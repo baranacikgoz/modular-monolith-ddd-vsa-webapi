@@ -16,9 +16,9 @@ internal sealed class CurrentUser : ICurrentUser
                 ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
                 : string.Empty;
 
-        Id = IdAsString is not null
-                ? Guid.Parse(IdAsString)
-                : Guid.Empty;
+        Id = string.IsNullOrEmpty(IdAsString)
+                ? Guid.Empty
+                : Guid.Parse(IdAsString);
 
         FullName = IsAuthenticated
                 ? user?.FindFirstValue(CustomClaims.Fullname)
