@@ -1,0 +1,12 @@
+{
+  "CustomLocalizationOptions": {
+    "ResourcesPath": "Resources",
+    "DefaultCulture": "tr",
+    "SupportedCultures": [
+      "tr",
+      "tr-TR",
+      "en",
+      "en-US"
+    ]
+  }
+}

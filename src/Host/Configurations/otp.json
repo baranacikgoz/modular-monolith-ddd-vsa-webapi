@@ -1,0 +1,5 @@
+{
+  "OtpOptions": {
+    "ExpirationInMinutes": 5
+  }
+}

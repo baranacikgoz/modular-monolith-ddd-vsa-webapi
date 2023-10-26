@@ -1,0 +1,10 @@
+{
+  "RabbitMqOptions": {
+    "Host": "localhost",
+    "Username": "guest",
+    "Password": "guest",
+    "Port": 5672,
+    "IdentityAndAuthModuleQueueName": "identity-and-auth-module",
+    "AppointmentsModuleQueueName": "appointments-module"
+  }
+}

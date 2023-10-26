@@ -1,0 +1,5 @@
+{
+  "DatabaseOptions": {
+    "ConnectionString": "Server=localhost;Port=5432;Database=modular-monolith;User Id=postgres;Password=postgres;Include Error Detail=true"
+  }
+}

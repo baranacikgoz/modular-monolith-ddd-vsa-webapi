@@ -1,0 +1,9 @@
+{
+  "JwtOptions": {
+    "Secret": "S0M3RAND0MS3CR3T!1!MAG1C!1!SNMCASDQWEJ",
+    "Issuer": "Modular-Monolith",
+    "Audience": ".NET Developers",
+    "AccessTokenExpirationInMinutes": 60,
+    "RefreshTokenExpirationInDays": 14
+  }
+}
