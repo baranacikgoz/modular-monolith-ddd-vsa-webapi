@@ -1,0 +1,9 @@
+{
+  "LoggerOptions": {
+    "AppName": "ModularMonolith.WebAPI",
+    "SeqConnectionString": "http://localhost:17780",
+    "WriteToFile": true,
+    "WriteToConsole": true,
+    "MinimumLogLevel": "Debug"
+  }
+}
