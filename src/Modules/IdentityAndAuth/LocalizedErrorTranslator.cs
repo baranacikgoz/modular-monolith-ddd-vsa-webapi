@@ -20,7 +20,8 @@ public class LocalizedErrorTranslator(IStringLocalizer<LocalizedErrorTranslator>
         { nameof(OtpErrors.InvalidOtp), () => localizer["Kod hatalı veya süresi dolmuş."] },
         { nameof(TokenErrors.InvalidToken), () => localizer["Geçersiz token."] },
         { nameof(TokenErrors.InvalidRefreshToken), () => localizer["Geçersiz yenileme tokeni."] },
-        { nameof(CaptchaErrors.VerificationFailed), () => localizer["Captcha doğrulaması başarısız."] },
+        { nameof(CaptchaErrors.NotHuman), () => localizer["Robot olmadığınız doğrulanamadı."] },
+        { nameof(CaptchaErrors.ServiceUnavailable), () => localizer["Captcha servisi kaynaklı hata. Lütfen tekrar deneyiniz."] },
         { nameof(PhoneVerificationTokenErrors.VerificationFailed), () => localizer["Telefon doğrulama tokeni doğrulaması başarısız."] }
     };
     public string Translate(Error error)
