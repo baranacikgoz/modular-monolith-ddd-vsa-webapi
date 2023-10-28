@@ -14,10 +14,12 @@ using IdentityAndAuth.Features.Users.Domain.Errors;
 using IdentityAndAuth.Features.Users.Services;
 using IdentityAndAuth.Identity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NimbleMediator.Contracts;
@@ -99,12 +101,13 @@ public static class RefreshToken
     private static async Task<IResult> RefreshAsync(
         [FromBody] Request request,
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         var result = await mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(result);
+        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
 namespace Appointments.Features.Venues;
@@ -25,12 +26,13 @@ public static class CreateVenue
     private static async Task<IResult> CreateAsync(
         [FromBody] Request request,
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         var result = await mediator.SendAsync<Request, Result<Guid>>(request, cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(result);
+        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder venuesApiGroup)

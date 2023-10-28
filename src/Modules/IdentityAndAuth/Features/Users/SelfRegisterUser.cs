@@ -119,12 +119,13 @@ public static class SelfRegisterUser
     private static async Task<IResult> SelfRegisterAsync(
         [FromBody] Request request,
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         var response = await mediator.SendAsync<Request, Result<Guid>>(request, cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(response);
+        return resultTranslator.TranslateToMinimalApiResult(response, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)

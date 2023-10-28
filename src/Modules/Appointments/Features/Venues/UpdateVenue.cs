@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using NimbleMediator.Contracts;
 using Common.Core.Auth;
+using Microsoft.Extensions.Localization;
 
 namespace Appointments.Features.Venues;
 
@@ -26,7 +27,8 @@ public static class UpdateVenue
         [FromRoute] Guid id,
         [FromBody] Request request,
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         if (id != request.Id)
@@ -36,7 +38,7 @@ public static class UpdateVenue
 
         var result = await mediator.SendAsync<Request, Result>(request, cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(result);
+        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder venuesApiGroup)

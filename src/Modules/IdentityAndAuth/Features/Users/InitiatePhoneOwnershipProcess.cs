@@ -39,12 +39,13 @@ public static class InitiatePhoneOwnershipProcess
     private static async Task<IResult> InitiatePhoneOwnershipProcessAsync(
         [FromBody] Request request,
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         var result = await mediator.SendAsync<Request, Result>(request, cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(result);
+        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)

@@ -21,15 +21,6 @@ public static class ModuleInstaller
 
     public static IServiceCollection InstallIdentityAndAuthModule(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddHttpContextAccessor()
-            .AddKeyedTransient<IErrorTranslator, LocalizedErrorTranslator>(ModuleConstants.ModuleName)
-            .AddKeyedTransient<IResultTranslator, ResultTranslator>(
-            ModuleConstants.ModuleName,
-            (sp, _) => new ResultTranslator(
-                sp.GetRequiredKeyedService<IErrorTranslator>(ModuleConstants.ModuleName),
-                sp.GetRequiredService<IHttpContextAccessor>()));
-
         services.AddTransient<Seeder>();
 
         services

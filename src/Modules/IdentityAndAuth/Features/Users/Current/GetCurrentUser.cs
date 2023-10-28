@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Users.Current;
@@ -48,12 +49,13 @@ public static class GetCurrentUser
 
     private static async Task<IResult> GetAsync(
         [FromServices] IMediator mediator,
-        [FromKeyedServices(ModuleConstants.ModuleName)] IResultTranslator resultTranslator,
+        [FromServices] IResultTranslator resultTranslator,
+        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
     {
         var result = await mediator.SendAsync<Request, Result<Response>>(new(), cancellationToken);
 
-        return resultTranslator.TranslateToMinimalApiResult(result);
+        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
     }
 
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)

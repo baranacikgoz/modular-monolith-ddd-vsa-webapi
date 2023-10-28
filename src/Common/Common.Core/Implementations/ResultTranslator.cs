@@ -2,6 +2,7 @@
 using Common.Core.Contracts.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Common.Core.Implementations;
 
@@ -10,23 +11,22 @@ public class ResultTranslator(
     IHttpContextAccessor httpContextAccessor
     ) : IResultTranslator
 {
-    public IResult TranslateToMinimalApiResult<T>(Result<T> result)
+    public IResult TranslateToMinimalApiResult<T>(Result<T> result, IStringLocalizer<IErrorTranslator> localizer)
     {
         return result.IsSuccess
             ? Results.Ok(result.Value)
-            : CreateProblemDetails(result.Error!);
+            : CreateProblemDetails(result.Error!, localizer);
     }
 
-    public IResult TranslateToMinimalApiResult(Result result)
+    public IResult TranslateToMinimalApiResult(Result result, IStringLocalizer<IErrorTranslator> localizer)
     {
         return result.IsSuccess
             ? Results.Ok()
-            : CreateProblemDetails(result.Error!);
+            : CreateProblemDetails(result.Error!, localizer);
     }
-
-    private CustomProblemDetails CreateProblemDetails(Error error)
+    private CustomProblemDetails CreateProblemDetails(Error error, IStringLocalizer<IErrorTranslator> localizer)
     {
-        var localizedErrorMessage = errorTranslator.Translate(error);
+        var localizedErrorMessage = errorTranslator.Translate(error, localizer);
 
         return new CustomProblemDetails
         {
