@@ -24,6 +24,6 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzers>true</RunAnalyzers>
-    <NoWarn>CA1062;CA2007;IDE0005;CA1812;S1144;CA1848;S2094;S3604;S4136;CA1034</NoWarn>
+    <NoWarn>CA1062;CA2007;IDE0005;CA1812;S1144;CA1848;S2094;S3604;S4136;CA1034;CA1716</NoWarn>
   </PropertyGroup>
 </Project>

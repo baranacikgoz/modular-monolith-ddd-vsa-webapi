@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts.Results;
+using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken.Errors;
 
 namespace IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
 
@@ -14,9 +15,9 @@ public class DummyPhoneVerificationTokenService : IPhoneVerificationTokenService
 
         if (token != DummyPhoneVerificationToken)
         {
-            return new PhoneVerificationTokenValidationFailedError();
+            return PhoneVerificationTokenErrors.VerificationFailed;
         }
 
-        return Result.Succeeded();
+        return Result.Success;
     }
 }

@@ -28,7 +28,7 @@ public static class GetCurrentUser
             var id = currentUser.Id;
             if (id == Guid.Empty)
             {
-                return new UserNotFoundError();
+                return UserErrors.NotFound;
             }
 
             var user = await userManager
@@ -39,7 +39,7 @@ public static class GetCurrentUser
 
             if (user is null)
             {
-                return new UserNotFoundError();
+                return UserErrors.NotFound;
             }
 
             return user;

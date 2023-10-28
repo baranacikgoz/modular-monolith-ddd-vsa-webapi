@@ -46,7 +46,7 @@ public class TokenService(
     {
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
-            return new UserNotFoundError();
+            return TokenErrors.InvalidRefreshToken;
         }
 
         var refreshTokenExpiresAt = await userManager
@@ -57,15 +57,15 @@ public class TokenService(
 
         if (refreshTokenExpiresAt == default)
         {
-            return new InvalidTokenError();
+            return TokenErrors.InvalidRefreshToken;
         }
 
         if (refreshTokenExpiresAt < DateTime.UtcNow)
         {
-            return new InvalidTokenError();
+            return TokenErrors.RefreshTokenExpired;
         }
 
-        return Result.Succeeded();
+        return Result.Success;
     }
 
     private (string accessToken, DateTime accessTokenExpiresAt) GenerateJwt(ApplicationUser user)

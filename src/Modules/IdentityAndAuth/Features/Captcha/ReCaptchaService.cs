@@ -25,7 +25,7 @@ public class ReCaptchaService(
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
         {
             logger.LogError("Captcha validation failed with status code {StatusCode}", httpResponseMessage.StatusCode);
-            return new CaptchaResultFailedError();
+            return CaptchaErrors.VerificationFailed;
         }
 
         var reCaptchaResponse = await succeededResult.Content.ReadFromJsonAsync<ReCaptchaResponse>(cancellationToken);
@@ -33,10 +33,10 @@ public class ReCaptchaService(
         if (reCaptchaResponse is not { Success: true })
         {
             logger.LogError("Captcha validation failed with response {Response}", reCaptchaResponse);
-            return new CaptchaResultFailedError();
+            return CaptchaErrors.VerificationFailed;
         }
 
-        return Result.Succeeded();
+        return Result.Success;
     }
 
     private static FormUrlEncodedContent GetRequestParameters(string captchaToken, string secretKey)

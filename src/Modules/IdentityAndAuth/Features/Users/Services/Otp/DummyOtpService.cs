@@ -12,9 +12,9 @@ public class DummyOtpService : IOtpService
 
         if (otp == DummyOtp)
         {
-            return Result.Succeeded();
+            return Result.Success;
         }
 
-        return new InvalidOtpError(phoneNumber, otp);
+        return OtpErrors.InvalidOtp;
     }
 }

@@ -29,10 +29,10 @@ internal sealed class OtpService(
 
         if (code.IsNullOrEmpty())
         {
-            return new InvalidOtpError(phoneNumber, otp);
+            return OtpErrors.InvalidOtp;
         }
 
-        return Result.Succeeded();
+        return Result.Success;
     }
 
     private static string CacheKey(string phoneNumber) => $"otp:{phoneNumber}";

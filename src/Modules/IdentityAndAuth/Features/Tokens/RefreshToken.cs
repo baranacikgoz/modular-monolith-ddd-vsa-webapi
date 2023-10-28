@@ -44,7 +44,7 @@ public static class RefreshToken
                     var phoneNumber = principal.GetPhoneNumber();
                     if (string.IsNullOrWhiteSpace(phoneNumber))
                     {
-                        return new UserNotFoundError();
+                        return UserErrors.NotFound;
                     }
                     return await userService.GetByPhoneNumberAsync(phoneNumber, cancellationToken);
                 })
@@ -54,15 +54,15 @@ public static class RefreshToken
         private async Task<Result<Response>> ValidateRefreshTokenAndGenerateTokens(ApplicationUser user, string refreshToken)
         {
             var validateResult = await tokenService.ValidateRefreshTokenAsync(refreshToken, user.PhoneNumber ?? string.Empty);
-            if (!validateResult.IsSucceeded)
+            if (!validateResult.IsSuccess)
             {
-                return validateResult.Failure!;
+                return validateResult.Error!;
             }
 
             var tokenDtoResult = await tokenService.GenerateTokensAndUpdateUserAsync(user);
-            if (!tokenDtoResult.IsSucceeded)
+            if (!tokenDtoResult.IsSuccess)
             {
-                return tokenDtoResult.Failure!;
+                return tokenDtoResult.Error!;
             }
 
             var tokenDto = tokenDtoResult.Value!;
@@ -78,7 +78,7 @@ public static class RefreshToken
             var tokenHandler = new JwtSecurityTokenHandler();
             if (!tokenHandler.CanReadToken(token))
             {
-                return new InvalidTokenError();
+                return TokenErrors.InvalidToken;
             }
 
             var tokenValidationParameters = CustomTokenValidationParameters.Get(jwtOptions);
@@ -89,7 +89,7 @@ public static class RefreshToken
                     SecurityAlgorithms.HmacSha256,
                     StringComparison.OrdinalIgnoreCase))
             {
-                return new InvalidTokenError();
+                return TokenErrors.InvalidToken;
             }
 
             return principal;

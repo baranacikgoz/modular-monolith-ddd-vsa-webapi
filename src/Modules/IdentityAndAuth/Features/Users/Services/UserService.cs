@@ -22,7 +22,7 @@ public class UserService(
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
         {
-            return new UserNotFoundError();
+            return UserErrors.NotFound;
         }
 
         var user = await userManager
@@ -31,7 +31,7 @@ public class UserService(
 
         if (user is null)
         {
-            return new UserNotFoundError();
+            return UserErrors.NotFound;
         }
 
         return user;

@@ -12,30 +12,30 @@ public class ResultTranslator(
 {
     public IResult TranslateToMinimalApiResult<T>(Result<T> result)
     {
-        return result.IsSucceeded
+        return result.IsSuccess
             ? Results.Ok(result.Value)
-            : CreateProblemDetails(result.Failure!);
+            : CreateProblemDetails(result.Error!);
     }
 
     public IResult TranslateToMinimalApiResult(Result result)
     {
-        return result.IsSucceeded
+        return result.IsSuccess
             ? Results.Ok()
-            : CreateProblemDetails(result.Failure!);
+            : CreateProblemDetails(result.Error!);
     }
 
-    private CustomProblemDetails CreateProblemDetails(Failure failure)
+    private CustomProblemDetails CreateProblemDetails(Error error)
     {
-        var localizedErrorMessage = errorTranslator.Translate(failure);
+        var localizedErrorMessage = errorTranslator.Translate(error);
 
         return new CustomProblemDetails
         {
-            Status = (int)failure.StatusCode,
+            Status = (int)error.StatusCode,
             Title = localizedErrorMessage,
-            Type = failure.GetType().FullName ?? string.Empty,
+            Type = error.Key,
             Instance = httpContextAccessor.HttpContext?.Request.Path ?? string.Empty,
             TraceId = httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty,
-            Errors = failure.Errors ?? Enumerable.Empty<string>()
+            Errors = error.Errors ?? Enumerable.Empty<string>()
         };
     }
 }
