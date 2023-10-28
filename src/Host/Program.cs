@@ -15,6 +15,9 @@ using System.Reflection;
 using Host.Validation;
 using Appointments;
 using Host.Middlewares;
+using Common.Core.Contracts;
+using Common.Core.Implementations;
+using Microsoft.Extensions.Localization;
 
 Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -34,9 +37,22 @@ try
     // Add services to the container.
     builder
         .Services
+            .AddHttpContextAccessor()
             .AddSingleton<RequestResponseLoggingMiddleware>()
             .AddCustomLocalization("Resources")
             .AddSingleton<ExceptionHandlingMiddleware>()
+            .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(sp =>
+            {
+                var identityAndAuthModuleErrors = IdentityAndAuth.ErrorsToLocalize.GetErrorsAndMessages();
+                var appointmentsModuleErrors = Appointments.ErrorsToLocalize.GetErrorsAndMessages();
+
+                return new LocalizedErrorTranslator(
+                    identityAndAuthModuleErrors,
+                    appointmentsModuleErrors
+                    );
+
+            })
+            .AddSingleton<IResultTranslator, ResultTranslator>()
             .AddCaching()
             .AddNimbleMediator(cfg =>
             {
