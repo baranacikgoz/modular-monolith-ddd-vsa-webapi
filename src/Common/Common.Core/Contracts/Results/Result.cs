@@ -2,74 +2,64 @@
 
 namespace Common.Core.Contracts.Results;
 
-public abstract record Failure(HttpStatusCode StatusCode = HttpStatusCode.BadRequest, IEnumerable<string>? Errors = null);
-
-public readonly struct Result : IEquatable<Result>
+public class Error
 {
-    private static readonly Result _success = new(null);
-    public bool IsSucceeded => Failure is null;
-    public Failure? Failure { get; }
+    public string Key { get; }
+    public HttpStatusCode StatusCode { get; }
+    public IEnumerable<string>? Errors { get; }
 
-    private Result(Failure? failure)
+    public Error(string key, HttpStatusCode statusCode = HttpStatusCode.BadRequest, IEnumerable<string>? errors = null)
     {
-        Failure = failure;
+        Key = key;
+        StatusCode = statusCode;
+        Errors = errors;
     }
-
-    public static Result Succeeded() => _success;
-    public static Result Failed(Failure failure) => new(failure);
-
-#pragma warning disable CA2225
-    public static implicit operator Result(Failure failure) => Failed(failure);
-#pragma warning restore CA2225
-
-    public override int GetHashCode() => HashCode.Combine(IsSucceeded, Failure);
-
-    public bool Equals(Result other)
-    {
-        return IsSucceeded == other.IsSucceeded && EqualityComparer<Failure>.Default.Equals(Failure, other.Failure);
-    }
-
-    public static bool operator ==(Result left, Result right) => left.Equals(right);
-
-    public static bool operator !=(Result left, Result right) => !left.Equals(right);
-
-    public override bool Equals(object? obj) => obj is Result result && Equals(result);
-
 }
 
-public readonly struct Result<T> : IEquatable<Result<T>>
+public sealed class Result
+{
+    private static readonly Result _success = new(null);
+    public bool IsSuccess { get; }
+    public Error? Error { get; }
+
+    private Result(Error? error)
+    {
+        Error = error;
+        IsSuccess = error is null;
+    }
+
+    public static Result Success => _success;
+    public static Result Failure(Error error) => new(error);
+
+#pragma warning disable CA2225
+    public static implicit operator Result(Error error) => Failure(error);
+#pragma warning restore CA2225
+}
+
+public sealed class Result<T>
 {
     public T? Value { get; }
-    public Failure? Failure { get; }
-    public bool IsSucceeded => Failure is null;
+    public Error? Error { get; }
+    public bool IsSuccess { get; }
 
-    private Result(Failure failure) : this(default, failure) { }
+    private Result(Error error) : this(default, error) { }
 
     private Result(T value) : this(value, null) { }
 
-    private Result(T? value, Failure? failure)
+    private Result(T? value, Error? error)
     {
         Value = value;
-        Failure = failure;
+        Error = error;
+        IsSuccess = error is null;
     }
 
 #pragma warning disable CA1000
-    public static Result<T> Succeeded(T value) => new(value);
-    public static Result<T> Failed(Failure failure) => new(failure);
+    public static Result<T> Success(T value) => new(value);
+    public static Result<T> Failure(Error error) => new(error);
 #pragma warning restore CA1000
 
 #pragma warning disable CA2225
-    public static implicit operator Result<T>(T value) => Succeeded(value);
-    public static implicit operator Result<T>(Failure error) => Failed(error);
+    public static implicit operator Result<T>(T value) => Success(value);
+    public static implicit operator Result<T>(Error error) => Failure(error);
 #pragma warning restore CA2225
-
-    public override bool Equals(object? obj) => obj is Result<T> result && Equals(result);
-
-    public override int GetHashCode() => HashCode.Combine(Value, Failure);
-
-    public bool Equals(Result<T> other) => EqualityComparer<T>.Default.Equals(Value, other.Value) && EqualityComparer<Failure>.Default.Equals(Failure, other.Failure);
-
-    public static bool operator ==(Result<T> left, Result<T> right) => left.Equals(right);
-
-    public static bool operator !=(Result<T> left, Result<T> right) => !left.Equals(right);
 }

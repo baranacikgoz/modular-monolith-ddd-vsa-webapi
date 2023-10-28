@@ -32,7 +32,7 @@ public static class InitiatePhoneOwnershipProcess
             // Simulate sending sms otp.
             await Task.Delay(100, cancellationToken);
 
-            return Result.Succeeded();
+            return Result.Success;
         }
     }
 

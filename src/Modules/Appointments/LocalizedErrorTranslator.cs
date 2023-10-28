@@ -5,7 +5,7 @@ namespace Appointments.Common.Services;
 
 internal sealed class LocalizedErrorTranslator : IErrorTranslator
 {
-    public string Translate(Failure failure)
+    public string Translate(Error error)
     {
         throw new NotImplementedException();
     }

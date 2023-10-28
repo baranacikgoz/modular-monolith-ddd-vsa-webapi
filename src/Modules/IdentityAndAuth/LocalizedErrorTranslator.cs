@@ -5,6 +5,7 @@ using IdentityAndAuth.Features.Tokens.Errors;
 using IdentityAndAuth.Features.Users.Domain.Errors;
 using IdentityAndAuth.Features.Users.Services.Otp;
 using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
+using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken.Errors;
 using IdentityAndAuth.Identity;
 using Microsoft.Extensions.Localization;
 
@@ -12,18 +13,23 @@ namespace IdentityAndAuth;
 
 public class LocalizedErrorTranslator(IStringLocalizer<LocalizedErrorTranslator> localizer) : IErrorTranslator
 {
-    public string Translate(Failure failure)
+    private readonly Dictionary<string, Func<string>> _errorKeyToMessage = new()
     {
-        return failure switch
+        { nameof(UserErrors.NotFound), () => localizer["Kullanıcı bulunamadı."] },
+        { nameof(IdentityErrors.Some), () => localizer["Bir veya daha fazla hata oluştu."] },
+        { nameof(OtpErrors.InvalidOtp), () => localizer["Kod hatalı veya süresi dolmuş."] },
+        { nameof(TokenErrors.InvalidToken), () => localizer["Geçersiz token."] },
+        { nameof(TokenErrors.InvalidRefreshToken), () => localizer["Geçersiz yenileme tokeni."] },
+        { nameof(CaptchaErrors.VerificationFailed), () => localizer["Captcha doğrulaması başarısız."] },
+        { nameof(PhoneVerificationTokenErrors.VerificationFailed), () => localizer["Telefon doğrulama tokeni doğrulaması başarısız."] }
+    };
+    public string Translate(Error error)
+    {
+        if (_errorKeyToMessage.TryGetValue(error.Key, out var message))
         {
-            UserNotFoundError _ => localizer["Kullanıcı bulunamadı."],
-            IdentityError _ => localizer["Bir veya daha fazla hata oluştu."],
-            InvalidOtpError er => localizer["'{0}' numarası için geçersiz kod.", er.PhoneNumber],
-            InvalidTokenError _ => localizer["Geçersiz token."],
-            InvalidRefreshTokenError _ => localizer["Geçersiz yenileme tokeni."],
-            CaptchaResultFailedError _ => localizer["Captcha doğrulaması başarısız."],
-            PhoneVerificationTokenValidationFailedError _ => localizer["Telefon doğrulama tokeni doğrulaması başarısız."],
-            _ => throw new InvalidOperationException($"Unknown error type: {failure.GetType().Name}")
-        };
+            return message();
+        }
+
+        throw new NotImplementedException($"Error key {error.Key} is not implemented.");
     }
 }

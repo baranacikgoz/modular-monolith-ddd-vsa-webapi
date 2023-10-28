@@ -36,7 +36,7 @@ public static class GetUser
 
             if (response is null)
             {
-                return new UserNotFoundError();
+                return UserErrors.NotFound;
             }
 
             return response;
