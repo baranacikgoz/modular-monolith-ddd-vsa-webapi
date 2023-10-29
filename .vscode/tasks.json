@@ -44,7 +44,6 @@
         "build"
       ],
       "dockerBuild": {
-        "tag": "randevufastbackend:dev",
         "target": "base",
         "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
         "context": "${workspaceFolder}",
@@ -61,7 +60,6 @@
         "build"
       ],
       "dockerBuild": {
-        "tag": "randevufastbackend:latest",
         "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
         "context": "${workspaceFolder}",
         "platform": {

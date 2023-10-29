@@ -2,10 +2,13 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.7.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-rc.1.23421.29" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0-rc.1.23421.29" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"
+      Version="8.0.0-rc.1.23421.29" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"
+      Version="8.0.0-rc.1.23421.29" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-rc.1.23419.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.0-rc.1.23419.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions"
+      Version="8.0.0-rc.1.23419.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-rc.1.23419.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>none</PrivateAssets>
@@ -16,10 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference
+      Include="../../Common/Common.IntegrationEvents/Common.IntegrationEvents.csproj" />
     <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
     <ProjectReference Include="..\..\Common\Common.Options\Common.Options.csproj" />
     <ProjectReference Include="..\..\Common\Common.Caching\Common.Caching.csproj" />
-    <ProjectReference Include="..\..\Common\Common.Events\Common.DomainEvents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,6 +13,9 @@ using Common.Core.Implementations;
 using Microsoft.AspNetCore.Http;
 using IdentityAndAuth.Features.Common;
 using IdentityAndAuth.Features.Captcha;
+using IdentityAndAuth.Persistence;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityAndAuth;
 
@@ -47,8 +50,29 @@ public static class ModuleInstaller
     {
         using (var scope = app.Services.CreateScope())
         {
+            var context = scope.ServiceProvider.GetRequiredService<IdentityContext>();
+            try
+            {
+                context.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<IdentityContext>>();
+                logger.LogError(ex, "An error occurred while migrating the database.");
+                throw;
+            }
+
             var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
-            seeder.SeedDb().Wait();
+            try
+            {
+                seeder.SeedDb().Wait();
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Seeder>>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
+                throw;
+            }
         }
 
         rootGroup

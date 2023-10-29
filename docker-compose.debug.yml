@@ -1,13 +1,101 @@
 # Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
 
 version: '3.9'
+name: local
 
 services:
   host:
     image: host
+    container_name: host
+    networks:
+      - localbridge
     build:
       context: .
       dockerfile: src/Host/Dockerfile
+      args:
+        configuration: Debug
     ports:
       - 5000:5000
-      - 5001:5001
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - DatabaseOptions:ConnectionString=Host=postgresql;Database=modular-monolith-development;Username=postgres;Password=postgres;IncludeErrorDetail=true
+      - LoggerOptions:AppName=ModularMonolith.WebAPI
+      - LoggerOptions:SeqConnectionString=http://seq:5341
+      - LoggerOptions:WriteToFile=false
+      - LoggerOptions:WriteToConsole=true
+      - LoggerOptions:MinimumLogLevel=Debug
+    depends_on:
+      - postgresql
+      - seq
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    networks:
+      - localbridge
+    ports:
+      - 9000:9000
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgresql:5432/sonar
+      SONAR_JDBC_USERNAME: postgres
+      SONAR_JDBC_PASSWORD: postgres
+    depends_on:
+      - postgresql
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgresql:
+    image: postgres:16
+    container_name: postgresql
+    networks:
+      - localbridge
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    networks:
+      - localbridge
+    ports:
+      - 5341:80
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5341"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgresql:
+  seq:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+
+networks:
+  localbridge:
