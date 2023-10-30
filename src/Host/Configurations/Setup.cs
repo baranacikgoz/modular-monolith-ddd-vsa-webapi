@@ -5,29 +5,25 @@ public static class Setup
     public static WebApplicationBuilder AddConfigurations(this WebApplicationBuilder builder)
     {
         const string configurationsDirectory = "Configurations";
-        var env = builder.Environment;
+        var environmentName = builder.Environment.EnvironmentName;
+        var configuration = builder.Configuration;
 
-        builder
-            .Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/localization.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/localization.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/rabbitmq.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/rabbitmq.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/logger.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/logger.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/jwt.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/jwt.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/database.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/database.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/otp.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/otp.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/captcha.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"{configurationsDirectory}/captcha.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+        AddJsonFile(configuration, environmentName, "appsettings.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rabbitmq.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logger.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha.json");
 
-            .AddEnvironmentVariables();
-
+        configuration.AddEnvironmentVariables();
         return builder;
+    }
+
+    private static void AddJsonFile(ConfigurationManager configuration, string environment, string filePath)
+    {
+        configuration.AddJsonFile(filePath, optional: false, reloadOnChange: true);
+        configuration.AddJsonFile($"{filePath}.{environment}", optional: true, reloadOnChange: true);
     }
 }
