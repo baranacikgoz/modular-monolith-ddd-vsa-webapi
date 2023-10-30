@@ -1,72 +1,33 @@
 ﻿using Common.Core.Contracts;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.Generic;
 
 namespace Host.Swagger;
 
 public class DefaultResponsesOperationFilter : IOperationFilter
 {
+    private static OpenApiResponse CreateErrorResponse(string description, OperationFilterContext context)
+    {
+        return new OpenApiResponse
+        {
+            Description = description,
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                ["application/json"] = new OpenApiMediaType
+                {
+                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
+                }
+            }
+        };
+    }
+
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        // Add a default 400 Bad Request response
-        operation.Responses["400"] = new OpenApiResponse
-        {
-            Description = "Bad Request",
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
-
-        operation.Responses["401"] = new OpenApiResponse
-        {
-            Description = "Unauthorized",
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
-
-        operation.Responses["403"] = new OpenApiResponse
-        {
-            Description = "Forbidden",
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
-
-        operation.Responses["404"] = new OpenApiResponse
-        {
-            Description = "Not Found",
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
-
-        operation.Responses["500"] = new OpenApiResponse
-        {
-            Description = "Internal Server Error",
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
+        operation.Responses["400"] = CreateErrorResponse("Bad Request", context);
+        operation.Responses["401"] = CreateErrorResponse("Unauthorized", context);
+        operation.Responses["403"] = CreateErrorResponse("Forbidden", context);
+        operation.Responses["404"] = CreateErrorResponse("Not Found", context);
+        operation.Responses["500"] = CreateErrorResponse("Internal Server Error", context);
     }
 }
