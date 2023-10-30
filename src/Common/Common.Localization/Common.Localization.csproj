@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common.Options\Common.Options.csproj" />
+    <ProjectReference Include="../Common.Options/Common.Options.csproj" />
   </ItemGroup>
 
 </Project>

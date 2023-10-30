@@ -9,8 +9,8 @@
   <ItemGroup>
     <ProjectReference
       Include="../../Common/Common.IntegrationEvents/Common.IntegrationEvents.csproj" />
-    <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
-    <ProjectReference Include="..\..\Common\Common.Caching\Common.Caching.csproj" />
+    <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
+    <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
   </ItemGroup>
 
   <ItemGroup>

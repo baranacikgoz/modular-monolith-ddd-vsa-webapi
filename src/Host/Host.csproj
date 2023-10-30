@@ -31,12 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.Options\Common.Options.csproj" />
-    <ProjectReference Include="..\Common\Common.Localization\Common.Localization.csproj" />
-    <ProjectReference Include="..\Common\Common.Caching\Common.Caching.csproj" />
-    <ProjectReference Include="..\Common\Common.Core\Common.Core.csproj" />
-    <ProjectReference Include="..\Modules\IdentityAndAuth\IdentityAndAuth.csproj" />
-    <ProjectReference Include="..\Modules\Appointments\Appointments.csproj" />
+    <ProjectReference Include="../Common/Common.Options/Common.Options.csproj" />
+    <ProjectReference Include="../Common/Common.Localization/Common.Localization.csproj" />
+    <ProjectReference Include="../Common/Common.Caching/Common.Caching.csproj" />
+    <ProjectReference Include="../Common/Common.Core/Common.Core.csproj" />
+    <ProjectReference Include="../Modules/IdentityAndAuth/IdentityAndAuth.csproj" />
+    <ProjectReference Include="../Modules/Appointments/Appointments.csproj" />
   </ItemGroup>
 
 </Project>
