@@ -2,8 +2,8 @@
 version: '3.9'
 
 services:
-  host:
-    image: host
+  webapi:
+    image: webapi
     build:
       context: .
       dockerfile: src/Host/Dockerfile

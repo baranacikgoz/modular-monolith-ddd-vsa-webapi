@@ -4,9 +4,9 @@ version: '3.9'
 name: local
 
 services:
-  host:
-    image: host
-    container_name: host
+  webapi:
+    image: webapi
+    container_name: webapi
     networks:
       - localbridge
     build:
