@@ -1,8 +1,4 @@
-﻿
-using Common.Core.Auth;
-using Common.Core.Contracts;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Common.Core.Contracts;
 using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;

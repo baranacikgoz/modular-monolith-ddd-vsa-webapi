@@ -1,5 +1,4 @@
-﻿using Common.Caching;
-using IdentityAndAuth.Features.Tokens;
+﻿using IdentityAndAuth.Features.Tokens;
 using IdentityAndAuth.Features.Users;
 using IdentityAndAuth.Persistence.Seeding;
 using IdentityAndAuth.Auth;
@@ -8,10 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Common.Core.Contracts;
-using Common.Core.Implementations;
-using Microsoft.AspNetCore.Http;
-using IdentityAndAuth.Features.Common;
 using IdentityAndAuth.Features.Captcha;
 using IdentityAndAuth.Persistence;
 using Microsoft.Extensions.Logging;

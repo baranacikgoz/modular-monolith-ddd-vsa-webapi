@@ -1,10 +1,6 @@
 ﻿using Appointments.Features.Appointments;
 using Appointments.Features.Venues;
-using Common.Caching;
-using Common.Core.Contracts;
-using Common.Core.Implementations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 

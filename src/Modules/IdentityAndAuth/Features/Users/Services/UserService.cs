@@ -4,11 +4,9 @@ using IdentityAndAuth.Auth;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Users.Domain;
 using IdentityAndAuth.Features.Users.Domain.Errors;
-using IdentityAndAuth.Identity;
 using IdentityAndAuth.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAndAuth.Features.Users.Services;
 

@@ -1,7 +1,6 @@
 ﻿using Common.Core.Contracts;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
 
 namespace Host.Swagger;
 

@@ -1,13 +1,8 @@
-﻿using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
-using Common.Options;
+﻿using Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Captcha.ClientKey.Get;
 

@@ -4,7 +4,6 @@ using Host.Logging;
 using Serilog;
 using Common.Localization;
 using NimbleMediator.ServiceExtensions;
-using Common.Core;
 using System.Globalization;
 using Common.Caching;
 using IdentityAndAuth;
@@ -17,7 +16,6 @@ using Appointments;
 using Host.Middlewares;
 using Common.Core.Contracts;
 using Common.Core.Implementations;
-using Microsoft.Extensions.Localization;
 
 Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()

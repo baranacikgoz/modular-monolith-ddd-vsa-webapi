@@ -1,6 +1,5 @@
 using Common.Core.Contracts.Results;
 using IdentityAndAuth.Features.Users.Domain;
-using IdentityAndAuth.Identity;
 
 namespace IdentityAndAuth.Features.Users.Services;
 

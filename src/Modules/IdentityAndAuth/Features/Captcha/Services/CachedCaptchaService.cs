@@ -1,7 +1,5 @@
 ﻿using Common.Caching;
 using Common.Core.Contracts.Results;
-using Common.Options;
-using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha.Services;
 public class CachedCaptchaService(

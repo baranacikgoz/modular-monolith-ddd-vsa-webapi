@@ -1,13 +1,7 @@
 using IdentityAndAuth.Auth;
 using IdentityAndAuth.Identity;
-using IdentityAndAuth.Persistence;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using System.Linq;
 
 namespace IdentityAndAuth.Persistence.Seeding;
 

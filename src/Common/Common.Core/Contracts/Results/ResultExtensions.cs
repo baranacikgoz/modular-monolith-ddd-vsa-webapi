@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Common.Core.Contracts.Results;
+﻿namespace Common.Core.Contracts.Results;
 
 public static class SyncExtensions
 {

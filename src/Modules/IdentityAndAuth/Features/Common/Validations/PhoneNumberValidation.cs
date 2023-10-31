@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using IdentityAndAuth.Features.Users.Domain;
-using IdentityAndAuth.Identity;
 using Microsoft.Extensions.Localization;
 
 namespace IdentityAndAuth.Features.Common.Validations;

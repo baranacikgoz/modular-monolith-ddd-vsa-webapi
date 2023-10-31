@@ -1,14 +1,9 @@
 ﻿using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
-using IdentityAndAuth.Features.Captcha;
 using IdentityAndAuth.Features.Captcha.Errors;
 using IdentityAndAuth.Features.Tokens.Errors;
 using IdentityAndAuth.Features.Users.Domain.Errors;
-using IdentityAndAuth.Features.Users.Services.Otp;
 using IdentityAndAuth.Features.Users.Services.Otp.Errors;
-using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
 using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken.Errors;
-using IdentityAndAuth.Identity;
 using IdentityAndAuth.Identity.Errors;
 using Microsoft.Extensions.Localization;
 
