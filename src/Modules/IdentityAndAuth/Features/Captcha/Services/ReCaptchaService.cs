@@ -2,10 +2,11 @@
 using System.Text.Json.Serialization;
 using Common.Core.Contracts.Results;
 using Common.Options;
+using IdentityAndAuth.Features.Captcha.Errors;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace IdentityAndAuth.Features.Captcha;
+namespace IdentityAndAuth.Features.Captcha.Services;
 
 public class ReCaptchaService(
     HttpClient httpClient,

@@ -1,7 +1,6 @@
-﻿using System.Net;
-using Common.Core.Contracts.Results;
+﻿using Common.Core.Contracts.Results;
 
-namespace IdentityAndAuth.Identity;
+namespace IdentityAndAuth.Identity.Errors;
 
 public static class IdentityErrors
 {

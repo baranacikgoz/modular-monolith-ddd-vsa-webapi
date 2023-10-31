@@ -28,10 +28,10 @@ public static class ModuleInstaller
 
         services
             .AddCustomIdentity()
-            .AddCustomAuth(configuration)
-            .AddCommonFeatures();
+            .AddCustomAuth(configuration);
 
         services
+            .AddUsersFeatures()
             .AddTokensFeature();
 
         return services;

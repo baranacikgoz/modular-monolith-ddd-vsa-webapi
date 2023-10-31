@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Common.Caching;
 using Common.Core.Contracts.Results;
 using Common.Options;
+using IdentityAndAuth.Features.Users.Services.Otp.Errors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

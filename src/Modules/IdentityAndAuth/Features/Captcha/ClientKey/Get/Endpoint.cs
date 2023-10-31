@@ -9,14 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NimbleMediator.Contracts;
 
-namespace IdentityAndAuth.Features.Captcha;
+namespace IdentityAndAuth.Features.Captcha.ClientKey.Get;
 
-public static class GetClientKey
+public static class Endpoint
 {
     // We skipped the mediator pattern here because:
     // We just return the constant value from the options (from appsettings.json).
     // This api will be called frequently, if the operation is so simple, why mess with a lot of code and reduce performance?
-    public record Response(string ClientKey);
     internal static void MapEndpoint(RouteGroupBuilder captchaApiGroup)
     {
         captchaApiGroup

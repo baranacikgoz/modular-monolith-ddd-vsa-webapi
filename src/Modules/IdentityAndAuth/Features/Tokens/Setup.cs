@@ -9,11 +9,8 @@ namespace IdentityAndAuth.Features.Tokens;
 public static class Setup
 {
     public static IServiceCollection AddTokensFeature(this IServiceCollection services)
-    {
-        services.AddTransient<ITokenService, TokenService>();
-
-        return services;
-    }
+        => services
+            .AddTokensServices();
 
     public static RouteGroupBuilder MapTokensEndpoints(this RouteGroupBuilder rootGroup)
     {
@@ -21,8 +18,8 @@ public static class Setup
             .MapGroup("/tokens")
             .WithTags("Tokens");
 
-        CreateTokens.MapEndpoint(tokensApiGroup);
-        RefreshToken.MapEndpoint(tokensApiGroup);
+        Create.Endpoint.MapEndpoint(tokensApiGroup);
+        Refresh.Endpoint.MapEndpoint(tokensApiGroup);
 
         return rootGroup;
     }
