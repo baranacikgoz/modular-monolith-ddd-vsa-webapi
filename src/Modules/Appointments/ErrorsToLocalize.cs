@@ -1,6 +1,5 @@
 ﻿using Appointments.Features.Appointments.Domain.Errors;
 using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
 using Microsoft.Extensions.Localization;
 
 namespace Appointments;

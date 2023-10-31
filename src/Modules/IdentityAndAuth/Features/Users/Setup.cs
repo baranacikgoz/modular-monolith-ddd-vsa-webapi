@@ -1,6 +1,4 @@
-﻿using IdentityAndAuth.Features.Users.Current;
-using IdentityAndAuth.Features;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;

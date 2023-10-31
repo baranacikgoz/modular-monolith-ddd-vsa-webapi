@@ -1,11 +1,8 @@
-﻿using Common.Caching;
-using Common.Options;
-using IdentityAndAuth.Features.Captcha.Services;
+﻿using IdentityAndAuth.Features.Captcha.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha;
 

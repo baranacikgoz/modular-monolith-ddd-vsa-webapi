@@ -1,13 +1,10 @@
-﻿using System.Security.Claims;
-using System.Text;
-using Common.Core.Contracts;
+﻿using Common.Core.Contracts;
 using Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAndAuth.Auth.Jwt;
 

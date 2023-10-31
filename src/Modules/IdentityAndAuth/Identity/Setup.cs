@@ -1,5 +1,4 @@
 ﻿using Common.Options;
-using IdentityAndAuth.Features.Users;
 using IdentityAndAuth.Features.Users.Domain;
 using IdentityAndAuth.Persistence;
 using Microsoft.AspNetCore.Identity;

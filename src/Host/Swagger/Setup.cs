@@ -1,10 +1,4 @@
-﻿using System.Reflection;
-using Common.Core.Contracts;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-namespace Host.Swagger;
+﻿namespace Host.Swagger;
 
 public static class Setup
 {

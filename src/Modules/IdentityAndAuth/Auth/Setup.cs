@@ -1,5 +1,4 @@
-﻿using IdentityAndAuth.Features.Users;
-using IdentityAndAuth.Auth.Jwt;
+﻿using IdentityAndAuth.Auth.Jwt;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

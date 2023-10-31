@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace Common.Core.Auth;
+﻿namespace Common.Core.Auth;
 
 public interface ICurrentUser
 {

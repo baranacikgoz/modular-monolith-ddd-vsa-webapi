@@ -1,7 +1,6 @@
 ﻿using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 namespace Common.Core.Implementations;

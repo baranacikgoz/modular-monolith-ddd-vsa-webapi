@@ -1,9 +1,6 @@
 ﻿using System.Net;
-using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
 using Common.Core.Implementations;
 using FluentValidation.Results;
-using IdentityAndAuth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Results;

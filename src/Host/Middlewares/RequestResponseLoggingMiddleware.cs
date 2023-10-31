@@ -1,6 +1,4 @@
-﻿
-using Common.Core.Auth;
-using Serilog.Context;
+﻿using Serilog.Context;
 
 namespace Host.Middlewares;
 

@@ -1,6 +1,5 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace Common.Core.Implementations;

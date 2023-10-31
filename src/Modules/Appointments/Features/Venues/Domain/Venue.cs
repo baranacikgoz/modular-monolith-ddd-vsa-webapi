@@ -1,7 +1,5 @@
-﻿using Appointments.Features.Appointments;
-using Appointments.Features.Appointments.Domain;
+﻿using Appointments.Features.Appointments.Domain;
 using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
 
 namespace Appointments.Features.Venues.Domain;
 

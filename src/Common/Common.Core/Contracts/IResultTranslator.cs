@@ -1,5 +1,4 @@
 ﻿using Common.Core.Contracts.Results;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 
 namespace Common.Core.Contracts;
