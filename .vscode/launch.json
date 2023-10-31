@@ -14,7 +14,8 @@
       "symbolOptions": {
         "searchMicrosoftSymbolServer": true
       },
-      "suppressJITOptimizations": true
+      "suppressJITOptimizations": true,
+      "requireExactSource": false
     },
     {
       "name": ".NET Core Launch (web)",
