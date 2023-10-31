@@ -9,7 +9,7 @@
       "sourceFileMap": {
         "/src": "${workspaceFolder}"
       },
-      "containerName": "host",
+      "containerName": "webapi",
       "justMyCode": false,
       "symbolOptions": {
         "searchMicrosoftSymbolServer": true
