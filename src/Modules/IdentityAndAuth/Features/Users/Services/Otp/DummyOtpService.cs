@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts.Results;
+using IdentityAndAuth.Features.Users.Services.Otp.Errors;
 
 namespace IdentityAndAuth.Features.Users.Services.Otp;
 

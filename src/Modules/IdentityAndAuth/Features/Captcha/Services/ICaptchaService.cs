@@ -1,6 +1,6 @@
 ﻿using Common.Core.Contracts.Results;
 
-namespace IdentityAndAuth.Features.Captcha;
+namespace IdentityAndAuth.Features.Captcha.Services;
 
 public interface ICaptchaService
 {

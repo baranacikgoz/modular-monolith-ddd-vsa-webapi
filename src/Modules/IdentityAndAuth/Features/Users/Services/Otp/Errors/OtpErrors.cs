@@ -1,6 +1,6 @@
 ﻿using Common.Core.Contracts.Results;
 
-namespace IdentityAndAuth.Features.Users.Services.Otp;
+namespace IdentityAndAuth.Features.Users.Services.Otp.Errors;
 
 public static class OtpErrors
 {

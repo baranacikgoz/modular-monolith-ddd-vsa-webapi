@@ -3,7 +3,7 @@ using Common.Core.Contracts.Results;
 using Common.Options;
 using Microsoft.Extensions.Options;
 
-namespace IdentityAndAuth.Features.Captcha;
+namespace IdentityAndAuth.Features.Captcha.Services;
 public class CachedCaptchaService(
     ICaptchaService decoree,
     ICacheService cacheService,
