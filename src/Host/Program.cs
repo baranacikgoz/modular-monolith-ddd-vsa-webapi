@@ -77,9 +77,15 @@ try
 
     // Build the app and configure pipeline.
     var app = builder.Build();
+
     app
         .UseMiddleware<RequestResponseLoggingMiddleware>()
-        .UseHttpsRedirection()
+
+        // I generally run api projects behind a reverse proxy, so no need to use https,
+        // but if your kestrel is directly communicating with the outside world,
+        // you should uncomment the following line. and carefully set up your certificates and ports.
+        //.UseHttpsRedirection()
+
         .UseCustomLocalization()
         .UseMiddleware<ExceptionHandlingMiddleware>()
         .UseAuth();
