@@ -5,6 +5,7 @@ on:
     branches:
       - 'release/*'
       - 'hotfix/*'
+  workflow_dispatch: # This line allows manual triggering of the workflow
 
 jobs:
   deploy:
