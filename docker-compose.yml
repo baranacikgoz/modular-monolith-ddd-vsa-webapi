@@ -7,16 +7,12 @@ services:
     image: baranacikgoz/webapi:placeholder #version will be written by CI/CD
     container_name: webapi
     ports:
-      - 5001:5001
+      - 5000:5000
     env_file:
       - .env
-    # environment:
-    #   - ASPNETCORE_ENVIRONMENT=Development
-    #   - ASPNETCORE_URLS=https://+:5001
-    #   - ASPNETCORE_Kestrel__Certificates__Default__Password=your-password
-    #   - ASPNETCORE_Kestrel__Certificates__Default__Path=path-to-your-certificate.pfx
-    volumes:
-      - path-to-your-certificate:/https/
+    # environment: # Better come from .env file
+    #   - ASPNETCORE_ENVIRONMENT=Production
+    #   - ASPNETCORE_URLS=http://+:5000
     depends_on:
       - postgresql
 
