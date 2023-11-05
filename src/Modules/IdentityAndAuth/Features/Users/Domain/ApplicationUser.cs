@@ -49,7 +49,7 @@ public sealed class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
     private readonly List<DomainEvent> _domainEvents = new();
     [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-    public void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+    private void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
     public void ClearDomainEvents() => _domainEvents.Clear();
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
