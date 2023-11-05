@@ -1,6 +1,6 @@
 ﻿using Appointments.Features.Venues.Domain;
 using Common.Core.Contracts;
-using Common.IntegrationEvents.viaAppointments;
+using Common.DomainEvents.viaAppointments;
 
 namespace Appointments.Features.Appointments.Domain;
 

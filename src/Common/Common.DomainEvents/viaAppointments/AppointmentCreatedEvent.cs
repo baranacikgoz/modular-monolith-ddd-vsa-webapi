@@ -1,6 +1,6 @@
 ﻿using Common.Core.Contracts;
 
-namespace Common.IntegrationEvents.viaAppointments;
+namespace Common.DomainEvents.viaAppointments;
 
 public static partial class Events
 {

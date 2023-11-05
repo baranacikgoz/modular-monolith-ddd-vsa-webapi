@@ -12,12 +12,11 @@ public abstract class AggregateRoot<T> : AuditableEntity<T>, IAggregateRoot
 
     public void ClearDomainEvents() => _domainEvents.Clear();
 
-    public void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+    protected void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
 }
 
 public interface IAggregateRoot
 {
     IReadOnlyCollection<DomainEvent> DomainEvents { get; }
-    void AddDomainEvent(DomainEvent domainEvent);
     void ClearDomainEvents();
 }

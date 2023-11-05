@@ -1,6 +1,6 @@
 ﻿using Common.Core.Contracts;
 
-namespace Common.IntegrationEvents.viaIdentityAndAuth;
+namespace Common.DomainEvents.viaIdentityAndAuth;
 
 public static partial class Events
 {
