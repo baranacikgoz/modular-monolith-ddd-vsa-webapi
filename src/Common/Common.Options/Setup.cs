@@ -8,13 +8,6 @@ public static class Setup
     public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddOptions<RabbitMqOptions>()
-            .Bind(configuration.GetSection(nameof(RabbitMqOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.Port > 0, "Port must be greater than 0.")
-            .ValidateOnStart();
-
-        services
             .AddOptions<CustomLocalizationOptions>()
             .Bind(configuration.GetSection(nameof(CustomLocalizationOptions)))
             .ValidateDataAnnotations()
@@ -50,6 +43,13 @@ public static class Setup
             .AddOptions<CaptchaOptions>()
             .Bind(configuration.GetSection(nameof(CaptchaOptions)))
             .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services
+            .AddOptions<MassTransitOptions>()
+            .Bind(configuration.GetSection(nameof(MassTransitOptions)))
+            .ValidateDataAnnotations()
+            .Validate(o => o.DuplicateDetectionWindowInSeconds > 0, "DuplicateDetectionWindowInSeconds must be greater than 0.")
             .ValidateOnStart();
 
         return services;
