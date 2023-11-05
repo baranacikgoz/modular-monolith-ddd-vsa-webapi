@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" />
-    <PackageReference Include="MassTransit" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
