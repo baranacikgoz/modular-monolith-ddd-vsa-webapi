@@ -114,6 +114,18 @@ public static class AsyncExtensions
         return next(result.Value!);
     }
 
+    public static async Task<Result<TNext>> BindAsync<T, TNext>(this Task<Result<T>> resultTask, Func<T, TNext> next)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TNext>.Failure(result.Error!);
+        }
+
+        return next(result.Value!);
+    }
+
     public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Func<Task<TNext>> next)
     {
         var result = await resultTask.ConfigureAwait(false);

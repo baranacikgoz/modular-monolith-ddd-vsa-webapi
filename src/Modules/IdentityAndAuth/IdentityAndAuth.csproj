@@ -20,6 +20,7 @@
     <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
     <ProjectReference Include="../../Common/Common.Options/Common.Options.csproj" />
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Eventbus\Common.Eventbus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

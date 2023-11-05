@@ -1,23 +1,32 @@
 using System.Globalization;
 using Common.Core.Contracts.Results;
+using Common.Eventbus;
 using IdentityAndAuth.Auth;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Users.Domain;
 using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
 using Microsoft.AspNetCore.Identity;
 using NimbleMediator.Contracts;
+using Common.DomainEvents.viaIdentityAndAuth;
 
 namespace IdentityAndAuth.Features.Users.SelfRegister;
 
 internal sealed class RequestHandler(
         IPhoneVerificationTokenService phoneVerificationTokenService,
-        UserManager<ApplicationUser> userManager
+        UserManager<ApplicationUser> userManager,
+        IEventBus eventBus
         ) : IRequestHandler<Request, Result<Response>>
 {
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
         => await phoneVerificationTokenService
                 .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
-                .BindAsync(() => CreateUserAndAssignRoleAsync(request));
+                .BindAsync(() => CreateUserAndAssignRoleAsync(request))
+                .BindAsync(async (Response response) =>
+                {
+                    await eventBus.PublishAsync(new Events.IdentityAndAuth.UserCreatedEvent(response.Id));
+
+                    return Result<Response>.Success(response);
+                });
 
     private async Task<Result<Response>> CreateUserAndAssignRoleAsync(Request request)
     {

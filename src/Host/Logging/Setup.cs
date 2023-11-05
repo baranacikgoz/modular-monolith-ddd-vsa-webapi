@@ -97,6 +97,7 @@ public static class Setup
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                     .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
                     .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error);
+                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Error)
+                    .MinimumLevel.Override("MassTransit", LogEventLevel.Warning);
     }
 }

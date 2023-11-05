@@ -16,6 +16,9 @@ using Appointments;
 using Host.Middlewares;
 using Common.Core.Contracts;
 using Common.Core.Implementations;
+using Common.Eventbus;
+using Microsoft.Extensions.Options;
+using Notifications;
 
 Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -58,6 +61,12 @@ try
                 typeof(AppointmentsModuleAssemblyReference).Assembly,
                 typeof(IdentityAndAuthModuleAssemblyReference).Assembly);
             })
+            .AddEventBus(
+                builder.Configuration,
+                typeof(AppointmentsModuleAssemblyReference).Assembly,
+                typeof(IdentityAndAuthModuleAssemblyReference).Assembly,
+                typeof(NotificationsModuleAssemblyReference).Assembly
+            )
             .AddValidatorsFromAssemblies(
                 new List<Assembly>()
                 {
@@ -97,6 +106,7 @@ try
         .RequireAuthorization()
         .AddFluentValidationAutoValidation();
 
+    app.UseEventBus();
     app.UseIdentityAndAuthModule(rootGroup);
     app.UseAppointmentsModule(rootGroup);
 
