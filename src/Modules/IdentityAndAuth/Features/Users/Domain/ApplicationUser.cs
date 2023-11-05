@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Users.Domain;
 
-public sealed class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
+public sealed class ApplicationUser : IdentityUser<Guid>
 {
     private ApplicationUser(string firstName, string lastName, string phoneNumber, string nationalIdentityNumber, DateOnly birthDate, Uri? imageUrl = null)
     {
@@ -17,8 +17,6 @@ public sealed class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         NationalIdentityNumber = nationalIdentityNumber;
         BirthDate = birthDate;
         ImageUrl = imageUrl;
-
-        AddDomainEvent(new Events.IdentityAndAuth.UserCreatedEvent(Id));
     }
 
     public string FirstName { get; private set; }
@@ -45,12 +43,6 @@ public sealed class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         RefreshToken = refreshToken;
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
     }
-
-    private readonly List<DomainEvent> _domainEvents = new();
-    [NotMapped]
-    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-    private void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
-    public void ClearDomainEvents() => _domainEvents.Clear();
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
     private ApplicationUser() { }

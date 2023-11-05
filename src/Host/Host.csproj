@@ -37,6 +37,7 @@
     <ProjectReference Include="../Common/Common.Core/Common.Core.csproj" />
     <ProjectReference Include="../Modules/IdentityAndAuth/IdentityAndAuth.csproj" />
     <ProjectReference Include="../Modules/Appointments/Appointments.csproj" />
+    <ProjectReference Include="..\Modules\Notifications\Notifications.csproj" />
   </ItemGroup>
 
 </Project>
