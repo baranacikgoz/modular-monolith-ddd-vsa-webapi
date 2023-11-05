@@ -2,8 +2,7 @@
 
 namespace Common.Eventbus;
 
-public interface IModuleConfiguration
+public interface IModuleEventBusConfigurator
 {
-    string QueueName { get; }
-    void Configure(IBusRegistrationContext context, IRabbitMqReceiveEndpointConfigurator endpoint);
+    void Configure(IBusRegistrationConfigurator configurator);
 }
