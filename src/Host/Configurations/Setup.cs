@@ -10,12 +10,12 @@ public static class Setup
 
         AddJsonFile(configuration, environmentName, "appsettings.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rabbitmq.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logger.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp.json");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha.json");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/massTransit.json");
 
         configuration.AddEnvironmentVariables();
         return builder;

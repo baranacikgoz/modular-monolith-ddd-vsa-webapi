@@ -1,5 +1,6 @@
 ﻿using Common.Options;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -7,29 +8,37 @@ namespace Common.Eventbus;
 
 public static class Setup
 {
-    public static IServiceCollection AddEventBus(this IServiceCollection services, IEnumerable<IModuleConfiguration> moduleConfigurations)
+    public static IServiceCollection AddEventBus(
+        this IServiceCollection services,
+        MassTransitOptions massTransitOptions,
+        IEnumerable<IModuleEventBusConfigurator> moduleEventBusConfigurators)
     {
         services.AddMassTransit(conf =>
         {
+            // If you are planning to scale out the application,
+            // this DbContext should be configured to connect to the same database for all application instances.
+            // Read the comments in "UsingInMemory" method below as well.
+            conf.AddEntityFrameworkOutbox<OutboxDbContext>(o =>
+            {
+                o.UsePostgres();
+                o.UseBusOutbox();
+                o.DuplicateDetectionWindow = TimeSpan.FromSeconds(massTransitOptions.DuplicateDetectionWindowInSeconds);
+            });
+
             conf.SetKebabCaseEndpointNameFormatter();
 
-            conf.UsingRabbitMq((context, cfg) =>
+            // Allow each module to configure their own consumers in a decoupled way.
+            foreach (var configurator in moduleEventBusConfigurators)
             {
-                var options = context.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+                configurator.Configure(conf);
+            }
 
-                cfg.Host(options.Host, host =>
-                {
-                    host.Username(options.Username);
-                    host.Password(options.Password);
-                });
-
-                foreach (var moduleConfiguration in moduleConfigurations)
-                {
-                    cfg.ReceiveEndpoint(moduleConfiguration.QueueName, endpoint =>
-                    {
-                        moduleConfiguration.Configure(context, endpoint);
-                    });
-                }
+            // If you are planning to scale out the application,
+            // you should use a distributed message broker like RabbitMQ.
+            // Read the comments in "AddEntityFrameworkOutbox" method above as well.
+            conf.UsingInMemory((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
             });
         });
 

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="8.1.0" />
+    <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.1.1" />
     <PackageReference Include="MassTransit.RabbitMq" Version="8.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
