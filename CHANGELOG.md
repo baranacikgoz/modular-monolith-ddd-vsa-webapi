@@ -1,3 +1,22 @@
+## 0.2.0 (2023-11-06)
+
+### Feat
+
+- **eventbus**: Implement eventbus with MassTransit and Outbox Pattern
+- **EventBus**: Configuring eventbus, in-progress
+- **https-usage**: Disable https usage to run behind reverse proxy
+
+### Fix
+
+- **Dockerfile**: Add Common.Persistence project
+- **cd.yml**: Fix dash bug with docker compose command
+
+### Refactor
+
+- **dependencies**: Switch to central package version management via Directory.Packages.props
+- **ApplicationUser.cs**: Make AddDomainEvent method private
+- Refactor IntegrationEvents project's name to DomainEvents
+
 ## 0.1.0 (2023-11-01)
 
 ### Fix
