@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Common.Options/Common.Options.csproj" />
+    <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
   </ItemGroup>
 
 </Project>
