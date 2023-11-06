@@ -46,28 +46,10 @@ public static class ModuleInstaller
         using (var scope = app.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-            try
-            {
-                context.Database.Migrate();
-            }
-            catch (Exception ex)
-            {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<IdentityContext>>();
-                logger.LogError(ex, "An error occurred while migrating the database.");
-                throw;
-            }
+            context.Database.Migrate();
 
             var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
-            try
-            {
-                seeder.SeedDb().Wait();
-            }
-            catch (Exception ex)
-            {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Seeder>>();
-                logger.LogError(ex, "An error occurred while seeding the database.");
-                throw;
-            }
+            seeder.SeedDbAsync().GetAwaiter().GetResult();
         }
 
         rootGroup

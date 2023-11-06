@@ -2,7 +2,7 @@
 
 namespace Host.Middlewares;
 
-public class RequestResponseLoggingMiddleware(
+public partial class RequestResponseLoggingMiddleware(
     ILogger<RequestResponseLoggingMiddleware> logger
     ) : IMiddleware
 {
@@ -33,26 +33,53 @@ public class RequestResponseLoggingMiddleware(
     private void LogResponse(HttpContext context, double elapsedMs, bool isSlow)
     {
         var statusCode = context.Response.StatusCode;
-        var logValues = new object[]
-        {
-        isSlow ? "*SLOW*" : "",
-        context.Request.Method,
-        context.Request.Path,
-        statusCode,
-        elapsedMs
-        };
 
         if (statusCode >= 500)
         {
-            logger.LogError(LogTemplate, logValues);
+            LogErrorResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
         }
         else if (statusCode >= 400)
         {
-            logger.LogWarning(LogTemplate, logValues);
+            LogWarningResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
         }
         else
         {
-            logger.LogInformation(LogTemplate, logValues);
+            LogInformationResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
+
         }
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = LogTemplate)]
+    private static partial void LogInformationResponse(
+        ILogger logger,
+        string prefix,
+        string method,
+        string path,
+        int statusCode,
+        double elapsed);
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = LogTemplate)]
+    private static partial void LogWarningResponse(
+        ILogger logger,
+        string prefix,
+        string method,
+        string path,
+        int statusCode,
+        double elapsed);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = LogTemplate)]
+    private static partial void LogErrorResponse(
+        ILogger logger,
+        string prefix,
+        string method,
+        string path,
+        int statusCode,
+        double elapsed);
+
 }

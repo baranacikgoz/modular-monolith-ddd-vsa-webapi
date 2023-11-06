@@ -29,12 +29,18 @@ internal partial class Seeder
                 BirthDate = new DateOnly(2001, 06, 20)
             });
 
-        logger.LogInformation("Seeding the {AdminName} user.", admin.UserName);
+        LogSeedingAdmingUser(logger, admin.UserName!);
+
         await userManager.CreateAsync(admin);
 
         // Assign role to user
         await SeedAdminToAllRolesAsync(admin);
     }
+
+    [LoggerMessage(
+            Level = LogLevel.Information,
+            Message = "Seeding the {UserName} user.")]
+    private static partial void LogSeedingAdmingUser(ILogger logger, string userName);
 
     private async Task SeedAdminToAllRolesAsync(ApplicationUser admin)
     {

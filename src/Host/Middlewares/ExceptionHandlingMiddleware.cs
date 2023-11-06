@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
 
-public class ExceptionHandlingMiddleware(
+public partial class ExceptionHandlingMiddleware(
     ILogger<ExceptionHandlingMiddleware> logger
     ) : IMiddleware
 {
@@ -17,7 +17,7 @@ public class ExceptionHandlingMiddleware(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Unhandled exception occured.");
+            LogError(logger, exception);
 
             var problemDetails = GenerateProblemResponse(context, exception);
 
@@ -41,5 +41,10 @@ public class ExceptionHandlingMiddleware(
 
         return problemDetails;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Unhandled exception occured.")]
+    private static partial void LogError(ILogger logger, Exception exception);
 }
 

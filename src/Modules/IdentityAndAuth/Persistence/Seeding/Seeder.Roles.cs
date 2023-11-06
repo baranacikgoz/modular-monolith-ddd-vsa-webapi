@@ -20,7 +20,7 @@ internal partial class Seeder
         if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName)
                 is not ApplicationRole role)
         {
-            logger.LogInformation("Creating the {RoleName} role.", roleName);
+            LogRoleCreation(logger, roleName);
 
             // Create the role
             role = new ApplicationRole(roleName, $"{roleName} Role.");
@@ -29,4 +29,9 @@ internal partial class Seeder
 
         return role;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Creating the {RoleName} role.")]
+    private static partial void LogRoleCreation(ILogger logger, string roleName);
 }
