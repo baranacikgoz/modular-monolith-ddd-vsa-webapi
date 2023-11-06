@@ -1,6 +1,6 @@
 ﻿namespace IdentityAndAuth;
 
-public class AssemblyReference
+public interface IAssemblyReference
 {
 
 }

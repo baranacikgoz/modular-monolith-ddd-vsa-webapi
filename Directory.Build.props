@@ -26,13 +26,9 @@
       CA2007;
       IDE0005;
       CA1812;
-      <!-- CA1848; -->
-      S2094;
       S3604;
       S4136;
-      CA1034;
-      CA1716;
-      CA1040
+      <!-- CA1040 -->
     </NoWarn>
   </PropertyGroup>
 </Project>

@@ -1,10 +1,10 @@
 ﻿using Common.Core.Contracts;
 
-namespace Common.DomainEvents.viaAppointments;
+namespace Common.DomainEvents;
 
 public static partial class Events
 {
-    public static partial class Appointments
+    public static class Appointments
     {
         public record AppointmentCreatedEvent(Guid AppointmentId) : DomainEvent;
     }

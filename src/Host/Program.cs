@@ -60,23 +60,23 @@ try
             .AddNimbleMediator(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
-                    typeof(Appointments.AssemblyReference).Assembly,
-                    typeof(IdentityAndAuth.AssemblyReference).Assembly,
-                    typeof(Notifications.AssemblyReference).Assembly
+                    typeof(Appointments.IAssemblyReference).Assembly,
+                    typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                    typeof(Notifications.IAssemblyReference).Assembly
                 );
             })
             .AddEventBus(
                 builder.Configuration,
-                typeof(Appointments.AssemblyReference).Assembly,
-                typeof(IdentityAndAuth.AssemblyReference).Assembly,
-                typeof(Notifications.AssemblyReference).Assembly
+                typeof(Appointments.IAssemblyReference).Assembly,
+                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                typeof(Notifications.IAssemblyReference).Assembly
             )
             .AddValidatorsFromAssemblies(
                 new List<Assembly>()
                 {
-                    typeof(Appointments.AssemblyReference).Assembly,
-                    typeof(IdentityAndAuth.AssemblyReference).Assembly,
-                    typeof(Notifications.AssemblyReference).Assembly
+                    typeof(Appointments.IAssemblyReference).Assembly,
+                    typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                    typeof(Notifications.IAssemblyReference).Assembly
                 }
             )
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>())

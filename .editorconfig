@@ -465,3 +465,17 @@ dotnet_diagnostic.CS8981.severity = none
 dotnet_diagnostic.CA1861.severity = none
 dotnet_diagnostic.CA1707.severity = none
 
+[**/Request.cs] # Allow empty requests
+dotnet_diagnostic.S2094.severity = none
+
+[**/Common.DomainEvents/**] # Allow nesting for domain events
+dotnet_diagnostic.CA1034.severity = none
+
+[**/Common.*/**] # Allow conflicted names for common contracts
+dotnet_diagnostic.CA1716.severity = none
+
+[**/Features/**] # Allow conflicted names like "Get" for features
+dotnet_diagnostic.CA1716.severity = none
+
+[**/IAssemblyReference.cs] # Allow empty interfaces for assmebly markers
+dotnet_diagnostic.CA1040.severity = none

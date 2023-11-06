@@ -7,7 +7,7 @@ using IdentityAndAuth.Features.Users.Domain;
 using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
 using Microsoft.AspNetCore.Identity;
 using NimbleMediator.Contracts;
-using Common.DomainEvents.viaIdentityAndAuth;
+using Common.DomainEvents;
 
 namespace IdentityAndAuth.Features.Users.SelfRegister;
 
