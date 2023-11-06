@@ -35,7 +35,7 @@ public partial class ExceptionHandlingMiddleware(
             Title = localizer["Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.", context.TraceIdentifier],
             Type = exception.GetType().FullName ?? string.Empty,
             Instance = context.Request.Path,
-            TraceId = context.TraceIdentifier,
+            RequestId = context.TraceIdentifier,
             Errors = Enumerable.Empty<string>()
         };
 

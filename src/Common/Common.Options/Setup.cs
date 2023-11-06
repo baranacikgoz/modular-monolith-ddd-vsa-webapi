@@ -21,9 +21,10 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<LoggerOptions>()
-            .Bind(configuration.GetSection(nameof(LoggerOptions)))
+            .AddOptions<CustomLoggingOptions>()
+            .Bind(configuration.GetSection(nameof(CustomLoggingOptions)))
             .ValidateDataAnnotations()
+            .Validate(o => o.ResponseTimeThresholdInMs > 0, "ResponseTimeThresholdInMs must be greater than 0.")
             .ValidateOnStart();
 
         services

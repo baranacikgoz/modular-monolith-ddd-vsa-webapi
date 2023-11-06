@@ -33,7 +33,7 @@ public class ResultTranslator(
             Title = localizedErrorMessage,
             Type = error.Key,
             Instance = httpContextAccessor.HttpContext?.Request.Path ?? string.Empty,
-            TraceId = httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty,
+            RequestId = httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty,
             Errors = error.Errors ?? Enumerable.Empty<string>()
         };
     }

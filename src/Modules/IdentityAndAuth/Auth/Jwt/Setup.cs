@@ -42,7 +42,7 @@ internal static class Setup
                         Title = stringLocalizer["Giriş yapmanız gerekmektedir."],
                         Type = "Unauthorized",
                         Instance = context.Request.Path,
-                        TraceId = context.HttpContext.TraceIdentifier,
+                        RequestId = context.HttpContext.TraceIdentifier,
                         Errors = Enumerable.Empty<string>()
                     };
 
@@ -76,7 +76,7 @@ internal static class Setup
                         Title = stringLocalizer["Giriş yapmanız gerekmektedir."],
                         Type = "Unauthorized",
                         Instance = context.Request.Path,
-                        TraceId = context.HttpContext.TraceIdentifier,
+                        RequestId = context.HttpContext.TraceIdentifier,
                         Errors = Enumerable.Empty<string>()
                     };
 
@@ -92,7 +92,7 @@ internal static class Setup
                         Title = stringLocalizer["Bu işlemi yapmaya yetkiniz bulunmamaktadır."],
                         Type = "Forbidden",
                         Instance = context.Request.Path,
-                        TraceId = context.HttpContext.TraceIdentifier,
+                        RequestId = context.HttpContext.TraceIdentifier,
                         Errors = Enumerable.Empty<string>()
                     };
 

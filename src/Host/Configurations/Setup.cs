@@ -10,13 +10,12 @@ public static class Setup
 
         AddJsonFile(configuration, environmentName, "appsettings");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logger");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/massTransit");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/serilog");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logging");
 
         configuration.AddEnvironmentVariables();
         return builder;
