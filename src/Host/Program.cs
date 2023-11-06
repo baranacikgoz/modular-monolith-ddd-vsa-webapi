@@ -1,6 +1,5 @@
 using Common.Options;
 using Host.Configurations;
-using Host.Logging;
 using Serilog;
 using Common.Localization;
 using NimbleMediator.ServiceExtensions;
@@ -20,20 +19,23 @@ using Common.Eventbus;
 using Microsoft.Extensions.Options;
 using Notifications;
 
+// Create the builder and add initially required services.
+var builder = WebApplication.CreateBuilder(args);
+builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+                .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
-
-Log.Information("Server Booting Up...");
-
 try
 {
-    // Create the builder and add initially required services.
-    var builder = WebApplication.CreateBuilder(args);
-    builder.AddConfigurations();
-    builder.Services.AddCommonOptions(builder.Configuration);
-    builder.UseSerilogAsLoggingProvider();
+    Log.Information("Server Booting Up...");
+    builder
+        .Host
+        .UseSerilog((context, conf) => conf.ReadFrom.Configuration(context.Configuration));
+
+    // Add options to the container.
+    builder
+        .Services
+        .AddCommonOptions(builder.Configuration);
 
     // Add services to the container.
     builder

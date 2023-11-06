@@ -1,0 +1,52 @@
+{
+  "Serilog": {
+    "Properties": {
+      "Application": "modular-monolith-ddd-vsa-webapi"
+    },
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File",
+      "Serilog.Sinks.Seq",
+      "Serilog.Exceptions",
+      "Serilog.Sinks.Async"
+    ],
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Warning",
+        "Hangfire": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information",
+        "Microsoft.EntityFrameworkCore": "Warning",
+        "MassTransit": "Warning"
+      }
+    },
+    "Enrich": [
+      "FromLogContext",
+      "WithExceptionDetails",
+      "WithMachineName",
+      "WithProcessId",
+      "WithThreadId"
+    ],
+    "WriteTo": [
+      {
+        "Name": "Async",
+        "Args": {
+          "configure": [
+            {
+              "Name": "Console",
+              "Args": {
+                "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"
+              }
+            },
+            {
+              "Name": "Seq",
+              "Args": {
+                "serverUrl": "http://localhost:5341"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
