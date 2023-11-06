@@ -1,4 +1,7 @@
 {
+  "CustomLoggingOptions": {
+    "ResponseTimeThresholdInMs": 1000
+  },
   "Serilog": {
     "Properties": {
       "Application": "modular-monolith-ddd-vsa-webapi"
