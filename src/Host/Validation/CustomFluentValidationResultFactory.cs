@@ -23,7 +23,7 @@ public class CustomFluentValidationResultFactory(
                 Instance = context.HttpContext.Request.Path,
                 Extensions =
                 {
-                    ["traceId"] = context.HttpContext.TraceIdentifier,
+                    ["requestId"] = context.HttpContext.TraceIdentifier,
                     ["errors"] = validationResult.Errors.Select(x => x.ErrorMessage)
                 }
             });

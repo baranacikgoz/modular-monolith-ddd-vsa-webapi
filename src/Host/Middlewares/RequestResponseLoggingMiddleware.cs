@@ -1,27 +1,31 @@
-﻿using Serilog.Context;
+﻿using System.Diagnostics;
+using Common.Options;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
+using Microsoft.Extensions.Options;
+using Serilog.Context;
 
 namespace Host.Middlewares;
 
 public partial class RequestResponseLoggingMiddleware(
-    ILogger<RequestResponseLoggingMiddleware> logger
+    ILogger<RequestResponseLoggingMiddleware> logger,
+    IOptions<CustomLoggingOptions> loggingOptionsProvider
     ) : IMiddleware
 {
-    private const int ResponseTimeThresholdMs = 1000;
-    private const string LogTemplate = "{Prefix} HTTP {Method} {Path} responded {StatusCode} in {Elapsed:0} ms";
+    private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
+    private const string LogTemplate = "HTTP {Method} {Path} responded {StatusCode} in {Elapsed:0} ms";
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var start = DateTime.UtcNow;
+        var stopwatch = Stopwatch.StartNew();
 
         context.Response.OnCompleted(() =>
         {
-            var elapsed = DateTime.UtcNow - start;
-            var elapsedMs = elapsed.TotalMilliseconds;
-            var isSlow = elapsedMs > ResponseTimeThresholdMs;
+            stopwatch.Stop();
+            var elapsedMs = stopwatch.Elapsed.TotalMilliseconds;
+            var isSlow = elapsedMs > _responseTimeThresholdMs;
 
             using (LogContext.PushProperty("IsSlow", isSlow))
-            using (LogContext.PushProperty("TraceId", context.TraceIdentifier))
             {
-                LogResponse(context, elapsedMs, isSlow);
+                LogResponse(logger, context, elapsedMs, isSlow);
             }
 
             return Task.CompletedTask;
@@ -30,22 +34,28 @@ public partial class RequestResponseLoggingMiddleware(
         await next(context);
     }
 
-    private void LogResponse(HttpContext context, double elapsedMs, bool isSlow)
+    private static void LogResponse(ILogger<RequestResponseLoggingMiddleware> logger, HttpContext context, double elapsedMs, bool isSlow)
     {
         var statusCode = context.Response.StatusCode;
+        var method = context.Request.Method;
+        var path = context.Request.Path;
 
-        if (statusCode >= 500)
+        // Log critical if response is slow, regardless of status code.
+        if (isSlow)
         {
-            LogErrorResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
+            LogCriticalResponse(logger, method, path, statusCode, elapsedMs);
+        }
+        else if (statusCode >= 500)
+        {
+            LogErrorResponse(logger, method, path, statusCode, elapsedMs);
         }
         else if (statusCode >= 400)
         {
-            LogWarningResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
+            LogWarningResponse(logger, method, path, statusCode, elapsedMs);
         }
         else
         {
-            LogInformationResponse(logger, isSlow ? "*SLOW*" : "", context.Request.Method, context.Request.Path, statusCode, elapsedMs);
-
+            LogInformationResponse(logger, method, path, statusCode, elapsedMs);
         }
     }
 
@@ -54,18 +64,15 @@ public partial class RequestResponseLoggingMiddleware(
         Message = LogTemplate)]
     private static partial void LogInformationResponse(
         ILogger logger,
-        string prefix,
         string method,
         string path,
         int statusCode,
         double elapsed);
-
     [LoggerMessage(
         Level = LogLevel.Warning,
         Message = LogTemplate)]
     private static partial void LogWarningResponse(
         ILogger logger,
-        string prefix,
         string method,
         string path,
         int statusCode,
@@ -76,7 +83,16 @@ public partial class RequestResponseLoggingMiddleware(
         Message = LogTemplate)]
     private static partial void LogErrorResponse(
         ILogger logger,
-        string prefix,
+        string method,
+        string path,
+        int statusCode,
+        double elapsed);
+
+    [LoggerMessage(
+        Level = LogLevel.Critical,
+        Message = LogTemplate)]
+    private static partial void LogCriticalResponse(
+        ILogger logger,
         string method,
         string path,
         int statusCode,

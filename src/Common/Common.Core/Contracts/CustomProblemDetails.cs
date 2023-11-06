@@ -8,7 +8,7 @@ public class CustomProblemDetails : IResult
     public required string Title { get; init; }
     public required string Type { get; init; }
     public required string Instance { get; init; }
-    public required string TraceId { get; init; }
+    public required string RequestId { get; init; }
     public required IEnumerable<string> Errors { get; init; }
 
     public Task ExecuteAsync(HttpContext httpContext)
