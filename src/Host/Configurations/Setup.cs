@@ -8,14 +8,15 @@ public static class Setup
         var environmentName = builder.Environment.EnvironmentName;
         var configuration = builder.Configuration;
 
-        AddJsonFile(configuration, environmentName, "appsettings.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logger.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha.json");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/massTransit.json");
+        AddJsonFile(configuration, environmentName, "appsettings");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logger");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/massTransit");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/serilog");
 
         configuration.AddEnvironmentVariables();
         return builder;
@@ -23,7 +24,7 @@ public static class Setup
 
     private static void AddJsonFile(ConfigurationManager configuration, string environment, string filePath)
     {
-        configuration.AddJsonFile(filePath, optional: false, reloadOnChange: true);
-        configuration.AddJsonFile($"{filePath}.{environment}", optional: true, reloadOnChange: true);
+        configuration.AddJsonFile($"{filePath}.json", optional: false, reloadOnChange: true);
+        configuration.AddJsonFile($"{filePath}.{environment}.json", optional: true, reloadOnChange: true);
     }
 }
