@@ -38,20 +38,10 @@
             {
               "Name": "Console",
               "Args": {
-                "restrictedToMinimumLevel": "Error",
+                "restrictedToMinimumLevel": "Debug",
                 "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}"
               }
             },
-            // {
-            //   "Name": "File",
-            //   "Args": {
-            //     "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact",
-            //     "path": "Logs/logs.json",
-            //     "rollingInterval": "Day",
-            //     "retainedFileCountLimit": 31,
-            //     "restrictedToMinimumLevel": "Information"
-            //   }
-            // },
             {
               "Name": "Seq",
               "Args": {
