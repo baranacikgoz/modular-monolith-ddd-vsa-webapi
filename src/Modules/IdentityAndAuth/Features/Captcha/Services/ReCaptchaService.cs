@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Common.Core.Contracts.Results;
 using Common.Options;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha.Services;
 
-public class ReCaptchaService(
+public partial class ReCaptchaService(
     HttpClient httpClient,
     IOptions<CaptchaOptions> captchaOptionsProvider,
     ILogger<ReCaptchaService> logger
@@ -25,7 +26,7 @@ public class ReCaptchaService(
 
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
         {
-            logger.LogError("Captcha validation failed with status code {StatusCode}", httpResponseMessage.StatusCode);
+            LogCaptchaValidationFailedWithStatusCode(logger, (int)httpResponseMessage.StatusCode);
             return CaptchaErrors.ServiceUnavailable;
         }
 
@@ -33,7 +34,7 @@ public class ReCaptchaService(
 
         if (reCaptchaResponse is not { Success: true })
         {
-            logger.LogError("Captcha validation failed with response {Response}", reCaptchaResponse);
+            LogCaptchaValidationFailedWithResponse(logger, reCaptchaResponse);
             return CaptchaErrors.NotHuman;
         }
 
@@ -65,4 +66,14 @@ public class ReCaptchaService(
         [JsonPropertyName("error-codes")]
         public string[] ErrorCodes { get; set; } = default!;
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Captcha validation failed with status code {StatusCode}")]
+    private static partial void LogCaptchaValidationFailedWithStatusCode(ILogger logger, int statusCode);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Captcha validation failed with response {Response}")]
+    private static partial void LogCaptchaValidationFailedWithResponse(ILogger logger, ReCaptchaResponse? response);
 }

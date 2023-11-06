@@ -7,7 +7,7 @@ namespace IdentityAndAuth.Persistence.Seeding;
 
 internal sealed partial class Seeder(ILogger<Seeder> logger, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
 {
-    public async Task SeedDb()
+    public async Task SeedDbAsync()
     {
         await SeedRolesAsync();
         await SeedAdminUserAsync();
