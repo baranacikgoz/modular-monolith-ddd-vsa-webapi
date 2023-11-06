@@ -1,3 +1,14 @@
+## 0.3.0 (2023-11-06)
+
+### Fix
+
+- **Logging**: Fix "Log.Logger" and "builder.Host.Logger" are different bug
+- **Host/Configurations**: Fix configuration addition bug for environment specific json files
+
+### Refactor
+
+- Refactor assembly reference names to be concise
+
 ## 0.2.0 (2023-11-06)
 
 ### Feat
