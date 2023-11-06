@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Common.Core.Contracts;
-using Common.DomainEvents.viaIdentityAndAuth;
 using IdentityAndAuth.Extensions;
 using Microsoft.AspNetCore.Identity;
 

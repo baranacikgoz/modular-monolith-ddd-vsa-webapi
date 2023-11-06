@@ -1,7 +1,7 @@
-﻿using Common.DomainEvents.viaIdentityAndAuth;
-using Common.Eventbus;
+﻿using Common.Eventbus;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Common.DomainEvents;
 
 namespace Notifications.EventConsumers;
 

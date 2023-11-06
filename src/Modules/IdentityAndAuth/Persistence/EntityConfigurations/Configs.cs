@@ -48,47 +48,46 @@ public class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .IsRequired();
 
     }
-
-    public class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
-    {
-        public void Configure(EntityTypeBuilder<ApplicationRole> builder) =>
-            builder
-                .ToTable("Roles");
-    }
-
-    public class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<Guid>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityRoleClaim<Guid>> builder) =>
-            builder
-                .ToTable("RoleClaims");
-    }
-
-    public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder) =>
-            builder
-                .ToTable("UserRoles");
-    }
-
-    public class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<Guid>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityUserClaim<Guid>> builder) =>
-            builder
-                .ToTable("UserClaims");
-    }
-
-    public class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder) =>
-            builder
-                .ToTable("UserLogins");
-    }
-
-    public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<Guid>>
-    {
-        public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder) =>
-            builder
-                .ToTable("UserTokens");
-    }
 }
 
+public class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
+{
+    public void Configure(EntityTypeBuilder<ApplicationRole> builder) =>
+        builder
+            .ToTable("Roles");
+}
+
+public class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<Guid>>
+{
+    public void Configure(EntityTypeBuilder<IdentityRoleClaim<Guid>> builder) =>
+        builder
+            .ToTable("RoleClaims");
+}
+
+public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+{
+    public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder) =>
+        builder
+            .ToTable("UserRoles");
+}
+
+public class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<Guid>>
+{
+    public void Configure(EntityTypeBuilder<IdentityUserClaim<Guid>> builder) =>
+        builder
+            .ToTable("UserClaims");
+}
+
+public class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
+{
+    public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder) =>
+        builder
+            .ToTable("UserLogins");
+}
+
+public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<Guid>>
+{
+    public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder) =>
+        builder
+            .ToTable("UserTokens");
+}
