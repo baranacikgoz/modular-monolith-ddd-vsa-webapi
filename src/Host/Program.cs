@@ -18,6 +18,7 @@ using Common.Core.Implementations;
 using Common.Eventbus;
 using Microsoft.Extensions.Options;
 using Notifications;
+using Common.RateLimiting;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,7 @@ try
             .AddHttpContextAccessor()
             .AddSingleton<RequestResponseLoggingMiddleware>()
             .AddCustomLocalization("Resources")
+            .AddRateLimiting(builder.Configuration)
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(sp =>
             {
@@ -101,6 +103,7 @@ try
         //.UseHttpsRedirection()
 
         .UseCustomLocalization()
+        .UseRateLimiter()
         .UseMiddleware<ExceptionHandlingMiddleware>()
         .UseAuth();
 

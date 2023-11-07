@@ -53,6 +53,20 @@ public static class Setup
             .Validate(o => o.DuplicateDetectionWindowInSeconds > 0, "DuplicateDetectionWindowInSeconds must be greater than 0.")
             .ValidateOnStart();
 
+        // Even though we won't be using RateLimitingOptions via IOptions<RateLimitingOptions> in our code,
+        // (because we don't have an overload of the AddRateLimiter() that has ServiceProvider as parameter)
+        // we are validating it here to make sure that the options are valid.
+        // After this point, it is safe to use it like "Configuration.GetSection(nameof(RateLimitingOptions)).Get<RateLimitingOptions>();"
+        services
+            .AddOptions<RateLimitingOptions>()
+            .Bind(configuration.GetSection(nameof(RateLimitingOptions)))
+            .ValidateDataAnnotations()
+            .Validate(o => o.Global?.Limit > 0, "Global.Limit must be greater than 0.")
+            .Validate(o => o.Global?.PeriodInMs > 0, "Global.Period must be greater than 0.")
+            .Validate(o => o.Sms?.Limit > 0, "Sms.Limit must be greater than 0.")
+            .Validate(o => o.Sms?.PeriodInMs > 0, "Sms.Period must be greater than 0.")
+            .ValidateOnStart();
+
         return services;
     }
 }

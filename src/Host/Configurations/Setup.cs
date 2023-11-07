@@ -16,6 +16,7 @@ public static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/massTransit");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logging");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
 
         configuration.AddEnvironmentVariables();
         return builder;
