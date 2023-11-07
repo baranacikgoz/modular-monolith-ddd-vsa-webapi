@@ -1,3 +1,23 @@
+## 0.4.0 (2023-11-08)
+
+### Feat
+
+- Add Rate Limiting feature
+
+### Fix
+
+- **logging.json**: Rename old serilog.json to logging.json
+
+### Refactor
+
+- Remove redundant logging.Development.json
+- Solve analyzer warnings/errors
+
+### Perf
+
+- **logging**: Improve logging performance especially in RequestResponseLoggingMiddleware
+- **logging**: Improve performance using [LoggerMessage] attribute
+
 ## 0.3.0 (2023-11-06)
 
 ### Fix
