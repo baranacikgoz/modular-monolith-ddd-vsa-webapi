@@ -10,6 +10,7 @@ COPY ["src/Common/Common.Eventbus/Common.Eventbus.csproj", "Common/Common.Eventb
 COPY ["src/Common/Common.Localization/Common.Localization.csproj", "Common/Common.Localization/"]
 COPY ["src/Common/Common.Options/Common.Options.csproj", "Common/Common.Options/"]
 COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "Common/Common.Persistence/"]
+COPY ["src/Common/Common.RateLimiting/Common.RateLimiting.csproj", "Common/Common.RateLimiting/"]
 
 COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "Modules/IdentityAndAuth/"]
 COPY ["src/Modules/Appointments/Appointments.csproj", "Modules/Appointments/"]

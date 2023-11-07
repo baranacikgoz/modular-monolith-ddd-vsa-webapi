@@ -1,0 +1,14 @@
+{
+  "RateLimitingOptions": {
+    "Global": {
+      "Limit": 3,
+      "PeriodInMs": 1000,
+      "QueueLimit": 0
+    },
+    "Sms": {
+      "Limit": 1,
+      "PeriodInMs": 15000,
+      "QueueLimit": 0
+    }
+  }
+}

@@ -1,5 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ public static class Endpoint
     {
         usersApiGroup
             .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
+            .RequireRateLimiting(RateLimitingPolicies.Sms)
+            .AllowAnonymous()
             .WithDescription("Initiate phone ownership process by sending sms otp.")
-            .Produces(StatusCodes.Status200OK)
-            .AllowAnonymous();
+            .Produces(StatusCodes.Status200OK);
     }
+
     private static async Task<IResult> InitiatePhoneOwnershipProcessAsync(
         [FromBody] Request request,
         [FromServices] IMediator mediator,
