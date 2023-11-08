@@ -53,7 +53,7 @@ internal sealed class RequestHandler(
 
         var identityResult = await userManager.CreateAsync(user);
 
-        return identityResult.ToResult().Map(() => user);
+        return identityResult.ToResult(user);
     }
 
     private async Task<Result> AssignRoleToUserAsync(ApplicationUser user, string role)

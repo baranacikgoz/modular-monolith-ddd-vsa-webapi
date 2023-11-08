@@ -74,7 +74,7 @@ public static class AsyncExtensions
         }
 
         var nextResult = await next.ConfigureAwait(false);
-        return Result<TNext>.Success(nextResult.Value!);
+        return nextResult;
     }
 
     public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Result<TCurrent> result, Func<TCurrent, Task<Result<TNext>>> binder)
@@ -107,7 +107,7 @@ public static class AsyncExtensions
         }
 
         var nextResult = await next.ConfigureAwait(false);
-        return Result<TNext>.Success(nextResult.Value!);
+        return nextResult;
     }
 
     public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Task<Result<TCurrent>> resultTask, Task<TNext> next)
@@ -120,7 +120,7 @@ public static class AsyncExtensions
         }
 
         var nextValue = await next.ConfigureAwait(false);
-        return Result<TNext>.Success(nextValue);
+        return nextValue;
     }
 
     public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Task<Result<TNext>> next)
@@ -133,7 +133,7 @@ public static class AsyncExtensions
         }
 
         var nextResult = await next.ConfigureAwait(false);
-        return Result<TNext>.Success(nextResult.Value!);
+        return nextResult;
     }
 
     public static async Task<Result> BindAsync(this Task<Result> resultTask, Task next)
@@ -147,7 +147,7 @@ public static class AsyncExtensions
 
         await next.ConfigureAwait(false);
 
-        return Result.Success;
+        return result;
     }
 
     public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Task<TNext> next)
@@ -160,7 +160,7 @@ public static class AsyncExtensions
         }
 
         var nextValue = await next.ConfigureAwait(false);
-        return Result<TNext>.Success(nextValue);
+        return nextValue;
     }
 
     public static async Task<Result<TCurrent>> BindAsync<TCurrent>(this Task<Result<TCurrent>> resultTask, Task next)
@@ -173,7 +173,6 @@ public static class AsyncExtensions
         }
 
         await next.ConfigureAwait(false);
-
         return Result<TCurrent>.Success(result.Value!);
     }
 
@@ -201,7 +200,7 @@ public static class AsyncExtensions
         }
 
         var nextValue = mapper(result.Value!);
-        return Result<TOut>.Success(nextValue);
+        return nextValue;
     }
 
     public static async Task<Result<TOut>> MapAsync<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TIn, Task<TOut>> mapper)
@@ -214,7 +213,7 @@ public static class AsyncExtensions
         }
 
         var nextValue = await mapper(result.Value!).ConfigureAwait(false);
-        return Result<TOut>.Success(nextValue);
+        return nextValue;
     }
 
     public static async Task<Result<TOut>> MapAsync<TOut>(this Task<Result> resultTask, Func<TOut> mapper)
