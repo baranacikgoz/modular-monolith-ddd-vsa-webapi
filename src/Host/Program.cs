@@ -19,6 +19,7 @@ using Common.Eventbus;
 using Microsoft.Extensions.Options;
 using Notifications;
 using Common.RateLimiting;
+using NimbleMediator.NotificationPublishers;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -66,9 +67,10 @@ try
                     typeof(IdentityAndAuth.IAssemblyReference).Assembly,
                     typeof(Notifications.IAssemblyReference).Assembly
                 );
+
+                cfg.SetDefaultNotificationPublisher<TaskWhenAllPublisher>();
             })
             .AddEventBus(
-                builder.Configuration,
                 typeof(Appointments.IAssemblyReference).Assembly,
                 typeof(IdentityAndAuth.IAssemblyReference).Assembly,
                 typeof(Notifications.IAssemblyReference).Assembly
@@ -114,7 +116,6 @@ try
         .RequireAuthorization()
         .AddFluentValidationAutoValidation();
 
-    app.UseEventBus();
     app.UseIdentityAndAuthModule(rootGroup);
     app.UseAppointmentsModule(rootGroup);
 

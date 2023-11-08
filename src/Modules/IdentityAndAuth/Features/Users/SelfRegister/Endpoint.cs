@@ -22,7 +22,7 @@ public static class Endpoint
 
     private static async Task<IResult> SelfRegisterAsync(
         [FromBody] Request request,
-        [FromServices] IMediator mediator,
+        [FromServices] ISender mediator,
         [FromServices] IResultTranslator resultTranslator,
         [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)

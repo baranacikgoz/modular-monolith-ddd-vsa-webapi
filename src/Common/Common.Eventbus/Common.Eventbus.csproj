@@ -7,21 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" />
-    <PackageReference Include="MassTransit.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../Common.Options/Common.Options.csproj" />
     <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Persistence/" />
-    <Folder Include="Persistence/Migrations/" />
-    <Folder Include="scripts/Migrations/" />
   </ItemGroup>
 
 </Project>

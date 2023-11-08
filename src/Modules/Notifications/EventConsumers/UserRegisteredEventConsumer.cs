@@ -1,5 +1,4 @@
 ﻿using Common.Eventbus;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using Common.DomainEvents;
 
@@ -7,12 +6,11 @@ namespace Notifications.EventConsumers;
 
 public partial class UserRegisteredEventConsumer(
     ILogger<UserRegisteredEventConsumer> logger
-    ) : IEventConsumer<Events.IdentityAndAuth.UserCreatedEvent>
+    ) : IEventHandler<Events.IdentityAndAuth.UserCreatedEvent>
 {
-    public Task Consume(ConsumeContext<Events.IdentityAndAuth.UserCreatedEvent> context)
+    public Task HandleAsync(Events.IdentityAndAuth.UserCreatedEvent notification, CancellationToken cancellationToken)
     {
-        var userCreatedEvent = context.Message;
-        LogUserRegisteredEventConsumer(logger, userCreatedEvent.UserId);
+        LogUserRegisteredEventConsumer(logger, notification.UserId);
 
         // Do something with the event here.
 

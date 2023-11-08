@@ -6,10 +6,6 @@
     <ProjectReference Include="..\..\Common\Common.DomainEvents\Common.DomainEvents.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EventConsumers/viaIdentityAndAuth/" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
