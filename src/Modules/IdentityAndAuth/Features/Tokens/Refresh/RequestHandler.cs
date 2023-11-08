@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common.Core.Contracts.Results;
@@ -23,41 +24,29 @@ internal sealed class RequestHandler(
 {
     private readonly JwtOptions _jwtOptions = jwtOptionsProvider.Value;
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
-    {
-        return await GetPrincipalFromExpiredToken(request.ExpiredAccessToken, _jwtOptions)
-            .BindAsync(async principal =>
+        => await GetPrincipalFromExpiredToken(request.ExpiredAccessToken, _jwtOptions)
+            .Bind(claimsPrincipal =>
             {
-                var phoneNumber = principal.GetPhoneNumber();
-                if (string.IsNullOrWhiteSpace(phoneNumber))
-                {
-                    return UserErrors.NotFound;
-                }
-                return await userService.GetByPhoneNumberAsync(phoneNumber, cancellationToken);
+                var phoneNumber = claimsPrincipal.GetPhoneNumber();
+                return string.IsNullOrWhiteSpace(phoneNumber)
+                    ? UserErrors.NotFound
+                    : Result<ClaimsPrincipal>.Success(claimsPrincipal);
             })
-            .BindAsync(user => ValidateRefreshTokenAndGenerateTokens(user, request.RefreshToken));
-    }
-
-    private async Task<Result<Response>> ValidateRefreshTokenAndGenerateTokens(ApplicationUser user, string refreshToken)
-    {
-        var validateResult = await tokenService.ValidateRefreshTokenAsync(refreshToken, user.PhoneNumber ?? string.Empty);
-        if (!validateResult.IsSuccess)
-        {
-            return validateResult.Error!;
-        }
-
-        var tokenDtoResult = await tokenService.GenerateTokensAndUpdateUserAsync(user);
-        if (!tokenDtoResult.IsSuccess)
-        {
-            return tokenDtoResult.Error!;
-        }
-
-        var tokenDto = tokenDtoResult.Value!;
-        return new Response(
-            tokenDto.AccessToken,
-            tokenDto.AccessTokenExpiresAt,
-            tokenDto.RefreshToken,
-            tokenDto.RefreshTokenExpiresAt);
-    }
+            .BindAsync(async claimsPrincipal =>
+            {
+                var phoneNumber = claimsPrincipal.GetPhoneNumber() ?? string.Empty;
+                var tokenValidationResult = await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber);
+                return tokenValidationResult.IsSuccess
+                    ? Result<string>.Success(phoneNumber)
+                    : Result<string>.Failure(tokenValidationResult.Error!);
+            })
+            .BindAsync(phoneNumber => userService.GetByPhoneNumberAsync(phoneNumber, cancellationToken))
+            .BindAsync(tokenService.GenerateTokensAndUpdateUserAsync)
+            .MapAsync(tokenDto => new Response(
+                tokenDto.AccessToken,
+                tokenDto.AccessTokenExpiresAt,
+                tokenDto.RefreshToken,
+                tokenDto.RefreshTokenExpiresAt));
 
     private static Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token, JwtOptions jwtOptions)
     {

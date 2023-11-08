@@ -16,9 +16,15 @@ internal sealed class RequestHandler(
      : IRequestHandler<Request, Result<Response>>
 {
     async ValueTask<Result<Response>> IRequestHandler<Request, Result<Response>>.HandleAsync(Request request, CancellationToken cancellationToken)
-        => await otpService.ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
-            .BindAsync(() => phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
-            .MapAsync(async token => new Response(await UserExistsAsync(request.PhoneNumber, cancellationToken), token));
+        => await otpService
+            .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
+            .BindAsync(phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
+            .MapAsync(async token =>
+            {
+                var userExists = await UserExistsAsync(request.PhoneNumber, cancellationToken);
+                return new Response(userExists, token);
+            });
+
     private Task<bool> UserExistsAsync(string phoneNumber, CancellationToken cancellationToken)
         => userManager.Users.AnyAsync(x => x.PhoneNumber == phoneNumber, cancellationToken);
 }

@@ -2,16 +2,25 @@
 
 public static class SyncExtensions
 {
-    public static Result<TNext> Bind<T, TNext>(this Result<T> result, Func<T, Result<TNext>> next)
+    public static Result<TNext> Bind<TCurrent, TNext>(this Result<TCurrent> result, Result<TNext> next)
     {
         if (!result.IsSuccess)
         {
             return Result<TNext>.Failure(result.Error!);
         }
 
-        return next(result.Value!);
+        return Result<TNext>.Success(next.Value!);
     }
 
+    public static Result<TNext> Bind<TCurrent, TNext>(this Result<TCurrent> result, Func<TCurrent, Result<TNext>> binder)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TNext>.Failure(result.Error!);
+        }
+
+        return binder(result.Value!);
+    }
     public static Result<TOut> Map<TIn, TOut>(this Result<TIn> result, Func<TIn, TOut> mapperFunc)
     {
         if (!result.IsSuccess)
@@ -22,7 +31,17 @@ public static class SyncExtensions
         return Result<TOut>.Success(mapperFunc(result.Value!));
     }
 
-    public static TNext Match<T, TNext>(this Result<T> result, Func<T, TNext> onSuccess, Func<Error, TNext> onFailure)
+    public static Result<TOut> Map<TOut>(this Result result, Func<TOut> mapperFunc)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TOut>.Failure(result.Error!);
+        }
+
+        return Result<TOut>.Success(mapperFunc());
+    }
+
+    public static TNext Match<TCurrent, TNext>(this Result<TCurrent> result, Func<TCurrent, TNext> onSuccess, Func<Error, TNext> onFailure)
     {
         if (!result.IsSuccess)
         {
@@ -45,38 +64,40 @@ public static class SyncExtensions
 
 public static class AsyncExtensions
 {
-
-    public static async Task<Result<TNext>> BindAsync<T, TNext>(this Result<T> result, Func<T, Task<Result<TNext>>> next)
+    public static Task<Result<T>> ToTask<T>(this Result<T> result)
+        => Task.FromResult(result);
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Result<TCurrent> result, Task<Result<TNext>> next)
     {
         if (!result.IsSuccess)
         {
             return Result<TNext>.Failure(result.Error!);
         }
 
-        return await next(result.Value!).ConfigureAwait(false);
+        var nextResult = await next.ConfigureAwait(false);
+        return Result<TNext>.Success(nextResult.Value!);
     }
 
-    public static async Task<Result<TNext>> BindAsync<TNext>(this Result result, Func<Task<Result<TNext>>> next)
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Result<TCurrent> result, Func<TCurrent, Task<Result<TNext>>> binder)
     {
         if (!result.IsSuccess)
         {
             return Result<TNext>.Failure(result.Error!);
         }
 
-        return await next().ConfigureAwait(false);
+        return await binder(result.Value!).ConfigureAwait(false);
     }
 
-    public static async Task<Result> BindAsync(this Result result, Func<Task<Result>> next)
+    public static async Task<Result> BindAsync<TCurrent>(this Result<TCurrent> result, Func<TCurrent, Task<Result>> binder)
     {
         if (!result.IsSuccess)
         {
             return Result.Failure(result.Error!);
         }
 
-        return await next().ConfigureAwait(false);
+        return await binder(result.Value!).ConfigureAwait(false);
     }
 
-    public static async Task<Result<TNext>> BindAsync<T, TNext>(this Task<Result<T>> resultTask, Func<T, Task<Result<TNext>>> next)
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Task<Result<TCurrent>> resultTask, Task<Result<TNext>> next)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -85,11 +106,11 @@ public static class AsyncExtensions
             return Result<TNext>.Failure(result.Error!);
         }
 
-        var nextResult = await next(result.Value!).ConfigureAwait(false);
-        return nextResult;
+        var nextResult = await next.ConfigureAwait(false);
+        return Result<TNext>.Success(nextResult.Value!);
     }
 
-    public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Func<Task<Result<TNext>>> next)
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(this Task<Result<TCurrent>> resultTask, Task<TNext> next)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -98,11 +119,11 @@ public static class AsyncExtensions
             return Result<TNext>.Failure(result.Error!);
         }
 
-        var nextResult = await next().ConfigureAwait(false);
-        return nextResult;
+        var nextValue = await next.ConfigureAwait(false);
+        return Result<TNext>.Success(nextValue);
     }
 
-    public static async Task<Result<TNext>> BindAsync<T, TNext>(this Task<Result<T>> resultTask, Func<T, Result<TNext>> next)
+    public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Task<Result<TNext>> next)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -111,10 +132,25 @@ public static class AsyncExtensions
             return Result<TNext>.Failure(result.Error!);
         }
 
-        return next(result.Value!);
+        var nextResult = await next.ConfigureAwait(false);
+        return Result<TNext>.Success(nextResult.Value!);
     }
 
-    public static async Task<Result<TNext>> BindAsync<T, TNext>(this Task<Result<T>> resultTask, Func<T, TNext> next)
+    public static async Task<Result> BindAsync(this Task<Result> resultTask, Task next)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        await next.ConfigureAwait(false);
+
+        return Result.Success;
+    }
+
+    public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Task<TNext> next)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -123,10 +159,27 @@ public static class AsyncExtensions
             return Result<TNext>.Failure(result.Error!);
         }
 
-        return next(result.Value!);
+        var nextValue = await next.ConfigureAwait(false);
+        return Result<TNext>.Success(nextValue);
     }
 
-    public static async Task<Result<TNext>> BindAsync<TNext>(this Task<Result> resultTask, Func<Task<TNext>> next)
+    public static async Task<Result<TCurrent>> BindAsync<TCurrent>(this Task<Result<TCurrent>> resultTask, Task next)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        await next.ConfigureAwait(false);
+
+        return Result<TCurrent>.Success(result.Value!);
+    }
+
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
+    this Task<Result<TCurrent>> resultTask,
+    Func<TCurrent, Task<Result<TNext>>> binder)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -135,47 +188,59 @@ public static class AsyncExtensions
             return Result<TNext>.Failure(result.Error!);
         }
 
-        var nextResult = await next().ConfigureAwait(false);
-        return Result<TNext>.Success(nextResult);
+        return await binder(result.Value!).ConfigureAwait(false);
     }
 
-    public static async Task<Result<TNext>> MapAsync<TCurrent, TNext>(this Task<Result<TCurrent>> resultTask, Func<TCurrent, TNext> mapper)
+    public static async Task<Result<TOut>> MapAsync<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TIn, TOut> mapper)
     {
         var result = await resultTask.ConfigureAwait(false);
 
         if (!result.IsSuccess)
         {
-            return Result<TNext>.Failure(result.Error!);
+            return Result<TOut>.Failure(result.Error!);
         }
 
         var nextValue = mapper(result.Value!);
-        return Result<TNext>.Success(nextValue);
+        return Result<TOut>.Success(nextValue);
     }
 
-    public static async Task<Result<TNext>> MapAsync<TCurrent, TNext>(this Task<Result<TCurrent>> resultTask, Func<TCurrent, Task<TNext>> mapper)
+    public static async Task<Result<TOut>> MapAsync<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TIn, Task<TOut>> mapper)
     {
         var result = await resultTask.ConfigureAwait(false);
 
         if (!result.IsSuccess)
         {
-            return Result<TNext>.Failure(result.Error!);
+            return Result<TOut>.Failure(result.Error!);
         }
 
         var nextValue = await mapper(result.Value!).ConfigureAwait(false);
-        return Result<TNext>.Success(nextValue);
+        return Result<TOut>.Success(nextValue);
     }
 
-    public static async Task<Result<TNext>> MapAsync<TNext>(this Task<Result> resultTask, Func<TNext> mapper)
+    public static async Task<Result<TOut>> MapAsync<TOut>(this Task<Result> resultTask, Func<TOut> mapper)
     {
         var result = await resultTask.ConfigureAwait(false);
 
         if (!result.IsSuccess)
         {
-            return Result<TNext>.Failure(result.Error!);
+            return Result<TOut>.Failure(result.Error!);
         }
 
         var nextValue = mapper();
-        return Result<TNext>.Success(nextValue);
+        return Result<TOut>.Success(nextValue);
+    }
+
+    public static async Task<Result<TOut>> MapAsync<TIn, TOut>(this Task<Result<TIn>> resultTask, Func<TOut> mapper)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TOut>.Failure(result.Error!);
+        }
+
+        var nextValue = mapper();
+        return Result<TOut>.Success(nextValue);
     }
 
     public static Task<TNext> MatchAsync<T, TNext>(this Result<T> result, Func<T, Task<TNext>> onSuccess, Func<Error, Task<TNext>> onFailure)
