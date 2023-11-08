@@ -11,7 +11,6 @@ public class Appointment : AggregateRoot<AppointmentId>
         : base(new(Guid.NewGuid()))
     {
         VenueId = venueId;
-        AddDomainEvent(new Events.Appointments.AppointmentCreatedEvent(Id.Value));
     }
 
     public VenueId VenueId { get; }
@@ -19,6 +18,8 @@ public class Appointment : AggregateRoot<AppointmentId>
 
     public static Appointment Create(VenueId venueId)
     {
-        return new(venueId);
+        var appointment = new Appointment(venueId);
+        appointment.AddDomainEvent(new Events.Appointments.AppointmentCreatedEvent(appointment.VenueId.Value));
+        return appointment;
     }
 }
