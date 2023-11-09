@@ -1,6 +1,6 @@
 ﻿using NimbleMediator.Contracts;
 
-namespace Common.Core;
+namespace Common.Core.Contracts;
 
 #pragma warning disable CA1040
 public interface IEvent : INotification

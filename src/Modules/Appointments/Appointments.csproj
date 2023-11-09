@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common/" />
     <Folder Include="Features/Appointments/" />
     <Folder Include="Features/Appointments/Domain/" />
     <Folder Include="Features/Venues/CreateVenue/" />
