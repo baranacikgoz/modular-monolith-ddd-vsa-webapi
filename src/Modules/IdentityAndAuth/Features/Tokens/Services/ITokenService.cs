@@ -3,7 +3,7 @@ using IdentityAndAuth.Features.Users.Domain;
 
 namespace IdentityAndAuth.Features.Tokens.Services;
 
-public interface ITokenService
+internal interface ITokenService
 {
     Task<Result<TokenDto>> GenerateTokensAndUpdateUserAsync(ApplicationUser user);
     Task<Result> ValidateRefreshTokenAsync(string refreshToken, string phoneNumber);

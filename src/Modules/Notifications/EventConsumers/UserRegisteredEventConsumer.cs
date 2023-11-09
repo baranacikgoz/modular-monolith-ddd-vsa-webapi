@@ -4,7 +4,7 @@ using Common.DomainEvents;
 
 namespace Notifications.EventConsumers;
 
-public partial class UserRegisteredEventConsumer(
+internal partial class UserRegisteredEventConsumer(
     ILogger<UserRegisteredEventConsumer> logger
     ) : IEventHandler<Events.IdentityAndAuth.UserCreatedEvent>
 {

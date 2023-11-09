@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityAndAuth.Features.Users.Services;
 
-public class UserService(
+internal class UserService(
     UserManager<ApplicationUser> userManager,
     ICacheService cacheService,
     IdentityContext identityDbContext

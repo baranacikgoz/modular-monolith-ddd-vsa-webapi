@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAndAuth.Features.Tokens;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddTokensFeature(this IServiceCollection services)
         => services

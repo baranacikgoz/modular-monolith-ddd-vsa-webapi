@@ -1,6 +1,6 @@
 namespace IdentityAndAuth.ModuleSetup.RateLimiting;
 
-public static class Constants
+internal static class Constants
 {
     public const string Sms = nameof(Sms);
 }

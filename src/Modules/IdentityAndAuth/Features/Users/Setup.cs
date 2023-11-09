@@ -6,7 +6,7 @@ using IdentityAndAuth.Features.Users.Services;
 
 namespace IdentityAndAuth.Features.Users;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddUsersFeatures(this IServiceCollection services)
         => services

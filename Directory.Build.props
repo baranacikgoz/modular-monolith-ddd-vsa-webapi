@@ -28,7 +28,7 @@
       CA1812;
       S3604;
       S4136;
-      <!-- CA1040 -->
+      CA1852;
     </NoWarn>
   </PropertyGroup>
 </Project>

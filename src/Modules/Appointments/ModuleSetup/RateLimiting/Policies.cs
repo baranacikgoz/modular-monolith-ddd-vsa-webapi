@@ -5,12 +5,10 @@ namespace Appointments.ModuleSetup.RateLimiting;
 
 public static class Policies
 {
-#pragma warning disable CA1024
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
         yield return SearchAppointmentsPolicy;
     }
-#pragma warning restore CA1024
 
     private static void SearchAppointmentsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
         => rateLimiter

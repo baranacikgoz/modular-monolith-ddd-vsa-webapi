@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAndAuth.Features.Captcha;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddCaptchaFeatures(this IServiceCollection services)
         => services

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Extensions;
 
-public static class IdentityResultExtensions
+internal static class IdentityResultExtensions
 {
     public static Result ToResult(this IdentityResult identityResult)
     {

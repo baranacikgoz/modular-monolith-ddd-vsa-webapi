@@ -3,7 +3,7 @@ using IdentityAndAuth.Features.Users.Services.Otp.Errors;
 
 namespace IdentityAndAuth.Features.Users.Services.Otp;
 
-public class DummyOtpService : IOtpService
+internal class DummyOtpService : IOtpService
 {
     private const string DummyOtp = "123456";
     public Task<string> GetOtpAsync(string phoneNumber, CancellationToken cancellationToken) => Task.FromResult(DummyOtp);

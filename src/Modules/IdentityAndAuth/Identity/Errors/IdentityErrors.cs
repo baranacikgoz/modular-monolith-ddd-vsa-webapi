@@ -2,7 +2,7 @@
 
 namespace IdentityAndAuth.Identity.Errors;
 
-public static class IdentityErrors
+internal static class IdentityErrors
 {
     public static Error Some(IEnumerable<string> errors) => new(nameof(Some), errors: errors);
 }

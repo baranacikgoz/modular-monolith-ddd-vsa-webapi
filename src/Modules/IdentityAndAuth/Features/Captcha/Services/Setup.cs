@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha.Services;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddCaptchaServices(this IServiceCollection services)
         => services

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IdentityAndAuth.Persistence.EntityConfigurations;
 
-public class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
+internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
@@ -50,42 +50,42 @@ public class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
     }
 }
 
-public class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
+internal class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
 {
     public void Configure(EntityTypeBuilder<ApplicationRole> builder) =>
         builder
             .ToTable("Roles");
 }
 
-public class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<Guid>>
+internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<Guid>>
 {
     public void Configure(EntityTypeBuilder<IdentityRoleClaim<Guid>> builder) =>
         builder
             .ToTable("RoleClaims");
 }
 
-public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
 {
     public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder) =>
         builder
             .ToTable("UserRoles");
 }
 
-public class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<Guid>>
+internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<Guid>>
 {
     public void Configure(EntityTypeBuilder<IdentityUserClaim<Guid>> builder) =>
         builder
             .ToTable("UserClaims");
 }
 
-public class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
+internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
 {
     public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder) =>
         builder
             .ToTable("UserLogins");
 }
 
-public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<Guid>>
+internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<Guid>>
 {
     public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder) =>
         builder

@@ -1,6 +1,6 @@
 namespace Appointments.ModuleSetup.RateLimiting;
 
-public static class Constants
+internal static class Constants
 {
     public const string SearchAppointments = nameof(SearchAppointments);
 }
