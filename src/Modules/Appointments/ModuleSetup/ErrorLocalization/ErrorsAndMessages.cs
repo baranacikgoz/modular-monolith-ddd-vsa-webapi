@@ -2,11 +2,11 @@
 using Common.Core.Contracts;
 using Microsoft.Extensions.Localization;
 
-namespace Appointments;
+namespace Appointments.ModuleSetup.ErrorLocalization;
 
-public static class ErrorsToLocalize
+public static class ErrorsAndMessages
 {
-    public static Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> GetErrorsAndMessages()
+    public static Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> Get()
     {
         return new Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>>
         {

@@ -12,11 +12,10 @@ using IdentityAndAuth.Persistence;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityAndAuth;
+namespace IdentityAndAuth.ModuleSetup;
 
 public static class ModuleInstaller
 {
-
     public static IServiceCollection InstallIdentityAndAuthModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<Seeder>();

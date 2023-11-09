@@ -18,8 +18,9 @@ using Common.Core.Implementations;
 using Common.Eventbus;
 using Microsoft.Extensions.Options;
 using Notifications;
-using Common.RateLimiting;
 using NimbleMediator.NotificationPublishers;
+using IdentityAndAuth.ModuleSetup;
+using Appointments.ModuleSetup;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -49,8 +50,8 @@ try
             .AddSingleton<ExceptionHandlingMiddleware>()
             .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(sp =>
             {
-                var identityAndAuthModuleErrors = IdentityAndAuth.ErrorsToLocalize.GetErrorsAndMessages();
-                var appointmentsModuleErrors = Appointments.ErrorsToLocalize.GetErrorsAndMessages();
+                var identityAndAuthModuleErrors = IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get();
+                var appointmentsModuleErrors = Appointments.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get();
 
                 return new LocalizedErrorTranslator(
                     identityAndAuthModuleErrors,

@@ -58,13 +58,15 @@ public static class Setup
         // we are validating it here to make sure that the options are valid.
         // After this point, it is safe to use it like "Configuration.GetSection(nameof(RateLimitingOptions)).Get<RateLimitingOptions>();"
         services
-            .AddOptions<RateLimitingOptions>()
-            .Bind(configuration.GetSection(nameof(RateLimitingOptions)))
+            .AddOptions<CustomRateLimitingOptions>()
+            .Bind(configuration.GetSection(nameof(CustomRateLimitingOptions)))
             .ValidateDataAnnotations()
             .Validate(o => o.Global?.Limit > 0, "Global.Limit must be greater than 0.")
             .Validate(o => o.Global?.PeriodInMs > 0, "Global.Period must be greater than 0.")
             .Validate(o => o.Sms?.Limit > 0, "Sms.Limit must be greater than 0.")
             .Validate(o => o.Sms?.PeriodInMs > 0, "Sms.Period must be greater than 0.")
+            .Validate(o => o.SearchAppointments?.Limit > 0, "SearchAppointments.Limit must be greater than 0.")
+            .Validate(o => o.SearchAppointments?.PeriodInMs > 0, "SearchAppointments.Period must be greater than 0.")
             .ValidateOnStart();
 
         return services;

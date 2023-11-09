@@ -17,7 +17,7 @@ public class IdentityContext : IdentityDbContext<ApplicationUser, ApplicationRol
     {
         base.OnModelCreating(builder);
 
-        builder.HasDefaultSchema(ModuleConstants.ModuleName);
+        builder.HasDefaultSchema(nameof(IdentityAndAuth));
 
         builder.ApplyConfigurationsFromAssembly(typeof(IdentityContext).Assembly);
     }

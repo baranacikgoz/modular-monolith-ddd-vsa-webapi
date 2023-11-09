@@ -1,42 +1,48 @@
 ﻿using System.Threading.RateLimiting;
 using Common.Core.Contracts;
 using Common.Options;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace Common.RateLimiting;
+namespace Host.Middlewares;
 
-public static partial class Setup
+public static class RateLimitingMiddleware
 {
-    public static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddRateLimiting(
+        this IServiceCollection services,
+        IConfiguration configuration)
+
         => services
             .AddRateLimiter(opt =>
             {
-                var rateLimitingOptions = GetRateLimitingOptions(configuration);
+                var customRateLimitingOptions = GetCustomRateLimitingOptions(configuration);
 
                 opt.OnRejected = WriteTooManyRequestsToResponse();
 
-                opt.GlobalLimiter = GlobalRateLimiter(rateLimitingOptions);
+                opt.GlobalLimiter = GlobalRateLimiter(customRateLimitingOptions);
 
-                opt.ApplySmsPolicy(rateLimitingOptions);
+                var policies = new[]{
+                    IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
+                    Appointments.ModuleSetup.RateLimiting.Policies.Get(),
+                }.SelectMany(x => x);
+
+                // allow each module register their rate limit needs in a decoupled way
+                foreach (var policy in policies)
+                {
+                    policy(opt, customRateLimitingOptions);
+                }
             });
 
-    private static RateLimitingOptions GetRateLimitingOptions(IConfiguration configuration)
-    {
-        return configuration
-                .GetSection(nameof(RateLimitingOptions))
-                .Get<RateLimitingOptions>()
-                ?? throw new InvalidOperationException("RateLimitingOptions is null.");
-    }
+    private static CustomRateLimitingOptions GetCustomRateLimitingOptions(IConfiguration configuration)
+        => configuration
+            .GetSection(nameof(CustomRateLimitingOptions))
+            .Get<CustomRateLimitingOptions>()
+            ?? throw new InvalidOperationException("Custom rate limiting options are null.");
 
     private static string? GetIp(HttpContext httpContext) // Our app will be running behind a reverse proxy.
         => httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
 
-    private static PartitionedRateLimiter<HttpContext> GlobalRateLimiter(RateLimitingOptions rateLimitingOptions)
+    private static PartitionedRateLimiter<HttpContext> GlobalRateLimiter(CustomRateLimitingOptions rateLimitingOptions)
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
@@ -61,7 +67,7 @@ public static partial class Setup
     {
         return async (context, _) =>
         {
-            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<IDummyInterfaceForStringLocalizer>>();
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
 
             string[]? errors = null;
 
@@ -83,10 +89,4 @@ public static partial class Setup
             await tooManyRequestResult.ExecuteAsync(context.HttpContext);
         };
     }
-
-    // String localizer requires an interface as its generic type parameter.
-    // If it was injected from a class's constructor, we could have used that class as the generic type parameter.
-    // Since we are injecting it from a static class here, I had to create this dummy interface.
-    private interface IDummyInterfaceForStringLocalizer { }
-
 }
