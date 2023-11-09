@@ -18,7 +18,7 @@ internal static class Setup
             var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
             options
                 .UseNpgsql(connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, ModuleConstants.ModuleName));
+                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(IdentityAndAuth)));
         });
 
         services

@@ -1,11 +1,16 @@
 {
-  "RateLimitingOptions": {
+  "CustomRateLimitingOptions": {
     "Global": {
-      "Limit": 3,
+      "Limit": 5,
       "PeriodInMs": 1000,
       "QueueLimit": 0
     },
     "Sms": {
+      "Limit": 1,
+      "PeriodInMs": 15000,
+      "QueueLimit": 0
+    },
+    "SearchAppointments": {
       "Limit": 1,
       "PeriodInMs": 15000,
       "QueueLimit": 0

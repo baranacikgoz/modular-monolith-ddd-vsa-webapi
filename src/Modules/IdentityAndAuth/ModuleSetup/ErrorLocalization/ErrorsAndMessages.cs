@@ -7,11 +7,11 @@ using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken.Errors;
 using IdentityAndAuth.Identity.Errors;
 using Microsoft.Extensions.Localization;
 
-namespace IdentityAndAuth;
+namespace IdentityAndAuth.ModuleSetup.ErrorLocalization;
 
-public static class ErrorsToLocalize
+public static class ErrorsAndMessages
 {
-    public static Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> GetErrorsAndMessages()
+    public static Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> Get()
     {
         return new Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>>
         {

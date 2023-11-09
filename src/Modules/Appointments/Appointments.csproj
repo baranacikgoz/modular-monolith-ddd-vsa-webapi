@@ -10,6 +10,7 @@
     <ProjectReference Include="../../Common/Common.DomainEvents/Common.DomainEvents.csproj" />
     <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Options\Common.Options.csproj" />
   </ItemGroup>
 
   <ItemGroup>

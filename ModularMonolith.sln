@@ -43,8 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Persistence", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifications", "src\Modules\Notifications\Notifications.csproj", "{3AF9DCBB-2FC2-4990-A8AB-85014D307081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.RateLimiting", "src\Common\Common.RateLimiting\Common.RateLimiting.csproj", "{08404F91-81BA-42CC-A8B4-C671A29D083C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,10 +93,6 @@ Global
 		{3AF9DCBB-2FC2-4990-A8AB-85014D307081}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AF9DCBB-2FC2-4990-A8AB-85014D307081}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AF9DCBB-2FC2-4990-A8AB-85014D307081}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08404F91-81BA-42CC-A8B4-C671A29D083C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08404F91-81BA-42CC-A8B4-C671A29D083C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08404F91-81BA-42CC-A8B4-C671A29D083C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08404F91-81BA-42CC-A8B4-C671A29D083C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +111,5 @@ Global
 		{AF0BA532-6FD8-4C52-904C-2B872AB5B15B} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 		{38D72C27-8BAB-4CC2-BFF6-F1A789DE7D99} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 		{3AF9DCBB-2FC2-4990-A8AB-85014D307081} = {FD368DCB-E231-4C19-A40A-DEE98E008065}
-		{08404F91-81BA-42CC-A8B4-C671A29D083C} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 	EndGlobalSection
 EndGlobal

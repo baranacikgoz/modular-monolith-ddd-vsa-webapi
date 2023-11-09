@@ -2,7 +2,7 @@
 
 namespace Common.Options;
 
-public class RateLimitingOptions
+public class CustomRateLimitingOptions
 {
 
     [Required]
@@ -10,6 +10,9 @@ public class RateLimitingOptions
 
     [Required]
     public FixedWindow? Sms { get; set; } = default!;
+
+    [Required]
+    public FixedWindow? SearchAppointments { get; set; } = default!;
 }
 
 public class FixedWindow

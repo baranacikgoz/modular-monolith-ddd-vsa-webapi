@@ -1,12 +1,12 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
-using Common.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
+using RateLimitingConstants = IdentityAndAuth.ModuleSetup.RateLimiting.Constants;
 
 namespace IdentityAndAuth.Features.Users.InitiatePhoneOwnershipProcess;
 
@@ -16,7 +16,7 @@ public static class Endpoint
     {
         usersApiGroup
             .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
-            .RequireRateLimiting(RateLimitingPolicies.Sms)
+            .RequireRateLimiting(RateLimitingConstants.Sms)
             .AllowAnonymous()
             .WithDescription("Initiate phone ownership process by sending sms otp.")
             .Produces(StatusCodes.Status200OK);
