@@ -1,6 +1,6 @@
 ﻿namespace IdentityAndAuth.Features.Users.Domain;
 
-public static class ApplicationUserConstants
+internal static class ApplicationUserConstants
 {
     public const int FirstNameMaxLength = 50;
     public const int LastNameMaxLength = 50;

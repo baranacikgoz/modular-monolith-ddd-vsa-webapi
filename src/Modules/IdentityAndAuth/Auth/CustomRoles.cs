@@ -1,6 +1,6 @@
 ﻿namespace IdentityAndAuth.Auth;
 
-public static class CustomRoles
+internal static class CustomRoles
 {
     // Level 0
     public const string SystemAdmin = nameof(SystemAdmin); // Refers to the system admins, RandevuFast's own employees.

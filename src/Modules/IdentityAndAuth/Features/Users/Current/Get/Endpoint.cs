@@ -10,7 +10,7 @@ using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Users.Current.Get;
 
-public static class Endpoint
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {

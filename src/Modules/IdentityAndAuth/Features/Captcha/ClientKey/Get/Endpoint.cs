@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha.ClientKey.Get;
 
-public static class Endpoint
+internal static class Endpoint
 {
     // We skipped the mediator pattern here because:
     // We just return the constant value from the options (from appsettings.json).

@@ -10,7 +10,7 @@ using NimbleMediator.Contracts;
 
 namespace Appointments.Features.Venues.Create;
 
-public static class Endpoint
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder venuesApiGroup)
     {

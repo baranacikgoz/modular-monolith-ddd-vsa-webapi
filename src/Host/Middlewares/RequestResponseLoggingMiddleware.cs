@@ -6,7 +6,7 @@ using Serilog.Context;
 
 namespace Host.Middlewares;
 
-public partial class RequestResponseLoggingMiddleware(
+internal partial class RequestResponseLoggingMiddleware(
     ILogger<RequestResponseLoggingMiddleware> logger,
     IOptions<CustomLoggingOptions> loggingOptionsProvider
     ) : IMiddleware

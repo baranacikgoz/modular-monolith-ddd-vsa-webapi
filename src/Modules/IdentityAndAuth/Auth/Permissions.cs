@@ -2,7 +2,7 @@
 
 namespace IdentityAndAuth.Auth;
 
-public static class CustomPermissions
+internal static class CustomPermissions
 {
     private static readonly HashSet<CustomPermission> _basic = new()
     {

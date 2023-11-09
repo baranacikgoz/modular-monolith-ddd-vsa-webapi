@@ -2,7 +2,7 @@
 
 namespace IdentityAndAuth.Identity;
 
-public class ApplicationRole : IdentityRole<Guid>
+internal class ApplicationRole : IdentityRole<Guid>
 {
     public string? Description { get; set; }
 

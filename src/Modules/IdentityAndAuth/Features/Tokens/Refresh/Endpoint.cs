@@ -9,7 +9,7 @@ using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.Refresh;
 
-public static class Endpoint
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {

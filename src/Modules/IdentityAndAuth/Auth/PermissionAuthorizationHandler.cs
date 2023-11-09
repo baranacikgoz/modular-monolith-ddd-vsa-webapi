@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace IdentityAndAuth.Auth;
 
-public class PermissionAuthorizationHandler(
+internal class PermissionAuthorizationHandler(
     ICurrentUser currentUser,
     IUserService userService
 ) : AuthorizationHandler<PermissionRequirement>

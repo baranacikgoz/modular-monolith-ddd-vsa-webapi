@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
 
-public partial class ExceptionHandlingMiddleware(
+internal partial class ExceptionHandlingMiddleware(
     ILogger<ExceptionHandlingMiddleware> logger
     ) : IMiddleware
 {

@@ -2,7 +2,7 @@
 
 namespace IdentityAndAuth.Auth;
 
-public class PermissionPolicyProvider : IAuthorizationPolicyProvider
+internal class PermissionPolicyProvider : IAuthorizationPolicyProvider
 {
     public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
     {
@@ -32,7 +32,7 @@ public class PermissionPolicyProvider : IAuthorizationPolicyProvider
     }
 }
 
-public class PermissionRequirement : IAuthorizationRequirement
+internal class PermissionRequirement : IAuthorizationRequirement
 {
     public string PermissionName { get; private set; }
 

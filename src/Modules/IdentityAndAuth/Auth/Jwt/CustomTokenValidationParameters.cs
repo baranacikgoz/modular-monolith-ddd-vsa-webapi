@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAndAuth.Auth.Jwt;
 
-public static class CustomTokenValidationParameters
+internal static class CustomTokenValidationParameters
 {
     public static TokenValidationParameters Get(JwtOptions jwtOptions)
         => new()

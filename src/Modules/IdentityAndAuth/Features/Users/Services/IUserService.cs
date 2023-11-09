@@ -3,7 +3,7 @@ using IdentityAndAuth.Features.Users.Domain;
 
 namespace IdentityAndAuth.Features.Users.Services;
 
-public interface IUserService
+internal interface IUserService
 {
     Task<Result<ApplicationUser>> GetByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default);
     Task<Result> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken = default);

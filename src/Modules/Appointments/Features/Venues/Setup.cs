@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Appointments.Features.Venues;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddVenuesFeatures(this IServiceCollection services)
     {

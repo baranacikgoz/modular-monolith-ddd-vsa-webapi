@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
 
-public static class RateLimitingMiddleware
+internal static class RateLimitingMiddleware
 {
     public static IServiceCollection AddRateLimiting(
         this IServiceCollection services,

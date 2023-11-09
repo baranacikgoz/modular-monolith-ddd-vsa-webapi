@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityAndAuth.Features.Users.Services;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddUsersServices(this IServiceCollection services)
         => services

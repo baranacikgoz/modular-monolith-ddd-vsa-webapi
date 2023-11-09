@@ -1,6 +1,6 @@
 ﻿namespace Host.Swagger;
 
-public static class Setup
+internal static class Setup
 {
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
      => services.AddSwaggerGen(cfg =>

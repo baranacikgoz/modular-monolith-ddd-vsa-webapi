@@ -5,7 +5,7 @@ using Common.DomainEvents;
 namespace Appointments.Features.Appointments.Domain;
 
 public sealed record AppointmentId(Guid Value);
-public class Appointment : AggregateRoot<AppointmentId>
+internal class Appointment : AggregateRoot<AppointmentId>
 {
     private Appointment(VenueId venueId)
         : base(new(Guid.NewGuid()))

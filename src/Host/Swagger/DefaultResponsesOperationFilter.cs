@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-public class DefaultResponsesOperationFilter : IOperationFilter
+internal class DefaultResponsesOperationFilter : IOperationFilter
 {
     private static OpenApiResponse CreateErrorResponse(string description, OperationFilterContext context)
     {

@@ -15,7 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityAndAuth.Features.Tokens.Services;
 
-public class TokenService(
+internal class TokenService(
     IOptions<JwtOptions> jwtOptionsProvider,
     IUserService userService,
     UserManager<ApplicationUser> userManager)

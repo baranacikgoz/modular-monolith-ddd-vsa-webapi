@@ -1,6 +1,6 @@
 ﻿namespace Host.Configurations;
 
-public static class Setup
+internal static class Setup
 {
     public static WebApplicationBuilder AddConfigurations(this WebApplicationBuilder builder)
     {

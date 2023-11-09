@@ -1,6 +1,6 @@
 ﻿namespace IdentityAndAuth.Extensions;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     public static string TrimmedUpperInvariantTransliterateTurkishChars(this string value)
     {

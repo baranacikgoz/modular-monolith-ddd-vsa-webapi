@@ -3,7 +3,7 @@ using IdentityAndAuth.Features.Users.Services.PhoneVerificationToken.Errors;
 
 namespace IdentityAndAuth.Features.Users.Services.PhoneVerificationToken;
 
-public class DummyPhoneVerificationTokenService : IPhoneVerificationTokenService
+internal class DummyPhoneVerificationTokenService : IPhoneVerificationTokenService
 {
     private const string DummyPhoneVerificationToken = "dummyPhoneVerificationToken";
     public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)

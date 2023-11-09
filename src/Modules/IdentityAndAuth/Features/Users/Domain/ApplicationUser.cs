@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Users.Domain;
 
-public sealed class ApplicationUser : IdentityUser<Guid>
+internal sealed class ApplicationUser : IdentityUser<Guid>
 {
     private ApplicationUser(string firstName, string lastName, string phoneNumber, string nationalIdentityNumber, DateOnly birthDate, Uri? imageUrl = null)
     {

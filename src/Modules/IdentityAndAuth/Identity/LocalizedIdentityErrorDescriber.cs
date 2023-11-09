@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace IdentityAndAuth.Identity;
 
-public class LocalizedIdentityErrorDescriber(
+internal class LocalizedIdentityErrorDescriber(
     IStringLocalizer<LocalizedIdentityErrorDescriber> localizer
     ) : IdentityErrorDescriber
 {

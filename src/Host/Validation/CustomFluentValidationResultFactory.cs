@@ -7,7 +7,7 @@ using SharpGrip.FluentValidation.AutoValidation.Endpoints.Results;
 
 namespace Host.Validation;
 
-public class CustomFluentValidationResultFactory(
+internal class CustomFluentValidationResultFactory(
     IStringLocalizer<LocalizedErrorTranslator> localizer
     ) : IFluentValidationAutoValidationResultFactory
 {

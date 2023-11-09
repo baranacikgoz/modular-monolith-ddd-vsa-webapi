@@ -10,7 +10,7 @@ using RateLimitingConstants = IdentityAndAuth.ModuleSetup.RateLimiting.Constants
 
 namespace IdentityAndAuth.Features.Users.InitiatePhoneOwnershipProcess;
 
-public static class Endpoint
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {

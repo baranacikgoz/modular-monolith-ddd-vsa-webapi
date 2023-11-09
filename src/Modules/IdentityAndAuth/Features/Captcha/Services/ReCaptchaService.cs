@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Captcha.Services;
 
-public partial class ReCaptchaService(
+internal partial class ReCaptchaService(
     HttpClient httpClient,
     IOptions<CaptchaOptions> captchaOptionsProvider,
     ILogger<ReCaptchaService> logger
