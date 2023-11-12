@@ -11,30 +11,25 @@ public class ResultTranslator(
     ) : IResultTranslator
 {
     public IResult TranslateToMinimalApiResult<T>(Result<T> result, IStringLocalizer<IErrorTranslator> localizer)
-    {
-        return result.IsSuccess
-            ? Results.Ok(result.Value)
-            : CreateProblemDetails(result.Error!, localizer);
-    }
+        => result.Match(
+            onSuccess: value => Results.Ok(value),
+            onFailure: error => CreateProblemDetails(error, localizer)
+        );
 
     public IResult TranslateToMinimalApiResult(Result result, IStringLocalizer<IErrorTranslator> localizer)
-    {
-        return result.IsSuccess
-            ? Results.Ok()
-            : CreateProblemDetails(result.Error!, localizer);
-    }
-    private CustomProblemDetails CreateProblemDetails(Error error, IStringLocalizer<IErrorTranslator> localizer)
-    {
-        var localizedErrorMessage = errorTranslator.Translate(error, localizer);
+        => result.Match(
+            onSuccess: () => Results.Ok(),
+            onFailure: error => CreateProblemDetails(error, localizer)
+        );
 
-        return new CustomProblemDetails
+    private CustomProblemDetails CreateProblemDetails(Error error, IStringLocalizer<IErrorTranslator> localizer)
+        => new()
         {
             Status = (int)error.StatusCode,
-            Title = localizedErrorMessage,
+            Title = errorTranslator.Translate(error, localizer),
             Type = error.Key,
             Instance = httpContextAccessor.HttpContext?.Request.Path ?? string.Empty,
             RequestId = httpContextAccessor.HttpContext?.TraceIdentifier ?? string.Empty,
             Errors = error.Errors ?? Enumerable.Empty<string>()
         };
-    }
 }
