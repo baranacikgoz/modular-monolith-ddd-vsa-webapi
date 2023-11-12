@@ -19,8 +19,13 @@ internal partial class ExceptionHandlingMiddleware(
         {
             LogError(logger, exception);
 
-            var problemDetails = GenerateProblemResponse(context, exception);
+            if (context.Response.HasStarted)
+            {
+                LogCantWriteResponse(logger, exception);
+                return;
+            }
 
+            var problemDetails = GenerateProblemResponse(context, exception);
             await problemDetails.ExecuteAsync(context);
         }
     }
@@ -46,5 +51,10 @@ internal partial class ExceptionHandlingMiddleware(
         Level = LogLevel.Error,
         Message = "Unhandled exception occured.")]
     private static partial void LogError(ILogger logger, Exception exception);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Response has already started, can't write response.")]
+    private static partial void LogCantWriteResponse(ILogger logger, Exception exception);
 }
 
