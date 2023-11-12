@@ -57,7 +57,6 @@ try
                     identityAndAuthModuleErrors,
                     appointmentsModuleErrors
                     );
-
             })
             .AddSingleton<IResultTranslator, ResultTranslator>()
             .AddCaching()
