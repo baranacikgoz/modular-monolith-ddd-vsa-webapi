@@ -38,7 +38,6 @@
     <ProjectReference Include="../Modules/IdentityAndAuth/IdentityAndAuth.csproj" />
     <ProjectReference Include="../Modules/Appointments/Appointments.csproj" />
     <ProjectReference Include="..\Modules\Notifications\Notifications.csproj" />
-    <ProjectReference Include="..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
   </ItemGroup>
 
 </Project>
