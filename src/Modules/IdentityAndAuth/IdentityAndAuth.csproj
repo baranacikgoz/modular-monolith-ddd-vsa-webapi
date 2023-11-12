@@ -21,7 +21,6 @@
     <ProjectReference Include="../../Common/Common.Options/Common.Options.csproj" />
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
     <ProjectReference Include="..\..\Common\Common.Eventbus\Common.Eventbus.csproj" />
-    <ProjectReference Include="..\..\Common\Common.RateLimiting\Common.RateLimiting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
