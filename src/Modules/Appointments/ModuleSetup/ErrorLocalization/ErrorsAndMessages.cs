@@ -6,11 +6,8 @@ namespace Appointments.ModuleSetup.ErrorLocalization;
 
 public static class ErrorsAndMessages
 {
-    public static Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> Get()
+    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorTranslator>, string>>> Get()
     {
-        return new Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>>
-        {
-            { nameof(AppointmentErrors.DummyErrorForTesting), (localizer) => localizer["DummyErrorForTesting"] }
-        };
+        yield return new(nameof(AppointmentErrors.DummyErrorForTesting), (localizer) => localizer["DummyErrorForTesting"]);
     }
 }

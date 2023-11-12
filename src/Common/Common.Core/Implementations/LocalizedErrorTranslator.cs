@@ -9,7 +9,8 @@ public class LocalizedErrorTranslator : IErrorTranslator
 {
     // See https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-8.0
     private readonly FrozenDictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> _aggregatedErrorsAndMessages;
-    public LocalizedErrorTranslator(params Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>>[] errorKeysToMessages)
+    public LocalizedErrorTranslator(
+       params IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorTranslator>, string>>>[] errorKeysToMessages)
     {
         // The service will be singleton, so this n^2 complexity is not a problem.
         _aggregatedErrorsAndMessages = errorKeysToMessages
