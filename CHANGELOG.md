@@ -1,3 +1,9 @@
+## 0.5.1 (2023-11-12)
+
+### Refactor
+
+- **Result.cs**: Improve Result class and extensions to be more reliable
+
 ## 0.5.0 (2023-11-12)
 
 ### Feat
