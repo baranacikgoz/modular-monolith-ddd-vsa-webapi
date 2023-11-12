@@ -45,28 +45,19 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/webapi:${{ env.VERSION }}
 
-      # - name: Change image tag in docker-compose file
-      #   run: |
-      #     VERSION=${{ env.VERSION }}
-      #     sed -i "s/webapi:placeholder/webapi:$VERSION/" docker-compose.yml
-
-      # - name: Copy docker-compose file to Server
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_SSH_USER }}
-      #     key: ${{ secrets.SERVER_SSH_KEY }}
-      #     source: "docker-compose.yml"
-      #     target: "~/backend"
-
-      # - name: Deploy on Production Server
+      # - name: Update and Deploy on Remote Server # Updates the remote docker compose file with the new image tag and runs the new image
       #   uses: appleboy/ssh-action@master
       #   with:
       #     host: ${{ secrets.SERVER_HOST }}
       #     username: ${{ secrets.SERVER_SSH_USER }}
       #     key: ${{ secrets.SERVER_SSH_KEY }}
       #     script: |
-      #       cd path-to-docker-compose-file
-      #       sudo docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+      #       cd ~/backend
+      #       VERSION=${{ env.VERSION }}
+      #       USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+      #       sudo sed -i "s|$USERNAME/webapi:[^ ]*|$USERNAME/webapi:$VERSION|" docker-compose.yml
+      #       sudo docker login --username $USERNAME --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       #       sudo docker compose pull webapi
+      #       sudo docker container stop webapi
+      #       sudo docker container rm webapi
       #       sudo docker compose up -d --no-deps webapi
