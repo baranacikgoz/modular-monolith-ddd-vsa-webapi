@@ -6,9 +6,9 @@ namespace Notifications.EventConsumers;
 
 internal partial class UserRegisteredEventConsumer(
     ILogger<UserRegisteredEventConsumer> logger
-    ) : IEventHandler<Events.IdentityAndAuth.UserCreatedEvent>
+    ) : IEventHandler<Events.FromIdentityAndAuth.UserCreatedEvent>
 {
-    public Task HandleAsync(Events.IdentityAndAuth.UserCreatedEvent notification, CancellationToken cancellationToken)
+    public Task HandleAsync(Events.FromIdentityAndAuth.UserCreatedEvent notification, CancellationToken cancellationToken)
     {
         LogUserRegisteredEventConsumer(logger, notification.UserId);
 

@@ -5,12 +5,10 @@ namespace IdentityAndAuth.ModuleSetup.RateLimiting;
 
 public static class Policies
 {
-#pragma warning disable CA1024
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
         yield return SmsPolicy;
     }
-#pragma warning restore CA1024
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
         => rateLimiter
