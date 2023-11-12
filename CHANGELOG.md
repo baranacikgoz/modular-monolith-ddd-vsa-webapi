@@ -1,3 +1,9 @@
+## 0.5.2 (2023-11-13)
+
+### Fix
+
+- **ExceptionHandlingMiddleware.cs**: Fix "StatusCode cannot be set because the response has already started." error
+
 ## 0.5.1 (2023-11-12)
 
 ### Refactor
