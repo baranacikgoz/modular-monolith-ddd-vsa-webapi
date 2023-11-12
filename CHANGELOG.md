@@ -1,3 +1,28 @@
+## 0.5.0 (2023-11-12)
+
+### Feat
+
+- **EventBus**: Use current mediator as eventbus instead of Masstransit for simplicity for now
+
+### Fix
+
+- **ResultExtensions.cs**: Trying to return results value even if predecessor fails
+- Place adding domain event in static Create methods rather than ctors
+
+### Refactor
+
+- **ErrosAndMessages.cs**: Improve memory usage
+- Apply CA inside features, allow more decoupled module registration
+- Change publics to internal as much as possible
+- Move request validators inside request files
+- Adjust namespaces
+- **modules**: Make modules more decoupled
+- **Result-Monad**: Refactor Bind methods to not the same as Map
+
+### Perf
+
+- **LocalizedErrorTranslator.cs**: Switch to FrozenDictionary to have better lookup performance than traditional dictionary
+
 ## 0.4.0 (2023-11-08)
 
 ### Feat
