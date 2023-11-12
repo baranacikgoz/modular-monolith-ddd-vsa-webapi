@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Microsoft.Extensions.Localization;
@@ -6,18 +7,15 @@ namespace Common.Core.Implementations;
 
 public class LocalizedErrorTranslator : IErrorTranslator
 {
-    private static readonly Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> _aggregatedErrorsAndMessages = new();
-
+    // See https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-8.0
+    private readonly FrozenDictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>> _aggregatedErrorsAndMessages;
     public LocalizedErrorTranslator(params Dictionary<string, Func<IStringLocalizer<IErrorTranslator>, string>>[] errorKeysToMessages)
     {
-        // The service will be singleton, so this will be called only once at the startup (n^2 complexity) will not be a problem.
-        foreach (var errorKeyToMessage in errorKeysToMessages)
-        {
-            foreach (var (key, value) in errorKeyToMessage)
-            {
-                _aggregatedErrorsAndMessages.Add(key, value);
-            }
-        }
+        // The service will be singleton, so this n^2 complexity is not a problem.
+        _aggregatedErrorsAndMessages = errorKeysToMessages
+                                        .SelectMany(x => x)
+                                        .ToDictionary(x => x.Key, x => x.Value)
+                                        .ToFrozenDictionary();
     }
 
     public string Translate(Error error, IStringLocalizer<IErrorTranslator> localizer)
