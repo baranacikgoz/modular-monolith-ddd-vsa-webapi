@@ -1,3 +1,4 @@
+using Appointments.Features.Appointments.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -8,9 +9,8 @@ namespace Appointments.Features.Appointments;
 internal static class Setup
 {
     public static IServiceCollection AddAppointmentsFeatures(this IServiceCollection services)
-    {
-        return services;
-    }
+        => services
+            .AddAppointmentsInfrastructure();
 
     public static RouteGroupBuilder MapAppointmentsEndpoints(this RouteGroupBuilder rootGroup)
     {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.RateLimiting;
 using Common.Core.Contracts;
 using Common.Options;
+using IdentityAndAuth.Features.Auth.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 
@@ -38,15 +39,11 @@ internal static class RateLimitingMiddleware
             .GetSection(nameof(CustomRateLimitingOptions))
             .Get<CustomRateLimitingOptions>()
             ?? throw new InvalidOperationException("Custom rate limiting options are null.");
-
-    private static string? GetIp(HttpContext httpContext) // Our app will be running behind a reverse proxy.
-        => httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-
     private static PartitionedRateLimiter<HttpContext> GlobalRateLimiter(CustomRateLimitingOptions rateLimitingOptions)
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: GetIp(httpContext) ?? "N/A",
+                        partitionKey: httpContext.GetIpAddress() ?? "N/A",
                         factory: _ =>
                         {
                             var globalRateLimiting = rateLimitingOptions.Global ?? throw new InvalidOperationException("Global rate limiting is null.");

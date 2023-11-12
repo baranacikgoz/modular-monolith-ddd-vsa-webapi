@@ -1,8 +1,9 @@
-﻿using IdentityAndAuth.Features.Tokens.Services;
+﻿using IdentityAndAuth.Features.Tokens.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Endpoint = IdentityAndAuth.Features.Tokens.UseCases.Create.Endpoint;
 
 namespace IdentityAndAuth.Features.Tokens;
 
@@ -10,7 +11,7 @@ internal static class Setup
 {
     public static IServiceCollection AddTokensFeature(this IServiceCollection services)
         => services
-            .AddTokensServices();
+            .AddTokensInfrastructure();
 
     public static RouteGroupBuilder MapTokensEndpoints(this RouteGroupBuilder rootGroup)
     {
@@ -18,8 +19,8 @@ internal static class Setup
             .MapGroup("/tokens")
             .WithTags("Tokens");
 
-        Create.Endpoint.MapEndpoint(tokensApiGroup);
-        Refresh.Endpoint.MapEndpoint(tokensApiGroup);
+        Endpoint.MapEndpoint(tokensApiGroup);
+        UseCases.Refresh.Endpoint.MapEndpoint(tokensApiGroup);
 
         return rootGroup;
     }

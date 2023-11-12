@@ -1,4 +1,4 @@
-﻿using IdentityAndAuth.Features.Captcha.Services;
+﻿using IdentityAndAuth.Features.Captcha.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -8,16 +8,16 @@ namespace IdentityAndAuth.Features.Captcha;
 
 internal static class Setup
 {
-    public static IServiceCollection AddCaptchaFeatures(this IServiceCollection services)
+    public static IServiceCollection AddCaptchaFeature(this IServiceCollection services)
         => services
-            .AddCaptchaServices();
+            .AddCaptchaInfrastructure();
     public static RouteGroupBuilder MapCaptchaEndpoints(this RouteGroupBuilder rootGroup)
     {
         var captchaApiGroup = rootGroup
             .MapGroup("/captcha")
             .WithTags("Captcha");
 
-        ClientKey.Get.Endpoint.MapEndpoint(captchaApiGroup);
+        UseCases.ClientKey.Get.Endpoint.MapEndpoint(captchaApiGroup);
 
         return rootGroup;
     }

@@ -4,7 +4,7 @@ namespace Common.DomainEvents;
 
 public static partial class Events
 {
-    public static class IdentityAndAuth
+    public static class FromIdentityAndAuth
     {
         public record UserCreatedEvent(Guid UserId) : DomainEvent;
     }

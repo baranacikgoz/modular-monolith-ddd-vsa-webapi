@@ -19,7 +19,9 @@ internal class Appointment : AggregateRoot<AppointmentId>
     public static Appointment Create(VenueId venueId)
     {
         var appointment = new Appointment(venueId);
-        appointment.AddDomainEvent(new Events.Appointments.AppointmentCreatedEvent(appointment.VenueId.Value));
+        appointment.AddDomainEvent(new Events
+                                        .FromAppointments
+                                        .AppointmentCreatedEvent(appointment.VenueId.Value));
         return appointment;
     }
 }

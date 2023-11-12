@@ -1,5 +1,5 @@
-using IdentityAndAuth.Auth;
-using IdentityAndAuth.Identity;
+using IdentityAndAuth.Features.Auth.Domain;
+using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

@@ -1,6 +1,6 @@
+using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using IdentityAndAuth.Features.Users.Domain;
 
 namespace IdentityAndAuth.Persistence.Seeding;
 

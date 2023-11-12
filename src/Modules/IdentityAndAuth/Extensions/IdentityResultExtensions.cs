@@ -1,5 +1,5 @@
 ﻿using Common.Core.Contracts.Results;
-using IdentityAndAuth.Identity.Errors;
+using IdentityAndAuth.Features.Identity.Domain.Errors;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Extensions;

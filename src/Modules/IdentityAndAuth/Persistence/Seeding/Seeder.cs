@@ -1,7 +1,6 @@
-using IdentityAndAuth.Identity;
+using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using IdentityAndAuth.Features.Users.Domain;
 
 namespace IdentityAndAuth.Persistence.Seeding;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Appointments.Features.Venues.Infrastructure;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,9 +9,8 @@ namespace Appointments.Features.Venues;
 internal static class Setup
 {
     public static IServiceCollection AddVenuesFeatures(this IServiceCollection services)
-    {
-        return services;
-    }
+        => services
+            .AddVenuesInfrastructure();
 
     public static RouteGroupBuilder MapVenuesEndpoints(this RouteGroupBuilder rootGroup)
     {

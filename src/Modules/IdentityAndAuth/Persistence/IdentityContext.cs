@@ -1,5 +1,4 @@
-﻿using IdentityAndAuth.Features.Users.Domain;
-using IdentityAndAuth.Identity;
+﻿using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

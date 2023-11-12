@@ -1,13 +1,12 @@
-﻿using IdentityAndAuth.Features.Tokens;
-using IdentityAndAuth.Features.Users;
+﻿using IdentityAndAuth.Features.Auth;
+using IdentityAndAuth.Features.Tokens;
 using IdentityAndAuth.Persistence.Seeding;
-using IdentityAndAuth.Auth;
-using IdentityAndAuth.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityAndAuth.Features.Captcha;
+using IdentityAndAuth.Features.Identity;
 using IdentityAndAuth.Persistence;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +20,8 @@ public static class ModuleInstaller
         services.AddTransient<Seeder>();
 
         services
-            .AddCustomIdentity()
-            .AddCustomAuth(configuration);
-
-        services
-            .AddUsersFeatures()
+            .AddIdentityFeature()
+            .AddAuthFeature(configuration)
             .AddTokensFeature();
 
         return services;
