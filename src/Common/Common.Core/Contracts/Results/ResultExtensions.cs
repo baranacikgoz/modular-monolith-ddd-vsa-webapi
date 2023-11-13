@@ -2,6 +2,21 @@
 
 public static class SyncExtensions
 {
+    public static Result<TOut> Apply<TIn, TOut>(this Result<Func<TIn, TOut>> result, Result<TIn> arg)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TOut>.Failure(result.Error!);
+        }
+
+        if (!arg.IsSuccess)
+        {
+            return Result<TOut>.Failure(arg.Error!);
+        }
+
+        return Result<TOut>.Success(result.Value!(arg.Value!));
+    }
+
     public static Result<TNext> Bind<TCurrent, TNext>(this Result<TCurrent> result, Result<TNext> next)
     {
         if (!result.IsSuccess)
