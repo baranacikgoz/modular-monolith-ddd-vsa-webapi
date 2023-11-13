@@ -3,7 +3,7 @@ using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Microsoft.Extensions.Localization;
 
-namespace Common.Core.Implementations;
+namespace Host.Infrastructure;
 
 public class LocalizedErrorTranslator : IErrorTranslator
 {
@@ -12,7 +12,7 @@ public class LocalizedErrorTranslator : IErrorTranslator
     public LocalizedErrorTranslator(
        params IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorTranslator>, string>>>[] errorKeysToMessages)
     {
-        // The service will be singleton, so this n^2 complexity is not a problem.
+        // The service will be singleton, so don't worry about this operation being expensive.
         _aggregatedErrorsAndMessages = errorKeysToMessages
                                         .SelectMany(x => x)
                                         .ToDictionary(x => x.Key, x => x.Value)

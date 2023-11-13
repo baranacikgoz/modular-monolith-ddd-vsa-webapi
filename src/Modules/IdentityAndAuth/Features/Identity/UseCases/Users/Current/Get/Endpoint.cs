@@ -1,6 +1,7 @@
 using Common.Core.Auth;
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +19,12 @@ internal static class Endpoint
             .MapGet("", GetAsync)
             .WithDescription("Get current user.")
             .Produces<Response>(StatusCodes.Status200OK)
-            .MustHavePermission(RfActions.ReadMy, RfResources.Users);
+            .MustHavePermission(RfActions.ReadMy, RfResources.Users)
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
     }
 
-    private static async Task<IResult> GetAsync(
+    private static ValueTask<Result<Response>> GetAsync(
         [FromServices] ISender mediator,
-        [FromServices] IResultTranslator resultTranslator,
-        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
-    {
-        var result = await mediator.SendAsync<Request, Result<Response>>(new(), cancellationToken);
-
-        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
-    }
+        => mediator.SendAsync<Request, Result<Response>>(new(), cancellationToken);
 }

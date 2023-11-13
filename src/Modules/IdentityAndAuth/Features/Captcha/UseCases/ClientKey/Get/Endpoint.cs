@@ -1,4 +1,6 @@
-﻿using Common.Options;
+﻿using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
+using Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -16,11 +18,12 @@ internal static class Endpoint
         captchaApiGroup
             .MapGet("client-key", GetClientKeyAsync)
             .WithDescription("Get the client key for captcha.")
+            .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
-            .Produces<Response>(StatusCodes.Status200OK);
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
     }
 
-    private static Response GetClientKeyAsync(IOptions<CaptchaOptions> captchaOptionsProvider)
+    private static Result<Response> GetClientKeyAsync(IOptions<CaptchaOptions> captchaOptionsProvider)
     {
         var captchaOptions = captchaOptionsProvider.Value;
         return new Response(captchaOptions.ClientKey);

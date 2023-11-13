@@ -1,5 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +17,16 @@ internal static class Endpoint
     {
         usersApiGroup
             .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
+            .WithDescription("Initiate phone ownership process by sending sms otp.")
+            .Produces(StatusCodes.Status200OK)
             .RequireRateLimiting(RateLimitingConstants.Sms)
             .AllowAnonymous()
-            .WithDescription("Initiate phone ownership process by sending sms otp.")
-            .Produces(StatusCodes.Status200OK);
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter>();
     }
 
-    private static async Task<IResult> InitiatePhoneOwnershipProcessAsync(
+    private static ValueTask<Result> InitiatePhoneOwnershipProcessAsync(
         [FromBody] Request request,
         [FromServices] ISender mediator,
-        [FromServices] IResultTranslator resultTranslator,
-        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
-    {
-        var result = await mediator.SendAsync<Request, Result>(request, cancellationToken);
-
-        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
-    }
+        => mediator.SendAsync<Request, Result>(request, cancellationToken);
 }

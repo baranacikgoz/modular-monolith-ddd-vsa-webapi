@@ -1,5 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,20 +16,15 @@ internal static class Endpoint
     {
         usersApiGroup
             .MapPost("self-register", SelfRegisterAsync)
-            .AllowAnonymous()
             .WithDescription("Self register a new user.")
-            .Produces<Response>();
+            .Produces<Response>()
+            .AllowAnonymous()
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
     }
 
-    private static async Task<IResult> SelfRegisterAsync(
+    private static ValueTask<Result<Response>> SelfRegisterAsync(
         [FromBody] Request request,
         [FromServices] ISender mediator,
-        [FromServices] IResultTranslator resultTranslator,
-        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
-    {
-        var response = await mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
-
-        return resultTranslator.TranslateToMinimalApiResult(response, localizer);
-    }
+        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
 }

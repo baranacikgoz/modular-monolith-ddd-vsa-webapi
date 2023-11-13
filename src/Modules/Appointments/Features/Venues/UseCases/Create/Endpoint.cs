@@ -1,14 +1,13 @@
 using Common.Core.Auth;
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
-namespace Appointments.Features.Venues.Create;
+namespace Appointments.Features.Venues.UseCases.Create;
 
 internal static class Endpoint
 {
@@ -16,18 +15,14 @@ internal static class Endpoint
     {
         venuesApiGroup
             .MapPost("", CreateAsync)
+            .WithDescription("Create a new venue.")
+            .Produces<Response>(StatusCodes.Status200OK)
             .MustHavePermission(RfActions.Create, RfResources.Venues)
-            .WithDescription("Create a new venue.");
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
     }
-    private static async Task<IResult> CreateAsync(
+    private static ValueTask<Result<Response>> CreateAsync(
         [FromBody] Request request,
         [FromServices] ISender mediator,
-        [FromServices] IResultTranslator resultTranslator,
-        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
-    {
-        var result = await mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
-
-        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
-    }
+        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
 }

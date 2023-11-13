@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace IdentityAndAuth.Features.Auth.Extensions;
+namespace Common.Core.Extensions;
 
 public static class HttpContextExtensions
 {

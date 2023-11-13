@@ -1,7 +1,7 @@
 using Common.Core.Contracts.Results;
 using NimbleMediator.Contracts;
 
-namespace Appointments.Features.Appointments.Create;
+namespace Appointments.Features.Appointments.UseCases.Create;
 
 internal sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
 {

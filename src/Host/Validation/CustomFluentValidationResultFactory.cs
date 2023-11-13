@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using Common.Core.Implementations;
 using FluentValidation.Results;
+using Host.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Results;
