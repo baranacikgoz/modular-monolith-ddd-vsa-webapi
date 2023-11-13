@@ -48,11 +48,11 @@ try
             .AddCustomLocalization("Resources")
             .AddRateLimiting(builder.Configuration)
             .AddSingleton<ExceptionHandlingMiddleware>()
-            .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(_ =>
+            .AddSingleton<IErrorLocalizer, AggregatedErrorLocalizer>(_ =>
             {
-                return new LocalizedErrorTranslator(
-                    IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get(),
-                    Appointments.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get()
+                return new AggregatedErrorLocalizer(
+                    IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
+                    Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
                     );
             })
             .AddCaching()

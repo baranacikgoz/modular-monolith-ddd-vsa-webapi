@@ -19,7 +19,7 @@ internal static class Endpoint
             .WithDescription("Create token by validating otp.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
+            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
     }
 
     private static ValueTask<Result<Response>> CreateAsync(

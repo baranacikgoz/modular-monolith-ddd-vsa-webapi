@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Common.Core.Contracts;
 
-public interface IErrorTranslator
+public interface IErrorLocalizer
 {
-    string Translate(Error error, IStringLocalizer<IErrorTranslator> localizer);
+    string Localize(Error error, IStringLocalizer<IErrorLocalizer> stringLocalizer);
 }

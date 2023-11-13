@@ -19,7 +19,7 @@ internal static class Endpoint
             .WithDescription("Prove phone ownership by validating otp.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
+            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
     }
     private static ValueTask<Result<Response>> ProvePhoneOwnershipAsync(
         [FromBody] Request request,

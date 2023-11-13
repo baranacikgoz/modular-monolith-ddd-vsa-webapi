@@ -21,7 +21,7 @@ internal static class Endpoint
             .Produces(StatusCodes.Status200OK)
             .RequireRateLimiting(RateLimitingConstants.Sms)
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToMinimalApiResponseFilter>();
+            .AddEndpointFilter<ResultToResponseTransformer>();
     }
 
     private static ValueTask<Result> InitiatePhoneOwnershipProcessAsync(
