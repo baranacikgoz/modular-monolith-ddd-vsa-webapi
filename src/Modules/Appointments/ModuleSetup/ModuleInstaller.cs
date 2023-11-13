@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Appointments;
+namespace Appointments.ModuleSetup;
 
 public static class ModuleInstaller
 {

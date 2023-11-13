@@ -1,5 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +18,12 @@ internal static class Endpoint
             .MapPost("prove-phone-ownership", ProvePhoneOwnershipAsync)
             .WithDescription("Prove phone ownership by validating otp.")
             .Produces<Response>(StatusCodes.Status200OK)
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
     }
-    private static async Task<IResult> ProvePhoneOwnershipAsync(
+    private static ValueTask<Result<Response>> ProvePhoneOwnershipAsync(
         [FromBody] Request request,
         [FromServices] ISender mediator,
-        [FromServices] IResultTranslator resultTranslator,
-        [FromServices] IStringLocalizer<IErrorTranslator> localizer,
         CancellationToken cancellationToken)
-    {
-        var result = await mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
-
-        return resultTranslator.TranslateToMinimalApiResult(result, localizer);
-    }
+        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
 }

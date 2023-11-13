@@ -14,13 +14,13 @@ using Host.Validation;
 using Appointments;
 using Host.Middlewares;
 using Common.Core.Contracts;
-using Common.Core.Implementations;
 using Common.Eventbus;
 using Microsoft.Extensions.Options;
 using Notifications;
 using NimbleMediator.NotificationPublishers;
 using IdentityAndAuth.ModuleSetup;
 using Appointments.ModuleSetup;
+using Host.Infrastructure;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -48,17 +48,13 @@ try
             .AddCustomLocalization("Resources")
             .AddRateLimiting(builder.Configuration)
             .AddSingleton<ExceptionHandlingMiddleware>()
-            .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(sp =>
+            .AddSingleton<IErrorTranslator, LocalizedErrorTranslator>(_ =>
             {
-                var identityAndAuthModuleErrors = IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get();
-                var appointmentsModuleErrors = Appointments.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get();
-
                 return new LocalizedErrorTranslator(
-                    identityAndAuthModuleErrors,
-                    appointmentsModuleErrors
+                    IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get(),
+                    Appointments.ModuleSetup.ErrorLocalization.ErrorsAndMessages.Get()
                     );
             })
-            .AddSingleton<IResultTranslator, ResultTranslator>()
             .AddCaching()
             .AddNimbleMediator(cfg =>
             {
