@@ -6,9 +6,9 @@ using Microsoft.Extensions.Localization;
 
 namespace IdentityAndAuth.ModuleSetup.ErrorLocalization;
 
-public static class ErrorsAndMessages
+public static class ErrorsAndLocalizations
 {
-    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorTranslator>, string>>> Get()
+    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> Get()
     {
         yield return new(nameof(UserErrors.NotFound), localizer => localizer["Kullanıcı bulunamadı."]);
         yield return new(nameof(IdentityErrors.Some), localizer => localizer["Bir veya daha fazla hata oluştu."]);

@@ -18,7 +18,7 @@ internal static class Endpoint
             .WithDescription("Create a new venue.")
             .Produces<Response>(StatusCodes.Status200OK)
             .MustHavePermission(RfActions.Create, RfResources.Venues)
-            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
+            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
     }
     private static ValueTask<Result<Response>> CreateAsync(
         [FromBody] Request request,

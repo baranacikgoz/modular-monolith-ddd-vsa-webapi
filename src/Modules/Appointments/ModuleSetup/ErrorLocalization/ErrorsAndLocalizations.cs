@@ -4,9 +4,9 @@ using Microsoft.Extensions.Localization;
 
 namespace Appointments.ModuleSetup.ErrorLocalization;
 
-public static class ErrorsAndMessages
+public static class ErrorsAndLocalizations
 {
-    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorTranslator>, string>>> Get()
+    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> Get()
     {
         yield return new(nameof(AppointmentErrors.DummyErrorForTesting), (localizer) => localizer["DummyErrorForTesting"]);
     }

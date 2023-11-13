@@ -10,7 +10,7 @@ namespace Common.Core.EndpointFilters;
 // In this filters, no service needed for succes paths.
 // So we don't have to eagerly load failure case's services. (on ctor as usual)
 // That's why we're using the service provider to get the error translator and localizer if and only if failure case occur.
-public sealed class ResultToMinimalApiResponseFilter(IServiceProvider serviceProvider) : IEndpointFilter
+public sealed class ResultToResponseTransformer(IServiceProvider serviceProvider) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -18,20 +18,20 @@ public sealed class ResultToMinimalApiResponseFilter(IServiceProvider servicePro
 
         if (resultObj is not Result result)
         {
-            throw new InvalidOperationException($"{nameof(ResultToMinimalApiResponseFilter)} can only be used with Result type.");
+            throw new InvalidOperationException($"{nameof(ResultToResponseTransformer)} can only be used with Result type.");
         }
 
         return result.Match(
             onSuccess: () => Results.Ok(),
             onFailure: error =>
             {
-                var errorTranslator = serviceProvider.GetRequiredService<IErrorTranslator>();
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorTranslator>>();
+                var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
+                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
 
                 return new CustomProblemDetails()
                 {
                     Status = (int)error.StatusCode,
-                    Title = errorTranslator.Translate(error, localizer),
+                    Title = errorTranslator.Localize(error, localizer),
                     Type = error.Key,
                     Instance = context.HttpContext?.Request.Path ?? string.Empty,
                     RequestId = context.HttpContext?.TraceIdentifier ?? string.Empty,
@@ -42,7 +42,7 @@ public sealed class ResultToMinimalApiResponseFilter(IServiceProvider servicePro
     }
 }
 
-public sealed class ResultToMinimalApiResponseFilter<T>(IServiceProvider serviceProvider) : IEndpointFilter
+public sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -50,20 +50,20 @@ public sealed class ResultToMinimalApiResponseFilter<T>(IServiceProvider service
 
         if (resultObj is not Result<T> result)
         {
-            throw new InvalidOperationException($"{nameof(ResultToMinimalApiResponseFilter<T>)} can only be used with Result<{nameof(T)}> type.");
+            throw new InvalidOperationException($"{nameof(ResultToResponseTransformer<T>)} can only be used with Result<{nameof(T)}> type.");
         }
 
         return result.Match(
             onSuccess: value => Results.Ok(value),
             onFailure: error =>
             {
-                var errorTranslator = serviceProvider.GetRequiredService<IErrorTranslator>();
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorTranslator>>();
+                var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
+                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
 
                 return new CustomProblemDetails()
                 {
                     Status = (int)error.StatusCode,
-                    Title = errorTranslator.Translate(error, localizer),
+                    Title = errorTranslator.Localize(error, localizer),
                     Type = error.Key,
                     Instance = context.HttpContext?.Request.Path ?? string.Empty,
                     RequestId = context.HttpContext?.TraceIdentifier ?? string.Empty,

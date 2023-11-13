@@ -20,7 +20,7 @@ internal static class Endpoint
             .WithDescription("Get a user by id.")
             .Produces<Response>(StatusCodes.Status200OK)
             .MustHavePermission(RfActions.Read, RfResources.Users)
-            .AddEndpointFilter<ResultToMinimalApiResponseFilter<Response>>();
+            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
     }
     private static ValueTask<Result<Response>> GetAsync(
         [FromRoute] Guid id,
