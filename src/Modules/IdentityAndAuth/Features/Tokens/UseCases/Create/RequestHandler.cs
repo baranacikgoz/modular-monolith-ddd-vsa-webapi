@@ -14,8 +14,8 @@ internal sealed class RequestHandler(
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
         => await phoneVerificationTokenService
             .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
-            .BindAsync(userService.GetByPhoneNumberAsync(request.PhoneNumber, cancellationToken))
-            .BindAsync(tokenService.GenerateTokensAndUpdateUserAsync)
+            .BindAsync(async () => await userService.GetByPhoneNumberAsync(request.PhoneNumber, cancellationToken))
+            .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user))
             .MapAsync(tokenDto => new Response(
                 tokenDto.AccessToken,
                 tokenDto.AccessTokenExpiresAt,

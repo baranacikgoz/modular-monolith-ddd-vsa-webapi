@@ -4,5 +4,6 @@ namespace IdentityAndAuth.Features.Identity.Domain.Errors;
 
 internal static class PhoneVerificationTokenErrors
 {
-    public static readonly Error VerificationFailed = new(nameof(VerificationFailed));
+    public static readonly Error TokenNotFound = new(nameof(TokenNotFound));
+    public static readonly Error NotMatching = new(nameof(NotMatching));
 }

@@ -27,7 +27,7 @@ internal sealed class RequestHandler(
             {
                 var phoneNumber = claimsPrincipal.GetPhoneNumber();
                 return string.IsNullOrWhiteSpace(phoneNumber)
-                    ? UserErrors.NotFound
+                    ? UserErrors.UserNotFound
                     : Result<ClaimsPrincipal>.Success(claimsPrincipal);
             })
             .BindAsync(async claimsPrincipal =>
