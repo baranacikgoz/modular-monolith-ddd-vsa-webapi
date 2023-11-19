@@ -5,7 +5,7 @@ using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.UseCases.Refresh;
 
-public sealed record Request(string ExpiredAccessToken, string RefreshToken) : IRequest<Result<Response>>;
+public sealed record Request(string ExpiredAccessToken, string RefreshToken);
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {

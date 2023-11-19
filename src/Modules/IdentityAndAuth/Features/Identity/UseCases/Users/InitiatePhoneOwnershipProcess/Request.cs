@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.InitiatePhoneOwnershipProcess;
-public sealed record Request(string PhoneNumber) : IRequest<Result>;
+public sealed record Request(string PhoneNumber);
 
 public class RequestValidator : AbstractValidator<Request>
 {

@@ -10,9 +10,6 @@ namespace IdentityAndAuth.Features.Captcha.UseCases.ClientKey.Get;
 
 internal static class Endpoint
 {
-    // We skipped the mediator pattern here because:
-    // We just return the constant value from the options (from appsettings.json).
-    // This api will be called frequently, if the operation is so simple, why mess with a lot of code and reduce performance?
     internal static void MapEndpoint(RouteGroupBuilder captchaApiGroup)
     {
         captchaApiGroup
@@ -24,8 +21,7 @@ internal static class Endpoint
     }
 
     private static Result<Response> GetClientKeyAsync(IOptions<CaptchaOptions> captchaOptionsProvider)
-    {
-        var captchaOptions = captchaOptionsProvider.Value;
-        return new Response(captchaOptions.ClientKey);
-    }
+        => Result<CaptchaOptions>
+            .Success(captchaOptionsProvider.Value)
+            .Map(captchaOptions => new Response(captchaOptions.ClientKey));
 }

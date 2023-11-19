@@ -24,9 +24,13 @@ internal static class Endpoint
             .TransformResultToOkResponse();
     }
 
-    private static ValueTask<Result> InitiatePhoneOwnershipProcessAsync(
+    private static async Task<Result> InitiatePhoneOwnershipProcessAsync(
+#pragma warning disable S1172
         [FromBody] Request request,
-        [FromServices] ISender mediator,
+#pragma warning restore S1172
         CancellationToken cancellationToken)
-        => mediator.SendAsync<Request, Result>(request, cancellationToken);
+    {
+        await Task.Delay(300, cancellationToken);
+        return Result.Success;
+    }
 }

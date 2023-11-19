@@ -1,10 +1,13 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
+using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
@@ -21,9 +24,22 @@ internal static class Endpoint
             .AllowAnonymous()
             .TransformResultTo<Response>();
     }
-    private static ValueTask<Result<Response>> ProvePhoneOwnershipAsync(
+    private static async Task<Result<Response>> ProvePhoneOwnershipAsync(
         [FromBody] Request request,
-        [FromServices] ISender mediator,
+        [FromServices] IOtpService otpService,
+        [FromServices] IPhoneVerificationTokenService phoneVerificationTokenService,
+        [FromServices] UserManager<ApplicationUser> userManager,
         CancellationToken cancellationToken)
-        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
+        => await otpService
+            .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
+            .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
+            .MapAsync(async phoneVerificationToken => new Response(
+                                                        UserExists: await UserExistsAsync(userManager, request.PhoneNumber, cancellationToken),
+                                                        PhoneVerificationToken: phoneVerificationToken));
+
+    private static Task<bool> UserExistsAsync(
+        UserManager<ApplicationUser> userManager,
+        string phoneNumber,
+        CancellationToken cancellationToken)
+        => userManager.Users.AnyAsync(x => x.PhoneNumber == phoneNumber, cancellationToken);
 }

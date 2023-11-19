@@ -6,7 +6,7 @@ using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.ProvePhoneOwnership;
 
-public sealed record Request(string PhoneNumber, string Otp) : IRequest<Result<Response>>;
+public sealed record Request(string PhoneNumber, string Otp);
 
 public class RequestValidator : AbstractValidator<Request>
 {
