@@ -56,6 +56,7 @@ try
                     Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
                     );
             })
+            .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
             .AddCaching()
             .AddNimbleMediator(cfg =>
             {
