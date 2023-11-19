@@ -17,11 +17,9 @@ internal sealed class RequestHandler(
         => await otpService
             .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
             .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
-            .MapAsync(async token =>
-            {
-                var userExists = await UserExistsAsync(request.PhoneNumber, cancellationToken);
-                return new Response(userExists, token);
-            });
+            .MapAsync(async phoneVerificationToken => new Response(
+                                                        UserExists: await UserExistsAsync(request.PhoneNumber, cancellationToken),
+                                                        PhoneVerificationToken: phoneVerificationToken));
 
     private Task<bool> UserExistsAsync(string phoneNumber, CancellationToken cancellationToken)
         => userManager.Users.AnyAsync(x => x.PhoneNumber == phoneNumber, cancellationToken);

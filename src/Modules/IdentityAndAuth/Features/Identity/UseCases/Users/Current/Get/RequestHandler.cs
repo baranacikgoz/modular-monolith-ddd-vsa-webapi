@@ -14,24 +14,23 @@ internal sealed class RequestHandler(
     ) : IRequestHandler<Request, Result<Response>>
 {
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
-    {
-        var id = currentUser.Id;
-        if (id == Guid.Empty)
-        {
-            return UserErrors.UserNotFound;
-        }
+        => await Result<Dto>.Create(
+                taskToAwaitValue: async () => await userManager
+                                                    .Users
+                                                    .Where(x => x.Id == currentUser.Id)
+                                                    .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!))
+                                                    .SingleOrDefaultAsync(cancellationToken),
+                ifTaskReturnsNull: UserErrors.UserNotFound)
+            .MapAsync(dto => new Response(
+                                    dto.Id,
+                                    dto.FirstName,
+                                    dto.LastName,
+                                    dto.PhoneNumber));
 
-        var user = await userManager
-                        .Users
-                        .Where(x => x.Id == id)
-                        .Select(x => new Response(x.FirstName, x.LastName, x.PhoneNumber!))
-                        .SingleOrDefaultAsync(cancellationToken);
-
-        if (user is null)
-        {
-            return UserErrors.UserNotFound;
-        }
-
-        return user;
-    }
+    private sealed record Dto(
+        Guid Id,
+        string FirstName,
+        string LastName,
+        string PhoneNumber
+    );
 }

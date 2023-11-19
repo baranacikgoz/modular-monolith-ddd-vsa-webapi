@@ -1,4 +1,5 @@
 ﻿using Common.Caching;
+using Common.Core;
 using Common.Core.Contracts.Results;
 using Common.Options;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -22,22 +23,13 @@ internal class PhoneVerificationTokenService(
         cancellationToken: cancellationToken);
 
     public async Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
-        => await Result<string>.Create(
-                    taskToAwaitValue: cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
-                    errorIfValueNull: PhoneVerificationTokenErrors.TokenNotFound)
-                .BindAsync(EnsureCachedTokenNotNullOrEmpty)
+        => await Result<string>
+                .Create(
+                    taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
+                    ifTaskReturnsNull: PhoneVerificationTokenErrors.TokenNotFound)
+                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNull: PhoneVerificationTokenErrors.TokenNotFound))
                 .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token))
                 .BindAsync(async () => await cache.RemoveAsync(CacheKey(phoneNumber), cancellationToken));
-
-    private static Result<string> EnsureCachedTokenNotNullOrEmpty(string? cachedToken)
-    {
-        var boolResult = !string.IsNullOrEmpty(cachedToken);
-
-        return boolResult
-            ? cachedToken!
-            : PhoneVerificationTokenErrors.TokenNotFound;
-    }
-
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {
         var boolResult = string.Equals(cachedToken, token, StringComparison.Ordinal);

@@ -10,18 +10,27 @@ namespace IdentityAndAuth.Features.Identity.UseCases.Users.Get;
 internal sealed class RequestHandler(UserManager<ApplicationUser> userManager) : IRequestHandler<Request, Result<Response>>
 {
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
-    {
-        var response = await userManager
-                        .Users
-                        .Where(x => x.Id == request.Id)
-                        .Select(x => new Response(x.Id, x.FirstName, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
-                        .SingleOrDefaultAsync(cancellationToken);
+        => await Result<Dto>
+                .Create(taskToAwaitValue: async () => await userManager
+                                                            .Users
+                                                            .Where(x => x.Id == request.Id)
+                                                            .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
+                                                            .SingleOrDefaultAsync(cancellationToken),
+                        ifTaskReturnsNull: UserErrors.UserNotFound)
+                .MapAsync(dto => new Response(
+                                        dto.Id,
+                                        dto.FirstName,
+                                        dto.LastName,
+                                        dto.PhoneNumber,
+                                        dto.NationalIdentityNumber,
+                                        dto.BirthDate));
 
-        if (response is null)
-        {
-            return UserErrors.UserNotFound;
-        }
-
-        return response;
-    }
+    private sealed record Dto(
+        Guid Id,
+        string FirstName,
+        string LastName,
+        string PhoneNumber,
+        string NationalIdentityNumber,
+        DateOnly BirthDate
+    );
 }
