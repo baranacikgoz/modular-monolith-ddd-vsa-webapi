@@ -20,7 +20,7 @@ internal static class Endpoint
             .WithDescription("Get the client key for captcha.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
+            .TransformResultTo<Response>();
     }
 
     private static Result<Response> GetClientKeyAsync(IOptions<CaptchaOptions> captchaOptionsProvider)

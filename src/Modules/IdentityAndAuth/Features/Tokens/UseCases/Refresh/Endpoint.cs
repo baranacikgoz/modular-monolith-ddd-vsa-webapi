@@ -19,7 +19,7 @@ internal static class Endpoint
             .WithDescription("Refresh token by validating expired access token and refresh token.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
+            .TransformResultTo<Response>();
     }
     private static ValueTask<Result<Response>> RefreshAsync(
         [FromBody] Request request,

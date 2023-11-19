@@ -19,7 +19,7 @@ internal static class Endpoint
             .WithDescription("Self register a new user.")
             .Produces<Response>()
             .AllowAnonymous()
-            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
+            .TransformResultTo<Response>();
     }
 
     private static ValueTask<Result<Response>> SelfRegisterAsync(

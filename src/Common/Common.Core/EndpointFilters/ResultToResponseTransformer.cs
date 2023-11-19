@@ -10,7 +10,7 @@ namespace Common.Core.EndpointFilters;
 // In this filters, no service needed for succes paths.
 // So we don't have to eagerly load failure case's services. (on ctor as usual)
 // That's why we're using the service provider to get the error translator and localizer if and only if failure case occur.
-public sealed class ResultToResponseTransformer(IServiceProvider serviceProvider) : IEndpointFilter
+internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvider) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -42,7 +42,7 @@ public sealed class ResultToResponseTransformer(IServiceProvider serviceProvider
     }
 }
 
-public sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider) : IEndpointFilter
+internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {

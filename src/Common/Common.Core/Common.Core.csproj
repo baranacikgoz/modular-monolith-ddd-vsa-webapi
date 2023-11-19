@@ -13,8 +13,4 @@
 
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EndpointFilters/" />
-  </ItemGroup>
-
 </Project>
