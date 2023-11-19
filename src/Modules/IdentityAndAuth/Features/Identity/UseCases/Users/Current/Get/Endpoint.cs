@@ -20,7 +20,7 @@ internal static class Endpoint
             .WithDescription("Get current user.")
             .Produces<Response>(StatusCodes.Status200OK)
             .MustHavePermission(RfActions.ReadMy, RfResources.Users)
-            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
+            .TransformResultTo<Response>();
     }
 
     private static ValueTask<Result<Response>> GetAsync(

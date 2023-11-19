@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Common.Core.Auth;
 
-public static class EndpointRouteBuilderExtensions
+public static class RouteHandlerBuilderExtensions
 {
     public static RouteHandlerBuilder MustHavePermission(this RouteHandlerBuilder builder, string action, string resource)
-    {
-        return builder
-                .RequireAuthorization(CustomPermission.NameFor(action, resource));
-    }
+        => builder.RequireAuthorization(CustomPermission.NameFor(action, resource));
 }

@@ -18,7 +18,7 @@ internal static class Endpoint
             .WithDescription("Create an appointment.")
             .MustHavePermission(RfActions.Create, RfResources.Appointments)
             .Produces<Response>(StatusCodes.Status200OK)
-            .AddEndpointFilter<ResultToResponseTransformer<Response>>();
+            .TransformResultTo<Response>();
     }
     private static ValueTask<Result<Response>> CreateAsync(
         [FromBody] Request request,
