@@ -42,6 +42,19 @@ public static class SyncExtensions
 
         return binder(result.Value!);
     }
+
+    public static Result<TNext> Bind<TCurrent, TNext>(
+        this Result<TCurrent> result,
+        Func<TCurrent, TNext> binder)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TNext>.Failure(result.Error!);
+        }
+
+        return Result<TNext>.Success(binder(result.Value!));
+    }
+
     public static Result<TOut> Map<TIn, TOut>(
         this Result<TIn> result,
         Func<TIn, TOut> mapperFunc)
@@ -105,6 +118,20 @@ public static class AsyncExtensions
         }
 
         return await binder(result.Value!).ConfigureAwait(false);
+    }
+
+    public static async Task<Result<TCurrent>> BindAsync<TCurrent>(
+        this Result<TCurrent> result,
+        Func<TCurrent, Task<Result>> binder)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        await binder(result.Value!).ConfigureAwait(false);
+
+        return Result<TCurrent>.Success(result.Value!);
     }
 
     public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
