@@ -1,6 +1,8 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
+using IdentityAndAuth.Features.Identity.Domain;
+using IdentityAndAuth.Features.Tokens.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,9 +24,19 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static ValueTask<Result<Response>> CreateAsync(
+    private static async Task<Result<Response>> CreateAsync(
         [FromBody] Request request,
-        [FromServices] ISender mediator,
+        [FromServices] IPhoneVerificationTokenService phoneVerificationTokenService,
+        [FromServices] ITokenService tokenService,
+        [FromServices] IUserService userService,
         CancellationToken cancellationToken)
-        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
+        => await phoneVerificationTokenService
+            .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
+            .BindAsync(async () => await userService.GetByPhoneNumberAsync(request.PhoneNumber, cancellationToken))
+            .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user))
+            .MapAsync(tokenDto => new Response(
+                                    tokenDto.AccessToken,
+                                    tokenDto.AccessTokenExpiresAt,
+                                    tokenDto.RefreshToken,
+                                    tokenDto.RefreshTokenExpiresAt));
 }

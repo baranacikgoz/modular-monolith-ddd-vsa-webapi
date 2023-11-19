@@ -14,8 +14,7 @@ public sealed record Request(
         string FirstName,
         string LastName,
         string NationalIdentityNumber,
-        string BirthDate)
-        : IRequest<Result<Response>>;
+        string BirthDate);
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {

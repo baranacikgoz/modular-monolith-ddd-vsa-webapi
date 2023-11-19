@@ -58,16 +58,6 @@ try
             })
             .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
             .AddCaching()
-            .AddNimbleMediator(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblies(
-                    typeof(Appointments.IAssemblyReference).Assembly,
-                    typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                    typeof(Notifications.IAssemblyReference).Assembly
-                );
-
-                cfg.SetDefaultNotificationPublisher<TaskWhenAllPublisher>();
-            })
             .AddEventBus(
                 typeof(Appointments.IAssemblyReference).Assembly,
                 typeof(IdentityAndAuth.IAssemblyReference).Assembly,

@@ -6,7 +6,7 @@ using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.UseCases.Create;
 
-public sealed record Request(string PhoneVerificationToken, string PhoneNumber) : IRequest<Result<Response>>;
+public sealed record Request(string PhoneVerificationToken, string PhoneNumber);
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {

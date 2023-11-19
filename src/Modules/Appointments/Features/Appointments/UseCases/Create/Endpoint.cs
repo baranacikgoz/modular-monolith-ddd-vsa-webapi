@@ -22,7 +22,6 @@ internal static class Endpoint
     }
     private static ValueTask<Result<Response>> CreateAsync(
         [FromBody] Request request,
-        [FromServices] ISender mediator,
         CancellationToken cancellationToken)
-        => mediator.SendAsync<Request, Result<Response>>(request, cancellationToken);
+        => throw new NotImplementedException();
 }

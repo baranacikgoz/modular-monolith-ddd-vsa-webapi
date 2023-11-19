@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NimbleMediator.NotificationPublishers;
+using NimbleMediator.ServiceExtensions;
 
 namespace Common.Eventbus;
 
@@ -13,9 +15,11 @@ public static class Setup
         this IServiceCollection services,
         params Assembly[] assembliesToRegisterConsumersFrom)
     {
-        // IEventConsumers(EventHandlers in this case) is already registered with AddNimbleMediator() call.
-        // I've just put the ``assembliesToRegisterConsumersFrom`` as param because if you'd like to use
-        // something different like MassTransit, you would need to register consumers here.
+        services.AddNimbleMediator(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblies(assembliesToRegisterConsumersFrom);
+            cfg.SetDefaultNotificationPublisher<TaskWhenAllPublisher>();
+        });
 
         services.AddScoped<IEventBus, NimbleMediatorEventBus>();
 

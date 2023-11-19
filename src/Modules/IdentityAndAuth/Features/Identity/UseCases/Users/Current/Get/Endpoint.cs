@@ -2,10 +2,14 @@ using Common.Core.Auth;
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
+using IdentityAndAuth.Features.Identity.Domain;
+using IdentityAndAuth.Features.Identity.Domain.Errors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
 
@@ -23,8 +27,26 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static ValueTask<Result<Response>> GetAsync(
-        [FromServices] ISender mediator,
+    private static async Task<Result<Response>> GetAsync(
+        [FromServices] ICurrentUser currentUser,
+        [FromServices] UserManager<ApplicationUser> userManager,
         CancellationToken cancellationToken)
-        => mediator.SendAsync<Request, Result<Response>>(new(), cancellationToken);
+        => await Result<Dto>
+            .Create(taskToAwaitValue: async () => await userManager
+                                                    .Users
+                                                    .Where(x => x.Id == currentUser.Id)
+                                                    .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!))
+                                                    .SingleOrDefaultAsync(cancellationToken),
+                    ifTaskReturnsNull: UserErrors.UserNotFound)
+            .MapAsync(dto => new Response(
+                                    dto.Id,
+                                    dto.FirstName,
+                                    dto.LastName,
+                                    dto.PhoneNumber));
+
+    private sealed record Dto(
+        Guid Id,
+        string FirstName,
+        string LastName,
+        string PhoneNumber);
 }
