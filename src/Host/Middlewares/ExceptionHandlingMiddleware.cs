@@ -1,14 +1,15 @@
 ﻿using Common.Core.Contracts;
+using Common.Core.Interfaces;
 using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
 
-internal partial class ExceptionHandlingMiddleware(
-    ILogger<ExceptionHandlingMiddleware> logger
-    ) : IMiddleware
+// Using IServiceProvider instead of the services' itself becuase success cases generally outnumber failure cases,
+// and there are no services dependency for succes case here.
+// Injected services will only be used for failure cases, so we don't eagerly load them.
+// Using IServiceProvider is generally considered as bad practice and we lose explicitness of the code, but there is a tradeoff here.
+internal partial class ExceptionHandlingMiddleware(IServiceProvider serviceProvider) : IMiddleware
 {
-
-#pragma warning disable CA1031
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -17,6 +18,7 @@ internal partial class ExceptionHandlingMiddleware(
         }
         catch (Exception exception)
         {
+            var logger = context.RequestServices.GetRequiredService<ILogger<ExceptionHandlingMiddleware>>();
             LogError(logger, exception);
 
             if (context.Response.HasStarted)
@@ -25,26 +27,20 @@ internal partial class ExceptionHandlingMiddleware(
                 return;
             }
 
-            var problemDetails = GenerateProblemResponse(context, exception);
+            var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
+            var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<ExceptionHandlingMiddleware>>();
+
+            var problemDetails = problemDetailsFactory.Create(
+                status: StatusCodes.Status500InternalServerError,
+                title: localizer["Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.", context.TraceIdentifier],
+                type: exception.GetType().FullName ?? string.Empty,
+                instance: context.Request.Path,
+                requestId: context.TraceIdentifier,
+                errors: Enumerable.Empty<string>()
+            );
+
             await problemDetails.ExecuteAsync(context);
         }
-    }
-#pragma warning restore CA1031
-    private static CustomProblemDetails GenerateProblemResponse(HttpContext context, Exception exception)
-    {
-        var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<ExceptionHandlingMiddleware>>();
-
-        var problemDetails = new CustomProblemDetails
-        {
-            Status = StatusCodes.Status500InternalServerError,
-            Title = localizer["Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.", context.TraceIdentifier],
-            Type = exception.GetType().FullName ?? string.Empty,
-            Instance = context.Request.Path,
-            RequestId = context.TraceIdentifier,
-            Errors = Enumerable.Empty<string>()
-        };
-
-        return problemDetails;
     }
 
     [LoggerMessage(

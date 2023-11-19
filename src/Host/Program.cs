@@ -20,6 +20,7 @@ using Notifications;
 using NimbleMediator.NotificationPublishers;
 using IdentityAndAuth.ModuleSetup;
 using Appointments.ModuleSetup;
+using Common.Core.Interfaces;
 using Host.Infrastructure;
 
 // Create the builder and add initially required services.

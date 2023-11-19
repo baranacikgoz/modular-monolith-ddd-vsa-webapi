@@ -1,7 +1,7 @@
 ﻿using Common.Core.Contracts.Results;
 using Microsoft.Extensions.Localization;
 
-namespace Common.Core.Contracts;
+namespace Common.Core.Interfaces;
 
 public interface IErrorLocalizer
 {

@@ -479,3 +479,6 @@ dotnet_diagnostic.CA1716.severity = none
 
 [**/IAssemblyReference.cs] # Allow empty interfaces for assmebly markers
 dotnet_diagnostic.CA1040.severity = none
+
+[**/ExceptionHandlingMiddleware.cs] # Allow general "Exception" catch
+dotnet_diagnostic.CA1031.severity = none

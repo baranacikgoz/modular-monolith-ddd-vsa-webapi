@@ -1,8 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+using Common.Core.Interfaces;
 
-namespace Common.Core.Contracts;
+namespace Host.Infrastructure;
 
-public class CustomProblemDetails : IResult
+public class ProblemDetailsFactory : IProblemDetailsFactory
+{
+    public IResult Create(int status, string title, string type, string instance, string requestId, IEnumerable<string> errors)
+        => new CustomProblemDetails
+        {
+            Status = status,
+            Title = title,
+            Type = type,
+            Instance = instance,
+            RequestId = requestId,
+            Errors = errors
+        };
+}
+
+internal class CustomProblemDetails : IResult
 {
     public required int Status { get; init; }
     public required string Title { get; init; }
@@ -19,3 +33,4 @@ public class CustomProblemDetails : IResult
         return httpContext.Response.WriteAsJsonAsync(this);
     }
 }
+

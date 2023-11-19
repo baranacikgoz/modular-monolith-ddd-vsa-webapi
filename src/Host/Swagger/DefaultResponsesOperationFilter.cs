@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts;
+using Host.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

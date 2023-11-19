@@ -1,5 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
+using Common.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -27,16 +28,16 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
             {
                 var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
+                var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
-                return new CustomProblemDetails()
-                {
-                    Status = (int)error.StatusCode,
-                    Title = errorTranslator.Localize(error, localizer),
-                    Type = error.Key,
-                    Instance = context.HttpContext?.Request.Path ?? string.Empty,
-                    RequestId = context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    Errors = error.Errors ?? Enumerable.Empty<string>()
-                };
+                return problemDetailsFactory.Create(
+                    status: (int)error.StatusCode,
+                    title: errorTranslator.Localize(error, localizer),
+                    type: error.Key,
+                    instance: context.HttpContext?.Request.Path ?? string.Empty,
+                    requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
+                    errors: error.Errors ?? Enumerable.Empty<string>()
+                );
             }
         );
     }
@@ -59,16 +60,16 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
             {
                 var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
+                var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
-                return new CustomProblemDetails()
-                {
-                    Status = (int)error.StatusCode,
-                    Title = errorTranslator.Localize(error, localizer),
-                    Type = error.Key,
-                    Instance = context.HttpContext?.Request.Path ?? string.Empty,
-                    RequestId = context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    Errors = error.Errors ?? Enumerable.Empty<string>()
-                };
+                return problemDetailsFactory.Create(
+                    status: (int)error.StatusCode,
+                    title: errorTranslator.Localize(error, localizer),
+                    type: error.Key,
+                    instance: context.HttpContext?.Request.Path ?? string.Empty,
+                    requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
+                    errors: error.Errors ?? Enumerable.Empty<string>()
+                );
             }
         );
     }
