@@ -19,7 +19,7 @@ internal sealed class RequestHandler(UserManager<ApplicationUser> userManager) :
 
         if (response is null)
         {
-            return UserErrors.NotFound;
+            return UserErrors.UserNotFound;
         }
 
         return response;

@@ -16,7 +16,7 @@ internal sealed class RequestHandler(
     async ValueTask<Result<Response>> IRequestHandler<Request, Result<Response>>.HandleAsync(Request request, CancellationToken cancellationToken)
         => await otpService
             .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
-            .BindAsync(phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
+            .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
             .MapAsync(async token =>
             {
                 var userExists = await UserExistsAsync(request.PhoneNumber, cancellationToken);

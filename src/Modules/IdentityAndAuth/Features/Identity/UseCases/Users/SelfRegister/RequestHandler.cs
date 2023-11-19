@@ -19,26 +19,10 @@ internal sealed class RequestHandler(
     public async ValueTask<Result<Response>> HandleAsync(Request request, CancellationToken cancellationToken)
         => await phoneVerificationTokenService
                 .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
-                .BindAsync(CreateUserAsync(request))
-                .BindAsync(async user =>
-                {
-                    var assignRoleResult = await AssignRoleToUserAsync(user, CustomRoles.Basic);
-                    return assignRoleResult.IsSuccess
-                        ? Result<ApplicationUser>.Success(user)
-                        : Result<ApplicationUser>.Failure(assignRoleResult.Error!);
-                })
-                .BindAsync(async (ApplicationUser user) =>
-                {
-                    // We would normally add event in Aggregate's DomainEvents then publish in SaveChangesAsync (DbContext),
-                    // but I am not sure how we can do this with UserManager.
-                    // So published event here. Any idea to make it better?
-                    await eventBus.PublishAsync(new Events
-                                                    .FromIdentityAndAuth
-                                                    .UserCreatedEvent(user.Id));
-
-                    return Result<ApplicationUser>.Success(user);
-                })
-                .MapAsync((ApplicationUser user) => new Response(user.Id));
+                .BindAsync(async () => await CreateUserAsync(request))
+                .BindAsync(async user => await AssignRoleToUserAsync(user, CustomRoles.Basic))
+                .BindAsync(async user => await eventBus.PublishAsync(new Events.FromIdentityAndAuth.UserCreatedEvent(user.Id)))
+                .MapAsync(user => new Response(user.Id));
 
     private async Task<Result<ApplicationUser>> CreateUserAsync(Request request)
     {

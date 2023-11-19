@@ -18,7 +18,7 @@ internal sealed class RequestHandler(
         var id = currentUser.Id;
         if (id == Guid.Empty)
         {
-            return UserErrors.NotFound;
+            return UserErrors.UserNotFound;
         }
 
         var user = await userManager
@@ -29,7 +29,7 @@ internal sealed class RequestHandler(
 
         if (user is null)
         {
-            return UserErrors.NotFound;
+            return UserErrors.UserNotFound;
         }
 
         return user;

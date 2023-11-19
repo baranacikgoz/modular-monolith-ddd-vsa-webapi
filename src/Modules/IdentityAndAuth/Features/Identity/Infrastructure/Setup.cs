@@ -21,7 +21,7 @@ internal static class Setup
             // ));
 #pragma warning restore S125
             .AddSingleton<IOtpService, DummyOtpService>()
-            .AddSingleton<IPhoneVerificationTokenService, DummyPhoneVerificationTokenService>()
+            .AddSingleton<IPhoneVerificationTokenService, PhoneVerificationTokenService>()
             .AddScoped<IUserService, UserService>()
             .AddCustomIdentity();
 
