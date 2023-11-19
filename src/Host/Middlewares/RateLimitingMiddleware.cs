@@ -1,6 +1,7 @@
 ﻿using System.Threading.RateLimiting;
 using Common.Core.Contracts;
 using Common.Core.Extensions;
+using Common.Core.Interfaces;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
@@ -63,7 +64,7 @@ internal static class RateLimitingMiddleware
 
     private static Func<OnRejectedContext, CancellationToken, ValueTask> WriteTooManyRequestsToResponse()
     {
-        return async (context, _) =>
+        return (context, _) =>
         {
             var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
 
@@ -74,17 +75,17 @@ internal static class RateLimitingMiddleware
                 errors = [localizer["{0} sonra tekrar deneyiniz.", retryAfter]];
             }
 
-            var tooManyRequestResult = new CustomProblemDetails()
-            {
-                Status = StatusCodes.Status429TooManyRequests,
-                Title = localizer["Aşırı istek."],
-                Type = "TooManyRequests",
-                Instance = context.HttpContext.Request.Path,
-                RequestId = context.HttpContext.TraceIdentifier,
-                Errors = errors ?? Enumerable.Empty<string>()
-            };
+            var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
+            var tooManyRequestResult = problemDetailsFactory.Create(
+                status: StatusCodes.Status429TooManyRequests,
+                title: localizer["Aşırı istek."],
+                type: "TooManyRequests",
+                instance: context.HttpContext.Request.Path,
+                requestId: context.HttpContext.TraceIdentifier,
+                errors: errors ?? Enumerable.Empty<string>()
+            );
 
-            await tooManyRequestResult.ExecuteAsync(context.HttpContext);
+            return new ValueTask(tooManyRequestResult.ExecuteAsync(context.HttpContext));
         };
     }
 }

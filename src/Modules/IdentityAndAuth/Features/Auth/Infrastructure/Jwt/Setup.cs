@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts;
+using Common.Core.Interfaces;
 using Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
@@ -36,17 +37,17 @@ internal static class Setup
                     }
 
                     var stringLocalizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<JwtOptions>>();
-                    var problemDetails = new CustomProblemDetails
-                    {
-                        Status = StatusCodes.Status401Unauthorized,
-                        Title = stringLocalizer["Giriş yapmanız gerekmektedir."],
-                        Type = "Unauthorized",
-                        Instance = context.Request.Path,
-                        RequestId = context.HttpContext.TraceIdentifier,
-                        Errors = Enumerable.Empty<string>()
-                    };
+                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
+                    var problemDetails = problemDetailsFactory.Create(
+                        status: StatusCodes.Status401Unauthorized,
+                        title: stringLocalizer["Giriş yapmanız gerekmektedir."],
+                        type: "Unauthorized",
+                        instance: context.Request.Path,
+                        requestId: context.HttpContext.TraceIdentifier,
+                        errors: Enumerable.Empty<string>()
+                    );
 
-                    context.Response.StatusCode = problemDetails.Status;
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
 
                     return context.Response.WriteAsJsonAsync(problemDetails);
@@ -70,15 +71,15 @@ internal static class Setup
                 OnAuthenticationFailed = context =>
                 {
                     var stringLocalizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<JwtOptions>>();
-                    var problemDetails = new CustomProblemDetails
-                    {
-                        Status = StatusCodes.Status401Unauthorized,
-                        Title = stringLocalizer["Giriş yapmanız gerekmektedir."],
-                        Type = "Unauthorized",
-                        Instance = context.Request.Path,
-                        RequestId = context.HttpContext.TraceIdentifier,
-                        Errors = Enumerable.Empty<string>()
-                    };
+                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
+                    var problemDetails = problemDetailsFactory.Create(
+                        status: StatusCodes.Status401Unauthorized,
+                        title: stringLocalizer["Giriş yapmanız gerekmektedir."],
+                        type: "Unauthorized",
+                        instance: context.Request.Path,
+                        requestId: context.HttpContext.TraceIdentifier,
+                        errors: Enumerable.Empty<string>()
+                    );
 
                     return problemDetails.ExecuteAsync(context.HttpContext);
                 },
@@ -86,15 +87,16 @@ internal static class Setup
                 OnForbidden = context =>
                 {
                     var stringLocalizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<JwtOptions>>();
-                    var problemDetails = new CustomProblemDetails
-                    {
-                        Status = StatusCodes.Status403Forbidden,
-                        Title = stringLocalizer["Bu işlemi yapmaya yetkiniz bulunmamaktadır."],
-                        Type = "Forbidden",
-                        Instance = context.Request.Path,
-                        RequestId = context.HttpContext.TraceIdentifier,
-                        Errors = Enumerable.Empty<string>()
-                    };
+                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
+
+                    var problemDetails = problemDetailsFactory.Create(
+                        status: StatusCodes.Status403Forbidden,
+                        title: stringLocalizer["Bu işlemi yapmaya yetkiniz bulunmamaktadır."],
+                        type: "Forbidden",
+                        instance: context.Request.Path,
+                        requestId: context.HttpContext.TraceIdentifier,
+                        errors: Enumerable.Empty<string>()
+                    );
 
                     return problemDetails.ExecuteAsync(context.HttpContext);
                 },

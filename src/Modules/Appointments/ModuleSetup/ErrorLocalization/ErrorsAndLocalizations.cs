@@ -1,5 +1,6 @@
 ﻿using Appointments.Features.Appointments.Domain.Errors;
 using Common.Core.Contracts;
+using Common.Core.Interfaces;
 using Microsoft.Extensions.Localization;
 
 namespace Appointments.ModuleSetup.ErrorLocalization;

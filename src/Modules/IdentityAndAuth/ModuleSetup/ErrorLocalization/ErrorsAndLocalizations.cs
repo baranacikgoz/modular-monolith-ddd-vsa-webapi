@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts;
+using Common.Core.Interfaces;
 using IdentityAndAuth.Features.Captcha.Domain.Errors;
 using IdentityAndAuth.Features.Identity.Domain.Errors;
 using IdentityAndAuth.Features.Tokens.Domain.Errors;
