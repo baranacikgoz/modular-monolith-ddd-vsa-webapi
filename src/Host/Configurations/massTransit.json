@@ -1,5 +1,0 @@
-{
-  "MassTransitOptions": {
-    "DuplicateDetectionWindowInSeconds": 30
-  }
-}
