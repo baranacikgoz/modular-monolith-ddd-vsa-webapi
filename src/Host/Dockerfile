@@ -2,6 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# Copy Directory.Packages.props and Directory.Build.props
+COPY ["Directory.Packages.props", "Directory.Build.props", "./"]
+
 # Copy csproj(s) and restore as distinct layers
 COPY ["src/Common/Common.Caching/Common.Caching.csproj", "Common/Common.Caching/"]
 COPY ["src/Common/Common.Core/Common.Core.csproj", "Common/Common.Core/"]
@@ -13,6 +16,7 @@ COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "Common/Common.
 
 COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "Modules/IdentityAndAuth/"]
 COPY ["src/Modules/Appointments/Appointments.csproj", "Modules/Appointments/"]
+COPY ["src/Modules/Notifications/Notifications.csproj", "Modules/Notifications/"]
 
 COPY ["src/Host/Host.csproj", "src/Host/"]
 RUN dotnet restore "src/Host/Host.csproj"
