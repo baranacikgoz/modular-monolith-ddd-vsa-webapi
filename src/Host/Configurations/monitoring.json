@@ -1,0 +1,6 @@
+{
+  "MonitoringOptions": {
+    "OtlpEndpoint": "http://localhost:4317",
+    "ServiceName": "webapi"
+  }
+}

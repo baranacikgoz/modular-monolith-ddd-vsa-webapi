@@ -1,0 +1,15 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: ${PROMETHEUS_URL}
+    editable: false
+    uid: prometheus
+
+  - name: Jaeger
+    type: jaeger
+    access: proxy
+    url: ${JAEGER_URL}
+    editable: false
+    uid: jaeger
