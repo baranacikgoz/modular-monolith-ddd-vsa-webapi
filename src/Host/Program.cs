@@ -108,7 +108,7 @@ try
             })
             .WithMetrics(x =>
             {
-                x.AddAspNetCoreInstrumentation(o => o.Filter = (_, httpContext) => httpContext.Request.Path != "/metrics");
+                x.AddAspNetCoreInstrumentation();
                 x.AddHttpClientInstrumentation();
                 x.AddRuntimeInstrumentation();
                 x.AddProcessInstrumentation();
