@@ -4,36 +4,38 @@ version: '3.9'
 name: local
 
 services:
-  webapi:
-    image: webapi
-    container_name: webapi
-    networks:
-      - localbridge
-    build:
-      context: .
-      dockerfile: src/Host/Dockerfile
-      args:
-        configuration: Debug
-    ports:
-      - 5000:5000
-    env_file:
-      - .env
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5000
-      - DatabaseOptions:ConnectionString=Host=postgresql;Database=modular-monolith-development;Username=postgres;Password=postgres;IncludeErrorDetail=true
-      - LoggerOptions:AppName=ModularMonolith.WebAPI
-      - LoggerOptions:SeqConnectionString=http://seq:5341
-      - LoggerOptions:WriteToFile=false
-      - LoggerOptions:WriteToConsole=true
-      - LoggerOptions:MinimumLogLevel=Debug
-    depends_on:
-      - postgresql
-      - seq
+  # webapi:
+  #   image: webapi
+  #   container_name: webapi
+  #   networks:
+  #     - localbridge
+  #   build:
+  #     context: .
+  #     dockerfile: src/Host/Dockerfile
+  #     args:
+  #       configuration: Debug
+  #   ports:
+  #     - 5000:5000
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:5000
+  #     - DatabaseOptions:ConnectionString=Host=postgresql;Database=modular-monolith-development;Username=postgres;Password=postgres;IncludeErrorDetail=true
+  #     - LoggerOptions:AppName=ModularMonolith.WebAPI
+  #     - LoggerOptions:SeqConnectionString=http://seq:5341
+  #     - LoggerOptions:WriteToFile=false
+  #     - LoggerOptions:WriteToConsole=true
+  #     - LoggerOptions:MinimumLogLevel=Debug
+  #   depends_on:
+  #     - postgresql
+  #     - seq
+  #     - prometheus
 
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
+    restart: unless-stopped
     networks:
       - localbridge
     ports:
@@ -57,6 +59,7 @@ services:
   postgresql:
     image: postgres:16
     container_name: postgresql
+    restart: unless-stopped
     networks:
       - localbridge
     environment:
@@ -73,9 +76,26 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-exporter:
+    image: wrouesnel/postgres_exporter
+    container_name: postgres-exporter
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - 9187:9187
+    environment:
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@postgresql:5432/postgres?sslmode=disable
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9187"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   seq:
     image: datalust/seq:latest
     container_name: seq
+    restart: unless-stopped
     networks:
       - localbridge
     ports:
@@ -90,12 +110,128 @@ services:
       timeout: 5s
       retries: 5
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - "7070:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - 9100:9100
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - 9090:9090
+    env_file:
+      - ./prometheus/prometheus.env
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus:/etc/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.enable-lifecycle
+    links:
+      - cadvisor:cadvisor
+    depends_on:
+      - cadvisor
+      - node-exporter
+      - postgres-exporter
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - 16686:16686 # Jaeger UI
+      - 4317:4317 # Jaeger Collector
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=true
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:16686"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - localbridge
+    ports:
+      - 3000:3000
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+    env_file:
+      - ./grafana/grafana.env
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgresql:
   seq:
   sonarqube_data:
   sonarqube_extensions:
   sonarqube_logs:
+  grafana_data:
+  prometheus_data:
 
 networks:
   localbridge:

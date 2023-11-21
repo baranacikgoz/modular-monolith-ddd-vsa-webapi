@@ -22,6 +22,13 @@ using IdentityAndAuth.ModuleSetup;
 using Appointments.ModuleSetup;
 using Common.Core.Interfaces;
 using Host.Infrastructure;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Npgsql;
+using OpenTelemetry.Exporter;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +80,48 @@ try
             )
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>())
             .AddEndpointsApiExplorer()
-            .AddCustomSwagger();
+            .AddCustomSwagger()
+            .AddOpenTelemetry()
+            .WithTracing((x) =>
+            {
+                x.AddAspNetCoreInstrumentation(o => o.Filter = httpContext => httpContext.Request.Path != "/metrics");
+                x.AddHttpClientInstrumentation(o =>
+                {
+                    // Filter out requests to Seq.
+                    Uri seqUrl = builder.Configuration.GetSection(nameof(CustomLoggingOptions)).Get<CustomLoggingOptions>()?.SeqUrl ?? throw new InvalidOperationException("SeqUrl is null.");
+                    o.FilterHttpWebRequest = request => request.RequestUri != seqUrl;
+                });
+                x.AddEntityFrameworkCoreInstrumentation();
+                x.AddNpgsql();
+                x.ConfigureResource(r =>
+                {
+                    var monitoringOptions = builder.Configuration.GetSection(nameof(MonitoringOptions)).Get<MonitoringOptions>() ?? throw new InvalidOperationException("MonitoringOptions is null.");
+                    r.AddService(monitoringOptions.ServiceName);
+                    r.AddTelemetrySdk();
+                });
+                x.AddOtlpExporter(o =>
+                {
+                    var monitoringOptions = builder.Configuration.GetSection(nameof(MonitoringOptions)).Get<MonitoringOptions>() ?? throw new InvalidOperationException("MonitoringOptions is null.");
+                    o.Endpoint = new Uri(monitoringOptions.OtlpEndpoint);
+                    o.Protocol = OtlpExportProtocol.Grpc;
+                });
+            })
+            .WithMetrics(x =>
+            {
+                x.AddAspNetCoreInstrumentation(o => o.Filter = (_, httpContext) => httpContext.Request.Path != "/metrics");
+                x.AddHttpClientInstrumentation();
+                x.AddRuntimeInstrumentation();
+                x.AddProcessInstrumentation();
+                x.AddMeter(
+                    "Microsoft.AspNetCore.Hosting",
+                    "Microsoft.AspNetCore.Server.Kestrel");
+                x.AddView("http.server.request.duration",
+                    new ExplicitBucketHistogramConfiguration
+                    {
+                        Boundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
+                    });
+                x.AddPrometheusExporter();
+            });
 
     // Add modules to the container.
     builder
@@ -85,7 +133,10 @@ try
     var app = builder.Build();
 
     app
-        .UseMiddleware<RequestResponseLoggingMiddleware>()
+        .UseWhen(
+            context => context.Request.Path != "/metrics",
+            appBuilder => appBuilder.UseMiddleware<RequestResponseLoggingMiddleware>()
+        )
 
         // I generally run api projects behind a reverse proxy, so no need to use https,
         // but if your kestrel is directly communicating with the outside world,
@@ -98,6 +149,7 @@ try
         .UseAuth();
 
     app.UseCustomSwagger();
+    app.MapPrometheusScrapingEndpoint();
 
     var rootGroup = app
         .MapGroup("/")

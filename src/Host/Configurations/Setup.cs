@@ -16,6 +16,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logging");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/monitoring");
 
         configuration.AddEnvironmentVariables();
         return builder;

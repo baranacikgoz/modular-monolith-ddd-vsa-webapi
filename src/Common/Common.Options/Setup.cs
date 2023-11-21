@@ -46,13 +46,6 @@ public static class Setup
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services
-            .AddOptions<MassTransitOptions>()
-            .Bind(configuration.GetSection(nameof(MassTransitOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.DuplicateDetectionWindowInSeconds > 0, "DuplicateDetectionWindowInSeconds must be greater than 0.")
-            .ValidateOnStart();
-
         // Even though we won't be using RateLimitingOptions via IOptions<RateLimitingOptions> in our code,
         // (because we don't have an overload of the AddRateLimiter() that has ServiceProvider as parameter)
         // we are validating it here to make sure that the options are valid.
@@ -67,6 +60,12 @@ public static class Setup
             .Validate(o => o.Sms?.PeriodInMs > 0, "Sms.Period must be greater than 0.")
             .Validate(o => o.SearchAppointments?.Limit > 0, "SearchAppointments.Limit must be greater than 0.")
             .Validate(o => o.SearchAppointments?.PeriodInMs > 0, "SearchAppointments.Period must be greater than 0.")
+            .ValidateOnStart();
+
+        services
+            .AddOptions<MonitoringOptions>()
+            .Bind(configuration.GetSection(nameof(MonitoringOptions)))
+            .ValidateDataAnnotations()
             .ValidateOnStart();
 
         return services;
