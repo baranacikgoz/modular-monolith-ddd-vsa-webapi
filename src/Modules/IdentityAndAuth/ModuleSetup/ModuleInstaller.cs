@@ -15,7 +15,7 @@ namespace IdentityAndAuth.ModuleSetup;
 
 public static class ModuleInstaller
 {
-    public static IServiceCollection InstallIdentityAndAuthModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIdentityAndAuthModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<Seeder>();
 

@@ -10,10 +10,10 @@ internal static class Setup
          cfg.SchemaFilter<DateOnlySchemaFilter>();
      });
 
-    public static WebApplication UseCustomSwagger(this WebApplication app)
+    public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
     {
         // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
+        if (env.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();

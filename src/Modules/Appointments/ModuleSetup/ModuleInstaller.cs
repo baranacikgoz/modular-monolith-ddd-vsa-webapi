@@ -8,7 +8,7 @@ namespace Appointments.ModuleSetup;
 
 public static class ModuleInstaller
 {
-    public static IServiceCollection InstallAppointmentsModule(this IServiceCollection services)
+    public static IServiceCollection AddAppointmentsModule(this IServiceCollection services)
         => services
         .AddAppointmentsFeatures()
         .AddVenuesFeatures();
