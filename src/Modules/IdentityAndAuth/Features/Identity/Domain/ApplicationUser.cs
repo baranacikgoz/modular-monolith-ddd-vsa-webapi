@@ -25,8 +25,14 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
     public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
 
     public static ApplicationUser Create(CreateApplicationUserModel model)
-        => new(
-            model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars(),
+    {
+        var firstName = model.MiddleName is not null
+                        ? CombineFirstAndMiddleNames(
+                            model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars(),
+                            model.MiddleName.TrimmedUpperInvariantTransliterateTurkishChars())
+                        : model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars();
+        return new(
+            firstName,
             model.LastName.TrimmedUpperInvariantTransliterateTurkishChars(),
             model.PhoneNumber.Trim(),
             model.NationalIdentityNumber.Trim(),
@@ -34,6 +40,9 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
         {
             PhoneNumberConfirmed = true // We first validated phone number, then create user.
         };
+    }
+
+    private static string CombineFirstAndMiddleNames(string firstName, string middleName) => $"{firstName} {middleName}";
 
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
     {

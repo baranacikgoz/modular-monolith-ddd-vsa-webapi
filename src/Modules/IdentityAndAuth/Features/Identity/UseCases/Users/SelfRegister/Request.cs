@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Buffers;
+using System.Globalization;
 using Common.Core.Contracts.Results;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
@@ -12,14 +13,15 @@ public sealed record Request(
         string PhoneVerificationToken,
         string PhoneNumber,
         string FirstName,
+        string? MiddleName,
         string LastName,
         string NationalIdentityNumber,
         string BirthDate);
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {
-    private const char EmptySpace = ' ';
-    private static readonly HashSet<char> _turkishAlphabetSet = new("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
+    // Checkout: https://www.youtube.com/watch?v=IzDMg916t98&t=573s&ab_channel=NickChapsas
+    private static readonly SearchValues<char> _turkishAlphabet = SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
 
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {
@@ -32,16 +34,23 @@ public sealed class RequestValidator : AbstractValidator<Request>
         RuleFor(x => x.FirstName)
             .NotEmpty()
                 .WithMessage(localizer["İsim boş olamaz."])
-            .Must(str => str.All(c => IsEligibleForFirstName(c)))
+            .Must(str => IsEligibleForName(str))
                 .WithMessage(localizer["İsim sadece Türkçe alfabesindeki karakterlerden oluşabilir."])
             .MaximumLength(ApplicationUserConstants.FirstNameMaxLength)
                 .WithMessage(localizer["İsim {0} karakterden uzun olamaz.", ApplicationUserConstants.FirstNameMaxLength]);
 
+        RuleFor(x => x.MiddleName)
+            .Must(str => IsEligibleForName(str!))
+                .WithMessage(localizer["Orta isimler sadece Türkçe alfabesindeki karakterlerden oluşabilir."])
+            .Must(str => str!.Length <= ApplicationUserConstants.FirstNameMaxLength)
+                .WithMessage(localizer["Orta isimler {0} karakterden uzun olamaz.", ApplicationUserConstants.FirstNameMaxLength])
+            .When(x => x.MiddleName is not null);
+
         RuleFor(x => x.LastName)
             .NotEmpty()
                 .WithMessage(localizer["Soyisim boş olamaz."])
-            .Must(str => str.All(c => _turkishAlphabetSet.Contains(c)))
-                .WithMessage(localizer["Soyisim sadece Türkçe alfabesindeki karakterlerden oluşabilir ve boşluk içermemelidir."])
+            .Must(str => IsEligibleForName(str))
+                .WithMessage(localizer["Soyisim sadece Türkçe alfabesindeki karakterlerden oluşabilir."])
             .MaximumLength(ApplicationUserConstants.LastNameMaxLength)
                 .WithMessage(localizer["Soyisim {0} karakterden uzun olamaz.", ApplicationUserConstants.LastNameMaxLength]);
 
@@ -60,7 +69,5 @@ public sealed class RequestValidator : AbstractValidator<Request>
                 .WithMessage(localizer["Doğum tarihi, yyyy-MM-dd formatında olmalıdır."]);
     }
 
-    // Empty space is included because we want to allow names with middle names.
-    private static bool IsEligibleForFirstName(char c)
-        => _turkishAlphabetSet.Contains(c) || c.Equals(EmptySpace);
+    private static bool IsEligibleForName(string s) => !s.AsSpan().ContainsAnyExcept(_turkishAlphabet);
 }
