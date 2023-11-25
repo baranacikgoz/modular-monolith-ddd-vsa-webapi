@@ -2,6 +2,7 @@
 using Common.Core.Interfaces;
 using Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,12 +56,11 @@ internal static class Setup
 
                 OnMessageReceived = context =>
                 {
-                    var accessToken = context.Request.Query["access_token"];
-
                     // If the request is for our hub...
                     var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs", StringComparison.Ordinal))
+                    if (path.StartsWithSegments("/hubs", StringComparison.Ordinal))
                     {
+                        var accessToken = context.Request.Query["access_token"];
                         // Read the token out of the query string
                         context.Token = accessToken;
                     }
@@ -70,6 +70,11 @@ internal static class Setup
 
                 OnAuthenticationFailed = context =>
                 {
+                    if (context.HttpContext.GetEndpoint()?.Metadata?.GetMetadata<IAllowAnonymous>() is not null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
                     var stringLocalizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<JwtOptions>>();
                     var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
                     var problemDetails = problemDetailsFactory.Create(
