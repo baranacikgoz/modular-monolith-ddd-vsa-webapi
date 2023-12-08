@@ -51,7 +51,7 @@ internal static class Setup
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     context.Response.ContentType = "application/json";
 
-                    return context.Response.WriteAsJsonAsync(problemDetails);
+                    return problemDetails.ExecuteAsync(context.HttpContext);
                 },
 
                 OnMessageReceived = context =>
