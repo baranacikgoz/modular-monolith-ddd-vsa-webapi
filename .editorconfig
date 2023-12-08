@@ -482,3 +482,6 @@ dotnet_diagnostic.CA1040.severity = none
 
 [**/ExceptionHandlingMiddleware.cs] # Allow general "Exception" catch
 dotnet_diagnostic.CA1031.severity = none
+
+[**/tests/**] # Allow test projects to have underscores
+dotnet_diagnostic.CA1707.severity = none

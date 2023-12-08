@@ -35,39 +35,28 @@ internal static class Endpoint
         [FromServices] UserManager<ApplicationUser> userManager,
         [FromServices] IEventBus eventBus,
         CancellationToken cancellationToken)
-        => await phoneVerificationTokenService
-            .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
-            .BindAsync(async () => await CreateUserAsync(userManager, request))
-            .BindAsync(async user => await AssignRoleToUserAsync(userManager, user, CustomRoles.Basic))
+        => await ApplicationUser.CreateAsync(
+                new()
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    PhoneNumber = request.PhoneNumber,
+                    NationalIdentityNumber = request.NationalIdentityNumber,
+                    BirthDate = DateOnly.Parse(request.BirthDate, CultureInfo.InvariantCulture)
+                },
+                phoneVerificationTokenService,
+                request.PhoneVerificationToken,
+                cancellationToken)
+            .BindAsync(async user =>
+            {
+                var identityResult = await userManager.CreateAsync(user);
+                return identityResult.ToResult(user);
+            })
+            .BindAsync(async user =>
+            {
+                var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
+                return identityResult.ToResult(user);
+            })
             .BindAsync(async user => await eventBus.PublishAsync(new Events.FromIdentityAndAuth.UserCreatedEvent(user.Id)))
             .MapAsync(user => new Response(user.Id));
-
-    private static async Task<Result<ApplicationUser>> CreateUserAsync(
-        UserManager<ApplicationUser> userManager,
-        Request request)
-    {
-        var user = ApplicationUser.Create(
-            new()
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                PhoneNumber = request.PhoneNumber,
-                NationalIdentityNumber = request.NationalIdentityNumber,
-                BirthDate = DateOnly.Parse(request.BirthDate, CultureInfo.InvariantCulture)
-            }
-        );
-
-        var identityResult = await userManager.CreateAsync(user);
-
-        return identityResult.ToResult(user);
-    }
-
-    private static async Task<Result> AssignRoleToUserAsync(
-        UserManager<ApplicationUser> userManager,
-        ApplicationUser user,
-        string role)
-    {
-        var identityResult = await userManager.AddToRoleAsync(user, role);
-        return identityResult.ToResult();
-    }
 }

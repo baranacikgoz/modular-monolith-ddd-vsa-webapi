@@ -1,3 +1,4 @@
+using Common.Core.Contracts.Results;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ namespace IdentityAndAuth.Persistence.Seeding;
 
 internal partial class Seeder
 {
+    private static readonly DummyPhoneVerificationTokenService _dummyPhoneVerificationTokenService = new();
     private async Task SeedAdminUserAsync()
     {
         const string baransPhoneNumber = "905380718209";
@@ -19,7 +21,7 @@ internal partial class Seeder
         const string adminName = "Baran";
         const string adminSurname = "Açıkgöz";
 
-        admin = ApplicationUser.Create(
+        var userCreationResult = await ApplicationUser.CreateAsync(
             new()
             {
                 FirstName = adminName,
@@ -27,7 +29,13 @@ internal partial class Seeder
                 PhoneNumber = baransPhoneNumber,
                 NationalIdentityNumber = "15112312123",
                 BirthDate = new DateOnly(2001, 06, 20)
-            });
+            },
+            _dummyPhoneVerificationTokenService,
+            "dummyCode",
+            CancellationToken.None
+            );
+
+        admin = userCreationResult.Value!;
 
         LogSeedingAdmingUser(logger, admin.UserName!);
 
@@ -35,6 +43,14 @@ internal partial class Seeder
 
         // Assign role to user
         await SeedAdminToAllRolesAsync(admin);
+    }
+
+    private sealed class DummyPhoneVerificationTokenService : IPhoneVerificationTokenService
+    {
+        public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)
+            => Task.FromResult("dummyCode");
+        public Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
+            => Task.FromResult(Result.Success);
     }
 
     [LoggerMessage(

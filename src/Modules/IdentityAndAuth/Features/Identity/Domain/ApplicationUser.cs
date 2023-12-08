@@ -1,4 +1,5 @@
-﻿using IdentityAndAuth.Extensions;
+﻿using Common.Core.Contracts.Results;
+using IdentityAndAuth.Extensions;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
@@ -24,26 +25,26 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
     public string RefreshToken { get; private set; } = string.Empty;
     public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
 
-    public static ApplicationUser Create(CreateApplicationUserModel model)
-    {
-        var firstName = model.MiddleName is not null
-                        ? CombineFirstAndMiddleNames(
-                            model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars(),
-                            model.MiddleName.TrimmedUpperInvariantTransliterateTurkishChars())
-                        : model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars();
-        return new(
-            firstName,
-            model.LastName.TrimmedUpperInvariantTransliterateTurkishChars(),
-            model.PhoneNumber.Trim(),
-            model.NationalIdentityNumber.Trim(),
-            model.BirthDate)
-        {
-            PhoneNumberConfirmed = true // We first validated phone number, then create user.
-        };
-    }
+    public static async Task<Result<ApplicationUser>> CreateAsync(
+        CreateApplicationUserModel model,
+        IPhoneVerificationTokenService phoneVerificationTokenService,
+        string phoneVerificationToken,
+        CancellationToken cancellationToken)
+        => await phoneVerificationTokenService
+            .ValidateTokenAsync(model.PhoneNumber, phoneVerificationToken, cancellationToken)
+            .MapAsync(() => model.MiddleName is not null
+                            ? CombineFirstAndMiddleNames(
+                                model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars(),
+                                model.MiddleName.TrimmedUpperInvariantTransliterateTurkishChars())
+                            : model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars())
+            .MapAsync(firstName => new ApplicationUser(
+                firstName,
+                model.LastName.TrimmedUpperInvariantTransliterateTurkishChars(),
+                model.PhoneNumber.Trim(),
+                model.NationalIdentityNumber.Trim(),
+                model.BirthDate));
 
     private static string CombineFirstAndMiddleNames(string firstName, string middleName) => $"{firstName} {middleName}";
-
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
     {
         RefreshToken = refreshToken;
