@@ -30,13 +30,15 @@ public static partial class Setup
             .AddFluentValidation()
             .AddEndpointsApiExplorer()
             .AddCustomSwagger()
-            .AddMonitoringAndTracing(configuration);
+            .AddMonitoringAndTracing(configuration)
+            .AddCustomCors();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env)
         => app
             .UseRequestResponseLoggingMiddleware()
             .UseCustomLocalization()
             .UseRateLimiter()
+            .UseCors()
             .UseExceptionHandlingMiddleware()
             .UseAuth()
             .UseCustomSwagger(env);
@@ -79,5 +81,17 @@ public static partial class Setup
                 }
             )
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
+
+    private static IServiceCollection AddCustomCors(this IServiceCollection services)
+        => services
+            .AddCors(options =>
+            {
+                // Change this if production.
+                options.AddDefaultPolicy(builder =>
+                        builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
 
 }
