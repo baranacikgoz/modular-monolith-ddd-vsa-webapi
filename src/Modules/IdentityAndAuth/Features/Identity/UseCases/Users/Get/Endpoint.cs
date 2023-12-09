@@ -31,7 +31,7 @@ internal static class Endpoint
         [FromServices] UserManager<ApplicationUser> userManager,
         CancellationToken cancellationToken)
         => await Result<Dto>
-            .Create(taskToAwaitValue: async () => await userManager
+            .CreateAsync(taskToAwaitValue: async () => await userManager
                                                         .Users
                                                         .Where(x => x.Id == id)
                                                         .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
