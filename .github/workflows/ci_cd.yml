@@ -1,19 +1,39 @@
-name: cd
+name: CI/CD Workflow
 
 on:
   push:
-    branches:
-      - 'release/*'
-      - 'hotfix/*'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Webapi image tag (leave empty to use branch/tag name)'
-        required: false
-        default: ''
+        description: "Give a tag that will be used for the docker image, then a deployment will be triggered."
+        required: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-restore --verbosity normal
+
   deploy:
+    needs: build
+    if: >
+      startsWith(github.ref, 'refs/heads/release/') ||
+      startsWith(github.ref, 'refs/heads/hotfix/') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -48,6 +48,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2EB4FFFE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityAndAuth.Tests", "src\tests\IdentityAndAuth.Tests\IdentityAndAuth.Tests.csproj", "{9822C72B-0EEE-4405-B599-6C85709DAF34}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{72B20402-BD4A-4986-AF26-1ACB06737ABF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{48702C3D-CFDB-4855-8EB0-92B8E19F06D8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci_cd.yml = .github\workflows\ci_cd.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,5 +129,7 @@ Global
 		{3AF9DCBB-2FC2-4990-A8AB-85014D307081} = {FD368DCB-E231-4C19-A40A-DEE98E008065}
 		{2EB4FFFE-E595-4733-BB9F-9D87A75F55D7} = {123C371A-07C7-4CB8-BB17-3354463B075D}
 		{9822C72B-0EEE-4405-B599-6C85709DAF34} = {2EB4FFFE-E595-4733-BB9F-9D87A75F55D7}
+		{72B20402-BD4A-4986-AF26-1ACB06737ABF} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{48702C3D-CFDB-4855-8EB0-92B8E19F06D8} = {72B20402-BD4A-4986-AF26-1ACB06737ABF}
 	EndGlobalSection
 EndGlobal
