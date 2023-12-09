@@ -60,6 +60,8 @@ try
 
     app.UseModules();
 
+    app.MapGet("/", () => "https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi");
+
     app.Run();
 }
 #pragma warning disable CA1031
