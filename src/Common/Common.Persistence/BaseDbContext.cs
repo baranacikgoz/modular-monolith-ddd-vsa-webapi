@@ -7,7 +7,8 @@ namespace Common.Persistence;
 
 public class BaseDbContext(
     DbContextOptions options,
-    ICurrentUser currentUser, IEventBus eventBus
+    ICurrentUser currentUser,
+    IEventBus eventBus
     ) : DbContext(options)
 {
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
