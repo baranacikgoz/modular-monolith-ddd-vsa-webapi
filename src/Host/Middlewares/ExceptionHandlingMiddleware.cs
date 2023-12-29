@@ -18,7 +18,7 @@ internal partial class ExceptionHandlingMiddleware(IServiceProvider serviceProvi
         }
         catch (Exception exception)
         {
-            var logger = context.RequestServices.GetRequiredService<ILogger<ExceptionHandlingMiddleware>>();
+            var logger = serviceProvider.GetRequiredService<ILogger<ExceptionHandlingMiddleware>>();
             LogError(logger, exception);
 
             if (context.Response.HasStarted)
@@ -28,7 +28,7 @@ internal partial class ExceptionHandlingMiddleware(IServiceProvider serviceProvi
             }
 
             var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
-            var localizer = context.RequestServices.GetRequiredService<IStringLocalizer<ExceptionHandlingMiddleware>>();
+            var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ExceptionHandlingMiddleware>>();
 
             var problemDetails = problemDetailsFactory.Create(
                 status: StatusCodes.Status500InternalServerError,
