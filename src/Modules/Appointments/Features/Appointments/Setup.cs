@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Endpoint = Appointments.Features.Appointments.UseCases.Create.Endpoint;
+using Endpoint = Appointments.Features.Appointments.UseCases.Book.Endpoint;
 
 namespace Appointments.Features.Appointments;
 
