@@ -2,9 +2,9 @@ using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using IdentityAndAuth.ModuleSetup;
 using Appointments.ModuleSetup;
 
-namespace Host.Modules;
+namespace Host.Infrastructure;
 
-public static class Setup
+public static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
         => services
