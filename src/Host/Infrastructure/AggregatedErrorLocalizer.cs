@@ -10,12 +10,10 @@ public class AggregatedErrorLocalizer : IErrorLocalizer
 {
     // See https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-8.0
     private readonly FrozenDictionary<string, Func<IStringLocalizer<IErrorLocalizer>, string>> _aggregatedErrorsAndLocalizations;
-    public AggregatedErrorLocalizer(
-       params IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>>[] errorsAndLocalizationsPerModule)
+    public AggregatedErrorLocalizer(IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> errorsAndLocalizations)
     {
         // The service will be singleton, so don't worry about this operation being expensive.
-        _aggregatedErrorsAndLocalizations = errorsAndLocalizationsPerModule
-                                            .SelectMany(x => x)
+        _aggregatedErrorsAndLocalizations = errorsAndLocalizations
                                             .ToDictionary(x => x.Key, x => x.Value)
                                             .ToFrozenDictionary();
     }

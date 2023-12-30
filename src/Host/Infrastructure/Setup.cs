@@ -10,6 +10,7 @@ using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Validation;
 using Host.Swagger;
 using Common.Options;
+using Microsoft.Extensions.Localization;
 
 namespace Host.Infrastructure;
 
@@ -21,12 +22,21 @@ public static partial class Setup
             .AddHttpContextAccessor()
             .AddSingleton<RequestResponseLoggingMiddleware>()
             .AddCustomLocalization("Resources")
-            .AddRateLimiting(configuration)
+            .AddRateLimiting(
+                configuration,
+                IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
+                Appointments.ModuleSetup.RateLimiting.Policies.Get())
             .AddSingleton<ExceptionHandlingMiddleware>()
-            .AddErrorLocalizer()
+            .AddErrorLocalizer(
+                IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
+                Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
+            )
             .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
             .AddCaching()
-            .AddEventBus()
+            .AddEventBus(
+                typeof(Appointments.IAssemblyReference).Assembly,
+                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                typeof(Notifications.IAssemblyReference).Assembly)
             .AddFluentValidation()
             .AddEndpointsApiExplorer()
             .AddCustomSwagger()
@@ -53,22 +63,14 @@ public static partial class Setup
         => app
             .UseMiddleware<ExceptionHandlingMiddleware>();
 
-    private static IServiceCollection AddErrorLocalizer(this IServiceCollection services)
+    private static IServiceCollection AddErrorLocalizer(
+        this IServiceCollection services,
+        params IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>>[] errorLocalizationsPerModule)
         => services
             .AddSingleton<IErrorLocalizer, AggregatedErrorLocalizer>(_ =>
             {
-                return new AggregatedErrorLocalizer(
-                    IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
-                    Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
-                    );
+                return new AggregatedErrorLocalizer(errorLocalizationsPerModule.SelectMany(x => x));
             });
-
-    private static IServiceCollection AddEventBus(this IServiceCollection services)
-        => services
-            .AddEventBus(
-                typeof(Appointments.IAssemblyReference).Assembly,
-                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                typeof(Notifications.IAssemblyReference).Assembly);
 
     private static IServiceCollection AddFluentValidation(this IServiceCollection services)
         => services

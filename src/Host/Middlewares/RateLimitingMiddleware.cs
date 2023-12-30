@@ -13,7 +13,8 @@ internal static class RateLimitingMiddleware
 {
     public static IServiceCollection AddRateLimiting(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        params IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>[] rateLimitingPoliciesPerModule)
 
         => services
             .AddRateLimiter(opt =>
@@ -24,13 +25,8 @@ internal static class RateLimitingMiddleware
 
                 opt.GlobalLimiter = GlobalRateLimiter(customRateLimitingOptions);
 
-                var policies = new[]{
-                    IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
-                    Appointments.ModuleSetup.RateLimiting.Policies.Get(),
-                }.SelectMany(x => x);
-
                 // allow each module register their rate limit needs in a decoupled way
-                foreach (var policy in policies)
+                foreach (var policy in rateLimitingPoliciesPerModule.SelectMany(x => x))
                 {
                     policy(opt, customRateLimitingOptions);
                 }
