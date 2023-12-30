@@ -30,7 +30,6 @@ using Npgsql;
 using OpenTelemetry.Exporter;
 using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using OpenTelemetry.Instrumentation.AspNetCore;
-using Host.Modules;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
