@@ -29,7 +29,7 @@ public static class Policies
         public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => async (context, cancellationToken) =>
         {
             var problemDetails = problemDetailsFactory.Create(
-                status: StatusCodes.Status429TooManyRequests,
+                status: StatusCodes.Status409Conflict,
                 title: localizer["Aynı randevuyu şu anda başka bir kullanıcı almayı deniyor. Lütfen biraz sonra tekrar deneyin."],
                 type: nameof(BookAppointmentConcurrencyRateLimitingPolicy),
                 instance: context.HttpContext.Request.Path,
