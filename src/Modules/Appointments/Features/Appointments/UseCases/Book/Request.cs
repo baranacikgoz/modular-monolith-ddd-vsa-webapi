@@ -3,4 +3,4 @@ using NimbleMediator.Contracts;
 
 namespace Appointments.Features.Appointments.UseCases.Book;
 
-public sealed record Request(string Name);
+public sealed record Request(string? Note);

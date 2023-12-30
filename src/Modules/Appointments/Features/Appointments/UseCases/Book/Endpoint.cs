@@ -15,18 +15,17 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder appointmentsApiGroup)
     {
         appointmentsApiGroup
-            .MapPost("", BookAppointmentAsync)
+            .MapPost("{venueId}/{appointmentDate}", BookAppointmentAsync)
             .WithDescription("Book an appointment.")
-            .RequireRateLimiting(RateLimitingConstants.BookAppointmentConcurrency)
             .MustHavePermission(RfActions.Create, RfResources.Appointments)
+            .RequireRateLimiting(RateLimitingConstants.BookAppointmentConcurrency)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
 
-    // Route param names must be the same as the ones defined above.
     private static ValueTask<Result<Response>> BookAppointmentAsync(
         [FromRoute] Guid venueId,
-        [FromRoute] DateTime appointmentDate,
+        [FromRoute] string appointmentDate,
         [FromBody] Request request,
         CancellationToken cancellationToken)
         => throw new NotImplementedException();
