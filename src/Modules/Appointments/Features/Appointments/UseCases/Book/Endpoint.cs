@@ -12,10 +12,10 @@ namespace Appointments.Features.Appointments.UseCases.Book;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder venuesApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder appointmentsApiGroup)
     {
-        venuesApiGroup
-            .MapPost("", CreateAsync)
+        appointmentsApiGroup
+            .MapPost("", BookAppointmentAsync)
             .WithDescription("Book an appointment.")
             .RequireRateLimiting(RateLimitingConstants.BookAppointmentConcurrency)
             .MustHavePermission(RfActions.Create, RfResources.Appointments)
@@ -24,7 +24,7 @@ internal static class Endpoint
     }
 
     // Route param names must be the same as the ones defined above.
-    private static ValueTask<Result<Response>> CreateAsync(
+    private static ValueTask<Result<Response>> BookAppointmentAsync(
         [FromRoute] Guid venueId,
         [FromRoute] DateTime appointmentDate,
         [FromBody] Request request,
