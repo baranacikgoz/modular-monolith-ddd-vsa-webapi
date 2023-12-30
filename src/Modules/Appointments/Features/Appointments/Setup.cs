@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Endpoint = Appointments.Features.Appointments.UseCases.Book.Endpoint;
 
 namespace Appointments.Features.Appointments;
 
@@ -19,7 +18,7 @@ internal static class Setup
             .MapGroup("/appointments")
             .WithTags("Appointments");
 
-        Endpoint.MapEndpoint(appointmentsApiGroup);
+        UseCases.Book.Endpoint.MapEndpoint(appointmentsApiGroup);
 
         return rootGroup;
     }
