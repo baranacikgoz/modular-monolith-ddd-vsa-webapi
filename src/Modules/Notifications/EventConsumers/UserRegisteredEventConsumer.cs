@@ -6,11 +6,11 @@ namespace Notifications.EventConsumers;
 
 internal partial class UserRegisteredEventConsumer(
     ILogger<UserRegisteredEventConsumer> logger
-    ) : IEventHandler<Events.FromIdentityAndAuth.UserCreatedEvent>
+    ) : IEventHandler<Events.Published.From.IdentityAndAuth.UserCreated>
 {
-    public Task HandleAsync(Events.FromIdentityAndAuth.UserCreatedEvent notification, CancellationToken cancellationToken)
+    public Task HandleAsync(Events.Published.From.IdentityAndAuth.UserCreated notification, CancellationToken cancellationToken)
     {
-        LogUserRegisteredEventConsumer(logger, notification.UserId);
+        LogUserRegistered(logger, notification.Name, notification.UserId);
 
         // Do something with the event here.
 
@@ -19,6 +19,6 @@ internal partial class UserRegisteredEventConsumer(
 
     [LoggerMessage(
         Level = LogLevel.Debug,
-        Message = "UserRegisteredEventConsumer: UserId: {UserId}")]
-    private static partial void LogUserRegisteredEventConsumer(ILogger logger, Guid userId);
+        Message = "A new user with the name {Name} has been registered with the id {UserId}.")]
+    private static partial void LogUserRegistered(ILogger logger, string name, Guid userId);
 }
