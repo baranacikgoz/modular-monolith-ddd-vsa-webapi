@@ -85,7 +85,7 @@ internal class TokenService(
         => new()
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(CustomClaims.Fullname, $"{user.FirstName} {user.LastName}"),
+            new(CustomClaims.Fullname, $"{user.Name} {user.LastName}"),
             new(ClaimTypes.Name, user.UserName!),
             new(ClaimTypes.Surname, user.LastName ?? string.Empty),
             new(CustomClaims.ImageUrl, user.ImageUrl?.ToString() ?? string.Empty),

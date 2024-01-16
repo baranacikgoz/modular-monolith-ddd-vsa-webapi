@@ -38,7 +38,7 @@ public class ApplicationUserTests
         // Assert
         userResult.IsSuccess.Should().BeTrue();
         var user = userResult.Value!;
-        user.FirstName.Should().Be("JOHN");
+        user.Name.Should().Be("JOHN");
         user.LastName.Should().Be("DOE");
         user.PhoneNumber.Should().Be("5555555555");
         user.UserName.Should().Be("5555555555");
@@ -95,7 +95,7 @@ public class ApplicationUserTests
         // Assert
         userResult.IsSuccess.Should().BeTrue();
         var user = userResult.Value!;
-        user.FirstName.Should().Be("JOHN HARRISON");
+        user.Name.Should().Be("JOHN HARRISON");
         user.LastName.Should().Be("DOE");
     }
 
