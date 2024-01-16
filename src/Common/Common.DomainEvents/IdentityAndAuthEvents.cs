@@ -4,8 +4,14 @@ namespace Common.DomainEvents;
 
 public static partial class Events
 {
-    public static class FromIdentityAndAuth
+    public static partial class Published
     {
-        public record UserCreatedEvent(Guid UserId) : DomainEvent;
+        public static partial class From
+        {
+            public static class IdentityAndAuth
+            {
+                public record UserCreated(Guid UserId, string Name) : DomainEvent;
+            }
+        }
     }
 }
