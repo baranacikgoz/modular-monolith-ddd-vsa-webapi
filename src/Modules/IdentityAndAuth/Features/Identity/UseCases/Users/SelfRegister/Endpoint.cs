@@ -42,7 +42,7 @@ internal static class Endpoint
                     LastName = request.LastName,
                     PhoneNumber = request.PhoneNumber,
                     NationalIdentityNumber = request.NationalIdentityNumber,
-                    BirthDate = DateOnly.Parse(request.BirthDate, CultureInfo.InvariantCulture)
+                    BirthDate = DateOnly.ParseExact(request.BirthDate, SelfRegister.Constants.TurkishDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None),
                 },
                 phoneVerificationTokenService,
                 request.PhoneVerificationToken,
@@ -57,6 +57,10 @@ internal static class Endpoint
                 var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
                 return identityResult.ToResult(user);
             })
-            .BindAsync(async user => await eventBus.PublishAsync(new Events.FromIdentityAndAuth.UserCreatedEvent(user.Id)))
+            .BindAsync(async user => await eventBus.PublishAsync(new Events
+                                                                    .Published
+                                                                    .From
+                                                                    .IdentityAndAuth
+                                                                    .UserCreated(user.Id, user.Name)))
             .MapAsync(user => new Response(user.Id));
 }
