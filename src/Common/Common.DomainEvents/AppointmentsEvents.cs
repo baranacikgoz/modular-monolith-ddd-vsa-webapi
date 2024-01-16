@@ -4,8 +4,14 @@ namespace Common.DomainEvents;
 
 public static partial class Events
 {
-    public static class FromAppointments
+    public static partial class Published
     {
-        public record AppointmentCreatedEvent(Guid AppointmentId) : DomainEvent;
+        public static partial class From
+        {
+            public static class Appointments
+            {
+                public record AppointmentCreated(Guid AppointmentId) : DomainEvent;
+            }
+        }
     }
 }
