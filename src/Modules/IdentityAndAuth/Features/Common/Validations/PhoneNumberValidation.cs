@@ -11,8 +11,8 @@ public static partial class CommonValidations
         return ruleBuilder
             .NotEmpty()
                 .WithMessage(localizer["Telefon numarası boş olamaz."])
-            .Length(ApplicationUserConstants.PhoneNumberLength)
-                .WithMessage(localizer["Telefon numarası, alan kodu dahil {0} karakter olmalıdır.", ApplicationUserConstants.PhoneNumberLength])
+            .Length(Constants.PhoneNumberLength)
+                .WithMessage(localizer["Telefon numarası, alan kodu dahil {0} karakter olmalıdır.", Constants.PhoneNumberLength])
             .Must(str => str.All(char.IsDigit))
                 .WithMessage(localizer["Telefon numarası sadece rakamlardan oluşmalıdır."])
             .Must(str => str.StartsWith("90", StringComparison.Ordinal))

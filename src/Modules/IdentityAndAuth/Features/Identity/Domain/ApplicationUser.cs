@@ -6,9 +6,9 @@ namespace IdentityAndAuth.Features.Identity.Domain;
 
 internal sealed class ApplicationUser : IdentityUser<Guid>
 {
-    private ApplicationUser(string firstName, string lastName, string phoneNumber, string nationalIdentityNumber, DateOnly birthDate, Uri? imageUrl = null)
+    private ApplicationUser(string name, string lastName, string phoneNumber, string nationalIdentityNumber, DateOnly birthDate, Uri? imageUrl = null)
     {
-        FirstName = firstName;
+        Name = name;
         LastName = lastName;
         PhoneNumber = phoneNumber;
         UserName = PhoneNumber; // We use PhoneNumber as UserName
@@ -17,7 +17,7 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
         ImageUrl = imageUrl;
     }
 
-    public string FirstName { get; private set; }
+    public string Name { get; private set; }
     public string LastName { get; private set; }
     public string NationalIdentityNumber { get; private set; }
     public DateOnly BirthDate { get; private set; }
@@ -32,19 +32,29 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
         CancellationToken cancellationToken)
         => await phoneVerificationTokenService
             .ValidateTokenAsync(model.PhoneNumber, phoneVerificationToken, cancellationToken)
-            .MapAsync(() => model.MiddleName is not null
-                            ? CombineFirstAndMiddleNames(
-                                model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars(),
-                                model.MiddleName.TrimmedUpperInvariantTransliterateTurkishChars())
-                            : model.FirstName.TrimmedUpperInvariantTransliterateTurkishChars())
-            .MapAsync(firstName => new ApplicationUser(
-                firstName,
-                model.LastName.TrimmedUpperInvariantTransliterateTurkishChars(),
+            .BindAsync(() => CreateName(model.FirstName, model.MiddleName, model.LastName))
+            .MapAsync(names => new ApplicationUser(
+                names.ProcessedName,
+                names.ProcessedLastName,
                 model.PhoneNumber.Trim(),
                 model.NationalIdentityNumber.Trim(),
                 model.BirthDate));
 
-    private static string CombineFirstAndMiddleNames(string firstName, string middleName) => $"{firstName} {middleName}";
+    private static Result<(string ProcessedName, string ProcessedLastName)> CreateName(string firstName, string? middleName, string lastName)
+    {
+        var processedFirstName = firstName.TrimmedUpperInvariantTransliterateTurkishChars();
+        var processedLastName = lastName.TrimmedUpperInvariantTransliterateTurkishChars();
+
+        if (string.IsNullOrWhiteSpace(middleName))
+        {
+            return (processedFirstName, processedLastName);
+        }
+
+        var processedMiddleName = middleName.TrimmedUpperInvariantTransliterateTurkishChars();
+
+        return ($"{processedFirstName} {processedMiddleName}", processedLastName);
+    }
+
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
     {
         RefreshToken = refreshToken;
