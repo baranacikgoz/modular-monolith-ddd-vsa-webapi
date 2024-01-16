@@ -200,6 +200,20 @@ public static class AsyncExtensions
     }
 
     public static async Task<Result<TNext>> BindAsync<TNext>(
+        this Task<Result> resultTask,
+        Func<Result<TNext>> next)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TNext>.Failure(result.Error!);
+        }
+
+        return next();
+    }
+
+    public static async Task<Result<TNext>> BindAsync<TNext>(
         this Task<Result<TNext>> resultTask,
         Func<Task> task)
     {
