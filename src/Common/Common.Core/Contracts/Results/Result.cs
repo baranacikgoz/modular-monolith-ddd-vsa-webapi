@@ -47,10 +47,10 @@ public sealed class Result<T>
     }
 
 #pragma warning disable CA1000
-    public static async Task<Result<T>> CreateAsync(Func<Task<T?>> taskToAwaitValue, Error ifTaskReturnsNull)
+    public static async Task<Result<T>> CreateAsync(Func<Task<T?>> taskToAwaitValue, Error errorIfTaskReturnsNull)
     {
         var value = await taskToAwaitValue();
-        return value is null ? Failure(ifTaskReturnsNull) : Success(value);
+        return value is null ? Failure(errorIfTaskReturnsNull) : Success(value);
     }
     public static Result<T> Success(T value) => new(value);
     public static Result<T> Failure(Error error) => new(error);
