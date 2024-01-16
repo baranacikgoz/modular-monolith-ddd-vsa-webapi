@@ -35,18 +35,18 @@ internal static class Endpoint
             .CreateAsync(taskToAwaitValue: async () => await userManager
                                                     .Users
                                                     .Where(x => x.Id == currentUser.Id)
-                                                    .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!))
+                                                    .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!))
                                                     .SingleOrDefaultAsync(cancellationToken),
-                    ifTaskReturnsNull: UserErrors.UserNotFound)
+                    errorIfTaskReturnsNull: UserErrors.UserNotFound)
             .MapAsync(dto => new Response(
                                     dto.Id,
-                                    dto.FirstName,
+                                    dto.Name,
                                     dto.LastName,
                                     dto.PhoneNumber));
 
     private sealed record Dto(
         Guid Id,
-        string FirstName,
+        string Name,
         string LastName,
         string PhoneNumber);
 }

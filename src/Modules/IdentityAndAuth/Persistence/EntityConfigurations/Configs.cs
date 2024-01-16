@@ -7,23 +7,24 @@ namespace IdentityAndAuth.Persistence.EntityConfigurations;
 
 internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 {
+    private const int NameMaxLength = Constants.FirstNameMaxLength + Constants.MiddleNameMaxLength;
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
         builder.ToTable("Users");
 
         builder
-            .Property(u => u.FirstName)
-            .HasMaxLength(ApplicationUserConstants.FirstNameMaxLength)
+            .Property(u => u.Name)
+            .HasMaxLength(NameMaxLength)
             .IsRequired();
 
         builder
             .Property(u => u.LastName)
-            .HasMaxLength(ApplicationUserConstants.LastNameMaxLength)
+            .HasMaxLength(Constants.LastNameMaxLength)
             .IsRequired();
 
         builder
             .Property(u => u.NationalIdentityNumber)
-            .HasMaxLength(ApplicationUserConstants.NationalIdentityNumberLength)
+            .HasMaxLength(Constants.NationalIdentityNumberLength)
             .IsRequired();
 
         builder
@@ -40,7 +41,7 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
         builder
             .Property(u => u.RefreshToken)
             .IsRequired()
-            .HasMaxLength(ApplicationUserConstants.RefreshTokenMaxLength);
+            .HasMaxLength(Constants.RefreshTokenMaxLength);
 
         builder
             .Property(u => u.RefreshTokenExpiresAt)

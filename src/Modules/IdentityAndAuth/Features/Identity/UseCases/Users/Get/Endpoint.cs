@@ -34,12 +34,12 @@ internal static class Endpoint
             .CreateAsync(taskToAwaitValue: async () => await userManager
                                                         .Users
                                                         .Where(x => x.Id == id)
-                                                        .Select(x => new Dto(x.Id, x.FirstName, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
+                                                        .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
                                                         .SingleOrDefaultAsync(cancellationToken),
-                    ifTaskReturnsNull: UserErrors.UserNotFound)
+                    errorIfTaskReturnsNull: UserErrors.UserNotFound)
             .MapAsync(dto => new Response(
                                     dto.Id,
-                                    dto.FirstName,
+                                    dto.Name,
                                     dto.LastName,
                                     dto.PhoneNumber,
                                     dto.NationalIdentityNumber,
@@ -47,7 +47,7 @@ internal static class Endpoint
 
     private sealed record Dto(
         Guid Id,
-        string FirstName,
+        string Name,
         string LastName,
         string PhoneNumber,
         string NationalIdentityNumber,
