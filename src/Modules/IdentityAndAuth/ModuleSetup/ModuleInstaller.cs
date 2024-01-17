@@ -20,6 +20,7 @@ public static class ModuleInstaller
         services.AddTransient<Seeder>();
 
         services
+            .AddPersistence()
             .AddIdentityFeature()
             .AddAuthFeature(configuration)
             .AddTokensFeature();
@@ -38,14 +39,7 @@ public static class ModuleInstaller
 
     public static WebApplication UseIdentityAndAuthModule(this WebApplication app, RouteGroupBuilder rootGroup)
     {
-        using (var scope = app.Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<IdentityContext>();
-            context.Database.Migrate();
-
-            var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
-            seeder.SeedDbAsync().GetAwaiter().GetResult();
-        }
+        app.UsePersistence();
 
         rootGroup
             .MapUsersEndpoints()

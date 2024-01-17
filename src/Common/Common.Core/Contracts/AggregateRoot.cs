@@ -1,4 +1,6 @@
-﻿namespace Common.Core.Contracts;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Common.Core.Contracts;
 
 public abstract class AggregateRoot<T> : AuditableEntity<T>, IAggregateRoot
 {
@@ -6,8 +8,9 @@ public abstract class AggregateRoot<T> : AuditableEntity<T>, IAggregateRoot
         : base(id)
     {
     }
-    private readonly List<DomainEvent> _domainEvents = new();
+    private readonly List<DomainEvent> _domainEvents = [];
 
+    [NotMapped]
     public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     public void ClearDomainEvents() => _domainEvents.Clear();

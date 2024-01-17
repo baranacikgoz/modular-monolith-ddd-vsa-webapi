@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace IdentityAndAuth.Persistence.Migrations
 {
-    [DbContext(typeof(IdentityContext))]
+    [DbContext(typeof(IdentityDbContext))]
     [Migration("20231026221349_initial")]
     partial class initial
     {

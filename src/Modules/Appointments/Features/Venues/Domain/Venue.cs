@@ -23,4 +23,8 @@ internal class Venue : AggregateRoot<VenueId>
         return new(name.Trim(), coordinates);
     }
 
+    // Orms need parameterless constructors
+#pragma warning disable CS8618
+    private Venue() : base(new(Guid.NewGuid())) { }
+#pragma warning restore CS8618
 }

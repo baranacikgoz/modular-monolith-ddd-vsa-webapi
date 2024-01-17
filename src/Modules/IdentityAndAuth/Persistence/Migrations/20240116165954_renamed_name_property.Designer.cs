@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace IdentityAndAuth.Persistence.Migrations
 {
-    [DbContext(typeof(IdentityContext))]
+    [DbContext(typeof(IdentityDbContext))]
     [Migration("20240116165954_renamed_name_property")]
     partial class renamed_name_property
     {

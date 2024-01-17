@@ -13,7 +13,7 @@ namespace IdentityAndAuth.Features.Identity.Infrastructure;
 internal class UserService(
     UserManager<ApplicationUser> userManager,
     ICacheService cacheService,
-    IdentityContext identityDbContext
+    IdentityDbContext identityDbContext
     ) : IUserService
 {
     public async Task<Result<ApplicationUser>> GetByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default)
