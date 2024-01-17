@@ -35,4 +35,8 @@ public sealed class Coordinates : ValueObject
         yield return Latitude;
         yield return Longitude;
     }
+
+    // Orms need parameterless constructors
+    private Coordinates() { }
+
 }

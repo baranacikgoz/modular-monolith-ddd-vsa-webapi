@@ -27,14 +27,6 @@ internal static class Setup
 
     private static IServiceCollection AddCustomIdentity(this IServiceCollection services)
     {
-        services.AddDbContext<IdentityContext>((sp, options) =>
-        {
-            var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-            options
-                .UseNpgsql(connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(IdentityAndAuth)));
-        });
-
         services
             .AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
@@ -44,7 +36,7 @@ internal static class Setup
                 // We use PhoneNumber as UserName
                 options.User.AllowedUserNameCharacters = "0123456789";
             })
-            .AddEntityFrameworkStores<IdentityContext>()
+            .AddEntityFrameworkStores<IdentityDbContext>()
             .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
             .AddDefaultTokenProviders();
 

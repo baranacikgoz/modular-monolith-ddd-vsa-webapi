@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Common.Persistence;
 
-public class BaseDbContext(
+public abstract class BaseDbContext(
     DbContextOptions options,
     ICurrentUser currentUser,
     IEventBus eventBus
@@ -33,7 +33,7 @@ public class BaseDbContext(
 
             if (entry.Entity is IAggregateRoot aggregateRoot && aggregateRoot.DomainEvents.Count > 0)
             {
-                domainEvents ??= new List<DomainEvent>(); // Lazy
+                domainEvents ??= []; // Lazy
                 domainEvents.AddRange(aggregateRoot.DomainEvents);
                 aggregateRoot.ClearDomainEvents();
             }
