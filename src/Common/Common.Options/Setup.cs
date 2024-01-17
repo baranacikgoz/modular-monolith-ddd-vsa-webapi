@@ -63,8 +63,8 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<MonitoringOptions>()
-            .Bind(configuration.GetSection(nameof(MonitoringOptions)))
+            .AddOptions<MonitoringTracingOptions>()
+            .Bind(configuration.GetSection(nameof(MonitoringTracingOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

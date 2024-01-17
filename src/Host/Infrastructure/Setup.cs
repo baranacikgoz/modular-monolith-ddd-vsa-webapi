@@ -43,7 +43,7 @@ public static partial class Setup
             .AddMonitoringAndTracing(configuration)
             .AddCustomCors();
 
-    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env)
+    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         => app
             .UseRequestResponseLoggingMiddleware()
             .UseCustomLocalization()
@@ -51,7 +51,8 @@ public static partial class Setup
             .UseCors()
             .UseExceptionHandlingMiddleware()
             .UseAuth()
-            .UseCustomSwagger(env);
+            .UseCustomSwagger(env)
+            .UseMonitoringAndTracing(configuration);
 
     private static IApplicationBuilder UseRequestResponseLoggingMiddleware(this IApplicationBuilder app)
         => app

@@ -26,7 +26,7 @@ internal class PhoneVerificationTokenService(
         => await Result<string>
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
-                    ifTaskReturnsNull: PhoneVerificationTokenErrors.TokenNotFound)
+                    errorIfTaskReturnsNull: PhoneVerificationTokenErrors.TokenNotFound)
                 .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNull: PhoneVerificationTokenErrors.TokenNotFound))
                 .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token))
                 .BindAsync(async () => await cache.RemoveAsync(CacheKey(phoneNumber), cancellationToken));
