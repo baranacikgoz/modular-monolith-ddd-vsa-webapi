@@ -53,9 +53,7 @@ try
     // Build the app and configure pipeline.
     var app = builder.Build();
 
-    app.UseInfrastructure(builder.Environment);
-
-    app.MapPrometheusScrapingEndpoint();
+    app.UseInfrastructure(builder.Environment, builder.Configuration);
 
     app.UseModules();
 

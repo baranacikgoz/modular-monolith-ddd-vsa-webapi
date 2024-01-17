@@ -1,0 +1,9 @@
+{
+  "MonitoringTracingOptions": {
+    "ServiceName": "webapi",
+    "TracingExporter": "otlp",
+    "OtlpEndpoint": "http://localhost:4317",
+    "ZipkinEndpoint": "",
+    "MetricsExporter": "prometheus"
+  }
+}
