@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="NimbleMediator" />
-
+    <PackageReference Include="FluentValidation" />
   </ItemGroup>
 
 </Project>
