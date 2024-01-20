@@ -3,13 +3,42 @@
 internal static class Setup
 {
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
-     => services.AddSwaggerGen(cfg =>
-     {
-         cfg.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
-         cfg.OperationFilter<DefaultResponsesOperationFilter>();
-         cfg.SchemaFilter<DateOnlySchemaFilter>();
-         cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
-     });
+        => services
+            .AddSwaggerGen(cfg =>
+            {
+                cfg.CustomSchemaIds(SchemaIdGenerator);
+                cfg.OperationFilter<DefaultResponsesOperationFilter>();
+                cfg.SchemaFilter<DateOnlySchemaFilter>();
+                cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
+            });
+
+    private static string SchemaIdGenerator(Type type)
+    {
+        // For example, for: "Appointments.Features.Venues.UseCases.Create.Request" return Venue.Create.Request
+        // If "Features" existst but "UseCases" doesn't, return Venue.Create.Request again.
+        // If neither exist, such as Common.Core.Contracts.IEmpty200Response, return IEmpty200Response.
+
+        var name = type.FullName ?? type.Name;
+
+        var splitted = name.Split('.').ToList();
+
+        if (!splitted.Contains("Features"))
+        {
+            return splitted[^1];
+        }
+
+        var indexOfFeatures = splitted.IndexOf("Features");
+
+        if (!splitted.Contains("UseCases"))
+        {
+            return string.Join('.', splitted[(indexOfFeatures + 1)..]).Replace('+', '.');
+        }
+
+        var indexOfUseCases = splitted.IndexOf("UseCases");
+        splitted.RemoveAt(indexOfUseCases);
+
+        return string.Join('.', splitted[(indexOfFeatures + 1)..]).Replace('+', '.');
+    }
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
     {
