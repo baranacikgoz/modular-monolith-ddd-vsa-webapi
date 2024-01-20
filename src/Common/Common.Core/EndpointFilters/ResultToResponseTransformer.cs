@@ -23,7 +23,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
         }
 
         return result.Match(
-            onSuccess: () => Results.Ok(),
+            onSuccess: () => Results.NoContent(),
             onFailure: error =>
             {
                 var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
