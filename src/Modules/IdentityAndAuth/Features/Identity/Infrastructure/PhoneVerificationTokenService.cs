@@ -22,14 +22,21 @@ internal class PhoneVerificationTokenService(
         absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_expirationInMinutes),
         cancellationToken: cancellationToken);
 
+    /// <summary>
+    /// Initially, we were removing the token from the cache after everthing was successful.
+    /// But, for the new user registrations, since we are requesting token twice;
+    /// - First in <see cref="UseCases.Users.SelfRegister.Endpoint>
+    /// - Then in <see cref="Tokens.UseCases.Create.Endpoint>
+    /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.TokenNotFound"/>
+    /// And users will have to go back to the very first step of the registration process.
+    /// </summary>
     public async Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
         => await Result<string>
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
                     errorIfTaskReturnsNull: PhoneVerificationTokenErrors.TokenNotFound)
                 .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNull: PhoneVerificationTokenErrors.TokenNotFound))
-                .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token))
-                .BindAsync(async () => await cache.RemoveAsync(CacheKey(phoneNumber), cancellationToken));
+                .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {
         var boolResult = string.Equals(cachedToken, token, StringComparison.Ordinal);
