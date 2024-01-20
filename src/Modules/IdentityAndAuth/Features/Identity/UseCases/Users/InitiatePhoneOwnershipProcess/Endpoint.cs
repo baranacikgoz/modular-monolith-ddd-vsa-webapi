@@ -18,7 +18,7 @@ internal static class Endpoint
         usersApiGroup
             .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
             .WithDescription("Initiate phone ownership process by sending sms otp.")
-            .Produces<IEmpty200Response>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent)
             .RequireRateLimiting(RateLimitingConstants.Sms)
             .AllowAnonymous()
             .TransformResultToOkResponse();

@@ -10,18 +10,12 @@ public class RemoveDefaultResponseSchemaFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        if (operation.Responses.TryGetValue("200", out var value) && ShouldHaveEmptyResponseBody(context))
+        if (operation.Responses.TryGetValue("204", out var value))
         {
             value.Content.Clear();
-        }
-    }
 
-    private static bool ShouldHaveEmptyResponseBody(OperationFilterContext context)
-    {
-        // check if endpoint is registered with "api.Produces<IEmpty200Response>()"
-        return context
-            .ApiDescription
-            .SupportedResponseTypes
-            .Any(x => x.Type == typeof(IEmpty200Response));
+            // remove 200 response
+            operation.Responses.Remove("200");
+        }
     }
 }
