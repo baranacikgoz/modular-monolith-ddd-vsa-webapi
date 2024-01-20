@@ -24,7 +24,7 @@ internal static class Endpoint
         usersApiGroup
             .MapPost("self-register", SelfRegisterAsync)
             .WithDescription("Self register a new user.")
-            .Produces<Response>()
+            .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
             .TransformResultTo<Response>();
     }

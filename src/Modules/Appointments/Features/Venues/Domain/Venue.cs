@@ -3,7 +3,7 @@ using Common.Core.Contracts;
 
 namespace Appointments.Features.Venues.Domain;
 
-internal sealed record VenueId(Guid Value);
+internal record struct VenueId(Guid Value);
 internal class Venue : AggregateRoot<VenueId>
 {
     private Venue(string name, Coordinates coordinates)
@@ -25,6 +25,6 @@ internal class Venue : AggregateRoot<VenueId>
 
     // Orms need parameterless constructors
 #pragma warning disable CS8618
-    private Venue() : base(new(Guid.NewGuid())) { }
+    private Venue() : base(default) { }
 #pragma warning restore CS8618
 }

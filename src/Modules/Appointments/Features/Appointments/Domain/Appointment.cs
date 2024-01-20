@@ -4,7 +4,7 @@ using Common.DomainEvents;
 
 namespace Appointments.Features.Appointments.Domain;
 
-public sealed record AppointmentId(Guid Value);
+internal record struct AppointmentId(Guid Value);
 internal class Appointment : AggregateRoot<AppointmentId>
 {
     protected Appointment(VenueId venueId, Guid userId)
@@ -36,7 +36,7 @@ internal class Appointment : AggregateRoot<AppointmentId>
 
     // Orms need parameterless constructors
 #pragma warning disable CS8618
-    private Appointment() : base(new(Guid.NewGuid())) { }
+    private Appointment() : base(default) { }
 #pragma warning restore CS8618
 
 }

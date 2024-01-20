@@ -8,6 +8,7 @@ internal static class Setup
          cfg.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
          cfg.OperationFilter<DefaultResponsesOperationFilter>();
          cfg.SchemaFilter<DateOnlySchemaFilter>();
+         cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
      });
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
