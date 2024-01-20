@@ -23,7 +23,7 @@ internal class PhoneVerificationTokenService(
         cancellationToken: cancellationToken);
 
     /// <summary>
-    /// Initially, we were removing the token from the cache after everthing was successful.
+    /// Initially, we were removing the token from the cache at the end of this <see cref="ValidateTokenAsync"/> method.
     /// But, for the new user registrations, since we are requesting token twice;
     /// - First in <see cref="UseCases.Users.SelfRegister.Endpoint>
     /// - Then in <see cref="Tokens.UseCases.Create.Endpoint>
