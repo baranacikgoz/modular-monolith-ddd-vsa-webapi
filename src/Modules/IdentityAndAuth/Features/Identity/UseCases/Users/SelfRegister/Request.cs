@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Globalization;
 using Common.Core.Contracts.Results;
+using Common.Core.Validation;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -18,7 +19,7 @@ public sealed record Request(
         string NationalIdentityNumber,
         string BirthDate);
 
-public sealed class RequestValidator : AbstractValidator<Request>
+public sealed class RequestValidator : ResilientValidator<Request>
 {
     // Checkout: https://www.youtube.com/watch?v=IzDMg916t98&t=573s&ab_channel=NickChapsas
     private static readonly SearchValues<char> _turkishAlphabet = SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");

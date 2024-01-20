@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts.Results;
+using Common.Core.Validation;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
 using Microsoft.Extensions.Localization;
@@ -8,7 +9,7 @@ namespace IdentityAndAuth.Features.Identity.UseCases.Users.ProvePhoneOwnership;
 
 public sealed record Request(string PhoneNumber, string Otp);
 
-public class RequestValidator : AbstractValidator<Request>
+public class RequestValidator : ResilientValidator<Request>
 {
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {
