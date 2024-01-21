@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using NimbleMediator.Contracts;
 
-namespace Appointments.Features.Venues.UseCases.Create;
+namespace Appointments.Features.Venues.UseCases.v1.Create;
 
 internal static class Endpoint
 {

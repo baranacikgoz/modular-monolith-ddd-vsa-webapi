@@ -1,6 +1,7 @@
 ﻿using Appointments.Features.Appointments;
 using Appointments.Features.Venues;
 using Appointments.Persistence;
+using Asp.Versioning.Builder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,17 +12,18 @@ public static class ModuleInstaller
 {
     public static IServiceCollection AddAppointmentsModule(this IServiceCollection services)
         => services
-        .AddPersistence()
-        .AddAppointmentsFeatures()
-        .AddVenuesFeatures();
+            .AddPersistence()
+            .AddAppointmentsFeatures()
+            .AddVenuesFeatures();
 
-    public static WebApplication UseAppointmentsModule(this WebApplication app, RouteGroupBuilder rootGroup)
+    public static WebApplication UseAppointmentsModule(
+        this WebApplication app,
+        RouteGroupBuilder versionedApiGroup)
     {
         app.UsePersistence();
 
-        rootGroup
-            .MapAppointmentsEndpoints()
-            .MapVenuesEndpoints();
+        versionedApiGroup.MapAppointmentsEndpoints();
+        versionedApiGroup.MapVenuesEndpoints();
 
         return app;
     }

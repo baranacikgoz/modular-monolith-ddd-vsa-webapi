@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Endpoint = Appointments.Features.Venues.UseCases.Create.Endpoint;
+using Endpoint = Appointments.Features.Venues.UseCases.v1.Create.Endpoint;
 
 namespace Appointments.Features.Venues;
 
@@ -13,14 +13,20 @@ internal static class Setup
         => services
             .AddVenuesInfrastructure();
 
-    public static RouteGroupBuilder MapVenuesEndpoints(this RouteGroupBuilder rootGroup)
+    public static void MapVenuesEndpoints(this RouteGroupBuilder versionedApiGroup)
     {
-        var venuesApiGroup = rootGroup
+        var v1VenuesApiGroup = versionedApiGroup
             .MapGroup("/venues")
-            .WithTags("Venues");
+            .WithTags("Venues")
+            .MapToApiVersion(1);
 
-        Endpoint.MapEndpoint(venuesApiGroup);
+        Venues.UseCases.v1.Create.Endpoint.MapEndpoint(v1VenuesApiGroup);
 
-        return rootGroup;
+        // var v2VenuesApiGroup = versionedApiGroup
+        //     .MapGroup("/venues")
+        //     .WithTags("Venues")
+        //     .MapToApiVersion(2)
+
+        // Venues.UseCases.v2.xxx.Endpoint.MapEndpoint(v2VenuesApiGroup)
     }
 }

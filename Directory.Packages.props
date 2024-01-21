@@ -70,5 +70,7 @@
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore"
       Version="1.7.0-rc.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="1.7.0" />
+    <PackageVersion Include="Asp.Versioning.Http" Version="8.0.0" />
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
   </ItemGroup>
 </Project>

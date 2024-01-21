@@ -1,15 +1,22 @@
-﻿namespace Host.Swagger;
+﻿using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Asp.Versioning.ApiExplorer;
+
+namespace Host.Swagger;
 
 internal static class Setup
 {
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
         => services
+            .AddEndpointsApiExplorer()
+            .AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>()
             .AddSwaggerGen(cfg =>
             {
+                cfg.OperationFilter<SwaggerDefaultValues>();
                 cfg.CustomSchemaIds(SchemaIdGenerator);
                 cfg.OperationFilter<DefaultResponsesOperationFilter>();
                 cfg.SchemaFilter<DateOnlySchemaFilter>();
-                cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
+                // cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>()
             });
 
     private static string SchemaIdGenerator(Type type)
@@ -42,11 +49,25 @@ internal static class Setup
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
     {
+        if (app is not WebApplication webApplication)
+        {
+            throw new InvalidOperationException("This method can only be called on a WebApplication");
+        }
+
         // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(
+                options =>
+                {
+                    foreach (var description in webApplication.DescribeApiVersions())
+                    {
+                        options.SwaggerEndpoint(
+                            $"/swagger/{description.GroupName}/swagger.json",
+                            description.GroupName);
+                    }
+                });
         }
 
         return app;

@@ -68,6 +68,12 @@ public static class Setup
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services
+            .AddOptions<OpenApiOptions>()
+            .Bind(configuration.GetSection(nameof(OpenApiOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }

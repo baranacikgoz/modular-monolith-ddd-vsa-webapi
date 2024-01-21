@@ -1,6 +1,7 @@
 ﻿using Common.Caching;
 using Common.Core;
 using Common.Core.Contracts.Results;
+using Common.Core.Extensions;
 using Common.Options;
 using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Features.Identity.Domain.Errors;
@@ -26,7 +27,7 @@ internal class PhoneVerificationTokenService(
     /// Initially, we were removing the token from the cache at the end of this <see cref="ValidateTokenAsync"/> method.
     /// But, for the new user registrations, since we are requesting token twice;
     /// - First in <see cref="UseCases.Users.SelfRegister.Endpoint>
-    /// - Then in <see cref="Tokens.UseCases.Create.Endpoint>
+    /// - Then in <see cref="Tokens.UseCases.v1.Create.Endpoint>
     /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.TokenNotFound"/>
     /// And users will have to go back to the very first step of the registration process.
     /// </summary>
@@ -35,7 +36,7 @@ internal class PhoneVerificationTokenService(
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
                     errorIfTaskReturnsNull: PhoneVerificationTokenErrors.TokenNotFound)
-                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNull: PhoneVerificationTokenErrors.TokenNotFound))
+                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.TokenNotFound))
                 .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {

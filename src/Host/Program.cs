@@ -48,7 +48,8 @@ try
     builder
         .Services
             .AddInfrastructure(builder.Configuration)
-            .AddModules(builder.Configuration);
+            .AddModules(builder.Configuration)
+            .AddCustomSwagger();
 
     // Build the app and configure pipeline.
     var app = builder.Build();
@@ -58,6 +59,8 @@ try
     app.UseModules();
 
     app.MapGet("/", () => Results.Redirect("/swagger"));
+
+    app.UseCustomSwagger(builder.Environment);
 
     app.Run();
 }

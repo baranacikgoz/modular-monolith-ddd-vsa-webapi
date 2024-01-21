@@ -1,4 +1,3 @@
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -7,8 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.UseCases.Create;
 
