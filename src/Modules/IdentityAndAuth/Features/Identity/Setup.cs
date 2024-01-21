@@ -11,7 +11,7 @@ internal static class Setup
     public static IServiceCollection AddIdentityFeature(this IServiceCollection services)
         => services
             .AddIdentityInfrastructure();
-    public static RouteGroupBuilder MapUsersEndpoints(this RouteGroupBuilder rootGroup)
+    public static void MapUsersEndpoints(this RouteGroupBuilder rootGroup)
     {
         var usersApiGroup = rootGroup
             .MapGroup("/users")
@@ -26,7 +26,5 @@ internal static class Setup
             .MapGroup("/current");
 
         UseCases.Users.Current.Get.Endpoint.MapEndpoint(currentUserApiGroup);
-
-        return rootGroup;
     }
 }

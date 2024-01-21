@@ -1,9 +1,6 @@
-﻿using Common.Core.Contracts.Results;
-using Common.Core.Validation;
-using FluentValidation;
+﻿using Common.Core.Validation;
 using IdentityAndAuth.Features.Common.Validations;
 using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.UseCases.Create;
 

@@ -11,14 +11,12 @@ internal static class Setup
     public static IServiceCollection AddCaptchaFeature(this IServiceCollection services)
         => services
             .AddCaptchaInfrastructure();
-    public static RouteGroupBuilder MapCaptchaEndpoints(this RouteGroupBuilder rootGroup)
+    public static void MapCaptchaEndpoints(this RouteGroupBuilder rootGroup)
     {
         var captchaApiGroup = rootGroup
             .MapGroup("/captcha")
             .WithTags("Captcha");
 
         UseCases.ClientKey.Get.Endpoint.MapEndpoint(captchaApiGroup);
-
-        return rootGroup;
     }
 }

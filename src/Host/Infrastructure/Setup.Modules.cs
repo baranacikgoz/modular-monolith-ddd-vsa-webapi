@@ -12,13 +12,23 @@ public static partial class Setup
             .AddAppointmentsModule();
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
-        var rootGroup = app
-                        .MapGroup("/")
-                        .RequireAuthorization()
-                        .AddFluentValidationAutoValidation();
+        var versionNeutralApiGroup = app
+                                    .MapGroup("/")
+                                    .RequireAuthorization()
+                                    .AddFluentValidationAutoValidation()
+                                    .WithOpenApi();
 
-        app.UseIdentityAndAuthModule(rootGroup);
-        app.UseAppointmentsModule(rootGroup);
+        var apiVersionSet = app.GetApiVersionSet();
+
+        var versionedApiGroup = app
+                                .MapGroup("/v{version:apiVersion}")
+                                .WithApiVersionSet(apiVersionSet)
+                                .RequireAuthorization()
+                                .AddFluentValidationAutoValidation()
+                                .WithOpenApi();
+
+        app.UseIdentityAndAuthModule(versionNeutralApiGroup);
+        app.UseAppointmentsModule(versionedApiGroup);
 
         return app;
     }

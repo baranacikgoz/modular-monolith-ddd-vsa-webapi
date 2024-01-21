@@ -19,6 +19,7 @@ public static partial class Setup
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         => services
             .AddCommonOptions(configuration)
+            .AddVersioning()
             .AddHttpContextAccessor()
             .AddSingleton<RequestResponseLoggingMiddleware>()
             .AddCustomLocalization("Resources")
@@ -39,7 +40,6 @@ public static partial class Setup
                 typeof(Notifications.IAssemblyReference).Assembly)
             .AddFluentValidation()
             .AddEndpointsApiExplorer()
-            .AddCustomSwagger()
             .AddMonitoringAndTracing(configuration)
             .AddCustomCors();
 
@@ -51,7 +51,6 @@ public static partial class Setup
             .UseCors()
             .UseExceptionHandlingMiddleware()
             .UseAuth()
-            .UseCustomSwagger(env)
             .UseMonitoringAndTracing(configuration);
 
     private static IApplicationBuilder UseRequestResponseLoggingMiddleware(this IApplicationBuilder app)

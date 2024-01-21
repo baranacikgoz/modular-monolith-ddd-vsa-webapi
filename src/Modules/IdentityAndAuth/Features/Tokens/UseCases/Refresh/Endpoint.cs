@@ -1,9 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Common.Core;
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
+using Common.Core.Extensions;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Extensions;
 using IdentityAndAuth.Features.Auth.Infrastructure.Jwt;
@@ -14,10 +13,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Tokens.UseCases.Refresh;
 
@@ -40,7 +37,7 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await GetPrincipalFromExpiredToken(request.ExpiredAccessToken, jwtOptionsProvider.Value)
             .Bind(claimsPrincipal => claimsPrincipal.GetPhoneNumber())
-            .Bind(phoneNumber => StringExt.EnsureNotNullOrEmpty(phoneNumber, ifNull: TokenErrors.InvalidToken))
+            .Bind(phoneNumber => StringExt.EnsureNotNullOrEmpty(phoneNumber, ifNullOrEmpty: TokenErrors.InvalidToken))
             .BindAsync(async phoneNumber => await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber))
             .BindAsync(async phoneNumber => await userService.GetByPhoneNumberAsync(phoneNumber, cancellationToken))
             .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user))

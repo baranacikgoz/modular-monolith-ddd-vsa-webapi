@@ -17,8 +17,10 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/logging");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/monitoringTracing");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/openApi");
 
         configuration.AddEnvironmentVariables();
+
         return builder;
     }
 

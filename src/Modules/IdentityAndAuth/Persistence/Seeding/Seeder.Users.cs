@@ -14,7 +14,6 @@ internal partial class Seeder
 
         if (await userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == baransPhoneNumber) is ApplicationUser admin)
         {
-            await SeedAdminToAllRolesAsync(admin);
             return;
         }
 

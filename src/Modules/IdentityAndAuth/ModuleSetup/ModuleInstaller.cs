@@ -37,14 +37,15 @@ public static class ModuleInstaller
         return app;
     }
 
-    public static WebApplication UseIdentityAndAuthModule(this WebApplication app, RouteGroupBuilder rootGroup)
+    public static WebApplication UseIdentityAndAuthModule(
+        this WebApplication app,
+        RouteGroupBuilder versionNeutralApiGroup)
     {
         app.UsePersistence();
 
-        rootGroup
-            .MapUsersEndpoints()
-            .MapTokensEndpoints()
-            .MapCaptchaEndpoints();
+        versionNeutralApiGroup.MapUsersEndpoints();
+        versionNeutralApiGroup.MapTokensEndpoints();
+        versionNeutralApiGroup.MapCaptchaEndpoints();
 
         return app;
     }
