@@ -4,39 +4,28 @@ using IdentityAndAuth.Features.Auth.Domain;
 
 namespace IdentityAndAuth.Features.Identity.Infrastructure;
 
-internal sealed class CurrentUser : ICurrentUser
+internal sealed class CurrentUser(
+    ClaimsPrincipal? user,
+    string? ipAddress
+    ) : ICurrentUser
 {
-    public CurrentUser(ClaimsPrincipal? user, string? ipAddress)
-    {
-        IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
-        UserName = user?.Identity?.Name;
-        IpAddress = ipAddress;
-
-        IdAsString = IsAuthenticated
-                ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
-                : string.Empty;
-
-        Id = string.IsNullOrEmpty(IdAsString)
-                ? Guid.Empty
-                : Guid.Parse(IdAsString);
-
-        FullName = IsAuthenticated
-                ? user?.FindFirstValue(CustomClaims.Fullname)
-                : null;
-
-        PhoneNumber = IsAuthenticated
-                ? user?.FindFirstValue(ClaimTypes.MobilePhone)
-                : null;
-    }
-    private bool IsAuthenticated { get; }
-
-    public string? UserName { get; }
-
-    public string? IpAddress { get; }
-
-    public Guid Id { get; }
-    public string? IdAsString { get; }
-
-    public string? FullName { get; }
-    public string? PhoneNumber { get; }
+    public string? IpAddress => ipAddress;
+    private bool IsAuthenticated => user?.Identity?.IsAuthenticated ?? false;
+    public string? UserName => user?.Identity?.Name;
+    public string? IdAsString
+        => IsAuthenticated
+            ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
+            : string.Empty;
+    public Guid Id
+        => string.IsNullOrEmpty(IdAsString)
+            ? Guid.Empty
+            : Guid.Parse(IdAsString);
+    public string? FullName
+        => IsAuthenticated
+            ? user?.FindFirstValue(CustomClaims.Fullname)
+            : null;
+    public string? PhoneNumber
+        => IsAuthenticated
+            ? user?.FindFirstValue(ClaimTypes.MobilePhone)
+            : null;
 }
