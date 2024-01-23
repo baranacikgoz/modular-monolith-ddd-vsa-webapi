@@ -1,51 +1,29 @@
 using Common.Core.Interfaces;
-using Microsoft.Extensions.ObjectPool;
 
 namespace Host.Infrastructure;
 
-public class ProblemDetailsFactory(ObjectPool<CustomProblemDetails> problemDetailsPool) : IProblemDetailsFactory
+public class ProblemDetailsFactory : IProblemDetailsFactory
 {
     public IResult Create(int status, string title, string type, string instance, string requestId, IEnumerable<string> errors)
-    {
-        var problemDetails = problemDetailsPool.Get();
-        try
+        => new CustomProblemDetails
         {
-            problemDetails.ReInitialize(
-                status: status,
-                title: title,
-                type: type,
-                instance: instance,
-                requestId: requestId,
-                errors: errors);
-
-            return problemDetails;
-        }
-        finally
-        {
-            problemDetailsPool.Return(problemDetails);
-        }
-    }
+            Status = status,
+            Title = title,
+            Type = type,
+            Instance = instance,
+            RequestId = requestId,
+            Errors = errors
+        };
 }
 
-public class CustomProblemDetails : IResult, IResettable
+internal class CustomProblemDetails : IResult
 {
-    public int Status { get; private set; }
-    public string Title { get; private set; } = string.Empty;
-    public string Type { get; private set; } = string.Empty;
-    public string Instance { get; private set; } = string.Empty;
-    public string RequestId { get; private set; } = string.Empty;
-    private readonly List<string> _errors = [];
-    public IReadOnlyCollection<string> Errors => _errors;
-
-    public void ReInitialize(int status, string title, string type, string instance, string requestId, IEnumerable<string> errors)
-    {
-        Status = status;
-        Title = title;
-        Type = type;
-        Instance = instance;
-        RequestId = requestId;
-        _errors.AddRange(errors);
-    }
+    public required int Status { get; init; }
+    public required string Title { get; init; }
+    public required string Type { get; init; }
+    public required string Instance { get; init; }
+    public required string RequestId { get; init; }
+    public required IEnumerable<string> Errors { get; init; }
 
     public Task ExecuteAsync(HttpContext httpContext)
     {
@@ -53,12 +31,6 @@ public class CustomProblemDetails : IResult, IResettable
         httpContext.Response.ContentType = "application/json";
 
         return httpContext.Response.WriteAsJsonAsync(this);
-    }
-
-    public bool TryReset()
-    {
-        _errors.Clear();
-        return true;
     }
 }
 
