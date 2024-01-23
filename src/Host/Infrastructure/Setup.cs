@@ -11,6 +11,8 @@ using Host.Validation;
 using Host.Swagger;
 using Common.Options;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.ObjectPool;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Host.Infrastructure;
 
@@ -32,7 +34,7 @@ public static partial class Setup
                 IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
                 Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
             )
-            .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
+            .AddProblemDetailsFactory()
             .AddCaching()
             .AddEventBus(
                 typeof(Appointments.IAssemblyReference).Assembly,
@@ -71,6 +73,17 @@ public static partial class Setup
             {
                 return new AggregatedErrorLocalizer(errorLocalizationsPerModule.SelectMany(x => x));
             });
+
+    private static IServiceCollection AddProblemDetailsFactory(this IServiceCollection services)
+    {
+        services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+        return services.AddSingleton<ObjectPool<CustomProblemDetails>>(serviceProvider =>
+            {
+                var provider = serviceProvider.GetRequiredService<ObjectPoolProvider>();
+                return provider.Create<CustomProblemDetails>();
+            })
+            .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>();
+    }
 
     private static IServiceCollection AddFluentValidation(this IServiceCollection services)
         => services
