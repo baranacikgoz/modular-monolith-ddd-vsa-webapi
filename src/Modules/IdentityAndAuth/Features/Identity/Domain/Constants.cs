@@ -2,8 +2,7 @@
 
 internal static class Constants
 {
-    public const int FirstNameMaxLength = 50;
-    public const int MiddleNameMaxLength = 50;
+    public const int NameMaxLength = 50;
     public const int LastNameMaxLength = 50;
     public const int PhoneNumberLength = 12;
     public const int NationalIdentityNumberLength = 11;

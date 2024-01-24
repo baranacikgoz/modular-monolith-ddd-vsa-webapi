@@ -77,8 +77,7 @@ public class ApplicationUserTests
         // Arrange
         var createModel = new CreateApplicationUserModel
         {
-            FirstName = "John",
-            MiddleName = "Harrison",
+            FirstName = "John Harrison",
             LastName = "Doe",
             PhoneNumber = "5555555555",
             NationalIdentityNumber = "12345678901",
@@ -105,8 +104,7 @@ public class ApplicationUserTests
         // Arrange
         var model = new CreateApplicationUserModel
         {
-            FirstName = "John",
-            MiddleName = "Doe",
+            FirstName = "John Harrison",
             LastName = "Doe",
             PhoneNumber = "5555555555",
             NationalIdentityNumber = "12345678901",

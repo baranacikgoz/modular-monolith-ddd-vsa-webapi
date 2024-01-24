@@ -32,7 +32,7 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
         CancellationToken cancellationToken)
         => await phoneVerificationTokenService
             .ValidateTokenAsync(model.PhoneNumber, phoneVerificationToken, cancellationToken)
-            .BindAsync(() => CreateName(model.FirstName, model.MiddleName, model.LastName))
+            .BindAsync(() => CreateName(model.FirstName, model.LastName))
             .MapAsync(names => new ApplicationUser(
                 names.ProcessedName,
                 names.ProcessedLastName,
@@ -40,19 +40,12 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
                 model.NationalIdentityNumber.Trim(),
                 model.BirthDate));
 
-    private static Result<(string ProcessedName, string ProcessedLastName)> CreateName(string firstName, string? middleName, string lastName)
+    private static Result<(string ProcessedName, string ProcessedLastName)> CreateName(string firstName, string lastName)
     {
         var processedFirstName = firstName.TrimmedUpperInvariantTransliterateTurkishChars();
         var processedLastName = lastName.TrimmedUpperInvariantTransliterateTurkishChars();
 
-        if (string.IsNullOrWhiteSpace(middleName))
-        {
-            return (processedFirstName, processedLastName);
-        }
-
-        var processedMiddleName = middleName.TrimmedUpperInvariantTransliterateTurkishChars();
-
-        return ($"{processedFirstName} {processedMiddleName}", processedLastName);
+        return (processedFirstName, processedLastName);
     }
 
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
