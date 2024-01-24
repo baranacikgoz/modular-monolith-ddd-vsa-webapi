@@ -1,5 +1,6 @@
 ﻿using Common.Core.Contracts;
 using Common.Core.Interfaces;
+using Common.Localization;
 using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
@@ -28,7 +29,7 @@ internal partial class ExceptionHandlingMiddleware(IServiceProvider serviceProvi
             }
 
             var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
-            var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ExceptionHandlingMiddleware>>();
+            var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
             var problemDetails = problemDetailsFactory.Create(
                 status: StatusCodes.Status500InternalServerError,

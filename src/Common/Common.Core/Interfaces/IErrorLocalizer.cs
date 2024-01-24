@@ -5,5 +5,5 @@ namespace Common.Core.Interfaces;
 
 public interface IErrorLocalizer
 {
-    string Localize(Error error, IStringLocalizer<IErrorLocalizer> stringLocalizer);
+    string Localize(Error error, IStringLocalizer localizer);
 }

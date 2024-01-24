@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Common.Localization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
 namespace IdentityAndAuth.Features.Identity.Infrastructure;
 
 internal class LocalizedIdentityErrorDescriber(
-    IStringLocalizer<LocalizedIdentityErrorDescriber> localizer
+    IStringLocalizer<ResxLocalizer> localizer
     ) : IdentityErrorDescriber
 {
     public override Microsoft.AspNetCore.Identity.IdentityError ConcurrencyFailure()

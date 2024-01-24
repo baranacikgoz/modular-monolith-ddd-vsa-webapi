@@ -1,12 +1,9 @@
 {
-  "CustomLocalizationOptions": {
-    "ResourcesPath": "Resources",
+  "ResxLocalizationOptions": {
     "DefaultCulture": "tr",
     "SupportedCultures": [
       "tr",
-      "tr-TR",
-      "en",
-      "en-US"
+      "en"
     ]
   }
 }

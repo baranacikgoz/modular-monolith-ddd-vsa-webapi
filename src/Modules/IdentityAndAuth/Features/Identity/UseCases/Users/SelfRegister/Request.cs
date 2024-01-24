@@ -2,6 +2,7 @@
 using System.Globalization;
 using Common.Core.Contracts.Results;
 using Common.Core.Validation;
+using Common.Localization;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -23,7 +24,7 @@ public sealed class RequestValidator : ResilientValidator<Request>
 {
     // Checkout: https://www.youtube.com/watch?v=IzDMg916t98&t=573s&ab_channel=NickChapsas
     private static readonly SearchValues<char> _turkishAlphabet = SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
-    public RequestValidator(IStringLocalizer<RequestValidator> localizer)
+    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.PhoneVerificationToken)
             .PhoneVerificationTokenValidation(localizer);

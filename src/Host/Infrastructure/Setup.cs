@@ -22,7 +22,7 @@ public static partial class Setup
             .AddVersioning()
             .AddHttpContextAccessor()
             .AddSingleton<RequestResponseLoggingMiddleware>()
-            .AddCustomLocalization("Resources")
+            .AddResxLocalization()
             .AddRateLimiting(
                 configuration,
                 IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
@@ -46,7 +46,7 @@ public static partial class Setup
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         => app
             .UseRequestResponseLoggingMiddleware()
-            .UseCustomLocalization()
+            .UseResxLocalization()
             .UseRateLimiter()
             .UseCors()
             .UseExceptionHandlingMiddleware()
@@ -65,7 +65,7 @@ public static partial class Setup
 
     private static IServiceCollection AddErrorLocalizer(
         this IServiceCollection services,
-        params IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>>[] errorLocalizationsPerModule)
+        params IEnumerable<KeyValuePair<string, Func<IStringLocalizer, string>>>[] errorLocalizationsPerModule)
         => services
             .AddSingleton<IErrorLocalizer, AggregatedErrorLocalizer>(_ =>
             {

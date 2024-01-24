@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Common.Localization;
 using FluentValidation.Results;
 using Host.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using SharpGrip.FluentValidation.AutoValidation.Endpoints.Results;
 namespace Host.Validation;
 
 internal class CustomFluentValidationResultFactory(
-    IStringLocalizer<AggregatedErrorLocalizer> localizer
+    IStringLocalizer<ResxLocalizer> localizer
     ) : IFluentValidationAutoValidationResultFactory
 {
 

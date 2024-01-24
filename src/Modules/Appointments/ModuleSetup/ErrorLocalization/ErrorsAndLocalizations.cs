@@ -8,7 +8,7 @@ namespace Appointments.ModuleSetup.ErrorLocalization;
 
 public static class ErrorsAndLocalizations
 {
-    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> Get()
+    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer, string>>> Get()
     {
         yield return new(
             nameof(CoordinatesErrors.LatitudeMustBeBetweenMinus90And90),

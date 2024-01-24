@@ -2,11 +2,8 @@
 
 namespace Common.Options;
 
-public class CustomLocalizationOptions
+public class ResxLocalizationOptions
 {
-    [Required(AllowEmptyStrings = false)]
-    public string ResourcesPath { get; set; } = default!;
-
     [Required(AllowEmptyStrings = false)]
     public string DefaultCulture { get; set; } = default!;
 

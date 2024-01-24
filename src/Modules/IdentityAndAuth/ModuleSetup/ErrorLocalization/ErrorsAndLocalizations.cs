@@ -9,7 +9,7 @@ namespace IdentityAndAuth.ModuleSetup.ErrorLocalization;
 
 public static class ErrorsAndLocalizations
 {
-    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> Get()
+    public static IEnumerable<KeyValuePair<string, Func<IStringLocalizer, string>>> Get()
     {
         yield return new(nameof(UserErrors.UserNotFound), localizer => localizer["Kullanıcı bulunamadı."]);
         yield return new(nameof(IdentityErrors.Some), localizer => localizer["Bir veya daha fazla hata oluştu."]);
