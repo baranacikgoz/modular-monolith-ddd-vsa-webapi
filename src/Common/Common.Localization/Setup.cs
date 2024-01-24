@@ -3,26 +3,44 @@ using Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Common.Localization;
 
 public static class Setup
 {
-    public static IServiceCollection AddCustomLocalization(this IServiceCollection services, string ResourcesPath)
+    public static IServiceCollection AddResxLocalization(this IServiceCollection services)
     {
-        return services.AddLocalization(options => options.ResourcesPath = ResourcesPath);
+        return services.AddLocalization(options => options.ResourcesPath = "Resources");
     }
 
-    public static IApplicationBuilder UseCustomLocalization(this IApplicationBuilder app)
+    public static IApplicationBuilder UseResxLocalization(this IApplicationBuilder app)
     {
-        var locOptions = app.ApplicationServices.GetRequiredService<IOptions<CustomLocalizationOptions>>().Value;
+        var locOptions = app.ApplicationServices.GetRequiredService<IOptions<ResxLocalizationOptions>>().Value;
 
         app.UseRequestLocalization(opt =>
         {
             opt.DefaultRequestCulture = new RequestCulture(locOptions.DefaultCulture);
             opt.SupportedCultures = locOptions.SupportedCultures.Select(c => new CultureInfo(c)).ToList();
+            opt.SupportedUICultures = locOptions.SupportedCultures.Select(c => new CultureInfo(c)).ToList();
             opt.FallBackToParentCultures = true;
+            opt.RequestCultureProviders.Clear();
+            opt.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
+            opt.ApplyCurrentCultureToResponseHeaders = true;
+        });
+
+        app.Use((context, next) =>
+        {
+            var culture = context.Request.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture;
+            var logger = context.RequestServices.GetRequiredService<ILogger<ResxLocalizer>>();
+
+#pragma warning disable CA1848 // Use the LoggerMessage delegates
+            logger.LogInformation("Current culture is {Culture}", culture);
+#pragma warning restore CA1848 // Use the LoggerMessage delegates
+
+            return next();
         });
 
         return app;

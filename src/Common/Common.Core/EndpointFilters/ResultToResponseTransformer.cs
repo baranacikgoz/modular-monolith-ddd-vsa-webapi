@@ -1,6 +1,7 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.Interfaces;
+using Common.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -27,7 +28,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
             onFailure: error =>
             {
                 var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
+                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                 var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
                 return problemDetailsFactory.Create(
@@ -59,7 +60,7 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
             onFailure: error =>
             {
                 var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<IErrorLocalizer>>();
+                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                 var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
                 return problemDetailsFactory.Create(

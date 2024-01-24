@@ -1,5 +1,6 @@
 ﻿using Common.Core.Contracts.Results;
 using Common.Core.Validation;
+using Common.Localization;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
 using Microsoft.Extensions.Localization;
@@ -10,7 +11,7 @@ public sealed record Request(string PhoneNumber);
 
 public class RequestValidator : ResilientValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<RequestValidator> localizer)
+    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.PhoneNumber)
             .PhoneNumberValidation(localizer);

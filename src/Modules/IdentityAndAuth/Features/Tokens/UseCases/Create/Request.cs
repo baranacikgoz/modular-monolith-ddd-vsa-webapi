@@ -1,4 +1,5 @@
 ﻿using Common.Core.Validation;
+using Common.Localization;
 using IdentityAndAuth.Features.Common.Validations;
 using Microsoft.Extensions.Localization;
 
@@ -8,7 +9,7 @@ public sealed record Request(string PhoneVerificationToken, string PhoneNumber);
 
 public sealed class RequestValidator : ResilientValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<RequestValidator> localizer)
+    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.PhoneVerificationToken)
             .PhoneVerificationTokenValidation(localizer);

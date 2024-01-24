@@ -8,8 +8,8 @@ public static class Setup
     public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddOptions<CustomLocalizationOptions>()
-            .Bind(configuration.GetSection(nameof(CustomLocalizationOptions)))
+            .AddOptions<ResxLocalizationOptions>()
+            .Bind(configuration.GetSection(nameof(ResxLocalizationOptions)))
             .ValidateDataAnnotations()
             .Validate(o => o.SupportedCultures.Count > 0, "SupportedCultures must contain at least one culture.")
             .ValidateOnStart();

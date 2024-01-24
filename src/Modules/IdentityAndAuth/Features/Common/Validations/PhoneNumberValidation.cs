@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Common.Localization;
+using FluentValidation;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.Extensions.Localization;
 
@@ -6,7 +7,7 @@ namespace IdentityAndAuth.Features.Common.Validations;
 
 public static partial class CommonValidations
 {
-    public static IRuleBuilderOptions<T, string> PhoneNumberValidation<T>(this IRuleBuilder<T, string> ruleBuilder, IStringLocalizer localizer)
+    public static IRuleBuilderOptions<T, string> PhoneNumberValidation<T>(this IRuleBuilder<T, string> ruleBuilder, IStringLocalizer<ResxLocalizer> localizer)
     {
         return ruleBuilder
             .NotEmpty()

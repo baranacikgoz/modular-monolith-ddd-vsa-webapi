@@ -1,4 +1,5 @@
 ﻿using Common.Core.Validation;
+using Common.Localization;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
@@ -8,7 +9,7 @@ public sealed record Request(string ExpiredAccessToken, string RefreshToken);
 
 public sealed class RequestValidator : ResilientValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<RequestValidator> localizer)
+    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.RefreshToken)
             .NotEmpty()

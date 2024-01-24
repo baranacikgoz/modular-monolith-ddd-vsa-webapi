@@ -13,4 +13,8 @@
     <PackageReference Include="FluentValidation" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Localization\Common.Localization.csproj" />
+  </ItemGroup>
+
 </Project>

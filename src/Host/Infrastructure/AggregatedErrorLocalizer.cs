@@ -9,8 +9,8 @@ namespace Host.Infrastructure;
 public class AggregatedErrorLocalizer : IErrorLocalizer
 {
     // See https://learn.microsoft.com/en-us/dotnet/api/system.collections.frozen.frozendictionary-2?view=net-8.0
-    private readonly FrozenDictionary<string, Func<IStringLocalizer<IErrorLocalizer>, string>> _aggregatedErrorsAndLocalizations;
-    public AggregatedErrorLocalizer(IEnumerable<KeyValuePair<string, Func<IStringLocalizer<IErrorLocalizer>, string>>> errorsAndLocalizations)
+    private readonly FrozenDictionary<string, Func<IStringLocalizer, string>> _aggregatedErrorsAndLocalizations;
+    public AggregatedErrorLocalizer(IEnumerable<KeyValuePair<string, Func<IStringLocalizer, string>>> errorsAndLocalizations)
     {
         // The service will be singleton, so don't worry about this operation being expensive.
         _aggregatedErrorsAndLocalizations = errorsAndLocalizations
@@ -18,11 +18,11 @@ public class AggregatedErrorLocalizer : IErrorLocalizer
                                             .ToFrozenDictionary();
     }
 
-    public string Localize(Error error, IStringLocalizer<IErrorLocalizer> stringLocalizer)
+    public string Localize(Error error, IStringLocalizer localizer)
     {
         if (_aggregatedErrorsAndLocalizations.TryGetValue(error.Key, out var localizerFunc))
         {
-            return localizerFunc(stringLocalizer);
+            return localizerFunc(localizer);
         }
 
         throw new NotImplementedException($"Localization of error '{error.Key}' is not implemented.");

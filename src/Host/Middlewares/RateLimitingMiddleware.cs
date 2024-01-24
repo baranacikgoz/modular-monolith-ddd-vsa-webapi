@@ -2,6 +2,7 @@
 using Common.Core.Contracts;
 using Common.Core.Extensions;
 using Common.Core.Interfaces;
+using Common.Localization;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
@@ -62,7 +63,7 @@ internal static class RateLimitingMiddleware
     {
         return (context, _) =>
         {
-            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<Program>>();
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
             string[]? errors = null;
 
