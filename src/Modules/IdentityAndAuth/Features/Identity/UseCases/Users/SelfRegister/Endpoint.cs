@@ -38,7 +38,7 @@ internal static class Endpoint
         => await ApplicationUser.CreateAsync(
                 new()
                 {
-                    FirstName = request.FirstName,
+                    FirstName = request.Name,
                     LastName = request.LastName,
                     PhoneNumber = request.PhoneNumber,
                     NationalIdentityNumber = request.NationalIdentityNumber,
