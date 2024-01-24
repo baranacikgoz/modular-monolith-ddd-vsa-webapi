@@ -29,7 +29,7 @@ public static partial class Setup
         => app
             .NewApiVersionSet()
             .HasApiVersion(1)
-            .HasApiVersion(2)
-            .HasApiVersion(3)
+            // .HasApiVersion(2)
+            // .HasApiVersion(3)
             .Build();
 }
