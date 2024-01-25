@@ -31,18 +31,6 @@ public static class Setup
             opt.ApplyCurrentCultureToResponseHeaders = true;
         });
 
-        app.Use((context, next) =>
-        {
-            var culture = context.Request.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture.Culture;
-            var logger = context.RequestServices.GetRequiredService<ILogger<ResxLocalizer>>();
-
-#pragma warning disable CA1848 // Use the LoggerMessage delegates
-            logger.LogInformation("Current culture is {Culture}", culture);
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
-
-            return next();
-        });
-
         return app;
     }
 }
