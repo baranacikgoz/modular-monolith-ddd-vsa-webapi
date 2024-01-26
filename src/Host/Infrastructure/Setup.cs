@@ -27,7 +27,7 @@ public static partial class Setup
                 configuration,
                 IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
                 Appointments.ModuleSetup.RateLimiting.Policies.Get())
-            .AddSingleton<ExceptionHandlingMiddleware>()
+            .AddExceptionHandler<GlobalExceptionHandlingMiddleware>()
             .AddErrorLocalizer(
                 IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
                 Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
@@ -60,8 +60,7 @@ public static partial class Setup
                 appBuilder => appBuilder.UseMiddleware<RequestResponseLoggingMiddleware>());
 
     private static IApplicationBuilder UseExceptionHandlingMiddleware(this IApplicationBuilder app)
-        => app
-            .UseMiddleware<ExceptionHandlingMiddleware>();
+        => app.UseExceptionHandler(options => { });
 
     private static IServiceCollection AddErrorLocalizer(
         this IServiceCollection services,
