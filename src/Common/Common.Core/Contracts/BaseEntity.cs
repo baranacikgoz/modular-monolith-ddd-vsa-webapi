@@ -1,15 +1,18 @@
-﻿namespace Common.Core.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
-public interface IEntity<out TId>
-{
-    TId Id { get; }
-}
+namespace Common.Core.Contracts;
 
-public abstract class BaseEntity<TId> : IEntity<TId>
+public abstract class BaseEntity<TId>
 {
     protected BaseEntity(TId id)
     {
         Id = id;
     }
     public TId Id { get; }
+
+#pragma warning disable CA1819
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = default!;
+#pragma warning restore CA1819
+
 }

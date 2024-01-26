@@ -4,14 +4,16 @@ using Common.Core.Auth;
 using Common.Eventbus;
 using Common.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Appointments.Persistence;
 
 internal sealed class AppointmentsDbContext(
     DbContextOptions<AppointmentsDbContext> options,
     ICurrentUser currentUser,
-    IEventBus eventBus
-    ) : BaseDbContext(options, currentUser, eventBus)
+    IEventBus eventBus,
+    ILogger<AppointmentsDbContext> logger
+    ) : BaseDbContext(options, currentUser, eventBus, logger)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
