@@ -464,6 +464,7 @@ dotnet_diagnostic.IDE0161.severity = none
 dotnet_diagnostic.CS8981.severity = none
 dotnet_diagnostic.CA1861.severity = none
 dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1825.severity = none
 
 [**/Request.cs] # Allow empty requests
 dotnet_diagnostic.S2094.severity = none
