@@ -21,24 +21,11 @@ public static partial class Setup
             .AddCommonOptions(configuration)
             .AddVersioning()
             .AddHttpContextAccessor()
-            .AddSingleton<RequestResponseLoggingMiddleware>()
+            .AddRequestResponseLoggingMiddleware()
             .AddResxLocalization()
-            .AddRateLimiting(
-                configuration,
-                IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
-                Sales.ModuleSetup.RateLimiting.Policies.Get())
-            .AddExceptionHandler<GlobalExceptionHandlingMiddleware>()
-            .AddErrorLocalizer(
-                IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
-                Sales.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
-            )
-            .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
+            .AddGlobalExceptionHandlingMiddleware()
+            .AddCustomProblemDetailsFactory()
             .AddCaching()
-            .AddEventBus(
-                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                typeof(Sales.IAssemblyReference).Assembly,
-                typeof(Notifications.IAssemblyReference).Assembly)
-            .AddFluentValidation()
             .AddEndpointsApiExplorer()
             .AddMonitoringAndTracing(configuration)
             .AddCustomCors();
@@ -49,45 +36,15 @@ public static partial class Setup
             .UseResxLocalization()
             .UseRateLimiter()
             .UseCors()
-            .UseExceptionHandlingMiddleware()
+            .UseGlobalExceptionHandlingMiddleware()
             .UseAuth()
             .UseMonitoringAndTracing(configuration);
-
-    private static IApplicationBuilder UseRequestResponseLoggingMiddleware(this IApplicationBuilder app)
-        => app
-            .UseWhen(
-                context => context.Request.Path != "/metrics",
-                appBuilder => appBuilder.UseMiddleware<RequestResponseLoggingMiddleware>());
-
-    private static IApplicationBuilder UseExceptionHandlingMiddleware(this IApplicationBuilder app)
-        => app.UseExceptionHandler(options => { });
-
-    private static IServiceCollection AddErrorLocalizer(
-        this IServiceCollection services,
-        params IEnumerable<KeyValuePair<string, Func<IStringLocalizer, string>>>[] errorLocalizationsPerModule)
-        => services
-            .AddSingleton<IErrorLocalizer, AggregatedErrorLocalizer>(_ =>
-            {
-                return new AggregatedErrorLocalizer(errorLocalizationsPerModule.SelectMany(x => x));
-            });
-
-    private static IServiceCollection AddFluentValidation(this IServiceCollection services)
-        => services
-            .AddValidatorsFromAssemblies(
-                new List<Assembly>()
-                {
-                    typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                    typeof(Sales.IAssemblyReference).Assembly,
-                    typeof(Notifications.IAssemblyReference).Assembly
-                }
-            )
-            .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)
         => services
             .AddCors(options =>
             {
-                // Change this if production.
+                // Change this in production.
                 options.AddDefaultPolicy(builder =>
                         builder
                         .AllowAnyOrigin()
@@ -95,4 +52,6 @@ public static partial class Setup
                         .AllowAnyHeader());
             });
 
+    private static IServiceCollection AddCustomProblemDetailsFactory(this IServiceCollection services)
+        => services.AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>();
 }
