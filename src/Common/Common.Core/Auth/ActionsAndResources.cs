@@ -1,6 +1,6 @@
 ﻿namespace Common.Core.Auth;
 
-public static class RfActions
+public static class CustomActions
 {
     public const string Create = nameof(Create);
     public const string CreateMy = nameof(CreateMy);
@@ -9,12 +9,13 @@ public static class RfActions
     public const string Update = nameof(Update);
     public const string UpdateMy = nameof(UpdateMy);
     public const string Delete = nameof(Delete);
+    public const string DeleteMy = nameof(DeleteMy);
 }
 
-public static class RfResources
+public static class CustomResources
 {
     public const string Users = nameof(Users);
 
-    public const string Venues = nameof(Venues);
-    public const string Appointments = nameof(Appointments);
+    public const string Stores = nameof(Stores);
+    public const string Products = nameof(Products);
 }

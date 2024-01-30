@@ -53,7 +53,7 @@ internal static class RateLimitingMiddleware
                             {
                                 PermitLimit = permitLimit,
                                 Window = TimeSpan.FromMilliseconds(periodInMs),
-                                QueueLimit = globalRateLimiting.HasQueueLimit ? globalRateLimiting.QueueLimit!.Value : 0
+                                QueueLimit = globalRateLimiting.QueueLimit
                             };
                         }
                 ));

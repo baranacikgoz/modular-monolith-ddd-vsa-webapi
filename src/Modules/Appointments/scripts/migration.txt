@@ -1,6 +1,0 @@
-# Assumed executed directory is / root directory of the project
-
-dotnet ef migrations add initial --startup-project src/Host --project src/Modules/Appointments --context AppointmentsDbContext -o Persistence/Migrations -v
-
-# Don't use this, migrations should be applied automatically
-dotnet ef database update --startup-project src/Host --project src/Modules/Appointments -v

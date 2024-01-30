@@ -69,12 +69,6 @@ internal class UserService(
                         return true;
                     }
                     break;
-                case CustomRoles.VenueAdmin:
-                    if (CustomPermissions.VenueAdmin.Contains(permissionName))
-                    {
-                        return true;
-                    }
-                    break;
                 case CustomRoles.Basic:
                     if (CustomPermissions.Basic.Contains(permissionName))
                     {

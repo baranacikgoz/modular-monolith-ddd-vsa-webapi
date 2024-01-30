@@ -56,10 +56,13 @@ public static class Setup
             .ValidateDataAnnotations()
             .Validate(o => o.Global?.Limit > 0, "Global.Limit must be greater than 0.")
             .Validate(o => o.Global?.PeriodInMs > 0, "Global.Period must be greater than 0.")
+            .Validate(o => o.Global?.QueueLimit >= 0, "Global.QueueLimit must be greater than or equal to 0.")
             .Validate(o => o.Sms?.Limit > 0, "Sms.Limit must be greater than 0.")
             .Validate(o => o.Sms?.PeriodInMs > 0, "Sms.Period must be greater than 0.")
-            .Validate(o => o.SearchAppointments?.Limit > 0, "SearchAppointments.Limit must be greater than 0.")
-            .Validate(o => o.SearchAppointments?.PeriodInMs > 0, "SearchAppointments.Period must be greater than 0.")
+            .Validate(o => o.Sms?.QueueLimit >= 0, "Sms.QueueLimit must be greater than or equal to 0.")
+            .Validate(o => o.CreateStore?.Limit > 0, "CreateStore.Limit must be greater than 0.")
+            .Validate(o => o.CreateStore?.PeriodInMs > 0, "CreateStore.Period must be greater than 0.")
+            .Validate(o => o.CreateStore?.QueueLimit >= 0, "CreateStore.QueueLimit must be greater than or equal to 0.")
             .ValidateOnStart();
 
         services

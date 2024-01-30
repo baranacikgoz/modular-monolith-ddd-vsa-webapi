@@ -23,7 +23,7 @@ internal static class Endpoint
             .MapGet("", GetAsync)
             .WithDescription("Get current user.")
             .Produces<Response>(StatusCodes.Status200OK)
-            .MustHavePermission(RfActions.ReadMy, RfResources.Users)
+            .MustHavePermission(CustomActions.ReadMy, CustomResources.Users)
             .TransformResultTo<Response>();
     }
 
@@ -37,7 +37,7 @@ internal static class Endpoint
                                                     .Where(x => x.Id == currentUser.Id)
                                                     .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!))
                                                     .SingleOrDefaultAsync(cancellationToken),
-                    errorIfTaskReturnsNull: UserErrors.UserNotFound)
+                    errorIfValueNull: UserErrors.UserNotFound)
             .MapAsync(dto => new Response(
                                     dto.Id,
                                     dto.Name,

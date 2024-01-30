@@ -1,6 +1,6 @@
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using IdentityAndAuth.ModuleSetup;
-using Appointments.ModuleSetup;
+using Sales.ModuleSetup;
 
 namespace Host.Infrastructure;
 
@@ -9,7 +9,7 @@ public static partial class Setup
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
         => services
             .AddIdentityAndAuthModule(configuration)
-            .AddAppointmentsModule();
+            .AddSalesModule();
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
         var versionNeutralApiGroup = app
@@ -20,6 +20,8 @@ public static partial class Setup
 
         var apiVersionSet = app.GetApiVersionSet();
 
+        // I did not extend this group from "/" root group because I got errors doing so (probably because of versioning)
+        // So decided to create it from scratch.
         var versionedApiGroup = app
                                 .MapGroup("/v{version:apiVersion}")
                                 .WithApiVersionSet(apiVersionSet)
@@ -28,7 +30,7 @@ public static partial class Setup
                                 .WithOpenApi();
 
         app.UseIdentityAndAuthModule(versionNeutralApiGroup);
-        app.UseAppointmentsModule(versionedApiGroup);
+        app.UseSalesModule(versionedApiGroup);
 
         return app;
     }

@@ -42,8 +42,8 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
 
     private static Result<(string ProcessedName, string ProcessedLastName)> CreateName(string firstName, string lastName)
     {
-        var processedFirstName = firstName.TrimmedUpperInvariantTransliterateTurkishChars();
-        var processedLastName = lastName.TrimmedUpperInvariantTransliterateTurkishChars();
+        var processedFirstName = TrimmedUpperInvariantTransliterateTurkishChars(firstName);
+        var processedLastName = TrimmedUpperInvariantTransliterateTurkishChars(lastName);
 
         return (processedFirstName, processedLastName);
     }
@@ -52,6 +52,38 @@ internal sealed class ApplicationUser : IdentityUser<Guid>
     {
         RefreshToken = refreshToken;
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
+    }
+
+    private static string TrimmedUpperInvariantTransliterateTurkishChars(string value)
+    {
+        value = value.Trim();
+
+        return string.Create(value.Length, value, (chars, state) =>
+        {
+            for (var i = 0; i < state.Length; i++)
+            {
+                var c = state[i];
+
+                var result = c switch
+                {
+                    'ş' => 'S',
+                    'Ş' => 'S',
+                    'ğ' => 'G',
+                    'Ğ' => 'G',
+                    'ç' => 'C',
+                    'Ç' => 'C',
+                    'ö' => 'O',
+                    'Ö' => 'O',
+                    'ü' => 'U',
+                    'Ü' => 'U',
+                    'ı' => 'I',
+                    'İ' => 'I',
+                    _ => char.ToUpperInvariant(c),
+                };
+
+                chars[i] = result;
+            }
+        });
     }
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
