@@ -7,47 +7,47 @@ internal static class CustomPermissions
 {
     private static readonly HashSet<CustomPermission> _basic =
     [
-        new("Read My Profile", RfActions.ReadMy, RfResources.Users),
-        new("Update My Profile", RfActions.UpdateMy, RfResources.Users),
-        new("Create My Appointments", RfActions.CreateMy, RfResources.Appointments),
-        new("Read My Appointments", RfActions.ReadMy, RfResources.Appointments),
-        new("Update My Appointments", RfActions.UpdateMy, RfResources.Appointments),
-        new("Read Venues", RfActions.Read, RfResources.Venues),
-    ];
+        new("Read My Profile", CustomActions.ReadMy, CustomResources.Users),
+        new("Update My Profile", CustomActions.UpdateMy, CustomResources.Users),
 
-    private static readonly HashSet<CustomPermission> _venueAdmin =
-    [
-        new("Create My Venue", RfActions.CreateMy, RfResources.Venues),
-        new("Read My Venue", RfActions.ReadMy, RfResources.Venues),
-        new("Update My Venue", RfActions.UpdateMy, RfResources.Venues),
-        new("Read Appointments", RfActions.Read, RfResources.Appointments),
+        new("Create My Store", CustomActions.CreateMy, CustomResources.Stores),
+        new("Read My Store", CustomActions.ReadMy, CustomResources.Stores),
+        new("Update My Store", CustomActions.UpdateMy, CustomResources.Stores),
+        new("Delete My Store", CustomActions.DeleteMy, CustomResources.Stores),
+
+        new("Create My Product", CustomActions.CreateMy, CustomResources.Products),
+        new("Read My Product", CustomActions.ReadMy, CustomResources.Products),
+        new("Update My Product", CustomActions.UpdateMy, CustomResources.Products),
+        new("Delete My Product", CustomActions.DeleteMy, CustomResources.Products),
+
+        // For individual users to see all stores and products
+        new("Read Products", CustomActions.Read, CustomResources.Products),
     ];
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
     [
-        new("Create Users", RfActions.Create, RfResources.Users),
-        new("Read Users", RfActions.Read, RfResources.Users),
-        new("Update Users", RfActions.Update, RfResources.Users),
-        new("Delete Users", RfActions.Delete, RfResources.Users),
-        new("Create Venues", RfActions.Create, RfResources.Venues),
-        new("Read Venues", RfActions.Read, RfResources.Venues),
-        new("Update Venues", RfActions.Update, RfResources.Venues),
-        new("Delete Venues", RfActions.Delete, RfResources.Venues),
-        new("Create Appointments", RfActions.Create, RfResources.Appointments),
-        new("Read Appointments", RfActions.Read, RfResources.Appointments),
-        new("Update Appointments", RfActions.Update, RfResources.Appointments),
-        new("Delete Appointments", RfActions.Delete, RfResources.Appointments),
+        new("Create Users", CustomActions.Create, CustomResources.Users),
+        new("Read Users", CustomActions.Read, CustomResources.Users),
+        new("Update Users", CustomActions.Update, CustomResources.Users),
+        new("Delete Users", CustomActions.Delete, CustomResources.Users),
+
+        new("Create Stores", CustomActions.Create, CustomResources.Stores),
+        new("Read Stores", CustomActions.Read, CustomResources.Stores),
+        new("Update Stores", CustomActions.Update, CustomResources.Stores),
+        new("Delete Stores", CustomActions.Delete, CustomResources.Stores),
+
+        new("Create Products", CustomActions.Create, CustomResources.Products),
+        new("Read Products", CustomActions.Read, CustomResources.Products),
+        new("Update Products", CustomActions.Update, CustomResources.Products),
+        new("Delete Products", CustomActions.Delete, CustomResources.Products),
     ];
 
-    public static readonly IReadOnlySet<string> Basic = _basic
+    public static readonly IReadOnlySet<string> Basic =
+        _basic
         .Select(r => r.Name)
         .ToFrozenSet();
-    public static readonly IReadOnlySet<string> VenueAdmin = _basic
-        .Concat(_venueAdmin)
-        .Select(r => r.Name)
-        .ToFrozenSet();
-    public static readonly IReadOnlySet<string> SystemAdmin = _basic
-        .Concat(_venueAdmin)
+    public static readonly IReadOnlySet<string> SystemAdmin =
+        _basic
         .Concat(_systemAdmin)
         .Select(r => r.Name)
         .ToFrozenSet();

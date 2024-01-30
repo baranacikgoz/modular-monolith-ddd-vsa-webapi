@@ -15,7 +15,7 @@ COPY ["src/Common/Common.Options/Common.Options.csproj", "Common/Common.Options/
 COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "Common/Common.Persistence/"]
 
 COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "Modules/IdentityAndAuth/"]
-COPY ["src/Modules/Appointments/Appointments.csproj", "Modules/Appointments/"]
+COPY ["src/Modules/Sales/Sales.csproj", "Modules/Sales/"]
 COPY ["src/Modules/Notifications/Notifications.csproj", "Modules/Notifications/"]
 
 COPY ["src/Host/Host.csproj", "src/Host/"]

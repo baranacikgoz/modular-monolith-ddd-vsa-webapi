@@ -20,10 +20,6 @@ public static class Policies
 
                 opt.PermitLimit = permitLimit;
                 opt.Window = TimeSpan.FromMilliseconds(periodInMs);
-
-                if (smsRateLimiting.HasQueueLimit)
-                {
-                    opt.QueueLimit = smsRateLimiting.QueueLimit!.Value;
-                }
+                opt.QueueLimit = smsRateLimiting.QueueLimit;
             });
 }

@@ -26,17 +26,17 @@ public static partial class Setup
             .AddRateLimiting(
                 configuration,
                 IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
-                Appointments.ModuleSetup.RateLimiting.Policies.Get())
+                Sales.ModuleSetup.RateLimiting.Policies.Get())
             .AddExceptionHandler<GlobalExceptionHandlingMiddleware>()
             .AddErrorLocalizer(
                 IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get(),
-                Appointments.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
+                Sales.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get()
             )
             .AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>()
             .AddCaching()
             .AddEventBus(
-                typeof(Appointments.IAssemblyReference).Assembly,
                 typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                typeof(Sales.IAssemblyReference).Assembly,
                 typeof(Notifications.IAssemblyReference).Assembly)
             .AddFluentValidation()
             .AddEndpointsApiExplorer()
@@ -76,8 +76,8 @@ public static partial class Setup
             .AddValidatorsFromAssemblies(
                 new List<Assembly>()
                 {
-                    typeof(Appointments.IAssemblyReference).Assembly,
                     typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                    typeof(Sales.IAssemblyReference).Assembly,
                     typeof(Notifications.IAssemblyReference).Assembly
                 }
             )

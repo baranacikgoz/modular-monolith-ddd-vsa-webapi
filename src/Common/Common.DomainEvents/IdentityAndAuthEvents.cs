@@ -10,7 +10,7 @@ public static partial class Events
         {
             public static class IdentityAndAuth
             {
-                public record UserCreated(Guid UserId, string Name) : DomainEvent;
+                public sealed record UserCreated(Guid UserId, string Name) : DomainEvent;
             }
         }
     }

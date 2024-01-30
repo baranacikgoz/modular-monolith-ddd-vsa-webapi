@@ -10,9 +10,9 @@
       "PeriodInMs": 15000,
       "QueueLimit": 0
     },
-    "SearchAppointments": {
+    "CreateStore": {
       "Limit": 1,
-      "PeriodInMs": 15000,
+      "PeriodInMs": 604800000, // 7 days
       "QueueLimit": 0
     }
   }

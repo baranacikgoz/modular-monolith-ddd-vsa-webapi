@@ -19,11 +19,16 @@ internal static class Setup
                 // cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>()
             });
 
+    /// <summary>
+    /// This method is used to shorten the schema names to generate shorter names for openapi generator for the front-end.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     private static string SchemaIdGenerator(Type type)
     {
-        // For example, for: "Appointments.Features.Venues.UseCases.Create.Request" return Venue.Create.Request
-        // If "Features" existst but "UseCases" doesn't, return Venue.Create.Request again.
-        // If neither exist, such as Common.Core.Contracts.IEmpty200Response, return IEmpty200Response.
+        // For example, for: "Sales.Features.UseCases.v1.Stores.Create.Request" return "Stores.Create.Request".
+        // If "Features" existst but "UseCases" doesn't, return "Stores.Create.Request" as well.
+        // If neither exist, such as Common.Core.Contracts.IEmpty200Response, return IEmpty200Response (the last part of the name).
 
         var name = type.FullName ?? type.Name;
 
