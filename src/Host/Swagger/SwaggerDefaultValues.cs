@@ -17,7 +17,10 @@ public class SwaggerDefaultValues : IOperationFilter
         foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
         {
             var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
-            var response = operation.Responses[responseKey];
+            if (!operation.Responses.TryGetValue(responseKey, out var response))
+            {
+                continue;
+            }
 
             foreach (var contentType in response.Content.Keys)
             {

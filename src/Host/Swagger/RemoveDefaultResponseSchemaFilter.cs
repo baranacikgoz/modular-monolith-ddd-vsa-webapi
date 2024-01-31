@@ -15,7 +15,10 @@ public class RemoveDefaultResponseSchemaFilter : IOperationFilter
             value.Content.Clear();
 
             // remove 200 response
-            operation.Responses.Remove("200");
+            if (operation.Responses.TryGetValue("200", out var _))
+            {
+                operation.Responses.Remove("200");
+            }
         }
     }
 }

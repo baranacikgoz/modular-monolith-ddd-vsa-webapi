@@ -16,7 +16,7 @@ internal static class Setup
                 cfg.CustomSchemaIds(SchemaIdGenerator);
                 cfg.OperationFilter<DefaultResponsesOperationFilter>();
                 cfg.SchemaFilter<DateOnlySchemaFilter>();
-                // cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>()
+                cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
             });
 
     /// <summary>
