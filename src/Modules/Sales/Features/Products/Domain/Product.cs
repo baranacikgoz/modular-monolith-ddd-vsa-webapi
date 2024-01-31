@@ -3,11 +3,15 @@ using Sales.Features.Stores.Domain;
 
 namespace Sales.Features.Products.Domain;
 
-internal record struct ProductId(Guid Value);
+internal readonly record struct ProductId(Guid Value)
+{
+    public static ProductId New() => new(Guid.NewGuid());
+}
+
 internal class Product : AuditableEntity<ProductId>
 {
     private Product(StoreId storeId, string name)
-        : base(new(Guid.NewGuid()))
+        : base(ProductId.New())
     {
         StoreId = storeId;
         Name = name;

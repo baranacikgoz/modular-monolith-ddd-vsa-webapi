@@ -6,11 +6,15 @@ using Sales.Features.Stores.Domain.Errors;
 
 namespace Sales.Features.Stores.Domain;
 
-internal record struct StoreId(Guid Value);
+internal readonly record struct StoreId(Guid Value)
+{
+    public static StoreId New() => new(Guid.NewGuid());
+}
+
 internal class Store : AggregateRoot<StoreId>
 {
     private Store(Guid ownerId)
-        : base(new(Guid.NewGuid()))
+        : base(StoreId.New())
     {
         OwnerId = ownerId;
     }
