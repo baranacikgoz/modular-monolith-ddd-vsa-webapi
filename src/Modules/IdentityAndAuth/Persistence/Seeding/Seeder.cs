@@ -9,6 +9,6 @@ internal sealed partial class Seeder(ILogger<Seeder> logger, RoleManager<Applica
     public async Task SeedDbAsync()
     {
         await SeedRolesAsync();
-        await SeedAdminUserAsync();
+        await SeedUsersAsync();
     }
 }
