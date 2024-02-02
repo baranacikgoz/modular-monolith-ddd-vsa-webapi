@@ -466,9 +466,6 @@ dotnet_diagnostic.CA1861.severity = none
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1825.severity = none
 
-[**/Request.cs] # Allow empty requests
-dotnet_diagnostic.S2094.severity = none
-
 [**/Common.Events/**] # Allow nesting for domain events
 dotnet_diagnostic.CA1034.severity = none
 
@@ -480,6 +477,10 @@ dotnet_diagnostic.CA1716.severity = none
 
 [**/IAssemblyReference.cs] # Allow empty interfaces for assmebly markers
 dotnet_diagnostic.CA1040.severity = none
+
+[**/Common.IntermoduleRequests/**] # Allow empty interfaces for assmebly markers
+dotnet_diagnostic.CA1040.severity = none
+dotnet_diagnostic.CA1034.severity = none
 
 [**/ExceptionHandlingMiddleware.cs] # Allow general "Exception" catch
 dotnet_diagnostic.CA1031.severity = none
