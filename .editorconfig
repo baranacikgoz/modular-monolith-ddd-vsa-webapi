@@ -469,7 +469,7 @@ dotnet_diagnostic.CA1825.severity = none
 [**/Request.cs] # Allow empty requests
 dotnet_diagnostic.S2094.severity = none
 
-[**/Common.DomainEvents/**] # Allow nesting for domain events
+[**/Common.Events/**] # Allow nesting for domain events
 dotnet_diagnostic.CA1034.severity = none
 
 [**/Common.*/**] # Allow conflicted names for common contracts

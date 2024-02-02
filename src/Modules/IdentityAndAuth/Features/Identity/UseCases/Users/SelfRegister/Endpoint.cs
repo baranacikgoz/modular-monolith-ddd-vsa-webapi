@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using NimbleMediator.Contracts;
-using Common.DomainEvents;
+using Common.Events;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.SelfRegister;
 
@@ -57,10 +57,8 @@ internal static class Endpoint
                 var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
                 return identityResult.ToResult(user);
             })
-            .BindAsync(async user => await eventBus.PublishAsync(new Events
-                                                                    .Published
-                                                                    .From
+            .BindAsync(async user => await eventBus.PublishAsync(new EventsOf
                                                                     .IdentityAndAuth
-                                                                    .UserCreated(user.Id, user.Name)))
+                                                                    .UserCreatedDomainEvent(user.Id, user.Name), cancellationToken))
             .MapAsync(user => new Response(user.Id));
 }

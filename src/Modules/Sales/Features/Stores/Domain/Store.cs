@@ -1,6 +1,6 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
-using Common.DomainEvents;
+using Common.Events;
 using Sales.Features.Products.Domain;
 using Sales.Features.Stores.Domain.Errors;
 
@@ -27,11 +27,9 @@ internal class Store : AggregateRoot<StoreId>
     {
         var store = new Store(ownerId);
 
-        store.AddDomainEvent(new Events
-                                .Published
-                                .From
+        store.AddDomainEvent(new EventsOf
                                 .Sales
-                                .StoreCreated(store.Id.Value, store.OwnerId));
+                                .StoreCreatedDomainEvent(store.Id.Value, store.OwnerId));
 
         return store;
     }
@@ -40,11 +38,9 @@ internal class Store : AggregateRoot<StoreId>
     {
         _products.Add(product);
 
-        AddDomainEvent(new Events
-                          .Published
-                          .From
+        AddDomainEvent(new EventsOf
                           .Sales
-                          .ProductAdded(Id.Value, product.Id.Value));
+                          .ProductAddedDomainEvent(Id.Value, product.Id.Value));
 
         return Result.Success;
     }
@@ -55,11 +51,9 @@ internal class Store : AggregateRoot<StoreId>
 
         foreach (var product in products)
         {
-            AddDomainEvent(new Events
-                              .Published
-                              .From
+            AddDomainEvent(new EventsOf
                               .Sales
-                              .ProductAdded(Id.Value, product.Id.Value));
+                              .ProductAddedDomainEvent(Id.Value, product.Id.Value));
         }
 
         return Result.Success;

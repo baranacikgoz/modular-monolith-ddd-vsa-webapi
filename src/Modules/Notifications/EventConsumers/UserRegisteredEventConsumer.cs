@@ -1,14 +1,14 @@
 ﻿using Common.Eventbus;
 using Microsoft.Extensions.Logging;
-using Common.DomainEvents;
+using Common.Events;
 
 namespace Notifications.EventConsumers;
 
 internal partial class UserRegisteredEventConsumer(
     ILogger<UserRegisteredEventConsumer> logger
-    ) : IEventHandler<Events.Published.From.IdentityAndAuth.UserCreated>
+    ) : IEventHandler<EventsOf.IdentityAndAuth.UserCreatedDomainEvent>
 {
-    public Task HandleAsync(Events.Published.From.IdentityAndAuth.UserCreated notification, CancellationToken cancellationToken)
+    public Task HandleAsync(EventsOf.IdentityAndAuth.UserCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
         LogUserRegistered(logger, notification.Name, notification.UserId);
 
