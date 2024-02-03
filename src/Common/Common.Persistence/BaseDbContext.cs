@@ -1,6 +1,6 @@
 ﻿using Common.Core.Auth;
 using Common.Core.Contracts;
-using Common.Eventbus;
+using Common.EventBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

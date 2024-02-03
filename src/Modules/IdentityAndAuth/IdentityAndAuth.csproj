@@ -21,7 +21,8 @@
     <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
     <ProjectReference Include="../../Common/Common.Options/Common.Options.csproj" />
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
-    <ProjectReference Include="..\..\Common\Common.Eventbus\Common.Eventbus.csproj" />
+    <ProjectReference Include="../../Common/Common.EventBus/Common.EventBus.csproj" />
+    <ProjectReference Include="../../Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

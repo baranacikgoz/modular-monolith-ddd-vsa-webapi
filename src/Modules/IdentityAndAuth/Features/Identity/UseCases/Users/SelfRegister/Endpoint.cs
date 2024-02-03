@@ -2,7 +2,7 @@ using System.Globalization;
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
-using Common.Eventbus;
+using Common.EventBus;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;

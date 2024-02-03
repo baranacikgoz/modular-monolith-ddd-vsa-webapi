@@ -1,12 +1,12 @@
-﻿using Common.IntermoduleRequests.Contracts;
+﻿using Common.InterModuleRequests.Contracts;
 using MassTransit;
 
-namespace Common.IntermoduleRequests;
+namespace Common.InterModuleRequests;
 
-public class MassTransitIntermoduleRequestClient<TRequest, TResponse>(
+public class MassTransitInterModuleRequestClient<TRequest, TResponse>(
     IRequestClient<TRequest> requestClient
-    ) : IIntermoduleRequestClient<TRequest, TResponse>
-    where TRequest : class, IIntermoduleRequest<TResponse>
+    ) : IInterModuleRequestClient<TRequest, TResponse>
+    where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class
 {
     public async Task<TResponse> SendAsync(TRequest request, CancellationToken cancellationToken)

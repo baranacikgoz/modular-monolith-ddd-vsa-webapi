@@ -3,7 +3,7 @@ using Common.Localization;
 using IdentityAndAuth.ModuleSetup;
 using Common.Core.Interfaces;
 using Common.Caching;
-using Common.Eventbus;
+using Common.EventBus;
 using FluentValidation;
 using System.Reflection;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;

@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 
-namespace Common.IntermoduleRequests.Contracts;
+namespace Common.InterModuleRequests.Contracts;
 
 /// <summary>
 /// This is a mechanism to force returning response directly using <see cref="HandleAsync"/> method providing a mediator-like experience,
@@ -10,8 +10,8 @@ namespace Common.IntermoduleRequests.Contracts;
 /// </summary>
 /// <typeparam name="TRequest"></typeparam>
 /// <typeparam name="TResponse"></typeparam>
-public abstract class IntermoduleRequestHandler<TRequest, TResponse> : IConsumer<TRequest>
-    where TRequest : class, IIntermoduleRequest<TResponse>
+public abstract class InterModuleRequestHandler<TRequest, TResponse> : IConsumer<TRequest>
+    where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class
 {
     public async Task Consume(ConsumeContext<TRequest> context)

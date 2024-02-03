@@ -1,6 +1,6 @@
 ﻿using Common.Core.Contracts;
 
-namespace Common.Eventbus;
+namespace Common.EventBus;
 
 public interface IEventBus
 {

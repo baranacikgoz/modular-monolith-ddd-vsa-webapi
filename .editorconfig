@@ -478,7 +478,7 @@ dotnet_diagnostic.CA1716.severity = none
 [**/IAssemblyReference.cs] # Allow empty interfaces for assmebly markers
 dotnet_diagnostic.CA1040.severity = none
 
-[**/Common.IntermoduleRequests/**] # Allow empty interfaces for assmebly markers
+[**/Common.InterModuleRequests/**] # Allow empty interfaces for assmebly markers
 dotnet_diagnostic.CA1040.severity = none
 dotnet_diagnostic.CA1034.severity = none
 
