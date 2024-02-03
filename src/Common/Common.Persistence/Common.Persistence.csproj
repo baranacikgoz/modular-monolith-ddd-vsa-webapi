@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
-    <ProjectReference Include="..\Common.Eventbus\Common.Eventbus.csproj" />
+    <ProjectReference Include="..\Common.EventBus\Common.EventBus.csproj" />
   </ItemGroup>
 
 </Project>

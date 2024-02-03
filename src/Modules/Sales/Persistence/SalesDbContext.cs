@@ -1,5 +1,5 @@
 using Common.Core.Auth;
-using Common.Eventbus;
+using Common.EventBus;
 using Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

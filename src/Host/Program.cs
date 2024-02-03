@@ -13,7 +13,7 @@ using System.Reflection;
 using Host.Validation;
 using Host.Middlewares;
 using Common.Core.Contracts;
-using Common.Eventbus;
+using Common.EventBus;
 using Microsoft.Extensions.Options;
 using Notifications;
 using NimbleMediator.NotificationPublishers;

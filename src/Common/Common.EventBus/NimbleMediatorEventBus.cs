@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using NimbleMediator;
 using NimbleMediator.Contracts;
 
-namespace Common.Eventbus;
+namespace Common.EventBus;
 
 public partial class NimbleMediatorEventBus(
     IPublisher publisher,

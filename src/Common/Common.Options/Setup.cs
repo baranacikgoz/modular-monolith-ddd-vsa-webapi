@@ -77,6 +77,12 @@ public static class Setup
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services
+            .AddOptions<MessageBrokerOptions>()
+            .Bind(configuration.GetSection(nameof(MessageBrokerOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }

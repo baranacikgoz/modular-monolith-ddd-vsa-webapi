@@ -6,8 +6,9 @@ using Microsoft.Extensions.Localization;
 using Common.Core.Interfaces;
 using Host.Validation;
 using System.Reflection;
-using Common.Eventbus;
+using Common.EventBus;
 using FluentValidation;
+using Common.InterModuleRequests;
 
 namespace Host.Infrastructure;
 
@@ -20,6 +21,7 @@ public static partial class Setup
             .AddRateLimiting(configuration)
             .AddErrorLocalizer()
             .AddEventBus()
+            .AddInterModuleRequests()
             .AddFluentValidationAndAutoValidation();
 
     public static IApplicationBuilder UseModules(this WebApplication app)

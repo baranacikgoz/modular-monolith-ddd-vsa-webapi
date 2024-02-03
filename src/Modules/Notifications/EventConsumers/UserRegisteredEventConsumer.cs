@@ -1,4 +1,4 @@
-﻿using Common.Eventbus;
+﻿using Common.EventBus;
 using Microsoft.Extensions.Logging;
 using Common.Events;
 
