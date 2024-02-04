@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
+using Sales.Persistence.Seeding;
+using MassTransit;
 
 namespace Sales.Persistence;
 
@@ -12,6 +14,7 @@ internal static class Setup
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
+            .AddTransient<Seeder>()
             .AddDbContext<SalesDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
@@ -24,13 +27,16 @@ internal static class Setup
     {
         using (var scope = app.Services.CreateScope())
         {
+            var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
+            busControl.Start();
+
             var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
             context.Database.Migrate();
 
-#pragma warning disable S125
-            // var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
-            // seeder.SeedDbAsync().GetAwaiter().GetResult();
-#pragma warning restore S125
+            var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
+            seeder.SeedDbAsync().GetAwaiter().GetResult();
+
+            busControl.Stop();
         }
 
         return app;

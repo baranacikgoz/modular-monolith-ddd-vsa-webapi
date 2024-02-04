@@ -1,6 +1,6 @@
 namespace IdentityAndAuth.Features.Identity.Domain;
 
-internal class CreateApplicationUserModel
+public class CreateApplicationUserModel
 {
     public required string FirstName { get; init; } = string.Empty;
     public required string LastName { get; init; } = string.Empty;

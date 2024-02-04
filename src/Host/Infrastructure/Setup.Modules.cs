@@ -14,15 +14,14 @@ namespace Host.Infrastructure;
 
 public static partial class Setup
 {
-    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
             .AddIdentityAndAuthModule(configuration)
             .AddSalesModule()
             .AddRateLimiting(configuration)
             .AddErrorLocalizer()
-            .AddEventBus()
-            .AddInterModuleRequests()
-            .AddFluentValidationAndAutoValidation();
+            .AddFluentValidationAndAutoValidation()
+            .AddEventBus(env);
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
@@ -66,12 +65,6 @@ public static partial class Setup
                 return new AggregatedErrorLocalizer(errorLocalizations);
             });
 
-    private static IServiceCollection AddEventBus(this IServiceCollection services)
-        => services.AddEventBus(
-                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                typeof(Sales.IAssemblyReference).Assembly,
-                typeof(Notifications.IAssemblyReference).Assembly);
-
     private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
         => services
             .AddValidatorsFromAssemblies(
@@ -81,4 +74,12 @@ public static partial class Setup
                     typeof(Notifications.IAssemblyReference).Assembly
                 ])
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
+
+    private static IServiceCollection AddEventBus(this IServiceCollection services, IWebHostEnvironment env)
+        => services
+            .AddEventBus(
+                env,
+                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
+                typeof(Sales.IAssemblyReference).Assembly,
+                typeof(Notifications.IAssemblyReference).Assembly);
 }

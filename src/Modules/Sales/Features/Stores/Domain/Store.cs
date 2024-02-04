@@ -13,19 +13,23 @@ internal readonly record struct StoreId(Guid Value)
 
 internal class Store : AggregateRoot<StoreId>
 {
-    private Store(Guid ownerId)
+    private Store(Guid ownerId, string name)
         : base(StoreId.New())
     {
         OwnerId = ownerId;
+        Name = name;
     }
 
     public Guid OwnerId { get; private set; }
+    public string Name { get; private set; }
     private readonly List<Product> _products = [];
     public virtual IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-    public static Store Create(Guid ownerId)
+    public static Store Create(Guid ownerId, string name)
     {
-        var store = new Store(ownerId);
+        var store = new Store(ownerId, name);
+
+        store.Name = name;
 
         store.AddDomainEvent(new EventsOf
                                 .Sales
