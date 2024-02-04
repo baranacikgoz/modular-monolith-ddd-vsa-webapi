@@ -6,8 +6,16 @@ namespace IdentityAndAuth.Features.Identity.Domain;
 
 public sealed class ApplicationUser : IdentityUser<Guid>
 {
-    private ApplicationUser(string name, string lastName, string phoneNumber, string nationalIdentityNumber, DateOnly birthDate, Uri? imageUrl = null)
+    private ApplicationUser(
+        DateTime createdOn,
+        string name,
+        string lastName,
+        string phoneNumber,
+        string nationalIdentityNumber,
+        DateOnly birthDate,
+        Uri? imageUrl = null)
     {
+        CreatedOn = createdOn;
         Name = name;
         LastName = lastName;
         PhoneNumber = phoneNumber;
@@ -17,6 +25,7 @@ public sealed class ApplicationUser : IdentityUser<Guid>
         ImageUrl = imageUrl;
     }
 
+    public DateTime CreatedOn { get; }
     public string Name { get; private set; }
     public string LastName { get; private set; }
     public string NationalIdentityNumber { get; private set; }
@@ -34,6 +43,7 @@ public sealed class ApplicationUser : IdentityUser<Guid>
             .ValidateTokenAsync(model.PhoneNumber, phoneVerificationToken, cancellationToken)
             .BindAsync(() => CreateName(model.FirstName, model.LastName))
             .MapAsync(names => new ApplicationUser(
+                DateTime.UtcNow,
                 names.ProcessedName,
                 names.ProcessedLastName,
                 model.PhoneNumber.Trim(),

@@ -18,10 +18,10 @@ internal partial class Seeder
 
     private async Task SeedAdminUserAsync()
     {
-        const string phoneNumber = "905380718209";
+        const string phoneNumber = "901111111111";
         const string name = "Baran";
         const string surname = "Açıkgöz";
-        const string nationalIdentityNumber = "12312312123";
+        const string nationalIdentityNumber = "11111111111";
 
         var admin = await SeedUser(phoneNumber, name, surname, nationalIdentityNumber, new(2001, 6, 20), LogSeedingAdmingUser);
         await SeedAdminToAllRolesAsync(admin);
@@ -29,20 +29,45 @@ internal partial class Seeder
 
     private async Task SeedBasicUsersAsync()
     {
-        const string phoneNumber = "903211235577";
+
+        const string phoneNumber = "901111111112";
         const string name = "John";
         const string surname = "Doe";
-        const string nationalIdentityNumber = "12312312124";
+        const string nationalIdentityNumber = "11111111112";
 
         var basicUser = await SeedUser(phoneNumber, name, surname, nationalIdentityNumber, new(2001, 6, 20), LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
 
-        const string phoneNumber2 = "903211236688";
+        const string phoneNumber2 = "901111111113";
         const string name2 = "Michael";
         const string surname2 = "Scott";
-        const string nationalIdentityNumber2 = "12312312125";
+        const string nationalIdentityNumber2 = "11111111113";
 
         basicUser = await SeedUser(phoneNumber2, name2, surname2, nationalIdentityNumber2, new(2001, 6, 20), LogSeedingBasicUser);
+        await SeedBasicUserToBasicRoleAsync(basicUser);
+
+        const string phoneNumber3 = "901111111114";
+        const string name3 = "Pam";
+        const string surname3 = "Beesly";
+        const string nationalIdentityNumber3 = "11111111114";
+
+        basicUser = await SeedUser(phoneNumber3, name3, surname3, nationalIdentityNumber3, new(2001, 6, 20), LogSeedingBasicUser);
+        await SeedBasicUserToBasicRoleAsync(basicUser);
+
+        const string phoneNumber4 = "901111111115";
+        const string name4 = "Dwight";
+        const string surname4 = "Schrute";
+        const string nationalIdentityNumber4 = "11111111115";
+
+        basicUser = await SeedUser(phoneNumber4, name4, surname4, nationalIdentityNumber4, new(2001, 6, 20), LogSeedingBasicUser);
+        await SeedBasicUserToBasicRoleAsync(basicUser);
+
+        const string phoneNumber5 = "901111111116";
+        const string name5 = "Jim";
+        const string surname5 = "Halpert";
+        const string nationalIdentityNumber5 = "11111111116";
+
+        basicUser = await SeedUser(phoneNumber5, name5, surname5, nationalIdentityNumber5, new(2001, 6, 20), LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
     }
 

@@ -12,6 +12,10 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
         builder.ToTable("Users");
 
         builder
+            .Property(u => u.CreatedOn)
+            .IsRequired();
+
+        builder
             .Property(u => u.Name)
             .HasMaxLength(Constants.NameMaxLength)
             .IsRequired();
