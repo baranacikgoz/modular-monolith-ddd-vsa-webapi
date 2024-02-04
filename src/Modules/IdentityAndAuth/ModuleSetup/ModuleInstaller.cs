@@ -17,8 +17,6 @@ public static class ModuleInstaller
 {
     public static IServiceCollection AddIdentityAndAuthModule(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<Seeder>();
-
         services
             .AddPersistence()
             .AddIdentityFeature()

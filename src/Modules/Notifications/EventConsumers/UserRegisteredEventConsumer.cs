@@ -1,4 +1,5 @@
 ﻿using Common.EventBus;
+using Common.EventBus.Contracts;
 using Microsoft.Extensions.Logging;
 using Common.Events;
 

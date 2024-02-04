@@ -22,6 +22,7 @@
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzers>true</RunAnalyzers>
     <NoWarn>
+      CA1040;
       CA1062;
       CA2007;
       IDE0005;

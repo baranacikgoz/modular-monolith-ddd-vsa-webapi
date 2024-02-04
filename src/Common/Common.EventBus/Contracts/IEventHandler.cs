@@ -1,7 +1,7 @@
 using Common.Core.Contracts;
 using NimbleMediator.Contracts;
 
-namespace Common.EventBus;
+namespace Common.EventBus.Contracts;
 
 #pragma warning disable CA1711
 public interface IEventHandler<in TEvent> : INotificationHandler<TEvent>

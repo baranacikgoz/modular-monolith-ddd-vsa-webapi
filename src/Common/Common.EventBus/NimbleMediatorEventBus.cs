@@ -1,4 +1,5 @@
 ﻿using Common.Core.Contracts;
+using Common.EventBus.Contracts;
 using Microsoft.Extensions.Logging;
 using NimbleMediator;
 using NimbleMediator.Contracts;

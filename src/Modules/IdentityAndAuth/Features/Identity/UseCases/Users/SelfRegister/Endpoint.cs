@@ -3,6 +3,7 @@ using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
 using Common.EventBus;
+using Common.EventBus.Contracts;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;

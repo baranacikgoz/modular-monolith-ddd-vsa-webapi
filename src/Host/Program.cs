@@ -28,6 +28,8 @@ using Npgsql;
 using OpenTelemetry.Exporter;
 using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using OpenTelemetry.Instrumentation.AspNetCore;
+using MassTransit;
+using Common.InterModuleRequests.IdentityAndAuth;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -46,7 +48,7 @@ try
     builder
         .Services
             .AddInfrastructure(builder.Configuration)
-            .AddModules(builder.Configuration)
+            .AddModules(builder.Configuration, builder.Environment)
             .AddCustomSwagger();
 
     // Build the app and configure pipeline.

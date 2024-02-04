@@ -1,12 +1,15 @@
 ﻿using System.Reflection;
+using Common.EventBus.Contracts;
 using Common.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NimbleMediator.NotificationPublishers;
 using NimbleMediator.ServiceExtensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Common.EventBus;
 
@@ -14,19 +17,28 @@ public static class Setup
 {
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
-        params Assembly[] assembliesToRegister)
-        => services
-            .AddSingleton<IEventBus, MassTransitEventBus>()
-            .AddMassTransit(x =>
+        IWebHostEnvironment env,
+        params Assembly[] assemblies)
+    => services
+        .AddSingleton<IEventBus, MassTransitEventBus>()
+        .AddMassTransit(x =>
+        {
+            x.SetKebabCaseEndpointNameFormatter();
+
+            foreach (var assembly in assemblies)
             {
-                x.SetKebabCaseEndpointNameFormatter();
+                x.AddConsumers(assembly);
+            }
 
-                foreach (var assembly in assembliesToRegister)
+            if (env.IsDevelopment())
+            {
+                x.UsingInMemory((context, cfg) =>
                 {
-                    x.AddConsumersFromAssembly(assembly);
-                    x.AddRequestClientsFromAssembly(assembly);
-                }
-
+                    cfg.ConfigureEndpoints(context);
+                });
+            }
+            else
+            {
                 x.UsingRabbitMq((context, configurator) =>
                 {
                     var options = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
@@ -34,15 +46,16 @@ public static class Setup
                     var port = options.Port;
                     var uri = new Uri($"rabbitmq://{host}:{port}");
 
-                    configurator.Host(uri, hostConfigurator =>
+                    configurator.Host(uri, h =>
                     {
-                        hostConfigurator.Username(options.Username);
-                        hostConfigurator.Password(options.Password);
+                        h.Username(options.Username);
+                        h.Password(options.Password);
                     });
 
                     configurator.ConfigureEndpoints(context);
                 });
+            }
 
-            });
+        });
 
 }
