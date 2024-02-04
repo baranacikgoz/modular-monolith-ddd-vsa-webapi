@@ -12,7 +12,7 @@ using Sales.Persistence;
 namespace Sales.Persistence.Migrations
 {
     [DbContext(typeof(SalesDbContext))]
-    [Migration("20240130142920_initial")]
+    [Migration("20240204142049_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -37,6 +37,10 @@ namespace Sales.Persistence.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
@@ -52,14 +56,14 @@ namespace Sales.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -89,14 +93,18 @@ namespace Sales.Persistence.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("RowVersion")
+                    b.Property<uint>("Version")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 

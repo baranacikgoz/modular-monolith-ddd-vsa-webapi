@@ -10,9 +10,6 @@ public abstract class BaseEntity<TId>
     }
     public TId Id { get; }
 
-#pragma warning disable CA1819
     [Timestamp]
-    public byte[] RowVersion { get; set; } = default!;
-#pragma warning restore CA1819
-
+    public uint Version { get; set; }
 }
