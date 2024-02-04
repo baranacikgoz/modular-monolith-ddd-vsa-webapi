@@ -7,10 +7,11 @@ using NimbleMediator.Contracts;
 namespace Sales.Persistence.Seeding;
 
 internal sealed partial class Seeder(
-    IRequestClient<FirstBasicUserIdRequest> requestClient,
+    IRequestClient<FirstBasicUserIdsRequest> requestClient,
     SalesDbContext dbContext
     )
 {
+    private const int StoreCount = 2;
     public async Task SeedDbAsync(CancellationToken cancellationToken = default)
     {
         await SeedStoresAsync(cancellationToken);

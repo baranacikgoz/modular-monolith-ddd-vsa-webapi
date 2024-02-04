@@ -1,19 +1,35 @@
 namespace Sales.Persistence.Seeding;
 using Common.InterModuleRequests.IdentityAndAuth;
+using Microsoft.EntityFrameworkCore;
 using Sales.Features.Stores.Domain;
 
 internal sealed partial class Seeder
 {
     private async Task SeedStoresAsync(CancellationToken cancellationToken)
     {
-        var basicUserIdResponse = await requestClient.GetResponse<FirstBasicUserIdResponse>(new(), cancellationToken);
-        var basicUserId = basicUserIdResponse.Message.UserId;
+        var basicUserIdResponse = await requestClient.GetResponse<FirstBasicUserIdsResponse>(new(StoreCount), cancellationToken);
+        var userIds = basicUserIdResponse.Message.UserIds;
 
-        var store = Store.Create(
-            ownerId: basicUserId,
-            name: "Store 1");
+        var user1Id = userIds.ElementAt(0);
+        var store1Name = "Store 1";
+        await SeedStore(user1Id, store1Name, cancellationToken);
 
-        await dbContext.Stores.AddAsync(store, cancellationToken);
+        var user2Id = userIds.ElementAt(1);
+        var store2Name = "Store 2";
+        await SeedStore(user2Id, store2Name, cancellationToken);
+    }
+
+    private async Task SeedStore(Guid userId, string storeName, CancellationToken cancellationToken)
+    {
+        if (await dbContext.Stores.AnyAsync(store => store.OwnerId == userId || store.Name == storeName, cancellationToken))
+        {
+            return;
+        }
+        var store1 = Store.Create(
+            ownerId: userId,
+            name: storeName);
+
+        await dbContext.Stores.AddAsync(store1, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

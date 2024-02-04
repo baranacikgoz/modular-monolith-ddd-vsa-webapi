@@ -4,8 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace IdentityAndAuth.Persistence.Seeding;
 
-internal sealed partial class Seeder(ILogger<Seeder> logger, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+internal sealed partial class Seeder(
+    ILogger<Seeder> logger,
+    RoleManager<ApplicationRole> roleManager,
+    UserManager<ApplicationUser> userManager)
 {
+
     public async Task SeedDbAsync()
     {
         await SeedRolesAsync();
