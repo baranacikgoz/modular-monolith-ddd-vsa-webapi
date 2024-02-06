@@ -55,6 +55,20 @@ public static class SyncExtensions
         return Result<TNext>.Success(binder(result.Value!));
     }
 
+    public static Result Bind(
+        this Result result,
+        Action action)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        action();
+
+        return Result.Success;
+    }
+
     public static Result<TOut> Map<TIn, TOut>(
         this Result<TIn> result,
         Func<TIn, TOut> mapperFunc)
