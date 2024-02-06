@@ -30,32 +30,21 @@ public static class Setup
                 x.AddConsumers(assembly);
             }
 
-            if (env.IsDevelopment())
+            x.UsingRabbitMq((context, configurator) =>
             {
-                x.UsingInMemory((context, cfg) =>
+                var options = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
+                var host = options.Host;
+                var port = options.Port;
+                var uri = new Uri($"rabbitmq://{host}:{port}");
+
+                configurator.Host(uri, h =>
                 {
-                    cfg.ConfigureEndpoints(context);
+                    h.Username(options.Username);
+                    h.Password(options.Password);
                 });
-            }
-            else
-            {
-                x.UsingRabbitMq((context, configurator) =>
-                {
-                    var options = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-                    var host = options.Host;
-                    var port = options.Port;
-                    var uri = new Uri($"rabbitmq://{host}:{port}");
 
-                    configurator.Host(uri, h =>
-                    {
-                        h.Username(options.Username);
-                        h.Password(options.Password);
-                    });
-
-                    configurator.ConfigureEndpoints(context);
-                });
-            }
-
+                configurator.ConfigureEndpoints(context);
+            });
         });
 
 }
