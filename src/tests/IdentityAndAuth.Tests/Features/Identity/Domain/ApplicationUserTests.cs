@@ -61,14 +61,14 @@ public class ApplicationUserTests
 
         _mockPhoneVerificationTokenService
             .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure(PhoneVerificationTokenErrors.NotMatching));
+            .ReturnsAsync(Result.Failure(PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching));
 
         // Act
         var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
 
         // Assert
         userResult.IsSuccess.Should().BeFalse();
-        userResult.Error.Should().Be(PhoneVerificationTokenErrors.NotMatching);
+        userResult.Error.Should().Be(PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching);
     }
 
     [Fact]

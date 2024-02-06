@@ -1,4 +1,5 @@
-﻿using System.Threading.RateLimiting;
+﻿using System.Net;
+using System.Threading.RateLimiting;
 using Common.Core.Contracts;
 using Common.Core.Extensions;
 using Common.Core.Interfaces;
@@ -69,14 +70,14 @@ internal static class RateLimitingMiddleware
 
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
             {
-                errors = [localizer["{0} sonra tekrar deneyiniz.", retryAfter]];
+                errors = [localizer[nameof(MetadataName.RetryAfter), retryAfter]];
             }
 
             var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
             var tooManyRequestResult = problemDetailsFactory.Create(
-                status: StatusCodes.Status429TooManyRequests,
-                title: localizer["Aşırı istek."],
-                type: "TooManyRequests",
+                status: (int)HttpStatusCode.TooManyRequests,
+                title: localizer[nameof(HttpStatusCode.TooManyRequests)],
+                type: nameof(HttpStatusCode.TooManyRequests),
                 instance: context.HttpContext.Request.Path,
                 requestId: context.HttpContext.TraceIdentifier,
                 errors: errors ?? Enumerable.Empty<string>()

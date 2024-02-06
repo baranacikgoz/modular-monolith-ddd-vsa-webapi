@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <data name="Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz." xml:space="preserve">
-        <value>An unexpected error happened. You may share the trace identifier ({0}) of the error with us, to enable us solve it as fast as possible.</value>
-    </data>
-    <data name="Giriş yapmanız gerekmektedir." xml:space="preserve">
-        <value>You have to be logged in.</value>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>User not found.</value>
     </data>
 </root>

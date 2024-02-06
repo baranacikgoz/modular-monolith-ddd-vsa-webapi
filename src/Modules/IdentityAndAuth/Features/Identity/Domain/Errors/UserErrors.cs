@@ -5,5 +5,5 @@ namespace IdentityAndAuth.Features.Identity.Domain.Errors;
 
 internal static class UserErrors
 {
-    public static readonly Error UserNotFound = new(nameof(UserNotFound), HttpStatusCode.NotFound);
+    public static readonly Error UserNotFound = new(nameof(UserNotFound), statusCode: HttpStatusCode.NotFound);
 }

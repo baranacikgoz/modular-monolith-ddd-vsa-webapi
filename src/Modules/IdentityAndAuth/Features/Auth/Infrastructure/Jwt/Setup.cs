@@ -1,4 +1,5 @@
-﻿using Common.Core.Contracts;
+﻿using System.Net;
+using Common.Core.Contracts;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Common.Options;
@@ -41,15 +42,15 @@ internal static class Setup
                     var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                     var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
                     var problemDetails = problemDetailsFactory.Create(
-                        status: StatusCodes.Status401Unauthorized,
-                        title: localizer["Giriş yapmanız gerekmektedir."],
-                        type: "Unauthorized",
+                        status: (int)HttpStatusCode.Unauthorized,
+                        title: localizer[nameof(HttpStatusCode.Unauthorized)],
+                        type: nameof(HttpStatusCode.Unauthorized),
                         instance: context.Request.Path,
                         requestId: context.HttpContext.TraceIdentifier,
                         errors: Enumerable.Empty<string>()
                     );
 
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     context.Response.ContentType = "application/json";
 
                     return problemDetails.ExecuteAsync(context.HttpContext);
@@ -78,11 +79,10 @@ internal static class Setup
 
                     var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                     var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
-                    var localizedMessage = localizer["Giriş yapmanız gerekmektedir."];
                     var problemDetails = problemDetailsFactory.Create(
-                        status: StatusCodes.Status401Unauthorized,
-                        title: localizedMessage,
-                        type: "Unauthorized",
+                        status: (int)HttpStatusCode.Unauthorized,
+                        title: localizer[nameof(HttpStatusCode.Unauthorized)],
+                        type: nameof(HttpStatusCode.Unauthorized),
                         instance: context.Request.Path,
                         requestId: context.HttpContext.TraceIdentifier,
                         errors: Enumerable.Empty<string>()
@@ -97,9 +97,9 @@ internal static class Setup
                     var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
 
                     var problemDetails = problemDetailsFactory.Create(
-                        status: StatusCodes.Status403Forbidden,
-                        title: localizer["Bu işlemi yapmaya yetkiniz bulunmamaktadır."],
-                        type: "Forbidden",
+                        status: (int)HttpStatusCode.Forbidden,
+                        title: localizer[nameof(HttpStatusCode.Forbidden)],
+                        type: nameof(HttpStatusCode.Forbidden),
                         instance: context.Request.Path,
                         requestId: context.HttpContext.TraceIdentifier,
                         errors: Enumerable.Empty<string>()
