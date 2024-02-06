@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.RateLimiting;
 using Common.Core.Auth;
 using Common.Core.Interfaces;
@@ -30,7 +31,7 @@ public static partial class Policies
                 : LocalizedMessage(TimeSpan.FromMilliseconds(_rateLimitingOptions.CreateStore!.PeriodInMs!));
 
             var problemDetails = problemDetailsFactory.Create(
-                status: StatusCodes.Status429TooManyRequests,
+                status: (int)HttpStatusCode.TooManyRequests,
                 title: localizedMessage,
                 type: nameof(CreateStoreRateLimitingPolicy),
                 instance: context.HttpContext.Request.Path,

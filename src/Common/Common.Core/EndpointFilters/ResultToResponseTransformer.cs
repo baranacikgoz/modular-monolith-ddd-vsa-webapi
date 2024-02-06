@@ -27,13 +27,12 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
             onSuccess: () => Results.NoContent(),
             onFailure: error =>
             {
-                var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                 var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
                 return problemDetailsFactory.Create(
                     status: (int)error.StatusCode,
-                    title: errorTranslator.Localize(error, localizer),
+                    title: localizer.LocalizeFromError(error),
                     type: error.Key,
                     instance: context.HttpContext?.Request.Path ?? string.Empty,
                     requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
@@ -59,13 +58,12 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
             onSuccess: value => Results.Ok(value),
             onFailure: error =>
             {
-                var errorTranslator = serviceProvider.GetRequiredService<IErrorLocalizer>();
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
                 var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
                 return problemDetailsFactory.Create(
                     status: (int)error.StatusCode,
-                    title: errorTranslator.Localize(error, localizer),
+                    title: localizer.LocalizeFromError(error),
                     type: error.Key,
                     instance: context.HttpContext?.Request.Path ?? string.Empty,
                     requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,

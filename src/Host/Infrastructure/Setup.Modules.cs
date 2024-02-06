@@ -19,7 +19,6 @@ public static partial class Setup
             .AddIdentityAndAuthModule(configuration)
             .AddSalesModule()
             .AddRateLimiting(configuration)
-            .AddErrorLocalizer()
             .AddFluentValidationAndAutoValidation()
             .AddEventBus(env);
 
@@ -53,17 +52,6 @@ public static partial class Setup
                 configuration,
                 IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
                 Sales.ModuleSetup.RateLimiting.Policies.Get());
-
-    private static IServiceCollection AddErrorLocalizer(this IServiceCollection services)
-        => services
-            .AddSingleton<IErrorLocalizer, AggregatedErrorLocalizer>(_ =>
-            {
-                var errorLocalizations = new List<KeyValuePair<string, Func<IStringLocalizer, string>>>();
-                errorLocalizations.AddRange(IdentityAndAuth.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get());
-                errorLocalizations.AddRange(Sales.ModuleSetup.ErrorLocalization.ErrorsAndLocalizations.Get());
-
-                return new AggregatedErrorLocalizer(errorLocalizations);
-            });
 
     private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
         => services

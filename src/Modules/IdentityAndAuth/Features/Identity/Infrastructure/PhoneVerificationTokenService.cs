@@ -28,15 +28,15 @@ internal class PhoneVerificationTokenService(
     /// But, for the new user registrations, since we are requesting token twice;
     /// - First in <see cref="UseCases.Users.SelfRegister.Endpoint>
     /// - Then in <see cref="Tokens.UseCases.v1.Create.Endpoint>
-    /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.TokenNotFound"/>
+    /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound"/>
     /// And users will have to go back to the very first step of the registration process.
     /// </summary>
     public async Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
         => await Result<string>
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
-                    errorIfValueNull: PhoneVerificationTokenErrors.TokenNotFound)
-                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.TokenNotFound))
+                    errorIfValueNull: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound)
+                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound))
                 .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {
@@ -47,7 +47,7 @@ internal class PhoneVerificationTokenService(
             return cachedToken;
         }
 
-        return PhoneVerificationTokenErrors.NotMatching;
+        return PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching;
     }
 
     private static string CacheKey(string phoneNumber) => $"phone-verification-token:{phoneNumber}";

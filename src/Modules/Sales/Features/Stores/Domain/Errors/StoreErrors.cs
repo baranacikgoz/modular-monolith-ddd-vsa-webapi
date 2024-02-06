@@ -6,5 +6,5 @@ namespace Sales.Features.Stores.Domain.Errors;
 
 internal static class StoreErrors
 {
-    public static readonly Error ProductNotFound = new(nameof(ProductNotFound), HttpStatusCode.NotFound);
+    public static readonly Error ProductNotFound = new(nameof(ProductNotFound), statusCode: HttpStatusCode.NotFound);
 }

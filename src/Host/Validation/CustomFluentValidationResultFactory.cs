@@ -19,7 +19,7 @@ internal class CustomFluentValidationResultFactory(
             new ProblemDetails
             {
                 Status = (int)HttpStatusCode.BadRequest,
-                Title = localizer["Hatalı istek."],
+                Title = localizer[nameof(HttpStatusCode.BadRequest)],
                 Type = nameof(ValidationFailure),
                 Instance = context.HttpContext.Request.Path,
                 Extensions =

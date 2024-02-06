@@ -1,4 +1,5 @@
-﻿using Common.Core.Contracts;
+﻿using System.Net;
+using Common.Core.Contracts;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Microsoft.AspNetCore.Diagnostics;
@@ -22,16 +23,16 @@ internal partial class GlobalExceptionHandlingMiddleware(
                 await HandleExceptionAsync(
                     httpContext,
                     concurrencyException,
-                    StatusCodes.Status409Conflict,
-                    localizer["Başka bir kullanıcı sizden önce davrandı. Lütfen tekrar deneyin."]);
+                    (int)HttpStatusCode.Conflict,
+                    localizer[nameof(HttpStatusCode.Conflict)]);
                 return true;
 
             default:
                 await HandleExceptionAsync(
                     httpContext,
                     exception,
-                    StatusCodes.Status500InternalServerError,
-                    localizer["Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.", httpContext.TraceIdentifier]);
+                    (int)HttpStatusCode.InternalServerError,
+                    localizer[nameof(HttpStatusCode.InternalServerError), httpContext.TraceIdentifier]);
                 return true;
         }
     }

@@ -27,7 +27,7 @@ internal partial class ReCaptchaService(
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
         {
             LogCaptchaValidationFailedWithStatusCode(logger, (int)httpResponseMessage.StatusCode);
-            return CaptchaErrors.ServiceUnavailable;
+            return CaptchaErrors.CaptchaServiceUnavailable;
         }
 
         var reCaptchaResponse = await succeededResult.Content.ReadFromJsonAsync<ReCaptchaResponse>(cancellationToken);

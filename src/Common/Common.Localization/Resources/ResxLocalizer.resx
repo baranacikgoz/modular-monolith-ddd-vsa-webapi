@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <data name="Conflict" xml:space="preserve">
+        <value>Başka bir kullanıcı sizden önce davrandı. Lütfen tekrar deneyin.</value>
+    </data>
+    <data name="InternalServerError" xml:space="preserve">
+        <value>Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.</value>
+    </data>
+    <data name="BadRequest" xml:space="preserve">
+        <value>Hatalı istek.</value>
+    </data>
+    <data name="TooManyRequests" xml:space="preserve">
+        <value>Aşırı istek.</value>
+    </data>
+    <data name="Unauthorized" xml:space="preserve">
+        <value>Giriş yapmanız gerekmektedir.</value>
+    </data>
+    <data name="Forbidden" xml:space="preserve">
+        <value>Yetkiniz bulunmamaktadır.</value>
+    </data>
+    <data name="RetryAfter" xml:space="preserve">
+        <value>{0} sonra tekrar deneyiniz.</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>Kullanıcı bulunamadı.</value>
+    </data>
+    <data name="Some" xml:space="preserve">
+        <value>Bir veya daha fazla hata oluştu.</value>
+    </data>
+    <data name="InvalidOtp" xml:space="preserve">
+        <value>Kod hatalı veya süresi dolmuş.</value>
+    </data>
+    <data name="InvalidToken" xml:space="preserve">
+        <value>Geçersiz token.</value>
+    </data>
+    <data name="NotHuman" xml:space="preserve">
+        <value>Robot olmadığınız doğrulanamadı.</value>
+    </data>
+    <data name="CaptchaServiceUnavailable" xml:space="preserve">
+        <value>Captcha servisi kaynaklı hata. Lütfen tekrar deneyiniz.</value>
+    </data>
+    <data name="PhoneVerificationTokenNotFound" xml:space="preserve">
+        <value>Telefon doğrulama tokeni bulunamadı. Önce telefon doğrulama işlemini başlatınız.</value>
+    </data>
+    <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
+        <value>Telefon doğrulama tokeni eşleşmiyor.</value>
+    </data>
+</root>
