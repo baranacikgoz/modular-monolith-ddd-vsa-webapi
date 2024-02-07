@@ -5,6 +5,7 @@ using Common.Localization;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
 using Microsoft.Extensions.Localization;
+using Common.Core.Extensions;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.SelfRegister;
 
@@ -18,9 +19,6 @@ public sealed record Request(
 
 public sealed class RequestValidator : ResilientValidator<Request>
 {
-    // Checkout for SearchValues: https://www.youtube.com/watch?v=IzDMg916t98&t=573s&ab_channel=NickChapsas
-    // Space is for allowing middle names
-    private static readonly SearchValues<char> _turkishAlphabetWithSpace = SearchValues.Create(" abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.PhoneVerificationToken)
@@ -32,7 +30,7 @@ public sealed class RequestValidator : ResilientValidator<Request>
         RuleFor(x => x.Name)
             .NotEmpty()
                 .WithMessage(localizer["İsim boş olamaz."])
-            .Must(str => IsEligibleForName(str))
+            .Must(str => str.ContainsOnlyTurkishCharacters(allowWhiteSpace: true))
                 .WithMessage(localizer["İsim sadece Türkçe alfabesindeki karakterlerden oluşabilir."])
             .MaximumLength(Domain.Constants.NameMaxLength)
                 .WithMessage(localizer["İsim {0} karakterden uzun olamaz.", Domain.Constants.NameMaxLength]);
@@ -40,7 +38,7 @@ public sealed class RequestValidator : ResilientValidator<Request>
         RuleFor(x => x.LastName)
             .NotEmpty()
                 .WithMessage(localizer["Soyisim boş olamaz."])
-            .Must(str => IsEligibleForName(str))
+            .Must(str => str.ContainsOnlyTurkishCharacters(allowWhiteSpace: false))
                 .WithMessage(localizer["Soyisim sadece Türkçe alfabesindeki karakterlerden oluşabilir."])
             .MaximumLength(Domain.Constants.LastNameMaxLength)
                 .WithMessage(localizer["Soyisim {0} karakterden uzun olamaz.", Domain.Constants.LastNameMaxLength]);
@@ -59,6 +57,4 @@ public sealed class RequestValidator : ResilientValidator<Request>
             .Must(str => DateOnly.TryParseExact(str, SelfRegister.Constants.TurkishDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
                 .WithMessage(localizer["Doğum tarihi, {0} formatında olmalıdır.", SelfRegister.Constants.TurkishDateFormat]);
     }
-
-    private static bool IsEligibleForName(string s) => !s.AsSpan().ContainsAnyExcept(_turkishAlphabetWithSpace);
 }
