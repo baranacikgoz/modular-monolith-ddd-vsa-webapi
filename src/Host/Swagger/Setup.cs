@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Asp.Versioning.ApiExplorer;
 
 namespace Host.Swagger;
 

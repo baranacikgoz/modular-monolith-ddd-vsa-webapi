@@ -2,7 +2,6 @@
 using Common.EventBus.Contracts;
 using Microsoft.Extensions.Logging;
 using NimbleMediator;
-using NimbleMediator.Contracts;
 
 namespace Common.EventBus;
 

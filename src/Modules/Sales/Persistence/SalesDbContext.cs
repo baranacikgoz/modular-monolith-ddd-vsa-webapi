@@ -1,5 +1,4 @@
 using Common.Core.Auth;
-using Common.EventBus;
 using Common.EventBus.Contracts;
 using Common.Persistence;
 using Microsoft.EntityFrameworkCore;

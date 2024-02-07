@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 
 namespace Common.Core.Auth;
 

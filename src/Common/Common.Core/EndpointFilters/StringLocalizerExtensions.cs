@@ -1,7 +1,4 @@
-using System.Collections.Frozen;
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
-using Common.Core.Interfaces;
 using Microsoft.Extensions.Localization;
 
 namespace Common.Core.EndpointFilters;

@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Common.Core.Contracts;
 
 // We're not using records because some may use "with" keyword to create a new record from an existing one,

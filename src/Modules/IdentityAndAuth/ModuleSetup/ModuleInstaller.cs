@@ -1,6 +1,5 @@
 ﻿using IdentityAndAuth.Features.Auth;
 using IdentityAndAuth.Features.Tokens;
-using IdentityAndAuth.Persistence.Seeding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using IdentityAndAuth.Features.Captcha;
 using IdentityAndAuth.Features.Identity;
 using IdentityAndAuth.Persistence;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityAndAuth.ModuleSetup;
 

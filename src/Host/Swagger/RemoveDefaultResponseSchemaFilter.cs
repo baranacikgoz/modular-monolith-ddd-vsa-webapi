@@ -1,6 +1,3 @@
-using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

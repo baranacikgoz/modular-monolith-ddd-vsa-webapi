@@ -1,14 +1,10 @@
-using Common.InterModuleRequests;
 using Common.InterModuleRequests.IdentityAndAuth;
 using IdentityAndAuth.Features.Auth.Domain;
-using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Persistence;
 using MassTransit;
-using MassTransit.Internals;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityAndAuth.IntermoduleRequestHandlers;
+namespace IdentityAndAuth.IntermoduleRequestConsumers;
 
 /// <summary>
 /// First users are the seed users.

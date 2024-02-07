@@ -1,5 +1,4 @@
-﻿using Common.Core.Contracts;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Common.Core.Interfaces;
 

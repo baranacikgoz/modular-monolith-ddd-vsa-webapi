@@ -1,6 +1,5 @@
 using Common.Core.Auth;
 using Common.Core.Extensions;
-using IdentityAndAuth.Features.Auth.Extensions;
 using IdentityAndAuth.Features.Auth.Infrastructure.Jwt;
 using IdentityAndAuth.Features.Identity.Infrastructure;
 using Microsoft.AspNetCore.Authorization;

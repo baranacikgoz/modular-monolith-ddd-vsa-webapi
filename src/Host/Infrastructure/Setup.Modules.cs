@@ -2,13 +2,9 @@ using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using IdentityAndAuth.ModuleSetup;
 using Sales.ModuleSetup;
 using Host.Middlewares;
-using Microsoft.Extensions.Localization;
-using Common.Core.Interfaces;
 using Host.Validation;
-using System.Reflection;
 using Common.EventBus;
 using FluentValidation;
-using Common.InterModuleRequests;
 
 namespace Host.Infrastructure;
 

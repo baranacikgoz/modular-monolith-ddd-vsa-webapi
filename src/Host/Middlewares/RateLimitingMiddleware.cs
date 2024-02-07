@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Threading.RateLimiting;
-using Common.Core.Contracts;
 using Common.Core.Extensions;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Common.Options;
-using IdentityAndAuth.Features.Auth.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 

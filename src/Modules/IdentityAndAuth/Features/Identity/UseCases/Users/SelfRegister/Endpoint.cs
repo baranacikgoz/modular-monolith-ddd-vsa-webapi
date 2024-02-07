@@ -1,8 +1,6 @@
 using System.Globalization;
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
-using Common.EventBus;
 using Common.EventBus.Contracts;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Auth.Domain;
@@ -12,8 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 using Common.Events;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.SelfRegister;
