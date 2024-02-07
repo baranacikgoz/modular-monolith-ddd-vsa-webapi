@@ -1,5 +1,4 @@
-﻿using Asp.Versioning.Builder;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Sales.Features.Products;

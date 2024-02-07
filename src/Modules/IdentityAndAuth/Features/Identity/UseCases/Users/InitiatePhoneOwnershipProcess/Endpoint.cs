@@ -1,12 +1,9 @@
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 using RateLimitingConstants = IdentityAndAuth.ModuleSetup.RateLimiting.Constants;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.InitiatePhoneOwnershipProcess;

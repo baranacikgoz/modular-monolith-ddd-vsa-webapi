@@ -1,35 +1,7 @@
-using Common.Options;
 using Host.Configurations;
 using Serilog;
-using Common.Localization;
-using NimbleMediator.ServiceExtensions;
-using System.Globalization;
-using Common.Caching;
-using IdentityAndAuth;
 using Host.Swagger;
-using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using FluentValidation;
-using System.Reflection;
-using Host.Validation;
-using Host.Middlewares;
-using Common.Core.Contracts;
-using Common.EventBus;
-using Microsoft.Extensions.Options;
-using Notifications;
-using NimbleMediator.NotificationPublishers;
-using IdentityAndAuth.ModuleSetup;
-using Common.Core.Interfaces;
 using Host.Infrastructure;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using Npgsql;
-using OpenTelemetry.Exporter;
-using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
-using OpenTelemetry.Instrumentation.AspNetCore;
-using MassTransit;
-using Common.InterModuleRequests.IdentityAndAuth;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);

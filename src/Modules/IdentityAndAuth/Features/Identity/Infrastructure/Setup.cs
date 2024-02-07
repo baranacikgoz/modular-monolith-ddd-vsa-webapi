@@ -1,11 +1,7 @@
-using Common.Options;
 using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Persistence;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace IdentityAndAuth.Features.Identity.Infrastructure;
 

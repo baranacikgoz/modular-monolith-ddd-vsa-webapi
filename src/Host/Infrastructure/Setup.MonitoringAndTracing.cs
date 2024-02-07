@@ -2,7 +2,6 @@ using Common.Options;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AspNetCore;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;

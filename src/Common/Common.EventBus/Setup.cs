@@ -2,14 +2,9 @@
 using Common.EventBus.Contracts;
 using Common.Options;
 using MassTransit;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using NimbleMediator.NotificationPublishers;
-using NimbleMediator.ServiceExtensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Common.EventBus;
 

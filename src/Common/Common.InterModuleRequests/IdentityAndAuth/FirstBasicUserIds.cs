@@ -1,5 +1,3 @@
-using Common.EventBus.Contracts;
-
 namespace Common.InterModuleRequests.IdentityAndAuth;
 
 public sealed record FirstBasicUserIdsRequest(int Count);

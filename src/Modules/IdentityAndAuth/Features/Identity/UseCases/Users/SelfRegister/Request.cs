@@ -1,13 +1,10 @@
 ﻿using System.Buffers;
 using System.Globalization;
-using Common.Core.Contracts.Results;
 using Common.Core.Validation;
 using Common.Localization;
 using FluentValidation;
 using IdentityAndAuth.Features.Common.Validations;
-using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.SelfRegister;
 

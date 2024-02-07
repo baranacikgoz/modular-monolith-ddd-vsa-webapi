@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Common.Options;
-using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 

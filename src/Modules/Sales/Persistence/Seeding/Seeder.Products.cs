@@ -1,5 +1,5 @@
 namespace Sales.Persistence.Seeding;
-using Common.InterModuleRequests.IdentityAndAuth;
+
 using Microsoft.EntityFrameworkCore;
 using Sales.Features.Products.Domain;
 using Sales.Features.Stores.Domain;

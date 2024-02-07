@@ -1,5 +1,3 @@
-using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using IdentityAndAuth.ModuleSetup;
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;

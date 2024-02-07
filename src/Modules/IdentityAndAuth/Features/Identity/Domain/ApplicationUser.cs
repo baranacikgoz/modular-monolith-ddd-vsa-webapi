@@ -1,5 +1,4 @@
 ﻿using Common.Core.Contracts.Results;
-using IdentityAndAuth.Extensions;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;

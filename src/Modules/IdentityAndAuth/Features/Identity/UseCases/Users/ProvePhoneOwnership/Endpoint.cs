@@ -1,4 +1,3 @@
-using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.EndpointFilters;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -8,8 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using NimbleMediator.Contracts;
 
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.ProvePhoneOwnership;
 

@@ -1,8 +1,5 @@
-using Common.EventBus.Contracts;
 using Common.InterModuleRequests.IdentityAndAuth;
 using MassTransit;
-using Microsoft.Extensions.Hosting;
-using NimbleMediator.Contracts;
 
 namespace Sales.Persistence.Seeding;
 
