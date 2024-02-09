@@ -22,7 +22,7 @@
         <value>{0} sonra tekrar deneyiniz.</value>
     </data>
     <data name="UniqueViolation" xml:space="preserve">
-        <value>Eşsiz olması gereken bir değer zaten mevcut.</value>
+        <value>Eşsiz olması gereken bir değerin aynısı, başka bir kayıtta bulundu.</value>
     </data>
     <data name="UserNotFound" xml:space="preserve">
         <value>Kullanıcı bulunamadı.</value>
