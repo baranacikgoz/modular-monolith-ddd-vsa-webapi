@@ -38,7 +38,7 @@ internal static class Endpoint
         => await GetPrincipalFromExpiredToken(request.ExpiredAccessToken, jwtOptionsProvider.Value)
             .Bind(claimsPrincipal => claimsPrincipal.GetPhoneNumber())
             .Bind(phoneNumber => StringExt.EnsureNotNullOrEmpty(phoneNumber, ifNullOrEmpty: TokenErrors.InvalidToken))
-            .BindAsync(async phoneNumber => await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber))
+            .TapAsync(async phoneNumber => await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber))
             .BindAsync(async phoneNumber => await userService.GetByPhoneNumberAsync(phoneNumber, cancellationToken))
             .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user))
             .MapAsync(tokenDto => new Response(
