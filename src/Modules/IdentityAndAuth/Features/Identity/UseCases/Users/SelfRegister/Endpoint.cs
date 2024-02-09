@@ -54,7 +54,7 @@ internal static class Endpoint
                 var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
                 return identityResult.ToResult(user);
             })
-            .BindAsync(async user => await eventBus.PublishAsync(new EventsOf
+            .TapAsync(async user => await eventBus.PublishAsync(new EventsOf
                                                                     .IdentityAndAuth
                                                                     .UserCreatedDomainEvent(user.Id, user.Name), cancellationToken))
             .MapAsync(user => new Response(user.Id));
