@@ -21,6 +21,9 @@
     <data name="RetryAfter" xml:space="preserve">
         <value>{0} sonra tekrar deneyiniz.</value>
     </data>
+    <data name="UniqueViolation" xml:space="preserve">
+        <value>Eşsiz olması gereken bir değer zaten mevcut.</value>
+    </data>
     <data name="UserNotFound" xml:space="preserve">
         <value>Kullanıcı bulunamadı.</value>
     </data>
