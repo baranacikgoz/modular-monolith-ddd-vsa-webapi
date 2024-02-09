@@ -92,7 +92,12 @@ public static class SyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        func(result.Value!);
+        var nextResult = func(result.Value!);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
 
         return result;
     }
@@ -106,7 +111,12 @@ public static class SyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        func(result.Value!);
+        var nextResult = func(result.Value!);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
 
         return result;
     }
@@ -174,20 +184,6 @@ public static class AsyncExtensions
         }
 
         return await binder(result.Value!).ConfigureAwait(false);
-    }
-
-    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
-        this Task<Result<TCurrent>> resultTask,
-        Func<TCurrent, Result<TNext>> binder)
-    {
-        var result = await resultTask.ConfigureAwait(false);
-
-        if (!result.IsSuccess)
-        {
-            return Result<TNext>.Failure(result.Error!);
-        }
-
-        return binder(result.Value!);
     }
 
     public static async Task<Result<TCurrent>> BindAsync<TCurrent>(
@@ -278,7 +274,12 @@ public static class AsyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        await func(result.Value!).ConfigureAwait(false);
+        var nextResult = await func(result.Value!).ConfigureAwait(false);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
 
         return result;
     }
@@ -292,7 +293,12 @@ public static class AsyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        await func(result.Value!).ConfigureAwait(false);
+        var nextResult = await func(result.Value!).ConfigureAwait(false);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
 
         return result;
     }
@@ -323,6 +329,48 @@ public static class AsyncExtensions
         }
 
         await func(result.Value!).ConfigureAwait(false);
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapAsync<TCurrent>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, Result> func)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        var nextResult = func(result.Value!);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapAsync<TCurrent>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, Result<TCurrent>> func)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        var nextResult = func(result.Value!);
+
+        if (!nextResult.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(nextResult.Error!);
+        }
 
         return result;
     }

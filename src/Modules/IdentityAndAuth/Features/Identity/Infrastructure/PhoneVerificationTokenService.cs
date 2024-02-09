@@ -35,8 +35,8 @@ internal class PhoneVerificationTokenService(
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
                     errorIfValueNull: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound)
-                .BindAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound))
-                .BindAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
+                .TapAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound))
+                .TapAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {
         var boolResult = string.Equals(cachedToken, token, StringComparison.Ordinal);
