@@ -68,5 +68,5 @@ internal class Store : AggregateRoot<StoreId>
             .Create(
                 funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
                 errorIfValueNull: StoreErrors.ProductNotFound)
-            .Bind(product => _products.Remove(product));
+            .Tap(product => _products.Remove(product));
 }

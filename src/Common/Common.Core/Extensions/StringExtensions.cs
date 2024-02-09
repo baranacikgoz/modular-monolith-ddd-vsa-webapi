@@ -5,10 +5,10 @@ namespace Common.Core.Extensions;
 
 public static class StringExt
 {
-    public static Result<string> EnsureNotNullOrEmpty(string? value, Error ifNullOrEmpty)
+    public static Result EnsureNotNullOrEmpty(string? value, Error ifNullOrEmpty)
         => string.IsNullOrEmpty(value)
-            ? Result<string>.Failure(ifNullOrEmpty)
-            : Result<string>.Success(value!);
+            ? Result.Failure(ifNullOrEmpty)
+            : Result.Success;
 
     private static readonly SearchValues<char> _turkishAlphabet = SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
     private static readonly SearchValues<char> _turkishAlphabetWithEmptySpace = SearchValues.Create(" abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
