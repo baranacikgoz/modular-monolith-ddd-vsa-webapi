@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <data name="UserNotFound" xml:space="preserve">
-        <value>User not found.</value>
-    </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>({0}) not found.</value>
+</data>
 </root>

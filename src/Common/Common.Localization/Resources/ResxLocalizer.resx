@@ -1,51 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <data name="Conflict" xml:space="preserve">
-        <value>Başka bir kullanıcı sizden önce davrandı. Lütfen tekrar deneyin.</value>
+  <data name="NotFound" xml:space="preserve">
+    <value>({0}) bulunamadı.</value>
+  </data>
+  <data name="NotUnqiue" xml:space="preserve">
+    <value>({0}), başka bir kayıtta mevcut.</value>
+  </data>
+  <data name="UniqueViolation" xml:space="preserve">
+    <value>Eşsiz olması gereken bir değer, başka bir kayıtta mevcut.</value>
+  </data>
+  <data name="Conflict" xml:space="preserve">
+    <value>Başka bir kullanıcı sizden önce davrandı. Lütfen tekrar deneyin.</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.</value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>Hatalı istek.</value>
+  </data>
+  <data name="TooManyRequests" xml:space="preserve">
+    <value>Aşırı istek.</value>
+  </data>
+  <data name="RetryAfter" xml:space="preserve">
+    <value>({0}) sonra tekrar deneyiniz.</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>Giriş yapmanız gerekmektedir.</value>
+  </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>Yetkiniz bulunmamaktadır.</value>
+  </data>
+  <data name="Some" xml:space="preserve">
+    <value>Bir veya daha fazla hata oluştu.</value>
+  </data>
+  <data name="InvalidOtp" xml:space="preserve">
+    <value>Kod hatalı veya süresi dolmuş.</value>
+  </data>
+  <data name="InvalidToken" xml:space="preserve">
+      <value>Geçersiz token.</value>
     </data>
-    <data name="InternalServerError" xml:space="preserve">
-        <value>Beklenmeyen bir hata oluştu. Hata'nın izini ({0}) bizimle paylaşarak anında çözülmesini sağlayabilirsiniz.</value>
-    </data>
-    <data name="BadRequest" xml:space="preserve">
-        <value>Hatalı istek.</value>
-    </data>
-    <data name="TooManyRequests" xml:space="preserve">
-        <value>Aşırı istek.</value>
-    </data>
-    <data name="Unauthorized" xml:space="preserve">
-        <value>Giriş yapmanız gerekmektedir.</value>
-    </data>
-    <data name="Forbidden" xml:space="preserve">
-        <value>Yetkiniz bulunmamaktadır.</value>
-    </data>
-    <data name="RetryAfter" xml:space="preserve">
-        <value>{0} sonra tekrar deneyiniz.</value>
-    </data>
-    <data name="UniqueViolation" xml:space="preserve">
-        <value>Eşsiz olması gereken bir değerin aynısı, başka bir kayıtta bulundu.</value>
-    </data>
-    <data name="UserNotFound" xml:space="preserve">
-        <value>Kullanıcı bulunamadı.</value>
-    </data>
-    <data name="Some" xml:space="preserve">
-        <value>Bir veya daha fazla hata oluştu.</value>
-    </data>
-    <data name="InvalidOtp" xml:space="preserve">
-        <value>Kod hatalı veya süresi dolmuş.</value>
-    </data>
-    <data name="InvalidToken" xml:space="preserve">
-        <value>Geçersiz token.</value>
-    </data>
-    <data name="NotHuman" xml:space="preserve">
-        <value>Robot olmadığınız doğrulanamadı.</value>
-    </data>
-    <data name="CaptchaServiceUnavailable" xml:space="preserve">
-        <value>Captcha servisi kaynaklı hata. Lütfen tekrar deneyiniz.</value>
-    </data>
-    <data name="PhoneVerificationTokenNotFound" xml:space="preserve">
-        <value>Telefon doğrulama tokeni bulunamadı. Önce telefon doğrulama işlemini başlatınız.</value>
-    </data>
-    <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
-        <value>Telefon doğrulama tokeni eşleşmiyor.</value>
-    </data>
+  <data name="InvalidRefreshToken" xml:space="preserve">
+      <value>Geçersiz yenileme tokeni.</value>
+  </data>
+  <data name="RefreshTokenExpired" xml:space="preserve">
+    <value>Yenileme tokeni süresi dolmuş.</value>
+  </data>
+  <data name="NotHuman" xml:space="preserve">
+    <value>Robot olmadığınız doğrulanamadı.</value>
+  </data>
+  <data name="CaptchaServiceUnavailable" xml:space="preserve">
+    <value>Captcha servisi kaynaklı hata. Lütfen tekrar deneyiniz.</value>
+  </data>
+  <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
+    <value>Telefon doğrulama tokeni eşleşmiyor.</value>
+  </data>
+  <data name="ConcurrencyFailure" xml:space="preserve">
+    <value>"Aynı anda birden fazla istek bu kullanıcıyı güncellemeye çalıştı. Tekrar deneyiniz."</value>
+  </data>
+  <data name="DefaultError" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>({0}) Geçersiz e-posta adresi.</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>({0}) Geçersiz telefon numarası.</value>
+  </data>
+  <data name="DuplicateEmail" xml:space="preserve">
+    <value>({0}) e-posta adresi başka bir kullanıcı tarafından kullanılıyor.</value>
+  </data>
+  <data name="DuplicateUserName" xml:space="preserve">
+    <value>({0}) telefon numarası başka bir kullanıcı tarafından kullanılıyor.</value>
+  </data>
+  <data name="UserNotInRole" xml:space="preserve">
+    <value>Kullanıcı ({0}) rolüne sahip değil.</value>
+  </data>
+  <data name="DuplicateRoleName" xml:space="preserve">
+    <value>({0}) rolü zaten mevcut.</value>
+  </data>
+  <data name="InvalidRoleName" xml:space="preserve">
+    <value>({0}) geçersiz rol ismi.</value>
+  </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Geçersiz token.</value>
+  </data>
+  <data name="LoginAlreadyAssociated" xml:space="preserve">
+    <value>Bu kullanıcı zaten başka bir hesapla ilişkilendirilmiş.</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Şifreler eşleşmiyor.</value>
+  </data>
+  <data name="PasswordRequiresDigit" xml:space="preserve">
+    <value>Şifre en az bir rakam içermelidir.</value>
+  </data>
+  <data name="PasswordRequiresLower" xml:space="preserve">
+    <value>Şifre en az bir küçük harf içermelidir.</value>
+  </data>
+  <data name="PasswordRequiresNonAlphanumeric" xml:space="preserve">
+    <value>Şifre en az bir özel karakter içermelidir.</value>
+  </data>
+  <data name="PasswordRequiresUniqueChars" xml:space="preserve">
+    <value>Şifre en az ({0}) farklı karakter içermelidir.</value>
+  </data>
+  <data name="PasswordRequiresUpper" xml:space="preserve">
+    <value>Şifre en az bir büyük harf içermelidir.</value>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Şifre en az ({0}) karakter uzunluğunda olmalıdır.</value>
+  </data>
+  <data name="UserAlreadyHasPassword" xml:space="preserve">
+    <value>Kullanıcı zaten bir şifreye sahip.</value>
+  </data>
+  <data name="UserAlreadyInRole" xml:space="preserve">
+    <value>Kullanıcı zaten ({0}) rolüne sahip.</value>
+  </data>
+  <data name="RecoveryCodeRedemptionFailed" xml:space="preserve">
+    <value>Kurtarma kodu kullanılamadı.</value>
+  </data>
+  <data name="UserLockoutNotEnabled" xml:space="preserve">
+    <value>Kullanıcı kilitleme özelliği etkin değil.</value>
+  </data>
+  <data name="ApplicationUser" xml:space="preserve">
+    <value>Kullanıcı</value>
+  </data>
+  <data name="PhoneVerificationToken" xml:space="preserve">
+    <value>Telefon doğrulama tokeni</value>
+  </data>
 </root>

@@ -34,7 +34,7 @@ internal static class Endpoint
                                                     .Where(x => x.Id == currentUser.Id)
                                                     .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!))
                                                     .SingleOrDefaultAsync(cancellationToken),
-                    errorIfValueNull: UserErrors.UserNotFound)
+                    errorIfValueNull: Error.NotFound(nameof(ApplicationUser), currentUser.Id))
             .MapAsync(dto => new Response(
                                     dto.Id,
                                     dto.Name,

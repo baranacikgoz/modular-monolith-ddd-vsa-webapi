@@ -2,24 +2,6 @@
 
 namespace Common.Core.Contracts.Results;
 
-public class Error
-{
-    public Error(
-        string key,
-        IEnumerable<object>? arguments = null,
-        HttpStatusCode statusCode = HttpStatusCode.BadRequest,
-        IEnumerable<string>? errors = null)
-    {
-        Key = key;
-        StatusCode = statusCode;
-        Errors = errors;
-    }
-    public string Key { get; }
-    public IEnumerable<object>? Arguments { get; }
-    public HttpStatusCode StatusCode { get; }
-    public IEnumerable<string>? Errors { get; }
-}
-
 public sealed class Result
 {
     private static readonly Result _success = new(null);

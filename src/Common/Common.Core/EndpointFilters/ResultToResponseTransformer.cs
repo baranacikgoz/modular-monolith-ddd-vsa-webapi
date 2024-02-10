@@ -35,7 +35,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
                     type: error.Key,
                     instance: context.HttpContext?.Request.Path ?? string.Empty,
                     requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    errors: error.Errors ?? Enumerable.Empty<string>()
+                    errors: error.SubErrors ?? Enumerable.Empty<string>()
                 );
             }
         );
@@ -66,7 +66,7 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
                     type: error.Key,
                     instance: context.HttpContext?.Request.Path ?? string.Empty,
                     requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    errors: error.Errors ?? Enumerable.Empty<string>()
+                    errors: error.SubErrors ?? Enumerable.Empty<string>()
                 );
             }
         );

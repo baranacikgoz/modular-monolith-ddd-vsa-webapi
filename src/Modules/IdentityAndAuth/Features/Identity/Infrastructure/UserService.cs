@@ -20,7 +20,7 @@ internal class UserService(
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
         {
-            return UserErrors.UserNotFound;
+            return Error.NotFound(nameof(ApplicationUser), phoneNumber);
         }
 
         var user = await userManager
@@ -29,7 +29,7 @@ internal class UserService(
 
         if (user is null)
         {
-            return UserErrors.UserNotFound;
+            return Error.NotFound(nameof(ApplicationUser), phoneNumber);
         }
 
         return user;

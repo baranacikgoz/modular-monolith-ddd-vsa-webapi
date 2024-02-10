@@ -2,7 +2,6 @@ using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Events;
 using Sales.Features.Products.Domain;
-using Sales.Features.Stores.Domain.Errors;
 
 namespace Sales.Features.Stores.Domain;
 
@@ -67,6 +66,6 @@ internal class Store : AggregateRoot<StoreId>
         => Result<Product>
             .Create(
                 funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
-                errorIfValueNull: StoreErrors.ProductNotFound)
+                errorIfValueNull: Error.NotFound(nameof(Product), productId.Value))
             .Tap(product => _products.Remove(product));
 }
