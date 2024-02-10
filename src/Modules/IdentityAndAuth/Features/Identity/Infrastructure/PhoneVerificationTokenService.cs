@@ -14,6 +14,7 @@ internal class PhoneVerificationTokenService(
     ) : IPhoneVerificationTokenService
 {
     private readonly int _expirationInMinutes = otpOptionsProvider.Value.ExpirationInMinutes;
+    private const string ErrorKey = "PhoneVerificationToken";
 
     public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)
      => cache.GetOrSetAsync(
@@ -34,8 +35,8 @@ internal class PhoneVerificationTokenService(
         => await Result<string>
                 .CreateAsync(
                     taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
-                    errorIfValueNull: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound)
-                .TapAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound))
+                    errorIfValueNull: Error.NotFound(ErrorKey, phoneNumber))
+                .TapAsync(cachedToken => StringExt.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: Error.NotFound(ErrorKey, phoneNumber)))
                 .TapAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
     private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
     {

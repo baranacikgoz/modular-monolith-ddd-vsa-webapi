@@ -23,6 +23,6 @@ internal static class IdentityResultExtensions
     private static Error ToCustomIdentityError(this IdentityResult identityResult)
     {
         var errors = identityResult.Errors.Select(e => e.Description);
-        return new Error(nameof(IdentityErrors.Some), errors: errors);
+        return new Error { Key = nameof(IdentityErrors.Some), SubErrors = errors };
     }
 }
