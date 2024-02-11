@@ -4,7 +4,7 @@ using IdentityAndAuth.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityAndAuth.IntermoduleRequestConsumers;
+namespace IdentityAndAuth.InterModuleRequestConsumers;
 
 /// <summary>
 /// First users are the seed users.
