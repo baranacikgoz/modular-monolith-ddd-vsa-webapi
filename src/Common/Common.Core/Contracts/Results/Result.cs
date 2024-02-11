@@ -40,18 +40,26 @@ public sealed class Result<T>
     }
 
 #pragma warning disable CA1000
-    public static async Task<Result<T>> CreateAsync(Func<Task<T?>> taskToAwaitValue, Error? errorIfValueNull = null)
+    public static async Task<Result<T>> CreateAsync(Func<Task<T>> taskToAwaitValue)
     {
         var value = await taskToAwaitValue();
-        return value is null ? Failure(errorIfValueNull ?? throw new InvalidOperationException("Result failed but no error was provided."))
-                             : Success(value);
+        return Success(value);
+    }
+    public static async Task<Result<T>> CreateAsync(Func<Task<T?>> taskToAwaitValue, Error errorIfValueNull)
+    {
+        var value = await taskToAwaitValue();
+        return value is null ? Failure(errorIfValueNull) : Success(value);
     }
 
-    public static Result<T> Create(Func<T?> funcToGetValue, Error? errorIfValueNull = null)
+    public static Result<T> Create(Func<T> funcToGetValue)
     {
         var value = funcToGetValue();
-        return value is null ? Failure(errorIfValueNull ?? throw new InvalidOperationException("Result failed but no error was provided."))
-                             : Success(value);
+        return Success(value);
+    }
+    public static Result<T> Create(Func<T?> funcToGetValue, Error errorIfValueNull)
+    {
+        var value = funcToGetValue();
+        return value is null ? Failure(errorIfValueNull) : Success(value);
     }
 
     public static Result<T> Success(T value) => new(value);
