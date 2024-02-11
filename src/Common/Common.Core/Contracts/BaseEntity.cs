@@ -13,3 +13,13 @@ public abstract class BaseEntity<TId>
     [Timestamp]
     public uint Version { get; set; }
 }
+
+/// <summary>
+/// For tables requiring multiple keys like many-to-many relationships
+/// </summary>
+public abstract class BaseEntity
+{
+
+    [Timestamp]
+    public uint Version { get; set; }
+}
