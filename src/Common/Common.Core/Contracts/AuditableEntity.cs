@@ -1,23 +1,25 @@
-﻿namespace Common.Core.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Common.Core.Contracts;
 public interface IAuditableEntity
 {
     void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn);
     void ApplyUpdatedAudit(Guid userId, string ipAddress, DateTime updatedOn);
 }
 
-public abstract class AuditableEntity<TId> : BaseEntity<TId>, IAuditableEntity
+/// <summary>
+/// Non-generic version is intended to be used with the entities may have multiple keys, such as many-to-many join tables.
+/// </summary>
+public abstract class AuditableEntity : IAuditableEntity
 {
-    public DateTime CreatedOn { get; protected set; }
-    public Guid CreatedBy { get; protected set; } = Guid.Empty;
-    public DateTime? LastModifiedOn { get; protected set; }
-    public Guid? LastModifiedBy { get; protected set; }
-    public string LastModifiedIp { get; protected set; } = string.Empty;
+    public DateTime CreatedOn { get; private set; }
+    public Guid CreatedBy { get; private set; } = Guid.Empty;
+    public DateTime? LastModifiedOn { get; private set; }
+    public Guid? LastModifiedBy { get; private set; }
+    public string LastModifiedIp { get; private set; } = string.Empty;
 
-    protected AuditableEntity(TId id)
-        : base(id)
-    {
-        LastModifiedOn = DateTime.UtcNow;
-    }
+    [Timestamp]
+    public uint Version { get; set; } // for optimistic concurrency
 
     public void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn)
     {
@@ -33,25 +35,16 @@ public abstract class AuditableEntity<TId> : BaseEntity<TId>, IAuditableEntity
     }
 }
 
-public abstract class AuditableEntity : BaseEntity, IAuditableEntity
+/// <summary>
+/// Generic version is intended to be used with the entities have single key.
+/// </summary>
+/// <typeparam name="TId"></typeparam>
+public abstract class AuditableEntity<TId> : AuditableEntity
 {
-    public DateTime CreatedOn { get; protected set; }
-    public Guid CreatedBy { get; protected set; } = Guid.Empty;
-    public DateTime? LastModifiedOn { get; protected set; }
-    public Guid? LastModifiedBy { get; protected set; }
-    public string LastModifiedIp { get; protected set; } = string.Empty;
-
-    public void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn)
+    protected AuditableEntity(TId id)
     {
-        CreatedBy = userId;
-        CreatedOn = createdOn;
-        ApplyUpdatedAudit(userId, ipAddress, createdOn);
+        Id = id;
     }
-    public void ApplyUpdatedAudit(Guid userId, string ipAddress, DateTime updatedOn)
-    {
-        LastModifiedBy = userId;
-        LastModifiedOn = updatedOn;
-        LastModifiedIp = ipAddress;
-    }
+    public TId Id { get; }
 }
 
