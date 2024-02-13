@@ -6,12 +6,12 @@ public static class SyncExtensions
         this Result<Func<TIn, TOut>> result,
         Result<TIn> arg)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }
 
-        if (!arg.IsSuccess)
+        if (arg.IsFailure)
         {
             return Result<TOut>.Failure(arg.Error!);
         }
@@ -23,7 +23,7 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Result<TNext> next)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -35,7 +35,7 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Result<TNext>> binder)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -47,7 +47,7 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, TNext> binder)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -59,7 +59,7 @@ public static class SyncExtensions
         this Result result,
         Action action)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result.Failure(result.Error!);
         }
@@ -73,7 +73,7 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Action<TCurrent> action)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -87,14 +87,14 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Result> func)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = func(result.Value!);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -106,14 +106,14 @@ public static class SyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Result<TCurrent>> func)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = func(result.Value!);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -126,7 +126,7 @@ public static class SyncExtensions
         Func<TCurrent, Result> tap,
         Predicate<TCurrent> when)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -135,7 +135,7 @@ public static class SyncExtensions
         {
             var nextResult = tap(result.Value!);
 
-            if (!nextResult.IsSuccess)
+            if (nextResult.IsFailure)
             {
                 return Result<TCurrent>.Failure(nextResult.Error!);
             }
@@ -148,7 +148,7 @@ public static class SyncExtensions
         this Result<TIn> result,
         Func<TIn, TOut> mapperFunc)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }
@@ -160,7 +160,7 @@ public static class SyncExtensions
         this Result result,
         Func<TOut> mapperFunc)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }
@@ -173,7 +173,7 @@ public static class SyncExtensions
         Func<TCurrent, TNext> onSuccess,
         Func<Error, TNext> onFailure)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return onFailure(result.Error!);
         }
@@ -186,7 +186,7 @@ public static class SyncExtensions
         Func<TNext> onSuccess,
         Func<Error, TNext> onFailure)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return onFailure(result.Error!);
         }
@@ -201,7 +201,7 @@ public static class AsyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Task<Result<TNext>>> binder)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -215,14 +215,14 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = await binder(result.Value!);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -236,7 +236,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -250,7 +250,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -264,7 +264,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -280,7 +280,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TNext>.Failure(result.Error!);
         }
@@ -292,14 +292,14 @@ public static class AsyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Task<Result>> func)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = await func(result.Value!).ConfigureAwait(false);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -311,14 +311,14 @@ public static class AsyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Task<Result<TCurrent>>> func)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = await func(result.Value!).ConfigureAwait(false);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -330,7 +330,7 @@ public static class AsyncExtensions
         this Result<TCurrent> result,
         Func<TCurrent, Task> func)
     {
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -346,7 +346,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -362,14 +362,14 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = func(result.Value!);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -383,14 +383,14 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
 
         var nextResult = func(result.Value!);
 
-        if (!nextResult.IsSuccess)
+        if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
         }
@@ -404,7 +404,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -421,7 +421,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -441,7 +441,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TCurrent>.Failure(result.Error!);
         }
@@ -450,7 +450,7 @@ public static class AsyncExtensions
         {
             var nextResult = await tap(result.Value!).ConfigureAwait(false);
 
-            if (!nextResult.IsSuccess)
+            if (nextResult.IsFailure)
             {
                 return Result<TCurrent>.Failure(nextResult.Error!);
             }
@@ -465,7 +465,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }
@@ -480,7 +480,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }
@@ -495,7 +495,7 @@ public static class AsyncExtensions
     {
         var result = await resultTask.ConfigureAwait(false);
 
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return Result<TOut>.Failure(result.Error!);
         }

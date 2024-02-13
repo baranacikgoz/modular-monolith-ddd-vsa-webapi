@@ -36,7 +36,7 @@ public class ApplicationUserTests
         var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
 
         // Assert
-        userResult.IsSuccess.Should().BeTrue();
+        userResult.IsFailure.Should().BeFalse();
         var user = userResult.Value!;
         user.Name.Should().Be("JOHN");
         user.LastName.Should().Be("DOE");
@@ -67,7 +67,7 @@ public class ApplicationUserTests
         var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
 
         // Assert
-        userResult.IsSuccess.Should().BeFalse();
+        userResult.IsFailure.Should().BeTrue();
         userResult.Error.Should().Be(PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching);
     }
 
@@ -92,7 +92,7 @@ public class ApplicationUserTests
         var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
 
         // Assert
-        userResult.IsSuccess.Should().BeTrue();
+        userResult.IsFailure.Should().BeFalse();
         var user = userResult.Value!;
         user.Name.Should().Be("JOHN HARRISON");
         user.LastName.Should().Be("DOE");

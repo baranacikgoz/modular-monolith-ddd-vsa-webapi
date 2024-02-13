@@ -5,13 +5,13 @@ namespace Common.Core.Contracts.Results;
 public sealed class Result
 {
     private static readonly Result _success = new(null);
-    public bool IsSuccess { get; }
     public Error? Error { get; }
+    public bool IsFailure { get; }
 
     private Result(Error? error)
     {
         Error = error;
-        IsSuccess = error is null;
+        IsFailure = error is not null;
     }
 
     public static Result Success => _success;
@@ -26,7 +26,7 @@ public sealed class Result<T>
 {
     public T? Value { get; }
     public Error? Error { get; }
-    public bool IsSuccess { get; }
+    public bool IsFailure { get; }
 
     private Result(Error error) : this(default, error) { }
 
@@ -36,7 +36,7 @@ public sealed class Result<T>
     {
         Value = value;
         Error = error;
-        IsSuccess = error is null;
+        IsFailure = error is not null;
     }
 
 #pragma warning disable CA1000
@@ -69,6 +69,6 @@ public sealed class Result<T>
 #pragma warning disable CA2225
     public static implicit operator Result<T>(T value) => Success(value);
     public static implicit operator Result<T>(Error error) => Failure(error);
-    public static implicit operator Result(Result<T> result) => result.IsSuccess ? Result.Success : Result.Failure(result.Error!);
+    public static implicit operator Result(Result<T> result) => result.IsFailure ? Result.Failure(result.Error!) : Result.Success;
 #pragma warning restore CA2225
 }
