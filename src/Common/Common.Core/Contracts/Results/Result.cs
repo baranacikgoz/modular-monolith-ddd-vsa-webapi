@@ -19,6 +19,8 @@ public sealed class Result
 
 #pragma warning disable CA2225
     public static implicit operator Result(Error error) => Failure(error);
+
+    public static implicit operator bool(Result result) => !result.IsFailure;
 #pragma warning restore CA2225
 }
 
@@ -70,5 +72,7 @@ public sealed class Result<T>
     public static implicit operator Result<T>(T value) => Success(value);
     public static implicit operator Result<T>(Error error) => Failure(error);
     public static implicit operator Result(Result<T> result) => result.IsFailure ? Result.Failure(result.Error!) : Result.Success;
+
+    public static implicit operator bool(Result<T> result) => !result.IsFailure;
 #pragma warning restore CA2225
 }
