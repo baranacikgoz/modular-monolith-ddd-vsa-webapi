@@ -121,6 +121,29 @@ public static class SyncExtensions
         return result;
     }
 
+    public static Result<TCurrent> TapWhen<TCurrent>(
+        this Result<TCurrent> result,
+        Func<TCurrent, Result> tap,
+        Predicate<TCurrent> when)
+    {
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when(result.Value!))
+        {
+            var nextResult = tap(result.Value!);
+
+            if (!nextResult.IsSuccess)
+            {
+                return Result<TCurrent>.Failure(nextResult.Error!);
+            }
+        }
+
+        return result;
+    }
+
     public static Result<TOut> Map<TIn, TOut>(
         this Result<TIn> result,
         Func<TIn, TOut> mapperFunc)
@@ -370,6 +393,67 @@ public static class AsyncExtensions
         if (!nextResult.IsSuccess)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
+        }
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapAsync<TCurrent>(
+        this Task<Result<TCurrent>> resultTask,
+        Action<TCurrent> func)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        func(result.Value!);
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, Task> tap,
+        Predicate<TCurrent> when)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when(result.Value!))
+        {
+            await tap(result.Value!).ConfigureAwait(false);
+        }
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, Task<Result>> tap,
+        Predicate<TCurrent> when)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when(result.Value!))
+        {
+            var nextResult = await tap(result.Value!).ConfigureAwait(false);
+
+            if (!nextResult.IsSuccess)
+            {
+                return Result<TCurrent>.Failure(nextResult.Error!);
+            }
         }
 
         return result;
