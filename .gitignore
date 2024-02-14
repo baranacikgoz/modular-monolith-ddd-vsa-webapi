@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# containers
+.containers/
+
 # sonarqube files
 .sonarqube/
 

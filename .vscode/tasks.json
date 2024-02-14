@@ -9,7 +9,7 @@
         "build",
         "${workspaceFolder}/ModularMonolith.sln",
         "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary"
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -21,7 +21,7 @@
         "publish",
         "${workspaceFolder}/ModularMonolith.sln",
         "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary"
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -44,7 +44,7 @@
         "build"
       ],
       "dockerBuild": {
-        "tag": "webapi:latest",
+        "tag": "modularmonolithdddvsawebapi:dev",
         "target": "base",
         "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
         "context": "${workspaceFolder}",
@@ -61,11 +61,11 @@
         "build"
       ],
       "dockerBuild": {
-        "tag": "webapi:latest",
+        "tag": "modularmonolithdddvsawebapi:latest",
         "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
         "context": "${workspaceFolder}",
         "platform": {
-          "os": "linux",
+          "os": "windows",
           "architecture": "amd64"
         },
         "pull": true
@@ -80,7 +80,9 @@
       "dependsOn": [
         "docker-build: debug"
       ],
-      "dockerRun": {},
+      "dockerRun": {
+        "os": "Windows"
+      },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Host/Host.csproj",
         "enableDebugging": true
@@ -92,7 +94,9 @@
       "dependsOn": [
         "docker-build: release"
       ],
-      "dockerRun": {},
+      "dockerRun": {
+        "os": "Windows"
+      },
       "netCore": {
         "appProject": "${workspaceFolder}/src/Host/Host.csproj"
       }

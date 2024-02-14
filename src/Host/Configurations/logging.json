@@ -1,7 +1,7 @@
 {
   "CustomLoggingOptions": {
     "ResponseTimeThresholdInMs": 1000,
-    "SeqUrl": "http://localhost:5341"
+    "SeqUrl": "http:localhost:5341"
   },
   "Serilog": {
     "Properties": {
