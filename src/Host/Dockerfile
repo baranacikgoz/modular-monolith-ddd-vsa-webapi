@@ -1,47 +1,39 @@
-# Build stage
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+
+COPY ["Directory.Packages.props", "Directory.Build.props", ".editorconfig", "./"]
 WORKDIR /src
 
-# Copy Directory.Packages.props and Directory.Build.props
-COPY ["Directory.Packages.props", "Directory.Build.props", "./"]
-
-# Copy csproj(s) and restore as distinct layers
-COPY ["src/Common/Common.Caching/Common.Caching.csproj", "Common/Common.Caching/"]
-COPY ["src/Common/Common.Core/Common.Core.csproj", "Common/Common.Core/"]
-COPY ["src/Common/Common.EventBus/Common.EventBus.csproj", "Common/Common.EventBus/"]
-COPY ["src/Common/Common.Events/Common.Events.csproj", "Common/Common.Events/"]
-COPY ["src/Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj", "Common/Common.InterModuleRequests/"]
-COPY ["src/Common/Common.Localization/Common.Localization.csproj", "Common/Common.Localization/"]
-COPY ["src/Common/Common.Options/Common.Options.csproj", "Common/Common.Options/"]
-COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "Common/Common.Persistence/"]
-
-COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "Modules/IdentityAndAuth/"]
-COPY ["src/Modules/Sales/Sales.csproj", "Modules/Sales/"]
-COPY ["src/Modules/Notifications/Notifications.csproj", "Modules/Notifications/"]
-
 COPY ["src/Host/Host.csproj", "src/Host/"]
-RUN dotnet restore "src/Host/Host.csproj"
-
-# Copy everything else and build
+COPY ["src/Common/Common.Options/Common.Options.csproj", "src/Common/Common.Options/"]
+COPY ["src/Common/Common.Localization/Common.Localization.csproj", "src/Common/Common.Localization/"]
+COPY ["src/Common/Common.Caching/Common.Caching.csproj", "src/Common/Common.Caching/"]
+COPY ["src/Common/Common.Core/Common.Core.csproj", "src/Common/Common.Core/"]
+COPY ["src/Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj", "src/Common/Common.InterModuleRequests/"]
+COPY ["src/Common/Common.EventBus/Common.EventBus.csproj", "src/Common/Common.EventBus/"]
+COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "src/Modules/IdentityAndAuth/"]
+COPY ["src/Common/Common.Events/Common.Events.csproj", "src/Common/Common.Events/"]
+COPY ["src/Modules/Sales/Sales.csproj", "src/Modules/Sales/"]
+COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "src/Common/Common.Persistence/"]
+COPY ["src/Modules/Notifications/Notifications.csproj", "src/Modules/Notifications/"]
+RUN dotnet restore "./src/Host/Host.csproj"
 COPY . .
 WORKDIR "/src/src/Host"
-ARG configuration=Release
-RUN dotnet build "Host.csproj" -c $configuration -o /app/build
+RUN dotnet build "./Host.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish stage
 FROM build AS publish
-RUN dotnet publish "Host.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Host.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM base AS final
 WORKDIR /app
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-
-# Check if user 'app' exists; if not, create it
-RUN id -u app &>/dev/null || useradd -m app
-
-# Set user context to 'app'
-USER app
-
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Host.dll"]

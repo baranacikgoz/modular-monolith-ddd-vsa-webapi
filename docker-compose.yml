@@ -1,231 +1,53 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
-
-version: '3.9'
-name: local
+version: '3.4'
+name: mm-local-development
 
 services:
+  host:
+    image: ${DOCKER_REGISTRY-}host
+    container_name: mm.host
+    build:
+      context: .
+      dockerfile: src/Host/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - CustomLoggingOptions__SeqUrl=http://mm.seq:5341
+      - MessageBrokerOptions__Host=mm.rabbitmq
+      - MessageBrokerOptions__Port=5672
+      - MessageBrokerOptions__Username=guest
+      - MessageBrokerOptions__Password=guest 
 
-  postgresql:
-    image: postgres:16
-    container_name: postgresql
-    restart: unless-stopped
-    networks:
-      - localbridge
+  mm.database:
+    image: postgres:latest
+    container_name: mm.database
+    volumes:
+      - ./.containers/mm.database:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    ports:
-      - 5432:5432
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  seq:
-    image: datalust/seq:latest
-    container_name: seq
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 5341:80
-    environment:
-      - ACCEPT_EULA=Y
-    volumes:
-      - seq_data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5341"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  rabbitmq:
+  mm.rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: unless-stopped
-    networks:
-      - localbridge
+    container_name: mm.rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
+    volumes:
+      - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  sonarqube:
-    image: sonarqube:latest
-    container_name: sonarqube
-    restart: unless-stopped
-    networks:
-      - localbridge
+  mm.seq:
+    image: datalust/seq:latest
+    container_name: mm.seq
     ports:
-      - 9000:9000
+      - 5341:80
+    volumes:
+      - ./.containers/mm.seq:/data
     environment:
-      SONAR_JDBC_URL: jdbc:postgresql://postgresql:5432/sonar
-      SONAR_JDBC_USERNAME: postgres
-      SONAR_JDBC_PASSWORD: postgres
-    depends_on:
-      - postgresql
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  postgres-exporter:
-    image: wrouesnel/postgres_exporter
-    container_name: postgres-exporter
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 9187:9187
-    environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:postgres@postgresql:5432/postgres?sslmode=disable
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9187"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - "7070:8080"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node-exporter
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 9100:9100
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - --path.procfs=/host/proc
-      - --path.sysfs=/host/sys
-      - --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9100"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 9090:9090
-    env_file:
-      - ./prometheus/prometheus.env
-    volumes:
-      - prometheus_data:/prometheus
-      - ./prometheus:/etc/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.console.libraries=/usr/share/prometheus/console_libraries
-      - --web.console.templates=/usr/share/prometheus/consoles
-      - --web.enable-lifecycle
-    links:
-      - cadvisor:cadvisor
-    depends_on:
-      - cadvisor
-      - node-exporter
-      - postgres-exporter
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 3000:3000
-    environment:
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
-    env_file:
-      - ./grafana/grafana.env
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on:
-      - prometheus
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: jaeger
-    restart: unless-stopped
-    networks:
-      - localbridge
-    ports:
-      - 16686:16686 # Jaeger UI
-      - 4317:4317 # Jaeger Collector
-    environment:
-      - METRICS_STORAGE_TYPE=prometheus
-      - PROMETHEUS_SERVER_URL=http://prometheus:9090
-      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=true
-    depends_on:
-      - prometheus
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:16686"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgresql_data:
-  seq_data:
-  rabbitmq_data:
-  grafana_data:
-  prometheus_data:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:
-
-networks:
-  localbridge:
+      - ACCEPT_EULA=Y

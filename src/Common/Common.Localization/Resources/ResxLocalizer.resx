@@ -81,9 +81,6 @@
   <data name="InvalidRoleName" xml:space="preserve">
     <value>({0}) geçersiz rol ismi.</value>
   </data>
-  <data name="InvalidToken" xml:space="preserve">
-    <value>Geçersiz token.</value>
-  </data>
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>Bu kullanıcı zaten başka bir hesapla ilişkilendirilmiş.</value>
   </data>
