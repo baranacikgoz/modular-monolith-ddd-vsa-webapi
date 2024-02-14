@@ -3,7 +3,6 @@ using Common.Core.Contracts.Results;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
-using IdentityAndAuth.Features.Identity.Domain.Errors;
 using IdentityAndAuth.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
