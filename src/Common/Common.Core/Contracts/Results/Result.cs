@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Common.Core.Contracts.Results;
+﻿namespace Common.Core.Contracts.Results;
 
 public sealed class Result
 {

@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Common.Core.Interfaces;
 using Common.Localization;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Npgsql;
