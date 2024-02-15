@@ -5,10 +5,7 @@ namespace Common.Options;
 public class MessageBrokerOptions
 {
     [Required(AllowEmptyStrings = false)]
-    public string Host { get; set; } = null!;
-
-    [Required(AllowEmptyStrings = false)]
-    public string Port { get; set; } = null!;
+    public Uri Uri { get; set; } = null!;
 
     [Required(AllowEmptyStrings = false)]
     public string Username { get; set; } = null!;

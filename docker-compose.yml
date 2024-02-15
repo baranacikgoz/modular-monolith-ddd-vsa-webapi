@@ -13,14 +13,13 @@ services:
       - 8080:8080
     depends_on:
       - mm.database
-      - mm.rabbitmq 
+      - mm.rabbitmq
     environment:
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - CustomLoggingOptions__SeqUrl=http://mm.seq:5341
-      - MessageBrokerOptions__Host=mm.rabbitmq
-      - MessageBrokerOptions__Port=5672
+      - MessageBrokerOptions__Uri=rabbitmq://mm.rabbitmq:5672
       - MessageBrokerOptions__Username=guest
-      - MessageBrokerOptions__Password=guest 
+      - MessageBrokerOptions__Password=guest
 
   mm.database:
     image: postgres:latest

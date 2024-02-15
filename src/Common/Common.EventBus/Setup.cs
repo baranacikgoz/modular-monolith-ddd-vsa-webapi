@@ -28,11 +28,8 @@ public static class Setup
             x.UsingRabbitMq((context, configurator) =>
             {
                 var options = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-                var host = options.Host;
-                var port = options.Port;
-                var uri = new Uri($"rabbitmq://{host}:{port}");
 
-                configurator.Host(uri, h =>
+                configurator.Host(options.Uri, h =>
                 {
                     h.Username(options.Username);
                     h.Password(options.Password);
