@@ -19,8 +19,16 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      # see https://github.com/dotnet/sdk/issues/35134
+      - name: Remove compose proj from sln
+        run: dotnet sln remove $(dotnet sln list | grep .dcproj)
+        
       - name: Restore dependencies
         run: dotnet restore
+
+       # see https://github.com/dotnet/sdk/issues/35134
+      - name: Add compose proj back to sln
+        run: dotnet sln add **/*.dcproj
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
