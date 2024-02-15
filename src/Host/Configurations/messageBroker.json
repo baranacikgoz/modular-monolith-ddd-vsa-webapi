@@ -1,7 +1,6 @@
 {
   "MessageBrokerOptions": {
-    "Host": "localhost",
-    "Port": 5672,
+    "Uri": "rabbitmq://localhost:5672",
     "Username": "guest",
     "Password": "guest"
   }

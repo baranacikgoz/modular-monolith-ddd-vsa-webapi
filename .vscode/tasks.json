@@ -3,6 +3,41 @@
   "tasks": [
     {
       "label": "build",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "excludeProject",
+        "buildSolution",
+        "revertExclude"
+      ]
+    },
+    {
+      "label": "excludeProject",
+      "command": "${workspaceFolder}/exclude_docker_compose_dcproj.bat",
+      "type": "shell",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "revertExclude",
+      "command": "${workspaceFolder}/revert_exclude.bat",
+      "type": "shell",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "buildSolution",
       "command": "dotnet",
       "type": "process",
       "args": [
@@ -36,70 +71,6 @@
         "${workspaceFolder}/ModularMonolith.sln"
       ],
       "problemMatcher": "$msCompile"
-    },
-    {
-      "type": "docker-build",
-      "label": "docker-build: debug",
-      "dependsOn": [
-        "build"
-      ],
-      "dockerBuild": {
-        "tag": "modularmonolithdddvsawebapi:dev",
-        "target": "base",
-        "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
-        "context": "${workspaceFolder}",
-        "pull": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Host/Host.csproj"
-      }
-    },
-    {
-      "type": "docker-build",
-      "label": "docker-build: release",
-      "dependsOn": [
-        "build"
-      ],
-      "dockerBuild": {
-        "tag": "modularmonolithdddvsawebapi:latest",
-        "dockerfile": "${workspaceFolder}/src/Host/Dockerfile",
-        "context": "${workspaceFolder}",
-        "platform": {
-          "os": "windows",
-          "architecture": "amd64"
-        },
-        "pull": true
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Host/Host.csproj"
-      }
-    },
-    {
-      "type": "docker-run",
-      "label": "docker-run: debug",
-      "dependsOn": [
-        "docker-build: debug"
-      ],
-      "dockerRun": {
-        "os": "Windows"
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Host/Host.csproj",
-        "enableDebugging": true
-      }
-    },
-    {
-      "type": "docker-run",
-      "label": "docker-run: release",
-      "dependsOn": [
-        "docker-build: release"
-      ],
-      "dockerRun": {
-        "os": "Windows"
-      },
-      "netCore": {
-        "appProject": "${workspaceFolder}/src/Host/Host.csproj"
-      }
     }
   ]
 }
