@@ -18,18 +18,19 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.x'
-        
+
+      # See https://github.com/dotnet/sdk/issues/35134
+      - name: Remove docker-compose.dcproj 
+        run: dotnet sln remove $(dotnet sln list | grep .dcproj)
+          
       - name: Restore dependencies
-        run: |
-          # See https://github.com/dotnet/sdk/issues/35134
-          cp ModularMonolith.sln Temp_ModularMonolith.sln
-          dotnet sln "ModularMonolith.sln" remove ./docker-compose.dcproj
-          dotnet restore ModularMonolith.sln
-          rm ModularMonolith.sln
-          mv Temp_ModularMonolith.sln ModularMonolith.sln
+        run: dotnet restore
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
+
+      - name: Add docker-compose.dcproj back
+        run: dotnet sln add **/*.dcproj
 
       - name: Test
         run: dotnet test --configuration Release --no-restore --verbosity normal
