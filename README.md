@@ -42,6 +42,11 @@ List of prerequisites to use or contribute to the project:
 - Use appropriate ``tasks.json`` depending on your OS
     - Duplicate ``tasks.windows.json`` or ``tasks.unix.json``, then rename as ``tasks.json``.
 
+##### Unix only
+- Make before and after restore & build scripts executable
+    - ``chmod +x exclude_docker_compose_dcproj.sh``
+    - ``chmod +x revert_exclude.sh``
+
 #### Development
 - Run required services
     - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select ``Compose Up - Select Services``. Select the following services:
@@ -54,9 +59,6 @@ List of prerequisites to use or contribute to the project:
         ```
 - Run the application
     - Press ``F5`` to start the application in debug mode
-
-- Build if necessary
-    - Press ``Ctrl+Shift+B`` to build the application
 
 ### Visual Studio
 - Open the solution file ``ModularMonolith.sln`` in Visual Studio
