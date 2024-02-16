@@ -23,7 +23,7 @@ jobs:
         run: |
           # See https://github.com/dotnet/sdk/issues/35134
           cp ModularMonolith.sln Temp_ModularMonolith.sln
-          dotnet sln remove ./docker-compose.dcproj
+          dotnet sln "ModularMonolith.sln" remove ./docker-compose.dcproj
           dotnet restore
           rm ModularMonolith.sln
           mv Temp_ModularMonolith.sln ModularMonolith.sln
