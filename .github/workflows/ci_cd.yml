@@ -19,19 +19,18 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # See https://github.com/dotnet/sdk/issues/35134
-      - name: Remove docker-compose.dcproj 
-        run: dotnet sln remove $(dotnet sln list | grep .dcproj)
-          
       - name: Restore dependencies
-        run: dotnet restore
-
+        run: |
+          dotnet sln remove $(dotnet sln list | grep .dcproj) # See https://github.com/dotnet/sdk/issues/35134
+          dotnet restore
+          dotnet sln add **/*.dcproj # See https://github.com/dotnet/sdk/issues/35134
+        
       - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Add docker-compose.dcproj back
-        run: dotnet sln add **/*.dcproj
-
+        run: |
+          dotnet sln remove $(dotnet sln list | grep .dcproj) # See https://github.com/dotnet/sdk/issues/35134
+          dotnet build --configuration Release --no-restore
+          dotnet sln add **/*.dcproj # See https://github.com/dotnet/sdk/issues/35134
+          
       - name: Test
         run: dotnet test --configuration Release --no-restore --verbosity normal
 
