@@ -8,7 +8,11 @@
         "excludeProject",
         "buildSolution",
         "revertExclude"
-      ]
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     },
     {
       "label": "excludeProject",
@@ -16,10 +20,6 @@
       "type": "shell",
       "presentation": {
         "reveal": "silent"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
       },
       "problemMatcher": []
     },
@@ -29,10 +29,6 @@
       "type": "shell",
       "presentation": {
         "reveal": "silent"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
       },
       "problemMatcher": []
     },
