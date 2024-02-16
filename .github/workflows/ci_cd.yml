@@ -22,13 +22,13 @@ jobs:
       - name: Restore dependencies
         run: |
           dotnet sln remove $(dotnet sln list | grep .dcproj) # See https://github.com/dotnet/sdk/issues/35134
-          dotnet restore
+          dotnet restore ModularMonolith.sln
           dotnet sln add **/*.dcproj # See https://github.com/dotnet/sdk/issues/35134
         
       - name: Build
         run: |
           dotnet sln remove $(dotnet sln list | grep .dcproj) # See https://github.com/dotnet/sdk/issues/35134
-          dotnet build --configuration Release --no-restore
+          dotnet build ModularMonolith.sln --configuration Release --no-restore
           dotnet sln add **/*.dcproj # See https://github.com/dotnet/sdk/issues/35134
           
       - name: Test
