@@ -33,7 +33,7 @@ jobs:
       - name: Test
         run: dotnet test ModularMonolith.sln --configuration Release --no-restore --verbosity normal
 
-      - name: Revert removal of docker-compose.dcproj
+      - name: Revert removal of docker-compose.dcproj # See https://github.com/dotnet/sdk/issues/35134
         run: |
           rm ModularMonolith.sln
           mv Temp_ModularMonolith.sln ModularMonolith.sln
