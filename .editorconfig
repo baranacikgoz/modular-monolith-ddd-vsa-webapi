@@ -465,6 +465,7 @@ dotnet_diagnostic.CS8981.severity = none
 dotnet_diagnostic.CA1861.severity = none
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1825.severity = none
+dotnet_diagnostic.S4581.severity = none
 
 [**/Common.Events/**] # Allow nesting for domain events
 dotnet_diagnostic.CA1034.severity = none
