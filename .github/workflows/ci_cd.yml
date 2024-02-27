@@ -19,22 +19,24 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # see https://github.com/dotnet/sdk/issues/35134
-      - name: Remove compose proj from sln
-        run: dotnet sln remove $(dotnet sln list | grep .dcproj)
+      - name: Remove docker-compose.dcproj # See https://github.com/dotnet/sdk/issues/35134
+        run: |
+          cp ModularMonolith.sln Temp_ModularMonolith.sln
+          dotnet sln ModularMonolith.sln remove ./docker-compose.dcproj
         
       - name: Restore dependencies
-        run: dotnet restore
-
-       # see https://github.com/dotnet/sdk/issues/35134
-      - name: Add compose proj back to sln
-        run: dotnet sln add **/*.dcproj
-
+        run: dotnet restore ModularMonolith.sln
+        
       - name: Build
-        run: dotnet build --configuration Release --no-restore
-
+        run: dotnet build ModularMonolith.sln --configuration Release --no-restore
+        
       - name: Test
-        run: dotnet test --configuration Release --no-restore --verbosity normal
+        run: dotnet test ModularMonolith.sln --configuration Release --no-restore --verbosity normal
+
+      - name: Revert removal of docker-compose.dcproj # See https://github.com/dotnet/sdk/issues/35134
+        run: |
+          rm ModularMonolith.sln
+          mv Temp_ModularMonolith.sln ModularMonolith.sln
 
   deploy:
     needs: build
