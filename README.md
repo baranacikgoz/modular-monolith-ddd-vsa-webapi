@@ -40,7 +40,7 @@ List of prerequisites to use or contribute to the project:
 
 #### One-time setup
 - Use appropriate ``tasks.json`` depending on your OS
-    - Duplicate ``tasks.windows.json`` or ``tasks.unix.json``, then rename as ``tasks.json``.
+    - Copy ``tasks.windows.json`` or ``tasks.unix.json``, into a new file with the name ``tasks.json``.
 
 ##### Unix only
 - Make before and after restore & build scripts executable
