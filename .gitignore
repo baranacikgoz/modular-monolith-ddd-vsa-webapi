@@ -391,7 +391,8 @@ FodyWeavers.xsd
 # VS Code files for those working on multiple tools
 .vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
+!.vscode/tasks.unix.json
+!.vscode/tasks.windows.json
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
