@@ -1,6 +1,7 @@
-﻿using System.Net;
+using System.Net;
 using Common.Core.Interfaces;
 using Common.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Npgsql;
@@ -10,8 +11,8 @@ namespace Host.Middlewares;
 #pragma warning disable CA1031
 
 internal partial class GlobalExceptionHandlingMiddleware(
+    IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
-    IProblemDetailsFactory problemDetailsFactory,
     IStringLocalizer<ResxLocalizer> localizer
     ) : IMiddleware
 {
@@ -24,35 +25,35 @@ internal partial class GlobalExceptionHandlingMiddleware(
         catch (DbUpdateConcurrencyException concurrencyException)
         {
             await HandleExceptionAsync(
-                context,
-                concurrencyException,
-                (int)HttpStatusCode.Conflict,
-                localizer[nameof(HttpStatusCode.Conflict)]);
+                context: context,
+                exception: concurrencyException,
+                statusCode: (int)HttpStatusCode.Conflict,
+                title: localizer[nameof(HttpStatusCode.Conflict)]);
         }
         catch (DbUpdateException dbUpdateException) when (dbUpdateException.InnerException is PostgresException postgresException
                                                           && postgresException.SqlState == PostgresErrorCodes.UniqueViolation)
         {
             await HandleExceptionAsync(
-                context,
-                postgresException,
-                (int)HttpStatusCode.BadRequest,
-                localizer[nameof(PostgresErrorCodes.UniqueViolation)]);
+                context: context,
+                exception: postgresException,
+                statusCode: (int)HttpStatusCode.BadRequest,
+                title: localizer[nameof(PostgresErrorCodes.UniqueViolation)]);
         }
         catch (DbUpdateException dbUpdateException)
         {
             await HandleExceptionAsync(
-                context,
-                dbUpdateException,
-                (int)HttpStatusCode.InternalServerError,
-                localizer[nameof(HttpStatusCode.InternalServerError), context.TraceIdentifier]);
+                context: context,
+                exception: dbUpdateException,
+                statusCode: (int)HttpStatusCode.InternalServerError,
+                title: localizer[nameof(HttpStatusCode.InternalServerError)]);
         }
         catch (Exception exception)
         {
             await HandleExceptionAsync(
-                context,
-                exception,
-                (int)HttpStatusCode.InternalServerError,
-                localizer[nameof(HttpStatusCode.InternalServerError), context.TraceIdentifier]);
+                context: context,
+                exception: exception,
+                statusCode: (int)HttpStatusCode.InternalServerError,
+                title: localizer[nameof(HttpStatusCode.InternalServerError), context.TraceIdentifier]);
         }
     }
 
@@ -71,15 +72,19 @@ internal partial class GlobalExceptionHandlingMiddleware(
             return;
         }
 
-        var problemDetails = problemDetailsFactory.Create(
-            status: statusCode,
-            title: title,
-            type: exception.GetType().FullName ?? string.Empty,
-            instance: context.Request.Path,
-            requestId: context.TraceIdentifier,
-            errors: Enumerable.Empty<string>());
+        var details = new ProblemDetails()
+        {
+            Status = statusCode,
+            Title = title
+        };
 
-        await problemDetails.ExecuteAsync(context);
+        context.Response.StatusCode = statusCode;
+        await problemDetailsService.WriteAsync(new ProblemDetailsContext()
+        {
+            HttpContext = context,
+            Exception = exception,
+            ProblemDetails = details,
+        });
     }
 
     [LoggerMessage(

@@ -1,4 +1,4 @@
-﻿using Common.Core.Contracts.Results;
+using Common.Core.Contracts.Results;
 using IdentityAndAuth.Features.Identity.Domain.Errors;
 using Microsoft.AspNetCore.Identity;
 
@@ -22,7 +22,7 @@ internal static class IdentityResultExtensions
 
     private static Error ToCustomIdentityError(this IdentityResult identityResult)
     {
-        var errors = identityResult.Errors.Select(e => e.Description);
+        var errors = identityResult.Errors.Select(e => e.Description).ToList();
         return new Error { Key = nameof(IdentityErrors.Some), SubErrors = errors };
     }
 }

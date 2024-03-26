@@ -1,7 +1,9 @@
 using Common.Core.Contracts.Results;
+using Common.Core.Extensions;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -27,16 +29,17 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
             onFailure: error =>
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-                var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
-                return problemDetailsFactory.Create(
-                    status: (int)error.StatusCode,
-                    title: localizer.LocalizeFromError(error),
-                    type: error.Key,
-                    instance: context.HttpContext?.Request.Path ?? string.Empty,
-                    requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    errors: error.SubErrors ?? Enumerable.Empty<string>()
-                );
+                var details = new ProblemDetails()
+                {
+                    Status = (int)error.StatusCode,
+                    Title = localizer.LocalizeFromError(error)
+                };
+
+                details.AddErrorKey(error);
+                details.AddErrors(error.SubErrors);
+
+                return Results.Problem(details);
             }
         );
     }
@@ -58,16 +61,17 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
             onFailure: error =>
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-                var problemDetailsFactory = serviceProvider.GetRequiredService<IProblemDetailsFactory>();
 
-                return problemDetailsFactory.Create(
-                    status: (int)error.StatusCode,
-                    title: localizer.LocalizeFromError(error),
-                    type: error.Key,
-                    instance: context.HttpContext?.Request.Path ?? string.Empty,
-                    requestId: context.HttpContext?.TraceIdentifier ?? string.Empty,
-                    errors: error.SubErrors ?? Enumerable.Empty<string>()
-                );
+                var details = new ProblemDetails()
+                {
+                    Status = (int)error.StatusCode,
+                    Title = localizer.LocalizeFromError(error)
+                };
+
+                details.AddErrorKey(error.Key);
+                details.AddErrors(error.SubErrors);
+
+                return Results.Problem(details);
             }
         );
     }

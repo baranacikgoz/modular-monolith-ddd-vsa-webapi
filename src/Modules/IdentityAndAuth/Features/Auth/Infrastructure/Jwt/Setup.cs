@@ -1,10 +1,12 @@
-﻿using System.Net;
+using System.Net;
+using Common.Core.Extensions;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -30,29 +32,30 @@ internal static class Setup
 
             options.Events = new JwtBearerEvents
             {
-                OnChallenge = context =>
+                OnChallenge = async context =>
                 {
                     context.HandleResponse();
                     if (context.Response.HasStarted)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
-                    var problemDetails = problemDetailsFactory.Create(
-                        status: (int)HttpStatusCode.Unauthorized,
-                        title: localizer[nameof(HttpStatusCode.Unauthorized)],
-                        type: nameof(HttpStatusCode.Unauthorized),
-                        instance: context.Request.Path,
-                        requestId: context.HttpContext.TraceIdentifier,
-                        errors: Enumerable.Empty<string>()
-                    );
+                    var problemDetailsService = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
+                    var problemDetails = new ProblemDetails()
+                    {
+                        Status = (int)HttpStatusCode.Unauthorized,
+                        Title = localizer[nameof(HttpStatusCode.Unauthorized)]
+                    };
 
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    context.Response.ContentType = "application/json";
+                    problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
 
-                    return problemDetails.ExecuteAsync(context.HttpContext);
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await problemDetailsService.WriteAsync(new ProblemDetailsContext()
+                    {
+                        HttpContext = context.HttpContext,
+                        ProblemDetails = problemDetails,
+                    });
                 },
 
                 OnMessageReceived = context =>
@@ -69,44 +72,52 @@ internal static class Setup
                     return Task.CompletedTask;
                 },
 
-                OnAuthenticationFailed = context =>
+                OnAuthenticationFailed = async context =>
                 {
                     if (context.HttpContext.GetEndpoint()?.Metadata?.GetMetadata<IAllowAnonymous>() is not null)
                     {
-                        return Task.CompletedTask;
+                        return;
                     }
 
                     var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
-                    var problemDetails = problemDetailsFactory.Create(
-                        status: (int)HttpStatusCode.Unauthorized,
-                        title: localizer[nameof(HttpStatusCode.Unauthorized)],
-                        type: nameof(HttpStatusCode.Unauthorized),
-                        instance: context.Request.Path,
-                        requestId: context.HttpContext.TraceIdentifier,
-                        errors: Enumerable.Empty<string>()
-                    );
+                    var problemDetailsService = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
 
-                    return problemDetails.ExecuteAsync(context.HttpContext);
+                    var problemDetails = new ProblemDetails()
+                    {
+                        Status = (int)HttpStatusCode.Unauthorized,
+                        Title = localizer[nameof(HttpStatusCode.Unauthorized)]
+                    };
+
+                    problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
+
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await problemDetailsService.WriteAsync(new ProblemDetailsContext()
+                    {
+                        HttpContext = context.HttpContext,
+                        ProblemDetails = problemDetails
+                    });
                 },
 
-                OnForbidden = context =>
+                OnForbidden = async context =>
                 {
                     var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-                    var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
+                    var problemDetailsService = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
 
-                    var problemDetails = problemDetailsFactory.Create(
-                        status: (int)HttpStatusCode.Forbidden,
-                        title: localizer[nameof(HttpStatusCode.Forbidden)],
-                        type: nameof(HttpStatusCode.Forbidden),
-                        instance: context.Request.Path,
-                        requestId: context.HttpContext.TraceIdentifier,
-                        errors: Enumerable.Empty<string>()
-                    );
+                    var problemDetails = new ProblemDetails()
+                    {
+                        Status = (int)HttpStatusCode.Forbidden,
+                        Title = localizer[nameof(HttpStatusCode.Forbidden)]
+                    };
 
-                    return problemDetails.ExecuteAsync(context.HttpContext);
+                    problemDetails.AddErrorKey(nameof(HttpStatusCode.Forbidden));
+
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    await problemDetailsService.WriteAsync(new ProblemDetailsContext()
+                    {
+                        HttpContext = context.HttpContext,
+                        ProblemDetails = problemDetails
+                    });
                 },
-
             };
         });
 

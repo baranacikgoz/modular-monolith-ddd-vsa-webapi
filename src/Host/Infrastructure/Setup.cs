@@ -8,7 +8,7 @@ namespace Host.Infrastructure;
 
 public static partial class Setup
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
             .AddCommonOptions(configuration)
             .AddVersioning()
@@ -16,7 +16,7 @@ public static partial class Setup
             .AddRequestResponseLoggingMiddleware()
             .AddResxLocalization()
             .AddGlobalExceptionHandlingMiddleware()
-            .AddCustomProblemDetailsFactory()
+            .AddCustomizedProblemDetails(env)
             .AddCaching()
             .AddEndpointsApiExplorer()
             .AddMonitoringAndTracing(configuration)
@@ -44,6 +44,15 @@ public static partial class Setup
                         .AllowAnyHeader());
             });
 
-    private static IServiceCollection AddCustomProblemDetailsFactory(this IServiceCollection services)
-        => services.AddSingleton<IProblemDetailsFactory, ProblemDetailsFactory>();
+    private static IServiceCollection AddCustomizedProblemDetails(this IServiceCollection services, IWebHostEnvironment env)
+        => services.AddProblemDetails(opt =>
+        {
+            opt.CustomizeProblemDetails = (context) =>
+            {
+                context.ProblemDetails.Extensions.Add("instance", context.HttpContext.Request.Path.Value);
+                context.ProblemDetails.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+                context.ProblemDetails.Extensions.Add("environment", env.EnvironmentName);
+                context.ProblemDetails.Extensions.Add("node", Environment.MachineName);
+            };
+        });
 }

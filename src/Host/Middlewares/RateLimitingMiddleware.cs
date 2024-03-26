@@ -1,9 +1,10 @@
-﻿using System.Net;
+using System.Net;
 using System.Threading.RateLimiting;
 using Common.Core.Extensions;
 using Common.Core.Interfaces;
 using Common.Localization;
 using Common.Options;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 
@@ -21,6 +22,7 @@ internal static class RateLimitingMiddleware
             {
                 var customRateLimitingOptions = GetCustomRateLimitingOptions(configuration);
 
+                // all individual policies should have their own OnRejected, I guess this is fallback only ??? don't know at the moment.
                 opt.OnRejected = WriteTooManyRequestsToResponse();
 
                 opt.GlobalLimiter = GlobalRateLimiter(customRateLimitingOptions);
@@ -64,24 +66,26 @@ internal static class RateLimitingMiddleware
         {
             var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-            string[]? errors = null;
+            var problemDetailsService = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
+            var problemDetails = new ProblemDetails()
+            {
+                Status = (int)HttpStatusCode.TooManyRequests,
+                Title = localizer[nameof(HttpStatusCode.TooManyRequests)],
+            };
 
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
             {
-                errors = [localizer[nameof(MetadataName.RetryAfter), retryAfter]];
+                problemDetails.Detail = localizer[nameof(MetadataName.RetryAfter), retryAfter];
             }
 
-            var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsFactory>();
-            var tooManyRequestResult = problemDetailsFactory.Create(
-                status: (int)HttpStatusCode.TooManyRequests,
-                title: localizer[nameof(HttpStatusCode.TooManyRequests)],
-                type: nameof(HttpStatusCode.TooManyRequests),
-                instance: context.HttpContext.Request.Path,
-                requestId: context.HttpContext.TraceIdentifier,
-                errors: errors ?? Enumerable.Empty<string>()
-            );
+            problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
 
-            return new ValueTask(tooManyRequestResult.ExecuteAsync(context.HttpContext));
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+            return problemDetailsService.WriteAsync(new ProblemDetailsContext()
+            {
+                HttpContext = context.HttpContext,
+                ProblemDetails = problemDetails
+            });
         };
     }
 }
