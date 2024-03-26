@@ -1,5 +1,5 @@
 using Common.Core.Contracts.Results;
-using Common.Core.EndpointFilters;
+using Common.Core.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

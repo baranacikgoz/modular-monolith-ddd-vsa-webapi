@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Common.Core.EndpointFilters;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Common.Core.EndpointFilters;
+namespace Common.Core.Extensions;
 
 public static class RouteHandlerBuilderExtensions
 {

@@ -1,6 +1,6 @@
 using Common.Core.Auth;
 using Common.Core.Contracts.Results;
-using Common.Core.EndpointFilters;
+using Common.Core.Extensions;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

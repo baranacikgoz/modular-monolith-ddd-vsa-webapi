@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Common.Core.Auth;
 using Common.Core.Contracts.Results;
-using Common.Core.EndpointFilters;
 using Microsoft.AspNetCore.Mvc;
+using Common.Core.Extensions;
 
 namespace Sales.Features.Stores.UseCases.v1.Create;
 

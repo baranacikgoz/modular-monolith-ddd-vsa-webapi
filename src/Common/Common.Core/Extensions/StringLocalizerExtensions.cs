@@ -1,7 +1,7 @@
 using Common.Core.Contracts.Results;
 using Microsoft.Extensions.Localization;
 
-namespace Common.Core.EndpointFilters;
+namespace Common.Core.Extensions;
 
 public static class StringLocalizerExtensions
 {

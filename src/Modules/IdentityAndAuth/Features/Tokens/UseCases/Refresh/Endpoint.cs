@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common.Core.Contracts.Results;
-using Common.Core.EndpointFilters;
 using Common.Core.Extensions;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Extensions;
