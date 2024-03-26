@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
@@ -24,6 +24,7 @@ public static class Setup
             opt.SupportedCultures = locOptions.SupportedCultures.Select(c => new CultureInfo(c)).ToList();
             opt.SupportedUICultures = locOptions.SupportedCultures.Select(c => new CultureInfo(c)).ToList();
             opt.FallBackToParentCultures = true;
+            opt.FallBackToParentUICultures = true;
             opt.RequestCultureProviders.Clear();
             opt.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
             opt.ApplyCurrentCultureToResponseHeaders = true;
