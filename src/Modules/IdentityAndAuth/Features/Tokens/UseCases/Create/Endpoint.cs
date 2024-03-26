@@ -1,5 +1,5 @@
 using Common.Core.Contracts.Results;
-using Common.Core.EndpointFilters;
+using Common.Core.Extensions;
 using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Features.Tokens.Domain.Services;
 using Microsoft.AspNetCore.Builder;
