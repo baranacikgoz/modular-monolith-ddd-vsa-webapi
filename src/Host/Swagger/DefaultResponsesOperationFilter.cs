@@ -1,4 +1,5 @@
-﻿using Host.Infrastructure;
+using Host.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -13,9 +14,9 @@ internal class DefaultResponsesOperationFilter : IOperationFilter
             Description = description,
             Content = new Dictionary<string, OpenApiMediaType>
             {
-                ["application/json"] = new OpenApiMediaType
+                ["application/problem+json"] = new OpenApiMediaType
                 {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(CustomProblemDetails), context.SchemaRepository)
+                    Schema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails), context.SchemaRepository)
                 }
             }
         };

@@ -54,4 +54,8 @@
     <ProjectReference Include="../Modules/Notifications/Notifications.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Extensions\" />
+  </ItemGroup>
+
 </Project>

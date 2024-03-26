@@ -20,7 +20,7 @@ try
     // Add services to the container.
     builder
         .Services
-            .AddInfrastructure(builder.Configuration)
+            .AddInfrastructure(builder.Configuration, builder.Environment)
             .AddModules(builder.Configuration, builder.Environment)
             .AddCustomSwagger();
 

@@ -1,4 +1,5 @@
-﻿using System.Net;
+using System.Net;
+using Common.Core.Extensions;
 using Common.Localization;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -14,18 +15,16 @@ internal class CustomFluentValidationResultFactory(
 
     public IResult CreateResult(EndpointFilterInvocationContext context, ValidationResult validationResult)
     {
-        return Results.Problem(
-            new ProblemDetails
-            {
-                Status = (int)HttpStatusCode.BadRequest,
-                Title = localizer[nameof(HttpStatusCode.BadRequest)],
-                Type = nameof(ValidationFailure),
-                Instance = context.HttpContext.Request.Path,
-                Extensions =
-                {
-                    ["requestId"] = context.HttpContext.TraceIdentifier,
-                    ["errors"] = validationResult.Errors.Select(x => x.ErrorMessage)
-                }
-            });
+        var problemDetails = new ProblemDetails
+        {
+            Status = (int)HttpStatusCode.BadRequest,
+            Title = localizer[nameof(HttpStatusCode.BadRequest)],
+            Instance = context.HttpContext.Request.Path,
+        };
+
+        problemDetails.AddErrorKey(nameof(ValidationFailure));
+        problemDetails.AddErrors(validationResult.Errors.Select(x => x.ErrorMessage));
+
+        return Results.Problem(problemDetails);
     }
 }

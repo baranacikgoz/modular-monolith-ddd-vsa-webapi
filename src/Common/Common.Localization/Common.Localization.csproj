@@ -15,4 +15,19 @@
     <ProjectReference Include="../Common.Options/Common.Options.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\ResxLocalizer.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResxLocalizer.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\ResxLocalizer.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResxLocalizer.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

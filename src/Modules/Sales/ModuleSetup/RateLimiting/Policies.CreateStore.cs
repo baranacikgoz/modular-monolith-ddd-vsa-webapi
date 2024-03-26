@@ -1,9 +1,11 @@
 using System.Net;
 using System.Threading.RateLimiting;
 using Common.Core.Auth;
+using Common.Core.Extensions;
 using Common.Core.Interfaces;
 using Common.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -18,28 +20,33 @@ public static partial class Policies
             .AddPolicy<string, CreateStoreRateLimitingPolicy>(RateLimiting.RateLimitingConstants.CreateStore);
 
     private sealed class CreateStoreRateLimitingPolicy(
-        IProblemDetailsFactory problemDetailsFactory,
+        IProblemDetailsService problemDetailsService,
         IStringLocalizer<CreateStoreRateLimitingPolicy> localizer,
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider
         ) : IRateLimiterPolicy<string>
     {
         private readonly CustomRateLimitingOptions _rateLimitingOptions = rateLimitingOptionsProvider.Value;
-        public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => async (context, cancellationToken) =>
+        public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => (context, cancellationToken) =>
         {
             var localizedMessage = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
                 ? LocalizedMessage(retryAfter)
                 : LocalizedMessage(TimeSpan.FromMilliseconds(_rateLimitingOptions.CreateStore!.PeriodInMs!));
 
-            var problemDetails = problemDetailsFactory.Create(
-                status: (int)HttpStatusCode.TooManyRequests,
-                title: localizedMessage,
-                type: nameof(CreateStoreRateLimitingPolicy),
-                instance: context.HttpContext.Request.Path,
-                requestId: context.HttpContext.TraceIdentifier,
-                errors: Enumerable.Empty<string>()
-            );
+            var problemDetails = new ProblemDetails()
+            {
+                Status = (int)HttpStatusCode.TooManyRequests,
+                Title = localizedMessage,
+                Instance = context.HttpContext.Request.Path,
+            };
 
-            await problemDetails.ExecuteAsync(context.HttpContext);
+            problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
+
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+            return problemDetailsService.WriteAsync(new ProblemDetailsContext()
+            {
+                HttpContext = context.HttpContext,
+                ProblemDetails = problemDetails,
+            });
         };
 
         private LocalizedString LocalizedMessage(TimeSpan retryAfter)
