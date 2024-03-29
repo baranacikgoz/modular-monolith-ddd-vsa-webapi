@@ -4,15 +4,15 @@ A .NET 8 Webapi boilerplate with Modular Monolith approach, Domain-Driven Design
 
 ## Table of Contents
 
-- [Introduction](#introduction)
+<!-- - [Introduction](#introduction)
 - [Features](#features)
-- [Requirements](#requirements)
+- [Requirements](#requirements) -->
 - [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
+<!-- - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [License](#license)
+- [License](#license) -->
 
-## Introduction
+<!-- ## Introduction
 
 Brief introduction to the project, its purpose, and goals.
 
@@ -30,7 +30,7 @@ List of prerequisites to use or contribute to the project:
 
 - .NET Core SDK version X.X.X
 - SQL Server (if applicable)
-- ...
+- ... -->
 
 ## Getting Started
 
@@ -44,8 +44,9 @@ List of prerequisites to use or contribute to the project:
 
 ##### Unix only
 - Make before and after restore & build scripts executable
-    - ``chmod +x exclude_docker_compose_dcproj.sh``
-    - ``chmod +x revert_exclude.sh``
+    - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
+    - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
+    - ``chmod +x .vscode/revert_exclude.sh``
 
 #### Development
 - Run required services
@@ -68,7 +69,7 @@ List of prerequisites to use or contribute to the project:
 
 - Start application
 
-## API Documentation
+<!-- ## API Documentation
 
 Links to API documentation (if available), or instructions on how to generate it.
 
@@ -78,4 +79,4 @@ Guidelines for contributing to the project, including how to report bugs, sugges
 
 ## License
 
-Information about the project's license.
+Information about the project's license. -->
