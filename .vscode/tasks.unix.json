@@ -6,8 +6,7 @@
       "dependsOrder": "sequence",
       "dependsOn": [
         "excludeProject",
-        "buildSolution",
-        "revertExclude"
+        "buildSolutionThenCleanup"
       ],
       "group": {
         "kind": "build",
@@ -16,7 +15,7 @@
     },
     {
       "label": "excludeProject",
-      "command": "${workspaceFolder}/exclude_docker_compose_dcproj.sh",
+      "command": "${workspaceFolder}/.vscode/exclude_docker_compose_dcproj.bat",
       "type": "shell",
       "presentation": {
         "reveal": "silent"
@@ -24,25 +23,20 @@
       "problemMatcher": []
     },
     {
-      "label": "revertExclude",
-      "command": "${workspaceFolder}/revert_exclude.sh",
+      "label": "buildSolutionThenCleanup",
       "type": "shell",
-      "presentation": {
-        "reveal": "silent"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "buildSolution",
-      "command": "dotnet",
-      "type": "process",
+      "command": "${workspaceFolder}/.vscode/dotnet_build_and_cleanup.bat",
       "args": [
-        "build",
         "${workspaceFolder}/ModularMonolith.sln",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+        "${workspaceFolder}/.vscode/revert_exclude.bat"
       ],
-      "problemMatcher": "$msCompile"
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build"
+      },
+      "presentation": {
+        "reveal": "always"
+      }
     },
     {
       "label": "publish",
