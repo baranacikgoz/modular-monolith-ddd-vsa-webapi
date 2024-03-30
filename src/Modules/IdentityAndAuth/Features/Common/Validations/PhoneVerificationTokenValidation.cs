@@ -7,9 +7,7 @@ namespace IdentityAndAuth.Features.Common.Validations;
 public static partial class CommonValidations
 {
     public static IRuleBuilderOptions<T, string> PhoneVerificationTokenValidation<T>(this IRuleBuilder<T, string> ruleBuilder, IStringLocalizer<ResxLocalizer> localizer)
-    {
-        return ruleBuilder
+        => ruleBuilder
             .NotEmpty()
                 .WithMessage(localizer["Telefon doğrulama tokeni boş olamaz."]);
-    }
 }

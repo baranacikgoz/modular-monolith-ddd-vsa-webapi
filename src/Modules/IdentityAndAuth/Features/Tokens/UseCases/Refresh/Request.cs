@@ -7,7 +7,7 @@ namespace IdentityAndAuth.Features.Tokens.UseCases.Refresh;
 
 public sealed record Request(string ExpiredAccessToken, string RefreshToken);
 
-public sealed class RequestValidator : ResilientValidator<Request>
+public sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
@@ -18,6 +18,5 @@ public sealed class RequestValidator : ResilientValidator<Request>
         RuleFor(x => x.ExpiredAccessToken)
             .NotEmpty()
             .WithMessage(localizer["Eski erişim tokeni boş olamaz."]);
-
     }
 }
