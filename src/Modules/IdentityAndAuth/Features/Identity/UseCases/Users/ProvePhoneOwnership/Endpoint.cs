@@ -31,12 +31,14 @@ internal static class Endpoint
             .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
             .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
             .MapAsync(async phoneVerificationToken => new Response(
-                                                        UserExists: await UserExistsAsync(userManager, request.PhoneNumber, cancellationToken),
+                                                        UserExists: await IsUserExistAsync(userManager, request.PhoneNumber, cancellationToken),
                                                         PhoneVerificationToken: phoneVerificationToken));
 
-    private static Task<bool> UserExistsAsync(
+    private static Task<bool> IsUserExistAsync(
         UserManager<ApplicationUser> userManager,
         string phoneNumber,
         CancellationToken cancellationToken)
-        => userManager.Users.AnyAsync(x => x.PhoneNumber == phoneNumber, cancellationToken);
+        => userManager
+            .Users
+            .AnyAsync(x => x.PhoneNumber == phoneNumber, cancellationToken);
 }
