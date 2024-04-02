@@ -21,6 +21,7 @@ internal static class Setup
         UseCases.Users.Get.Endpoint.MapEndpoint(usersApiGroup);
         UseCases.Users.InitiatePhoneOwnershipProcess.Endpoint.MapEndpoint(usersApiGroup);
         UseCases.Users.ProvePhoneOwnership.Endpoint.MapEndpoint(usersApiGroup);
+        UseCases.Users.CheckExistenceWithEmail.Endpoint.MapEndpoint(usersApiGroup);
 
         var currentUserApiGroup = usersApiGroup
             .MapGroup("/current");
