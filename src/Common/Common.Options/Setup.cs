@@ -88,7 +88,7 @@ public static class Setup
             .AddOptions<OutboxOptions>()
             .Bind(configuration.GetSection(nameof(OutboxOptions)))
             .ValidateDataAnnotations()
-            .Validate(o => o.WorkerPeriodInMilliSeconds >= 0, "WorkerPeriodInMilliSeconds must be greater than 0.")
+            .Validate(o => o.BackgroundJobPeriodInMilliSeconds >= 0, "BackgroundJobPeriodInMilliSeconds must be greater than 0.")
             .Validate(o => o.BatchSizePerExecution >= 0, "BatchSizePerExecution must be greater than 0.")
             .Validate(o => o.MaxFailCountBeforeSentToDeadLetter >= 0, "MaxFailCountBeforeSentToDeadLetter must be greater than 0.")
             .ValidateOnStart();

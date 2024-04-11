@@ -1,6 +1,8 @@
-﻿using Common.Core.Auth;
+using System.Text.Json;
+using Common.Core.Auth;
 using Common.Core.Contracts;
 using Common.EventBus.Contracts;
+using Common.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -9,42 +11,16 @@ namespace Common.Persistence;
 public abstract partial class BaseDbContext(
     DbContextOptions options,
     ICurrentUser currentUser,
-    IEventBus eventBus,
     ILogger logger
     ) : DbContext(options)
 {
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var now = DateTime.UtcNow;
         var userId = currentUser.Id;
-        var ipAddress = currentUser.IpAddress ?? "N/A";
 
-        List<DomainEvent>? domainEvents = null;
-
-        foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
-        {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Entity.ApplyCreatedAudit(userId, ipAddress, now);
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.ApplyUpdatedAudit(userId, ipAddress, now);
-                    break;
-            }
-
-            if (entry.Entity is IAggregateRoot aggregateRoot && aggregateRoot.DomainEvents.Count > 0)
-            {
-                domainEvents ??= []; // Lazy
-                domainEvents.AddRange(aggregateRoot.DomainEvents);
-                aggregateRoot.ClearDomainEvents();
-            }
-        }
-
-        int result;
         try
         {
-            result = await base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException ex)
         {
@@ -65,16 +41,6 @@ public abstract partial class BaseDbContext(
             LogConcurrencyExceptionOccuredOnSingleEntity(logger, ex, typeAndTableName, userId);
             throw;
         }
-
-        if (domainEvents?.Count > 0)
-        {
-            foreach (var domainEvent in domainEvents)
-            {
-                await eventBus.PublishAsync(domainEvent, cancellationToken);
-            }
-        }
-
-        return result;
     }
 
     private static string MergeTypeAndTableName(string? typeName, string? tableName)
@@ -96,5 +62,13 @@ public abstract partial class BaseDbContext(
         ILogger logger,
         DbUpdateConcurrencyException exception,
         IEnumerable<string> TypeAndTableNames,
+        Guid UserId);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "An error occurred while saving changes for the user {UserId}.")]
+    static partial void LogErrorWhileSavingChanges(
+        ILogger logger,
+        Exception exception,
         Guid UserId);
 }

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Common.EventBus\Common.EventBus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Outbox\Migrations\" />
+  </ItemGroup>
+
 </Project>

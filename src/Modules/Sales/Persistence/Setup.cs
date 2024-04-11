@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
 using Sales.Persistence.Seeding;
 using MassTransit;
+using Common.Persistence;
+using Common.Persistence.Outbox;
 
 namespace Sales.Persistence;
 
@@ -17,9 +19,13 @@ internal static class Setup
             .AddDbContext<SalesDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-                options.UseNpgsql(
-                    connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Sales)));
+                options
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Sales)))
+                    .AddInterceptors(
+                        sp.GetRequiredService<ApplyAuditingInterceptor>(),
+                        sp.GetRequiredService<InsertOutboxMessagesInterceptor>());
             });
 
     public static WebApplication UsePersistence(this WebApplication app)

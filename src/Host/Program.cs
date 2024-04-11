@@ -2,6 +2,7 @@ using Host.Configurations;
 using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
+using Common.Persistence;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,12 @@ try
     // Add services to the container.
     builder
         .Services
+            .Configure<HostOptions>(x =>
+            {
+                x.ServicesStartConcurrently = true;
+                x.ServicesStopConcurrently = true;
+            })
+            .AddCommonPersistence()
             .AddInfrastructure(builder.Configuration, builder.Environment)
             .AddModules(builder.Configuration, builder.Environment)
             .AddCustomSwagger();
@@ -27,6 +34,7 @@ try
     // Build the app and configure pipeline.
     var app = builder.Build();
 
+    app.UseCommonPersistence();
     app.UseInfrastructure(builder.Environment, builder.Configuration);
 
     app.UseModules();
