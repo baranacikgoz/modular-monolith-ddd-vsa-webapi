@@ -1,4 +1,6 @@
 namespace Sales.Persistence.Seeding;
+
+using Common.Events;
 using Common.InterModuleRequests.IdentityAndAuth;
 using Microsoft.EntityFrameworkCore;
 using Sales.Features.Stores.Domain;
@@ -25,9 +27,8 @@ internal sealed partial class Seeder
         {
             return;
         }
-        var store1 = Store.Create(
-            ownerId: userId,
-            name: storeName);
+
+        var store1 = Store.Create(userId, storeName);
 
         await dbContext.Stores.AddAsync(store1, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);

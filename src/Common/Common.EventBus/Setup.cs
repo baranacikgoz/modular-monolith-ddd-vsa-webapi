@@ -1,8 +1,9 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Common.EventBus.Contracts;
 using Common.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -13,6 +14,7 @@ public static class Setup
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
         IWebHostEnvironment env,
+        IConfiguration configuration,
         params Assembly[] assemblies)
     => services
         .AddSingleton<IEventBus, MassTransitEventBus>()
@@ -25,18 +27,51 @@ public static class Setup
                 x.AddConsumers(assembly);
             }
 
-            x.UsingRabbitMq((context, configurator) =>
+            var eventBusOptions = configuration.GetSection(nameof(EventBusOptions)).Get<EventBusOptions>()
+                ?? throw new InvalidOperationException($"{nameof(EventBusOptions)} is null");
+
+            var useInMemoryEventBus = eventBusOptions.UseInMemoryEventBus;
+
+            if (useInMemoryEventBus)
             {
-                var options = context.GetRequiredService<IOptions<MessageBrokerOptions>>().Value;
-
-                configurator.Host(options.Uri, h =>
+                x.UsingInMemory((context, configurator) =>
                 {
-                    h.Username(options.Username);
-                    h.Password(options.Password);
+                    configurator.ConfigureEndpoints(context);
                 });
+            }
+            else
+            {
+                var messageBrokerOptions = eventBusOptions.MessageBrokerOptions
+                    ?? throw new InvalidOperationException($"{nameof(useInMemoryEventBus)} is false but {nameof(MessageBrokerOptions)} is null.");
 
-                configurator.ConfigureEndpoints(context);
-            });
+                x.UseAppropriateMessageBroker(messageBrokerOptions);
+            }
+
         });
+
+    private static void UseAppropriateMessageBroker(
+        this IBusRegistrationConfigurator busRegistrationConfigurator,
+        MessageBrokerOptions messageBrokerOptions)
+    {
+        switch (messageBrokerOptions.MessageBrokerType)
+        {
+            case MessageBrokerType.RabbitMQ:
+                busRegistrationConfigurator.UsingRabbitMq((context, configurator) =>
+                {
+
+                    configurator.Host(messageBrokerOptions.Uri, h =>
+                    {
+                        h.Username(messageBrokerOptions.Username);
+                        h.Password(messageBrokerOptions.Password);
+                    });
+
+                    configurator.ConfigureEndpoints(context);
+                });
+                break;
+
+            default:
+                throw new InvalidOperationException($"No registration set for the message broker {nameof(messageBrokerOptions.MessageBrokerType)}.");
+        }
+    }
 
 }

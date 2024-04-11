@@ -33,6 +33,7 @@
       S3267;
       S2094;
       CA1824;
+      CA1711;
     </NoWarn>
   </PropertyGroup>
 </Project>

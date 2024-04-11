@@ -30,32 +30,24 @@ internal static class Endpoint
         [FromBody] Request request,
         [FromServices] IPhoneVerificationTokenService phoneVerificationTokenService,
         [FromServices] UserManager<ApplicationUser> userManager,
-        [FromServices] IEventBus eventBus,
         CancellationToken cancellationToken)
-        => await ApplicationUser.CreateAsync(
-                new()
+        => await phoneVerificationTokenService
+                .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
+                .MapAsync(() => ApplicationUser.Create(
+                    request.Name,
+                    request.LastName,
+                    request.PhoneNumber,
+                    request.NationalIdentityNumber,
+                    DateOnly.ParseExact(request.BirthDate, SelfRegister.Constants.TurkishDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None)))
+                .BindAsync(async user =>
                 {
-                    FirstName = request.Name,
-                    LastName = request.LastName,
-                    PhoneNumber = request.PhoneNumber,
-                    NationalIdentityNumber = request.NationalIdentityNumber,
-                    BirthDate = DateOnly.ParseExact(request.BirthDate, SelfRegister.Constants.TurkishDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None),
-                },
-                phoneVerificationTokenService,
-                request.PhoneVerificationToken,
-                cancellationToken)
-            .BindAsync(async user =>
-            {
-                var identityResult = await userManager.CreateAsync(user);
-                return identityResult.ToResult(user);
-            })
-            .BindAsync(async user =>
-            {
-                var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
-                return identityResult.ToResult(user);
-            })
-            .TapAsync(async user => await eventBus.PublishAsync(new EventsOf
-                                                                    .IdentityAndAuth
-                                                                    .UserCreatedDomainEvent(user.Id, user.Name), cancellationToken))
-            .MapAsync(user => new Response(user.Id));
+                    var identityResult = await userManager.CreateAsync(user);
+                    return identityResult.ToResult(user);
+                })
+                .BindAsync(async user =>
+                {
+                    var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
+                    return identityResult.ToResult(user);
+                })
+                .MapAsync(user => new Response(user.Id));
 }

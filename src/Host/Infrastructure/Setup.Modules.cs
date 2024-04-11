@@ -16,7 +16,7 @@ public static partial class Setup
             .AddSalesModule()
             .AddRateLimiting(configuration)
             .AddFluentValidationAndAutoValidation()
-            .AddEventBus(env);
+            .AddEventBus(env, configuration);
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
@@ -59,10 +59,11 @@ public static partial class Setup
                 ])
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
 
-    private static IServiceCollection AddEventBus(this IServiceCollection services, IWebHostEnvironment env)
+    private static IServiceCollection AddEventBus(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
         => services
             .AddEventBus(
                 env,
+                config,
                 typeof(IdentityAndAuth.IAssemblyReference).Assembly,
                 typeof(Sales.IAssemblyReference).Assembly,
                 typeof(Notifications.IAssemblyReference).Assembly);

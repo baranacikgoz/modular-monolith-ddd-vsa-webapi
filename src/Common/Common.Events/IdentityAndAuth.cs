@@ -1,12 +1,16 @@
-﻿using Common.Core.Contracts;
+using Common.Core.Contracts;
 
 namespace Common.Events;
 
-public static partial class EventsOf
-{
-    public static class IdentityAndAuth
-    {
-        public sealed record UserCreatedDomainEvent(Guid UserId, string Name) : DomainEvent;
-    }
+public sealed record UserCreatedDomainEvent(
+    Guid Id,
+    string Name,
+    string LastName,
+    string PhoneNumber,
+    string NationalIdentityNumber,
+    DateOnly BirthDate
+    ) : DomainEvent;
 
-}
+public sealed record RefreshTokenUpdatedDomainEvent(Guid UserId) : DomainEvent;
+
+public sealed record UserImageUrlUpdatedDomainEvent(Guid UserId, Uri ImageUrl) : DomainEvent;

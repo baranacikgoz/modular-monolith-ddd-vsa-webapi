@@ -1,4 +1,5 @@
 using Common.Core.Contracts.Results;
+using Common.Events;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,6 @@ namespace IdentityAndAuth.Persistence.Seeding;
 
 internal partial class Seeder
 {
-    private static readonly DummyPhoneVerificationTokenService _dummyPhoneVerificationTokenService = new();
-
     private async Task SeedUsersAsync()
     {
         await SeedAdminUserAsync();
@@ -86,21 +85,13 @@ internal partial class Seeder
 
         logSeedingUser(logger, $"{name} {surname}");
 
-        var userCreationResult = await ApplicationUser.CreateAsync(
-            new()
-            {
-                FirstName = name,
-                LastName = surname,
-                PhoneNumber = phoneNumber,
-                NationalIdentityNumber = nationalIdentityNumber,
-                BirthDate = birthDate
-            },
-            _dummyPhoneVerificationTokenService,
-            "dummyCode",
-            CancellationToken.None
-            );
+        user = ApplicationUser.Create(
+            name,
+            surname,
+            phoneNumber,
+            nationalIdentityNumber,
+            birthDate);
 
-        user = userCreationResult.Value!;
         await userManager.CreateAsync(user);
         return user;
     }
@@ -133,14 +124,6 @@ internal partial class Seeder
 
     private static string FullName(ApplicationUser user)
         => $"{user.Name} {user.LastName}";
-
-    private sealed class DummyPhoneVerificationTokenService : IPhoneVerificationTokenService
-    {
-        public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)
-            => Task.FromResult("dummyCode");
-        public Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
-            => Task.FromResult(Result.Success);
-    }
 
     [LoggerMessage(
             Level = LogLevel.Information,
