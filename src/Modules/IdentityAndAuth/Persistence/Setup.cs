@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
 using IdentityAndAuth.Persistence.Seeding;
 using MassTransit;
+using Common.Persistence;
+using Common.Persistence.Outbox;
 
 namespace IdentityAndAuth.Persistence;
 
@@ -17,10 +19,14 @@ internal static class Setup
             .AddDbContext<IdentityDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-                options.UseNpgsql(
-                    connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(IdentityAndAuth))
-                );
+
+                options
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(IdentityAndAuth)))
+                    .AddInterceptors(
+                        sp.GetRequiredService<ApplyAuditingInterceptor>(),
+                        sp.GetRequiredService<InsertOutboxMessagesInterceptor>());
             });
 
     public static WebApplication UsePersistence(this WebApplication app)

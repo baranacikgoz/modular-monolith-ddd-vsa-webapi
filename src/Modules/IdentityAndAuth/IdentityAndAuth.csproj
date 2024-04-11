@@ -23,6 +23,7 @@
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
     <ProjectReference Include="../../Common/Common.EventBus/Common.EventBus.csproj" />
     <ProjectReference Include="../../Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Persistence\Common.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

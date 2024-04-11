@@ -47,7 +47,7 @@
             {
               "Name": "Seq",
               "Args": {
-                "serverUrl": "http://localhost:5341"
+                "serverUrl": "http://mm.seq:80"
               }
             }
           ]

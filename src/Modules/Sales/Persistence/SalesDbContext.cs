@@ -11,9 +11,8 @@ namespace Sales.Persistence;
 internal sealed class SalesDbContext(
     DbContextOptions<SalesDbContext> options,
     ICurrentUser currentUser,
-    IEventBus eventBus,
     ILogger<SalesDbContext> logger
-    ) : BaseDbContext(options, currentUser, eventBus, logger)
+    ) : BaseDbContext(options, currentUser, logger)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
