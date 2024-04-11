@@ -3,6 +3,7 @@ using IdentityAndAuth.ModuleSetup;
 using Common.Core.Interfaces;
 using Common.Caching;
 using Common.Options;
+using Common.Persistence;
 
 namespace Host.Infrastructure;
 

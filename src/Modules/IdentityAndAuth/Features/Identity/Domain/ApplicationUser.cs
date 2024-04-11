@@ -1,12 +1,29 @@
-﻿using Common.Core.Contracts.Results;
+using System.Xml.Linq;
+using Common.Core.Contracts;
+using Common.Core.Contracts.Results;
+using Common.Core.Extensions;
+using Common.Core.Interfaces;
+using Common.Events;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
 
-public sealed class ApplicationUser : IdentityUser<Guid>
+public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot, IAuditableEntity
 {
-    private ApplicationUser(
-        DateTime createdOn,
+    private ApplicationUser(UserCreatedDomainEvent @event)
+    {
+        Apply(@event);
+    }
+
+    public string Name { get; private set; } = string.Empty;
+    public string LastName { get; private set; } = string.Empty;
+    public string NationalIdentityNumber { get; private set; } = string.Empty;
+    public DateOnly BirthDate { get; private set; }
+    public Uri? ImageUrl { get; private set; }
+    public string RefreshToken { get; private set; } = string.Empty;
+    public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
+
+    public static ApplicationUser Create(
         string name,
         string lastName,
         string phoneNumber,
@@ -14,85 +31,68 @@ public sealed class ApplicationUser : IdentityUser<Guid>
         DateOnly birthDate,
         Uri? imageUrl = null)
     {
-        CreatedOn = createdOn;
-        Name = name;
-        LastName = lastName;
-        PhoneNumber = phoneNumber;
-        UserName = PhoneNumber; // We use PhoneNumber as UserName
-        NationalIdentityNumber = nationalIdentityNumber;
-        BirthDate = birthDate;
-        ImageUrl = imageUrl;
+        var id = Guid.NewGuid();
+        var @event = new UserCreatedDomainEvent(
+            id,
+            name,
+            lastName,
+            phoneNumber,
+            nationalIdentityNumber,
+            birthDate);
+
+        var user = new ApplicationUser(@event);
+        user.EnqueueEvent(@event);
+        return user;
     }
 
-    public DateTime CreatedOn { get; }
-    public string Name { get; private set; }
-    public string LastName { get; private set; }
-    public string NationalIdentityNumber { get; private set; }
-    public DateOnly BirthDate { get; private set; }
-    public Uri? ImageUrl { get; private set; }
-    public string RefreshToken { get; private set; } = string.Empty;
-    public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
-
-    public static async Task<Result<ApplicationUser>> CreateAsync(
-        CreateApplicationUserModel model,
-        IPhoneVerificationTokenService phoneVerificationTokenService,
-        string phoneVerificationToken,
-        CancellationToken cancellationToken)
-        => await phoneVerificationTokenService
-            .ValidateTokenAsync(model.PhoneNumber, phoneVerificationToken, cancellationToken)
-            .BindAsync(() => CreateName(model.FirstName, model.LastName))
-            .MapAsync(names => new ApplicationUser(
-                DateTime.UtcNow,
-                names.ProcessedName,
-                names.ProcessedLastName,
-                model.PhoneNumber.Trim(),
-                model.NationalIdentityNumber.Trim(),
-                model.BirthDate));
-
-    private static Result<(string ProcessedName, string ProcessedLastName)> CreateName(string firstName, string lastName)
+    public void UpdateImageUrl(Uri imageUrl)
     {
-        var processedFirstName = TrimmedUpperInvariantTransliterateTurkishChars(firstName);
-        var processedLastName = TrimmedUpperInvariantTransliterateTurkishChars(lastName);
-
-        return (processedFirstName, processedLastName);
+        var @event = new UserImageUrlUpdatedDomainEvent(Id, imageUrl);
+        RaiseEvent(@event);
     }
 
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
     {
+        // Intentionally did not follow the RaiseEvent pattern here because did not want to expose token as parameter in event.
+        // Events are written in db(outbox pattern) or published to a message-queue which both cases tokens should not be there unprotected.
+        // Hence, should a user's refresh token be recreatable/replayable?
+
         RefreshToken = refreshToken;
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
+
+        var @event = new RefreshTokenUpdatedDomainEvent(Id);
+        EnqueueEvent(@event);
     }
 
-    private static string TrimmedUpperInvariantTransliterateTurkishChars(string value)
+    private void Apply(IEvent @event)
     {
-        value = value.Trim();
-
-        return string.Create(value.Length, value, (chars, state) =>
+        switch (@event)
         {
-            for (var i = 0; i < state.Length; i++)
-            {
-                var c = state[i];
+            case UserCreatedDomainEvent e:
+                Apply(e);
+                break;
+            case UserImageUrlUpdatedDomainEvent e:
+                Apply(e);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown event {@event.GetType().Name}");
+        }
+    }
 
-                var result = c switch
-                {
-                    'ş' => 'S',
-                    'Ş' => 'S',
-                    'ğ' => 'G',
-                    'Ğ' => 'G',
-                    'ç' => 'C',
-                    'Ç' => 'C',
-                    'ö' => 'O',
-                    'Ö' => 'O',
-                    'ü' => 'U',
-                    'Ü' => 'U',
-                    'ı' => 'I',
-                    'İ' => 'I',
-                    _ => char.ToUpperInvariant(c),
-                };
+    private void Apply(UserCreatedDomainEvent @event)
+    {
+        Id = @event.EventId;
+        Name = @event.Name;
+        LastName = @event.LastName;
+        PhoneNumber = @event.PhoneNumber;
+        UserName = @event.PhoneNumber; // We use PhoneNumber as UserName
+        NationalIdentityNumber = @event.NationalIdentityNumber;
+        BirthDate = @event.BirthDate;
+    }
 
-                chars[i] = result;
-            }
-        });
+    private void Apply(UserImageUrlUpdatedDomainEvent @event)
+    {
+        ImageUrl = @event.ImageUrl;
     }
 
 #pragma warning disable CS8618 // Orms need parameterless constructors

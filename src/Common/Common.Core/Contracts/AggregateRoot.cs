@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using Common.Core.Interfaces;
 
 namespace Common.Core.Contracts;
 
@@ -8,18 +9,27 @@ public abstract class AggregateRoot<T> : AuditableEntity<T>, IAggregateRoot
         : base(id)
     {
     }
-    private readonly List<DomainEvent> _domainEvents = [];
+
+    private readonly Queue<IEvent> _events = [];
 
     [NotMapped]
-    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public bool HasAnyEvent => _events.Count > 0;
 
-    public void ClearDomainEvents() => _domainEvents.Clear();
+    public bool TryDequeueEvent(out IEvent? @event) => _events.TryDequeue(out @event);
+    protected void EnqueueEvent(IEvent @event) => _events.Enqueue(@event);
+    protected abstract void ApplyEvent(IEvent @event);
 
-    protected void AddDomainEvent(DomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+#pragma warning disable CA1030
+    protected void RaiseEvent(IEvent @event)
+    {
+        ApplyEvent(@event);
+        EnqueueEvent(@event);
+    }
+#pragma warning restore CA1030
 }
 
 public interface IAggregateRoot
 {
-    IReadOnlyCollection<DomainEvent> DomainEvents { get; }
-    void ClearDomainEvents();
+    bool TryDequeueEvent(out IEvent? @event);
+    bool HasAnyEvent { get; }
 }

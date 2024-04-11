@@ -1,8 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Common.Core.Contracts;
 public interface IAuditableEntity
 {
+    DateTime CreatedOn { get; }
+    Guid CreatedBy { get; }
+    DateTime? LastModifiedOn { get; }
+    Guid? LastModifiedBy { get; }
+    string LastModifiedIp { get; }
+
     void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn);
     void ApplyUpdatedAudit(Guid userId, string ipAddress, DateTime updatedOn);
 }

@@ -1,9 +1,9 @@
-﻿using NimbleMediator.Contracts;
+using NimbleMediator.Contracts;
 
 namespace Common.Core.Interfaces;
 
-#pragma warning disable CA1040
 public interface IEvent : INotification
 {
+    Guid EventId { get; }
+    DateTime CreatedOn { get; }
 }
-#pragma warning restore CA1040

@@ -25,4 +25,8 @@ internal class Product : AuditableEntity<ProductId>
 
     public static Product Create(StoreId storeId, string name, string description)
         => new(storeId, name.Trim(), description.Trim());
+
+#pragma warning disable CS8618
+    private Product() : base(ProductId.New()) { } // ORMs need parameterlers ctor
+#pragma warning disable CS8618
 }

@@ -1,12 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Common.Core.Contracts.Results;
+using Common.Events;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
-using IdentityAndAuth.Features.Tokens.Domain;
 using IdentityAndAuth.Features.Tokens.Domain.Errors;
 using IdentityAndAuth.Features.Tokens.Domain.Services;
 using Microsoft.AspNetCore.Identity;
@@ -18,8 +18,7 @@ namespace IdentityAndAuth.Features.Tokens.Infrastructure;
 
 internal class TokenService(
     IOptions<JwtOptions> jwtOptionsProvider,
-    IUserService userService,
-    UserManager<ApplicationUser> userManager)
+    IUserService userService)
      : ITokenService
 {
     private readonly JwtOptions _jwtOptions = jwtOptionsProvider.Value;
@@ -41,32 +40,6 @@ internal class TokenService(
         return new TokenDto(accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt);
     }
 
-    public async Task<Result> ValidateRefreshTokenAsync(string refreshToken, string phoneNumber)
-    {
-        if (string.IsNullOrWhiteSpace(refreshToken))
-        {
-            return TokenErrors.InvalidRefreshToken;
-        }
-
-        var refreshTokenExpiresAt = await userManager
-                                        .Users
-                                        .Where(u => u.PhoneNumber == phoneNumber && u.RefreshToken == refreshToken)
-                                        .Select(u => u.RefreshTokenExpiresAt)
-                                        .FirstOrDefaultAsync();
-
-        if (refreshTokenExpiresAt == default)
-        {
-            return TokenErrors.InvalidRefreshToken;
-        }
-
-        if (refreshTokenExpiresAt < DateTime.UtcNow)
-        {
-            return TokenErrors.RefreshTokenExpired;
-        }
-
-        return Result.Success;
-    }
-
     private (string accessToken, DateTime accessTokenExpiresAt) GenerateJwt(ApplicationUser user)
     {
         var expiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpirationInMinutes);
@@ -82,15 +55,15 @@ internal class TokenService(
     }
 
     private static List<Claim> GetClaims(ApplicationUser user)
-        => new()
-        {
+        =>
+        [
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(CustomClaims.Fullname, $"{user.Name} {user.LastName}"),
             new(ClaimTypes.Name, user.UserName!),
             new(ClaimTypes.Surname, user.LastName ?? string.Empty),
             new(CustomClaims.ImageUrl, user.ImageUrl?.ToString() ?? string.Empty),
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty),
-        };
+        ];
 
     private SigningCredentials GetSigningCredentials()
     {

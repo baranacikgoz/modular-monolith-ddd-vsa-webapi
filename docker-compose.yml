@@ -13,13 +13,14 @@ services:
       - 8080:8080
     depends_on:
       - mm.database
-      - mm.rabbitmq
+      # - mm.rabbitmq
     environment:
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - CustomLoggingOptions__SeqUrl=http://mm.seq:5341
-      - MessageBrokerOptions__Uri=rabbitmq://mm.rabbitmq:5672
-      - MessageBrokerOptions__Username=guest
-      - MessageBrokerOptions__Password=guest
+      - EventBusOptions__UseInMemoryEventBus=true
+      - OutboxOptions__WorkerPeriodInMilliSeconds=1000
+      - OutboxOptions__BatchSizePerExecution=100
+      - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
 
   mm.database:
     image: postgres:latest
@@ -34,18 +35,18 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
 
-  mm.rabbitmq:
-    image: rabbitmq:3-management
-    container_name: mm.rabbitmq
-    restart: "no"
-    ports:
-      - 5672:5672
-      - 15672:15672
-    volumes:
-      - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+  # mm.rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: mm.rabbitmq
+  #   restart: "no"
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   volumes:
+  #     - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=guest
+  #     - RABBITMQ_DEFAULT_PASS=guest
 
   mm.seq:
     image: datalust/seq:latest

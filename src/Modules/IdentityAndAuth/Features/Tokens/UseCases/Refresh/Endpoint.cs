@@ -3,15 +3,17 @@ using System.Security.Claims;
 using Common.Core.Contracts.Results;
 using Common.Core.Extensions;
 using Common.Options;
-using IdentityAndAuth.Features.Auth.Extensions;
+using IdentityAndAuth.Features.Auth.Infrastructure;
 using IdentityAndAuth.Features.Auth.Infrastructure.Jwt;
 using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Features.Tokens.Domain.Errors;
 using IdentityAndAuth.Features.Tokens.Domain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,13 +33,14 @@ internal static class Endpoint
     private static async Task<Result<Response>> RefreshAsync(
         [FromBody] Request request,
         [FromServices] IOptions<JwtOptions> jwtOptionsProvider,
-        [FromServices] ITokenService tokenService,
         [FromServices] IUserService userService,
+        [FromServices] ITokenService tokenService,
+        [FromServices] UserManager<ApplicationUser> userManager,
         CancellationToken cancellationToken)
         => await GetPrincipalFromExpiredToken(request.ExpiredAccessToken, jwtOptionsProvider.Value)
             .Bind(claimsPrincipal => claimsPrincipal.GetPhoneNumber())
             .Tap(phoneNumber => StringExt.EnsureNotNullOrEmpty(phoneNumber, ifNullOrEmpty: TokenErrors.InvalidToken))
-            .TapAsync(async phoneNumber => await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber!))
+            .TapAsync(async phoneNumber => await userManager.ValidateRefreshTokenAsync(request.RefreshToken, phoneNumber!))
             .BindAsync(async phoneNumber => await userService.GetByPhoneNumberAsync(phoneNumber!, cancellationToken))
             .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user))
             .MapAsync(tokenDto => new Response(
@@ -66,5 +69,34 @@ internal static class Endpoint
         }
 
         return principal;
+    }
+
+    private static async Task<Result> ValidateRefreshTokenAsync(
+        this UserManager<ApplicationUser> userManager,
+        string refreshToken,
+        string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return TokenErrors.InvalidRefreshToken;
+        }
+
+        var refreshTokenExpiresAt = await userManager
+                                        .Users
+                                        .Where(u => u.PhoneNumber == phoneNumber && u.RefreshToken == refreshToken)
+                                        .Select(u => u.RefreshTokenExpiresAt)
+                                        .FirstOrDefaultAsync();
+
+        if (refreshTokenExpiresAt == default)
+        {
+            return TokenErrors.InvalidRefreshToken;
+        }
+
+        if (refreshTokenExpiresAt < DateTime.UtcNow)
+        {
+            return TokenErrors.RefreshTokenExpired;
+        }
+
+        return Result.Success;
     }
 }

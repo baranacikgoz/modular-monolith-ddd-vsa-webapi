@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using IdentityAndAuth.Features.Auth.Domain;
 
-namespace IdentityAndAuth.Features.Auth.Extensions;
+namespace IdentityAndAuth.Features.Auth.Infrastructure;
 
 internal static class ClaimsPrincipalExtensions
 {

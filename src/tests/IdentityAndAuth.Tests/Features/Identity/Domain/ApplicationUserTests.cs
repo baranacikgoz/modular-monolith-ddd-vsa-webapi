@@ -6,38 +6,25 @@ namespace IdentityAndAuth.Tests.Features.Identity.Domain;
 
 public class ApplicationUserTests
 {
-    private readonly Mock<IPhoneVerificationTokenService> _mockPhoneVerificationTokenService;
-    private readonly CancellationToken _cancellationToken;
-
-    public ApplicationUserTests()
-    {
-        _mockPhoneVerificationTokenService = new Mock<IPhoneVerificationTokenService>();
-        _cancellationToken = new CancellationToken();
-    }
 
     [Fact]
-    public async Task Create_ShouldCreateApplicationUser_WhenValidModelAndValidPhoneVerificationToken()
+    public void Create_ShouldCreateApplicationUser_WhenValidParameters()
     {
-        // Arrange
-        var createModel = new CreateApplicationUserModel
-        {
-            FirstName = "John",
-            LastName = "Doe",
-            PhoneNumber = "5555555555",
-            NationalIdentityNumber = "12345678901",
-            BirthDate = new DateOnly(1990, 1, 1)
-        };
+        // Arrange & Act
+        var firstName = "John";
+        var lastName = "Doe";
+        var phoneNumber = "5555555555";
+        var nationalIdentityNumber = "12345678901";
+        var birthDate = new DateOnly(1990, 1, 1);
 
-        _mockPhoneVerificationTokenService
-            .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success);
-
-        // Act
-        var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
+        var user = ApplicationUser.Create(
+            firstName,
+            lastName,
+            phoneNumber,
+            nationalIdentityNumber,
+            birthDate);
 
         // Assert
-        userResult.IsFailure.Should().BeFalse();
-        var user = userResult.Value!;
         user.Name.Should().Be("JOHN");
         user.LastName.Should().Be("DOE");
         user.PhoneNumber.Should().Be("5555555555");
@@ -47,76 +34,21 @@ public class ApplicationUserTests
     }
 
     [Fact]
-    public async Task Create_ShouldFail_WhenInvalidPhoneVerificationToken()
+    public void UpdateRefreshToken_ShouldUpdateRefreshTokenAndRefreshTokenExpiresAt_WhenValidParameters()
     {
         // Arrange
-        var createModel = new CreateApplicationUserModel
-        {
-            FirstName = "John",
-            LastName = "Doe",
-            PhoneNumber = "5555555555",
-            NationalIdentityNumber = "12345678901",
-            BirthDate = new DateOnly(1990, 1, 1)
-        };
+        var firstName = "John";
+        var lastName = "Doe";
+        var phoneNumber = "5555555555";
+        var nationalIdentityNumber = "12345678901";
+        var birthDate = new DateOnly(1990, 1, 1);
 
-        _mockPhoneVerificationTokenService
-            .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Failure(PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching));
-
-        // Act
-        var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
-
-        // Assert
-        userResult.IsFailure.Should().BeTrue();
-        userResult.Error.Should().Be(PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching);
-    }
-
-    [Fact]
-    public async Task Create_ShouldCombineFirstAndMiddleNames_WhenMiddleNameIsNotNull()
-    {
-        // Arrange
-        var createModel = new CreateApplicationUserModel
-        {
-            FirstName = "John Harrison",
-            LastName = "Doe",
-            PhoneNumber = "5555555555",
-            NationalIdentityNumber = "12345678901",
-            BirthDate = new DateOnly(1990, 1, 1)
-        };
-
-        _mockPhoneVerificationTokenService
-            .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success);
-
-        // Act
-        var userResult = await ApplicationUser.CreateAsync(createModel, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
-
-        // Assert
-        userResult.IsFailure.Should().BeFalse();
-        var user = userResult.Value!;
-        user.Name.Should().Be("JOHN HARRISON");
-        user.LastName.Should().Be("DOE");
-    }
-
-    [Fact]
-    public async Task UpdateRefreshToken_ShouldUpdateRefreshTokenAndRefreshTokenExpiresAt_WhenValidParameters()
-    {
-        // Arrange
-        var model = new CreateApplicationUserModel
-        {
-            FirstName = "John Harrison",
-            LastName = "Doe",
-            PhoneNumber = "5555555555",
-            NationalIdentityNumber = "12345678901",
-            BirthDate = new DateOnly(1990, 1, 1)
-        };
-
-        _mockPhoneVerificationTokenService
-            .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success);
-
-        var userResult = await ApplicationUser.CreateAsync(model, _mockPhoneVerificationTokenService.Object, "token", _cancellationToken);
-        var user = userResult.Value!;
+        var user = ApplicationUser.Create(
+            firstName,
+            lastName,
+            phoneNumber,
+            nationalIdentityNumber,
+            birthDate);
 
         // Act
         user.UpdateRefreshToken("refreshToken", DateTime.Now);

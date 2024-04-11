@@ -1,4 +1,4 @@
-﻿namespace Host.Configurations;
+namespace Host.Configurations;
 
 internal static class Setup
 {
@@ -18,7 +18,8 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/monitoringTracing");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/openApi");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/messageBroker");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/eventBus");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/outbox");
 
         configuration.AddEnvironmentVariables();
 

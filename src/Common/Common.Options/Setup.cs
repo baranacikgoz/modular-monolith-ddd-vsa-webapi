@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Options;
@@ -78,9 +78,19 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<MessageBrokerOptions>()
-            .Bind(configuration.GetSection(nameof(MessageBrokerOptions)))
+            .AddOptions<EventBusOptions>()
+            .Bind(configuration.GetSection(nameof(EventBusOptions)))
             .ValidateDataAnnotations()
+            .Validate(o => !(!o.UseInMemoryEventBus && o.MessageBrokerOptions is null), "Both UseInMemory false and MessageBrokerOptions are null. Use in memory or provide message broker options.")
+            .ValidateOnStart();
+
+        services
+            .AddOptions<OutboxOptions>()
+            .Bind(configuration.GetSection(nameof(OutboxOptions)))
+            .ValidateDataAnnotations()
+            .Validate(o => o.WorkerPeriodInMilliSeconds >= 0, "WorkerPeriodInMilliSeconds must be greater than 0.")
+            .Validate(o => o.BatchSizePerExecution >= 0, "BatchSizePerExecution must be greater than 0.")
+            .Validate(o => o.MaxFailCountBeforeSentToDeadLetter >= 0, "MaxFailCountBeforeSentToDeadLetter must be greater than 0.")
             .ValidateOnStart();
 
         return services;
