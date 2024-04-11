@@ -34,8 +34,8 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         var id = Guid.NewGuid();
         var @event = new UserCreatedDomainEvent(
             id,
-            name,
-            lastName,
+            name.TrimmedUpperInvariantTransliterateTurkishChars(),
+            lastName.TrimmedUpperInvariantTransliterateTurkishChars(),
             phoneNumber,
             nationalIdentityNumber,
             birthDate);
