@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using Common.Core.Contracts.Results;
 
 namespace Common.Core.Extensions;
@@ -26,4 +26,37 @@ public static class StringExt
 
         return !s.AsSpan().ContainsAnyExcept(_turkishAlphabet);
     }
+
+    public static string TrimmedUpperInvariantTransliterateTurkishChars(this string value)
+    {
+        value = value.Trim();
+
+        return string.Create(value.Length, value, (chars, state) =>
+        {
+            for (var i = 0; i < state.Length; i++)
+            {
+                var c = state[i];
+
+                var result = c switch
+                {
+                    'ş' => 'S',
+                    'Ş' => 'S',
+                    'ğ' => 'G',
+                    'Ğ' => 'G',
+                    'ç' => 'C',
+                    'Ç' => 'C',
+                    'ö' => 'O',
+                    'Ö' => 'O',
+                    'ü' => 'U',
+                    'Ü' => 'U',
+                    'ı' => 'I',
+                    'İ' => 'I',
+                    _ => char.ToUpperInvariant(c),
+                };
+
+                chars[i] = result;
+            }
+        });
+    }
+
 }
