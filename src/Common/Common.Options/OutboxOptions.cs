@@ -10,7 +10,7 @@ namespace Common.Options;
 public class OutboxOptions
 {
     [Required]
-    public int BackgroundJobPeriodInMilliSeconds { get; set; }
+    public int BackgroundJobPeriodInSeconds { get; set; }
 
     [Required]
     public int BatchSizePerExecution { get; set; }
