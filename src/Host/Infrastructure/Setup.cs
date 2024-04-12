@@ -20,7 +20,7 @@ public static partial class Setup
             .AddCustomizedProblemDetails(env)
             .AddCaching()
             .AddEndpointsApiExplorer()
-            .AddMonitoringAndTracing(configuration)
+            .AddMetricsAndTracing(configuration)
             .AddCustomCors();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
@@ -30,8 +30,8 @@ public static partial class Setup
             .UseRateLimiter()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware()
-            .UseAuth()
-            .UseMonitoringAndTracing(configuration);
+            .UseAuth();
+    // .UsePrometheusScraping()
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)
         => services

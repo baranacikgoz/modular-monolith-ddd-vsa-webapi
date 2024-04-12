@@ -16,11 +16,14 @@ services:
       # - mm.rabbitmq
     environment:
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
-      - CustomLoggingOptions__SeqUrl=http://mm.seq:5341
       - EventBusOptions__UseInMemoryEventBus=true
-      - OutboxOptions__BackgroundJobPeriodInMilliSeconds=1000
+      - OutboxOptions__BackgroundJobPeriodInSeconds=5
       - OutboxOptions__BatchSizePerExecution=100
       - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
+      - LoggingMonitoringTracingOptions__SeqUrl=http://mm.seq:80
+      - LoggingMonitoringTracingOptions__EnableMetric=false
+      - LoggingMonitoringTracingOptions__EnableTracing=false
+      - LoggingMonitoringTracingOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
 
   mm.database:
     image: postgres:latest

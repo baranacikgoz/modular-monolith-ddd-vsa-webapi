@@ -7,7 +7,7 @@ namespace Host.Middlewares;
 
 internal partial class RequestResponseLoggingMiddleware(
     ILogger<RequestResponseLoggingMiddleware> logger,
-    IOptions<CustomLoggingOptions> loggingOptionsProvider
+    IOptions<LoggingMonitoringTracingOptions> loggingOptionsProvider
     ) : IMiddleware
 {
     private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
