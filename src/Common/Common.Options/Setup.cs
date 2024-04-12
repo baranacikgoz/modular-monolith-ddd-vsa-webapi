@@ -21,8 +21,8 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<CustomLoggingOptions>()
-            .Bind(configuration.GetSection(nameof(CustomLoggingOptions)))
+            .AddOptions<LoggingMonitoringTracingOptions>()
+            .Bind(configuration.GetSection(nameof(LoggingMonitoringTracingOptions)))
             .ValidateDataAnnotations()
             .Validate(o => o.ResponseTimeThresholdInMs > 0, "ResponseTimeThresholdInMs must be greater than 0.")
             .ValidateOnStart();
@@ -66,12 +66,6 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<MonitoringTracingOptions>()
-            .Bind(configuration.GetSection(nameof(MonitoringTracingOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
-
-        services
             .AddOptions<OpenApiOptions>()
             .Bind(configuration.GetSection(nameof(OpenApiOptions)))
             .ValidateDataAnnotations()
@@ -88,7 +82,7 @@ public static class Setup
             .AddOptions<OutboxOptions>()
             .Bind(configuration.GetSection(nameof(OutboxOptions)))
             .ValidateDataAnnotations()
-            .Validate(o => o.BackgroundJobPeriodInMilliSeconds >= 0, "BackgroundJobPeriodInMilliSeconds must be greater than 0.")
+            .Validate(o => o.BackgroundJobPeriodInSeconds >= 0, "BackgroundJobPeriodInSeconds must be greater than 0.")
             .Validate(o => o.BatchSizePerExecution >= 0, "BatchSizePerExecution must be greater than 0.")
             .Validate(o => o.MaxFailCountBeforeSentToDeadLetter >= 0, "MaxFailCountBeforeSentToDeadLetter must be greater than 0.")
             .ValidateOnStart();

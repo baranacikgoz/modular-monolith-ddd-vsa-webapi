@@ -1,0 +1,21 @@
+{
+  "LoggingMonitoringTracingOptions": {
+    "AppName": "modular-monolith",
+    "MinimumLevel": "Debug",
+    "MinimumLevelOverrides": {
+      "Microsoft": "Warning",
+      "Hangfire": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "Microsoft.EntityFrameworkCore": "Warning",
+      "MassTransit": "Warning"
+    },
+    "WriteToConsole": true,
+    "WriteToFile": true,
+    "ResponseTimeThresholdInMs": 1000,
+    "SeqUrl": "http://localhost:5341",
+    "EnableMetrics": false,
+    "EnableTracing": false,
+    "OtlpTracingEndpoint": "http://localhost:5341/ingest/otlp/v1/traces",
+    "OtlpMetricsEndpoint": "http://localhost:4317"
+  }
+}

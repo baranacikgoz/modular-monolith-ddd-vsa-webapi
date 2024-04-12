@@ -3,20 +3,26 @@ using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
 using Common.Persistence;
+using Serilog.Formatting.Compact;
+using Serilog.Sinks.SystemConsole.Themes;
+using System.Globalization;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(builder.Configuration)
+                .WriteTo.Console(
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    theme: SystemConsoleTheme.Literate,
+                    formatProvider: CultureInfo.InvariantCulture)
                 .CreateLogger();
 try
 {
     Log.Information("Server Booting Up...");
     builder
         .Host
-        .UseSerilog((context, conf) => conf.ReadFrom.Configuration(context.Configuration));
+        .UseCustomizedSerilog();
 
     // Add services to the container.
     builder
