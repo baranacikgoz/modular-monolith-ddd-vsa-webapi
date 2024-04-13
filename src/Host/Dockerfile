@@ -1,7 +1,10 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -16,9 +19,9 @@ COPY ["src/Common/Common.Core/Common.Core.csproj", "src/Common/Common.Core/"]
 COPY ["src/Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj", "src/Common/Common.InterModuleRequests/"]
 COPY ["src/Common/Common.EventBus/Common.EventBus.csproj", "src/Common/Common.EventBus/"]
 COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "src/Modules/IdentityAndAuth/"]
-COPY ["src/Common/Common.Events/Common.Events.csproj", "src/Common/Common.Events/"]
-COPY ["src/Modules/Sales/Sales.csproj", "src/Modules/Sales/"]
+COPY ["src/Common/Common.Events/Common.IntegrationEvents.csproj", "src/Common/Common.Events/"]
 COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "src/Common/Common.Persistence/"]
+COPY ["src/Modules/Sales/Sales.csproj", "src/Modules/Sales/"]
 COPY ["src/Modules/Notifications/Notifications.csproj", "src/Modules/Notifications/"]
 RUN dotnet restore "./src/Host/Host.csproj"
 COPY . .

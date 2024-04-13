@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="../../Common/Common.EventBus/Common.EventBus.csproj" />
     <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
-    <ProjectReference Include="../../Common/Common.Events/Common.Events.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Events\Common.IntegrationEvents.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

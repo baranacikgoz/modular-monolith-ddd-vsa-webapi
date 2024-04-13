@@ -9,11 +9,10 @@ using Common.Core.Interfaces;
 
 namespace Common.Persistence.Outbox;
 
-public abstract class OutboxMessageBase(string type, string payload)
+public abstract class OutboxMessageBase(IEvent @event)
 {
     public int Id { get; set; }
-    public string Type { get; } = type;
-    public string Payload { get; } = payload;
+    public IEvent Event { get; } = @event;
     public DateTime CreatedOn { get; } = DateTime.UtcNow;
     public int FailedCount { get; protected set; }
     public DateTime? LastFailedAt { get; protected set; }
@@ -27,16 +26,16 @@ public abstract class OutboxMessageBase(string type, string payload)
 
 public class OutboxMessage : OutboxMessageBase
 {
-    private OutboxMessage(string type, string payload)
-        : base(type, payload)
+    private OutboxMessage(IEvent @event)
+        : base(@event)
     {
     }
 
     public bool IsProcessed { get; protected set; }
     public DateTime? ProcessedOn { get; protected set; }
 
-    public static OutboxMessage Create(string type, string payload)
-        => new(type, payload);
+    public static OutboxMessage Create(IEvent @event)
+        => new(@event);
 
     public void MarkAsProcessed()
     {
@@ -47,13 +46,13 @@ public class OutboxMessage : OutboxMessageBase
 
 public class DeadLetterMessage : OutboxMessageBase
 {
-    private DeadLetterMessage(string type, string payload, int failedCount, DateTime? lastFailedAt)
-        : base(type, payload)
+    private DeadLetterMessage(IEvent @event, int failedCount, DateTime? lastFailedAt)
+        : base(@event)
     {
         FailedCount = failedCount;
         LastFailedAt = lastFailedAt;
     }
 
     public static DeadLetterMessage CreateFrom(OutboxMessage outboxMessage)
-        => new(outboxMessage.Type, outboxMessage.Payload, outboxMessage.FailedCount, outboxMessage.LastFailedAt);
+        => new(outboxMessage.Event, outboxMessage.FailedCount, outboxMessage.LastFailedAt);
 }

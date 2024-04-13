@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Common.Core.Contracts.Results;
-using Common.Events;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;

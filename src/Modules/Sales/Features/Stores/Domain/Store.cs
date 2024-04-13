@@ -1,20 +1,20 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.Interfaces;
-using Common.Events;
 using Sales.Features.Products.Domain;
+using Sales.Features.Stores.Domain.DomainEvents;
 
 namespace Sales.Features.Stores.Domain;
 
-internal readonly record struct StoreId(Guid Value)
+public readonly record struct StoreId(Guid Value)
 {
     public static StoreId New() => new(Guid.NewGuid());
 }
 
-internal class Store : AggregateRoot<StoreId>
+public class Store : AggregateRoot<StoreId>
 {
     private Store(StoreCreatedDomainEvent @event)
-        : base(new StoreId(@event.EventId))
+        : base(@event.Id)
     {
         // Constructors should be side-effect free (for serialization/deserialization etc.)
         // That's why I used "Apply" instead of "RaiseEvent".
@@ -32,24 +32,24 @@ internal class Store : AggregateRoot<StoreId>
     public static Store Create(Guid ownerId, string name)
     {
         var id = StoreId.New();
-        var @event = new StoreCreatedDomainEvent(id.Value, ownerId, name);
+        var @event = new StoreCreatedDomainEvent(id, ownerId, name);
         var store = new Store(@event);
         store.EnqueueEvent(@event);
 
         return store;
     }
 
-    public void AddProduct(string name, string description)
+    public void AddProduct(Product product)
     {
-        var @event = new ProductAddedDomainEvent(Id.Value, name, description);
+        var @event = new ProductAddedToStoreDomainEvent(this, product);
         RaiseEvent(@event);
     }
 
-    public Result RemoveProduct(ProductId productId)
+    public Result RemoveProduct(Product product)
         => Result<bool>
-            .Create(() => _products.Exists(p => p.Id == productId))
-            .Bind(isExist => isExist ? Result.Success : Error.NotFound(nameof(Product), productId.Value))
-            .Tap(_ => RaiseEvent(new ProductRemovedDomainEvent(Id.Value, productId.Value)));
+            .Create(() => _products.Exists(p => p.Id == product.Id))
+            .Bind(isExist => isExist ? Result.Success : Error.NotFound(nameof(Product), product.Id.Value))
+            .Tap(_ => RaiseEvent(new ProductRemovedFromStoreDomainEvent(this, product)));
 
     protected override void ApplyEvent(IEvent @event)
     {
@@ -58,10 +58,10 @@ internal class Store : AggregateRoot<StoreId>
             case StoreCreatedDomainEvent e:
                 Apply(e);
                 break;
-            case ProductAddedDomainEvent e:
+            case ProductAddedToStoreDomainEvent e:
                 Apply(e);
                 break;
-            case ProductRemovedDomainEvent e:
+            case ProductRemovedFromStoreDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -75,17 +75,14 @@ internal class Store : AggregateRoot<StoreId>
         Name = @event.Name;
     }
 
-    private void Apply(ProductAddedDomainEvent @event)
+    private void Apply(ProductAddedToStoreDomainEvent @event)
     {
-        _products.Add(Product.Create(Id, @event.Name, @event.Description));
+        _products.Add(@event.Product);
     }
 
-    private void Apply(ProductRemovedDomainEvent @event)
+    private void Apply(ProductRemovedFromStoreDomainEvent @event)
     {
-        var product = _products.Find(p => p.Id.Value == @event.ProductId);
-        ArgumentNullException.ThrowIfNull(product);
-
-        _products.Remove(product);
+        _products.Remove(@event.Product);
     }
 
 #pragma warning disable CS8618

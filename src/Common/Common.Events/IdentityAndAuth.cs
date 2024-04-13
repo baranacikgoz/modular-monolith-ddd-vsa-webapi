@@ -1,16 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Common.Core.Contracts;
 
-namespace Common.Events;
+namespace Common.IntegrationEvents;
 
-public sealed record UserCreatedDomainEvent(
-    Guid Id,
+public sealed record UserRegisteredIntegrationEvent(
+    Guid UserId,
     string Name,
-    string LastName,
-    string PhoneNumber,
-    string NationalIdentityNumber,
-    DateOnly BirthDate
+    string PhoneNumber
     ) : DomainEvent;
-
-public sealed record RefreshTokenUpdatedDomainEvent(Guid UserId) : DomainEvent;
-
-public sealed record UserImageUrlUpdatedDomainEvent(Guid UserId, Uri ImageUrl) : DomainEvent;

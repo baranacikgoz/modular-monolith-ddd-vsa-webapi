@@ -3,14 +3,14 @@ using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
 using Common.Core.Extensions;
 using Common.Core.Interfaces;
-using Common.Events;
+using IdentityAndAuth.Features.Identity.Domain.DomainEvents;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
 
 public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot, IAuditableEntity
 {
-    private ApplicationUser(UserCreatedDomainEvent @event)
+    private ApplicationUser(UserRegisteredDomainEvent @event)
     {
         Apply(@event);
     }
@@ -32,7 +32,7 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         Uri? imageUrl = null)
     {
         var id = Guid.NewGuid();
-        var @event = new UserCreatedDomainEvent(
+        var @event = new UserRegisteredDomainEvent(
             id,
             name.TrimmedUpperInvariantTransliterateTurkishChars(),
             lastName.TrimmedUpperInvariantTransliterateTurkishChars(),
@@ -68,7 +68,7 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
     {
         switch (@event)
         {
-            case UserCreatedDomainEvent e:
+            case UserRegisteredDomainEvent e:
                 Apply(e);
                 break;
             case UserImageUrlUpdatedDomainEvent e:
@@ -79,9 +79,9 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         }
     }
 
-    private void Apply(UserCreatedDomainEvent @event)
+    private void Apply(UserRegisteredDomainEvent @event)
     {
-        Id = @event.EventId;
+        Id = @event.UserId;
         Name = @event.Name;
         LastName = @event.LastName;
         PhoneNumber = @event.PhoneNumber;

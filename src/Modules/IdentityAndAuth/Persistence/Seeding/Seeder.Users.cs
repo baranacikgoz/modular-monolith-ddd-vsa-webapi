@@ -1,5 +1,4 @@
 using Common.Core.Contracts.Results;
-using Common.Events;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.EntityFrameworkCore;

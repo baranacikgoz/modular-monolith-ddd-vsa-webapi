@@ -38,20 +38,9 @@ public class InsertOutboxMessagesInterceptor(
         {
             outboxMessages ??= []; // Lazy
 
-            while (aggregateRoot.TryDequeueEvent(out var @event))
+            while (aggregateRoot.TryDequeueEvent(out var @event) && @event is not null)
             {
-                if (@event is null)
-                {
-                    continue;
-                }
-
-                var type = @event.GetType().AssemblyQualifiedName!;
-                var payload = JsonSerializer.Serialize(@event, @event.GetType());
-
-                outboxMessages.Add(OutboxMessage.Create(
-                    type: type,
-                    payload: payload));
-
+                outboxMessages.Add(OutboxMessage.Create(@event));
             }
         }
 

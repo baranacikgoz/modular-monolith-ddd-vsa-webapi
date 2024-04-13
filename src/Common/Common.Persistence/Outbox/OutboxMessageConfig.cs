@@ -9,9 +9,9 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Type).IsRequired();
-
-        builder.Property(x => x.Payload).IsRequired();
+        builder.Property(x => x.Event)
+            .HasConversion<EventConverter>()
+            .IsRequired();
 
         builder.Property(x => x.CreatedOn).IsRequired();
         builder.HasIndex(x => x.CreatedOn);
@@ -31,8 +31,10 @@ public class DeadLetterMessageConfig : IEntityTypeConfiguration<DeadLetterMessag
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Type).IsRequired();
-        builder.Property(x => x.Payload).IsRequired();
+        builder.Property(x => x.Event)
+            .HasConversion<EventConverter>()
+            .IsRequired();
+
         builder.Property(x => x.CreatedOn).IsRequired();
         builder.Property(x => x.FailedCount).IsRequired();
     }
