@@ -18,18 +18,20 @@ public class InsertEventStoreEventsInterceptor : SaveChangesInterceptor
         }
 
         List<EventStoreEvent>? eventsToAdd = null;
-        foreach (var entry in dbContext.ChangeTracker.Entries<IAggregateRoot>())
+        foreach (var aggregateRoot in dbContext
+                                      .ChangeTracker
+                                      .Entries<IAggregateRoot>()
+                                      .Where(e => e.Entity.Events.Count > 0)
+                                      .Select(e => e.Entity))
         {
             eventsToAdd ??= [];
 
-            var aggregateRoot = entry.Entity;
-            if (aggregateRoot.Events.Count > 0)
+            foreach (var @event in aggregateRoot.Events)
             {
-                foreach (var @event in aggregateRoot.Events)
-                {
-                    var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.Id.Value, @event.Version, @event);
-                    eventsToAdd.Add(eventStoreEvent);
-                }
+                var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.Id.Value, @event.Version, @event);
+                eventsToAdd.Add(eventStoreEvent);
+
+                // Do not add to DbSet directly here, it throws collection modified exception
             }
         }
 
