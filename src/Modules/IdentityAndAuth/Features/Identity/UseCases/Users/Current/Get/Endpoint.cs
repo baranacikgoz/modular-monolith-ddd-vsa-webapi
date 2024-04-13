@@ -30,8 +30,8 @@ internal static class Endpoint
         => await Result<Dto>
             .CreateAsync(taskToAwaitValue: async () => await userManager
                                                     .Users
-                                                    .Where(x => x.Id == currentUser.Id)
-                                                    .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!))
+                                                    .Where(x => x.Id.Value == currentUser.Id)
+                                                    .Select(x => new Dto(x.Id.Value, x.Name, x.LastName, x.PhoneNumber!))
                                                     .SingleOrDefaultAsync(cancellationToken),
                     errorIfValueNull: Error.NotFound(nameof(ApplicationUser), currentUser.Id))
             .MapAsync(dto => new Response(

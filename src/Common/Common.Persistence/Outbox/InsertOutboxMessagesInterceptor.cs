@@ -23,12 +23,12 @@ public class InsertOutboxMessagesInterceptor(
         foreach (var aggregateRoot in dbContext
                                       .ChangeTracker
                                       .Entries<IAggregateRoot>()
-                                      .Where(e => e.Entity.HasAnyEvent)
+                                      .Where(e => e.Entity.Events.Count > 0)
                                       .Select(e => e.Entity))
         {
             outboxMessages ??= []; // Lazy
 
-            while (aggregateRoot.TryDequeueEvent(out var @event) && @event is not null)
+            foreach (var @event in aggregateRoot.Events)
             {
                 outboxMessages.Add(OutboxMessage.Create(@event));
             }

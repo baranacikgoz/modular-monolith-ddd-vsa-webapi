@@ -10,7 +10,7 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Event)
-            .HasConversion<EventConverter>()
+            .HasConversion<DomainEventConverter>()
             .IsRequired();
 
         builder.Property(x => x.CreatedOn).IsRequired();
@@ -32,7 +32,7 @@ public class DeadLetterMessageConfig : IEntityTypeConfiguration<DeadLetterMessag
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Event)
-            .HasConversion<EventConverter>()
+            .HasConversion<DomainEventConverter>()
             .IsRequired();
 
         builder.Property(x => x.CreatedOn).IsRequired();

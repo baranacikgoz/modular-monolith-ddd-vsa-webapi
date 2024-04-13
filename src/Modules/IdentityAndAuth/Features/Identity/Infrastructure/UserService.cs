@@ -41,7 +41,7 @@ internal class UserService(
         return identityResult.ToResult();
     }
 
-    public Task<List<string>> GetRoles(Guid userId, CancellationToken cancellationToken = default)
+    public Task<List<string>> GetRoles(ApplicationUserId userId, CancellationToken cancellationToken = default)
         => cacheService.GetOrSetAsync(
             CacheKeyForRoles(userId),
             () => identityDbContext
@@ -54,7 +54,7 @@ internal class UserService(
                     .ToListAsync(cancellationToken),
                     slidingExpiration: TimeSpan.FromDays(7), cancellationToken: cancellationToken);
 
-    public async Task<bool> HasPermissionAsync(Guid userId, string permissionName, CancellationToken cancellationToken = default)
+    public async Task<bool> HasPermissionAsync(ApplicationUserId userId, string permissionName, CancellationToken cancellationToken = default)
     {
         var userRoles = await GetRoles(userId, cancellationToken);
 
@@ -79,8 +79,8 @@ internal class UserService(
 
         return false;
     }
-    public Task InvalidateRolesCacheAsync(Guid userId, CancellationToken cancellationToken = default)
+    public Task InvalidateRolesCacheAsync(ApplicationUserId userId, CancellationToken cancellationToken = default)
         => cacheService.RemoveAsync(CacheKeyForRoles(userId), cancellationToken);
 
-    private static string CacheKeyForRoles(Guid userId) => $"roles:{userId}";
+    private static string CacheKeyForRoles(ApplicationUserId userId) => $"roles:{userId}";
 }

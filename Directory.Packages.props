@@ -58,8 +58,8 @@
     <PackageVersion Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="1.4.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.8.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.8.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="0.5.0-beta.4" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="8.0.2" />

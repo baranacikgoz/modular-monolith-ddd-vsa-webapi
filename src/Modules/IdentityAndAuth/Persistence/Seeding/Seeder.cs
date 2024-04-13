@@ -6,7 +6,7 @@ namespace IdentityAndAuth.Persistence.Seeding;
 
 internal sealed partial class Seeder(
     ILogger<Seeder> logger,
-    RoleManager<ApplicationRole> roleManager,
+    RoleManager<IdentityRole<ApplicationUserId>> roleManager,
     UserManager<ApplicationUser> userManager)
 {
 

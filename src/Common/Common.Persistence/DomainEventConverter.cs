@@ -5,29 +5,29 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Common.Persistence;
 
-public partial class EventConverter : ValueConverter<IEvent, string>
+public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
 {
     private static readonly JsonSerializerOptions _options = new()
     {
         WriteIndented = true,
         Converters =
         {
-            new PolymorphicIEventConverter(),
+            new PolymorphicDomainEventConverter(),
             new JsonStringEnumConverter()
         }
     };
 
-    public EventConverter() : base(
+    public DomainEventConverter() : base(
             eventItem => JsonSerializer.Serialize(eventItem, _options),
-            json => JsonSerializer.Deserialize<IEvent>(json, _options)!
+            json => JsonSerializer.Deserialize<DomainEvent>(json, _options)!
         )
     {
     }
 
     private const string EventTypeFieldName = "EventType";
-    private sealed class PolymorphicIEventConverter : JsonConverter<IEvent>
+    private sealed class PolymorphicDomainEventConverter : JsonConverter<DomainEvent>
     {
-        public override IEvent Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override DomainEvent Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var jsonDocument = JsonDocument.ParseValue(ref reader);
             var typeString = jsonDocument.RootElement.GetProperty(EventTypeFieldName).GetString()
@@ -35,10 +35,10 @@ public partial class EventConverter : ValueConverter<IEvent, string>
             var type = Type.GetType(typeString)
                 ?? throw new InvalidOperationException($"Type {typeString} not found.");
 
-            return (IEvent)JsonSerializer.Deserialize(jsonDocument.RootElement.GetRawText(), type, options)!;
+            return (DomainEvent)JsonSerializer.Deserialize(jsonDocument.RootElement.GetRawText(), type, options)!;
         }
 
-        public override void Write(Utf8JsonWriter writer, IEvent value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, DomainEvent value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();  // Start the enclosing object.
             writer.WriteString(EventTypeFieldName, value.GetType().AssemblyQualifiedName); // Write the type information.

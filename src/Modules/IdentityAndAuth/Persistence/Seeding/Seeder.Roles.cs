@@ -1,5 +1,6 @@
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,15 +16,15 @@ internal partial class Seeder
         }
     }
 
-    private async Task<ApplicationRole> SeedRoleAsync(string roleName)
+    private async Task<IdentityRole<ApplicationUserId>> SeedRoleAsync(string roleName)
     {
         if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName)
-                is not ApplicationRole role)
+                is not IdentityRole<ApplicationUserId> role)
         {
             LogRoleCreation(logger, roleName);
 
             // Create the role
-            role = new ApplicationRole(roleName, $"{roleName} Role.");
+            role = new IdentityRole<ApplicationUserId>(roleName) { Id = ApplicationUserId.New() };
             await roleManager.CreateAsync(role);
         }
 

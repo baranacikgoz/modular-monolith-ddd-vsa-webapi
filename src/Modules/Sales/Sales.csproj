@@ -26,4 +26,8 @@
     <ProjectReference Include="../../Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,7 @@ public class UserRegisteredDomainEventHandler(
 {
     protected override async Task HandleAsync(UserRegisteredDomainEvent @event, CancellationToken cancellationToken)
     {
-        var integrationEvent = new UserRegisteredIntegrationEvent(@event.UserId, @event.Name, @event.PhoneNumber);
+        var integrationEvent = new UserRegisteredIntegrationEvent(@event.UserId.Value, @event.Name, @event.PhoneNumber);
 
         await eventbus.PublishAsync(integrationEvent, cancellationToken);
     }
