@@ -1,4 +1,4 @@
-﻿namespace Common.Core.Interfaces;
+﻿namespace Common.Core.Contracts;
 
 #pragma warning disable CA1040
 public interface IDomainService

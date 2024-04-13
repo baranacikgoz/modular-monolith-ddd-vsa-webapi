@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Common.Core.Contracts;
-using Common.Core.Interfaces;
 
 namespace Common.Persistence.Outbox;
 

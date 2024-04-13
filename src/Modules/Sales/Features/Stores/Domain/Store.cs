@@ -1,6 +1,5 @@
 using Common.Core.Contracts;
 using Common.Core.Contracts.Results;
-using Common.Core.Interfaces;
 using Sales.Features.Products.Domain;
 using Sales.Features.Stores.Domain.DomainEvents;
 

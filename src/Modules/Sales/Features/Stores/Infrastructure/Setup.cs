@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Sales.Features.Stores.UseCases.v1.Create;
 
 namespace Sales.Features.Stores.Infrastructure;
 

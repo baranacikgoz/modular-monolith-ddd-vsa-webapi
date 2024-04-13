@@ -1,5 +1,4 @@
 using Common.Core.Contracts;
-using Common.Core.Interfaces;
 using Sales.Features.Products.Domain.DomainEvents;
 using Sales.Features.Stores.Domain;
 

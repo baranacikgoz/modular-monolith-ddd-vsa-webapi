@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Common.Core.Interfaces;
 
 namespace Common.Core.Contracts;
 

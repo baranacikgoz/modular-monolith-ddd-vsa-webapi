@@ -1,6 +1,6 @@
 using NimbleMediator.Contracts;
 
-namespace Common.Core.Interfaces;
+namespace Common.Core.Contracts;
 
 public interface IEvent : INotification
 {

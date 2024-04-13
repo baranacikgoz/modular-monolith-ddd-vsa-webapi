@@ -1,5 +1,4 @@
 using Common.Core.Contracts;
-using Common.Core.Interfaces;
 
 namespace Common.EventBus.Contracts;
 

@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Core.Interfaces;
+using Common.Core.Contracts;
 using MassTransit;
-using Microsoft.Extensions.Logging;
 
 namespace Common.EventBus.Contracts;
 
