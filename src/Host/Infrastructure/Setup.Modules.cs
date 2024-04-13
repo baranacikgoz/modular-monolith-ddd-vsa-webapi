@@ -5,6 +5,7 @@ using Host.Middlewares;
 using Host.Validation;
 using Common.EventBus;
 using FluentValidation;
+using Notifications.ModuleSetup;
 
 namespace Host.Infrastructure;
 
@@ -14,6 +15,7 @@ public static partial class Setup
         => services
             .AddIdentityAndAuthModule(configuration)
             .AddSalesModule()
+            .AddNotificationsModule()
             .AddRateLimiting(configuration)
             .AddFluentValidationAndAutoValidation()
             .AddEventBus(env, configuration);

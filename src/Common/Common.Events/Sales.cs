@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Common.Core.Contracts;
 
-namespace Common.Events;
+namespace Common.IntegrationEvents;
+public sealed record StoreCreatedIntegrationEvent(Guid StoreId, Guid OwnerId) : DomainEvent;
 
-public sealed record StoreCreatedDomainEvent(Guid Id, Guid OwnerId, string Name) : DomainEvent;
-public sealed record ProductAddedDomainEvent(Guid StoreId, string Name, string Description) : DomainEvent;
-public sealed record ProductRemovedDomainEvent(Guid StoreId, Guid ProductId) : DomainEvent;
+public sealed record ProductCreatedIntegrationEvent(Guid ProductId, Guid StoreId, string Name) : DomainEvent;

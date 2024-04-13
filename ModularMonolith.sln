@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sales", "src\Modules\Sales\Sales.csproj", "{FDD7666A-26FE-4F79-8577-3ED27A17BBA9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Events", "src\Common\Common.Events\Common.Events.csproj", "{F702E139-2B5E-4965-88F5-2A3BC64A2633}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.IntegrationEvents", "src\Common\Common.Events\Common.IntegrationEvents.csproj", "{F702E139-2B5E-4965-88F5-2A3BC64A2633}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.EventBus", "src\Common\Common.EventBus\Common.EventBus.csproj", "{639D14B7-7EE2-4173-80E4-736C7458D232}"
 EndProject
@@ -137,5 +137,8 @@ Global
 		{639D14B7-7EE2-4173-80E4-736C7458D232} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 		{2DEE0752-DB5A-416F-A7AF-1E9AC09EF8D7} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 		{421B79E0-2999-47BA-9CC8-EE08E3F8CC5A} = {123C371A-07C7-4CB8-BB17-3354463B075D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}
 	EndGlobalSection
 EndGlobal

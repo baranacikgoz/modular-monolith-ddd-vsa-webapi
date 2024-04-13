@@ -54,28 +54,20 @@ internal partial class OutboxBackgroundService(
             {
                 try
                 {
-                    var type = Type.GetType(outboxMessage.Type);
-                    if (type is null)
-                    {
-                        LogEventTypeIsNull(logger, outboxMessage.Id);
-                        continue;
-                    }
-
-                    string payload = outboxMessage.Payload;
-                    var @event = JsonSerializer.Deserialize(payload, type);
-                    if (@event is null)
-                    {
-                        LogEventIsNull(logger, outboxMessage.Id);
-                        continue;
-                    }
-                    await eventBus.PublishAsync((IEvent)@event, cancellationToken);
+                    var @event = outboxMessage.Event;
+                    await eventBus.PublishAsync(@event, cancellationToken);
                     outboxMessage.MarkAsProcessed();
                 }
 #pragma warning disable CA1031
                 catch (Exception ex)
 #pragma warning restore CA1031
                 {
-                    LogExceptionOccuredDuringEventPublishing(logger, ex, outboxMessage.Id, outboxMessage.Type, outboxMessage.Payload);
+                    LogExceptionOccuredDuringEventPublishing(
+                        logger,
+                        ex,
+                        outboxMessage.Id,
+                        outboxMessage.Event.GetType().Name,
+                        outboxMessage.Event);
 
                     outboxMessage.MarkAsFailed();
 
@@ -133,18 +125,8 @@ internal partial class OutboxBackgroundService(
 
     [LoggerMessage(
         Level = LogLevel.Critical,
-        Message = "Event type is null for outbox message with Id: {OutboxMessageId}")]
-    private static partial void LogEventTypeIsNull(ILogger logger, int OutboxMessageId);
-
-    [LoggerMessage(
-        Level = LogLevel.Critical,
-        Message = "Event is null for outbox message with Id: {OutboxMessageId}")]
-    private static partial void LogEventIsNull(ILogger logger, int OutboxMessageId);
-
-    [LoggerMessage(
-        Level = LogLevel.Critical,
-        Message = "An exception occured during event publishing for outbox message with Id: {OutboxMessageId}. Event type: {EventType}. Payload: {Payload}")]
-    private static partial void LogExceptionOccuredDuringEventPublishing(ILogger logger, Exception ex, int OutboxMessageId, string EventType, string Payload);
+        Message = "An exception occured during event publishing for outbox message with Id: {OutboxMessageId}. Event type: {EventType}. Payload: {@Payload}")]
+    private static partial void LogExceptionOccuredDuringEventPublishing(ILogger logger, Exception ex, int OutboxMessageId, string EventType, IEvent Payload);
 
     [LoggerMessage(
         Level = LogLevel.Critical,

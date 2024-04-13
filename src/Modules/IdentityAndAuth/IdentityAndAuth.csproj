@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../Common/Common.Events/Common.Events.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Events\Common.IntegrationEvents.csproj" />
     <ProjectReference Include="../../Common/Common.Core/Common.Core.csproj" />
     <ProjectReference Include="../../Common/Common.Options/Common.Options.csproj" />
     <ProjectReference Include="../../Common/Common.Caching/Common.Caching.csproj" />
