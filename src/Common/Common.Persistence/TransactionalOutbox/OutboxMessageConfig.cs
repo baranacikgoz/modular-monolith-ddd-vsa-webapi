@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Common.Persistence.Outbox;
+namespace Common.Persistence.TransactionalOutbox;
 
 public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
 {

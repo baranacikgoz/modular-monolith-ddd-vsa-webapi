@@ -1,5 +1,6 @@
 using Common.Core.Auth;
 using Common.Core.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -28,10 +29,16 @@ public class ApplyAuditingInterceptor(
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.ApplyCreatedAudit(userId, ipAddress, now);
+                    entry.Entity.CreatedBy = userId;
+                    entry.Entity.CreatedOn = now;
+                    entry.Entity.LastModifiedBy = userId;
+                    entry.Entity.LastModifiedOn = now;
+                    entry.Entity.LastModifiedIp = ipAddress;
                     break;
                 case EntityState.Modified:
-                    entry.Entity.ApplyUpdatedAudit(userId, ipAddress, now);
+                    entry.Entity.LastModifiedBy = userId;
+                    entry.Entity.LastModifiedOn = now;
+                    entry.Entity.LastModifiedIp = ipAddress;
                     break;
             }
         }

@@ -2,7 +2,7 @@ using Common.Core.Contracts;
 using Common.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Common.Persistence.Outbox;
+namespace Common.Persistence.TransactionalOutbox;
 
 public class InsertEventStoreEventsInterceptor : SaveChangesInterceptor
 {

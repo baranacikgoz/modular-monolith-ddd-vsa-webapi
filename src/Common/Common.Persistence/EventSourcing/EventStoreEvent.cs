@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Common.Core.Contracts;
 
 namespace Common.Persistence.EventSourcing;
-public class EventStoreEvent
+public class EventStoreEvent : IAuditableEntity
 {
     private EventStoreEvent(Guid aggregateId, long version, DomainEvent @event)
     {
@@ -18,10 +18,16 @@ public class EventStoreEvent
     public Guid AggregateId { get; }
     public DomainEvent Event { get; }
     public long Version { get; }
-    public DateTime CreatedOn { get; } = DateTime.UtcNow;
 
     public static EventStoreEvent Create(Guid aggregateId, long version, DomainEvent @event)
         => new(aggregateId, version, @event);
+
+    // Auditing Related Section
+    public DateTime CreatedOn { get; set; }
+    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public DateTime? LastModifiedOn { get; set; }
+    public Guid? LastModifiedBy { get; set; }
+    public string LastModifiedIp { get; set; } = string.Empty;
 
 #pragma warning disable CS8618
     private EventStoreEvent() { } // ORMs need parameterless ctor
