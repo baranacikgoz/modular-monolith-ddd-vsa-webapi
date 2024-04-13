@@ -1,9 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Core.Contracts;
-using Common.Core.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Logging;
 
 namespace Common.Persistence;
 

@@ -3,7 +3,6 @@ using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
 using Common.Persistence;
-using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
 using System.Globalization;
 

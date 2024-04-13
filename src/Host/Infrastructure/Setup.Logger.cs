@@ -1,9 +1,5 @@
 using System.Globalization;
-using Asp.Versioning;
-using Asp.Versioning.Builder;
-using Asp.Versioning.Conventions;
 using Common.Options;
-using MassTransit.Configuration;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Configuration;

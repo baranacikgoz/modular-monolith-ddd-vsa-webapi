@@ -6,10 +6,7 @@ using Common.Core.Contracts.Results;
 using Common.Options;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Features.Identity.Domain;
-using IdentityAndAuth.Features.Tokens.Domain.Errors;
 using IdentityAndAuth.Features.Tokens.Domain.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

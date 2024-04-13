@@ -1,4 +1,4 @@
-using Common.Core.Interfaces;
+using Common.Core.Contracts;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
 

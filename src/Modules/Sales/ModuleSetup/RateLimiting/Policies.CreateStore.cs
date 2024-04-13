@@ -2,7 +2,6 @@ using System.Net;
 using System.Threading.RateLimiting;
 using Common.Core.Auth;
 using Common.Core.Extensions;
-using Common.Core.Interfaces;
 using Common.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

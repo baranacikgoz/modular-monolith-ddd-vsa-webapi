@@ -1,8 +1,5 @@
-using System.Xml.Linq;
 using Common.Core.Contracts;
-using Common.Core.Contracts.Results;
 using Common.Core.Extensions;
-using Common.Core.Interfaces;
 using IdentityAndAuth.Features.Identity.Domain.DomainEvents;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,6 +1,5 @@
 using Common.EventBus.Contracts;
 using Microsoft.Extensions.Logging;
-using MassTransit;
 using Common.IntegrationEvents;
 using Notifications.Services;
 
