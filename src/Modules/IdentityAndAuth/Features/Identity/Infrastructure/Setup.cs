@@ -24,7 +24,7 @@ internal static class Setup
     private static IServiceCollection AddCustomIdentity(this IServiceCollection services)
     {
         services
-            .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            .AddIdentity<ApplicationUser, IdentityRole<ApplicationUserId>>(options =>
             {
                 options.SignIn.RequireConfirmedPhoneNumber = true;
                 options.SignIn.RequireConfirmedAccount = true;

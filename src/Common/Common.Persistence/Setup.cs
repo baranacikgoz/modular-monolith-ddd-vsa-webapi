@@ -11,6 +11,8 @@ public static class Setup
         => services
             .AddOutboxAndInterceptor()
             .AddScoped<ApplyAuditingInterceptor>()
+            .AddScoped<InsertEventStoreEventsInterceptor>()
+            .AddScoped<ClearAggregateEventsInterceptor>()
             .AddSingleton<OutboxBackgroundService>()
             .AddHostedService<OutboxBackgroundService>();
 

@@ -1,3 +1,5 @@
+using Common.Persistence;
+using Common.Persistence.EventSourcing;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,10 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
         builder.ToTable("Users");
+
+        builder
+            .Property(u => u.Id)
+            .HasConversion<ApplicationUserIdConverter>();
 
         builder
             .Property(u => u.CreatedOn)
@@ -56,44 +62,56 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
     }
 }
 
-internal class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
+internal class ApplicationRoleConfig : IEntityTypeConfiguration<IdentityRole<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<ApplicationRole> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityRole<ApplicationUserId>> builder) =>
         builder
-            .ToTable("Roles");
+            .ToTable("Roles")
+            .Property(u => u.Id)
+            .HasConversion<ApplicationUserIdConverter>();
 }
 
-internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<Guid>>
+internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityRoleClaim<Guid>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityRoleClaim<ApplicationUserId>> builder) =>
         builder
-            .ToTable("RoleClaims");
+            .ToTable("RoleClaims")
+            .Property(u => u.RoleId)
+            .HasConversion<ApplicationUserIdConverter>();
 }
 
-internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<Guid>>
+internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserRole<ApplicationUserId>> builder) =>
         builder
-            .ToTable("UserRoles");
+            .ToTable("UserRoles")
+            .Property(u => u.UserId)
+            .HasConversion<ApplicationUserIdConverter>();
 }
 
-internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<Guid>>
+internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserClaim<Guid>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserClaim<ApplicationUserId>> builder) =>
         builder
-            .ToTable("UserClaims");
+            .ToTable("UserClaims")
+            .Property(u => u.UserId)
+            .HasConversion<ApplicationUserIdConverter>();
 }
 
-internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
+internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserLogin<ApplicationUserId>> builder) =>
         builder
-            .ToTable("UserLogins");
+            .ToTable("UserLogins")
+            .Property(u => u.UserId)
+            .HasConversion<ApplicationUserIdConverter>();
 }
 
-internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<Guid>>
+internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserToken<ApplicationUserId>> builder) =>
         builder
-            .ToTable("UserTokens");
+            .ToTable("UserTokens")
+            .Property(u => u.UserId)
+            .HasConversion<ApplicationUserIdConverter>();
 }

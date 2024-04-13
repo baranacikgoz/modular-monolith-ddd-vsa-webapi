@@ -3,6 +3,7 @@ using System;
 using IdentityAndAuth.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IdentityAndAuth.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    partial class IdentityContextModelSnapshot : ModelSnapshot
+    [Migration("20240413181317_refactored_aggregate")]
+    partial class refactored_aggregate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,6 +44,35 @@ namespace IdentityAndAuth.Persistence.Migrations
                     b.HasKey("AggregateId", "Version");
 
                     b.ToTable("EventStoreEvents", "IdentityAndAuth");
+                });
+
+            modelBuilder.Entity("IdentityAndAuth.Features.Identity.Domain.ApplicationRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("Roles", "IdentityAndAuth");
                 });
 
             modelBuilder.Entity("IdentityAndAuth.Features.Identity.Domain.ApplicationUser", b =>
@@ -159,32 +191,6 @@ namespace IdentityAndAuth.Persistence.Migrations
                     b.ToTable("Users", "IdentityAndAuth");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("Roles", "IdentityAndAuth");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", b =>
                 {
                     b.Property<int>("Id")
@@ -290,7 +296,7 @@ namespace IdentityAndAuth.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", null)
+                    b.HasOne("IdentityAndAuth.Features.Identity.Domain.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -317,7 +323,7 @@ namespace IdentityAndAuth.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<IdentityAndAuth.Features.Identity.Domain.ApplicationUserId>", null)
+                    b.HasOne("IdentityAndAuth.Features.Identity.Domain.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

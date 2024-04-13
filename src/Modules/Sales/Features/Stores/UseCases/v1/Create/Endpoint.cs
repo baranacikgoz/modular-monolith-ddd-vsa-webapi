@@ -13,7 +13,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder salesApiGroup)
     {
         salesApiGroup
-            .MapPost("{storeId}", CreateProductAsync)
+            .MapPost("", CreateProductAsync)
             .WithDescription("Create a store.")
             .MustHavePermission(CustomActions.Create, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)
@@ -21,7 +21,6 @@ internal static class Endpoint
     }
 
     private static ValueTask<Result<Response>> CreateProductAsync(
-        [FromRoute] Guid storeId,
         [FromBody] Request request,
         CancellationToken cancellationToken)
         => throw new NotImplementedException();

@@ -2,10 +2,10 @@ using Common.Core.Contracts;
 
 namespace Common.Persistence.Outbox;
 
-public abstract class OutboxMessageBase(IEvent @event)
+public abstract class OutboxMessageBase(DomainEvent @event)
 {
     public int Id { get; set; }
-    public IEvent Event { get; } = @event;
+    public DomainEvent Event { get; } = @event;
     public DateTime CreatedOn { get; } = DateTime.UtcNow;
     public int FailedCount { get; protected set; }
     public DateTime? LastFailedAt { get; protected set; }
@@ -19,7 +19,7 @@ public abstract class OutboxMessageBase(IEvent @event)
 
 public class OutboxMessage : OutboxMessageBase
 {
-    private OutboxMessage(IEvent @event)
+    private OutboxMessage(DomainEvent @event)
         : base(@event)
     {
     }
@@ -27,7 +27,7 @@ public class OutboxMessage : OutboxMessageBase
     public bool IsProcessed { get; protected set; }
     public DateTime? ProcessedOn { get; protected set; }
 
-    public static OutboxMessage Create(IEvent @event)
+    public static OutboxMessage Create(DomainEvent @event)
         => new(@event);
 
     public void MarkAsProcessed()
@@ -39,7 +39,7 @@ public class OutboxMessage : OutboxMessageBase
 
 public class DeadLetterMessage : OutboxMessageBase
 {
-    private DeadLetterMessage(IEvent @event, int failedCount, DateTime? lastFailedAt)
+    private DeadLetterMessage(DomainEvent @event, int failedCount, DateTime? lastFailedAt)
         : base(@event)
     {
         FailedCount = failedCount;

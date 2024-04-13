@@ -5,23 +5,14 @@ using Sales.Features.Stores.Domain.DomainEvents;
 
 namespace Sales.Features.Stores.Domain;
 
-public readonly record struct StoreId(Guid Value)
+public readonly record struct StoreId(Guid Value) : IStronglyTypedId
 {
     public static StoreId New() => new(Guid.NewGuid());
+    public override string ToString() => Value.ToString();
 }
 
 public class Store : AggregateRoot<StoreId>
 {
-    private Store(StoreCreatedDomainEvent @event)
-        : base(@event.Id)
-    {
-        // Constructors should be side-effect free (for serialization/deserialization etc.)
-        // That's why I used "Apply" instead of "RaiseEvent".
-        // Event is Enqueued in "Create" factory method.
-
-        Apply(@event);
-    }
-
     public Guid OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
 
@@ -31,9 +22,10 @@ public class Store : AggregateRoot<StoreId>
     public static Store Create(Guid ownerId, string name)
     {
         var id = StoreId.New();
+        var store = new Store();
+
         var @event = new StoreCreatedDomainEvent(id, ownerId, name);
-        var store = new Store(@event);
-        store.EnqueueEvent(@event);
+        store.RaiseEvent(@event);
 
         return store;
     }
@@ -50,7 +42,7 @@ public class Store : AggregateRoot<StoreId>
             .Bind(isExist => isExist ? Result.Success : Error.NotFound(nameof(Product), product.Id.Value))
             .Tap(_ => RaiseEvent(new ProductRemovedFromStoreDomainEvent(this, product)));
 
-    protected override void ApplyEvent(IEvent @event)
+    protected override void ApplyEvent(DomainEvent @event)
     {
         switch (@event)
         {
@@ -70,6 +62,7 @@ public class Store : AggregateRoot<StoreId>
 
     private void Apply(StoreCreatedDomainEvent @event)
     {
+        Id = @event.Id;
         OwnerId = @event.OwnerId;
         Name = @event.Name;
     }
@@ -85,6 +78,6 @@ public class Store : AggregateRoot<StoreId>
     }
 
 #pragma warning disable CS8618
-    private Store() : base(StoreId.New()) { } // ORMs need parameterlers ctor
+    private Store() : base(new(Guid.Empty)) { } // ORMs need parameterlers ctor
 #pragma warning disable CS8618
 }

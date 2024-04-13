@@ -35,7 +35,7 @@ public class FirstBasicUserIdsRequestConsumer(
             )
             .Where(uur => uur.RoleId == roleId)
             .OrderBy(uur => uur.u.CreatedOn)
-            .Select(uur => uur.u.Id)
+            .Select(uur => uur.u.Id.Value)
             .Take(userCount)
             .ToListAsync(context.CancellationToken);
 

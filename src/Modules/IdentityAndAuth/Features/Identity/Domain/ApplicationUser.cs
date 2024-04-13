@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Common.Core.Contracts;
 using Common.Core.Extensions;
 using IdentityAndAuth.Features.Identity.Domain.DomainEvents;
@@ -5,13 +6,24 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
 
-public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot, IAuditableEntity
+public readonly record struct ApplicationUserId : IStronglyTypedId
 {
-    private ApplicationUser(UserRegisteredDomainEvent @event)
+    public Guid Value { get; } = Guid.NewGuid();
+
+    // Parameterless constructor for EF
+    public ApplicationUserId() : this(Guid.NewGuid()) { }
+
+    public ApplicationUserId(Guid value)
     {
-        Apply(@event);
+        Value = value;
     }
 
+    public static ApplicationUserId New() => new(Guid.NewGuid());
+    public override string ToString() => Value.ToString();
+}
+
+public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, IAggregateRoot
+{
     public string Name { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public string NationalIdentityNumber { get; private set; } = string.Empty;
@@ -19,6 +31,10 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
     public Uri? ImageUrl { get; private set; }
     public string RefreshToken { get; private set; } = string.Empty;
     public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
+
+    [ConcurrencyCheck]
+    public long Version { get; set; }
+    IStronglyTypedId IAggregateRoot.Id => Id;
 
     public static ApplicationUser Create(
         string name,
@@ -28,7 +44,7 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         DateOnly birthDate,
         Uri? imageUrl = null)
     {
-        var id = Guid.NewGuid();
+        var id = ApplicationUserId.New();
         var @event = new UserRegisteredDomainEvent(
             id,
             name.TrimmedUpperInvariantTransliterateTurkishChars(),
@@ -37,8 +53,8 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
             nationalIdentityNumber,
             birthDate);
 
-        var user = new ApplicationUser(@event);
-        user.EnqueueEvent(@event);
+        var user = new ApplicationUser();
+        user.RaiseEvent(@event);
         return user;
     }
 
@@ -50,7 +66,7 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
 
     public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
     {
-        // Intentionally did not follow the RaiseEvent pattern here because did not want to expose token as parameter in event.
+        // Intentionally did not follow the usual pattern here because did not want to expose token as parameter in event.
         // Events are written in db(outbox pattern) or published to a message-queue which both cases tokens should not be there unprotected.
         // Hence, should a user's refresh token be recreatable/replayable?
 
@@ -58,10 +74,10 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
 
         var @event = new RefreshTokenUpdatedDomainEvent(Id);
-        EnqueueEvent(@event);
+        RaiseEvent(@event);
     }
 
-    private void Apply(IEvent @event)
+    private void ApplyEvent(IEvent @event)
     {
         switch (@event)
         {
@@ -69,6 +85,9 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
                 Apply(e);
                 break;
             case UserImageUrlUpdatedDomainEvent e:
+                Apply(e);
+                break;
+            case RefreshTokenUpdatedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -91,6 +110,13 @@ public sealed partial class ApplicationUser : IdentityUser<Guid>, IAggregateRoot
     {
         ImageUrl = @event.ImageUrl;
     }
+
+#pragma warning disable CA1822, S1186, IDE0060
+    private void Apply(RefreshTokenUpdatedDomainEvent @event)
+    {
+        /// Nothing to do here, see the explanation in <see cref="UpdateRefreshToken(string, DateTime)"/>
+    }
+#pragma warning restore CA1822, S1186, IDE0060
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
     private ApplicationUser() { }

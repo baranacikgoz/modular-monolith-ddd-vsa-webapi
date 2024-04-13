@@ -1,4 +1,5 @@
 using Common.Core.Auth;
+using Common.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,8 @@ public abstract partial class BaseDbContext(
     ILogger logger
     ) : DbContext(options)
 {
+    public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var userId = currentUser.Id;

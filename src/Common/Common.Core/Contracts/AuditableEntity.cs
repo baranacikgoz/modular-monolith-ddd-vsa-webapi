@@ -24,8 +24,8 @@ public abstract class AuditableEntity : IAuditableEntity
     public Guid? LastModifiedBy { get; private set; }
     public string LastModifiedIp { get; private set; } = string.Empty;
 
-    [Timestamp]
-    public uint Version { get; set; } // for optimistic concurrency
+    [ConcurrencyCheck]
+    public virtual uint Version { get; set; }
 
     public void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn)
     {
@@ -45,12 +45,8 @@ public abstract class AuditableEntity : IAuditableEntity
 /// Generic version is intended to be used with the entities have single key.
 /// </summary>
 /// <typeparam name="TId"></typeparam>
-public abstract class AuditableEntity<TId> : AuditableEntity
+public abstract class AuditableEntity<TId>(TId id) : AuditableEntity where TId : IStronglyTypedId
 {
-    protected AuditableEntity(TId id)
-    {
-        Id = id;
-    }
-    public TId Id { get; }
+    public TId Id { get; } = id;
 }
 

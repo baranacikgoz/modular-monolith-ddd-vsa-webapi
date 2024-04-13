@@ -25,7 +25,9 @@ internal static class Setup
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Sales)))
                     .AddInterceptors(
                         sp.GetRequiredService<ApplyAuditingInterceptor>(),
-                        sp.GetRequiredService<InsertOutboxMessagesInterceptor>());
+                        sp.GetRequiredService<InsertOutboxMessagesInterceptor>(),
+                        sp.GetRequiredService<InsertEventStoreEventsInterceptor>(),
+                        sp.GetRequiredService<ClearAggregateEventsInterceptor>());
             });
 
     public static WebApplication UsePersistence(this WebApplication app)

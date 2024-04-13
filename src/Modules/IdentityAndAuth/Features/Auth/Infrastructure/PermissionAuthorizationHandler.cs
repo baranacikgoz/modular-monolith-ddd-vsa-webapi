@@ -1,4 +1,4 @@
-﻿using Common.Core.Auth;
+using Common.Core.Auth;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -11,7 +11,7 @@ internal class PermissionAuthorizationHandler(
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        if (await userService.HasPermissionAsync(currentUser.Id, requirement.PermissionName, default))
+        if (await userService.HasPermissionAsync(new(currentUser.Id), requirement.PermissionName, default))
         {
             context.Succeed(requirement);
         }
