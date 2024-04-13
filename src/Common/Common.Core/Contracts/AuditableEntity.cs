@@ -3,14 +3,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Common.Core.Contracts;
 public interface IAuditableEntity
 {
-    DateTime CreatedOn { get; }
-    Guid CreatedBy { get; }
-    DateTime? LastModifiedOn { get; }
-    Guid? LastModifiedBy { get; }
-    string LastModifiedIp { get; }
-
-    void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn);
-    void ApplyUpdatedAudit(Guid userId, string ipAddress, DateTime updatedOn);
+    DateTime CreatedOn { get; set; }
+    Guid CreatedBy { get; set; }
+    DateTime? LastModifiedOn { get; set; }
+    Guid? LastModifiedBy { get; set; }
+    string LastModifiedIp { get; set; }
 }
 
 /// <summary>
@@ -18,27 +15,14 @@ public interface IAuditableEntity
 /// </summary>
 public abstract class AuditableEntity : IAuditableEntity
 {
-    public DateTime CreatedOn { get; private set; }
-    public Guid CreatedBy { get; private set; } = Guid.Empty;
-    public DateTime? LastModifiedOn { get; private set; }
-    public Guid? LastModifiedBy { get; private set; }
-    public string LastModifiedIp { get; private set; } = string.Empty;
+    public DateTime CreatedOn { get; set; }
+    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public DateTime? LastModifiedOn { get; set; }
+    public Guid? LastModifiedBy { get; set; }
+    public string LastModifiedIp { get; set; } = string.Empty;
 
-    [ConcurrencyCheck]
-    public virtual uint Version { get; set; }
-
-    public void ApplyCreatedAudit(Guid userId, string ipAddress, DateTime createdOn)
-    {
-        CreatedBy = userId;
-        CreatedOn = createdOn;
-        ApplyUpdatedAudit(userId, ipAddress, createdOn);
-    }
-    public void ApplyUpdatedAudit(Guid userId, string ipAddress, DateTime updatedOn)
-    {
-        LastModifiedBy = userId;
-        LastModifiedOn = updatedOn;
-        LastModifiedIp = ipAddress;
-    }
+    [Timestamp]
+    public uint Version { get; set; }
 }
 
 /// <summary>

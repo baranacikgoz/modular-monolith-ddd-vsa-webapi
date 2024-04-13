@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using IdentityAndAuth.Persistence.Seeding;
 using MassTransit;
 using Common.Persistence;
-using Common.Persistence.Outbox;
+using Common.Persistence.TransactionalOutbox;
 
 namespace IdentityAndAuth.Persistence;
 

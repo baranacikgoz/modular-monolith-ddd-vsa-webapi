@@ -1,31 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Common.Persistence.Outbox.Migrations
+namespace Common.Persistence.TransactionalOutbox.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class made_messages_auditable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Outbox");
+                name: "TransactionalOutbox");
 
             migrationBuilder.CreateTable(
                 name: "DeadLetterMessages",
-                schema: "Outbox",
+                schema: "TransactionalOutbox",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Type = table.Column<string>(type: "text", nullable: false),
-                    Payload = table.Column<string>(type: "text", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Event = table.Column<string>(type: "text", nullable: false),
                     FailedCount = table.Column<int>(type: "integer", nullable: false),
-                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModifiedIp = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,18 +38,21 @@ namespace Common.Persistence.Outbox.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OutboxMessages",
-                schema: "Outbox",
+                schema: "TransactionalOutbox",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IsProcessed = table.Column<bool>(type: "boolean", nullable: false),
                     ProcessedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Type = table.Column<string>(type: "text", nullable: false),
-                    Payload = table.Column<string>(type: "text", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Event = table.Column<string>(type: "text", nullable: false),
                     FailedCount = table.Column<int>(type: "integer", nullable: false),
-                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    LastModifiedIp = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,13 +61,13 @@ namespace Common.Persistence.Outbox.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxMessages_CreatedOn",
-                schema: "Outbox",
+                schema: "TransactionalOutbox",
                 table: "OutboxMessages",
                 column: "CreatedOn");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxMessages_IsProcessed",
-                schema: "Outbox",
+                schema: "TransactionalOutbox",
                 table: "OutboxMessages",
                 column: "IsProcessed");
         }
@@ -70,11 +77,11 @@ namespace Common.Persistence.Outbox.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DeadLetterMessages",
-                schema: "Outbox");
+                schema: "TransactionalOutbox");
 
             migrationBuilder.DropTable(
                 name: "OutboxMessages",
-                schema: "Outbox");
+                schema: "TransactionalOutbox");
         }
     }
 }

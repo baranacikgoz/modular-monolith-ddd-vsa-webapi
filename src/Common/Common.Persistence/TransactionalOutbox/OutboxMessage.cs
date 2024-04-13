@@ -1,12 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using Common.Core.Contracts;
 
-namespace Common.Persistence.Outbox;
+namespace Common.Persistence.TransactionalOutbox;
 
-public abstract class OutboxMessageBase(DomainEvent @event)
+public abstract class OutboxMessageBase(DomainEvent @event) : IAuditableEntity
 {
     public int Id { get; set; }
     public DomainEvent Event { get; } = @event;
-    public DateTime CreatedOn { get; } = DateTime.UtcNow;
     public int FailedCount { get; protected set; }
     public DateTime? LastFailedAt { get; protected set; }
 
@@ -15,6 +15,13 @@ public abstract class OutboxMessageBase(DomainEvent @event)
         FailedCount++;
         LastFailedAt = DateTime.Now;
     }
+
+    // Auditing Related Section
+    public DateTime CreatedOn { get; set; }
+    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public DateTime? LastModifiedOn { get; set; }
+    public Guid? LastModifiedBy { get; set; }
+    public string LastModifiedIp { get; set; } = string.Empty;
 }
 
 public class OutboxMessage : OutboxMessageBase

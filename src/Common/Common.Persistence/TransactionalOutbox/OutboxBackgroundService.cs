@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Common.Persistence.Outbox;
+namespace Common.Persistence.TransactionalOutbox;
 internal partial class OutboxBackgroundService(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptionsProvider,

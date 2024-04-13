@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Sales.Persistence.Seeding;
 using MassTransit;
 using Common.Persistence;
-using Common.Persistence.Outbox;
+using Common.Persistence.TransactionalOutbox;
 
 namespace Sales.Persistence;
 

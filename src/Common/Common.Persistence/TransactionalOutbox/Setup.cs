@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Common.Persistence.Outbox;
+namespace Common.Persistence.TransactionalOutbox;
 internal static class Setup
 {
     public static IServiceCollection AddOutboxAndInterceptor(this IServiceCollection services)
@@ -16,6 +16,6 @@ internal static class Setup
                 options
                 .UseNpgsql(
                     connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)));
+                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(TransactionalOutbox)));
             });
 }

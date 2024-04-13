@@ -1,4 +1,4 @@
-using Common.Persistence.Outbox;
+using Common.Persistence.TransactionalOutbox;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;

@@ -1,1 +1,1 @@
-dotnet ef migrations add initial --startup-project .\src\Host\ --project .\src\Common\Common.Persistence\ --context OutboxDbContext -o Outbox/Migrations
+dotnet ef migrations add initial --startup-project .\src\Host\ --project .\src\Common\Common.Persistence\ --context OutboxDbContext -o TransactionalOutbox/Migrations
