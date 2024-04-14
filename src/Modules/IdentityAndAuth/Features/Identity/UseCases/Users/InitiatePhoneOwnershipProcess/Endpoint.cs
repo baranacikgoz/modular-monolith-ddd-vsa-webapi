@@ -15,10 +15,10 @@ internal static class Endpoint
         usersApiGroup
             .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
             .WithDescription("Initiate phone ownership process by sending sms otp.")
-            .Produces(StatusCodes.Status204NoContent)
             .RequireRateLimiting(RateLimitingConstants.Sms)
             .AllowAnonymous()
-            .TransformResultToOkResponse();
+            .Produces(StatusCodes.Status204NoContent)
+            .TransformResultToNoContentResponse();
     }
 
     private static async Task<Result> InitiatePhoneOwnershipProcessAsync(

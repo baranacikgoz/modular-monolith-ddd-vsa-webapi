@@ -8,7 +8,7 @@ namespace IdentityAndAuth.Features.Identity.Domain;
 
 public readonly record struct ApplicationUserId : IStronglyTypedId
 {
-    public Guid Value { get; } = Guid.NewGuid();
+    public Guid Value { get; init; } = Guid.NewGuid();
 
     // Parameterless constructor for EF
     public ApplicationUserId() : this(Guid.NewGuid()) { }

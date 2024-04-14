@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Sales.Features.Products.UseCases.v1.Create;
+using Sales.Features.Products.UseCases.v1.My.Create;
 
 namespace Sales.Features.Products.Infrastructure;
 
