@@ -8,8 +8,8 @@ internal sealed partial class Seeder
 {
     private async Task SeedStoresAsync(CancellationToken cancellationToken)
     {
-        var basicUserIdResponse = await requestClient.GetResponse<FirstBasicUserIdsResponse>(new(StoreCount), cancellationToken);
-        var userIds = basicUserIdResponse.Message.UserIds;
+        var getSeedUserIdsResponse = await requestClient.SendAsync(new(StoreCount), cancellationToken);
+        var userIds = getSeedUserIdsResponse.UserIds;
 
         var user1Id = userIds.ElementAt(0);
         var store1Name = "Store 1";

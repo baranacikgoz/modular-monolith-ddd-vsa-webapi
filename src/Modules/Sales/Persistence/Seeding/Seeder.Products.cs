@@ -8,7 +8,7 @@ internal sealed partial class Seeder
 {
     private async Task SeedProductsAsync(CancellationToken cancellationToken)
     {
-        var firstStoresIds = await dbContext
+        var seedStoresIds = await dbContext
                                 .Stores
                                 .OrderBy(s => s.CreatedOn)
                                 .Take(StoreCount)
@@ -18,7 +18,7 @@ internal sealed partial class Seeder
         for (var i = 0; i < StoreCount; i++)
         {
             var productName = $"Product {i + 1}";
-            await SeedProductsAsync(firstStoresIds[i], productName, cancellationToken);
+            await SeedProductsAsync(seedStoresIds[i], productName, cancellationToken);
         }
 
     }
