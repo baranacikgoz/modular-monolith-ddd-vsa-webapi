@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace Common.Core.Contracts;
 public interface IStronglyTypedId
 {
-    Guid Value { get; }
+    Guid Value { get; init; }
 }

@@ -1,4 +1,4 @@
-namespace Sales.Features.Products.UseCases.v1.Create;
+namespace Sales.Features.Products.UseCases.v1.My.Create;
 
 internal interface ISomeDummyService
 {

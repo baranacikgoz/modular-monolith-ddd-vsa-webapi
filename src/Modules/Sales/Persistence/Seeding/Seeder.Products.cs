@@ -1,5 +1,6 @@
 namespace Sales.Persistence.Seeding;
 
+using Common.Core.Contracts.Money;
 using Microsoft.EntityFrameworkCore;
 using Sales.Features.Products.Domain;
 using Sales.Features.Stores.Domain;
@@ -32,6 +33,7 @@ internal sealed partial class Seeder
 
         var product = Product.Create(
             storeId: storeId,
+            price: Price.Create(100, Currency.TRY),
             name: productName,
             description: "Seeded by system."
         );

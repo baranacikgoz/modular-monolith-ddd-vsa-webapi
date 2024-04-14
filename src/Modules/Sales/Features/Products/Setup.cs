@@ -19,7 +19,9 @@ internal static class Setup
             .WithTags("Products")
             .MapToApiVersion(1);
 
-        Products.UseCases.v1.Create.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        var v1MyProductsApiGroup = v1ProductsApiGroup.MapGroup("/my");
+        UseCases.v1.My.Create.Endpoint.MapEndpoint(v1MyProductsApiGroup);
+        UseCases.v1.My.UpdatePrice.Endpoint.MapEndpoint(v1MyProductsApiGroup);
 
         // v2ProductsApiGroup = versionedApiGroup
         //     .MapGroup("/products")

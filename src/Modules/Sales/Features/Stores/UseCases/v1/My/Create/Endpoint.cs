@@ -18,7 +18,7 @@ internal static class Endpoint
         salesApiGroup
             .MapPost("", CreateMyStoreAsync)
             .WithDescription("Create my store.")
-            .MustHavePermission(CustomActions.Create, CustomResources.Stores)
+            .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }

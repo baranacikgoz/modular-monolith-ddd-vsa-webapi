@@ -1,6 +1,8 @@
+using Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Sales.Features.Products.Domain;
+using Sales.Features.Stores.Domain;
 
 namespace Sales.Persistence.EntityConfigurations;
 
@@ -10,12 +12,12 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         builder
             .Property(a => a.Id)
-            .HasConversion(
-                id => id.Value,
-                value => new ProductId(value));
+            .HasConversion<StronglyTypedIdValueConverter<ProductId>>()
+            .IsRequired();
 
         builder
             .Property(a => a.StoreId)
+            .HasConversion<StronglyTypedIdValueConverter<StoreId>>()
             .IsRequired();
 
         builder
@@ -28,5 +30,12 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
             .Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(Sales.Features.Products.Domain.Constants.ProductNameMaxLength);
+
+        builder
+            .OwnsOne(m => m.Price, p =>
+            {
+                p.Property(x => x.Amount).IsRequired();
+                p.Property(x => x.Currency).IsRequired();
+            });
     }
 }

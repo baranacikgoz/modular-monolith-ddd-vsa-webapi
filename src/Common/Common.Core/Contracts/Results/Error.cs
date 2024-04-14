@@ -26,4 +26,18 @@ public class Error
             ParameterName = parameterName,
             Value = value
         };
+
+    /// <summary>
+    /// Represents the situation where user is authorized to access/operate only his/her own resources but tries someone else's resources.
+    /// </summary>
+    /// <param name="parameterName"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Error NotOwned(string parameterName, object value)
+        => new()
+        {
+            Key = nameof(NotOwned),
+            ParameterName = parameterName,
+            Value = value
+        };
 }
