@@ -1,3 +1,4 @@
+using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IdentityAndAuth;
 using IdentityAndAuth.Features.Auth.Domain;
 using IdentityAndAuth.Persistence;
@@ -7,23 +8,22 @@ using Microsoft.EntityFrameworkCore;
 namespace IdentityAndAuth.InterModuleRequestConsumers;
 
 /// <summary>
-/// First users are the seed users.
-/// This query is usefull for seeding other modules with some basic seed users, where a userId is required.
+/// This query is for seeding other modules requiring some basic seed users, where a userId is required.
 /// </summary>
 /// <param name="dbContext"></param>
-public class FirstBasicUserIdsRequestConsumer(
+public class GetSeedUserIdsRequestHandler(
     IdentityDbContext dbContext
-    ) : IConsumer<FirstBasicUserIdsRequest>
+    ) : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
 {
-    public async Task Consume(ConsumeContext<FirstBasicUserIdsRequest> context)
+    protected override async Task<GetSeedUserIdsResponse> HandleAsync(GetSeedUserIdsRequest request, CancellationToken cancellationToken)
     {
-        var userCount = context.Message.Count;
+        var requestedUserCount = request.Count;
 
         var roleId = await dbContext
                                .Roles
                                .Where(r => r.Name == CustomRoles.Basic)
                                .Select(r => r.Id)
-                               .SingleOrDefaultAsync(context.CancellationToken);
+                               .SingleOrDefaultAsync(cancellationToken);
 
         var firstBasicUsers = await dbContext
             .Users
@@ -36,9 +36,9 @@ public class FirstBasicUserIdsRequestConsumer(
             .Where(uur => uur.RoleId == roleId)
             .OrderBy(uur => uur.u.CreatedOn)
             .Select(uur => uur.u.Id.Value)
-            .Take(userCount)
-            .ToListAsync(context.CancellationToken);
+            .Take(requestedUserCount)
+            .ToListAsync(cancellationToken);
 
-        await context.RespondAsync(new FirstBasicUserIdsResponse(firstBasicUsers));
+        return new GetSeedUserIdsResponse(firstBasicUsers);
     }
 }
