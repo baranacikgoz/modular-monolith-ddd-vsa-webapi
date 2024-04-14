@@ -1,3 +1,4 @@
+using Common.Persistence.EventSourcing;
 using Common.Persistence.TransactionalOutbox;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -9,12 +10,11 @@ public static class Setup
 {
     public static IServiceCollection AddCommonPersistence(this IServiceCollection services)
         => services
-            .AddOutboxAndInterceptor()
+            .AddOutboxDbContextAndInterceptor()
+            .AddOutboxHostedService()
+            .AddEventSourcingInterceptors()
             .AddScoped<ApplyAuditingInterceptor>()
-            .AddSingleton<InsertEventStoreEventsInterceptor>()
-            .AddSingleton<ClearAggregateEventsInterceptor>()
-            .AddSingleton<OutboxBackgroundService>()
-            .AddHostedService<OutboxBackgroundService>();
+            .AddSingleton<ClearAggregateEventsInterceptor>();
 
     public static WebApplication UseCommonPersistence(this WebApplication app)
     {

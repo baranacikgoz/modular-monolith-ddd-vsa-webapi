@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace Common.Persistence.TransactionalOutbox;
 internal static class Setup
 {
-    public static IServiceCollection AddOutboxAndInterceptor(this IServiceCollection services)
+    public static IServiceCollection AddOutboxDbContextAndInterceptor(this IServiceCollection services)
         => services
             .AddScoped<InsertOutboxMessagesInterceptor>()
             .AddDbContext<OutboxDbContext>((sp, options) =>
@@ -18,4 +18,9 @@ internal static class Setup
                     connectionString,
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(TransactionalOutbox)));
             });
+
+    public static IServiceCollection AddOutboxHostedService(this IServiceCollection services)
+        => services
+            .AddSingleton<OutboxBackgroundService>()
+            .AddHostedService<OutboxBackgroundService>();
 }
