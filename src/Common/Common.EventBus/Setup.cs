@@ -10,7 +10,7 @@ namespace Common.EventBus;
 
 public static class Setup
 {
-    public static IServiceCollection AddEventBus(
+    public static IServiceCollection AddCommonEventBus(
         this IServiceCollection services,
         IWebHostEnvironment env,
         IConfiguration configuration,

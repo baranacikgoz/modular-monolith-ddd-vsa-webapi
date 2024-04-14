@@ -27,7 +27,8 @@ internal static class Setup
                         sp.GetRequiredService<ApplyAuditingInterceptor>(),
                         sp.GetRequiredService<InsertOutboxMessagesInterceptor>(),
                         sp.GetRequiredService<InsertEventStoreEventsInterceptor>(),
-                        sp.GetRequiredService<ClearAggregateEventsInterceptor>());
+                        sp.GetRequiredService<ClearAggregateEventsInterceptor>(),
+                        sp.GetRequiredService<RemoveStreamIfAggregateIsRemovedInterceptor>());
             });
 
     public static WebApplication UsePersistence(this WebApplication app)

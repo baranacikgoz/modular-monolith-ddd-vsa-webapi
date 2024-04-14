@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Caching;
 
 public static class Setup
 {
-    public static IServiceCollection AddCaching(this IServiceCollection services)
+    public static IServiceCollection AddCommonCaching(this IServiceCollection services)
     {
         services.AddDistributedMemoryCache(); // will be replaced with Redis in production
         services.AddSingleton<ICacheService, CacheService>();
