@@ -15,9 +15,9 @@ public class EventStoreEvent : IAuditableEntity
         Version = version;
     }
 
-    public Guid AggregateId { get; }
+    public Guid AggregateId { get; init; }
     public DomainEvent Event { get; }
-    public long Version { get; }
+    public long Version { get; init; }
 
     public static EventStoreEvent Create(Guid aggregateId, long version, DomainEvent @event)
         => new(aggregateId, version, @event);
@@ -30,6 +30,6 @@ public class EventStoreEvent : IAuditableEntity
     public string LastModifiedIp { get; set; } = string.Empty;
 
 #pragma warning disable CS8618
-    private EventStoreEvent() { } // ORMs need parameterless ctor
+    public EventStoreEvent() { } // ORMs need parameterless ctor
 #pragma warning restore CS8618
 }
