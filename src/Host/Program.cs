@@ -31,7 +31,6 @@ try
                 x.ServicesStartConcurrently = true;
                 x.ServicesStopConcurrently = true;
             })
-            .AddCommonPersistence()
             .AddInfrastructure(builder.Configuration, builder.Environment)
             .AddModules(builder.Configuration, builder.Environment)
             .AddCustomSwagger();

@@ -9,12 +9,12 @@ namespace Common.Localization;
 
 public static class Setup
 {
-    public static IServiceCollection AddResxLocalization(this IServiceCollection services)
+    public static IServiceCollection AddCommonResxLocalization(this IServiceCollection services)
     {
         return services.AddLocalization(options => options.ResourcesPath = "Resources");
     }
 
-    public static IApplicationBuilder UseResxLocalization(this IApplicationBuilder app)
+    public static IApplicationBuilder UseCommonResxLocalization(this IApplicationBuilder app)
     {
         var locOptions = app.ApplicationServices.GetRequiredService<IOptions<ResxLocalizationOptions>>().Value;
 
