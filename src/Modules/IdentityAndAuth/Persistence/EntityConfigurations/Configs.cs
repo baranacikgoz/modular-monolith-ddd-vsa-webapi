@@ -1,3 +1,4 @@
+using Common.Core.Contracts.Identity;
 using Common.Persistence;
 using Common.Persistence.EventSourcing;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -15,11 +16,7 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 
         builder
             .Property(u => u.Id)
-            .HasConversion<ApplicationUserIdConverter>();
-
-        builder
-            .Property(u => u.CreatedOn)
-            .IsRequired();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 
         builder
             .Property(u => u.Name)
@@ -59,6 +56,24 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
         builder
             .Property(u => u.RefreshTokenExpiresAt)
             .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedOn)
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedOn)
+            .IsRequired(false);
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired(false);
     }
 }
 
@@ -68,7 +83,7 @@ internal class ApplicationRoleConfig : IEntityTypeConfiguration<IdentityRole<App
         builder
             .ToTable("Roles")
             .Property(u => u.Id)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }
 
 internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<ApplicationUserId>>
@@ -77,7 +92,7 @@ internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleCl
         builder
             .ToTable("RoleClaims")
             .Property(u => u.RoleId)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }
 
 internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<ApplicationUserId>>
@@ -86,7 +101,7 @@ internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRol
         builder
             .ToTable("UserRoles")
             .Property(u => u.UserId)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }
 
 internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<ApplicationUserId>>
@@ -95,7 +110,7 @@ internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserCl
         builder
             .ToTable("UserClaims")
             .Property(u => u.UserId)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }
 
 internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<ApplicationUserId>>
@@ -104,7 +119,7 @@ internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLo
         builder
             .ToTable("UserLogins")
             .Property(u => u.UserId)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }
 
 internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<ApplicationUserId>>
@@ -113,5 +128,5 @@ internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserTo
         builder
             .ToTable("UserTokens")
             .Property(u => u.UserId)
-            .HasConversion<ApplicationUserIdConverter>();
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 }

@@ -1,7 +1,9 @@
+using Common.Core.Contracts.Identity;
+
 namespace IdentityAndAuth.Features.Identity.UseCases.Users.Get;
 
 internal sealed record Response(
-    Guid Id,
+    ApplicationUserId Id,
     string Name,
     string LastName,
     string PhoneNumber,

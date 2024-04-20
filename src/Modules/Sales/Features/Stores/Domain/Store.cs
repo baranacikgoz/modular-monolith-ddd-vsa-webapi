@@ -1,4 +1,5 @@
 using Common.Core.Contracts;
+using Common.Core.Contracts.Identity;
 using Common.Core.Contracts.Results;
 using Sales.Features.Products.Domain;
 using Sales.Features.Stores.Domain.DomainEvents;
@@ -9,17 +10,18 @@ public readonly record struct StoreId(Guid Value) : IStronglyTypedId
 {
     public static StoreId New() => new(Guid.NewGuid());
     public override string ToString() => Value.ToString();
+    public static bool TryParse(string str, out StoreId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
 
 public class Store : AggregateRoot<StoreId>
 {
-    public Guid OwnerId { get; private set; }
+    public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
 
     private readonly List<Product> _products = [];
     public virtual IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-    public static Store Create(Guid ownerId, string name)
+    public static Store Create(ApplicationUserId ownerId, string name)
     {
         var id = StoreId.New();
         var store = new Store();

@@ -35,7 +35,7 @@ public class GetSeedUserIdsRequestHandler(
             )
             .Where(uur => uur.RoleId == roleId)
             .OrderBy(uur => uur.u.CreatedOn)
-            .Select(uur => uur.u.Id.Value)
+            .Select(uur => uur.u.Id)
             .Take(requestedUserCount)
             .ToListAsync(cancellationToken);
 

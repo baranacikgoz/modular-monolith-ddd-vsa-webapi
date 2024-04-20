@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Common.Core.Contracts;
+using Common.Core.Contracts.Identity;
 
 namespace Common.Persistence.EventSourcing;
 
@@ -26,5 +27,19 @@ public class EventStoreEventConfiguration : IEntityTypeConfiguration<EventStoreE
         builder
             .Property(storeEvent => storeEvent.CreatedOn)
             .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedOn)
+            .IsRequired(false);
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired(false);
     }
 }

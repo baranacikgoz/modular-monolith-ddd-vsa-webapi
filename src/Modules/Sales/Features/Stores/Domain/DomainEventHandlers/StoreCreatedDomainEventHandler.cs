@@ -9,7 +9,7 @@ public class StoreCreatedDomainEventHandler(
 {
     protected override async Task HandleAsync(StoreCreatedDomainEvent @event, CancellationToken cancellationToken)
     {
-        var integrationEvent = new StoreCreatedIntegrationEvent(@event.Id.Value, @event.OwnerId);
+        var integrationEvent = new StoreCreatedIntegrationEvent(@event.Id.Value, @event.OwnerId.Value);
 
         await eventBus.PublishAsync(integrationEvent, cancellationToken);
     }

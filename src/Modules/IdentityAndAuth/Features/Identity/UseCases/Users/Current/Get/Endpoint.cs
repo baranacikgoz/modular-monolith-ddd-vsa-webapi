@@ -1,4 +1,5 @@
 using Common.Core.Auth;
+using Common.Core.Contracts.Identity;
 using Common.Core.Contracts.Results;
 using Common.Core.Extensions;
 using IdentityAndAuth.Features.Identity.Domain;
@@ -30,8 +31,8 @@ internal static class Endpoint
         => await Result<Dto>
             .CreateAsync(taskToAwaitValue: async () => await userManager
                                                     .Users
-                                                    .Where(x => x.Id.Value == currentUser.Id)
-                                                    .Select(x => new Dto(x.Id.Value, x.Name, x.LastName, x.PhoneNumber!))
+                                                    .Where(x => x.Id == currentUser.Id)
+                                                    .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!))
                                                     .SingleOrDefaultAsync(cancellationToken),
                     errorIfValueNull: Error.NotFound(nameof(ApplicationUser), currentUser.Id))
             .MapAsync(dto => new Response(
@@ -41,7 +42,7 @@ internal static class Endpoint
                                     dto.PhoneNumber));
 
     private sealed record Dto(
-        Guid Id,
+        ApplicationUserId Id,
         string Name,
         string LastName,
         string PhoneNumber);

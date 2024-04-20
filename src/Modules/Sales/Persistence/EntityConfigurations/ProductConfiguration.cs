@@ -1,3 +1,4 @@
+using Common.Core.Contracts.Identity;
 using Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -37,5 +38,23 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
                 p.Property(x => x.Amount).IsRequired();
                 p.Property(x => x.Currency).IsRequired();
             });
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedOn)
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedOn)
+            .IsRequired(false);
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired(false);
     }
 }

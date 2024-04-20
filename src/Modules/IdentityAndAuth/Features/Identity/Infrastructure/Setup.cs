@@ -1,3 +1,4 @@
+using Common.Core.Contracts.Identity;
 using IdentityAndAuth.Features.Identity.Domain;
 using IdentityAndAuth.Persistence;
 using Microsoft.AspNetCore.Identity;

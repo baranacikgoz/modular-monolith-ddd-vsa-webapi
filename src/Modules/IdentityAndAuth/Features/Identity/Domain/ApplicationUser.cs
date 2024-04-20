@@ -1,26 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using Common.Core.Contracts;
+using Common.Core.Contracts.Identity;
 using Common.Core.Extensions;
 using IdentityAndAuth.Features.Identity.Domain.DomainEvents;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
-
-public readonly record struct ApplicationUserId : IStronglyTypedId
-{
-    public Guid Value { get; init; } = Guid.NewGuid();
-
-    // Parameterless constructor for EF
-    public ApplicationUserId() : this(Guid.NewGuid()) { }
-
-    public ApplicationUserId(Guid value)
-    {
-        Value = value;
-    }
-
-    public static ApplicationUserId New() => new(Guid.NewGuid());
-    public override string ToString() => Value.ToString();
-}
 
 public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, IAggregateRoot
 {

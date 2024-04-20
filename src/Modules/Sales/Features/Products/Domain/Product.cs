@@ -10,6 +10,7 @@ public readonly record struct ProductId(Guid Value) : IStronglyTypedId
 {
     public static ProductId New() => new(Guid.NewGuid());
     public override string ToString() => Value.ToString();
+    public static bool TryParse(string str, out ProductId id) => StronglyTypedIdHelper.TryDeserialize<ProductId>(str, out id);
 }
 
 public class Product : AggregateRoot<ProductId>

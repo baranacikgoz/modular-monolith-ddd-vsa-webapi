@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Common.Persistence.EventSourcing;
+using Common.Core.Contracts.Identity;
 
 namespace IdentityAndAuth.Persistence;
 

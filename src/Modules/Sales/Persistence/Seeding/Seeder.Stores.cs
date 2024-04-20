@@ -1,5 +1,6 @@
 namespace Sales.Persistence.Seeding;
 
+using Common.Core.Contracts.Identity;
 using Common.InterModuleRequests.IdentityAndAuth;
 using Microsoft.EntityFrameworkCore;
 using Sales.Features.Stores.Domain;
@@ -20,7 +21,7 @@ internal sealed partial class Seeder
         await SeedStore(user2Id, store2Name, cancellationToken);
     }
 
-    private async Task SeedStore(Guid userId, string storeName, CancellationToken cancellationToken)
+    private async Task SeedStore(ApplicationUserId userId, string storeName, CancellationToken cancellationToken)
     {
         if (await dbContext.Stores.AnyAsync(store => store.OwnerId == userId || store.Name == storeName, cancellationToken))
         {

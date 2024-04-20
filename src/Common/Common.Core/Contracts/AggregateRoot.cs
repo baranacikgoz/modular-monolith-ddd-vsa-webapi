@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Common.Core.Contracts;
+using Common.Core.Contracts.Identity;
 
 namespace Common.Core.Contracts;
 
@@ -19,9 +20,9 @@ public abstract class AggregateRoot<TId>(TId id) : IAggregateRoot where TId : IS
 
     // Auditing Related Section
     public DateTime CreatedOn { get; set; }
-    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public ApplicationUserId CreatedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
-    public Guid? LastModifiedBy { get; set; }
+    public ApplicationUserId? LastModifiedBy { get; set; }
     public string LastModifiedIp { get; set; } = string.Empty;
     protected void AddEvent(DomainEvent @event) => _events.Add(@event);
     public void ClearEvents() => _events.Clear();

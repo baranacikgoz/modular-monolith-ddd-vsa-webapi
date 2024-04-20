@@ -1,5 +1,6 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Common.Core.Auth;
+using Common.Core.Contracts.Identity;
 using IdentityAndAuth.Features.Auth.Domain;
 
 namespace IdentityAndAuth.Features.Identity.Infrastructure;
@@ -16,10 +17,10 @@ internal sealed class CurrentUser(
         => IsAuthenticated
             ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
             : string.Empty;
-    public Guid Id
-        => string.IsNullOrEmpty(IdAsString)
+    public ApplicationUserId Id
+        => new(string.IsNullOrEmpty(IdAsString)
             ? Guid.Empty
-            : Guid.Parse(IdAsString);
+            : Guid.Parse(IdAsString));
     public string? FullName
         => IsAuthenticated
             ? user?.FindFirstValue(CustomClaims.Fullname)

@@ -1,4 +1,5 @@
 using Common.Caching;
+using Common.Core.Contracts.Identity;
 using Common.Core.Contracts.Results;
 using IdentityAndAuth.Extensions;
 using IdentityAndAuth.Features.Auth.Domain;

@@ -1,3 +1,4 @@
+using Common.Core.Contracts.Identity;
 using Common.Core.Contracts.Results;
 
 namespace IdentityAndAuth.Features.Identity.Domain;
