@@ -8,6 +8,7 @@ using Common.Persistence;
 using FluentValidation;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Validation;
+using Common.Core.JsonConverters;
 
 namespace Host.Infrastructure;
 
@@ -15,6 +16,15 @@ public static partial class Setup
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
+            .Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(x =>
+            {
+                x.SerializerOptions.Converters.Add(new StronglyTypedIdWriteOnlyJsonConverter());
+            })
+            .Configure<HostOptions>(x =>
+            {
+                x.ServicesStartConcurrently = true;
+                x.ServicesStopConcurrently = true;
+            })
             .AddVersioning()
             .AddHttpContextAccessor()
             .AddRequestResponseLoggingMiddleware()

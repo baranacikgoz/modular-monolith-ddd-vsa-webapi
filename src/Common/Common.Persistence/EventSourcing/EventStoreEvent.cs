@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.Core.Contracts;
+using Common.Core.Contracts.Identity;
 
 namespace Common.Persistence.EventSourcing;
 public class EventStoreEvent : IAuditableEntity
@@ -24,9 +25,9 @@ public class EventStoreEvent : IAuditableEntity
 
     // Auditing Related Section
     public DateTime CreatedOn { get; set; }
-    public Guid CreatedBy { get; set; } = Guid.Empty;
+    public ApplicationUserId CreatedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
-    public Guid? LastModifiedBy { get; set; }
+    public ApplicationUserId? LastModifiedBy { get; set; }
     public string LastModifiedIp { get; set; } = string.Empty;
 
 #pragma warning disable CS8618

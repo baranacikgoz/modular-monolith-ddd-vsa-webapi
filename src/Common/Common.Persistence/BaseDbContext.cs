@@ -1,4 +1,5 @@
 using Common.Core.Auth;
+using Common.Core.Contracts.Identity;
 using Common.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ public abstract partial class BaseDbContext(
         ILogger logger,
         DbUpdateConcurrencyException exception,
         string TypeAndTableName,
-        Guid UserId);
+        ApplicationUserId UserId);
 
     [LoggerMessage(
         Level = LogLevel.Information,
@@ -61,7 +62,7 @@ public abstract partial class BaseDbContext(
         ILogger logger,
         DbUpdateConcurrencyException exception,
         IEnumerable<string> TypeAndTableNames,
-        Guid UserId);
+        ApplicationUserId UserId);
 
     [LoggerMessage(
         Level = LogLevel.Error,
@@ -69,5 +70,5 @@ public abstract partial class BaseDbContext(
     static partial void LogErrorWhileSavingChanges(
         ILogger logger,
         Exception exception,
-        Guid UserId);
+        ApplicationUserId UserId);
 }

@@ -1,10 +1,12 @@
-﻿namespace Common.Core.Auth;
+using Common.Core.Contracts.Identity;
+
+namespace Common.Core.Auth;
 
 public interface ICurrentUser
 {
     string? UserName { get; }
     string? IpAddress { get; }
-    Guid Id { get; }
+    ApplicationUserId Id { get; }
     string? IdAsString { get; }
     string? FullName { get; }
     string? PhoneNumber { get; }

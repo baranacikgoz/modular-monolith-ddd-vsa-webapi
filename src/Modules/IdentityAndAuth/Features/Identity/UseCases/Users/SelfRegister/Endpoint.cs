@@ -47,5 +47,5 @@ internal static class Endpoint
                     var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
                     return identityResult.ToResult(user);
                 })
-                .MapAsync(user => new Response(user.Id.Value));
+                .MapAsync(user => new Response(user.Id));
 }

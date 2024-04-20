@@ -1,6 +1,8 @@
 using Common.Core.Auth;
+using Common.Core.Contracts.Identity;
 using Common.Core.Contracts.Results;
 using Common.Core.Extensions;
+using Common.Core.ModelBinders;
 using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,14 +25,14 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
     private static async Task<Result<Response>> GetAsync(
-        [FromRoute] Guid id,
+        [FromRoute, ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>] ApplicationUserId id,
         [FromServices] UserManager<ApplicationUser> userManager,
         CancellationToken cancellationToken)
         => await Result<Dto>
             .CreateAsync(taskToAwaitValue: async () => await userManager
                                                         .Users
-                                                        .Where(x => x.Id.Value == id)
-                                                        .Select(x => new Dto(x.Id.Value, x.Name, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
+                                                        .Where(x => x.Id == id)
+                                                        .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
                                                         .SingleOrDefaultAsync(cancellationToken),
                     errorIfValueNull: Error.NotFound(nameof(ApplicationUser), id))
             .MapAsync(dto => new Response(
@@ -42,7 +44,7 @@ internal static class Endpoint
                                     dto.BirthDate));
 
     private sealed record Dto(
-        Guid Id,
+        ApplicationUserId Id,
         string Name,
         string LastName,
         string PhoneNumber,

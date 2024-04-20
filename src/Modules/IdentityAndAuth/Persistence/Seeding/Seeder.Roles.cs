@@ -1,5 +1,5 @@
+using Common.Core.Contracts.Identity;
 using IdentityAndAuth.Features.Auth.Domain;
-using IdentityAndAuth.Features.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

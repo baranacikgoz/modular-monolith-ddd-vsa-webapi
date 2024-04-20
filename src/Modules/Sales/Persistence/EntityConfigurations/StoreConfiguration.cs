@@ -1,4 +1,5 @@
 
+using Common.Core.Contracts.Identity;
 using Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,6 +19,7 @@ internal class StoreConfiguration : IEntityTypeConfiguration<Store>
 
         builder
             .Property(a => a.OwnerId)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
             .IsRequired();
 
         builder
@@ -26,5 +28,22 @@ internal class StoreConfiguration : IEntityTypeConfiguration<Store>
             .HasForeignKey(p => p.StoreId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder
+            .Property(storeEvent => storeEvent.CreatedOn)
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.CreatedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired();
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedOn)
+            .IsRequired(false);
+
+        builder
+            .Property(storeEvent => storeEvent.LastModifiedBy)
+            .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
+            .IsRequired(false);
     }
 }

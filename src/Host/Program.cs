@@ -5,6 +5,7 @@ using Host.Infrastructure;
 using Common.Persistence;
 using Serilog.Sinks.SystemConsole.Themes;
 using System.Globalization;
+using Common.Core.JsonConverters;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -26,11 +27,6 @@ try
     // Add services to the container.
     builder
         .Services
-            .Configure<HostOptions>(x =>
-            {
-                x.ServicesStartConcurrently = true;
-                x.ServicesStopConcurrently = true;
-            })
             .AddInfrastructure(builder.Configuration, builder.Environment)
             .AddModules(builder.Configuration, builder.Environment)
             .AddCustomSwagger();

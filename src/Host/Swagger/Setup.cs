@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+using Common.Core.Contracts;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
@@ -15,6 +17,7 @@ internal static class Setup
                 cfg.CustomSchemaIds(SchemaIdGenerator);
                 cfg.OperationFilter<DefaultResponsesOperationFilter>();
                 cfg.SchemaFilter<DateOnlySchemaFilter>();
+                cfg.SchemaFilter<StronglyTypedIdSchemaFilter>();
                 cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
             });
 
