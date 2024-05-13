@@ -1,4 +1,4 @@
-using Common.Options;
+using Common.Infrastructure.Options;
 using Npgsql;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;

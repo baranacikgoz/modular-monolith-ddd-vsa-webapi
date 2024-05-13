@@ -1,5 +1,5 @@
 using Asp.Versioning.ApiExplorer;
-using Common.Options;
+using Common.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;

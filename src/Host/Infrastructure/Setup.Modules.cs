@@ -1,11 +1,8 @@
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using IdentityAndAuth.ModuleSetup;
-using Sales.ModuleSetup;
 using Host.Middlewares;
-using Host.Validation;
-using Common.EventBus;
-using FluentValidation;
-using Notifications.ModuleSetup;
+using IdentityAndAuth.Infrastructure;
+using Inventory.Infrastructure;
+using Notifications.Infrastructure;
 
 namespace Host.Infrastructure;
 
@@ -14,7 +11,7 @@ public static partial class Setup
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
             .AddIdentityAndAuthModule(configuration)
-            .AddSalesModule()
+            .AddInventoryModule()
             .AddNotificationsModule()
             .AddRateLimiting(configuration);
 
@@ -38,7 +35,7 @@ public static partial class Setup
                                 .WithOpenApi();
 
         app.UseIdentityAndAuthModule(versionNeutralApiGroup);
-        app.UseSalesModule(versionedApiGroup);
+        app.UseInventoryModule(versionedApiGroup);
 
         return app;
     }
@@ -46,6 +43,6 @@ public static partial class Setup
     private static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
         => services.AddRateLimiting(
                 configuration,
-                IdentityAndAuth.ModuleSetup.RateLimiting.Policies.Get(),
-                Sales.ModuleSetup.RateLimiting.Policies.Get());   
+                IdentityAndAuth.Infrastructure.RateLimiting.Policies.Get(),
+                Inventory.Infrastructure.RateLimiting.Policies.Get()); 
 }

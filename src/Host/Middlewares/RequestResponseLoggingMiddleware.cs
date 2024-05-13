@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using Common.Options;
+using System.Diagnostics;
+using Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 

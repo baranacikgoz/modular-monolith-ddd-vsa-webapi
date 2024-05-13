@@ -35,7 +35,8 @@
       CA1824;
       CA1711;
       CA1056;
-      ASP0003
+      ASP0003;
+      CA1716;
     </NoWarn>
   </PropertyGroup>
 </Project>

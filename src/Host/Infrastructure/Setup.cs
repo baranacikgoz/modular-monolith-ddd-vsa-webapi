@@ -1,14 +1,15 @@
-using Common.Localization;
-using IdentityAndAuth.ModuleSetup;
-using Common.Caching;
-using Common.Options;
-using Common.EventBus;
-using Common.InterModuleRequests;
-using Common.Persistence;
 using FluentValidation;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Validation;
-using Common.Core.JsonConverters;
+using Common.Infrastructure.JsonConverters;
+using Common.Infrastructure.Localization;
+using Common.Infrastructure.Caching;
+using System.Reflection;
+using Common.Infrastructure.EventBus;
+using Common.InterModuleRequests;
+using Common.Infrastructure.Options;
+using Common.Infrastructure.Persistence;
+using IdentityAndAuth.Infrastructure;
 
 namespace Host.Infrastructure;
 
@@ -33,7 +34,7 @@ public static partial class Setup
             .AddEndpointsApiExplorer()
             .AddMetricsAndTracing(configuration)
             .AddCustomCors()
-            .AddDependenciesOfCommonProjects(env, configuration)
+            .AddCommonDependencies(env, configuration)
             .AddFluentValidationAndAutoValidation();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
@@ -71,31 +72,32 @@ public static partial class Setup
             };
         });
 
-    private static IServiceCollection AddDependenciesOfCommonProjects(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
+    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
         => services
             .AddCommonCaching()
-            .AddCommonEventBus(env, config)
+            .AddCommonEventBus(env, config, _moduleAssemblies)
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
             .AddCommonPersistence();
 
-    private static IServiceCollection AddCommonEventBus(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
-        => services
-            .AddCommonEventBus(
-                env,
-                config,
-                typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                typeof(Sales.IAssemblyReference).Assembly,
-                typeof(Notifications.IAssemblyReference).Assembly);
-
     private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
         => services
-            .AddValidatorsFromAssemblies(
-                [
-                    typeof(IdentityAndAuth.IAssemblyReference).Assembly,
-                    typeof(Sales.IAssemblyReference).Assembly,
-                    typeof(Notifications.IAssemblyReference).Assembly
-                ])
+            .AddValidatorsFromAssemblies(_moduleAssemblies)
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
+
+    private static readonly Assembly[] _moduleAssemblies =
+        [
+            typeof(IdentityAndAuth.Domain.IAssemblyReference).Assembly,
+            typeof(IdentityAndAuth.Application.IAssemblyReference).Assembly,
+            typeof(IdentityAndAuth.Infrastructure.IAssemblyReference).Assembly,
+
+            typeof(Inventory.Domain.IAssemblyReference).Assembly,
+            typeof(Inventory.Application.IAssemblyReference).Assembly,
+            typeof(Inventory.Infrastructure.IAssemblyReference).Assembly,
+
+            typeof(Notifications.Domain.IAssemblyReference).Assembly,
+            typeof(Notifications.Application.IAssemblyReference).Assembly,
+            typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
+        ];
 }

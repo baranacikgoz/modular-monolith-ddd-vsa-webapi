@@ -1,6 +1,4 @@
-using Common.Core.Contracts;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
@@ -28,30 +26,15 @@ internal static class Setup
     /// <returns></returns>
     private static string SchemaIdGenerator(Type type)
     {
-        // For example, for: "Sales.Features.UseCases.v1.Stores.Create.Request" return "Stores.Create.Request".
-        // If "Features" existst but "UseCases" doesn't, return "Stores.Create.Request" as well.
-        // If neither exist, such as Common.Core.Contracts.IEmpty200Response, return IEmpty200Response (the last part of the name).
+        // For example, for: "Inventory.Application.Products.v1.Create.Request" return "Products.v1.Create.Request".
 
         var name = type.FullName ?? type.Name;
 
         var splitted = name.Split('.').ToList();
 
-        if (!splitted.Contains("Features"))
-        {
-            return splitted[^1];
-        }
+        var indexOfApplication = splitted.IndexOf("Application");
 
-        var indexOfFeatures = splitted.IndexOf("Features");
-
-        if (!splitted.Contains("UseCases"))
-        {
-            return string.Join('.', splitted[(indexOfFeatures + 1)..]).Replace('+', '.');
-        }
-
-        var indexOfUseCases = splitted.IndexOf("UseCases");
-        splitted.RemoveAt(indexOfUseCases);
-
-        return string.Join('.', splitted[(indexOfFeatures + 1)..]).Replace('+', '.');
+        return string.Join('.', splitted[(indexOfApplication + 1)..]).Replace('+', '.');
     }
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
