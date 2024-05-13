@@ -3,8 +3,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -12,17 +10,20 @@ WORKDIR /src
 COPY ["Directory.Packages.props", "."]
 COPY ["Directory.Build.props", "."]
 COPY ["src/Host/Host.csproj", "src/Host/"]
-COPY ["src/Common/Common.Options/Common.Options.csproj", "src/Common/Common.Options/"]
-COPY ["src/Common/Common.Localization/Common.Localization.csproj", "src/Common/Common.Localization/"]
-COPY ["src/Common/Common.Caching/Common.Caching.csproj", "src/Common/Common.Caching/"]
-COPY ["src/Common/Common.Core/Common.Core.csproj", "src/Common/Common.Core/"]
+COPY ["src/Common/Common.Infrastructure/Common.Infrastructure.csproj", "src/Common/Common.Infrastructure/"]
+COPY ["src/Common/Common.Application/Common.Application.csproj", "src/Common/Common.Application/"]
+COPY ["src/Common/Common.Domain/Common.Domain.csproj", "src/Common/Common.Domain/"]
+COPY ["src/Common/Common.IntegrationEvents/Common.IntegrationEvents.csproj", "src/Common/Common.IntegrationEvents/"]
 COPY ["src/Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj", "src/Common/Common.InterModuleRequests/"]
-COPY ["src/Common/Common.EventBus/Common.EventBus.csproj", "src/Common/Common.EventBus/"]
-COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.csproj", "src/Modules/IdentityAndAuth/"]
-COPY ["src/Common/Common.Events/Common.IntegrationEvents.csproj", "src/Common/Common.Events/"]
-COPY ["src/Common/Common.Persistence/Common.Persistence.csproj", "src/Common/Common.Persistence/"]
-COPY ["src/Modules/Sales/Sales.csproj", "src/Modules/Sales/"]
-COPY ["src/Modules/Notifications/Notifications.csproj", "src/Modules/Notifications/"]
+COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.Infrastructure/IdentityAndAuth.Infrastructure.csproj", "src/Modules/IdentityAndAuth/IdentityAndAuth.Infrastructure/"]
+COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.Application/IdentityAndAuth.Application.csproj", "src/Modules/IdentityAndAuth/IdentityAndAuth.Application/"]
+COPY ["src/Modules/IdentityAndAuth/IdentityAndAuth.Domain/IdentityAndAuth.Domain.csproj", "src/Modules/IdentityAndAuth/IdentityAndAuth.Domain/"]
+COPY ["src/Modules/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj", "src/Modules/Inventory/Inventory.Infrastructure/"]
+COPY ["src/Modules/Inventory/Inventory.Application/Inventory.Application.csproj", "src/Modules/Inventory/Inventory.Application/"]
+COPY ["src/Modules/Inventory/Inventory.Domain/Inventory.Domain.csproj", "src/Modules/Inventory/Inventory.Domain/"]
+COPY ["src/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj", "src/Modules/Notifications/Notifications.Infrastructure/"]
+COPY ["src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj", "src/Modules/Notifications/Notifications.Application/"]
+COPY ["src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj", "src/Modules/Notifications/Notifications.Domain/"]
 RUN dotnet restore "./src/Host/Host.csproj"
 COPY . .
 WORKDIR "/src/src/Host"

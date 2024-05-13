@@ -1,10 +1,10 @@
 using System.Net;
-using Common.Core.Extensions;
-using Common.Localization;
+using Common.Application.Localization;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Results;
+using Common.Application.Extensions;
 
 namespace Host.Validation;
 

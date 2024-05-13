@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Serilog" />
@@ -46,18 +47,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Common/Common.Options/Common.Options.csproj" />
-    <ProjectReference Include="../Common/Common.Localization/Common.Localization.csproj" />
-    <ProjectReference Include="../Common/Common.Caching/Common.Caching.csproj" />
-    <ProjectReference Include="../Common/Common.Core/Common.Core.csproj" />
-    <ProjectReference Include="../Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj" />
-    <ProjectReference Include="../Modules/IdentityAndAuth/IdentityAndAuth.csproj" />
-    <ProjectReference Include="../Modules/Sales/Sales.csproj" />
-    <ProjectReference Include="../Modules/Notifications/Notifications.csproj" />
+    <Folder Include="Infrastructure\Extensions\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\Extensions\" />
+    <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
+    <ProjectReference Include="..\Modules\IdentityAndAuth\IdentityAndAuth.Infrastructure\IdentityAndAuth.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

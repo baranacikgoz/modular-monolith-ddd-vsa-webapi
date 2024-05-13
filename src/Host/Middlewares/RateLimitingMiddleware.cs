@@ -1,11 +1,12 @@
 using System.Net;
 using System.Threading.RateLimiting;
-using Common.Core.Extensions;
-using Common.Localization;
-using Common.Options;
+using Common.Infrastructure.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
+using Common.Infrastructure.Extensions;
+using Common.Application.Localization;
+using Common.Application.Extensions;
 
 namespace Host.Middlewares;
 
@@ -15,7 +16,6 @@ internal static class RateLimitingMiddleware
         this IServiceCollection services,
         IConfiguration configuration,
         params IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>[] rateLimitingPoliciesPerModule)
-
         => services
             .AddRateLimiter(opt =>
             {

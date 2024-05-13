@@ -3,6 +3,8 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+logs/
+
 # containers
 .containers/
 

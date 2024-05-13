@@ -1,4 +1,4 @@
-using Common.Core.Contracts;
+using Common.Domain.StronglyTypedIds;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

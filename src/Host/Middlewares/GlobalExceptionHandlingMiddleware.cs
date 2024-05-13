@@ -1,5 +1,5 @@
 using System.Net;
-using Common.Localization;
+using Common.Application.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;

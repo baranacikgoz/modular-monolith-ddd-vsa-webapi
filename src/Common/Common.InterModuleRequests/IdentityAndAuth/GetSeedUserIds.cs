@@ -1,4 +1,4 @@
-using Common.Core.Contracts.Identity;
+using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 
 namespace Common.InterModuleRequests.IdentityAndAuth;

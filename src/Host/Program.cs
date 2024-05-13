@@ -2,10 +2,9 @@ using Host.Configurations;
 using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
-using Common.Persistence;
 using Serilog.Sinks.SystemConsole.Themes;
 using System.Globalization;
-using Common.Core.JsonConverters;
+using Common.Infrastructure.Persistence;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
