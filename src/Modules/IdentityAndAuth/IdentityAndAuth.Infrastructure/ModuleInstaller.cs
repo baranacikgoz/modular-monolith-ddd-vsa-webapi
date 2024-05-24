@@ -20,6 +20,7 @@ public static class ModuleInstaller
             .AddPersistence()
             .AddIdentityInfrastructure()
             .AddAuthInfrastructure(configuration)
+            .AddCaptchaInfrastructure()
             .AddTokensInfrastructure();
 
         return services;

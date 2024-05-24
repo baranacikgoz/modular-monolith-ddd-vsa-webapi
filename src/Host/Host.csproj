@@ -47,10 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
     <ProjectReference Include="..\Modules\IdentityAndAuth\IdentityAndAuth.Infrastructure\IdentityAndAuth.Infrastructure.csproj" />
