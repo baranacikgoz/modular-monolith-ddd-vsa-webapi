@@ -2,7 +2,8 @@ namespace Common.Domain.StronglyTypedIds;
 
 public readonly record struct ApplicationUserId : IStronglyTypedId
 {
-    public Guid Value { get; init; } = Guid.NewGuid();
+    public Guid Value { get; init; }
+    public bool IsEmpty => Value == Guid.Empty;
 
     // Parameterless constructor for EF
     public ApplicationUserId() : this(Guid.NewGuid()) { }

@@ -9,6 +9,7 @@ using IdentityAndAuth.Infrastructure.Tokens;
 using IdentityAndAuth.Application.Identity;
 using IdentityAndAuth.Application.Tokens;
 using IdentityAndAuth.Application.Captcha;
+using IdentityAndAuth.Infrastructure.Captcha;
 
 namespace IdentityAndAuth.Infrastructure;
 
@@ -26,11 +27,18 @@ public static class ModuleInstaller
         return services;
     }
 
-    public static IApplicationBuilder UseAuth(this IApplicationBuilder app)
+    public static IApplicationBuilder UseAuth(
+        this IApplicationBuilder app,
+        Action<IApplicationBuilder>? betweenAuthenticationAndAuthorization = null)
     {
-        app
-           .UseAuthentication()
-           .UseAuthorization();
+        app.UseAuthentication();
+
+        if (betweenAuthenticationAndAuthorization is not null)
+        {
+            betweenAuthenticationAndAuthorization(app);
+        }
+
+        app.UseAuthorization();
 
         return app;
     }

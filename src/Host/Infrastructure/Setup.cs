@@ -10,6 +10,7 @@ using Common.InterModuleRequests;
 using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
 using IdentityAndAuth.Infrastructure;
+using Host.Middlewares;
 
 namespace Host.Infrastructure;
 
@@ -35,7 +36,8 @@ public static partial class Setup
             .AddMetricsAndTracing(configuration)
             .AddCustomCors()
             .AddCommonDependencies(env, configuration)
-            .AddFluentValidationAndAutoValidation();
+            .AddFluentValidationAndAutoValidation()
+            .AddEnrichLogsWithUserInfoMiddlware();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         => app
@@ -44,7 +46,7 @@ public static partial class Setup
             .UseRateLimiter()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware()
-            .UseAuth();
+            .UseAuth(betweenAuthenticationAndAuthorization: app => app.UseMiddleware<EnrichLogsWithUserInfoMiddleware>());
     // .UsePrometheusScraping()
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)
@@ -100,4 +102,7 @@ public static partial class Setup
             typeof(Notifications.Application.IAssemblyReference).Assembly,
             typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
         ];
+
+    private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
+        => services.AddScoped<EnrichLogsWithUserInfoMiddleware>();
 }
