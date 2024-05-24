@@ -5,16 +5,17 @@ using Host.Infrastructure;
 using Serilog.Sinks.SystemConsole.Themes;
 using System.Globalization;
 using Common.Infrastructure.Persistence;
+using Common.Infrastructure.Options;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console(
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-                    theme: SystemConsoleTheme.Literate,
-                    formatProvider: CultureInfo.InvariantCulture)
+                .ApplyConfigurations(builder
+                                        .Configuration
+                                        .GetSection(nameof(LoggingMonitoringTracingOptions))
+                                        .Get<LoggingMonitoringTracingOptions>() ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringTracingOptions)} is null."))
                 .CreateLogger();
 try
 {

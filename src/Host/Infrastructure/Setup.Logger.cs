@@ -14,19 +14,26 @@ namespace Host.Infrastructure;
 public static partial class Setup
 {
     public static IHostBuilder UseCustomizedSerilog(this IHostBuilder hostBuilder)
-        => hostBuilder.UseSerilog((_, sp, serilog) =>
+        => hostBuilder.UseSerilog((ctx, sp, serilog) =>
         {
             var options = sp.GetRequiredService<IOptions<LoggingMonitoringTracingOptions>>()?.Value
                 ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringTracingOptions)} is null.");
 
-            serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
-
-            serilog.OverrideMinimumLevelsOf(options.MinimumLevelOverrides);
-
-            serilog.ConfigureEnrichers();
-
-            serilog.ConfigureWriteTos(options);
+            serilog.ApplyConfigurations(options);
         });
+
+    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, LoggingMonitoringTracingOptions options)
+    {
+        serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
+
+        serilog.OverrideMinimumLevelsOf(options.MinimumLevelOverrides);
+
+        serilog.ConfigureEnrichers();
+
+        serilog.ConfigureWriteTos(options);
+
+        return serilog;
+    }
 
     private static LoggerMinimumLevelConfiguration ParseFrom(this LoggerMinimumLevelConfiguration minLevel, string level)
     {
