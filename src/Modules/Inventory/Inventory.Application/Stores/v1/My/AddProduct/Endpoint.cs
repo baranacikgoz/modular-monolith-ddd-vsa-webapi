@@ -16,9 +16,9 @@ namespace Inventory.Application.Stores.v1.My.AddProduct;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder salesApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder inventoryApiGroup)
     {
-        salesApiGroup
+        inventoryApiGroup
             .MapPatch("", AddProductToMyStore)
             .WithDescription("Add product to my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
