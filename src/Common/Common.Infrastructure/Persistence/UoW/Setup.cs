@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Common.Infrastructure.Persistence.UoW;
 public static class Setup
 {
-    public static IServiceCollection AddModuleUnitOfWork<TDbContext>(this IServiceCollection services, string moduleName)
+    public static IServiceCollection AddModuleUnitOfWork<TDbContext>(
+        this IServiceCollection services,
+        string moduleName)
         where TDbContext : DbContext
         => services.AddKeyedScoped<IUnitOfWork>(moduleName, (sp, _) =>
         {
