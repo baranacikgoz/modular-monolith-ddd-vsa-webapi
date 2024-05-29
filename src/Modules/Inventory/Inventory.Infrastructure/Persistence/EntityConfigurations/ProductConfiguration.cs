@@ -16,12 +16,12 @@ internal class ProductConfiguration : AuditableEntityConfiguration<Product, Prod
 
         builder
             .Property(a => a.Name)
-            .HasMaxLength(Constants.ProductNameMaxLength)
+            .HasMaxLength(Domain.Products.Constants.NameMaxLength)
             .IsRequired();
 
         builder
             .Property(a => a.Description)
-            .HasMaxLength(Constants.ProductDescriptionMaxLength)
+            .HasMaxLength(Domain.Products.Constants.DescriptionMaxLength)
             .IsRequired();
     }
 }

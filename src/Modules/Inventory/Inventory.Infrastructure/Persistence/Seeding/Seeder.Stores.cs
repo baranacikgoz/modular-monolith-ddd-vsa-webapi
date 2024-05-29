@@ -29,7 +29,7 @@ internal sealed partial class Seeder
         if (await dbContext.Stores.SingleOrDefaultAsync(store => store.OwnerId == userId || store.Name == storeName, cancellationToken)
             is not Store store)
         {
-            store = Store.Create(userId, storeName);
+            store = Store.Create(userId, storeName, "Seeded by system.");
 
             await dbContext.Stores.AddAsync(store, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
