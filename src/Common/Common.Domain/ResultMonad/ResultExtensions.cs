@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.ResultMonad;
+namespace Common.Domain.ResultMonad;
 
 public static class SyncExtensions
 {
@@ -410,6 +410,30 @@ public static class AsyncExtensions
         }
 
         func(result.Value!);
+
+        return result;
+    }
+
+    public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
+       this Task<Result<TCurrent>> resultTask,
+       Func<TCurrent, Result> tap,
+       Predicate<TCurrent> when)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (result.IsFailure)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when(result.Value!))
+        {
+            var tapResult = tap(result.Value!);
+            if (tapResult.IsFailure)
+            {
+                return tapResult.Error!;
+            }
+        }
 
         return result;
     }

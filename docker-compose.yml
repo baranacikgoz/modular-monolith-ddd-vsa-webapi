@@ -24,6 +24,7 @@ services:
       - LoggingMonitoringTracingOptions__EnableMetric=false
       - LoggingMonitoringTracingOptions__EnableTracing=false
       - LoggingMonitoringTracingOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
+      - JwtOptions__AccessTokenExpirationInMinutes=1440 
 
   mm.database:
     image: postgres:latest

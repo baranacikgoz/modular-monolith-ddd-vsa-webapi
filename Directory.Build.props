@@ -37,6 +37,7 @@
       CA1056;
       ASP0003;
       CA1716;
+      S2234;
     </NoWarn>
   </PropertyGroup>
 </Project>

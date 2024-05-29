@@ -36,6 +36,30 @@ public class Store : AggregateRoot<StoreId>
         return store;
     }
 
+    public Result UpdateName(string newName)
+    {
+        if (string.Equals(Name, newName, StringComparison.Ordinal))
+        {
+            return Error.SameValue(nameof(Name), newName);
+        }
+
+        var storeNameUpdatedEvent = new StoreNameUpdatedDomainEvent(Id, Name, newName);
+        RaiseEvent(storeNameUpdatedEvent);
+        return Result.Success;
+    }
+
+    public Result UpdateDescription(string newDescription)
+    {
+        if (string.Equals(Description, newDescription, StringComparison.Ordinal))
+        {
+            return Error.SameValue(nameof(Description), newDescription);
+        }
+
+        var storeDescriptionUpdatedEvent = new StoreDescriptionUpdatedDomainEvent(Id, Description, newDescription);
+        RaiseEvent(storeDescriptionUpdatedEvent);
+        return Result.Success;
+    }
+
     public StoreProduct AddProduct(ProductId productId, int quantity, decimal price)
     {
         var storeProduct = StoreProduct.Create(Id, productId, quantity, price);
@@ -84,6 +108,12 @@ public class Store : AggregateRoot<StoreId>
             case StoreCreatedDomainEvent e:
                 Apply(e);
                 break;
+            case StoreNameUpdatedDomainEvent e:
+                Apply(e);
+                break;
+            case StoreDescriptionUpdatedDomainEvent e:
+                Apply(e);
+                break;
             case ProductAddedToStoreDomainEvent e:
                 Apply(e);
                 break;
@@ -113,6 +143,12 @@ public class Store : AggregateRoot<StoreId>
         {
             case StoreCreatedDomainEvent _:
                 throw new InvalidOperationException($"{nameof(StoreCreatedDomainEvent)} is undoable.");
+            case StoreNameUpdatedDomainEvent e:
+                UndoWith(e, new StoreNameUpdatedDomainEvent(Id, OldName: e.NewName, NewName: e.OldName));
+                break;
+            case StoreDescriptionUpdatedDomainEvent e:
+                UndoWith(e, new StoreDescriptionUpdatedDomainEvent(Id, OldDescription: e.NewDescription, NewDescription: e.OldDescription));
+                break;
             case ProductAddedToStoreDomainEvent e:
                 UndoWith(e, new ProductRemovedFromStoreDomainEvent(Id, e.Product));
                 break;
@@ -143,6 +179,16 @@ public class Store : AggregateRoot<StoreId>
         Name = @event.Name;
         Description = @event.Description;
         LogoUrl = @event.LogoUrl;
+    }
+
+    private void Apply(StoreNameUpdatedDomainEvent @event)
+    {
+        Name = @event.NewName;
+    }
+
+    private void Apply(StoreDescriptionUpdatedDomainEvent @event)
+    {
+        Description = @event.NewDescription;
     }
 
     private void Apply(ProductAddedToStoreDomainEvent @event)

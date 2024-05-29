@@ -14,6 +14,7 @@ public static class Setup
 
         var v1MyStoresApiGroup = v1StoresApiGroup.MapGroup("/my");
         v1.My.Create.Endpoint.MapEndpoint(v1MyStoresApiGroup);
+        v1.My.Update.Endpoint.MapEndpoint(v1MyStoresApiGroup);
 
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")
