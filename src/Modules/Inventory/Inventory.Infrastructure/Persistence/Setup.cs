@@ -14,7 +14,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<InventoryDbContext>(modouleName: nameof(Inventory))
+            .AddModuleDbContext<InventoryDbContext>(moduleName: nameof(Inventory))
             .AddModuleUnitOfWork<InventoryDbContext>(moduleName: nameof(Inventory))
             .AddModuleRepositories<InventoryDbContext>(assemblyContainingEntities: typeof(Domain.IAssemblyReference).Assembly);
 
