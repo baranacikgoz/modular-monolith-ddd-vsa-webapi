@@ -10,9 +10,9 @@ namespace Inventory.Application.Products.v1.Create;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder salesApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder inventoryApiGroup)
     {
-        salesApiGroup
+        inventoryApiGroup
             .MapPost("", CreateProductAsync)
             .WithDescription("Create a product.")
             .MustHavePermission(CustomActions.Create, CustomResources.Products)

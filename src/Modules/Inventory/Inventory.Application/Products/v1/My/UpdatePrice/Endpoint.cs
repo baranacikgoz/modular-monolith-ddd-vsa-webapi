@@ -16,9 +16,9 @@ namespace Inventory.Application.Products.v1.My.UpdatePrice;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder inventoryApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
-        inventoryApiGroup
+        myProductsApiGroup
             .MapPatch("{productId}/update-price", UpdateMyProductPriceAsync)
             .WithDescription("Update my product's price.")
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.Products)

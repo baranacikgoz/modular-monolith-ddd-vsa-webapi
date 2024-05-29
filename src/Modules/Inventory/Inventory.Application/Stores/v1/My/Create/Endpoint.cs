@@ -10,9 +10,9 @@ namespace Inventory.Application.Stores.v1.My.Create;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder inventoryApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
-        inventoryApiGroup
+        myStoresApiGroup
             .MapPost("", CreateMyStoreAsync)
             .WithDescription("Create my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
