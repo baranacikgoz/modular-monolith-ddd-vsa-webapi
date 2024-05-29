@@ -19,16 +19,18 @@ public class Store : AggregateRoot<StoreId>
 {
     public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
+    public string Description { get; private set; }
+    public Uri? LogoUrl { get; private set; }
 
     private readonly List<StoreProduct> _products = [];
     public virtual IReadOnlyCollection<StoreProduct> Products => _products.AsReadOnly();
 
-    public static Store Create(ApplicationUserId ownerId, string name)
+    public static Store Create(ApplicationUserId ownerId, string name, string description, Uri? logoUrl = null)
     {
         var id = StoreId.New();
         var store = new Store();
 
-        var @event = new StoreCreatedDomainEvent(id, ownerId, name);
+        var @event = new StoreCreatedDomainEvent(id, ownerId, name, description, logoUrl);
         store.RaiseEvent(@event);
 
         return store;
@@ -139,6 +141,8 @@ public class Store : AggregateRoot<StoreId>
         Id = @event.StoreId;
         OwnerId = @event.OwnerId;
         Name = @event.Name;
+        Description = @event.Description;
+        LogoUrl = @event.LogoUrl;
     }
 
     private void Apply(ProductAddedToStoreDomainEvent @event)
@@ -183,5 +187,7 @@ public class Store : AggregateRoot<StoreId>
         storeProduct.UpdatePrice(newPrice);
     }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public Store() : base(new(Guid.Empty)) { } // ORMs need parameterlers ctor
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 }
