@@ -20,7 +20,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<IdentityAndAuthDbContext>(modouleName: nameof(IdentityAndAuth))
+            .AddModuleDbContext<IdentityAndAuthDbContext>(moduleName: nameof(IdentityAndAuth))
             .AddModuleUnitOfWork<IdentityAndAuthDbContext>(moduleName: nameof(IdentityAndAuth))
             .AddModuleRepositories<IdentityAndAuthDbContext>(assemblyContainingEntities: typeof(Domain.IAssemblyReference).Assembly);
 

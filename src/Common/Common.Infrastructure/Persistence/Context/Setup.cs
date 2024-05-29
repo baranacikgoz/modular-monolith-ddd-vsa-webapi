@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 namespace Common.Infrastructure.Persistence.Context;
 public static class Setup
 {
-    public static IServiceCollection AddModuleDbContext<TModuleContext>(this IServiceCollection services, string modouleName)
+    public static IServiceCollection AddModuleDbContext<TModuleContext>(this IServiceCollection services, string moduleName)
         where TModuleContext : DbContext
         => services.AddDbContext<TModuleContext>((sp, options) =>
         {
@@ -19,7 +19,7 @@ public static class Setup
             options
                 .UseNpgsql(
                     connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, modouleName))
+                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>(),
                     sp.GetRequiredService<InsertOutboxMessagesInterceptor>(),
