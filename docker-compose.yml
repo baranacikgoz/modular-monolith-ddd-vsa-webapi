@@ -9,6 +9,8 @@ services:
     build:
       context: .
       dockerfile: src/Host/Dockerfile
+    networks:
+      - local_shared_network
     ports:
       - 8080:8080
     depends_on:
@@ -32,6 +34,8 @@ services:
     restart: "no"
     volumes:
       - ./.containers/mm.database:/var/lib/postgresql/data
+    networks:
+      - local_shared_network
     ports:
       - 5432:5432
     environment:
@@ -43,6 +47,8 @@ services:
   #   image: rabbitmq:3-management
   #   container_name: mm.rabbitmq
   #   restart: "no"
+  #   networks:
+  #     - local_shared_network
   #   ports:
   #     - 5672:5672
   #     - 15672:15672
@@ -56,9 +62,15 @@ services:
     image: datalust/seq:latest
     container_name: mm.seq
     restart: "no"
+    networks:
+      - local_shared_network
     ports:
       - 5341:80
     volumes:
       - ./.containers/mm.seq:/data
     environment:
       - ACCEPT_EULA=Y
+
+networks:
+  local_shared_network:
+    external: true
