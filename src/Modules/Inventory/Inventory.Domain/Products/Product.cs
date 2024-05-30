@@ -49,10 +49,5 @@ public class Product : AggregateRoot<ProductId>
         Description = @event.Description;
     }
 
-    protected override void UndoEvent(DomainEvent @event)
-    {
-        throw new NotImplementedException();
-    }
-
     public Product() : base(new(Guid.Empty)) { } // ORMs need parameterlers ctor
 }

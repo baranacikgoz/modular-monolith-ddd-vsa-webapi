@@ -18,14 +18,6 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
     protected void AddEvent(DomainEvent @event) => _events.Add(@event);
     public void ClearEvents() => _events.Clear();
     protected abstract void ApplyEvent(DomainEvent @event);
-    protected abstract void UndoEvent(DomainEvent @event);
-    protected void UndoWith(DomainEvent oldEvent, DomainEvent undoerEvent)
-    {
-        oldEvent.MarkAsUndone();
-
-        undoerEvent.MarkAsUndoerEvent();
-        RaiseEvent(undoerEvent);
-    }
 
 #pragma warning disable CA1030
     protected void RaiseEvent(DomainEvent @event)
