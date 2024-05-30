@@ -24,7 +24,9 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
     {
     }
 
+    private const string EventTypeNameFieldName = "EventType";
     private const string EventTypeFullNameFieldName = "EventTypeFullName";
+    private const string EventDataFieldName = "EventData";
     private sealed class PolymorphicDomainEventConverter : JsonConverter<DomainEvent>
     {
         public override DomainEvent Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -35,22 +37,19 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
             var type = Type.GetType(typeString)
                 ?? throw new InvalidOperationException($"Type {typeString} not found.");
 
-            return (DomainEvent)JsonSerializer.Deserialize(jsonDocument.RootElement.GetRawText(), type, options)!;
+            // EventData is in "EventData" property.
+            var eventData = jsonDocument.RootElement.GetProperty(EventDataFieldName).GetRawText();
+            return (DomainEvent)JsonSerializer.Deserialize(eventData, type, options)!;
         }
 
         public override void Write(Utf8JsonWriter writer, DomainEvent value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();  // Start the enclosing object.
             writer.WriteString(EventTypeFullNameFieldName, value.GetType().AssemblyQualifiedName); // Write the type information.
+            writer.WriteString(EventTypeNameFieldName, value.GetType().Name); // Write the type name.
 
-            // Serialize the 'value' object properties directly into the current JSON object.
-            using (var doc = JsonDocument.Parse(JsonSerializer.Serialize(value, value.GetType(), options)))
-            {
-                foreach (var prop in doc.RootElement.EnumerateObject())
-                {
-                    prop.WriteTo(writer); // This writes each property from the value object into the current JSON object.
-                }
-            }
+            writer.WritePropertyName(EventDataFieldName);
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
 
             writer.WriteEndObject();  // End the enclosing object.
         }
