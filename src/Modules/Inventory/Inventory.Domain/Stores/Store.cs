@@ -137,41 +137,6 @@ public class Store : AggregateRoot<StoreId>
         }
     }
 
-    protected override void UndoEvent(DomainEvent @event)
-    {
-        switch (@event)
-        {
-            case StoreCreatedDomainEvent _:
-                throw new InvalidOperationException($"{nameof(StoreCreatedDomainEvent)} is undoable.");
-            case StoreNameUpdatedDomainEvent e:
-                UndoWith(e, new StoreNameUpdatedDomainEvent(Id, OldName: e.NewName, NewName: e.OldName));
-                break;
-            case StoreDescriptionUpdatedDomainEvent e:
-                UndoWith(e, new StoreDescriptionUpdatedDomainEvent(Id, OldDescription: e.NewDescription, NewDescription: e.OldDescription));
-                break;
-            case ProductAddedToStoreDomainEvent e:
-                UndoWith(e, new ProductRemovedFromStoreDomainEvent(Id, e.Product));
-                break;
-            case ProductRemovedFromStoreDomainEvent e:
-                UndoWith(e, new ProductAddedToStoreDomainEvent(Id, e.Product));
-                break;
-            case ProductQuantityIncreasedDomainEvent e:
-                UndoWith(e, new ProductQuantityDecreasedDomainEvent(e.Product, NewQuantity: e.Product.Quantity));
-                break;
-            case ProductQuantityDecreasedDomainEvent e:
-                UndoWith(e, new ProductQuantityIncreasedDomainEvent(e.Product, NewQuantity: e.Product.Quantity));
-                break;
-            case ProductPriceIncreasedDomainEvent e:
-                UndoWith(e, new ProductPriceDecreasedDomainEvent(e.Product, NewPrice: e.Product.Price));
-                break;
-            case ProductPriceDecreasedDomainEvent e:
-                UndoWith(e, new ProductPriceIncreasedDomainEvent(e.Product, NewPrice: e.Product.Price));
-                break;
-            default:
-                throw new InvalidOperationException($"Can not undo the unknown event {@event.GetType().Name}");
-        }
-    }
-
     private void Apply(StoreCreatedDomainEvent @event)
     {
         Id = @event.StoreId;
