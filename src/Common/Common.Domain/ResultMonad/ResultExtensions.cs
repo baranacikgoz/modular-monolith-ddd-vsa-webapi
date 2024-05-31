@@ -69,6 +69,66 @@ public static class SyncExtensions
         return Result.Success;
     }
 
+    public static Result TapWhen(
+        this Result result,
+        Action action,
+        Func<bool> when)
+    {
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        if (when())
+        {
+            action();
+        }
+
+        return Result.Success;
+    }
+
+    public static Result Tap(
+        this Result result,
+        Func<Result> func)
+    {
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        var nextResult = func();
+
+        if (nextResult.IsFailure)
+        {
+            return Result.Failure(nextResult.Error!);
+        }
+
+        return result;
+    }
+
+    public static Result TapWhen(
+        this Result result,
+        Func<Result> func,
+        Func<bool> when)
+    {
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        if (when())
+        {
+            var nextResult = func();
+
+            if (nextResult.IsFailure)
+            {
+                return Result.Failure(nextResult.Error!);
+            }
+        }
+
+        return result;
+    }
+
     public static Result<TCurrent> Tap<TCurrent>(
         this Result<TCurrent> result,
         Action<TCurrent> action)
@@ -79,6 +139,24 @@ public static class SyncExtensions
         }
 
         action(result.Value!);
+
+        return result;
+    }
+
+    public static Result<TCurrent> TapWhen<TCurrent>(
+        this Result<TCurrent> result,
+        Action<TCurrent> action,
+        Func<bool> when)
+    {
+        if (result.IsFailure)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when())
+        {
+            action(result.Value!);
+        }
 
         return result;
     }
@@ -102,6 +180,29 @@ public static class SyncExtensions
         return result;
     }
 
+    public static Result<TCurrent> TapWhen<TCurrent>(
+        this Result<TCurrent> result,
+        Func<TCurrent, Result> func,
+        Func<bool> when)
+    {
+        if (result.IsFailure)
+        {
+            return Result<TCurrent>.Failure(result.Error!);
+        }
+
+        if (when())
+        {
+            var nextResult = func(result.Value!);
+
+            if (nextResult.IsFailure)
+            {
+                return Result<TCurrent>.Failure(nextResult.Error!);
+            }
+        }
+
+        return result;
+    }
+
     public static Result<TCurrent> Tap<TCurrent>(
         this Result<TCurrent> result,
         Func<TCurrent, Result<TCurrent>> func)
@@ -116,29 +217,6 @@ public static class SyncExtensions
         if (nextResult.IsFailure)
         {
             return Result<TCurrent>.Failure(nextResult.Error!);
-        }
-
-        return result;
-    }
-
-    public static Result<TCurrent> TapWhen<TCurrent>(
-        this Result<TCurrent> result,
-        Func<TCurrent, Result> tap,
-        Predicate<TCurrent> when)
-    {
-        if (result.IsFailure)
-        {
-            return Result<TCurrent>.Failure(result.Error!);
-        }
-
-        if (when(result.Value!))
-        {
-            var nextResult = tap(result.Value!);
-
-            if (nextResult.IsFailure)
-            {
-                return Result<TCurrent>.Failure(nextResult.Error!);
-            }
         }
 
         return result;
@@ -417,7 +495,7 @@ public static class AsyncExtensions
     public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
        this Task<Result<TCurrent>> resultTask,
        Func<TCurrent, Result> tap,
-       Predicate<TCurrent> when)
+       Func<bool> when)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -426,7 +504,7 @@ public static class AsyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        if (when(result.Value!))
+        if (when())
         {
             var tapResult = tap(result.Value!);
             if (tapResult.IsFailure)
@@ -441,7 +519,7 @@ public static class AsyncExtensions
     public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
         this Task<Result<TCurrent>> resultTask,
         Func<TCurrent, Task> tap,
-        Predicate<TCurrent> when)
+        Func<bool> when)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -450,7 +528,7 @@ public static class AsyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        if (when(result.Value!))
+        if (when())
         {
             await tap(result.Value!).ConfigureAwait(false);
         }
@@ -461,7 +539,7 @@ public static class AsyncExtensions
     public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
         this Task<Result<TCurrent>> resultTask,
         Func<TCurrent, Task<Result>> tap,
-        Predicate<TCurrent> when)
+        Func<bool> when)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -470,7 +548,7 @@ public static class AsyncExtensions
             return Result<TCurrent>.Failure(result.Error!);
         }
 
-        if (when(result.Value!))
+        if (when())
         {
             var nextResult = await tap(result.Value!).ConfigureAwait(false);
 

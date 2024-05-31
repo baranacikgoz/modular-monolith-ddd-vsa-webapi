@@ -36,7 +36,12 @@ public class Store : AggregateRoot<StoreId>
         return store;
     }
 
-    public Result UpdateName(string newName)
+    public Result Update(string? name, string? description)
+        => Result.Create()
+            .TapWhen(() => UpdateName(name!), when: () => !string.IsNullOrEmpty(name))
+            .TapWhen(() => UpdateDescription(description!), when: () => !string.IsNullOrEmpty(description));
+
+    private Result UpdateName(string newName)
     {
         if (string.Equals(Name, newName, StringComparison.Ordinal))
         {
@@ -48,7 +53,7 @@ public class Store : AggregateRoot<StoreId>
         return Result.Success;
     }
 
-    public Result UpdateDescription(string newDescription)
+    private Result UpdateDescription(string newDescription)
     {
         if (string.Equals(Description, newDescription, StringComparison.Ordinal))
         {
