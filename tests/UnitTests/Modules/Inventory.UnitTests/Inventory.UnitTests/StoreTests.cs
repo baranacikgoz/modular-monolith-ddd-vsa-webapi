@@ -150,4 +150,17 @@ public class StoreTests : AggregateTests<Store, StoreId>
             .Then<ProductRemovedFromStoreDomainEvent>(
                 (_, product, @event) => @event.Product.Should().Be((StoreProduct)product));
     }
+
+    [Fact]
+    public void RemoveProductFromStoreShouldActuallyRemoveProductFromStore()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .When((store, product) => store.RemoveProductFromStore(((StoreProduct)product).Id))
+            .Then(store => store.Products.Should().BeEmpty());
+    }
 }

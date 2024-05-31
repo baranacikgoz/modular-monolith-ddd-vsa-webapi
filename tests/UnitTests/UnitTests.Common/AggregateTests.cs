@@ -68,6 +68,18 @@ public abstract class AggregateTests<TAggregate, TId>
         return this;
     }
 
+    public AggregateTests<TAggregate, TId> Then(params Action<TAggregate>[] assertions)
+    {
+        if (assertions.Length > 0)
+        {
+            assertions
+                .Should()
+                .AllSatisfy(assert => assert(Aggregate));
+        }
+
+        return this;
+    }
+
     public AggregateTests<TAggregate, TId> Then<TDomainEvent>(params Action<TDomainEvent>[] assertions)
         where TDomainEvent : DomainEvent
     {
