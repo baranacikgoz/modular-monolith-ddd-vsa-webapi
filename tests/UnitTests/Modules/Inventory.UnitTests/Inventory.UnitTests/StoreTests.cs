@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using FluentAssertions;
+using Inventory.Domain.Products;
+using Inventory.Domain.StoreProducts;
 using Inventory.Domain.Stores;
 using Inventory.Domain.Stores.DomainEvents;
 using UnitTests.Common;
@@ -60,8 +62,8 @@ public class StoreTests : AggregateTests<Store, StoreId>
     {
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.Update(name: Name, description: null))
-            .ThenError<Error>(
-                error => error.ShouldBeSameValueError(parameterName: nameof(Store.Name), value: Name));
+            .ThenError(
+                error => error.ShouldBe(Error.SameValue(nameof(Store.Name), Name)));
     }
 
     [Fact]
@@ -69,8 +71,83 @@ public class StoreTests : AggregateTests<Store, StoreId>
     {
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.Update(name: null, description: Description))
-            .ThenError<Error>(
-                error => error.ShouldBeSameValueError(parameterName: nameof(Store.Description), value: Description));
+            .ThenError(
+                error => error.ShouldBe(Error.SameValue(nameof(Store.Description), Description)));
     }
 
+    [Fact]
+    public void AddProductShouldRaiseProductAddedToStoreDomainEvent()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .Then<ProductAddedToStoreDomainEvent>(
+                @event => @event.StoreId.Should().Be(Aggregate.Id),
+                @event => @event.Product.ProductId.Should().Be(productId),
+                @event => @event.Product.Quantity.Should().Be(quantity),
+                @event => @event.Product.Price.Should().Be(price));
+    }
+
+    [Fact]
+    public void UpdateProductQuantityShouldRaiseProductQuantityIncreasedDomainEventWhenNewQuantityIsGreaterThanOldQuantity()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+        const int newQuantity = 20;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .When((store, product) => store.UpdateProductQuantity(((StoreProduct)product).Id, newQuantity))
+            .Then<ProductQuantityIncreasedDomainEvent>(
+                (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
+                (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
+    }
+
+    [Fact]
+    public void UpdateProductQuantityShouldRaiseProductQuantityDecreasedDomainEventWhenNewQuantityIsLessThanOldQuantity()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+        const int newQuantity = 5;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .When((store, product) => store.UpdateProductQuantity(((StoreProduct)product).Id, newQuantity))
+            .Then<ProductQuantityDecreasedDomainEvent>(
+                (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
+                (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
+    }
+
+    [Fact]
+    public void UpdateProductQuantityShouldReturnSameValueErrorWhenSameValueIsGiven()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .When((store, product) => store.UpdateProductQuantity(((StoreProduct)product).Id, quantity))
+            .ThenError(
+                error => error.ShouldBe(Error.SameValue(nameof(StoreProduct.Quantity), quantity)));
+    }
+
+    [Fact]
+    public void RemoveProductFromStoreShouldRaiseProductRemovedFromStoreDomainEvent()
+    {
+        var productId = ProductId.New();
+        const int quantity = 10;
+        const decimal price = 100;
+
+        Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
+            .When(store => store.AddProduct(productId, quantity, price))
+            .When((store, product) => store.RemoveProductFromStore(((StoreProduct)product).Id))
+            .Then<ProductRemovedFromStoreDomainEvent>(
+                (_, product, @event) => @event.Product.Should().Be((StoreProduct)product));
+    }
 }
