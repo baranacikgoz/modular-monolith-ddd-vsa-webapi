@@ -1,4 +1,5 @@
 using Common.Domain.Aggregates;
+using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
@@ -11,32 +12,33 @@ public abstract class AggregateTests<TAggregate, TId>
     where TAggregate : AggregateRoot<TId>, new()
     where TId : IStronglyTypedId
 {
-    private TAggregate _aggregate = new();
+    protected TAggregate Aggregate = new();
+    private object? _objectUnderTheTestAlongWithAggregate;
     private Result<TAggregate>? _aggregateResult;
     private Result? _plainResult;
     private Error? _error;
 
     public AggregateTests<TAggregate, TId> Given(Func<TAggregate> func)
     {
-        _aggregate = func();
+        Aggregate = func();
         return this;
     }
 
     public AggregateTests<TAggregate, TId> Given(params DomainEvent[] events)
     {
-        _aggregate.LoadFromHistory(events);
+        Aggregate.LoadFromHistory(events);
         return this;
     }
 
     public AggregateTests<TAggregate, TId> When(Action<TAggregate> action)
     {
-        action(_aggregate);
+        action(Aggregate);
         return this;
     }
 
     public AggregateTests<TAggregate, TId> When(Func<TAggregate, Result<TAggregate>> func)
     {
-        var result = func(_aggregate);
+        var result = func(Aggregate);
         _aggregateResult = result;
         _error = result.Error;
         return this;
@@ -44,16 +46,32 @@ public abstract class AggregateTests<TAggregate, TId>
 
     public AggregateTests<TAggregate, TId> When(Func<TAggregate, Result> func)
     {
-        var result = func(_aggregate);
+        var result = func(Aggregate);
         _plainResult = result;
         _error = result.Error;
+        return this;
+    }
+
+    public AggregateTests<TAggregate, TId> When(Func<TAggregate, object, Result> func)
+    {
+        _objectUnderTheTestAlongWithAggregate.Should().NotBeNull();
+        var result = func(Aggregate, _objectUnderTheTestAlongWithAggregate!);
+        _plainResult = result;
+        _error = result.Error;
+        return this;
+    }
+
+    public AggregateTests<TAggregate, TId> When(Func<TAggregate, object> func)
+    {
+        var result = func(Aggregate);
+        _objectUnderTheTestAlongWithAggregate = result;
         return this;
     }
 
     public AggregateTests<TAggregate, TId> Then<TDomainEvent>(params Action<TDomainEvent>[] assertions)
         where TDomainEvent : DomainEvent
     {
-        var events = _aggregate
+        var events = Aggregate
                     .Events
                     .OfType<TDomainEvent>()
                     .ToList();
@@ -74,8 +92,57 @@ public abstract class AggregateTests<TAggregate, TId>
         return this;
     }
 
-    public AggregateTests<TAggregate, TId> ThenError<TError>(params Action<TError>[] assertions)
-        where TError : Error
+    public AggregateTests<TAggregate, TId> Then<TDomainEvent>(params Action<TAggregate, TDomainEvent>[] assertions)
+        where TDomainEvent : DomainEvent
+    {
+        var events = Aggregate
+                    .Events
+                    .OfType<TDomainEvent>()
+                    .ToList();
+
+        events.Should().NotBeNull();
+        events.Should().NotBeEmpty();
+        events.Should().ContainSingle();
+
+        var @event = events[0];
+
+        if (assertions.Length > 0)
+        {
+            assertions
+                .Should()
+                .AllSatisfy(assert => assert(Aggregate, @event));
+        }
+
+        return this;
+    }
+
+    public AggregateTests<TAggregate, TId> Then<TDomainEvent>(params Action<TAggregate, object, TDomainEvent>[] assertions)
+        where TDomainEvent : DomainEvent
+    {
+        var events = Aggregate
+                    .Events
+                    .OfType<TDomainEvent>()
+                    .ToList();
+
+        events.Should().NotBeNull();
+        events.Should().NotBeEmpty();
+        events.Should().ContainSingle();
+
+        var @event = events[0];
+
+        _objectUnderTheTestAlongWithAggregate.Should().NotBeNull();
+
+        if (assertions.Length > 0)
+        {
+            assertions
+                .Should()
+                .AllSatisfy(assert => assert(Aggregate, _objectUnderTheTestAlongWithAggregate!, @event));
+        }
+
+        return this;
+    }
+
+    public AggregateTests<TAggregate, TId> ThenError(params Action<Error>[] assertions)
     {
         // either _aggregateResult or _plainResult should be set
         if(_aggregateResult is null && _plainResult is null)
@@ -98,13 +165,12 @@ public abstract class AggregateTests<TAggregate, TId>
         }
 
         _error.Should().NotBeNull();
-        _error.Should().BeOfType<TError>();
 
         if (assertions.Length > 0)
         {
             assertions
                 .Should()
-                .AllSatisfy(assert => assert((TError)_error!));
+                .AllSatisfy(assert => assert(_error!));
         }
 
         return this;

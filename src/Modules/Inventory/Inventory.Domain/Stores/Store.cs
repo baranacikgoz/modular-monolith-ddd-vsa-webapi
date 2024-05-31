@@ -74,18 +74,18 @@ public class Store : AggregateRoot<StoreId>
         return storeProduct;
     }
 
-    public void UpdateProductQuantity(StoreProduct product, int newQuantity)
-    {
-        if (product.Quantity == newQuantity)
-        {
-            return;
-        }
-
-        RaiseEvent(
-            newQuantity > product.Quantity
-            ? new ProductQuantityIncreasedDomainEvent(product, newQuantity)
-            : new ProductQuantityDecreasedDomainEvent(product, newQuantity));
-    }
+    public Result UpdateProductQuantity(StoreProductId productId, int newQuantity)
+        => Result<StoreProduct>
+            .Create(
+                funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
+                errorIfValueNull: Error.NotFound(nameof(StoreProduct), productId))
+            .Tap(product => newQuantity == product.Quantity
+                                       ? Error.SameValue(nameof(StoreProduct.Quantity), newQuantity)
+                                       : product)
+            .Tap(product => RaiseEvent(
+                                newQuantity > product.Quantity
+                                ? new ProductQuantityIncreasedDomainEvent(product, newQuantity)
+                                : new ProductQuantityDecreasedDomainEvent(product, newQuantity)));
 
     public Result UpdateProductPrice(StoreProductId productId, decimal newPrice)
         => Result<StoreProduct>
@@ -100,10 +100,17 @@ public class Store : AggregateRoot<StoreId>
                                 ? new ProductPriceIncreasedDomainEvent(product, newPrice)
                                 : new ProductPriceDecreasedDomainEvent(product, newPrice)));
 
-    public void RemoveProductFromStore(StoreProduct product)
+    public Result RemoveProductFromStore(StoreProductId productId)
     {
+        if (_products.SingleOrDefault(p => p.Id == productId) is not { } product)
+        {
+            return Error.NotFound(nameof(StoreProduct), productId);
+        }
+
         var @event = new ProductRemovedFromStoreDomainEvent(Id, product);
         RaiseEvent(@event);
+
+        return Result.Success;
     }
 
     protected override void ApplyEvent(DomainEvent @event)
