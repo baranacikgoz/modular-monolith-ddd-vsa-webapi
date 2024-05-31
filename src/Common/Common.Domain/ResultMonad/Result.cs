@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.ResultMonad;
+namespace Common.Domain.ResultMonad;
 
 public sealed class Result
 {
@@ -14,6 +14,7 @@ public sealed class Result
 
     public static Result Success => _success;
     public static Result Failure(Error error) => new(error);
+    public static Result Create() => _success;
 
 #pragma warning disable CA2225
     public static implicit operator Result(Error error) => Failure(error);

@@ -36,8 +36,7 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await repository
             .SingleOrDefaultAsResultAsync(new StoreByOwnerIdSpec(currentUser.Id), cancellationToken)
-            .TapWhenAsync(store => store.UpdateName(request.Name!), when: _ => !string.IsNullOrEmpty(request.Name))
-            .TapWhenAsync(store => store.UpdateDescription(request.Description!), when: _ => !string.IsNullOrEmpty(request.Description))
+            .TapAsync(store => store.Update(request.Name, request.Description))
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
             
 }
