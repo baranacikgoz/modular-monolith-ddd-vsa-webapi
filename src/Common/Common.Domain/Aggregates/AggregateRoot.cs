@@ -12,6 +12,13 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
 
     private readonly List<DomainEvent> _events = [];
     public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
+    public void LoadFromHistory(IEnumerable<DomainEvent> events)
+    {
+        foreach (var @event in events)
+        {
+            RaiseEvent(@event);
+        }
+    }
 
     [ConcurrencyCheck]
     public new long Version { get; set; }
