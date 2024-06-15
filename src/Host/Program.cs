@@ -43,7 +43,7 @@ try
 
     app.UseCustomSwagger(builder.Environment);
 
-    app.Run();
+    await app.RunAsync();
 }
 #pragma warning disable CA1031
 catch (Exception ex)
@@ -54,5 +54,5 @@ catch (Exception ex)
 finally
 {
     Log.Information("Server Shutting down...");
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }
