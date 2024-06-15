@@ -1,6 +1,7 @@
 using Ardalis.Specification;
+using Inventory.Domain.Products;
 
-namespace Inventory.Domain.Products.Specs;
+namespace Inventory.Application.Products.Specs;
 public class ProductByIdSpec : SingleResultSpecification<Product>
 {
     public ProductByIdSpec(ProductId id)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Inventory.Domain.Stores;
 using Microsoft.Extensions.DependencyInjection;
-using Inventory.Domain.Stores.Specs;
+using Inventory.Application.Stores.Specs;
 using Inventory.Domain.StoreProducts;
 using Common.Application.ModelBinders;
 using Common.Application.Auth;

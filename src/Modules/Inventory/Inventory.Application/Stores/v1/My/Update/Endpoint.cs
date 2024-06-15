@@ -8,7 +8,7 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Inventory.Domain.Stores;
-using Inventory.Domain.Stores.Specs;
+using Inventory.Application.Stores.Specs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
