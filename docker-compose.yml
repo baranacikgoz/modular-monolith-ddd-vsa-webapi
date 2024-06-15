@@ -23,7 +23,7 @@ services:
       - OutboxOptions__BatchSizePerExecution=100
       - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
       - LoggingMonitoringTracingOptions__SeqUrl=http://mm.seq:80
-      - LoggingMonitoringTracingOptions__EnableMetric=false
+      - LoggingMonitoringTracingOptions__EnableMetrics=false
       - LoggingMonitoringTracingOptions__EnableTracing=false
       - LoggingMonitoringTracingOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
       - JwtOptions__AccessTokenExpirationInMinutes=1440 
