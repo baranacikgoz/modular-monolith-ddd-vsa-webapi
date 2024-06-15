@@ -4,7 +4,7 @@ using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Products;
 using Inventory.Domain.StoreProducts;
-using Inventory.Domain.Stores.DomainEvents;
+using Inventory.Domain.Stores.DomainEvents.v1;
 
 namespace Inventory.Domain.Stores;
 
@@ -30,7 +30,7 @@ public class Store : AggregateRoot<StoreId>
         var id = StoreId.New();
         var store = new Store();
 
-        var @event = new StoreCreatedDomainEvent(id, ownerId, name, description, logoUrl);
+        var @event = new V1StoreCreatedDomainEvent(id, ownerId, name, description, logoUrl);
         store.RaiseEvent(@event);
 
         return store;
@@ -48,7 +48,7 @@ public class Store : AggregateRoot<StoreId>
             return Error.SameValue(nameof(Name), newName);
         }
 
-        var storeNameUpdatedEvent = new StoreNameUpdatedDomainEvent(Id, Name, newName);
+        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, Name, newName);
         RaiseEvent(storeNameUpdatedEvent);
         return Result.Success;
     }
@@ -60,7 +60,7 @@ public class Store : AggregateRoot<StoreId>
             return Error.SameValue(nameof(Description), newDescription);
         }
 
-        var storeDescriptionUpdatedEvent = new StoreDescriptionUpdatedDomainEvent(Id, Description, newDescription);
+        var storeDescriptionUpdatedEvent = new V1StoreDescriptionUpdatedDomainEvent(Id, Description, newDescription);
         RaiseEvent(storeDescriptionUpdatedEvent);
         return Result.Success;
     }
@@ -68,7 +68,7 @@ public class Store : AggregateRoot<StoreId>
     public StoreProduct AddProduct(ProductId productId, int quantity, decimal price)
     {
         var storeProduct = StoreProduct.Create(Id, productId, quantity, price);
-        var @event = new ProductAddedToStoreDomainEvent(Id, storeProduct);
+        var @event = new V1ProductAddedToStoreDomainEvent(Id, storeProduct);
         RaiseEvent(@event);
 
         return storeProduct;
@@ -84,8 +84,8 @@ public class Store : AggregateRoot<StoreId>
                                        : product)
             .Tap(product => RaiseEvent(
                                 newQuantity > product.Quantity
-                                ? new ProductQuantityIncreasedDomainEvent(product, newQuantity)
-                                : new ProductQuantityDecreasedDomainEvent(product, newQuantity)));
+                                ? new V1ProductQuantityIncreasedDomainEvent(product, newQuantity)
+                                : new V1ProductQuantityDecreasedDomainEvent(product, newQuantity)));
 
     public Result UpdateProductPrice(StoreProductId productId, decimal newPrice)
         => Result<StoreProduct>
@@ -97,8 +97,8 @@ public class Store : AggregateRoot<StoreId>
                                        : product)
             .Tap(product => RaiseEvent(
                                 newPrice > product.Price
-                                ? new ProductPriceIncreasedDomainEvent(product, newPrice)
-                                : new ProductPriceDecreasedDomainEvent(product, newPrice)));
+                                ? new V1ProductPriceIncreasedDomainEvent(product, newPrice)
+                                : new V1ProductPriceDecreasedDomainEvent(product, newPrice)));
 
     public Result RemoveProductFromStore(StoreProductId productId)
     {
@@ -107,7 +107,7 @@ public class Store : AggregateRoot<StoreId>
             return Error.NotFound(nameof(StoreProduct), productId);
         }
 
-        var @event = new ProductRemovedFromStoreDomainEvent(Id, product);
+        var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product);
         RaiseEvent(@event);
 
         return Result.Success;
@@ -117,31 +117,31 @@ public class Store : AggregateRoot<StoreId>
     {
         switch (@event)
         {
-            case StoreCreatedDomainEvent e:
+            case V1StoreCreatedDomainEvent e:
                 Apply(e);
                 break;
-            case StoreNameUpdatedDomainEvent e:
+            case V1StoreNameUpdatedDomainEvent e:
                 Apply(e);
                 break;
-            case StoreDescriptionUpdatedDomainEvent e:
+            case V1StoreDescriptionUpdatedDomainEvent e:
                 Apply(e);
                 break;
-            case ProductAddedToStoreDomainEvent e:
+            case V1ProductAddedToStoreDomainEvent e:
                 Apply(e);
                 break;
-            case ProductRemovedFromStoreDomainEvent e:
+            case V1ProductRemovedFromStoreDomainEvent e:
                 Apply(e);
                 break;
-            case ProductQuantityIncreasedDomainEvent e:
+            case V1ProductQuantityIncreasedDomainEvent e:
                 Apply(e);
                 break;
-            case ProductQuantityDecreasedDomainEvent e:
+            case V1ProductQuantityDecreasedDomainEvent e:
                 Apply(e);
                 break;
-            case ProductPriceIncreasedDomainEvent e:
+            case V1ProductPriceIncreasedDomainEvent e:
                 Apply(e);
                 break;
-            case ProductPriceDecreasedDomainEvent e:
+            case V1ProductPriceDecreasedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -149,7 +149,7 @@ public class Store : AggregateRoot<StoreId>
         }
     }
 
-    private void Apply(StoreCreatedDomainEvent @event)
+    private void Apply(V1StoreCreatedDomainEvent @event)
     {
         Id = @event.StoreId;
         OwnerId = @event.OwnerId;
@@ -158,27 +158,27 @@ public class Store : AggregateRoot<StoreId>
         LogoUrl = @event.LogoUrl;
     }
 
-    private void Apply(StoreNameUpdatedDomainEvent @event)
+    private void Apply(V1StoreNameUpdatedDomainEvent @event)
     {
         Name = @event.NewName;
     }
 
-    private void Apply(StoreDescriptionUpdatedDomainEvent @event)
+    private void Apply(V1StoreDescriptionUpdatedDomainEvent @event)
     {
         Description = @event.NewDescription;
     }
 
-    private void Apply(ProductAddedToStoreDomainEvent @event)
+    private void Apply(V1ProductAddedToStoreDomainEvent @event)
     {
         _products.Add(@event.Product);
     }
 
-    private void Apply(ProductRemovedFromStoreDomainEvent @event)
+    private void Apply(V1ProductRemovedFromStoreDomainEvent @event)
     {
         _products.Remove(@event.Product);
     }
 
-    private static void Apply(ProductQuantityIncreasedDomainEvent @event)
+    private static void Apply(V1ProductQuantityIncreasedDomainEvent @event)
     {
         var storeProduct = @event.Product;
         var newQuantity = @event.NewQuantity;
@@ -186,7 +186,7 @@ public class Store : AggregateRoot<StoreId>
         storeProduct.UpdateQuantity(newQuantity);
     }
 
-    private static void Apply(ProductQuantityDecreasedDomainEvent @event)
+    private static void Apply(V1ProductQuantityDecreasedDomainEvent @event)
     {
         var storeProduct = @event.Product;
         var newQuantity = @event.NewQuantity;
@@ -194,7 +194,7 @@ public class Store : AggregateRoot<StoreId>
         storeProduct.UpdateQuantity(newQuantity);
     }
 
-    private static void Apply(ProductPriceIncreasedDomainEvent @event)
+    private static void Apply(V1ProductPriceIncreasedDomainEvent @event)
     {
         var storeProduct = @event.Product;
         var newPrice = @event.NewPrice;
@@ -202,7 +202,7 @@ public class Store : AggregateRoot<StoreId>
         storeProduct.UpdatePrice(newPrice);
     }
 
-    private static void Apply(ProductPriceDecreasedDomainEvent @event)
+    private static void Apply(V1ProductPriceDecreasedDomainEvent @event)
     {
         var storeProduct = @event.Product;
         var newPrice = @event.NewPrice;
