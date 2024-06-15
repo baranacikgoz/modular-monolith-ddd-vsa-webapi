@@ -21,7 +21,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPatch("", UpdateMyStoreAsync)
+            .MapPut("", UpdateMyStoreAsync)
             .WithDescription("Update my product.")
             .MustHavePermission(CustomActions.Create, CustomResources.Products)
             .Produces(StatusCodes.Status204NoContent)
