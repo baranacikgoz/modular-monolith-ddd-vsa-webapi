@@ -9,7 +9,7 @@ using FluentAssertions;
 using Inventory.Domain.Products;
 using Inventory.Domain.StoreProducts;
 using Inventory.Domain.Stores;
-using Inventory.Domain.Stores.DomainEvents;
+using Inventory.Domain.Stores.DomainEvents.v1;
 using UnitTests.Common;
 using Xunit;
 
@@ -26,7 +26,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
     public void CreateStoreShouldRaiseStoreCreatedDomainEvent()
     {
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
-            .Then<StoreCreatedDomainEvent>(
+            .Then<V1StoreCreatedDomainEvent>(
                 @event => @event.OwnerId.Should().Be(_ownerId),
                 @event => @event.Name.Should().Be(Name),
                 @event => @event.Description.Should().Be(Description),
@@ -40,7 +40,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.Update(name: newName, description: null))
-            .Then<StoreNameUpdatedDomainEvent>(
+            .Then<V1StoreNameUpdatedDomainEvent>(
                 @event => @event.OldName.Should().Be(Name),
                 @event => @event.NewName.Should().Be(newName));
     }
@@ -52,7 +52,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.Update(name: null, description: newDescription))
-            .Then<StoreDescriptionUpdatedDomainEvent>(
+            .Then<V1StoreDescriptionUpdatedDomainEvent>(
                 @event => @event.OldDescription.Should().Be(Description),
                 @event => @event.NewDescription.Should().Be(newDescription));
     }
@@ -84,7 +84,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
-            .Then<ProductAddedToStoreDomainEvent>(
+            .Then<V1ProductAddedToStoreDomainEvent>(
                 @event => @event.StoreId.Should().Be(Aggregate.Id),
                 @event => @event.Product.ProductId.Should().Be(productId),
                 @event => @event.Product.Quantity.Should().Be(quantity),
@@ -102,7 +102,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProductQuantity(((StoreProduct)product).Id, newQuantity))
-            .Then<ProductQuantityIncreasedDomainEvent>(
+            .Then<V1ProductQuantityIncreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
     }
@@ -118,7 +118,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProductQuantity(((StoreProduct)product).Id, newQuantity))
-            .Then<ProductQuantityDecreasedDomainEvent>(
+            .Then<V1ProductQuantityDecreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
     }
@@ -147,7 +147,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.RemoveProductFromStore(((StoreProduct)product).Id))
-            .Then<ProductRemovedFromStoreDomainEvent>(
+            .Then<V1ProductRemovedFromStoreDomainEvent>(
                 (_, product, @event) => @event.Product.Should().Be((StoreProduct)product));
     }
 

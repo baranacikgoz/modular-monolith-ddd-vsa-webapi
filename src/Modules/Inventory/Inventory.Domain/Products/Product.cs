@@ -1,7 +1,7 @@
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
-using Inventory.Domain.Products.DomainEvents;
+using Inventory.Domain.Products.DomainEvents.v1;
 using Inventory.Domain.Stores;
 using Inventory.Domain.Stores.DomainEvents;
 
@@ -24,7 +24,7 @@ public class Product : AggregateRoot<ProductId>
         var id = ProductId.New();
         var product = new Product();
 
-        var @event = new ProductCreatedDomainEvent(id, name, description);
+        var @event = new V1ProductCreatedDomainEvent(id, name, description);
         product.RaiseEvent(@event);
 
         return product;
@@ -34,7 +34,7 @@ public class Product : AggregateRoot<ProductId>
     {
         switch (@event)
         {
-            case ProductCreatedDomainEvent e:
+            case V1ProductCreatedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -42,7 +42,7 @@ public class Product : AggregateRoot<ProductId>
         }
     }
 
-    private void Apply(ProductCreatedDomainEvent @event)
+    private void Apply(V1ProductCreatedDomainEvent @event)
     {
         Id = @event.Id;
         Name = @event.Name;

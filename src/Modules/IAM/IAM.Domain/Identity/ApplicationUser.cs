@@ -4,7 +4,7 @@ using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.Extensions;
 using Common.Domain.StronglyTypedIds;
-using IAM.Domain.Identity.DomainEvents;
+using IAM.Domain.Identity.DomainEvents.v1;
 using Microsoft.AspNetCore.Identity;
 
 namespace IAM.Domain.Identity;
@@ -34,7 +34,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         Uri? imageUrl = null)
     {
         var id = ApplicationUserId.New();
-        var @event = new UserRegisteredDomainEvent(
+        var @event = new V1UserRegisteredDomainEvent(
             id,
             name.TrimmedUpperInvariantTransliterateTurkishChars(),
             lastName.TrimmedUpperInvariantTransliterateTurkishChars(),
@@ -49,7 +49,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
 
     public void UpdateImageUrl(Uri imageUrl)
     {
-        var @event = new UserImageUrlUpdatedDomainEvent(Id, imageUrl);
+        var @event = new V1UserImageUrlUpdatedDomainEvent(Id, imageUrl);
         RaiseEvent(@event);
     }
 
@@ -62,7 +62,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         RefreshToken = refreshToken;
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
 
-        var @event = new RefreshTokenUpdatedDomainEvent(Id);
+        var @event = new V1RefreshTokenUpdatedDomainEvent(Id);
         RaiseEvent(@event);
     }
 
@@ -70,13 +70,13 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     {
         switch (@event)
         {
-            case UserRegisteredDomainEvent e:
+            case V1UserRegisteredDomainEvent e:
                 Apply(e);
                 break;
-            case UserImageUrlUpdatedDomainEvent e:
+            case V1UserImageUrlUpdatedDomainEvent e:
                 Apply(e);
                 break;
-            case RefreshTokenUpdatedDomainEvent e:
+            case V1RefreshTokenUpdatedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -84,7 +84,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         }
     }
 
-    private void Apply(UserRegisteredDomainEvent @event)
+    private void Apply(V1UserRegisteredDomainEvent @event)
     {
         Id = @event.UserId;
         Name = @event.Name;
@@ -95,13 +95,13 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         BirthDate = @event.BirthDate;
     }
 
-    private void Apply(UserImageUrlUpdatedDomainEvent @event)
+    private void Apply(V1UserImageUrlUpdatedDomainEvent @event)
     {
         ImageUrl = @event.ImageUrl;
     }
 
 #pragma warning disable CA1822, S1186, IDE0060
-    private void Apply(RefreshTokenUpdatedDomainEvent @event)
+    private void Apply(V1RefreshTokenUpdatedDomainEvent @event)
     {
         /// Nothing to do here, see the explanation in <see cref="UpdateRefreshToken(string, DateTime)"/>
     }

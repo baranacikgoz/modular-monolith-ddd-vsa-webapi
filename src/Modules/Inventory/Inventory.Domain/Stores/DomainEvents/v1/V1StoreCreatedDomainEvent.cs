@@ -1,9 +1,9 @@
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 
-namespace Inventory.Domain.Stores.DomainEvents;
+namespace Inventory.Domain.Stores.DomainEvents.v1;
 
-public sealed record StoreCreatedDomainEvent(
+public sealed record V1StoreCreatedDomainEvent(
     StoreId StoreId,
     ApplicationUserId OwnerId,
     string Name,
