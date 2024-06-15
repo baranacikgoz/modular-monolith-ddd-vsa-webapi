@@ -1,8 +1,9 @@
 using Ardalis.Specification;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.StoreProducts;
+using Inventory.Domain.Stores;
 
-namespace Inventory.Domain.Stores.Specs;
+namespace Inventory.Application.Stores.Specs;
 
 public class StoreWithProductByOwnerIdSpec : SingleResultSpecification<Store>
 {
