@@ -1,5 +1,5 @@
 using Common.InterModuleRequests.Contracts;
-using Common.InterModuleRequests.IdentityAndAuth;
+using Common.InterModuleRequests.IAM;
 using Inventory.Domain.Products;
 using Inventory.Domain.StoreProducts;
 using Inventory.Domain.Stores;

@@ -9,7 +9,7 @@ using Common.Infrastructure.EventBus;
 using Common.InterModuleRequests;
 using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
-using IdentityAndAuth.Infrastructure;
+using IAM.Infrastructure;
 using Host.Middlewares;
 
 namespace Host.Infrastructure;
@@ -90,9 +90,9 @@ public static partial class Setup
 
     private static readonly Assembly[] _moduleAssemblies =
         [
-            typeof(IdentityAndAuth.Domain.IAssemblyReference).Assembly,
-            typeof(IdentityAndAuth.Application.IAssemblyReference).Assembly,
-            typeof(IdentityAndAuth.Infrastructure.IAssemblyReference).Assembly,
+            typeof(IAM.Domain.IAssemblyReference).Assembly,
+            typeof(IAM.Application.IAssemblyReference).Assembly,
+            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
 
             typeof(Inventory.Domain.IAssemblyReference).Assembly,
             typeof(Inventory.Application.IAssemblyReference).Assembly,
