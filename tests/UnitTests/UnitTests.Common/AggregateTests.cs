@@ -154,6 +154,20 @@ public abstract class AggregateTests<TAggregate, TId>
         return this;
     }
 
+    public AggregateTests<TAggregate, TId> ThenNoEventsOfType<TDomainEvent>()
+        where TDomainEvent : DomainEvent
+    {
+        var events = Aggregate
+                    .Events
+                    .OfType<TDomainEvent>()
+                    .ToList();
+
+        events.Should().NotBeNull();
+        events.Should().BeEmpty();
+
+        return this;
+    }
+
     public AggregateTests<TAggregate, TId> ThenError(params Action<Error>[] assertions)
     {
         // either _aggregateResult or _plainResult should be set
