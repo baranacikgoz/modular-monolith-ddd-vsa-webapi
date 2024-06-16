@@ -15,10 +15,10 @@ public static class CustomPermissions
         new("Update My Store", CustomActions.UpdateMy, CustomResources.Stores),
         new("Delete My Store", CustomActions.DeleteMy, CustomResources.Stores),
 
-        new("Create My Product", CustomActions.CreateMy, CustomResources.Products),
-        new("Read My Product", CustomActions.ReadMy, CustomResources.Products),
-        new("Update My Product", CustomActions.UpdateMy, CustomResources.Products),
-        new("Delete My Product", CustomActions.DeleteMy, CustomResources.Products),
+        new("Create My StoreProduct", CustomActions.CreateMy, CustomResources.StoreProducts),
+        new("Read My StoreProduct", CustomActions.ReadMy, CustomResources.StoreProducts),
+        new("Update My StoreProduct", CustomActions.UpdateMy, CustomResources.StoreProducts),
+        new("Delete My StoreProduct", CustomActions.DeleteMy, CustomResources.StoreProducts),
 
         // For individual users to see all stores and products
         new("Read Products", CustomActions.Read, CustomResources.Products),
@@ -36,6 +36,8 @@ public static class CustomPermissions
         new("Update Stores", CustomActions.Update, CustomResources.Stores),
         new("Delete Stores", CustomActions.Delete, CustomResources.Stores),
 
+        // In this marketplace system, the products those store owners can sell are managed by the system admins
+        // You may think of this as Trendyol, Hepsiburada, and sellers can only sell the products that are predefined by the system admins (then customize prices and etc. see ->StoreProduct entity).
         new("Create Products", CustomActions.Create, CustomResources.Products),
         new("Read Products", CustomActions.Read, CustomResources.Products),
         new("Update Products", CustomActions.Update, CustomResources.Products),
@@ -46,6 +48,7 @@ public static class CustomPermissions
         _basic
         .Select(r => r.Name)
         .ToFrozenSet();
+
     public static readonly IReadOnlySet<string> SystemAdmin =
         _basic
         .Concat(_systemAdmin)

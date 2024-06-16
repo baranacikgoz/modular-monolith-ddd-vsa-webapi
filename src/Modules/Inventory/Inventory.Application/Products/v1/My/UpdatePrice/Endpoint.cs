@@ -21,7 +21,7 @@ internal static class Endpoint
         myProductsApiGroup
             .MapPatch("{productId}/update-price", UpdateMyProductPriceAsync)
             .WithDescription("Update my product's price.")
-            .MustHavePermission(CustomActions.UpdateMy, CustomResources.Products)
+            .MustHavePermission(CustomActions.UpdateMy, CustomResources.StoreProducts)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

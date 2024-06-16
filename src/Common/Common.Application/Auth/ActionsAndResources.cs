@@ -1,4 +1,4 @@
-﻿namespace Common.Application.Auth;
+namespace Common.Application.Auth;
 
 public static class CustomActions
 {
@@ -18,4 +18,5 @@ public static class CustomResources
 
     public const string Stores = nameof(Stores);
     public const string Products = nameof(Products);
+    public const string StoreProducts = nameof(StoreProducts);
 }
