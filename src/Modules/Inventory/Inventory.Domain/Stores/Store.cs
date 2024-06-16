@@ -36,33 +36,29 @@ public class Store : AggregateRoot<StoreId>
         return store;
     }
 
-    public Result Update(string? name, string? description)
-        => Result.Create()
-            .TapWhen(() => UpdateName(name!), when: () => !string.IsNullOrEmpty(name))
-            .TapWhen(() => UpdateDescription(description!), when: () => !string.IsNullOrEmpty(description));
-
-    private Result UpdateName(string newName)
+    public void Update(string? name, string? description)
     {
-        if (string.Equals(Name, newName, StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
         {
-            return Error.SameValue(nameof(Name), newName);
+            UpdateName(name);
         }
 
-        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, Name, newName);
-        RaiseEvent(storeNameUpdatedEvent);
-        return Result.Success;
+        if (!string.IsNullOrEmpty(description) && !string.Equals(Description, description, StringComparison.Ordinal))
+        {
+            UpdateDescription(description);
+        }
     }
 
-    private Result UpdateDescription(string newDescription)
+    private void UpdateName(string newName)
     {
-        if (string.Equals(Description, newDescription, StringComparison.Ordinal))
-        {
-            return Error.SameValue(nameof(Description), newDescription);
-        }
+        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, Name, newName);
+        RaiseEvent(storeNameUpdatedEvent);
+    }
 
+    private void UpdateDescription(string newDescription)
+    {
         var storeDescriptionUpdatedEvent = new V1StoreDescriptionUpdatedDomainEvent(Id, Description, newDescription);
         RaiseEvent(storeDescriptionUpdatedEvent);
-        return Result.Success;
     }
 
     public StoreProduct AddProduct(ProductId productId, int quantity, decimal price)
@@ -74,31 +70,39 @@ public class Store : AggregateRoot<StoreId>
         return storeProduct;
     }
 
-    public Result UpdateProductQuantity(StoreProductId productId, int newQuantity)
+    public Result UpdateProduct(StoreProductId productId, int? newQuantity, decimal? newPrice)
         => Result<StoreProduct>
             .Create(
                 funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
                 errorIfValueNull: Error.NotFound(nameof(StoreProduct), productId))
-            .Tap(product => newQuantity == product.Quantity
-                                       ? Error.SameValue(nameof(StoreProduct.Quantity), newQuantity)
-                                       : product)
-            .Tap(product => RaiseEvent(
-                                newQuantity > product.Quantity
-                                ? new V1ProductQuantityIncreasedDomainEvent(product, newQuantity)
-                                : new V1ProductQuantityDecreasedDomainEvent(product, newQuantity)));
+            .TapWhen(product => UpdateProductQuantity(product, newQuantity!.Value), when: () => newQuantity is not null)
+            .TapWhen(product => UpdateProductPrice(product, newPrice!.Value), when: () => newPrice is not null);
 
-    public Result UpdateProductPrice(StoreProductId productId, decimal newPrice)
-        => Result<StoreProduct>
-            .Create(
-                funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
-                errorIfValueNull: Error.NotFound(nameof(StoreProduct), productId))
-            .Tap(product => newPrice == product.Price
-                                       ? Error.SameValue(nameof(StoreProduct), newPrice)
-                                       : product)
-            .Tap(product => RaiseEvent(
-                                newPrice > product.Price
-                                ? new V1ProductPriceIncreasedDomainEvent(product, newPrice)
-                                : new V1ProductPriceDecreasedDomainEvent(product, newPrice)));
+    private void UpdateProductQuantity(StoreProduct product, int newQuantity)
+    {
+        if (newQuantity == product.Quantity)
+        {
+            return;
+        }
+
+        RaiseEvent(
+            newQuantity > product.Quantity
+            ? new V1ProductQuantityIncreasedDomainEvent(product, newQuantity)
+            : new V1ProductQuantityDecreasedDomainEvent(product, newQuantity));
+    }
+
+    private void UpdateProductPrice(StoreProduct product, decimal newPrice)
+    {
+        if (newPrice == product.Price)
+        {
+            return;
+        }
+
+        RaiseEvent(
+            newPrice > product.Price
+            ? new V1ProductPriceIncreasedDomainEvent(product, newPrice)
+            : new V1ProductPriceDecreasedDomainEvent(product, newPrice));
+    }
 
     public Result RemoveProductFromStore(StoreProductId productId)
     {
