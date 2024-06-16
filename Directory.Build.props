@@ -39,6 +39,7 @@
       CA1716;
       S2234;
       CA1051;
+      S2699;
     </NoWarn>
   </PropertyGroup>
 </Project>
