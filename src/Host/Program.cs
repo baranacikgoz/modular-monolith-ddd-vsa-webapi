@@ -12,10 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
-                .ApplyConfigurations(builder
+                .ApplyConfigurations(options: builder
                                         .Configuration
-                                        .GetSection(nameof(LoggingMonitoringTracingOptions))
-                                        .Get<LoggingMonitoringTracingOptions>() ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringTracingOptions)} is null."))
+                                        .GetSection(nameof(LoggingMonitoringOptions))
+                                        .Get<LoggingMonitoringOptions>() ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringOptions)} is null."),
+                                     env: builder.Environment)
                 .CreateLogger();
 try
 {

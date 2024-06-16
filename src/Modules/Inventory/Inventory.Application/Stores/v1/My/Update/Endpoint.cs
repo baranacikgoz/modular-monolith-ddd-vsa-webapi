@@ -38,5 +38,5 @@ internal static class Endpoint
             .SingleOrDefaultAsResultAsync(new StoreByOwnerIdSpec(currentUser.Id), cancellationToken)
             .TapAsync(store => store.Update(request.Name, request.Description))
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
-            
+
 }

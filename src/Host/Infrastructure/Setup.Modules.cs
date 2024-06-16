@@ -44,5 +44,5 @@ public static partial class Setup
         => services.AddRateLimiting(
                 configuration,
                 IAM.Infrastructure.RateLimiting.Policies.Get(),
-                Inventory.Infrastructure.RateLimiting.Policies.Get()); 
+                Inventory.Infrastructure.RateLimiting.Policies.Get());
 }

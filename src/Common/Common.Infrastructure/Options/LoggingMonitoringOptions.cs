@@ -2,10 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.Infrastructure.Options;
 
-public class LoggingMonitoringTracingOptions
+public class LoggingMonitoringOptions
 {
     [Required(AllowEmptyStrings = false)]
     public string AppName { get; set; } = null!;
+
+    [Required(AllowEmptyStrings = false)]
+    public string AppVersion { get; set; } = null!;
 
     [Required(AllowEmptyStrings = false)]
     public string MinimumLevel { get; set; } = null!;

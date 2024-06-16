@@ -157,7 +157,7 @@ public abstract class AggregateTests<TAggregate, TId>
     public AggregateTests<TAggregate, TId> ThenError(params Action<Error>[] assertions)
     {
         // either _aggregateResult or _plainResult should be set
-        if(_aggregateResult is null && _plainResult is null)
+        if (_aggregateResult is null && _plainResult is null)
         {
             Assert.Fail("Either _aggregateResult or _plainResult should have been set");
         }

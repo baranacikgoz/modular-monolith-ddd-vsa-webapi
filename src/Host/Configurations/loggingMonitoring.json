@@ -1,6 +1,7 @@
 {
-  "LoggingMonitoringTracingOptions": {
+  "LoggingMonitoringOptions": {
     "AppName": "modular-monolith",
+    "AppVersion": "1.0.0",
     "MinimumLevel": "Debug",
     "MinimumLevelOverrides": {
       "Microsoft": "Warning",

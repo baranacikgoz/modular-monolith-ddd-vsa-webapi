@@ -16,19 +16,19 @@ public static partial class Setup
     public static IHostBuilder UseCustomizedSerilog(this IHostBuilder hostBuilder)
         => hostBuilder.UseSerilog((ctx, sp, serilog) =>
         {
-            var options = sp.GetRequiredService<IOptions<LoggingMonitoringTracingOptions>>()?.Value
-                ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringTracingOptions)} is null.");
+            var options = sp.GetRequiredService<IOptions<LoggingMonitoringOptions>>()?.Value
+                ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringOptions)} is null.");
 
-            serilog.ApplyConfigurations(options);
+            serilog.ApplyConfigurations(options, ctx.HostingEnvironment);
         });
 
-    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, LoggingMonitoringTracingOptions options)
+    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, LoggingMonitoringOptions options, IHostEnvironment env)
     {
         serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
 
         serilog.OverrideMinimumLevelsOf(options.MinimumLevelOverrides);
 
-        serilog.ConfigureEnrichers();
+        serilog.ConfigureEnrichers(options, env);
 
         serilog.ConfigureWriteTos(options);
 
@@ -86,8 +86,14 @@ public static partial class Setup
         }
     }
 
-    private static void ConfigureEnrichers(this LoggerConfiguration serilog)
+    private static void ConfigureEnrichers(this LoggerConfiguration serilog, LoggingMonitoringOptions options, IHostEnvironment env)
         => serilog
+                .Enrich
+                    .WithProperty("Application", options.AppName)
+                .Enrich
+                    .WithProperty("Environment", env.EnvironmentName)
+                .Enrich
+                    .WithProperty("AppVersion", options.AppVersion)
                 .Enrich
                     .FromLogContext()
                 .Enrich
@@ -101,7 +107,7 @@ public static partial class Setup
                 .Enrich
                     .WithSpan();
 
-    private static void ConfigureWriteTos(this LoggerConfiguration serilog, LoggingMonitoringTracingOptions options)
+    private static void ConfigureWriteTos(this LoggerConfiguration serilog, LoggingMonitoringOptions options)
     {
         if (options.WriteToConsole)
         {
