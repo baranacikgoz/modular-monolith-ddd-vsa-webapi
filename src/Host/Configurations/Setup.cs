@@ -14,7 +14,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/loggingMonitoringTracing");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/loggingMonitoring");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/openApi");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/eventBus");

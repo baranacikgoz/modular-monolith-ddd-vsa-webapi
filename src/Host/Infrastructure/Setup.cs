@@ -33,7 +33,7 @@ public static partial class Setup
             .AddGlobalExceptionHandlingMiddleware()
             .AddCustomizedProblemDetails(env)
             .AddEndpointsApiExplorer()
-            .AddMetricsAndTracing(configuration)
+            .AddMetricsAndTracing(configuration, env)
             .AddCustomCors()
             .AddCommonDependencies(env, configuration)
             .AddFluentValidationAndAutoValidation()

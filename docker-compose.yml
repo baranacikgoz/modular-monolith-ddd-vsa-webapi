@@ -22,10 +22,11 @@ services:
       - OutboxOptions__BackgroundJobPeriodInSeconds=5
       - OutboxOptions__BatchSizePerExecution=100
       - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
-      - LoggingMonitoringTracingOptions__SeqUrl=http://mm.seq:80
-      - LoggingMonitoringTracingOptions__EnableMetrics=false
-      - LoggingMonitoringTracingOptions__EnableTracing=false
-      - LoggingMonitoringTracingOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
+      - LoggingMonitoringOptions__AppVersion=1.0.0
+      - LoggingMonitoringOptions__SeqUrl=http://mm.seq:80
+      - LoggingMonitoringOptions__EnableMetrics=false
+      - LoggingMonitoringOptions__EnableTracing=false
+      - LoggingMonitoringOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
       - JwtOptions__AccessTokenExpirationInMinutes=1440 
 
   mm.database:

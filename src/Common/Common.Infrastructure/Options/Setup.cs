@@ -21,8 +21,8 @@ public static class Setup
             .ValidateOnStart();
 
         services
-            .AddOptions<LoggingMonitoringTracingOptions>()
-            .Bind(configuration.GetSection(nameof(LoggingMonitoringTracingOptions)))
+            .AddOptions<LoggingMonitoringOptions>()
+            .Bind(configuration.GetSection(nameof(LoggingMonitoringOptions)))
             .ValidateDataAnnotations()
             .Validate(o => o.ResponseTimeThresholdInMs > 0, "ResponseTimeThresholdInMs must be greater than 0.")
             .ValidateOnStart();
