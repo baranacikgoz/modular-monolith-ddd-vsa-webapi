@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Common.Application.Persistence;
+using Inventory.Domain.Products;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inventory.Application.Products.v1.Create;
 
@@ -20,8 +23,14 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static ValueTask<Result<Response>> CreateProductAsync(
+    private static async Task<Result<Response>> CreateProductAsync(
         [FromBody] Request request,
+        [FromServices] IRepository<Product> repository,
+        [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
-        => throw new NotImplementedException();
+        => await Result<Product>
+            .Create(() => Product.Create(request.Name, request.Description))
+            .Tap(product => repository.Add(product))
+            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken))
+            .MapAsync(product => new Response(product.Id));
 }
