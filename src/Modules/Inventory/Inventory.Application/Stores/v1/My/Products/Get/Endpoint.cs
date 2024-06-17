@@ -25,9 +25,9 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    public class StoreProductByStoreOwnerIdAndIdSpec : SingleResultSpecification<StoreProduct, Response>
+    public class StoreProductByStoreOwnerIdAndStoreProductIdSpec : SingleResultSpecification<StoreProduct, Response>
     {
-        public StoreProductByStoreOwnerIdAndIdSpec(ApplicationUserId ownerId, StoreProductId storeProductId)
+        public StoreProductByStoreOwnerIdAndStoreProductIdSpec(ApplicationUserId ownerId, StoreProductId storeProductId)
             => Query
                 .Select(sp => new Response(sp.Id, sp.Product.Name, sp.Product.Description))
                 .Include(sp => sp.Product)
@@ -40,5 +40,5 @@ internal static class Endpoint
         [FromServices] IRepository<StoreProduct> repository,
         CancellationToken cancellationToken)
         => await repository
-            .SingleOrDefaultAsResultAsync(new StoreProductByStoreOwnerIdAndIdSpec(currentUser.Id, id), cancellationToken);
+            .SingleOrDefaultAsResultAsync(new StoreProductByStoreOwnerIdAndStoreProductIdSpec(currentUser.Id, id), cancellationToken);
 }
