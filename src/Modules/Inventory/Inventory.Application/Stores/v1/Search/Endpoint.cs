@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Domain.ResultMonad;
-using Common.Application.Extensions;
-using Common.Domain.StronglyTypedIds;
-using Common.Application.ModelBinders;
 using Ardalis.Specification;
 using Inventory.Domain.Stores;
-using Microsoft.Extensions.DependencyInjection;
 using Common.Application.Persistence;
 using Common.Application.Pagination;
 
@@ -23,7 +18,7 @@ internal static class Endpoint
             .MapPost("search", SearchStoresAsync)
             .WithDescription("Search stores.")
             .MustHavePermission(CustomActions.Search, CustomResources.Stores)
-            .Produces<Response>(StatusCodes.Status200OK);
+            .Produces<PaginationResult<Response>>(StatusCodes.Status200OK);
     }
 
     private sealed class SearchStoresSpec : PaginationSpec<Store, Response>

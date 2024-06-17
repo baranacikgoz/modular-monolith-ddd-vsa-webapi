@@ -6,7 +6,6 @@ using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Domain.StronglyTypedIds;
-using Common.Application.ModelBinders;
 using Ardalis.Specification;
 using Inventory.Domain.Stores;
 using Microsoft.Extensions.DependencyInjection;

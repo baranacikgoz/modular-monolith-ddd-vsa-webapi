@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
-using Inventory.Domain.Stores;
 using Ardalis.Specification;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.StoreProducts;
