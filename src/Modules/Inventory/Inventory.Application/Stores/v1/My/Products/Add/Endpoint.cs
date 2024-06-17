@@ -26,14 +26,14 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    public class StoreByOwnerIdSpec : SingleResultSpecification<Store>
+    private sealed class StoreByOwnerIdSpec : SingleResultSpecification<Store>
     {
         public StoreByOwnerIdSpec(ApplicationUserId ownerId)
             => Query
                 .Where(s => s.OwnerId == ownerId);
     }
 
-    public class ProductByIdSpec : SingleResultSpecification<Product>
+    private sealed class ProductByIdSpec : SingleResultSpecification<Product>
     {
         public ProductByIdSpec(ProductId id)
             => Query.Where(p => p.Id == id);

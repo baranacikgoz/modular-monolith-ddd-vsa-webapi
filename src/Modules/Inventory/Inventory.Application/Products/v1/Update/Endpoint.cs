@@ -25,7 +25,7 @@ internal static class Endpoint
             .TransformResultToNoContentResponse();
     }
 
-    public class ProductByIdSpec : SingleResultSpecification<Product>
+    private sealed class ProductByIdSpec : SingleResultSpecification<Product>
     {
         public ProductByIdSpec(ProductId id)
             => Query.Where(p => p.Id == id);

@@ -29,7 +29,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    public class ProductByIdSpec : SingleResultSpecification<Product, Response>
+    private sealed class ProductByIdSpec : SingleResultSpecification<Product, Response>
     {
         public ProductByIdSpec(ProductId id)
             => Query

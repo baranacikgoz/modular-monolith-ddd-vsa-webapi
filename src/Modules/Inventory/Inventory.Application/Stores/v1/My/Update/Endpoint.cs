@@ -25,7 +25,7 @@ internal static class Endpoint
             .TransformResultToNoContentResponse();
     }
 
-    public class StoreByOwnerIdSpec : SingleResultSpecification<Store>
+    private sealed class StoreByOwnerIdSpec : SingleResultSpecification<Store>
     {
         public StoreByOwnerIdSpec(ApplicationUserId ownerId)
             => Query
