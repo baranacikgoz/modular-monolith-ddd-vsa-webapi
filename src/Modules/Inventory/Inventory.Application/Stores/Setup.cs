@@ -12,6 +12,8 @@ public static class Setup
             .WithTags("Stores")
             .MapToApiVersion(1);
 
+        v1.Create.Endpoint.MapEndpoint(v1StoresApiGroup);
+
         var v1MyStoresApiGroup = v1StoresApiGroup.MapGroup("/my");
         v1.My.Create.Endpoint.MapEndpoint(v1MyStoresApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1MyStoresApiGroup);

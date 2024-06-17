@@ -21,7 +21,9 @@ public interface IRepository<T>
     Task<List<T>> ListAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<List<TResult>> ListAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken);
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken);
+    Task<Result<int>> CountAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken);
+    Task<Result<bool>> AnyAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     IAsyncEnumerable<T> AsAsyncEnumerable(ISpecification<T> specification);
     Task<bool> IsOwnedByCurrentUserAync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken);
     Task<Result> EnsureOwnedByCurrentUserAsync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken);

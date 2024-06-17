@@ -30,8 +30,11 @@ public class BaseRepository<T>(
 
     public async Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         => await ApplySpecification(specification, true)
-                .AnyAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .AnyAsync(cancellationToken);
+
+    public async Task<Result<bool>> AnyAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken)
+        => await Result<bool>.CreateAsync(
+            taskToAwaitValue: async () => await AnyAsync(specification, cancellationToken));
 
     public IAsyncEnumerable<T> AsAsyncEnumerable(ISpecification<T> specification)
         => ApplySpecification(specification)
@@ -40,6 +43,10 @@ public class BaseRepository<T>(
     public Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         => ApplySpecification(specification, true)
           .CountAsync(cancellationToken);
+
+    public Task<Result<int>> CountAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken)
+        => Result<int>.CreateAsync(
+            taskToAwaitValue: async () => await CountAsync(specification, cancellationToken));
 
     public void Delete(T entity) => dbContext.Set<T>().Remove(entity);
 
