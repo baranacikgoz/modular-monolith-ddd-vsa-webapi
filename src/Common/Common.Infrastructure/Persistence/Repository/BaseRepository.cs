@@ -91,12 +91,12 @@ public class BaseRepository<T>(
     public async Task<Result<T>> SingleOrDefaultAsResultAsync(ISingleResultSpecification<T> specification, CancellationToken cancellationToken)
         => await Result<T>.CreateAsync(
             taskToAwaitValue: async () => await SingleOrDefaultAsync(specification, cancellationToken),
-            errorIfValueNull: Error.NotFound(nameof(T)));
+            errorIfValueNull: Error.NotFound(typeof(T).Name));
 
     public async Task<Result<TResult>> SingleOrDefaultAsResultAsync<TResult>(ISingleResultSpecification<T, TResult> specification, CancellationToken cancellationToken)
         => await Result<TResult>.CreateAsync(
             taskToAwaitValue: async () => await SingleOrDefaultAsync(specification, cancellationToken),
-            errorIfValueNull: Error.NotFound(nameof(T)));
+            errorIfValueNull: Error.NotFound(typeof(T).Name));
 
     public async Task<T?> SingleOrDefaultAsync(ISingleResultSpecification<T> specification, CancellationToken cancellationToken)
         => await ApplySpecification(specification)
