@@ -27,14 +27,14 @@ internal static class Endpoint
     }
 
     private static async ValueTask<Result> UpdateMyProductAsync(
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId productId,
-    [FromBody] Request request,
-    [FromServices] ICurrentUser currentUser,
-    [FromServices] IRepository<Store> storeRepository,
-    [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
-    CancellationToken cancellationToken)
-    => await storeRepository
-        .SingleOrDefaultAsResultAsync(new StoreWithProductByOwnerIdSpec(currentUser.Id, productId), cancellationToken)
-        .TapAsync(store => store.UpdateProduct(productId, request.Quantity, request.Price))
-        .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId productId,
+        [FromBody] Request request,
+        [FromServices] ICurrentUser currentUser,
+        [FromServices] IRepository<Store> storeRepository,
+        [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
+        CancellationToken cancellationToken)
+        => await storeRepository
+            .SingleOrDefaultAsResultAsync(new StoreWithProductByOwnerIdSpec(currentUser.Id, productId), cancellationToken)
+            .TapAsync(store => store.UpdateProduct(productId, request.Quantity, request.Price))
+            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
 }
