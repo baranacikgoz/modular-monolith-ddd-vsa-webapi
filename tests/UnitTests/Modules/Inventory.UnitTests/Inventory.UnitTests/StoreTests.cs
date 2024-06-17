@@ -62,7 +62,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
-            .Then(store => store.Products.Should().ContainSingle(product => product.ProductId == productId))
+            .Then(store => store.StoreProducts.Should().ContainSingle(product => product.ProductId == productId))
             .Then<V1ProductAddedToStoreDomainEvent>(
                 @event => @event.StoreId.Should().Be(Aggregate.Id),
                 @event => @event.Product.ProductId.Should().Be(productId),
@@ -82,7 +82,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProduct(((StoreProduct)product).Id, newQuantity: newQuantity, newPrice: null))
-            .Then(store => store.Products.Single().Quantity.Should().Be(newQuantity))
+            .Then(store => store.StoreProducts.Single().Quantity.Should().Be(newQuantity))
             .Then<V1ProductQuantityIncreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
@@ -100,7 +100,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProduct(((StoreProduct)product).Id, newQuantity: newQuantity, newPrice: null))
-            .Then(store => store.Products.Single().Quantity.Should().Be(newQuantity))
+            .Then(store => store.StoreProducts.Single().Quantity.Should().Be(newQuantity))
             .Then<V1ProductQuantityDecreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewQuantity.Should().Be(newQuantity));
@@ -134,7 +134,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProduct(((StoreProduct)product).Id, newQuantity: null, newPrice: newPrice))
-            .Then(store => store.Products.Single().Price.Should().Be(newPrice))
+            .Then(store => store.StoreProducts.Single().Price.Should().Be(newPrice))
             .Then<V1ProductPriceIncreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewPrice.Should().Be(newPrice));
@@ -152,7 +152,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.UpdateProduct(((StoreProduct)product).Id, newQuantity: null, newPrice: newPrice))
-            .Then(store => store.Products.Single().Price.Should().Be(newPrice))
+            .Then(store => store.StoreProducts.Single().Price.Should().Be(newPrice))
             .Then<V1ProductPriceDecreasedDomainEvent>(
                 (store, product, @event) => @event.Product.Should().Be((StoreProduct)product),
                 (_, _, @event) => @event.NewPrice.Should().Be(newPrice));
@@ -184,7 +184,7 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => Store.Create(_ownerId, Name, Description, _logoUrl))
             .When(store => store.AddProduct(productId, quantity, price))
             .When((store, product) => store.RemoveProductFromStore(((StoreProduct)product).Id))
-            .Then(store => store.Products.Should().BeEmpty())
+            .Then(store => store.StoreProducts.Should().BeEmpty())
             .Then<V1ProductRemovedFromStoreDomainEvent>(
                 (_, product, @event) => @event.Product.Should().Be((StoreProduct)product));
     }

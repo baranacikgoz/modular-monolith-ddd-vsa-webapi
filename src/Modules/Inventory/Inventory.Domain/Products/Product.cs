@@ -2,6 +2,7 @@ using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Products.DomainEvents.v1;
+using Inventory.Domain.StoreProducts;
 
 namespace Inventory.Domain.Products;
 
@@ -16,6 +17,9 @@ public class Product : AggregateRoot<ProductId>
 {
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+
+    private readonly List<StoreProduct> _storeProducts = [];
+    public IReadOnlyList<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
 
     public static Product Create(string name, string description)
     {
