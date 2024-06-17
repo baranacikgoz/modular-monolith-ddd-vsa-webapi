@@ -26,7 +26,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static async ValueTask<Result<Response>> AddProductToMyStore(
+    private static async Task<Result<Response>> AddProductToMyStore(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
         [FromServices] IRepository<Store> storesRepository,

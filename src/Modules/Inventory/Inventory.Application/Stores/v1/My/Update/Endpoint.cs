@@ -28,7 +28,7 @@ internal static class Endpoint
             .TransformResultToNoContentResponse();
     }
 
-    private static async ValueTask<Result> UpdateMyStoreAsync(
+    private static async Task<Result> UpdateMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
         [FromServices] IRepository<Store> repository,

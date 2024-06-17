@@ -20,7 +20,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static ValueTask<Result<Response>> CreateMyStoreAsync(
+    private static Task<Result<Response>> CreateMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
         CancellationToken cancellationToken)
