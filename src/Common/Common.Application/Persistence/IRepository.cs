@@ -1,11 +1,13 @@
 using System.Linq.Expressions;
 using Ardalis.Specification;
+using Common.Application.Pagination;
+using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 
 namespace Common.Application.Persistence;
 public interface IRepository<T>
-    where T : class
+    where T : class, IAuditableEntity
 {
     void Add(T entity);
     void AddRange(IEnumerable<T> entities);
@@ -20,6 +22,8 @@ public interface IRepository<T>
     Task<TResult?> SingleOrDefaultAsync<TResult>(ISingleResultSpecification<T, TResult> specification, CancellationToken cancellationToken);
     Task<List<T>> ListAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<List<TResult>> ListAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken);
+    Task<PaginationResult<T>> PaginateAsync(PaginationSpec<T> paginationSpec, CancellationToken cancellationToken);
+    Task<PaginationResult<TResult>> PaginateAsync<TResult>(PaginationSpec<T, TResult> paginationSpec, CancellationToken cancellationToken);
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<Result<int>> CountAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken);

@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Persistence\Specifications\" />
+    <Compile Remove="Persistence\Specifications\**" />
+    <EmbeddedResource Remove="Persistence\Specifications\**" />
+    <None Remove="Persistence\Specifications\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Persistence\Outbox\Migrations\" />
   </ItemGroup>
 
