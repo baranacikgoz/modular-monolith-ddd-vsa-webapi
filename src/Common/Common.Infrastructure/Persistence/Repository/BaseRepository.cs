@@ -2,7 +2,9 @@ using System.Linq.Expressions;
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Common.Application.Auth;
+using Common.Application.Pagination;
 using Common.Application.Persistence;
+using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +23,7 @@ public class BaseRepository<T>(
     DbContext dbContext,
     ICurrentUser currentUser
     ) : IRepository<T>
-    where T : class
+    where T : class, IAuditableEntity
 {
     private readonly SpecificationEvaluator _specificationEvaluator = SpecificationEvaluator.Default;
     public void Add(T entity) => dbContext.Set<T>().Add(entity);
@@ -91,6 +93,26 @@ public class BaseRepository<T>(
         var queryResult = await ApplySpecification(specification).ToListAsync(cancellationToken);
 
         return specification.PostProcessingAction is null ? queryResult : specification.PostProcessingAction(queryResult).ToList();
+    }
+
+    public async Task<PaginationResult<T>> PaginateAsync(PaginationSpec<T> paginationSpec, CancellationToken cancellationToken)
+    {
+        var queryResult = await ApplySpecification(paginationSpec).ToListAsync(cancellationToken);
+        var totalCount = await CountAsync(paginationSpec, cancellationToken);
+
+        return paginationSpec.PostProcessingAction is null
+            ? new PaginationResult<T>(queryResult, totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize)
+            : new PaginationResult<T>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize);
+    }
+
+    public async Task<PaginationResult<TResult>> PaginateAsync<TResult>(PaginationSpec<T, TResult> paginationSpec, CancellationToken cancellationToken)
+    {
+        var queryResult = await ApplySpecification(paginationSpec).ToListAsync(cancellationToken);
+        var totalCount = await CountAsync(paginationSpec, cancellationToken);
+
+        return paginationSpec.PostProcessingAction is null
+            ? new PaginationResult<TResult>(queryResult, totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize)
+            : new PaginationResult<TResult>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize);
     }
 
     public async Task<Result<T>> SingleOrDefaultAsResultAsync(ISingleResultSpecification<T> specification, CancellationToken cancellationToken)

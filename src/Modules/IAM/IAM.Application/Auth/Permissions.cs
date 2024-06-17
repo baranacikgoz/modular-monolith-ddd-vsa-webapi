@@ -12,16 +12,20 @@ public static class CustomPermissions
 
         new("Create My Store", CustomActions.CreateMy, CustomResources.Stores),
         new("Read My Store", CustomActions.ReadMy, CustomResources.Stores),
+        new("Read Stores", CustomActions.Read, CustomResources.Stores), // For individual users to see all stores
+        new("Search Stores", CustomActions.Search, CustomResources.Stores),
         new("Update My Store", CustomActions.UpdateMy, CustomResources.Stores),
         new("Delete My Store", CustomActions.DeleteMy, CustomResources.Stores),
+
+        new("Read My Products", CustomActions.ReadMy, CustomResources.Products),
+        new("Read Products", CustomActions.Read, CustomResources.Products), // For individual users to see all products
+        new("Search Products", CustomActions.Search, CustomResources.Products),
 
         new("Create My StoreProduct", CustomActions.CreateMy, CustomResources.StoreProducts),
         new("Read My StoreProduct", CustomActions.ReadMy, CustomResources.StoreProducts),
         new("Update My StoreProduct", CustomActions.UpdateMy, CustomResources.StoreProducts),
         new("Delete My StoreProduct", CustomActions.DeleteMy, CustomResources.StoreProducts),
-
-        // For individual users to see all stores and products
-        new("Read Products", CustomActions.Read, CustomResources.Products),
+        new("Search StoreProducts", CustomActions.Search, CustomResources.StoreProducts),
     ];
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
