@@ -24,7 +24,7 @@ internal static class Endpoint
         inventoryApiGroup
             .MapGet("{id}", GetProductAsync)
             .WithDescription("Get a product.")
-            .MustHavePermission(CustomActions.Create, CustomResources.Products)
+            .MustHavePermission(CustomActions.Read, CustomResources.Products)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
