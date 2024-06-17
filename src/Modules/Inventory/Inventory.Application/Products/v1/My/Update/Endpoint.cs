@@ -26,7 +26,7 @@ internal static class Endpoint
             .TransformResultToNoContentResponse();
     }
 
-    private static async ValueTask<Result> UpdateMyProductAsync(
+    private static async Task<Result> UpdateMyProductAsync(
         [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId productId,
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
