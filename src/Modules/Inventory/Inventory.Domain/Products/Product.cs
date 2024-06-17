@@ -30,11 +30,42 @@ public class Product : AggregateRoot<ProductId>
         return product;
     }
 
+    public void Update(string? name, string? description)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            UpdateName(name);
+        }
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            UpdateDescription(description);
+        }
+    }
+
+    private void UpdateName(string newName)
+    {
+        var @event = new V1ProductNameUpdatedDomainEvent(Id, newName);
+        RaiseEvent(@event);
+    }
+
+    private void UpdateDescription(string newDescription)
+    {
+        var @event = new V1ProductDescriptionUpdatedDomainEvent(Id, newDescription);
+        RaiseEvent(@event);
+    }
+
     protected override void ApplyEvent(DomainEvent @event)
     {
         switch (@event)
         {
             case V1ProductCreatedDomainEvent e:
+                Apply(e);
+                break;
+            case V1ProductNameUpdatedDomainEvent e:
+                Apply(e);
+                break;
+            case V1ProductDescriptionUpdatedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -46,6 +77,16 @@ public class Product : AggregateRoot<ProductId>
     {
         Id = @event.Id;
         Name = @event.Name;
+        Description = @event.Description;
+    }
+
+    private void Apply(V1ProductNameUpdatedDomainEvent @event)
+    {
+        Name = @event.Name;
+    }
+
+    private void Apply(V1ProductDescriptionUpdatedDomainEvent @event)
+    {
         Description = @event.Description;
     }
 
