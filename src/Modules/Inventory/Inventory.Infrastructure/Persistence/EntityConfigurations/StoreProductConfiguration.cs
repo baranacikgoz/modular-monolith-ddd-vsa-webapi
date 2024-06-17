@@ -14,25 +14,35 @@ internal class StoreProductConfiguration : AuditableEntityConfiguration<StorePro
         base.Configure(builder);
 
         builder
-            .HasIndex(a => new { a.StoreId, a.ProductId })
+            .HasIndex(sp => new { sp.StoreId, sp.ProductId })
             .IsUnique();
 
         builder
-            .Property(a => a.StoreId)
+            .Property(sp => sp.StoreId)
             .HasConversion<StronglyTypedIdValueConverter<StoreId>>()
             .IsRequired();
 
         builder
-            .Property(a => a.ProductId)
+            .HasOne(sp => sp.Store)
+            .WithMany(s => s.StoreProducts)
+            .HasForeignKey(sp => sp.StoreId);
+
+        builder
+            .Property(sp => sp.ProductId)
             .HasConversion<StronglyTypedIdValueConverter<ProductId>>()
             .IsRequired();
 
         builder
-            .Property(a => a.Quantity)
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.StoreProducts)
+            .HasForeignKey(sp => sp.ProductId);
+
+        builder
+            .Property(sp => sp.Quantity)
             .IsRequired();
 
         builder
-            .Property(a => a.Price)
+            .Property(sp => sp.Price)
             .IsRequired();
     }
 }

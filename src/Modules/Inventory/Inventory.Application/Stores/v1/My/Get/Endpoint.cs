@@ -27,7 +27,7 @@ internal static class Endpoint
     {
         public StoreWithProductCountByOwnerIdSpec(ApplicationUserId ownerId)
             => Query
-                .Select(s => new Response(s.Id, s.Name, s.Description, s.LogoUrl, s.Products.Count))
+                .Select(s => new Response(s.Id, s.Name, s.Description, s.LogoUrl, s.StoreProducts.Count))
                 .Where(s => s.OwnerId == ownerId);
     }
 

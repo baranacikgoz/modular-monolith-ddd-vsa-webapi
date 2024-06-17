@@ -24,12 +24,6 @@ internal class StoreConfiguration : AuditableEntityConfiguration<Store, StoreId>
             .IsUnique();
 
         builder
-            .HasMany(s => s.Products)
-            .WithOne(p => p.Store)
-            .HasForeignKey(p => p.StoreId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
             .Property(s => s.Name)
             .HasMaxLength(Domain.Stores.Constants.NameMaxLength)
             .IsRequired();

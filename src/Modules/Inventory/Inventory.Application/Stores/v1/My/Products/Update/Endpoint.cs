@@ -32,7 +32,7 @@ internal static class Endpoint
         public StoreWithProductByOwnerIdSpec(ApplicationUserId ownerId, StoreProductId productId)
             => Query
                 .Where(s => s.OwnerId == ownerId)
-                .Include(s => s.Products
+                .Include(s => s.StoreProducts
                                 .Where(p => p.Id == productId));
     }
 

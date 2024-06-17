@@ -22,8 +22,8 @@ public class Store : AggregateRoot<StoreId>
     public string Description { get; private set; }
     public Uri? LogoUrl { get; private set; }
 
-    private readonly List<StoreProduct> _products = [];
-    public virtual IReadOnlyCollection<StoreProduct> Products => _products.AsReadOnly();
+    private readonly List<StoreProduct> _storeProducts = [];
+    public virtual IReadOnlyCollection<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
 
     public static Store Create(ApplicationUserId ownerId, string name, string description, Uri? logoUrl = null)
     {
@@ -73,7 +73,7 @@ public class Store : AggregateRoot<StoreId>
     public Result UpdateProduct(StoreProductId productId, int? newQuantity, decimal? newPrice)
         => Result<StoreProduct>
             .Create(
-                funcToGetValue: () => _products.SingleOrDefault(p => p.Id == productId),
+                funcToGetValue: () => _storeProducts.SingleOrDefault(p => p.Id == productId),
                 errorIfValueNull: Error.NotFound(nameof(StoreProduct), productId))
             .TapWhen(product => UpdateProductQuantity(product, newQuantity!.Value), when: () => newQuantity is not null)
             .TapWhen(product => UpdateProductPrice(product, newPrice!.Value), when: () => newPrice is not null);
@@ -106,7 +106,7 @@ public class Store : AggregateRoot<StoreId>
 
     public Result RemoveProductFromStore(StoreProductId productId)
     {
-        if (_products.SingleOrDefault(p => p.Id == productId) is not { } product)
+        if (_storeProducts.SingleOrDefault(p => p.Id == productId) is not { } product)
         {
             return Error.NotFound(nameof(StoreProduct), productId);
         }
@@ -174,12 +174,12 @@ public class Store : AggregateRoot<StoreId>
 
     private void Apply(V1ProductAddedToStoreDomainEvent @event)
     {
-        _products.Add(@event.Product);
+        _storeProducts.Add(@event.Product);
     }
 
     private void Apply(V1ProductRemovedFromStoreDomainEvent @event)
     {
-        _products.Remove(@event.Product);
+        _storeProducts.Remove(@event.Product);
     }
 
     private static void Apply(V1ProductQuantityIncreasedDomainEvent @event)
