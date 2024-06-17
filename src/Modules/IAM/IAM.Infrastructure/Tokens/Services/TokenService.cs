@@ -7,8 +7,6 @@ using Common.Infrastructure.Options;
 using IAM.Domain.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Common.Domain.StronglyTypedIds;
-using Microsoft.AspNetCore.Identity;
 using IAM.Application.Identity.Services;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Tokens;

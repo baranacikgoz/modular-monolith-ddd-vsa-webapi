@@ -2,8 +2,6 @@ using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Products.DomainEvents.v1;
-using Inventory.Domain.Stores;
-using Inventory.Domain.Stores.DomainEvents;
 
 namespace Inventory.Domain.Products;
 

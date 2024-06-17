@@ -1,5 +1,4 @@
 using Inventory.Domain.Products;
-using Inventory.Domain.Stores;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Persistence.Seeding;

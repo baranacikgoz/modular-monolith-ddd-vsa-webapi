@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Inventory.Domain.Stores;
 using Microsoft.Extensions.DependencyInjection;
-using Inventory.Application.Stores.Specs;
 using Inventory.Domain.StoreProducts;
 using Common.Application.ModelBinders;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
+using Ardalis.Specification;
+using Common.Domain.StronglyTypedIds;
 
 namespace Inventory.Application.Stores.v1.My.Products.Update;
 
@@ -24,6 +25,15 @@ internal static class Endpoint
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.StoreProducts)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
+    }
+
+    public class StoreWithProductByOwnerIdSpec : SingleResultSpecification<Store>
+    {
+        public StoreWithProductByOwnerIdSpec(ApplicationUserId ownerId, StoreProductId productId)
+            => Query
+                .Where(s => s.OwnerId == ownerId)
+                .Include(s => s.Products
+                                .Where(p => p.Id == productId));
     }
 
     private static async Task<Result> UpdateMyProductAsync(

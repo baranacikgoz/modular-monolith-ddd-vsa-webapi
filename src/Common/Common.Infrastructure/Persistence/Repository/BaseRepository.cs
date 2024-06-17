@@ -1,12 +1,10 @@
 using System.Linq.Expressions;
-using System.Threading;
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Common.Application.Auth;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Common.Infrastructure.Persistence.Repository;

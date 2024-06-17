@@ -1,6 +1,5 @@
 using Common.Domain.Entities;
 using Common.Domain.Events;
-using Common.Domain.StronglyTypedIds;
 
 namespace Common.Infrastructure.Persistence.Outbox;
 

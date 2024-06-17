@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Inventory.Domain.Stores;
 using Inventory.Domain.Products;
 using Microsoft.Extensions.DependencyInjection;
-using Inventory.Application.Stores.Specs;
-using Inventory.Application.Products.Specs;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
+using Ardalis.Specification;
+using Common.Domain.StronglyTypedIds;
 
 namespace Inventory.Application.Stores.v1.My.Products.Add;
 
@@ -24,6 +24,19 @@ internal static class Endpoint
             .MustHavePermission(CustomActions.CreateMy, CustomResources.StoreProducts)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
+    }
+
+    public class StoreByOwnerIdSpec : SingleResultSpecification<Store>
+    {
+        public StoreByOwnerIdSpec(ApplicationUserId ownerId)
+            => Query
+                .Where(s => s.OwnerId == ownerId);
+    }
+
+    public class ProductByIdSpec : SingleResultSpecification<Product>
+    {
+        public ProductByIdSpec(ProductId id)
+            => Query.Where(p => p.Id == id);
     }
 
     private static async Task<Result<Response>> AddProductToMyStore(

@@ -1,5 +1,4 @@
 using Common.Infrastructure.Options;
-using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;

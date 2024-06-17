@@ -2,8 +2,6 @@ using Host.Configurations;
 using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
-using Serilog.Sinks.SystemConsole.Themes;
-using System.Globalization;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Options;
 

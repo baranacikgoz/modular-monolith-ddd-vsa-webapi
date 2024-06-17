@@ -1,4 +1,3 @@
-using Common.Domain.Aggregates;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.ValueConverters;
 using IAM.Domain.Identity;

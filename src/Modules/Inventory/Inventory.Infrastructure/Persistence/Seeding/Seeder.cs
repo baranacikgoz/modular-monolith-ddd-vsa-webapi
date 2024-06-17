@@ -1,8 +1,5 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
-using Inventory.Domain.Products;
-using Inventory.Domain.StoreProducts;
-using Inventory.Domain.Stores;
 using Inventory.Infrastructure.Persistence;
 
 namespace Inventory.Persistence.Seeding;

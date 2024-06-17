@@ -1,19 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Ardalis.Specification;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Stores;
-using Inventory.Application.Stores.Specs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Inventory.Application.Stores.v1.My.Update;
 internal static class Endpoint
@@ -26,6 +23,13 @@ internal static class Endpoint
             .MustHavePermission(CustomActions.Create, CustomResources.Products)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
+    }
+
+    public class StoreByOwnerIdSpec : SingleResultSpecification<Store>
+    {
+        public StoreByOwnerIdSpec(ApplicationUserId ownerId)
+            => Query
+                .Where(s => s.OwnerId == ownerId);
     }
 
     private static async Task<Result> UpdateMyStoreAsync(
