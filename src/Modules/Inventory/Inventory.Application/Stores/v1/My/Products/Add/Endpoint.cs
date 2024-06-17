@@ -21,7 +21,7 @@ internal static class Endpoint
         myStoresApiGroup
             .MapPost("", AddProductToMyStore)
             .WithDescription("Add product to my store.")
-            .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
+            .MustHavePermission(CustomActions.CreateMy, CustomResources.StoreProducts)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
