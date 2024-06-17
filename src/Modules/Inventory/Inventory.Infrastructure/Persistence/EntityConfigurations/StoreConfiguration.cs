@@ -20,6 +20,10 @@ internal class StoreConfiguration : AuditableEntityConfiguration<Store, StoreId>
             .IsRequired();
 
         builder
+            .HasIndex(s => s.OwnerId)
+            .IsUnique();
+
+        builder
             .HasMany(s => s.Products)
             .WithOne(p => p.Store)
             .HasForeignKey(p => p.StoreId)
