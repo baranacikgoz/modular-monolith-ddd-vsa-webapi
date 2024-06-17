@@ -8,7 +8,6 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Inventory.Domain.Stores;
 using Ardalis.Specification;
-using Common.Domain.StronglyTypedIds;
 using Common.Application.ModelBinders;
 
 namespace Inventory.Application.Stores.v1.Get;
