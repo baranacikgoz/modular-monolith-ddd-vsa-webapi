@@ -12,14 +12,14 @@ using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 
-namespace Inventory.Application.Products.v1.My.Update;
+namespace Inventory.Application.Stores.v1.My.Products.Update;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
         myProductsApiGroup
-            .MapPut("{productId}", UpdateMyProductAsync)
+            .MapPut("{id}", UpdateMyProductAsync)
             .WithDescription("Update my product.")
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.StoreProducts)
             .Produces(StatusCodes.Status204NoContent)
@@ -27,14 +27,14 @@ internal static class Endpoint
     }
 
     private static async Task<Result> UpdateMyProductAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId productId,
+        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId id,
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
         [FromServices] IRepository<Store> storeRepository,
         [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
         => await storeRepository
-            .SingleOrDefaultAsResultAsync(new StoreWithProductByOwnerIdSpec(currentUser.Id, productId), cancellationToken)
-            .TapAsync(store => store.UpdateProduct(productId, request.Quantity, request.Price))
+            .SingleOrDefaultAsResultAsync(new StoreWithProductByOwnerIdSpec(currentUser.Id, id), cancellationToken)
+            .TapAsync(store => store.UpdateProduct(id, request.Quantity, request.Price))
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
 }

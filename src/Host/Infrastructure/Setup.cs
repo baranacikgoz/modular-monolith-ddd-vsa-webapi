@@ -1,7 +1,7 @@
 using FluentValidation;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Validation;
-using Common.Infrastructure.JsonConverters;
+using Common.Application.JsonConverters;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Caching;
 using System.Reflection;

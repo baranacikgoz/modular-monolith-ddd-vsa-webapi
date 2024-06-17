@@ -15,7 +15,9 @@ public static class StringLocalizerExtensions
 
         if (error.Value is null)
         {
-            throw new InvalidOperationException("Value should not be null when parameter name is not null.");
+            // Assume parameter is "Store" and key is "NotFound".
+            // Then it will generate a string like "Store is not found."
+            return $"{localizer[error.ParameterName]} {localizer[error.Key]}";
         }
 
         // Assume parameter is "Store" and key is "NotFound" and value is "123".

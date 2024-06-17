@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Domain.StronglyTypedIds;
 
-namespace Common.Infrastructure.JsonConverters;
+namespace Common.Application.JsonConverters;
 public class StronglyTypedIdWriteOnlyJsonConverter : JsonConverter<IStronglyTypedId>
 {
     public override bool CanConvert(Type typeToConvert)

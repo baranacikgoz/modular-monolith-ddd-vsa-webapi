@@ -12,14 +12,14 @@ using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 
-namespace Inventory.Application.Stores.v1.My.AddProduct;
+namespace Inventory.Application.Stores.v1.My.Products.Add;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPatch("", AddProductToMyStore)
+            .MapPost("", AddProductToMyStore)
             .WithDescription("Add product to my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)
