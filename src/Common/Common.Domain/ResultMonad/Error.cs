@@ -19,10 +19,10 @@ public class Error
             StatusCode = HttpStatusCode.NotFound
         };
 
-    public static Error NotUnique(string parameterName, object value)
+    public static Error ViolatesUniqueConstraint(string parameterName, object? value = null)
         => new()
         {
-            Key = nameof(NotUnique),
+            Key = nameof(ViolatesUniqueConstraint),
             ParameterName = parameterName,
             Value = value
         };

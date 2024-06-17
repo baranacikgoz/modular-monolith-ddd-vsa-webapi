@@ -308,6 +308,22 @@ public static class AsyncExtensions
         return Result<TCurrent>.Success(result.Value!);
     }
 
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, TNext> binder)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+
+        if (result.IsFailure)
+        {
+            return Result<TNext>.Failure(result.Error!);
+        }
+
+        var nextResult = binder(result.Value!);
+
+        return Result<TNext>.Success(nextResult);
+    }
+
     public static async Task<Result<TNext>> BindAsync<TNext>(
         this Task<Result> resultTask,
         Func<Task<Result<TNext>>> next)
@@ -322,9 +338,9 @@ public static class AsyncExtensions
         return await next().ConfigureAwait(false);
     }
 
-    public static async Task<Result<TNext>> BindAsync<TNext>(
-        this Task<Result> resultTask,
-        Func<Result<TNext>> next)
+    public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
+        this Task<Result<TCurrent>> resultTask,
+        Func<TNext> next)
     {
         var result = await resultTask.ConfigureAwait(false);
 
