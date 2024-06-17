@@ -25,7 +25,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    public class StoreProductByStoreOwnerIdAndStoreProductIdSpec : SingleResultSpecification<StoreProduct, Response>
+    private sealed class StoreProductByStoreOwnerIdAndStoreProductIdSpec : SingleResultSpecification<StoreProduct, Response>
     {
         public StoreProductByStoreOwnerIdAndStoreProductIdSpec(ApplicationUserId ownerId, StoreProductId storeProductId)
             => Query

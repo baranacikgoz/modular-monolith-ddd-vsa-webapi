@@ -23,7 +23,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    public class StoreWithProductCountByOwnerIdSpec : SingleResultSpecification<Store, Response>
+    private sealed class StoreWithProductCountByOwnerIdSpec : SingleResultSpecification<Store, Response>
     {
         public StoreWithProductCountByOwnerIdSpec(ApplicationUserId ownerId)
             => Query
