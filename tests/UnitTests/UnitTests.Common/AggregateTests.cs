@@ -1,5 +1,4 @@
 using Common.Domain.Aggregates;
-using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;

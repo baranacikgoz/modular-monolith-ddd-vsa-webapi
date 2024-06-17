@@ -1,9 +1,6 @@
 using System.Security.Claims;
 using Common.Domain.ResultMonad;
-using Common.Domain.StronglyTypedIds;
-using Common.Infrastructure.Options;
 using IAM.Domain.Identity;
-using Microsoft.AspNetCore.Identity;
 
 namespace IAM.Application.Tokens.Services;
 

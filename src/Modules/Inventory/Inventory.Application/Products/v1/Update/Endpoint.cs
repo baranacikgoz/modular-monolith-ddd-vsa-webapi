@@ -9,7 +9,7 @@ using Common.Application.Persistence;
 using Inventory.Domain.Products;
 using Microsoft.Extensions.DependencyInjection;
 using Common.Application.ModelBinders;
-using Inventory.Application.Products.Specs;
+using Ardalis.Specification;
 
 namespace Inventory.Application.Products.v1.Update;
 
@@ -23,6 +23,12 @@ internal static class Endpoint
             .MustHavePermission(CustomActions.Create, CustomResources.Products)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
+    }
+
+    public class ProductByIdSpec : SingleResultSpecification<Product>
+    {
+        public ProductByIdSpec(ProductId id)
+            => Query.Where(p => p.Id == id);
     }
 
     private static async Task<Result> UpdateProductAsync(

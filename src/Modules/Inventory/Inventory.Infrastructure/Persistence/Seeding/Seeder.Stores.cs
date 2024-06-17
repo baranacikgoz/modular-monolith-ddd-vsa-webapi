@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Stores;
 using Microsoft.EntityFrameworkCore;

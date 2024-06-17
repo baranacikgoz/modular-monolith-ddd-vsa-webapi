@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +7,8 @@ using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Inventory.Domain.Stores;
-using Inventory.Application.Stores.Specs;
+using Ardalis.Specification;
+using Common.Domain.StronglyTypedIds;
 
 namespace Inventory.Application.Stores.v1.My.Get;
 internal static class Endpoint
@@ -27,11 +23,18 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
+    public class StoreWithProductCountByOwnerIdSpec : SingleResultSpecification<Store, Response>
+    {
+        public StoreWithProductCountByOwnerIdSpec(ApplicationUserId ownerId)
+            => Query
+                .Select(s => new Response(s.Id, s.Name, s.Description, s.LogoUrl, s.Products.Count))
+                .Where(s => s.OwnerId == ownerId);
+    }
+
     private static async Task<Result<Response>> GetMyStoreAsync(
         [FromServices] ICurrentUser currentUser,
         [FromServices] IRepository<Store> repository,
         CancellationToken cancellationToken)
         => await repository
-            .SingleOrDefaultAsResultAsync(new StoreByOwnerIdSpec(currentUser.Id), cancellationToken)
-            .MapAsync(store => new Response(store.Id, store.Name, store.Description, store.LogoUrl));
+            .SingleOrDefaultAsResultAsync(new StoreWithProductCountByOwnerIdSpec(currentUser.Id), cancellationToken);
 }

@@ -3,8 +3,6 @@ using Common.InterModuleRequests.IAM;
 using IAM.Application.Auth;
 using IAM.Application.Auth.Services;
 using IAM.Application.Identity.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Application.InterModuleRequestHandlers;
 

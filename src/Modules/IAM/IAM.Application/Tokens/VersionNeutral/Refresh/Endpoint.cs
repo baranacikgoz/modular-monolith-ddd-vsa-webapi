@@ -1,17 +1,9 @@
-using System.Security.Claims;
-using Common.Infrastructure.Options;
-using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using Common.Domain.Extensions;
-using Common.Domain.StronglyTypedIds;
 using IAM.Application.Identity.Services;
 using IAM.Application.Tokens.Services;
 

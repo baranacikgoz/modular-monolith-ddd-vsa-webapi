@@ -1,13 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.AspNetCore.Builder;
 using IAM.Persistence.Seeding;
-using Common.Infrastructure.Options;
-using Common.Infrastructure.Persistence.Context.Interceptors;
-using Common.Infrastructure.Persistence.Outbox;
-using Common.Infrastructure.Persistence.EventSourcing;
 using MassTransit;
 using Common.Infrastructure.Persistence.Context;
 using Common.Infrastructure.Persistence.UoW;
