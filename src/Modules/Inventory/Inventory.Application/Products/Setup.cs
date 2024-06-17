@@ -13,6 +13,7 @@ public static class Setup
             .MapToApiVersion(1);
 
         v1.Create.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.Update.Endpoint.MapEndpoint(v1ProductsApiGroup);
 
         var v1MyProductsApiGroup = v1ProductsApiGroup.MapGroup("/my");
 
