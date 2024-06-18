@@ -1,4 +1,4 @@
-using Common.Domain.EventBus;
+using Common.Application.EventBus;
 using Common.Domain.Events;
 using Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;

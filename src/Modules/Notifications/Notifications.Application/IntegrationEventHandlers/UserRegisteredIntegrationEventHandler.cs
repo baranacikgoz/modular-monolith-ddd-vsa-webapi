@@ -1,4 +1,4 @@
-using Common.Domain.EventBus;
+using Common.Application.EventBus;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
 using Microsoft.Extensions.Logging;

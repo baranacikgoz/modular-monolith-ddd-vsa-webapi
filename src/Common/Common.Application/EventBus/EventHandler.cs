@@ -1,7 +1,7 @@
 using Common.Domain.Events;
 using MassTransit;
 
-namespace Common.Domain.EventBus;
+namespace Common.Application.EventBus;
 
 public abstract partial class EventHandlerBase<TEvent> : IEventHandler<TEvent> where TEvent : class, IEvent
 {

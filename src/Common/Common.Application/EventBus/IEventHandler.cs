@@ -1,7 +1,7 @@
 using Common.Domain.Events;
 using MassTransit;
 
-namespace Common.Domain.EventBus;
+namespace Common.Application.EventBus;
 
 #pragma warning disable CA1711
 public interface IEventHandler<in TEvent> : IConsumer<TEvent>

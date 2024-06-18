@@ -1,4 +1,4 @@
-using Common.Domain.EventBus;
+using Common.Application.EventBus;
 using Common.IntegrationEvents;
 using IAM.Domain.Identity.DomainEvents.v1;
 
