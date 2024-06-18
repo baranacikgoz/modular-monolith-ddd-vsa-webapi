@@ -22,32 +22,32 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
     {
         RuleFor(x => x.Name)
             .MaximumLength(Domain.Stores.Constants.NameMaxLength)
-                .WithMessage(localizer["Stores.v1.Search.Name.MaximumLength", Domain.Stores.Constants.NameMaxLength])
+                .WithMessage(localizer["Stores.v1.Search.Name.MaximumLength {0}", Domain.Stores.Constants.NameMaxLength])
             .When(x => x.Name is not null);
 
         RuleFor(x => x.Description)
             .MaximumLength(Domain.Stores.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["Stores.v1.Search.Description.MaximumLength", Domain.Stores.Constants.DescriptionMaxLength])
+                .WithMessage(localizer["Stores.v1.Search.Description.MaximumLength {0}", Domain.Stores.Constants.DescriptionMaxLength])
             .When(x => x.Description is not null);
 
         RuleFor(x => x.MinQuantity)
-            .GreaterThanOrEqualTo(0)
-                .WithMessage(localizer["Stores.v1.Search.MinQuantity.GreaterThanOrEqualToZero"])
+            .GreaterThanOrEqualTo(Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo)
+                .WithMessage(localizer["Stores.v1.Search.MinQuantity.GreaterThanOrEqualTo {0}", Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo])
             .When(x => x.MinQuantity is not null);
 
         RuleFor(x => x.MaxQuantity)
-            .GreaterThanOrEqualTo(0)
-                .WithMessage(localizer["Stores.v1.Search.MaxQuantity.GreaterThanOrEqualToZero"])
+            .GreaterThanOrEqualTo(Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo)
+                .WithMessage(localizer["Stores.v1.Search.MaxQuantity.GreaterThanOrEqualTo {0}", Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo])
             .When(x => x.MaxQuantity is not null);
 
         RuleFor(x => x.MinPrice)
-            .GreaterThanOrEqualTo(0)
-                .WithMessage(localizer["Stores.v1.Search.MinPrice.GreaterThanOrEqualToZero"])
+            .GreaterThan(Domain.StoreProducts.Constants.PriceGreaterThan)
+                .WithMessage(localizer["Stores.v1.Search.MinPrice.GreaterThan {0}", Domain.StoreProducts.Constants.PriceGreaterThan])
             .When(x => x.MinPrice is not null);
 
         RuleFor(x => x.MaxPrice)
-            .GreaterThanOrEqualTo(0)
-                .WithMessage(localizer["Stores.v1.Search.MaxPrice.GreaterThanOrEqualToZero"])
+            .GreaterThan(Domain.StoreProducts.Constants.PriceGreaterThan)
+                .WithMessage(localizer["Stores.v1.Search.MaxPrice.GreaterThan {0}", Domain.StoreProducts.Constants.PriceGreaterThan])
             .When(x => x.MaxPrice is not null);
     }
 }

@@ -10,8 +10,9 @@ public static class CustomActions
     public const string UpdateMy = nameof(UpdateMy);
     public const string Delete = nameof(Delete);
     public const string DeleteMy = nameof(DeleteMy);
-
     public const string Search = nameof(Search);
+    public const string SearchMy = nameof(SearchMy);
+
 }
 
 public static class CustomResources

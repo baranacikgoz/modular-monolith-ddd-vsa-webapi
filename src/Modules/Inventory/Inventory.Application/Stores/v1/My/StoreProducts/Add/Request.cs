@@ -18,8 +18,6 @@ public sealed record Request(
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    private const int QuantityGreaterThanOrEqualTo = 0;
-    private const decimal PriceGreaterThan = 0;
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.ProductId)
@@ -27,11 +25,11 @@ public sealed class RequestValidator : CustomValidator<Request>
                 .WithMessage(localizer["Stores.v1.My.StoreProducts.Add.ProductId.NotEmpty"]);
 
         RuleFor(x => x.Quantity)
-            .GreaterThanOrEqualTo(QuantityGreaterThanOrEqualTo)
-                .WithMessage(localizer["Stores.v1.My.StoreProducts.Add.Quantity.GreaterThanOrEqualTo {0}", QuantityGreaterThanOrEqualTo]);
+            .GreaterThanOrEqualTo(Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo)
+                .WithMessage(localizer["Stores.v1.My.StoreProducts.Add.Quantity.GreaterThanOrEqualTo {0}", Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo]);
 
         RuleFor(x => x.Price)
-            .GreaterThan(PriceGreaterThan)
-                .WithMessage(localizer["Stores.v1.My.StoreProducts.Add.Price.GreaterThan {0}", PriceGreaterThan]);
+            .GreaterThan(Domain.StoreProducts.Constants.PriceGreaterThan)
+                .WithMessage(localizer["Stores.v1.My.StoreProducts.Add.Price.GreaterThan {0}", Domain.StoreProducts.Constants.PriceGreaterThan]);
     }
 }

@@ -14,12 +14,12 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
     {
         RuleFor(x => x.Name)
             .MaximumLength(Domain.Products.Constants.NameMaxLength)
-                .WithMessage(localizer["Products.v1.Search.Name.MaximumLength", Domain.Products.Constants.NameMaxLength])
+                .WithMessage(localizer["Products.v1.Search.Name.MaximumLength {0}", Domain.Products.Constants.NameMaxLength])
             .When(x => x.Name is not null);
 
         RuleFor(x => x.Description)
             .MaximumLength(Domain.Products.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["Products.v1.Search.Description.MaximumLength", Domain.Products.Constants.DescriptionMaxLength])
+                .WithMessage(localizer["Products.v1.Search.Description.MaximumLength {0}", Domain.Products.Constants.DescriptionMaxLength])
             .When(x => x.Description is not null);
     }
 }

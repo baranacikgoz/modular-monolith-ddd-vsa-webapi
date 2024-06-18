@@ -15,14 +15,14 @@ public sealed class RequestValidator : CustomValidator<Request>
             .NotEmpty()
                 .WithMessage(localizer["Products.v1.Update.Name.NotEmpty"])
             .MaximumLength(Domain.Products.Constants.NameMaxLength)
-                .WithMessage(localizer["Products.v1.Update.Name.MaxLength", Domain.Products.Constants.NameMaxLength])
+                .WithMessage(localizer["Products.v1.Update.Name.MaxLength {0}", Domain.Products.Constants.NameMaxLength])
             .When(x => x.Name is not null);
 
         RuleFor(x => x.Description)
             .NotEmpty()
                 .WithMessage(localizer["Products.v1.Update.Description.NotEmpty"])
             .MaximumLength(Domain.Products.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["Products.v1.Update.Description.MaxLength", Domain.Products.Constants.DescriptionMaxLength])
+                .WithMessage(localizer["Products.v1.Update.Description.MaxLength {0}", Domain.Products.Constants.DescriptionMaxLength])
             .When(x => x.Description is not null);
     }
 }

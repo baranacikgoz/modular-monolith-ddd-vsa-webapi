@@ -8,8 +8,6 @@ internal sealed record Request(int? Quantity, decimal? Price);
 
 internal class RequestValidator : CustomValidator<Request>
 {
-    private const int QuantityGreaterThanOrEqualTo = 0;
-    private const decimal PriceGreaterThan = 0;
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {
         RuleFor(r => r)
@@ -17,13 +15,13 @@ internal class RequestValidator : CustomValidator<Request>
                .WithMessage(localizer["Stores.v1.My.StoreProducts.Update.AtLeastOnePropertyIsRequired"]);
 
         RuleFor(r => r.Quantity)
-            .GreaterThanOrEqualTo(QuantityGreaterThanOrEqualTo)
-                .WithMessage(localizer["Stores.v1.My.StoreProducts.Update.Quantity.GreaterThanOrEqualTo {0}", QuantityGreaterThanOrEqualTo])
+            .GreaterThanOrEqualTo(Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo)
+                .WithMessage(localizer["Stores.v1.My.StoreProducts.Update.Quantity.GreaterThanOrEqualTo {0}", Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo])
             .When(r => r.Quantity.HasValue);
 
         RuleFor(r => r.Price)
-            .GreaterThan(PriceGreaterThan)
-                .WithMessage(localizer["Stores.v1.My.StoreProduct.Update.Price.GreaterThan {0}", PriceGreaterThan])
+            .GreaterThan(Domain.StoreProducts.Constants.PriceGreaterThan)
+                .WithMessage(localizer["Stores.v1.My.StoreProduct.Update.Price.GreaterThan {0}", Domain.StoreProducts.Constants.PriceGreaterThan])
             .When(r => r.Price.HasValue);
     }
 }
