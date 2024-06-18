@@ -10,6 +10,7 @@ using Ardalis.Specification;
 using Inventory.Domain.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Common.Application.Persistence;
+using Inventory.Application.Stores.v1.My;
 
 namespace Inventory.Application.Stores.v1.Update;
 

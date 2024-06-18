@@ -13,12 +13,12 @@ public sealed class RequestValidator : CustomValidator<Request>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-                .WithMessage(localizer["v1.Update.Name.NotEmpty"])
+                .WithMessage(localizer["Stores.v1.Update.Name.NotEmpty"])
             .MaximumLength(Domain.Stores.Constants.NameMaxLength)
-                .WithMessage(localizer["v1.Update.Name.MaxLength", Domain.Stores.Constants.NameMaxLength]);
+                .WithMessage(localizer["Stores.v1.Update.Name.MaxLength {0}", Domain.Stores.Constants.NameMaxLength]);
 
         RuleFor(x => x.Description)
             .MaximumLength(Domain.Stores.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["v1.Update.Description.MaxLength", Domain.Stores.Constants.DescriptionMaxLength]);
+                .WithMessage(localizer["Stores.v1.Update.Description.MaxLength {0}", Domain.Stores.Constants.DescriptionMaxLength]);
     }
 }

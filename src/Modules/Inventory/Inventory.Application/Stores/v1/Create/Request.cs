@@ -20,16 +20,16 @@ public sealed class RequestValidator : CustomValidator<Request>
     {
         RuleFor(x => x.OwnerId)
             .NotEmpty()
-                .WithMessage(localizer["v1.Create.OwnerId.NotEmpty"]);
+                .WithMessage(localizer["Stores.v1.Create.OwnerId.NotEmpty"]);
 
         RuleFor(x => x.Name)
             .NotEmpty()
-                .WithMessage(localizer["v1.Create.Name.NotEmpty"])
+                .WithMessage(localizer["Stores.v1.Create.Name.NotEmpty"])
             .MaximumLength(Domain.Stores.Constants.NameMaxLength)
-                .WithMessage(localizer["v1.Create.Name.MaxLength", Domain.Stores.Constants.NameMaxLength]);
+                .WithMessage(localizer["Stores.v1.Create.Name.MaxLength {0}", Domain.Stores.Constants.NameMaxLength]);
 
         RuleFor(x => x.Description)
             .MaximumLength(Domain.Stores.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["v1.Create.Description.MaxLength", Domain.Stores.Constants.DescriptionMaxLength]);
+                .WithMessage(localizer["Stores.v1.Create.Description.MaxLength {0}", Domain.Stores.Constants.DescriptionMaxLength]);
     }
 }

@@ -22,8 +22,6 @@ public sealed record Request(
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    private const int QuantityGreaterThanOrEqualTo = 0;
-    private const int PriceGreaterThan = 0;
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x.StoreId)
@@ -34,13 +32,12 @@ public sealed class RequestValidator : CustomValidator<Request>
             .NotEmpty()
                 .WithMessage(localizer["StoreProducts.v1.AddToStore.ProductId.NotEmpty"]);
 
-        // A store owner may want to list a product but it may be out-of-stock for now. So 0 is allowed.
         RuleFor(x => x.Quantity)
-            .GreaterThanOrEqualTo(QuantityGreaterThanOrEqualTo)
-                .WithMessage(localizer["StoreProducts.v1.AddToStore.Quantity.GreaterThanOrEqualTo {0}", QuantityGreaterThanOrEqualTo]);
+            .GreaterThanOrEqualTo(Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo)
+                .WithMessage(localizer["StoreProducts.v1.AddToStore.Quantity.GreaterThanOrEqualTo {0}", Domain.StoreProducts.Constants.QuantityGreaterThanOrEqualTo]);
 
         RuleFor(x => x.Price)
-            .GreaterThan(PriceGreaterThan)
-                .WithMessage(localizer["StoreProducts.v1.AddToStore.Price.GreaterThan {0}", PriceGreaterThan]);
+            .GreaterThan(Domain.StoreProducts.Constants.PriceGreaterThan)
+                .WithMessage(localizer["StoreProducts.v1.AddToStore.Price.GreaterThan {0}", Domain.StoreProducts.Constants.PriceGreaterThan]);
     }
 }

@@ -11,12 +11,12 @@ internal sealed class RequestValidator : CustomValidator<Request>
     {
         RuleFor(r => r.Name)
             .MaximumLength(Domain.Stores.Constants.NameMaxLength)
-                .WithMessage(localizer["Stores.My.Update.NameMaxLength"])
+                .WithMessage(localizer["Stores.v1.My.Update.NameMaxLength {0}", Domain.Stores.Constants.NameMaxLength])
             .When(r => !string.IsNullOrEmpty(r.Name));
 
         RuleFor(r => r.Description)
             .MaximumLength(Domain.Stores.Constants.DescriptionMaxLength)
-                .WithMessage(localizer["Stores.My.Update.DescriptionMaxLength"])
+                .WithMessage(localizer["Stores.v1.My.Update.DescriptionMaxLength {0}", Domain.Stores.Constants.DescriptionMaxLength])
             .When(r => !string.IsNullOrEmpty(r.Description));
     }
 }

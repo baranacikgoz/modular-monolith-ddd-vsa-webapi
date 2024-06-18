@@ -26,6 +26,7 @@ public static class CustomPermissions
         new("Update My StoreProduct", CustomActions.UpdateMy, CustomResources.StoreProducts),
         new("Delete My StoreProduct", CustomActions.DeleteMy, CustomResources.StoreProducts),
         new("Search StoreProducts", CustomActions.Search, CustomResources.StoreProducts),
+        new("Search My Stores StoreProducts", CustomActions.SearchMy, CustomResources.StoreProducts), // For store owners to ssearch their own store's products
     ];
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
