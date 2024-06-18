@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
+using Common.Application.Persistence;
+using Inventory.Domain.Stores;
+using Microsoft.Extensions.DependencyInjection;
+using Ardalis.Specification;
+using Common.Domain.StronglyTypedIds;
 
 namespace Inventory.Application.Stores.v1.My.Create;
 
@@ -20,9 +25,23 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static Task<Result<Response>> CreateMyStoreAsync(
+    private sealed class StoreByOwnerIdSpec : SingleResultSpecification<Store>
+    {
+        public StoreByOwnerIdSpec(ApplicationUserId ownerId)
+            => Query
+                .Where(s => s.OwnerId == ownerId);
+    }
+
+    private static async Task<Result<Response>> CreateMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
+        [FromServices] IRepository<Store> repository,
+        [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
-        => throw new NotImplementedException(); // sadece 1 taneye izin ver
+        => await repository.AnyAsyncAsResult(new StoreByOwnerIdSpec(currentUser.Id), cancellationToken)
+            .TapAsync(any => any ? Error.ViolatesUniqueConstraint(nameof(Store)) : Result.Success)
+            .BindAsync(_ => Store.Create(currentUser.Id, request.Name, request.Description))
+            .TapAsync(store => repository.Add(store))
+            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken))
+            .MapAsync(store => new Response(store.Id));
 }
