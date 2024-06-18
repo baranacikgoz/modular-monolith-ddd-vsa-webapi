@@ -20,77 +20,89 @@ internal partial class OutboxBackgroundService(
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            LogBeginProcessingOutboxMessages(logger);
-            using var scope = scopeFactory.CreateScope();
-            var outboxDbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-
-            var outboxMessages = await outboxDbContext
-                                       .OutboxMessages
-                                       .Where(x => !x.IsProcessed)
-                                       .OrderBy(x => x.CreatedOn)
-                                       .Take(_batchSizePerExecution)
-                                       .ToListAsync(cancellationToken);
-
-            if (outboxMessages.Count == 0)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                LogZeroOutboxMessages(logger);
+                LogBeginProcessingOutboxMessages(logger);
+                using var scope = scopeFactory.CreateScope();
 
-                await Task.Delay(_backgroundJobPeriodInMilliSeconds, cancellationToken);
-                continue;
-            }
+                var utcNow = scope.ServiceProvider.GetRequiredService<TimeProvider>().GetUtcNow();
+                var outboxDbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
 
-            LogFoundOutboxMessages(logger, outboxMessages.Count);
-            var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+                var outboxMessages = await outboxDbContext
+                                           .OutboxMessages
+                                           .Where(x => !x.IsProcessed)
+                                           .OrderBy(x => x.CreatedOn)
+                                           .Take(_batchSizePerExecution)
+                                           .ToListAsync(cancellationToken);
 
-            foreach (var outboxMessage in outboxMessages)
-            {
+                if (outboxMessages.Count == 0)
+                {
+                    LogZeroOutboxMessages(logger);
+
+                    await Task.Delay(_backgroundJobPeriodInMilliSeconds, cancellationToken);
+                    continue;
+                }
+
+                LogFoundOutboxMessages(logger, outboxMessages.Count);
+                var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+
+                foreach (var outboxMessage in outboxMessages)
+                {
+                    try
+                    {
+                        var @event = outboxMessage.Event;
+                        await eventBus.PublishAsync(@event, cancellationToken);
+                        outboxMessage.MarkAsProcessed(utcNow);
+                    }
+#pragma warning disable CA1031
+                    catch (Exception ex)
+#pragma warning restore CA1031
+                    {
+                        LogExceptionOccuredDuringEventPublishing(
+                            logger,
+                            ex,
+                            outboxMessage.Id,
+                            outboxMessage.Event.GetType().Name,
+                            outboxMessage.Event);
+
+                        outboxMessage.MarkAsFailed(utcNow);
+
+                        if (outboxMessage.FailedCount >= _maxFailCountBeforeSentToDeadLetter)
+                        {
+                            outboxDbContext.OutboxMessages.Remove(outboxMessage);
+                            outboxDbContext.DeadLetterMessages.Add(DeadLetterMessage.CreateFrom(outboxMessage));
+                        }
+                    }
+                }
+
                 try
                 {
-                    var @event = outboxMessage.Event;
-                    await eventBus.PublishAsync(@event, cancellationToken);
-                    outboxMessage.MarkAsProcessed();
+                    await outboxDbContext.SaveChangesAsync(cancellationToken);
                 }
 #pragma warning disable CA1031
                 catch (Exception ex)
 #pragma warning restore CA1031
                 {
-                    LogExceptionOccuredDuringEventPublishing(
-                        logger,
-                        ex,
-                        outboxMessage.Id,
-                        outboxMessage.Event.GetType().Name,
-                        outboxMessage.Event);
+                    LogExceptionOccuredDuringSavingChanges(logger, ex);
 
-                    outboxMessage.MarkAsFailed();
-
-                    if (outboxMessage.FailedCount >= _maxFailCountBeforeSentToDeadLetter)
-                    {
-                        outboxDbContext.OutboxMessages.Remove(outboxMessage);
-                        outboxDbContext.DeadLetterMessages.Add(DeadLetterMessage.CreateFrom(outboxMessage));
-                    }
+                    // Wait for a while before retrying
+                    await Task.Delay(_backgroundJobPeriodInMilliSeconds * 3, cancellationToken);
+                    continue;
                 }
-            }
 
-            try
-            {
-                await outboxDbContext.SaveChangesAsync(cancellationToken);
+                LogProcessedOutboxMessages(logger, outboxMessages.Count);
+
+                await Task.Delay(_backgroundJobPeriodInMilliSeconds, cancellationToken);
             }
+        }
 #pragma warning disable CA1031
-            catch (Exception ex)
+        catch (Exception ex)
 #pragma warning restore CA1031
-            {
-                LogExceptionOccuredDuringSavingChanges(logger, ex);
-
-                // Wait for a while before retrying
-                await Task.Delay(_backgroundJobPeriodInMilliSeconds * 3, cancellationToken);
-                continue;
-            }
-
-            LogProcessedOutboxMessages(logger, outboxMessages.Count);
-
-            await Task.Delay(_backgroundJobPeriodInMilliSeconds, cancellationToken);
+        {
+            // FATAL
+            LogUncaughtFatalExceptionOccuredWhileProcessingOutboxMessages(logger, ex);
         }
     }
 
@@ -126,4 +138,9 @@ internal partial class OutboxBackgroundService(
         Level = LogLevel.Critical,
         Message = "An exception occured during saving changes in outbox database.")]
     private static partial void LogExceptionOccuredDuringSavingChanges(ILogger logger, Exception ex);
+
+    [LoggerMessage(
+        Level = LogLevel.Critical,
+        Message = "FATAL: Uncaught exception occured while processing outbox messages")]
+    private static partial void LogUncaughtFatalExceptionOccuredWhileProcessingOutboxMessages(ILogger logger, Exception ex);
 }

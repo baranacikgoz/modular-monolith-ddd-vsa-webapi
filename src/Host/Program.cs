@@ -7,7 +7,6 @@ using Common.Infrastructure.Options;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
                 .ApplyConfigurations(options: builder

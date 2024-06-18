@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Common.Infrastructure.Persistence.Context.Interceptors;
 public class ApplyAuditingInterceptor(
-    ICurrentUser currentUser
+    ICurrentUser currentUser,
+    TimeProvider timeProvider
     ) : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -19,7 +20,7 @@ public class ApplyAuditingInterceptor(
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        var now = DateTime.UtcNow;
+        var now = timeProvider.GetUtcNow();
         var userId = currentUser.Id;
         var ipAddress = currentUser.IpAddress ?? "N/A";
 
