@@ -24,6 +24,7 @@ COPY ["src/Modules/Inventory/Inventory.Domain/Inventory.Domain.csproj", "src/Mod
 COPY ["src/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj", "src/Modules/Notifications/Notifications.Infrastructure/"]
 COPY ["src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj", "src/Modules/Notifications/Notifications.Application/"]
 COPY ["src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj", "src/Modules/Notifications/Notifications.Domain/"]
+COPY ["src/Modules/Outbox/Outbox.csproj", "src/Modules/Outbox/"]
 RUN dotnet restore "./src/Host/Host.csproj"
 COPY . .
 WORKDIR "/src/src/Host"
