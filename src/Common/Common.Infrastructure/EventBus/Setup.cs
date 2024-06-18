@@ -1,5 +1,5 @@
 using System.Reflection;
-using Common.Domain.EventBus;
+using Common.Application.EventBus;
 using Common.Infrastructure.Options;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;

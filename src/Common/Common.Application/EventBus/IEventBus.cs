@@ -1,6 +1,6 @@
 using Common.Domain.Events;
 
-namespace Common.Domain.EventBus;
+namespace Common.Application.EventBus;
 
 public interface IEventBus
 {
