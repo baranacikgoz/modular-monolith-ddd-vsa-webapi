@@ -12,13 +12,9 @@ public static class Setup
             .WithTags("Store Products")
             .MapToApiVersion(1);
 
+        v1.AddToStore.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
+        v1.Update.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
-
-        var v1MyStoreProductsApiGroup = v1StoreProductsApiGroup.MapGroup("/my");
-
-        v1.My.AddToStore.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
-        v1.My.Update.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
-        v1.My.Get.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
 
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")
