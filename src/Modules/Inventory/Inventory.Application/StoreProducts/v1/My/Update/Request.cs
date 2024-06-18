@@ -2,7 +2,7 @@ using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
-namespace Inventory.Application.Stores.v1.My.Products.Update;
+namespace Inventory.Application.StoreProducts.v1.My.Update;
 
 internal sealed record Request(int? Quantity, decimal? Price);
 

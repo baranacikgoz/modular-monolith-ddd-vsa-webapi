@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Inventory.Domain.Products;
 
-namespace Inventory.Application.Stores.v1.My.Products.Add;
+namespace Inventory.Application.StoreProducts.v1.My.AddToStore;
 
 public sealed record Request(
     int Quantity,

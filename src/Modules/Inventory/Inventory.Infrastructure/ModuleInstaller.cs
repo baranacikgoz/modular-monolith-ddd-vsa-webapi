@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Inventory.Application.Stores;
 using Inventory.Application.Products;
+using Inventory.Application.StoreProducts;
 
 namespace Inventory.Infrastructure;
 
@@ -21,6 +22,7 @@ public static class ModuleInstaller
 
         versionedApiGroup.MapStoresEndpoints();
         versionedApiGroup.MapProductsEndpoints();
+        versionedApiGroup.MapStoreProductsEndpoints();
 
         return app;
     }
