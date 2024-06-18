@@ -1,5 +1,4 @@
 using Common.Infrastructure.Options;
-using Common.Infrastructure.Persistence.Context.Interceptors;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Common.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;

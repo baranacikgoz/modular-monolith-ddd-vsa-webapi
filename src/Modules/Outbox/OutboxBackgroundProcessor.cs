@@ -8,10 +8,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Common.Infrastructure.Persistence.Outbox;
-internal partial class OutboxBackgroundService(
+internal partial class OutboxBackgroundProcessor(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptionsProvider,
-    ILogger<OutboxBackgroundService> logger
+    ILogger<OutboxBackgroundProcessor> logger
     ) : IHostedService
 {
     private readonly int _backgroundJobPeriodInMilliSeconds = outboxOptionsProvider.Value.BackgroundJobPeriodInSeconds * 1000;
