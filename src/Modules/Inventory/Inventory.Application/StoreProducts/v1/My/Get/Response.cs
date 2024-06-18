@@ -1,4 +1,4 @@
 using Inventory.Domain.StoreProducts;
 
-namespace Inventory.Application.Stores.v1.My.Products.Get;
+namespace Inventory.Application.StoreProducts.v1.My.Get;
 public sealed record Response(StoreProductId Id, string Name, string Description);

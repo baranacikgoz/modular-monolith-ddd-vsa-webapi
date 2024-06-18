@@ -13,7 +13,7 @@ using Common.Application.Persistence;
 using Ardalis.Specification;
 using Common.Domain.StronglyTypedIds;
 
-namespace Inventory.Application.Stores.v1.My.Products.Update;
+namespace Inventory.Application.StoreProducts.v1.My.Update;
 
 internal static class Endpoint
 {
