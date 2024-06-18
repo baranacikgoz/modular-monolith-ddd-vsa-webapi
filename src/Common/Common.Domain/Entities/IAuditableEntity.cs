@@ -1,12 +1,12 @@
-﻿using Common.Domain.StronglyTypedIds;
+using Common.Domain.StronglyTypedIds;
 
 namespace Common.Domain.Entities;
 
 public interface IAuditableEntity
 {
-    DateTime CreatedOn { get; set; }
+    DateTimeOffset CreatedOn { get; set; }
     ApplicationUserId CreatedBy { get; set; }
-    DateTime? LastModifiedOn { get; set; }
+    DateTimeOffset? LastModifiedOn { get; set; }
     ApplicationUserId? LastModifiedBy { get; set; }
     string LastModifiedIp { get; set; }
 }

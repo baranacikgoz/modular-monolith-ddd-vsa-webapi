@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Common.Infrastructure.Persistence.EventSourcing;
 
-public class InsertEventStoreEventsInterceptor : SaveChangesInterceptor
+public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider) : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
     DbContextEventData eventData,
@@ -17,6 +17,7 @@ public class InsertEventStoreEventsInterceptor : SaveChangesInterceptor
         }
 
         List<EventStoreEvent>? eventsToAdd = null;
+        DateTimeOffset? utcNow = null;
         foreach (var aggregateRoot in dbContext
                                       .ChangeTracker
                                       .Entries<IAggregateRoot>()
@@ -24,9 +25,11 @@ public class InsertEventStoreEventsInterceptor : SaveChangesInterceptor
                                       .Select(e => e.Entity))
         {
             eventsToAdd ??= [];
+            utcNow ??= timeProvider.GetUtcNow();
 
             foreach (var @event in aggregateRoot.Events)
             {
+                @event.CreatedOn = utcNow.Value;
                 var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.Id.Value, @event.Version, @event);
                 eventsToAdd.Add(eventStoreEvent);
 

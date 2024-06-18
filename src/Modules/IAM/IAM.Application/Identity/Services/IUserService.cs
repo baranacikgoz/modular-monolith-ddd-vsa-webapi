@@ -14,7 +14,7 @@ public interface IUserService
     Task<List<string>> GetRoles(ApplicationUserId userId, CancellationToken cancellationToken);
     Task<bool> HasPermissionAsync(ApplicationUserId userId, string permissionName, CancellationToken cancellationToken);
     Task InvalidateRolesCacheAsync(ApplicationUserId userId, CancellationToken cancellationToken);
-    Task<DateTime?> GetRefreshTokenExpiresAt(ApplicationUserId userId, string refreshToken, CancellationToken cancellationToken);
+    Task<DateTimeOffset?> GetRefreshTokenExpiresAt(ApplicationUserId userId, string refreshToken, CancellationToken cancellationToken);
     Task<ICollection<ApplicationUserId>> GetSeedUserIdsByRoleId(Guid roleId, int requestedUserCount, CancellationToken cancellationToken);
 
 }

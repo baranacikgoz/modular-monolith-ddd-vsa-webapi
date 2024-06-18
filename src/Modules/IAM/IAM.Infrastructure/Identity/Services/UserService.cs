@@ -72,7 +72,7 @@ internal class UserService(
                     .ToListAsync(cancellationToken),
                     slidingExpiration: TimeSpan.FromDays(7), cancellationToken: cancellationToken);
 
-    public async Task<DateTime?> GetRefreshTokenExpiresAt(ApplicationUserId userId, string refreshToken, CancellationToken cancellationToken)
+    public async Task<DateTimeOffset?> GetRefreshTokenExpiresAt(ApplicationUserId userId, string refreshToken, CancellationToken cancellationToken)
     {
         var refreshTokenExpiresAt = await userManager
                                         .Users

@@ -17,7 +17,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     public DateOnly BirthDate { get; private set; }
     public Uri? ImageUrl { get; private set; }
     public string RefreshToken { get; private set; } = string.Empty;
-    public DateTime RefreshTokenExpiresAt { get; private set; } = DateTime.MinValue;
+    public DateTimeOffset RefreshTokenExpiresAt { get; private set; } = DateTimeOffset.MinValue;
 
     [ConcurrencyCheck]
     public long Version { get; set; }
@@ -53,7 +53,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         RaiseEvent(@event);
     }
 
-    public void UpdateRefreshToken(string refreshToken, DateTime refreshTokenExpiresAt)
+    public void UpdateRefreshToken(string refreshToken, DateTimeOffset refreshTokenExpiresAt)
     {
         // Intentionally did not follow the usual pattern here because did not want to expose token as parameter in event.
         // Events are persisted in somewhere which tokens should not be there unprotected.

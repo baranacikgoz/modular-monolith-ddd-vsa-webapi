@@ -17,7 +17,8 @@ namespace IAM.Infrastructure.Tokens.Services;
 
 internal class TokenService(
     IOptions<JwtOptions> jwtOptionsProvider,
-    IUserService userService)
+    IUserService userService,
+    TimeProvider timeProvider)
      : ITokenService
 {
     private readonly JwtOptions _jwtOptions = jwtOptionsProvider.Value;
@@ -39,12 +40,12 @@ internal class TokenService(
         return new TokenDto(accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt);
     }
 
-    private (string accessToken, DateTime accessTokenExpiresAt) GenerateJwt(ApplicationUser user)
+    private (string accessToken, DateTimeOffset accessTokenExpiresAt) GenerateJwt(ApplicationUser user)
     {
-        var expiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpirationInMinutes);
+        var expiresAt = timeProvider.GetUtcNow().AddMinutes(_jwtOptions.AccessTokenExpirationInMinutes);
         var accessToken = new JwtSecurityToken(
            claims: GetClaims(user),
-           expires: expiresAt,
+           expires: expiresAt.DateTime,
            signingCredentials: GetSigningCredentials(),
            audience: _jwtOptions.Audience,
            issuer: _jwtOptions.Issuer);
@@ -62,7 +63,7 @@ internal class TokenService(
         return new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256);
     }
 
-    private (string RefreshToken, DateTime RefreshTokenExpiresAt) GenerateRefreshToken()
+    private (string RefreshToken, DateTimeOffset RefreshTokenExpiresAt) GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
@@ -70,7 +71,7 @@ internal class TokenService(
             rng.GetBytes(randomNumber);
         }
         var refreshToken = Convert.ToBase64String(randomNumber);
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtOptions.RefreshTokenExpirationInDays);
+        var refreshTokenExpiresAt = timeProvider.GetUtcNow().AddDays(_jwtOptions.RefreshTokenExpirationInDays);
 
         return (refreshToken, refreshTokenExpiresAt);
     }
@@ -110,7 +111,7 @@ internal class TokenService(
             return TokenErrors.InvalidRefreshToken;
         }
 
-        if (refreshTokenExpiresAt < DateTime.UtcNow)
+        if (refreshTokenExpiresAt < timeProvider.GetUtcNow())
         {
             return TokenErrors.RefreshTokenExpired;
         }

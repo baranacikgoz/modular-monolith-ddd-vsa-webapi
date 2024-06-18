@@ -8,12 +8,12 @@ public abstract class OutboxMessageBase(DomainEvent @event) : AuditableEntity
     public int Id { get; set; }
     public DomainEvent Event { get; } = @event;
     public int FailedCount { get; protected set; }
-    public DateTime? LastFailedAt { get; protected set; }
+    public DateTimeOffset? LastFailedOn { get; protected set; }
 
-    public void MarkAsFailed()
+    public void MarkAsFailed(DateTimeOffset failedOn)
     {
         FailedCount++;
-        LastFailedAt = DateTime.Now;
+        LastFailedOn = failedOn;
     }
 }
 
@@ -25,27 +25,27 @@ public class OutboxMessage : OutboxMessageBase
     }
 
     public bool IsProcessed { get; protected set; }
-    public DateTime? ProcessedOn { get; protected set; }
+    public DateTimeOffset? ProcessedOn { get; protected set; }
 
     public static OutboxMessage Create(DomainEvent @event)
         => new(@event);
 
-    public void MarkAsProcessed()
+    public void MarkAsProcessed(DateTimeOffset processedOn)
     {
         IsProcessed = true;
-        ProcessedOn = DateTime.Now;
+        ProcessedOn = processedOn;
     }
 }
 
 public class DeadLetterMessage : OutboxMessageBase
 {
-    private DeadLetterMessage(DomainEvent @event, int failedCount, DateTime? lastFailedAt)
+    private DeadLetterMessage(DomainEvent @event, int failedCount, DateTimeOffset? lastFailedOn)
         : base(@event)
     {
         FailedCount = failedCount;
-        LastFailedAt = lastFailedAt;
+        LastFailedOn = lastFailedOn;
     }
 
     public static DeadLetterMessage CreateFrom(OutboxMessage outboxMessage)
-        => new(outboxMessage.Event, outboxMessage.FailedCount, outboxMessage.LastFailedAt);
+        => new(outboxMessage.Event, outboxMessage.FailedCount, outboxMessage.LastFailedOn);
 }
