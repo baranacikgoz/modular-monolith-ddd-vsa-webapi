@@ -1,0 +1,50 @@
+using Common.Infrastructure.Options;
+using Common.Infrastructure.Persistence.Outbox;
+using MassTransit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace Outbox;
+public static class ModuleInstaller
+{
+    public static IServiceCollection AddOutboxModule(this IServiceCollection services)
+        => services
+            .AddOutboxDbContextAndInterceptor()
+            .AddOutboxHostedService();
+
+    public static WebApplication UseOutboxModule(this WebApplication app)
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
+            busControl.Start();
+
+            var context = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+            context.Database.Migrate();
+
+            busControl.Stop();
+        }
+
+        return app;
+    }
+
+    private static IServiceCollection AddOutboxDbContextAndInterceptor(this IServiceCollection services)
+        => services
+            .AddScoped<InsertOutboxMessagesInterceptor>()
+            .AddDbContext<OutboxDbContext>((sp, options) =>
+            {
+                var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
+                options
+                .UseNpgsql(
+                    connectionString,
+                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)));
+            });
+
+    private static IServiceCollection AddOutboxHostedService(this IServiceCollection services)
+        => services
+            .AddSingleton<OutboxBackgroundProcessor>()
+            .AddHostedService<OutboxBackgroundProcessor>();
+}

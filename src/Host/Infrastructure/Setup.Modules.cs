@@ -3,6 +3,7 @@ using Host.Middlewares;
 using IAM.Infrastructure;
 using Inventory.Infrastructure;
 using Notifications.Infrastructure;
+using Outbox;
 
 namespace Host.Infrastructure;
 
@@ -10,9 +11,10 @@ public static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
+            .AddOutboxModule()
+            .AddNotificationsModule()
             .AddIAMModule(configuration)
             .AddInventoryModule()
-            .AddNotificationsModule()
             .AddRateLimiting(configuration);
 
     public static IApplicationBuilder UseModules(this WebApplication app)
@@ -34,6 +36,8 @@ public static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
+        app.UseOutboxModule();
+        app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);
         app.UseInventoryModule(versionedApiGroup);
 

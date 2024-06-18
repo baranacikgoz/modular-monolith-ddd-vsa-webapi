@@ -3,7 +3,7 @@ using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Common.Infrastructure.Persistence.Context.Interceptors;
+namespace Common.Infrastructure.Persistence.Context;
 public class ApplyAuditingInterceptor(
     ICurrentUser currentUser,
     TimeProvider timeProvider
