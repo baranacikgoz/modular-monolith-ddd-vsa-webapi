@@ -31,6 +31,8 @@ public static class CustomPermissions
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
     [
+        new("Manage Hangfire Dashboard", CustomActions.Manage, CustomResources.Hangfire),
+
         new("Create Users", CustomActions.Create, CustomResources.Users),
         new("Read Users", CustomActions.Read, CustomResources.Users),
         new("Update Users", CustomActions.Update, CustomResources.Users),

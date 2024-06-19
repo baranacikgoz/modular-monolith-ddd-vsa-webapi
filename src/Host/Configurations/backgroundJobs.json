@@ -1,0 +1,6 @@
+{
+  "BackgroundJobsOptions": {
+    "PollingFrequencyInSeconds": 2,
+    "DashboardPath": "/hangfire"
+  }
+}

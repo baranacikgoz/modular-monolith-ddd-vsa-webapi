@@ -4,6 +4,7 @@ using IAM.Infrastructure;
 using Inventory.Infrastructure;
 using Notifications.Infrastructure;
 using Outbox;
+using BackgroundJobs;
 
 namespace Host.Infrastructure;
 
@@ -11,6 +12,7 @@ public static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
+            .AddBackgroundJobsModule()
             .AddOutboxModule()
             .AddNotificationsModule()
             .AddIAMModule(configuration)
@@ -36,6 +38,7 @@ public static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
+        app.UseBackgroundJobsModule();
         app.UseOutboxModule();
         app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);

@@ -87,6 +87,13 @@ public static class Setup
             .Validate(o => o.MaxFailCountBeforeSentToDeadLetter >= 0, "MaxFailCountBeforeSentToDeadLetter must be greater than 0.")
             .ValidateOnStart();
 
+        services
+            .AddOptions<BackgroundJobsOptions>()
+            .Bind(configuration.GetSection(nameof(BackgroundJobsOptions)))
+            .ValidateDataAnnotations()
+            .Validate(o => o.PollingFrequencyInSeconds > 0, "SchedulePollingIntervalSeconds must be greater than 0.")
+            .ValidateOnStart();
+
         return services;
     }
 }
