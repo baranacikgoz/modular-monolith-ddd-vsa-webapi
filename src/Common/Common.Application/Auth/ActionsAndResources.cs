@@ -13,10 +13,14 @@ public static class CustomActions
     public const string Search = nameof(Search);
     public const string SearchMy = nameof(SearchMy);
 
+    public const string Manage = nameof(Manage);
+
 }
 
 public static class CustomResources
 {
+    public const string Hangfire = nameof(Hangfire);
+
     public const string Users = nameof(Users);
 
     public const string Stores = nameof(Stores);

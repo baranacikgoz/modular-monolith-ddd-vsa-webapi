@@ -19,6 +19,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/openApi");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/eventBus");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/outbox");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/backgroundJobs");
 
         configuration.AddEnvironmentVariables();
 
