@@ -14,9 +14,15 @@ public static partial class Setup
 
         app
          .UseWhen(
-             context => context.Request.Path != "/metrics" && context.Request.Path != backgroundJobsDashboardPath,
+             context => !IsMetricsEndpoint(context) && !IsBackgroundJobsDashboardEndpoint(context, backgroundJobsDashboardPath),
              appBuilder => appBuilder.UseMiddleware<RequestResponseLoggingMiddleware>());
 
         return app;
     }
+
+    private static bool IsMetricsEndpoint(HttpContext context)
+        => context.Request.Path == "/metrics";
+
+    private static bool IsBackgroundJobsDashboardEndpoint(HttpContext context, string backgroundJobsDashboardPath)
+        => context.Request.Path.StartsWithSegments(backgroundJobsDashboardPath, StringComparison.OrdinalIgnoreCase);
 }
