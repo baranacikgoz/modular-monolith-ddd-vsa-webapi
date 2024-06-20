@@ -1,12 +1,14 @@
 using System.Globalization;
 using Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Compact;
+using Serilog.Sinks.OpenTelemetry;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host.Infrastructure;
@@ -16,13 +18,13 @@ public static partial class Setup
     public static IHostBuilder UseCustomizedSerilog(this IHostBuilder hostBuilder)
         => hostBuilder.UseSerilog((ctx, sp, serilog) =>
         {
-            var options = sp.GetRequiredService<IOptions<LoggingMonitoringOptions>>()?.Value
-                ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringOptions)} is null.");
+            var options = sp.GetRequiredService<IOptions<ObservabilityOptions>>()?.Value
+                ?? throw new InvalidOperationException($"{nameof(ObservabilityOptions)} is null.");
 
             serilog.ApplyConfigurations(options, ctx.HostingEnvironment);
         });
 
-    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, LoggingMonitoringOptions options, IHostEnvironment env)
+    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, ObservabilityOptions options, IHostEnvironment env)
     {
         serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
 
@@ -86,7 +88,7 @@ public static partial class Setup
         }
     }
 
-    private static void ConfigureEnrichers(this LoggerConfiguration serilog, LoggingMonitoringOptions options, IHostEnvironment env)
+    private static void ConfigureEnrichers(this LoggerConfiguration serilog, ObservabilityOptions options, IHostEnvironment env)
         => serilog
                 .Enrich
                     .WithProperty("Application", options.AppName)
@@ -107,7 +109,7 @@ public static partial class Setup
                 .Enrich
                     .WithSpan();
 
-    private static void ConfigureWriteTos(this LoggerConfiguration serilog, LoggingMonitoringOptions options)
+    private static void ConfigureWriteTos(this LoggerConfiguration serilog, ObservabilityOptions options)
     {
         if (options.WriteToConsole)
         {
@@ -134,7 +136,11 @@ public static partial class Setup
 
         serilog
             .WriteTo
-                .Async(wt => wt.Seq(options.SeqUrl));
+                .Async(wt => wt.OpenTelemetry(
+                                    endpoint: options.OtlpLoggingEndpoint,
+                                    protocol: options.OtlpLoggingProtocol.ToOtlpProtocol(),
+                                    resourceAttributes: new Dictionary<string, object>() { { "service.name", options.AppName } }
+                                    ));
     }
 
     private static bool IsDebug(this string level) => string.Equals("Debug", level, StringComparison.OrdinalIgnoreCase);

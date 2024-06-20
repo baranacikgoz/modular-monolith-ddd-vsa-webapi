@@ -33,7 +33,10 @@ public static partial class Setup
             .AddGlobalExceptionHandlingMiddleware()
             .AddCustomizedProblemDetails(env)
             .AddEndpointsApiExplorer()
-            .AddMetricsAndTracing(configuration, env)
+            .AddObservability(
+                configuration,
+                env,
+                Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
             .AddCustomCors()
             .AddCommonDependencies(env, configuration)
             .AddFluentValidationAndAutoValidation()
@@ -46,8 +49,8 @@ public static partial class Setup
             .UseRateLimiter()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware()
-            .UseAuth(betweenAuthenticationAndAuthorization: app => app.UseMiddleware<EnrichLogsWithUserInfoMiddleware>());
-    // .UsePrometheusScraping()
+            .UseAuth(betweenAuthenticationAndAuthorization: app => app.UseMiddleware<EnrichLogsWithUserInfoMiddleware>())
+            .UseObservability();
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)
         => services
