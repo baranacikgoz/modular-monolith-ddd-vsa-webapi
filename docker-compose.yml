@@ -1,4 +1,3 @@
-version: '3.4'
 name: mm-local-development
 
 services:
@@ -17,16 +16,22 @@ services:
       - mm.database
       # - mm.rabbitmq
     environment:
+      - ASPNETCORE_URLS=http://+:8080
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - EventBusOptions__UseInMemoryEventBus=true
       - OutboxOptions__BackgroundJobPeriodInSeconds=5
       - OutboxOptions__BatchSizePerExecution=100
       - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
-      - LoggingMonitoringOptions__AppVersion=1.0.0
-      - LoggingMonitoringOptions__SeqUrl=http://mm.seq:80
-      - LoggingMonitoringOptions__EnableMetrics=false
-      - LoggingMonitoringOptions__EnableTracing=false
-      - LoggingMonitoringOptions__OtlpTracingEndpoint=http://mm.seq:80/ingest/otlp/v1/traces
+      - ObservabilityOptions__AppVersion=1.0.0
+      - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq:5341/ingest/otlp/v1/logs
+      - ObservabilityOptions__OtlpLoggingProtocol=HttpProtobuf
+      - ObservabilityOptions__EnableMetrics=true
+      - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=true
+      # - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.prometheus:9090
+      # - ObservabilityOptions__OtlpMetricsProtocol=Grpc
+      - ObservabilityOptions__EnableTracing=true
+      - ObservabilityOptions__OtlpTracingEndpoint=http://mm.jaeger:4317
+      - ObservabilityOptions__OtlpTracingProtocol=Grpc
       - JwtOptions__AccessTokenExpirationInMinutes=1440 
 
   mm.database:
@@ -44,20 +49,56 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
 
-  # mm.rabbitmq:
-  #   image: rabbitmq:3-management
-  #   container_name: mm.rabbitmq
-  #   restart: "no"
-  #   networks:
-  #     - local_shared_network
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   volumes:
-  #     - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
-  #   environment:
-  #     - RABBITMQ_DEFAULT_USER=guest
-  #     - RABBITMQ_DEFAULT_PASS=guest
+  mm.jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: mm.jaeger
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - 16686:16686
+      - 4317:4317
+    volumes:
+      - ./.containers/mm.jaeger:/badger/data
+      - ./.containers/mm.jaeger:/badger/wal
+
+  mm.prometheus:
+    container_name: mm.prometheus
+    image: prom/prometheus
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - 9090:9090
+    volumes:
+      - ./.containers/mm.prometheus:/prometheus
+      - ./prometheus:/etc/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      # - --web.config.file=/etc/prometheus/web.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+
+  mm.grafana:
+    container_name: mm.grafana
+    image: grafana/grafana
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - 3000:3000
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./.containers/mm.grafana:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      # - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+    depends_on:
+      - mm.prometheus
 
   mm.seq:
     image: datalust/seq:latest

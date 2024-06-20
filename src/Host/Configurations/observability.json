@@ -1,5 +1,5 @@
 {
-  "LoggingMonitoringOptions": {
+  "ObservabilityOptions": {
     "AppName": "modular-monolith",
     "AppVersion": "1.0.0",
     "MinimumLevel": "Debug",
@@ -13,10 +13,14 @@
     "WriteToConsole": true,
     "WriteToFile": true,
     "ResponseTimeThresholdInMs": 1000,
-    "SeqUrl": "http://localhost:5341",
+    "OtlpLoggingEndpoint": "http://localhost:5341/ingest/otlp/v1/logs",
+    "OtlpLoggingProtocol": "HttpProtobuf",
     "EnableMetrics": false,
+    "OtlpMetricsUsePrometheusDirectly": true,
+    "OtlpMetricsEndpoint": "http://localhost:4317",
+    "OtlpMetricsProtocol": "HttpProtobuf",
     "EnableTracing": false,
     "OtlpTracingEndpoint": "http://localhost:5341/ingest/otlp/v1/traces",
-    "OtlpMetricsEndpoint": "http://localhost:4317"
+    "OtlpTracingProtocol": "HttpProtobuf"
   }
 }

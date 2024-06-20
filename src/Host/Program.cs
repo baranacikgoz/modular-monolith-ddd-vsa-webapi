@@ -11,8 +11,8 @@ builder.AddConfigurations();
 Log.Logger = new LoggerConfiguration()
                 .ApplyConfigurations(options: builder
                                         .Configuration
-                                        .GetSection(nameof(LoggingMonitoringOptions))
-                                        .Get<LoggingMonitoringOptions>() ?? throw new InvalidOperationException($"{nameof(LoggingMonitoringOptions)} is null."),
+                                        .GetSection(nameof(ObservabilityOptions))
+                                        .Get<ObservabilityOptions>() ?? throw new InvalidOperationException($"{nameof(ObservabilityOptions)} is null."),
                                      env: builder.Environment)
                 .CreateLogger();
 try

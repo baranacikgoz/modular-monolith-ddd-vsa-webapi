@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
-		prometheus.yml = prometheus.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -78,7 +77,36 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IAM.Infrastructure", "src\M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Outbox", "src\Modules\Outbox\Outbox.csproj", "{F4489ED6-B2FD-4B12-A805-A9382A638AFB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundJobs", "src\Modules\BackgroundJobs\BackgroundJobs.csproj", "{B932CD5A-E2D2-4E22-A528-B4B94FECF38D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackgroundJobs", "src\Modules\BackgroundJobs\BackgroundJobs.csproj", "{B932CD5A-E2D2-4E22-A528-B4B94FECF38D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prometheus", "prometheus", "{BCFA7F61-7B70-4B58-9761-F2B1D9AF04C8}"
+	ProjectSection(SolutionItems) = preProject
+		prometheus\prometheus.yml = prometheus\prometheus.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{111F60B8-ED74-4C81-93B4-98DBB59A40F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dashboards", "dashboards", "{2CA92E5B-D22B-4299-BA20-1D52FC9ECEE9}"
+	ProjectSection(SolutionItems) = preProject
+		grafana\dashboards\aspnetcore.json = grafana\dashboards\aspnetcore.json
+		grafana\dashboards\aspnetcore_endpoint.json = grafana\dashboards\aspnetcore_endpoint.json
+		grafana\dashboards\aspnet_otel.json = grafana\dashboards\aspnet_otel.json
+		grafana\dashboards\cadvisor.json = grafana\dashboards\cadvisor.json
+		grafana\dashboards\node_exporter.json = grafana\dashboards\node_exporter.json
+		grafana\dashboards\postgresql.json = grafana\dashboards\postgresql.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "provisioning", "provisioning", "{F433B40E-06CB-4E05-BD84-F09440492105}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dashboards", "dashboards", "{B546BBBC-6EA6-4773-B059-33F0D0B7F2C1}"
+	ProjectSection(SolutionItems) = preProject
+		grafana\provisioning\dashboards\dashboard.yml = grafana\provisioning\dashboards\dashboard.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "datasources", "datasources", "{59CE81AF-1522-4A63-8B53-2BB8683CFE2F}"
+	ProjectSection(SolutionItems) = preProject
+		grafana\provisioning\datasources\datasource.yml = grafana\provisioning\datasources\datasource.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -199,6 +227,12 @@ Global
 		{11873F6F-252D-42EE-8071-6C4ECD59CFD6} = {1C87A8D6-AD2E-423B-86E0-BD35C94BE21A}
 		{F4489ED6-B2FD-4B12-A805-A9382A638AFB} = {421B79E0-2999-47BA-9CC8-EE08E3F8CC5A}
 		{B932CD5A-E2D2-4E22-A528-B4B94FECF38D} = {421B79E0-2999-47BA-9CC8-EE08E3F8CC5A}
+		{BCFA7F61-7B70-4B58-9761-F2B1D9AF04C8} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{111F60B8-ED74-4C81-93B4-98DBB59A40F7} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{2CA92E5B-D22B-4299-BA20-1D52FC9ECEE9} = {111F60B8-ED74-4C81-93B4-98DBB59A40F7}
+		{F433B40E-06CB-4E05-BD84-F09440492105} = {111F60B8-ED74-4C81-93B4-98DBB59A40F7}
+		{B546BBBC-6EA6-4773-B059-33F0D0B7F2C1} = {F433B40E-06CB-4E05-BD84-F09440492105}
+		{59CE81AF-1522-4A63-8B53-2BB8683CFE2F} = {F433B40E-06CB-4E05-BD84-F09440492105}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}

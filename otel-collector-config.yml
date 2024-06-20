@@ -1,0 +1,16 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4318"  # Ensure the OTLP receiver listens on the correct port
+      http:
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:9464"  # Bind to all interfaces within the container
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheus]

@@ -7,6 +7,6 @@ providers:
     disableDeletion: false
     editable: true
     allowUiUpdates: true
-    updateIntervalSeconds: 10 # how often Grafana will scan for changed dashboards
+    updateIntervalSeconds: 5 # how often Grafana will scan for changed dashboards
     options:
       path: /var/lib/grafana/dashboards # path to dashboards on disk
