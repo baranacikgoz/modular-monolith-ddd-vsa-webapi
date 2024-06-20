@@ -6,6 +6,7 @@ datasources:
     url: http://mm.prometheus:9090
     editable: false
     uid: prometheus
+    isDefault: true
 
   - name: Jaeger
     type: jaeger

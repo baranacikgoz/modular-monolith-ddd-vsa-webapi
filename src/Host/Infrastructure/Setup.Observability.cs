@@ -1,5 +1,6 @@
 using System.Data;
 using Common.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -12,7 +13,19 @@ namespace Host.Infrastructure;
 public static partial class Setup
 {
     public static IApplicationBuilder UseObservability(this IApplicationBuilder app)
-        => app.UseOpenTelemetryPrometheusScrapingEndpoint();
+    {
+        var observabilityOptions = app
+                                    .ApplicationServices
+                                    .GetRequiredService<IOptions<ObservabilityOptions>>()
+                                    .Value ?? throw new InvalidOperationException("OtlpMetricsUsePrometheusDirectly is null.");
+
+        if (observabilityOptions.OtlpMetricsUsePrometheusDirectly)
+        {
+            app.UseOpenTelemetryPrometheusScrapingEndpoint();
+        }
+
+        return app;
+    }
     public static IServiceCollection AddObservability(
         this IServiceCollection services,
         IConfiguration configuration,

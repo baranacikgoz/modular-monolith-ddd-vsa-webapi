@@ -23,14 +23,14 @@ services:
       - OutboxOptions__BatchSizePerExecution=100
       - OutboxOptions__MaxFailCountBeforeSentToDeadLetter=3
       - ObservabilityOptions__AppVersion=1.0.0
-      - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq:5341/ingest/otlp/v1/logs
-      - ObservabilityOptions__OtlpLoggingProtocol=HttpProtobuf
+      - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.otel-collector:4317
+      - ObservabilityOptions__OtlpLoggingProtocol=Grpc
       - ObservabilityOptions__EnableMetrics=true
-      - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=true
-      # - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.prometheus:9090
-      # - ObservabilityOptions__OtlpMetricsProtocol=Grpc
+      - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=false
+      - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.otel-collector:4317
+      - ObservabilityOptions__OtlpMetricsProtocol=Grpc
       - ObservabilityOptions__EnableTracing=true
-      - ObservabilityOptions__OtlpTracingEndpoint=http://mm.jaeger:4317
+      - ObservabilityOptions__OtlpTracingEndpoint=http://mm.otel-collector:4317
       - ObservabilityOptions__OtlpTracingProtocol=Grpc
       - JwtOptions__AccessTokenExpirationInMinutes=1440 
 
@@ -56,8 +56,10 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 16686:16686
-      - 4317:4317
+      - "6831:6831/udp" # UDP port for Jaeger agent
+      - "16686:16686" # Web UI
+      - "14268:14268" # HTTP port for spans
+      - "4444:4317" # OTLP gRPC receiver for jaeger
     volumes:
       - ./.containers/mm.jaeger:/badger/data
       - ./.containers/mm.jaeger:/badger/wal
@@ -72,7 +74,7 @@ services:
       - 9090:9090
     volumes:
       - ./.containers/mm.prometheus:/prometheus
-      - ./prometheus:/etc/prometheus
+      - ./observability/prometheus:/etc/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       # - --web.config.file=/etc/prometheus/web.yml
@@ -105,11 +107,23 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - ./.containers/mm.grafana:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-      # - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
+      # - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
     depends_on:
       - mm.prometheus
+
+  mm.otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: mm.otel-collector
+    networks:
+      - local_shared_network
+    ports:
+      - "4317:4317" # OTLP gRPC receiver
+      - "9464:9464" # Prometheus exporter port
+    volumes:
+      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
+    command: ["--config=/etc/otel-collector-config.yml"]
 
   mm.seq:
     image: datalust/seq:latest
