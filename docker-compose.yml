@@ -80,6 +80,17 @@ services:
       - --web.console.libraries=/usr/share/prometheus/console_libraries
       - --web.console.templates=/usr/share/prometheus/consoles
 
+  mm.postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: mm.postgres-exporter
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - 9187:9187  # Expose PostgreSQL exporter metrics
+    environment:
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.database:5432/postgres?sslmode=disable
+
   mm.grafana:
     container_name: mm.grafana
     image: grafana/grafana
