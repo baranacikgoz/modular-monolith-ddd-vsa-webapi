@@ -16,7 +16,7 @@ exporters:
   # logging:
   #   loglevel: debug
 
-  seq:
+  otlphttp:
     endpoint: "http://mm.seq:5341/ingest/otlp"
 
 service:
@@ -29,4 +29,4 @@ service:
       exporters: [prometheus]
     logs:
       receivers: [otlp]
-      exporters: [seq]
+      exporters: [otlphttp]
