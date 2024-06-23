@@ -11,12 +11,13 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 8080:8080
+      - 5001:5001
     depends_on:
       - mm.database
       # - mm.rabbitmq
     environment:
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - EventBusOptions__UseInMemoryEventBus=true
       - OutboxOptions__BackgroundJobPeriodInSeconds=5
@@ -120,6 +121,7 @@ services:
       - local_shared_network
     ports:
       - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP HTTP receiver" 
       - "9464:9464" # Prometheus exporter port
     volumes:
       - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
