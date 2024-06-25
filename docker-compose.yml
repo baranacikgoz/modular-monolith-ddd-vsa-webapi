@@ -61,9 +61,10 @@ services:
       - "16686:16686" # Web UI
       - "14268:14268" # HTTP port for spans
       - "4444:4317" # OTLP gRPC receiver for jaeger
+      - "5555:4318"  
     volumes:
-      - ./.containers/mm.jaeger:/badger/data
-      - ./.containers/mm.jaeger:/badger/wal
+      - ./.containers/mm.jaeger/data:/badger/data
+      - ./.containers/mm.jaeger/wal:/badger/wal
 
   mm.prometheus:
     container_name: mm.prometheus
