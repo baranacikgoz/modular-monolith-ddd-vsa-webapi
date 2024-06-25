@@ -86,7 +86,8 @@ public static partial class Setup
                     new ExplicitBucketHistogramConfiguration
                     {
                         Boundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
-                    });
+                    })
+                .AddMeter(MassTransit.Monitoring.InstrumentationOptions.MeterName);
 
                 if (options.OtlpMetricsUsePrometheusDirectly)
                 {
@@ -121,6 +122,7 @@ public static partial class Setup
                     }
                 })
                 //.AddNpgsql()
+                .AddSource(MassTransit.Logging.DiagnosticHeaders.DefaultListenerName)
                 .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(options.OtlpTracingEndpoint);
