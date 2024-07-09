@@ -1,4 +1,5 @@
 using System.Data;
+using System.Diagnostics;
 using Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -32,6 +33,8 @@ public static partial class Setup
         IHostEnvironment env,
         IEnumerable<Func<string?, IDbCommand, bool>> efCoreTracingFiltersFromModules)
     {
+        Activity.DefaultIdFormat = ActivityIdFormat.W3C;
+
         var options = configuration
                         .GetSection(nameof(ObservabilityOptions))
                         .Get<ObservabilityOptions>()
