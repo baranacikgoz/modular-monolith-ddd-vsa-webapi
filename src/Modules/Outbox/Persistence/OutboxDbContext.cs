@@ -1,9 +1,10 @@
+using Common.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
-namespace Common.Infrastructure.Persistence.Outbox;
+namespace Outbox.Persistence;
 
 public class OutboxDbContext(DbContextOptions<OutboxDbContext> options)
-    : DbContext(options)
+    : DbContext(options), IOutboxDbContext
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -38,11 +38,11 @@ public static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
-        app.UseBackgroundJobsModule();
-        app.UseOutboxModule();
+        app.UseOutboxModule(); 
         app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);
         app.UseInventoryModule(versionedApiGroup);
+        app.UseBackgroundJobsModule();
 
         return app;
     }

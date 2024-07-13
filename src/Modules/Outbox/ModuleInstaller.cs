@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Outbox.Persistence;
 
 namespace Outbox;
 public static class ModuleInstaller
 {
     public static IServiceCollection AddOutboxModule(this IServiceCollection services)
         => services
+            .AddScoped<IOutboxDbContext, OutboxDbContext>()
             .AddOutboxDbContextAndInterceptor()
             .AddOutboxHostedService();
 
