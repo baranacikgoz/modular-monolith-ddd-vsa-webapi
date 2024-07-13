@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 namespace Common.Infrastructure.Persistence.Outbox;
 
 public class InsertOutboxMessagesInterceptor(
-    OutboxDbContext outboxDbContext
+    IOutboxDbContext outboxDbContext
     ) : SaveChangesInterceptor
 {
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(

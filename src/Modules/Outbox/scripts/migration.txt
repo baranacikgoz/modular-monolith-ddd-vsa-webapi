@@ -1,1 +1,1 @@
-dotnet ef migrations add initial --startup-project .\src\Host\ --project .\src\Common\Common.Infrastructure\ --context OutboxDbContext -o Persistence/Outbox/Migrations -v
+dotnet ef migrations add initial --dotnet ef migrations add demo --startup-project .\src\Host\ --project .\src\Modules\Outbox\ --context OutboxDbContext -o Persistence/Migrations -v
