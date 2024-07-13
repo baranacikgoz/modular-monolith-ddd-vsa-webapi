@@ -6,9 +6,9 @@ using Inventory.Domain.Stores;
 
 namespace Inventory.Domain.StoreProducts;
 
-public readonly record struct StoreProductId(Guid Value) : IStronglyTypedId
+public readonly record struct StoreProductId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static StoreProductId New() => new(Guid.NewGuid());
+    public static StoreProductId New() => new(DefaultIdType.NewGuid());
     public override string ToString() => Value.ToString();
     public static bool TryParse(string str, out StoreProductId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
@@ -48,5 +48,5 @@ public class StoreProduct : AuditableEntity<StoreProductId>
         Price = price;
     }
 
-    public StoreProduct() : base(new(Guid.Empty)) { } // ORMs need a parameterless ctor
+    public StoreProduct() : base(new(DefaultIdType.Empty)) { } // ORMs need a parameterless ctor
 }

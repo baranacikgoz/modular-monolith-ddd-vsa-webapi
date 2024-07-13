@@ -22,9 +22,9 @@ public class StronglyTypedIdBinder<TId> : IModelBinder where TId : IStronglyType
             return Task.CompletedTask;
         }
 
-        if (!Guid.TryParse(valueProviderResult.FirstValue, out var guid))
+        if (!DefaultIdType.TryParse(valueProviderResult.FirstValue, out var guid))
         {
-            bindingContext.ModelState.TryAddModelError(modelName, "Can't bind to a Guid.");
+            bindingContext.ModelState.TryAddModelError(modelName, $"Can't bind to a {nameof(DefaultIdType)}.");
             return Task.CompletedTask;
         }
 

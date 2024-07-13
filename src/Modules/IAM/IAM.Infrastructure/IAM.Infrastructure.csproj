@@ -21,10 +21,6 @@
     <ProjectReference Include="..\IAM.Application\IAM.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Persistence\Migrations\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

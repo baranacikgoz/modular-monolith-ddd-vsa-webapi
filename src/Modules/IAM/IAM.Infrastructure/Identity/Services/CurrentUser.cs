@@ -17,6 +17,6 @@ internal sealed class CurrentUser(
             : string.Empty;
     public ApplicationUserId Id
         => new(string.IsNullOrEmpty(IdAsString)
-            ? Guid.Empty
-            : Guid.Parse(IdAsString));
+            ? DefaultIdType.Empty
+            : DefaultIdType.Parse(IdAsString));
 }

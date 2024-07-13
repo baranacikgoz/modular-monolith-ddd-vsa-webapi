@@ -8,7 +8,7 @@ public class RoleService(
     IAMDbContext dbContext
     ) : IRoleService
 {
-    public async Task<Guid?> GetRoleIdByName(string roleName, CancellationToken cancellationToken)
+    public async Task<DefaultIdType?> GetRoleIdByName(string roleName, CancellationToken cancellationToken)
     {
         var roleId = await dbContext
                                .Roles

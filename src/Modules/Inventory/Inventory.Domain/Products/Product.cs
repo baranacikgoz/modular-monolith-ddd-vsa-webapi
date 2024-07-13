@@ -6,9 +6,9 @@ using Inventory.Domain.StoreProducts;
 
 namespace Inventory.Domain.Products;
 
-public readonly record struct ProductId(Guid Value) : IStronglyTypedId
+public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static ProductId New() => new(Guid.NewGuid());
+    public static ProductId New() => new(DefaultIdType.NewGuid());
     public override string ToString() => Value.ToString();
     public static bool TryParse(string str, out ProductId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
@@ -92,5 +92,5 @@ public class Product : AggregateRoot<ProductId>
         Description = @event.Description;
     }
 
-    public Product() : base(new(Guid.Empty)) { } // ORMs need parameterlers ctor
+    public Product() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
 }

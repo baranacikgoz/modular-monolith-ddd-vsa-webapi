@@ -4,7 +4,7 @@ using Common.Domain.Events;
 namespace Common.Infrastructure.Persistence.EventSourcing;
 public class EventStoreEvent : AuditableEntity
 {
-    private EventStoreEvent(Guid aggregateId, long version, DomainEvent @event)
+    private EventStoreEvent(DefaultIdType aggregateId, long version, DomainEvent @event)
     {
         AggregateId = aggregateId;
         Event = @event;
@@ -12,12 +12,12 @@ public class EventStoreEvent : AuditableEntity
         EventType = @event.GetType().Name ?? throw new InvalidOperationException("Type Name can't be null.");
     }
 
-    public Guid AggregateId { get; }
+    public DefaultIdType AggregateId { get; }
     public string EventType { get; }
     public DomainEvent Event { get; }
     public new long Version { get; }
 
-    public static EventStoreEvent Create(Guid aggregateId, long version, DomainEvent @event)
+    public static EventStoreEvent Create(DefaultIdType aggregateId, long version, DomainEvent @event)
         => new(aggregateId, version, @event);
 
 #pragma warning disable CS8618

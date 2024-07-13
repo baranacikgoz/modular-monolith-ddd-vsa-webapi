@@ -113,7 +113,7 @@ internal class UserService(
 
     private static string CacheKeyForRoles(ApplicationUserId userId) => $"roles:{userId}";
 
-    public async Task<ICollection<ApplicationUserId>> GetSeedUserIdsByRoleId(Guid roleId, int requestedUserCount, CancellationToken cancellationToken)
+    public async Task<ICollection<ApplicationUserId>> GetSeedUserIdsByRoleId(DefaultIdType roleId, int requestedUserCount, CancellationToken cancellationToken)
     {
         var stronglyTypedRoleId = new ApplicationUserId(roleId);
         return await dbContext

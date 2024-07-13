@@ -8,9 +8,9 @@ using Inventory.Domain.Stores.DomainEvents.v1;
 
 namespace Inventory.Domain.Stores;
 
-public readonly record struct StoreId(Guid Value) : IStronglyTypedId
+public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static StoreId New() => new(Guid.NewGuid());
+    public static StoreId New() => new(DefaultIdType.NewGuid());
     public override string ToString() => Value.ToString();
     public static bool TryParse(string str, out StoreId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
@@ -215,6 +215,6 @@ public class Store : AggregateRoot<StoreId>
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public Store() : base(new(Guid.Empty)) { } // ORMs need parameterlers ctor
+    public Store() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 }
