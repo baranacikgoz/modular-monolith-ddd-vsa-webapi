@@ -17,7 +17,7 @@ public class DeleteStreamIfAggregateIsDeletedInterceptor : SaveChangesIntercepto
             return await base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        List<Guid>? aggregateIdsToRemove = null;
+        List<DefaultIdType>? aggregateIdsToRemove = null;
         foreach (var aggregateRoot in dbContext
                                       .ChangeTracker
                                       .Entries<IAggregateRoot>()

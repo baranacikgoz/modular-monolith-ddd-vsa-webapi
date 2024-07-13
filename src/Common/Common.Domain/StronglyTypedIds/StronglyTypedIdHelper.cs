@@ -4,7 +4,7 @@ public static class StronglyTypedIdHelper
 {
     public static bool TryDeserialize<TId>(string str, out TId? id) where TId : IStronglyTypedId, new()
     {
-        if (!Guid.TryParse(str, out var guid))
+        if (!DefaultIdType.TryParse(str, out var guid))
         {
             id = default;
             return false;

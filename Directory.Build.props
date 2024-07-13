@@ -11,6 +11,10 @@
       Include="SonarAnalyzer.CSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="$(SolutionDir)GlobalUsings.cs" />
+  </ItemGroup>
+
   <PropertyGroup>
     <AnalysisMode>all</AnalysisMode>
     <AnalysisScope>all</AnalysisScope>
