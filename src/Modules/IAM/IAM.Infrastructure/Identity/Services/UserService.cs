@@ -103,6 +103,8 @@ internal class UserService(
                         return true;
                     }
                     break;
+                default:
+                    break;
             }
         }
 

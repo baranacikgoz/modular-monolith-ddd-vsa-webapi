@@ -2,7 +2,6 @@ namespace Common.Domain.ResultMonad;
 
 public sealed class Result
 {
-    private static readonly Result _success = new(null);
     public Error? Error { get; }
     public bool IsFailure { get; }
 
@@ -12,9 +11,9 @@ public sealed class Result
         IsFailure = error is not null;
     }
 
-    public static Result Success => _success;
+    public static Result Success { get; } = new(null);
     public static Result Failure(Error error) => new(error);
-    public static Result Create() => _success;
+    public static Result Create() => Success;
 
 #pragma warning disable CA2225
     public static implicit operator Result(Error error) => Failure(error);
