@@ -20,6 +20,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/eventBus");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/outbox");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/backgroundJobs");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/caching");
 
         configuration.AddEnvironmentVariables();
 

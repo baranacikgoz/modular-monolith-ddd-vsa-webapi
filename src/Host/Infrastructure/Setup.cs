@@ -79,7 +79,7 @@ internal static partial class Setup
 
     private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config)
         => services
-            .AddCommonCaching()
+            .AddCommonCaching(config)
             .AddCommonEventBus(config, _moduleAssemblies)
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()

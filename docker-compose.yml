@@ -33,7 +33,12 @@ services:
       - ObservabilityOptions__EnableTracing=true
       - ObservabilityOptions__OtlpTracingEndpoint=http://mm.otel-collector:4317
       - ObservabilityOptions__OtlpTracingProtocol=Grpc
-      - JwtOptions__AccessTokenExpirationInMinutes=1440 
+      - JwtOptions__AccessTokenExpirationInMinutes=1440
+      - CachingOptions__UseRedis=false
+      - CachingOptions__Redis__Host=mm.redis
+      - CachingOptions__Redis__Port=6379
+      - CachingOptions__Redis__Password=admin
+      - CachingOptions__Redis__AppName=modular-monolith-
 
   mm.database:
     image: postgres:latest
@@ -50,6 +55,21 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
 
+  # mm.redis:
+  #   image: redis/redis-stack:latest
+  #   container_name: mm.redis
+  #   restart: "no"
+  #   volumes:
+  #     - ./.containers/mm.redis:/data
+  #   networks:
+  #     - local_shared_network
+  #   ports:
+  #     - 6379:6379
+  #     - 8001:8001 
+  #   environment:
+  #     - REDIS_PASSWORD=admin
+  #   command: redis-server --requirepass admin
+
   mm.jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: mm.jaeger
@@ -61,7 +81,7 @@ services:
       - "16686:16686" # Web UI
       - "14268:14268" # HTTP port for spans
       - "4444:4317" # OTLP gRPC receiver for jaeger
-      - "5555:4318"  
+      - "5555:4318"
     volumes:
       - ./.containers/mm.jaeger/data:/badger/data
       - ./.containers/mm.jaeger/wal:/badger/wal
@@ -122,7 +142,7 @@ services:
       - local_shared_network
     ports:
       - "4317:4317" # OTLP gRPC receiver
-      - "4318:4318" # OTLP HTTP receiver" 
+      - "4318:4318" # OTLP HTTP receiver"
       - "9464:9464" # Prometheus exporter port
     volumes:
       - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml

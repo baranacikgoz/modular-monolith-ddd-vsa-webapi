@@ -60,17 +60,18 @@ internal class UserService(
     }
 
     public Task<List<string>> GetRoles(ApplicationUserId userId, CancellationToken cancellationToken)
-        => cacheService.GetOrSetAsync(
-            CacheKeyForRoles(userId),
-            () => dbContext
+        => cacheService.GetOrCreateAsync(
+            key: CacheKeyForRoles(userId),
+            factory: async ct => await dbContext
                     .UserRoles
                     .Where(ur => ur.UserId == userId)
                     .Join(dbContext.Roles,
                           ur => ur.RoleId,
                           r => r.Id,
                           (ur, r) => r.Name!)
-                    .ToListAsync(cancellationToken),
-                    slidingExpiration: TimeSpan.FromDays(7), cancellationToken: cancellationToken);
+                    .ToListAsync(ct),
+            absoluteExpirationRelativeToNow: TimeSpan.FromDays(7),
+            cancellationToken: cancellationToken);
 
     public async Task<DateTimeOffset?> GetRefreshTokenExpiresAt(ApplicationUserId userId, string refreshToken, CancellationToken cancellationToken)
     {
