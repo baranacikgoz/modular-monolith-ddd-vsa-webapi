@@ -1,9 +1,6 @@
 using Host.Configurations;
-using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
-using Common.Infrastructure.Persistence;
-using Common.Infrastructure.Options;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);

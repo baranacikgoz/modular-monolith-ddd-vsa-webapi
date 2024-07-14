@@ -1,0 +1,11 @@
+{
+  "CachingOptions": {
+    "UseRedis": false,
+    "Redis": {
+      "Host": "localhost",
+      "Port": 6379,
+      "Password": "admin",
+      "AppName": "modular-monolith"
+    }
+  }
+}
