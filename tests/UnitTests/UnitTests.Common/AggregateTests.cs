@@ -7,7 +7,9 @@ using Xunit;
 
 namespace UnitTests.Common;
 
+#pragma warning disable CA1515 // Consider making public types internal
 public abstract class AggregateTests<TAggregate, TId>
+#pragma warning restore CA1515 // Consider making public types internal
     where TAggregate : AggregateRoot<TId>, new()
     where TId : IStronglyTypedId
 {
@@ -180,14 +182,7 @@ public abstract class AggregateTests<TAggregate, TId>
             Assert.Fail("Both _aggregateResult and _plainResult should not have been set at the same time");
         }
 
-        if (_aggregateResult is not null)
-        {
-            _error = _aggregateResult.Error;
-        }
-        else
-        {
-            _error = _plainResult!.Error;
-        }
+        _error = _aggregateResult is not null ? _aggregateResult.Error : _plainResult!.Error;
 
         _error.Should().NotBeNull();
 

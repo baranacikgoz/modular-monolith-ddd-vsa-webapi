@@ -8,7 +8,7 @@ using BackgroundJobs;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services

@@ -14,7 +14,7 @@ using Host.Middlewares;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
@@ -38,7 +38,7 @@ public static partial class Setup
                 env,
                 Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
             .AddCustomCors()
-            .AddCommonDependencies(env, configuration)
+            .AddCommonDependencies(configuration)
             .AddFluentValidationAndAutoValidation()
             .AddEnrichLogsWithUserInfoMiddlware();
 
@@ -77,10 +77,10 @@ public static partial class Setup
             };
         });
 
-    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
+    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config)
         => services
             .AddCommonCaching()
-            .AddCommonEventBus(env, config, _moduleAssemblies)
+            .AddCommonEventBus(config, _moduleAssemblies)
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)

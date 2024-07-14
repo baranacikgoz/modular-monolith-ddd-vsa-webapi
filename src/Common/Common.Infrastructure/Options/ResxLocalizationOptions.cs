@@ -8,5 +8,5 @@ public class ResxLocalizationOptions
     public string DefaultCulture { get; set; } = default!;
 
     [Required(AllowEmptyStrings = false)]
-    public ICollection<string> SupportedCultures { get; } = new List<string>();
+    public ICollection<string> SupportedCultures { get; } = [];
 }

@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-public class RemoveDefaultResponseSchemaFilter : IOperationFilter
+internal class RemoveDefaultResponseSchemaFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
