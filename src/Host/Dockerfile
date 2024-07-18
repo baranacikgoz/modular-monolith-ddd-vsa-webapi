@@ -10,6 +10,8 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
 COPY ["src/Host/Host.csproj", "src/Host/"]
 COPY ["src/Common/Common.Infrastructure/Common.Infrastructure.csproj", "src/Common/Common.Infrastructure/"]
 COPY ["src/Common/Common.Application/Common.Application.csproj", "src/Common/Common.Application/"]
