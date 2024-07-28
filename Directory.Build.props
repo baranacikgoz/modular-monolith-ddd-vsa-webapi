@@ -16,6 +16,13 @@
     <Using Include="System.Guid" Alias="DefaultIdType" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      Condition="!$(MSBuildProjectName.StartsWith('Common')) And $(MSBuildProjectName.EndsWith('Application'))"/>
+  </ItemGroup>
+
   <PropertyGroup>
     <AnalysisMode>all</AnalysisMode>
     <AnalysisScope>all</AnalysisScope>
