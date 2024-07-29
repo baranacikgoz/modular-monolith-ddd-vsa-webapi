@@ -21,7 +21,7 @@ public static class CustomResources
 {
     public const string Hangfire = nameof(Hangfire);
 
-    public const string Users = nameof(Users);
+    public const string ApplicationUsers = nameof(ApplicationUsers);
 
     public const string Stores = nameof(Stores);
     public const string Products = nameof(Products);
