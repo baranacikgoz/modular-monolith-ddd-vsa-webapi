@@ -16,7 +16,7 @@ public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
     public static bool TryParse(string str, out StoreId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
 
-public class Store : AggregateRoot<StoreId>, ISingleOwnableEntity
+public class Store : AggregateRoot<StoreId>
 {
     public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
