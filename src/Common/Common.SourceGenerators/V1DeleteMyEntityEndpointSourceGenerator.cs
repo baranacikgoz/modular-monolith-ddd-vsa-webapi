@@ -7,15 +7,10 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Common.SourceGenerators;
 
-/// <summary>
-/// This source generator is intended to generate the delete endpoint for the entities those implements ISingleOwnableEntity,
-/// AND user(s) may have at most 1 of it (Such as store)
-/// So, this endpoint must not require an id in the route because the entity is unique per user. It should be removed by user id only.
-/// </summary>
 [Generator]
-public class V1DeleteMySingleOwnableEntityEndpointSourceGenerator : IIncrementalGenerator
+public class V1DeleteMyEntityEndpointSourceGenerator : IIncrementalGenerator
 {
-    private const string SingleOwnableEntityInterfaceName = "ISingleOwnableEntity";
+    private const string AuditableEntityInterfaceName = "IAuditableEntity";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -41,53 +36,60 @@ public class V1DeleteMySingleOwnableEntityEndpointSourceGenerator : IIncremental
                         .SingleOrDefault(assembly => string.Equals(assembly.Name, domainProjectName, StringComparison.Ordinal));
             });
 
-        // Step 4: Generate the endpoints for each entity implementing IAuditableEntity
+        // Step 4: Generate the endpoints for each entity implementing IAuditableEntity and having OwnerId field
         var endpointSourceProvider = domainAssemblyProvider
-            .SelectMany((domainAssemblySymbol, _) => GetAuditableEntities(domainAssemblySymbol?.GlobalNamespace))
+            .SelectMany((domainAssemblySymbol, _) => GetAuditableEntitiesHavingOwnerIdField(domainAssemblySymbol?.GlobalNamespace))
             .Combine(moduleNameProvider)
             .Select((pair, _) => GenerateDeleteEndpointCode(pair.Left.namespaceName, pair.Right, pair.Left.className));
 
         // Step 5: Add the source to the compilation
         context.RegisterSourceOutput(endpointSourceProvider, (context, source) =>
         {
-            context.AddSource($"{source.ClassName}_DeleteMyEntityEndpoint.g.cs", SourceText.From(source.SourceCode, Encoding.UTF8));
+            context.AddSource($"{source.ClassName}_DeleteEndpoint.g.cs", SourceText.From(source.SourceCode, Encoding.UTF8));
         });
-
     }
 
-    private static IEnumerable<(string namespaceName, string className, string sourceCode)> GetAuditableEntities(INamespaceSymbol? rootNs)
+    private static IEnumerable<(string namespaceName, string className, string sourceCode)> GetAuditableEntitiesHavingOwnerIdField(INamespaceSymbol? rootNs)
     {
-        if (rootNs is null)
+        if (rootNs is not null)
         {
-            yield break;
-        }
+            var stack = new Stack<INamespaceSymbol>();
+            stack.Push(rootNs);
 
-        var stack = new Stack<INamespaceSymbol>();
-        stack.Push(rootNs);
-
-        while (stack.Count > 0)
-        {
-            foreach (var member in stack.Pop().GetMembers())
+            while (stack.Count > 0)
             {
-                if (member is INamespaceSymbol namespaceSymbol)
+                foreach (var member in stack.Pop().GetMembers())
                 {
-                    stack.Push(namespaceSymbol);
-                }
-                else if (member is INamedTypeSymbol namedTypeSymbol && ImplementsIAuditableEntity(namedTypeSymbol))
-                {
-                    var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
-                    var className = namedTypeSymbol.Name;
-                    var (SourceCode, ClassName) = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
-                    yield return (namespaceName, ClassName, SourceCode);
+                    if (member is INamespaceSymbol namespaceSymbol)
+                    {
+                        stack.Push(namespaceSymbol);
+                    }
+                    else if (member is INamedTypeSymbol namedTypeSymbol && ImplementsIAuditableEntity(namedTypeSymbol) && HasOwnerIdField(namedTypeSymbol))
+                    {
+                        var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
+                        var className = namedTypeSymbol.Name;
+                        var (SourceCode, ClassName) = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
+                        yield return (namespaceName, ClassName, SourceCode);
+                    }
                 }
             }
         }
     }
 
     private static bool ImplementsIAuditableEntity(INamedTypeSymbol namedTypeSymbol)
-        => namedTypeSymbol
+    {
+        return namedTypeSymbol
             .AllInterfaces
-            .Any(i => i.Name.Contains(SingleOwnableEntityInterfaceName));
+            .Any(i => i.Name.Contains(AuditableEntityInterfaceName));
+    }
+
+    private static bool HasOwnerIdField(INamedTypeSymbol namedTypeSymbol)
+    {
+        return namedTypeSymbol
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Any(p => p.Name == "OwnerId");
+    }
 
     private static string GetModuleName(string assemblyName)
     {
@@ -128,27 +130,28 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder apiGroup)
     {{
         apiGroup
-            .MapDelete("""", DeleteMy{className}Async)
+            .MapDelete(""{{id}}"", Delete{className}Async)
             .WithDescription(""Delete my {className}."")
             .MustHavePermission(CustomActions.DeleteMy, CustomResources.{pluralClassName})
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }}
 
-    private sealed class {className}ByOwnerIdSpec : SingleResultSpecification<{className}>
+    private sealed class {className}ByIdAndOwnerIdSpec : SingleResultSpecification<{className}>
     {{
-        public {className}ByOwnerIdSpec(ApplicationUserId ownerId)
+        public {className}ByIdAndOwnerIdSpec({className}Id id, ApplicationUserId ownerId)
             => Query
-                .Where(p => p.OwnerId == ownerId);
+                .Where(p => p.Id == id && p.OwnerId == ownerId);
     }}
 
-    private static async Task<Result> DeleteMy{className}Async(
-        [FromServices] ICurrentUser currentUser,
+    private static async Task<Result> Delete{className}Async(
+        [FromRoute, ModelBinder(typeof(StronglyTypedIdBinder<{className}Id>))] {className}Id id,
         [FromServices] IRepository<{className}> repository,
+        [FromServices] ICurrentUser currentUser,
         [FromKeyedServices(nameof({moduleName}))] IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
         => await repository
-            .SingleOrDefaultAsResultAsync(new {className}ByOwnerIdSpec(currentUser.Id), cancellationToken)
+            .SingleOrDefaultAsResultAsync(new {className}ByIdAndOwnerIdSpec(id, currentUser.Id), cancellationToken)
             .TapAsync(entity => repository.Delete(entity))
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
 }}

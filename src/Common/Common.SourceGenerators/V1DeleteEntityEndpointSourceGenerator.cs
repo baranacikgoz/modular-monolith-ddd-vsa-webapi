@@ -52,28 +52,26 @@ public class V1DeleteEntityEndpointSourceGenerator : IIncrementalGenerator
 
     private static IEnumerable<(string namespaceName, string className, string sourceCode)> GetAuditableEntities(INamespaceSymbol? rootNs)
     {
-        if (rootNs is null)
+        if (rootNs is not null)
         {
-            yield break;
-        }
+            var stack = new Stack<INamespaceSymbol>();
+            stack.Push(rootNs);
 
-        var stack = new Stack<INamespaceSymbol>();
-        stack.Push(rootNs);
-
-        while (stack.Count > 0)
-        {
-            foreach (var member in stack.Pop().GetMembers())
+            while (stack.Count > 0)
             {
-                if (member is INamespaceSymbol namespaceSymbol)
+                foreach (var member in stack.Pop().GetMembers())
                 {
-                    stack.Push(namespaceSymbol);
-                }
-                else if (member is INamedTypeSymbol namedTypeSymbol && ImplementsIAuditableEntity(namedTypeSymbol))
-                {
-                    var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
-                    var className = namedTypeSymbol.Name;
-                    var (SourceCode, ClassName) = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
-                    yield return (namespaceName, ClassName, SourceCode);
+                    if (member is INamespaceSymbol namespaceSymbol)
+                    {
+                        stack.Push(namespaceSymbol);
+                    }
+                    else if (member is INamedTypeSymbol namedTypeSymbol && ImplementsIAuditableEntity(namedTypeSymbol))
+                    {
+                        var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
+                        var className = namedTypeSymbol.Name;
+                        var (SourceCode, ClassName) = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
+                        yield return (namespaceName, ClassName, SourceCode);
+                    }
                 }
             }
         }
