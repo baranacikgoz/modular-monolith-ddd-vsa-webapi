@@ -8,46 +8,58 @@ using Microsoft.CodeAnalysis.Text;
 namespace Common.SourceGenerators;
 
 [Generator]
-public class V1DeleteEndpointSourceGenerator : ISourceGenerator
+public class V1DeleteEntityEndpointSourceGenerator : IIncrementalGenerator
 {
     private const string AuditableEntityInterfaceName = "IAuditableEntity";
 
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // No initialization required
+        // Step 1: Get the module name
+        var moduleNameProvider = context
+            .CompilationProvider
+            .Select((compilation, _) => GetModuleName(compilation.AssemblyName!));
+
+        // Step 2: Get the domain project name
+        var domainProjectNameProvider = moduleNameProvider
+            .Select((moduleName, _) => $"{moduleName}.Domain");
+
+        // Step 3: Find the domain assembly symbol
+        var domainAssemblyProvider = context
+            .CompilationProvider
+            .Combine(domainProjectNameProvider)
+            .Select((pair, _) =>
+            {
+                var (compilation, domainProjectName) = pair;
+                return compilation
+                        .SourceModule
+                        .ReferencedAssemblySymbols
+                        .SingleOrDefault(assembly => string.Equals(assembly.Name, domainProjectName, StringComparison.Ordinal));
+            });
+
+        // Step 4: Generate the endpoints for each entity implementing IAuditableEntity
+        var endpointSourceProvider = domainAssemblyProvider
+            .SelectMany((domainAssemblySymbol, _) => GetAuditableEntities(domainAssemblySymbol?.GlobalNamespace))
+            .Combine(moduleNameProvider)
+            .Select((pair, _) => GenerateDeleteEndpointCode(pair.Left.namespaceName, pair.Right, pair.Left.className));
+
+        // Step 5: Add the source to the compilation
+        context.RegisterSourceOutput(endpointSourceProvider, (context, source) =>
+        {
+            context.AddSource($"{source.ClassName}_DeleteEndpoint.g.cs", SourceText.From(source.SourceCode, Encoding.UTF8));
+        });
+
     }
 
-    public void Execute(GeneratorExecutionContext context)
+    private static IEnumerable<(string namespaceName, string className, string sourceCode)> GetAuditableEntities(INamespaceSymbol? rootNs)
     {
-        var compilation = context.Compilation;
-
-        // Identify the module name from the application project name
-        var moduleName = GetModuleName(context.Compilation.AssemblyName!);
-        if (moduleName == null)
+        if (rootNs is null)
         {
-            context.ReportDiagnostic(Diagnostic.Create(_moduleNameNotFoundDescriptor, Location.None));
-            return;
+            yield break;
         }
 
-        // Construct the corresponding domain project name
-        var domainProjectName = $"{moduleName}.Domain";
-        context.ReportDiagnostic(Diagnostic.Create(_domainProjectNameDescriptor, Location.None, domainProjectName));
-
-        // Find the domain project in the referenced assemblies
-        var domainAssemblySymbol = compilation
-            .SourceModule
-            .ReferencedAssemblySymbols
-            .SingleOrDefault(assembly => string.Equals(assembly.Name, domainProjectName, StringComparison.Ordinal));
-
-        if (domainAssemblySymbol == null)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(_domainProjectNotFoundDescriptor, Location.None, domainProjectName));
-            return;
-        }
-
-        var rootNs = domainAssemblySymbol.GlobalNamespace;
         var stack = new Stack<INamespaceSymbol>();
         stack.Push(rootNs);
+
         while (stack.Count > 0)
         {
             foreach (var member in stack.Pop().GetMembers())
@@ -56,19 +68,12 @@ public class V1DeleteEndpointSourceGenerator : ISourceGenerator
                 {
                     stack.Push(namespaceSymbol);
                 }
-                else if (member is INamedTypeSymbol namedTypeSymbol)
+                else if (member is INamedTypeSymbol namedTypeSymbol && ImplementsIAuditableEntity(namedTypeSymbol))
                 {
-                    if (!ImplementsIAuditableEntity(namedTypeSymbol))
-                    {
-                        continue;
-                    }
-
                     var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
                     var className = namedTypeSymbol.Name;
-
-                    var source = GenerateDeleteEndpointCode(namespaceName, moduleName, className);
-                    context.AddSource($"{className}_DeleteEndpoint.g.cs", SourceText.From(source, Encoding.UTF8));
-                    context.ReportDiagnostic(Diagnostic.Create(_endpointGeneratedDescriptor, Location.None, className));
+                    var result = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
+                    yield return (namespaceName, className, result.SourceCode);
                 }
             }
         }
@@ -91,10 +96,10 @@ public class V1DeleteEndpointSourceGenerator : ISourceGenerator
         throw new InvalidOperationException("Invalid assembly name");
     }
 
-    private static string GenerateDeleteEndpointCode(string namespaceName, string moduleName, string className)
+    private static (string SourceCode, string ClassName) GenerateDeleteEndpointCode(string namespaceName, string moduleName, string className)
     {
         var pluralClassName = Pluralize(className);
-        return $@"
+        var sourceCode = $@"
 // WARNING: Auto-Generated by Source Generator.
 
 using Microsoft.AspNetCore.Builder;
@@ -143,6 +148,7 @@ internal static class Endpoint
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
 }}
 ";
+        return (sourceCode, className);
     }
 
     private static string Pluralize(string word)
@@ -159,36 +165,4 @@ internal static class Endpoint
 
         return $"{word}s";
     }
-
-    private static readonly DiagnosticDescriptor _moduleNameNotFoundDescriptor = new(
-        id: "SOURCEGEN001",
-        title: "Module Name Not Found",
-        messageFormat: "Module name not found",
-        category: "SourceGenerator",
-        defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor _domainProjectNotFoundDescriptor = new(
-        id: "SOURCEGEN002",
-        title: "Domain Project Not Found",
-        messageFormat: "Domain project {0} not found",
-        category: "SourceGenerator",
-        defaultSeverity: DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor _endpointGeneratedDescriptor = new(
-        id: "SOURCEGEN003",
-        title: "Endpoint Generated",
-        messageFormat: "Generated delete endpoint for {0}",
-        category: "SourceGenerator",
-        defaultSeverity: DiagnosticSeverity.Info,
-        isEnabledByDefault: true);
-
-    private static readonly DiagnosticDescriptor _domainProjectNameDescriptor = new(
-        id: "SOURCEGEN004",
-        title: "Domain Project Name",
-        messageFormat: "Domain project name was {0}",
-        category: "SourceGenerator",
-        defaultSeverity: DiagnosticSeverity.Info,
-        isEnabledByDefault: true);
 }
