@@ -72,8 +72,8 @@ public class V1DeleteEntityEndpointSourceGenerator : IIncrementalGenerator
                 {
                     var namespaceName = namedTypeSymbol.ContainingNamespace.ToDisplayString();
                     var className = namedTypeSymbol.Name;
-                    var result = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
-                    yield return (namespaceName, className, result.SourceCode);
+                    var (SourceCode, ClassName) = GenerateDeleteEndpointCode(namespaceName, string.Empty, className);
+                    yield return (namespaceName, ClassName, SourceCode);
                 }
             }
         }
