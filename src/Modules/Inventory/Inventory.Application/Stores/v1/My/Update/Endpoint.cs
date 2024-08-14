@@ -18,8 +18,8 @@ internal static class Endpoint
     {
         myStoresApiGroup
             .MapPut("", UpdateMyStoreAsync)
-            .WithDescription("Update my product.")
-            .MustHavePermission(CustomActions.Create, CustomResources.Products)
+            .WithDescription("Update my store.")
+            .MustHavePermission(CustomActions.UpdateMy, CustomResources.Stores)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }
