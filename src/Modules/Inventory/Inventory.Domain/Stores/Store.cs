@@ -1,3 +1,4 @@
+using Common.Domain;
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;
@@ -15,7 +16,7 @@ public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
     public static bool TryParse(string str, out StoreId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
 
-public class Store : AggregateRoot<StoreId>
+public class Store : AggregateRoot<StoreId>, ISingleOwnableEntity
 {
     public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
