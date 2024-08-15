@@ -9,27 +9,12 @@ using Microsoft.Extensions.Localization;
 
 namespace Inventory.Application.StoreProducts.v1.Update;
 
-public sealed record Request(int? Quantity, decimal? Price)
-{
-    [JsonConverter(typeof(StronglyTypedIdReadOnlyJsonConverter<StoreId>))]
-    public StoreId StoreId { get; init; }
-
-    [JsonConverter(typeof(StronglyTypedIdReadOnlyJsonConverter<StoreProductId>))]
-    public StoreProductId StoreProductId { get; init; }
-}
+public sealed record Request(int? Quantity, decimal? Price);
 
 public class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {
-        RuleFor(x => x.StoreId)
-            .NotEmpty()
-                .WithMessage(localizer["StoreProducts.v1.Update.StoreId.NotEmpty"]);
-
-        RuleFor(x => x.StoreProductId)
-            .NotEmpty()
-                .WithMessage(localizer["StoreProducts.v1.Update.StoreProductId.NotEmpty"]);
-
         RuleFor(r => r)
            .Must(r => r.Quantity.HasValue || r.Price.HasValue)
                .WithMessage(localizer["StoreProducts.v1.Update.AtLeastOnePropertyIsRequired"]);

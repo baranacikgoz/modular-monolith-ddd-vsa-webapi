@@ -11,14 +11,14 @@ using Inventory.Application.Stores.v1.Search;
 using Inventory.Domain.StoreProducts;
 using Common.Domain.StronglyTypedIds;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Search;
+namespace Inventory.Application.StoreProducts.v1.My.Search;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPost("search", SearchMyStoresStoreProductsAsync)
+            .MapPost("search", SearchMyStoreProductsAsync)
             .WithDescription("Search my store's StoreProducts.")
             .MustHavePermission(CustomActions.Search, CustomResources.StoreProducts)
             .Produces<PaginationResult<Response>>(StatusCodes.Status200OK);
@@ -40,7 +40,7 @@ internal static class Endpoint
                 .Where(s => s.Price <= request.MaxPrice, condition: request.MaxPrice is not null);
     }
 
-    private static async Task<PaginationResult<Response>> SearchMyStoresStoreProductsAsync(
+    private static async Task<PaginationResult<Response>> SearchMyStoreProductsAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
         [FromServices] IRepository<StoreProduct> repository,

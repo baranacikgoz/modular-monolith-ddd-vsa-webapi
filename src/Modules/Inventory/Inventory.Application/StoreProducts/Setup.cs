@@ -17,6 +17,12 @@ public static class Setup
         v1.Search.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
         v1.Delete.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
 
+        var v1MyStoreProductsApiGroup = v1StoreProductsApiGroup.MapGroup("/my");
+        v1.My.AddToMyStore.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
+        v1.My.Update.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
+        v1.My.Search.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
+        v1.My.Get.Endpoint.MapEndpoint(v1MyStoreProductsApiGroup);
+
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")
         //     .WithTags("Stores")

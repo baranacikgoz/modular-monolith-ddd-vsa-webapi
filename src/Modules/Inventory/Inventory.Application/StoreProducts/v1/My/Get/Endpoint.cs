@@ -11,7 +11,7 @@ using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.StoreProducts;
 using Common.Application.ModelBinders;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Get;
+namespace Inventory.Application.StoreProducts.v1.My.Get;
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
