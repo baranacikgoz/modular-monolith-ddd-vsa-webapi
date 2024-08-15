@@ -13,6 +13,7 @@ public static class Setup
             .MapToApiVersion(1);
 
         v1.AddToStore.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
+        v1.Get.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
         v1.Update.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
         v1.Delete.Endpoint.MapEndpoint(v1StoreProductsApiGroup);
