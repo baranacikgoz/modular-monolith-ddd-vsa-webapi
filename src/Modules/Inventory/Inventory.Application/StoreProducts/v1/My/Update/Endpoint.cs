@@ -13,15 +13,15 @@ using Common.Application.Persistence;
 using Ardalis.Specification;
 using Common.Domain.StronglyTypedIds;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Update;
+namespace Inventory.Application.StoreProducts.v1.My.Update;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
         myProductsApiGroup
-            .MapPut("{id}", UpdateMyProductAsync)
-            .WithDescription("Update my product.")
+            .MapPut("{id}", UpdateMyStoreProductAsync)
+            .WithDescription("Update my store product.")
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.StoreProducts)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
@@ -36,7 +36,7 @@ internal static class Endpoint
                                 .Where(p => p.Id == productId));
     }
 
-    private static async Task<Result> UpdateMyProductAsync(
+    private static async Task<Result> UpdateMyStoreProductAsync(
         [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreProductId>>] StoreProductId id,
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
