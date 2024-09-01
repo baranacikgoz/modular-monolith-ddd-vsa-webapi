@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <InvariantGlobalization>false</InvariantGlobalization>
     <UserSecretsId>6226e97f-a23c-4c5e-8a5f-5cb306bfb4aa</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -45,12 +49,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
-    <ProjectReference Include="..\Modules\BackgroundJobs\BackgroundJobs.csproj" />
+    <ProjectReference
+      Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
     <ProjectReference Include="..\Modules\IAM\IAM.Infrastructure\IAM.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Outbox\Outbox.csproj" />
   </ItemGroup>
 
   <ItemGroup>

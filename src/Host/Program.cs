@@ -4,6 +4,9 @@ using Host.Swagger;
 using Host.Infrastructure;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Options;
+using Common.Infrastructure;
+using System.Reflection;
+using Host.Plugins;
 
 // Create the builder and add initially required services.
 var builder = WebApplication.CreateBuilder(args);
@@ -22,19 +25,23 @@ try
         .Host
         .UseCustomizedSerilog();
 
+    var services = builder.Services;
+    var modules = PluginLoader
+        .LoadModules(builder.Environment)
+        .ToList();
     // Add services to the container.
-    builder
-        .Services
-            .AddInfrastructure(builder.Configuration, builder.Environment)
-            .AddModules(builder.Configuration, builder.Environment)
-            .AddCustomSwagger();
+    services
+        .AddInfrastructure(builder.Configuration, builder.Environment, modules)
+        .AddCustomSwagger();
+
+    services.RegisterModules(modules, builder.Configuration, builder.Environment);
 
     // Build the app and configure pipeline.
     var app = builder.Build();
 
     app.UseInfrastructure(builder.Environment, builder.Configuration);
 
-    app.UseModules();
+    app.UseModules(modules);
 
     app.MapGet("/", () => Results.Redirect("/swagger"));
 

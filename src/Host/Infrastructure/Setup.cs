@@ -9,14 +9,19 @@ using Common.Infrastructure.EventBus;
 using Common.InterModuleRequests;
 using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
-using IAM.Infrastructure;
 using Host.Middlewares;
+using IAM.Infrastructure;
+using Common.Infrastructure;
 
 namespace Host.Infrastructure;
 
 public static partial class Setup
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment env,
+        IEnumerable<IModule> modules)
         => services
             .Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(x =>
             {
@@ -36,10 +41,10 @@ public static partial class Setup
             .AddObservability(
                 configuration,
                 env,
-                Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
+                modules.SelectMany(m => m.EfCoreInstrumentationFilters()))
             .AddCustomCors()
-            .AddCommonDependencies(env, configuration)
-            .AddFluentValidationAndAutoValidation()
+            .AddCommonDependencies(env, configuration, modules)
+            .AddFluentValidationAndAutoValidation(modules)
             .AddEnrichLogsWithUserInfoMiddlware();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
@@ -77,34 +82,23 @@ public static partial class Setup
             };
         });
 
-    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IWebHostEnvironment env, IConfiguration config)
+    private static IServiceCollection AddCommonDependencies(
+        this IServiceCollection services,
+        IWebHostEnvironment env,
+        IConfiguration config,
+        IEnumerable<IModule> modules)
         => services
             .AddCommonCaching()
-            .AddCommonEventBus(env, config, _moduleAssemblies)
+            .AddCommonEventBus(env, config, modules.SelectMany(m => m.GetAssemblies()))
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
             .AddCommonPersistence();
 
-    private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
+    private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services, IEnumerable<IModule> modules)
         => services
-            .AddValidatorsFromAssemblies(_moduleAssemblies)
+            .AddValidatorsFromAssemblies(modules.SelectMany(m => m.GetAssemblies()))
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
-
-    private static readonly Assembly[] _moduleAssemblies =
-        [
-            typeof(IAM.Domain.IAssemblyReference).Assembly,
-            typeof(IAM.Application.IAssemblyReference).Assembly,
-            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
-
-            typeof(Inventory.Domain.IAssemblyReference).Assembly,
-            typeof(Inventory.Application.IAssemblyReference).Assembly,
-            typeof(Inventory.Infrastructure.IAssemblyReference).Assembly,
-
-            typeof(Notifications.Domain.IAssemblyReference).Assembly,
-            typeof(Notifications.Application.IAssemblyReference).Assembly,
-            typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
-        ];
 
     private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
         => services.AddScoped<EnrichLogsWithUserInfoMiddleware>();

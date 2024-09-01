@@ -1,25 +1,32 @@
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using Host.Middlewares;
+using Common.Infrastructure;
 using IAM.Infrastructure;
-using Inventory.Infrastructure;
-using Notifications.Infrastructure;
-using Outbox;
-using BackgroundJobs;
 
 namespace Host.Infrastructure;
 
 public static partial class Setup
 {
-    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
-        => services
-            .AddBackgroundJobsModule()
-            .AddOutboxModule()
-            .AddNotificationsModule()
-            .AddIAMModule(configuration)
-            .AddInventoryModule()
-            .AddRateLimiting(configuration);
+    public static IServiceCollection RegisterModules(
+        this IServiceCollection services,
+        IEnumerable<IModule> modules,
+        IConfiguration configuration,
+        IWebHostEnvironment env)
+    {
+        foreach (var module in modules)
+        {
+            module.Register(services, configuration, env);
+        }
 
-    public static IApplicationBuilder UseModules(this WebApplication app)
+        services.RegisterIAMModule(configuration);
+
+        services.AddRateLimiting(
+            configuration,
+            modules.SelectMany(m => m.RateLimitingPolicies()));
+
+        return services;
+    }
+
+    public static IApplicationBuilder UseModules(this WebApplication app, IEnumerable<IModule> modules)
     {
         var versionNeutralApiGroup = app
                                     .MapGroup("/")
@@ -38,18 +45,13 @@ public static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
-        app.UseOutboxModule(); 
-        app.UseNotificationsModule();
+        foreach (var module in modules.OrderBy(m => m.RegistrationPriority))
+        {
+            module.Use(app, versionedApiGroup);
+        }
+
         app.UseIAMModule(versionNeutralApiGroup);
-        app.UseInventoryModule(versionedApiGroup);
-        app.UseBackgroundJobsModule();
 
         return app;
     }
-
-    private static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
-        => services.AddRateLimiting(
-                configuration,
-                IAM.Infrastructure.RateLimiting.Policies.Get(),
-                Inventory.Infrastructure.RateLimiting.Policies.Get());
 }

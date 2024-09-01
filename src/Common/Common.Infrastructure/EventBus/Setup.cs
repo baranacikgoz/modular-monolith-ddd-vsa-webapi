@@ -14,7 +14,7 @@ public static class Setup
         this IServiceCollection services,
         IWebHostEnvironment env,
         IConfiguration configuration,
-        params Assembly[] assemblies)
+        IEnumerable<Assembly> assemblies)
     => services
         .AddSingleton<IEventBus, MassTransitEventBus>()
         .AddMassTransit(x =>

@@ -3,6 +3,7 @@ using System.Threading.RateLimiting;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Infrastructure.Options;
+using Inventory.Application;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -12,9 +13,9 @@ using Microsoft.Extensions.Options;
 
 namespace Inventory.Infrastructure.RateLimiting;
 
-public static partial class Policies
+public static class CreateStore
 {
-    private static void CreateStorePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    public static void Policy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
         => rateLimiter
             .AddPolicy<string, CreateStoreRateLimitingPolicy>(RateLimitingConstants.CreateStore);
 

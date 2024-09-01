@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -18,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\src\Modules\Inventory\Inventory.Domain\Inventory.Domain.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\..\src\Modules\Inventory\Inventory.Domain\Inventory.Domain.csproj" />
     <ProjectReference Include="..\..\..\UnitTests.Common\UnitTests.Common.csproj" />
   </ItemGroup>
 

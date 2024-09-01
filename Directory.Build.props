@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework Condition="!$(MSBuildProjectName.Contains('SourceGenerators'))">net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
@@ -17,10 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"
-                      Condition="!$(MSBuildProjectName.StartsWith('Common')) And $(MSBuildProjectName.EndsWith('Application'))"/>
+    <ProjectReference
+      Include="$(MSBuildThisFileDirectory)src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"
+      Condition="!$(MSBuildProjectName.StartsWith('Common')) And $(MSBuildProjectName.EndsWith('Application'))" />
   </ItemGroup>
 
   <PropertyGroup>

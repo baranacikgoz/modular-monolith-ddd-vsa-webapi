@@ -21,6 +21,7 @@ internal static class Endpoint
             .MapPost("", CreateStoreAsync)
             .WithDescription("Create a store.")
             .MustHavePermission(CustomActions.Create, CustomResources.Stores)
+            .RequireRateLimiting(RateLimitingConstants.CreateStore)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }

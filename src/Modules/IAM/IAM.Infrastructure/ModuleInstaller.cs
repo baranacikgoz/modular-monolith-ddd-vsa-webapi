@@ -10,12 +10,13 @@ using IAM.Infrastructure.Captcha;
 using IAM.Infrastructure.Tokens;
 using IAM.Infrastructure.Persistence;
 using IAM.Infrastructure.Auth;
+using Common.Infrastructure;
 
 namespace IAM.Infrastructure;
 
 public static class ModuleInstaller
 {
-    public static IServiceCollection AddIAMModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterIAMModule(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddPersistence()

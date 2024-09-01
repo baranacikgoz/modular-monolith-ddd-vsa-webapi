@@ -1,4 +1,5 @@
 using Common.Infrastructure.Options;
+using IAM.Application;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace IAM.Infrastructure.RateLimiting;

@@ -8,9 +8,9 @@ using Common.Infrastructure.Extensions;
 using Common.Application.Localization;
 using Common.Application.Extensions;
 
-namespace Host.Middlewares;
+namespace Host.Infrastructure;
 
-internal static class RateLimitingMiddleware
+public static partial class Setup
 {
     public static IServiceCollection AddRateLimiting(
         this IServiceCollection services,
