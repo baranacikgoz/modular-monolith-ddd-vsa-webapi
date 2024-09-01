@@ -113,6 +113,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "observability", "observabil
 		observability\otel-collector-config.yml = observability\otel-collector-config.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.SourceGenerators", "src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj", "{88357AFF-C2DF-4EBC-80CA-129A2E39745D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,6 +201,10 @@ Global
 		{B932CD5A-E2D2-4E22-A528-B4B94FECF38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B932CD5A-E2D2-4E22-A528-B4B94FECF38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B932CD5A-E2D2-4E22-A528-B4B94FECF38D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88357AFF-C2DF-4EBC-80CA-129A2E39745D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88357AFF-C2DF-4EBC-80CA-129A2E39745D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88357AFF-C2DF-4EBC-80CA-129A2E39745D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88357AFF-C2DF-4EBC-80CA-129A2E39745D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -239,6 +245,7 @@ Global
 		{B546BBBC-6EA6-4773-B059-33F0D0B7F2C1} = {F433B40E-06CB-4E05-BD84-F09440492105}
 		{59CE81AF-1522-4A63-8B53-2BB8683CFE2F} = {F433B40E-06CB-4E05-BD84-F09440492105}
 		{7CEAA17C-1E99-46DF-A3DF-AB10E693D278} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{88357AFF-C2DF-4EBC-80CA-129A2E39745D} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}

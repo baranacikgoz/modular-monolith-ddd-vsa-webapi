@@ -33,12 +33,7 @@ internal class PermissionPolicyProvider : IAuthorizationPolicyProvider
     }
 }
 
-internal class PermissionRequirement : IAuthorizationRequirement
+internal class PermissionRequirement(string permissionName) : IAuthorizationRequirement
 {
-    public string PermissionName { get; private set; }
-
-    public PermissionRequirement(string permissionName)
-    {
-        PermissionName = permissionName;
-    }
+    public string PermissionName { get; private set; } = permissionName;
 }

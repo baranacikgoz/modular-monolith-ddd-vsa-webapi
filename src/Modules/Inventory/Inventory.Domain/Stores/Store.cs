@@ -1,3 +1,4 @@
+using Common.Domain;
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;

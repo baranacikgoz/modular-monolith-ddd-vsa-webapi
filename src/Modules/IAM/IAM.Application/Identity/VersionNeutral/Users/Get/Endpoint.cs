@@ -21,7 +21,7 @@ internal static class Endpoint
             .MapGet("{id}", GetAsync)
             .WithDescription("Get a user by id.")
             .Produces<Response>(StatusCodes.Status200OK)
-            .MustHavePermission(CustomActions.Read, CustomResources.Users)
+            .MustHavePermission(CustomActions.Read, CustomResources.ApplicationUsers)
             .TransformResultTo<Response>();
     }
     private static async Task<Result<Response>> GetAsync(

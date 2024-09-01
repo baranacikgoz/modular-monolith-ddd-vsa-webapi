@@ -112,7 +112,7 @@ internal class UserService(
         return false;
     }
     public Task InvalidateRolesCacheAsync(ApplicationUserId userId, CancellationToken cancellationToken)
-        => cacheService.RemoveAsync(CacheKeyForRoles(userId), cancellationToken);
+        => cacheService.RemoveByKeyAsync(CacheKeyForRoles(userId), cancellationToken);
 
     private static string CacheKeyForRoles(ApplicationUserId userId) => $"roles:{userId}";
 

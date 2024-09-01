@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Outbox.Persistence;
 
 namespace Common.Infrastructure.Persistence.Outbox;
-internal partial class OutboxBackgroundProcessor(
+internal sealed partial class OutboxBackgroundProcessor(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptionsProvider,
     ILogger<OutboxBackgroundProcessor> logger

@@ -3,7 +3,7 @@ using Common.Application.Pagination;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Search;
+namespace Inventory.Application.StoreProducts.v1.My.Search;
 
 public sealed record Request(
     string? Name,

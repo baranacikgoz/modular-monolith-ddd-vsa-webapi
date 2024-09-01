@@ -10,7 +10,7 @@ using Hangfire;
 namespace BackgroundJobs;
 public class RecurringBackgroundJobsService(IRecurringJobManagerV2 recurringJobManager, TimeProvider timeProvider) : IRecurringBackgroundJobs
 {
-    private readonly RecurringJobOptions _recurringJobOptions = new RecurringJobOptions()
+    private readonly RecurringJobOptions _recurringJobOptions = new()
     {
         MisfireHandling = MisfireHandlingMode.Relaxed,
         TimeZone = timeProvider.LocalTimeZone

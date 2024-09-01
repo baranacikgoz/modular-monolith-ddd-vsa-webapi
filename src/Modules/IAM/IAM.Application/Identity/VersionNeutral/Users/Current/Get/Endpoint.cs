@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("", GetAsync)
             .WithDescription("Get current user.")
             .Produces<Response>(StatusCodes.Status200OK)
-            .MustHavePermission(CustomActions.ReadMy, CustomResources.Users)
+            .MustHavePermission(CustomActions.ReadMy, CustomResources.ApplicationUsers)
             .TransformResultTo<Response>();
     }
 
