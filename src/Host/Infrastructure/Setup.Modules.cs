@@ -38,7 +38,7 @@ public static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
-        app.UseOutboxModule(); 
+        app.UseOutboxModule();
         app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);
         app.UseInventoryModule(versionedApiGroup);

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Inventory.Infrastructure.Persistence.EntityConfigurations;
 
-internal class StoreProductConfiguration : AuditableEntityConfiguration<StoreProduct, StoreProductId>
+internal sealed class StoreProductConfiguration : AuditableEntityConfiguration<StoreProduct, StoreProductId>
 {
     public override void Configure(EntityTypeBuilder<StoreProduct> builder)
     {

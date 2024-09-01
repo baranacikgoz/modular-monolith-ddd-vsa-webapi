@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Inventory.Infrastructure.Persistence.EntityConfigurations;
 
-internal class StoreConfiguration : AuditableEntityConfiguration<Store, StoreId>
+internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, StoreId>
 {
     public override void Configure(EntityTypeBuilder<Store> builder)
     {

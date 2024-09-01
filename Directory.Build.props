@@ -33,27 +33,5 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzers>true</RunAnalyzers>
-    <NoWarn>
-      CA1040;
-      CA1062;
-      CA2007;
-      IDE0005;
-      CA1812;
-      S3604;
-      S4136;
-      CA1852;
-      S3267;
-      S2094;
-      CA1824;
-      CA1711;
-      CA1056;
-      ASP0003;
-      CA1716;
-      S2234;
-      CA1051;
-      S2699;
-      CA1034;
-      CA1724;
-    </NoWarn>
   </PropertyGroup>
 </Project>

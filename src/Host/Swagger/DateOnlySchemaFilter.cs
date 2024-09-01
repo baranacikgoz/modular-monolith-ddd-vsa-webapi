@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-internal class DateOnlySchemaFilter : ISchemaFilter
+internal sealed class DateOnlySchemaFilter : ISchemaFilter
 {
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {

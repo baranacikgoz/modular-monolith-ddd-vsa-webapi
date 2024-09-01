@@ -11,7 +11,9 @@ public abstract class AggregateTests<TAggregate, TId>
     where TAggregate : AggregateRoot<TId>, new()
     where TId : IStronglyTypedId
 {
+#pragma warning disable CA1051 // Do not declare visible instance fields
     protected TAggregate Aggregate = new();
+#pragma warning restore CA1051 // Do not declare visible instance fields
     private object? _objectUnderTheTestAlongWithAggregate;
     private Result<TAggregate>? _aggregateResult;
     private Result? _plainResult;
