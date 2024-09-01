@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework Condition="!$(MSBuildProjectName.Contains('SourceGenerators'))">net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
@@ -16,6 +16,13 @@
     <Using Include="System.Guid" Alias="DefaultIdType" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      Condition="!$(MSBuildProjectName.StartsWith('Common')) And $(MSBuildProjectName.EndsWith('Application'))"/>
+  </ItemGroup>
+
   <PropertyGroup>
     <AnalysisMode>all</AnalysisMode>
     <AnalysisScope>all</AnalysisScope>
@@ -26,30 +33,5 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <RunAnalyzers>true</RunAnalyzers>
-    <NoWarn>
-      CA1040;
-      CA1062;
-      CA2007;
-      IDE0005;
-      CA1812;
-      S3604;
-      S4136;
-      CA1852;
-      S3267;
-      S2094;
-      CA1824;
-      CA1711;
-      CA1056;
-      ASP0003;
-      CA1716;
-      S2234;
-      CA1051;
-      S2699;
-      CA1034;
-      CA1724;
-      IDE0046;
-      IDE0045;
-      IDE0161;
-    </NoWarn>
   </PropertyGroup>
 </Project>

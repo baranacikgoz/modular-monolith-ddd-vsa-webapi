@@ -10,7 +10,7 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
         => services
             .AddBackgroundJobsModule()
             .AddOutboxModule()
@@ -38,7 +38,7 @@ internal static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
-        app.UseOutboxModule(); 
+        app.UseOutboxModule();
         app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);
         app.UseInventoryModule(versionedApiGroup);

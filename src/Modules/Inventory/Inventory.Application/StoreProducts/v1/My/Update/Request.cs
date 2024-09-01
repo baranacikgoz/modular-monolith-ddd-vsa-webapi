@@ -2,11 +2,11 @@ using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Update;
+namespace Inventory.Application.StoreProducts.v1.My.Update;
 
 internal sealed record Request(int? Quantity, decimal? Price);
 
-internal class RequestValidator : CustomValidator<Request>
+internal sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {

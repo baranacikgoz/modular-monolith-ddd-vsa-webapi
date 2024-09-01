@@ -6,7 +6,7 @@ using FluentValidation;
 using Inventory.Domain.Products;
 using Microsoft.Extensions.Localization;
 
-namespace Inventory.Application.Stores.v1.My.StoreProducts.Add;
+namespace Inventory.Application.StoreProducts.v1.My.AddToMyStore;
 
 public sealed record Request(
     int Quantity,

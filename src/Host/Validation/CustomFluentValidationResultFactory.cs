@@ -8,7 +8,7 @@ using Common.Application.Extensions;
 
 namespace Host.Validation;
 
-internal class CustomFluentValidationResultFactory(
+internal sealed class CustomFluentValidationResultFactory(
     IStringLocalizer<ResxLocalizer> localizer
     ) : IFluentValidationAutoValidationResultFactory
 {

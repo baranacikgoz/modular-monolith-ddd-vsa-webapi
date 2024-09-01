@@ -42,7 +42,7 @@ internal static partial class Setup
             .AddFluentValidationAndAutoValidation()
             .AddEnrichLogsWithUserInfoMiddlware();
 
-    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
+    public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
         => app
             .UseRequestResponseLoggingMiddleware()
             .UseCommonResxLocalization()

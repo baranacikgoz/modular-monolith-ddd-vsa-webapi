@@ -25,13 +25,13 @@ try
     builder
         .Services
             .AddInfrastructure(builder.Configuration, builder.Environment)
-            .AddModules(builder.Configuration, builder.Environment)
+            .AddModules(builder.Configuration)
             .AddCustomSwagger();
 
     // Build the app and configure pipeline.
     var app = builder.Build();
 
-    app.UseInfrastructure(builder.Environment, builder.Configuration);
+    app.UseInfrastructure();
 
     app.UseModules();
 

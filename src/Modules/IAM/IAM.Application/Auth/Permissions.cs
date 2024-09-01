@@ -7,8 +7,8 @@ public static class CustomPermissions
 {
     private static readonly HashSet<CustomPermission> _basic =
     [
-        new("Read My Profile", CustomActions.ReadMy, CustomResources.Users),
-        new("Update My Profile", CustomActions.UpdateMy, CustomResources.Users),
+        new("Read My Profile", CustomActions.ReadMy, CustomResources.ApplicationUsers),
+        new("Update My Profile", CustomActions.UpdateMy, CustomResources.ApplicationUsers),
 
         new("Create My Store", CustomActions.CreateMy, CustomResources.Stores),
         new("Read My Store", CustomActions.ReadMy, CustomResources.Stores),
@@ -33,10 +33,10 @@ public static class CustomPermissions
     [
         new("Manage Hangfire Dashboard", CustomActions.Manage, CustomResources.Hangfire),
 
-        new("Create Users", CustomActions.Create, CustomResources.Users),
-        new("Read Users", CustomActions.Read, CustomResources.Users),
-        new("Update Users", CustomActions.Update, CustomResources.Users),
-        new("Delete Users", CustomActions.Delete, CustomResources.Users),
+        new("Create Users", CustomActions.Create, CustomResources.ApplicationUsers),
+        new("Read Users", CustomActions.Read, CustomResources.ApplicationUsers),
+        new("Update Users", CustomActions.Update, CustomResources.ApplicationUsers),
+        new("Delete Users", CustomActions.Delete, CustomResources.ApplicationUsers),
 
         new("Create Stores", CustomActions.Create, CustomResources.Stores),
         new("Read Stores", CustomActions.Read, CustomResources.Stores),

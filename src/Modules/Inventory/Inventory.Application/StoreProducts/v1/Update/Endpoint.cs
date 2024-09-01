@@ -20,11 +20,19 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
         myProductsApiGroup
-            .MapPut("", UpdateProductAsync)
-            .WithDescription("Update product.")
+            .MapPut("{id}", UpdateProductAsync)
+            .WithDescription("Update a store product.")
             .MustHavePermission(CustomActions.Update, CustomResources.StoreProducts)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
+    }
+
+    private sealed class StoreIdByStoreProductIdSpec : SingleResultSpecification<StoreProduct, StoreId>
+    {
+        public StoreIdByStoreProductIdSpec(StoreProductId storeProductId)
+            => Query
+                .Select(sp => sp.StoreId)
+                .Where(sp => sp.Id == storeProductId);
     }
 
     private sealed class StoreWithStoreProductByIdSpec : SingleResultSpecification<Store>
@@ -37,12 +45,15 @@ internal static class Endpoint
     }
 
     private static async Task<Result> UpdateProductAsync(
+        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] StoreProductId id,
         [FromBody] Request request,
+        [FromServices] IRepository<StoreProduct> storeProductRepository,
         [FromServices] IRepository<Store> storeRepository,
         [FromKeyedServices(nameof(Inventory))] IUnitOfWork unitOfWork,
         CancellationToken cancellationToken)
-        => await storeRepository
-            .SingleOrDefaultAsResultAsync(new StoreWithStoreProductByIdSpec(request.StoreId, request.StoreProductId), cancellationToken)
-            .TapAsync(store => store.UpdateProduct(request.StoreProductId, request.Quantity, request.Price))
-            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+        => await storeProductRepository
+            .SingleOrDefaultAsResultAsync(new StoreIdByStoreProductIdSpec(id), cancellationToken)
+            .BindAsync(async storeId => await storeRepository.SingleOrDefaultAsResultAsync(new StoreWithStoreProductByIdSpec(storeId, id), cancellationToken)
+            .TapAsync(store => store.UpdateProduct(id, request.Quantity, request.Price))
+            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken)));
 }
