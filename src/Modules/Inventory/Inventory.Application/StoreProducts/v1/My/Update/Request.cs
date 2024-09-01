@@ -6,7 +6,7 @@ namespace Inventory.Application.StoreProducts.v1.My.Update;
 
 internal sealed record Request(int? Quantity, decimal? Price);
 
-internal class RequestValidator : CustomValidator<Request>
+internal sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IStringLocalizer<RequestValidator> localizer)
     {

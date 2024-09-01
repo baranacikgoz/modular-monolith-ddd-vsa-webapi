@@ -9,7 +9,7 @@ namespace Host.Middlewares;
 
 #pragma warning disable CA1031
 
-internal partial class GlobalExceptionHandlingMiddleware(
+internal sealed partial class GlobalExceptionHandlingMiddleware(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
     IStringLocalizer<ResxLocalizer> localizer
