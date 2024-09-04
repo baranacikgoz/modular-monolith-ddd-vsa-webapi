@@ -4,7 +4,7 @@ using FluentValidation;
 using IAM.Application.Common.Validations;
 using Microsoft.Extensions.Localization;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.ProvePhoneOwnership;
+namespace IAM.Application.Identity.VersionNeutral.Users.VerifyOtp;
 
 public sealed record Request(string PhoneNumber, string Otp);
 

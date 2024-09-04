@@ -1,4 +1,4 @@
-namespace IAM.Application.Identity.VersionNeutral.Users.SelfRegister;
+namespace IAM.Application.Identity.VersionNeutral.Users.Register;
 
 internal static class Constants
 {
