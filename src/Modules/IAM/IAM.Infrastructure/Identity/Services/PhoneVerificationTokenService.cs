@@ -19,7 +19,7 @@ internal class PhoneVerificationTokenService(
     public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)
      => cache.GetOrCreateAsync(
         key: CacheKey(phoneNumber),
-        factory: _ => new ValueTask<string>(DefaultIdType.NewGuid().ToString("N")),
+        factory: _ => new ValueTask<string>(DefaultIdType.CreateVersion7().ToString("N")),
         absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_expirationInMinutes),
         cancellationToken: cancellationToken);
 
