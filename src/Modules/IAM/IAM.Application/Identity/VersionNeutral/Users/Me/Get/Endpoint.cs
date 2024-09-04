@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.Current.Get;
+namespace IAM.Application.Identity.VersionNeutral.Users.Me.Get;
 
 internal static class Endpoint
 {

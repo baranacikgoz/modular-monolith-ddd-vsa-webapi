@@ -6,7 +6,7 @@ using IAM.Application.Common.Validations;
 using Microsoft.Extensions.Localization;
 using Common.Domain.Extensions;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.SelfRegister;
+namespace IAM.Application.Identity.VersionNeutral.Users.Register;
 
 public sealed record Request(
         string PhoneVerificationToken,
