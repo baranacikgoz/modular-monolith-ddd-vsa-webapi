@@ -12,12 +12,12 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
 
         builder
             .Property(a => a.Name)
-            .HasMaxLength(Domain.Products.Constants.NameMaxLength)
+            .HasMaxLength(Constants.NameMaxLength)
             .IsRequired();
 
         builder
             .Property(a => a.Description)
-            .HasMaxLength(Domain.Products.Constants.DescriptionMaxLength)
+            .HasMaxLength(Constants.DescriptionMaxLength)
             .IsRequired();
     }
 }
