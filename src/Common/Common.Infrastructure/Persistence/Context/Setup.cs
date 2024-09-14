@@ -1,6 +1,7 @@
 using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Common.Infrastructure.Persistence.Outbox;
+using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ public static class Setup
                 .UseNpgsql(
                     connectionString,
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
+                .UseExceptionProcessor()
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>(),
                     sp.GetRequiredService<InsertOutboxMessagesInterceptor>(),
