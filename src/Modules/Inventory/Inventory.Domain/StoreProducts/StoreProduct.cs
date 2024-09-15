@@ -27,11 +27,11 @@ public class StoreProduct : AuditableEntity<StoreProductId>
     public StoreId StoreId { get; }
 
     [JsonIgnore]
-    public virtual Store Store { get; } = default!;
+    public Store Store { get; } = default!;
     public ProductId ProductId { get; }
 
     [JsonIgnore]
-    public virtual Product Product { get; } = default!;
+    public Product Product { get; } = default!;
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
 

@@ -24,7 +24,7 @@ public class Store : AggregateRoot<StoreId>
     public Uri? LogoUrl { get; private set; }
 
     private readonly List<StoreProduct> _storeProducts = [];
-    public virtual IReadOnlyCollection<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
+    public IReadOnlyCollection<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
 
     public static Store Create(ApplicationUserId ownerId, string name, string description, Uri? logoUrl = null)
     {
