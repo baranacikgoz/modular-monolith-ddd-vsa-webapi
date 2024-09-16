@@ -8,5 +8,6 @@ public sealed record V1UserRegisteredDomainEvent(
     string LastName,
     string PhoneNumber,
     string NationalIdentityNumber,
-    DateOnly BirthDate
+    DateOnly BirthDate,
+    Uri? ImageUrl = null
     ) : DomainEvent;

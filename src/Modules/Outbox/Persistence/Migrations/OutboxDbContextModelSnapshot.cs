@@ -8,7 +8,7 @@ using Outbox.Persistence;
 
 #nullable disable
 
-namespace Common.Infrastructure.Persistence.Outbox.Migrations
+namespace Outbox.Persistence.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
     partial class OutboxDbContextModelSnapshot : ModelSnapshot
@@ -18,7 +18,7 @@ namespace Common.Infrastructure.Persistence.Outbox.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Outbox")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

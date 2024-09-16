@@ -40,6 +40,14 @@ public class ApplyAuditingInterceptor(
                     entry.Entity.LastModifiedOn = now;
                     entry.Entity.LastModifiedIp = ipAddress;
                     break;
+                case EntityState.Detached:
+                    break;
+                case EntityState.Unchanged:
+                    break;
+                case EntityState.Deleted:
+                    break;
+                default:
+                    break;
             }
         }
 

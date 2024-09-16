@@ -13,7 +13,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     public static IHostBuilder UseCustomizedSerilog(this IHostBuilder hostBuilder)
         => hostBuilder.UseSerilog((ctx, sp, serilog) =>

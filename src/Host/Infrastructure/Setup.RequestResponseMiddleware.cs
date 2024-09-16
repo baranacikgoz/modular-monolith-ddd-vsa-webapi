@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     private static IServiceCollection AddRequestResponseLoggingMiddleware(this IServiceCollection services)
         => services.AddSingleton<RequestResponseLoggingMiddleware>();

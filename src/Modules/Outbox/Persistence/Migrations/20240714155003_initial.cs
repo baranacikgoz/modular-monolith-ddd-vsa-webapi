@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Common.Infrastructure.Persistence.Outbox.Migrations
+namespace Outbox.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class initial : Migration
@@ -21,15 +22,15 @@ namespace Common.Infrastructure.Persistence.Outbox.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     Event = table.Column<string>(type: "text", nullable: false),
                     FailedCount = table.Column<int>(type: "integer", nullable: false),
-                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    LastFailedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,16 +45,16 @@ namespace Common.Infrastructure.Persistence.Outbox.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IsProcessed = table.Column<bool>(type: "boolean", nullable: false),
-                    ProcessedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ProcessedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     Event = table.Column<string>(type: "text", nullable: false),
                     FailedCount = table.Column<int>(type: "integer", nullable: false),
-                    LastFailedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    LastFailedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
