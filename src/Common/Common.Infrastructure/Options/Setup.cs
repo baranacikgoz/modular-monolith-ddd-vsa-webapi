@@ -94,6 +94,13 @@ public static class Setup
             .Validate(o => o.PollingFrequencyInSeconds > 0, "SchedulePollingIntervalSeconds must be greater than 0.")
             .ValidateOnStart();
 
+        services
+            .AddOptions<CachingOptions>()
+            .Bind(configuration.GetSection(nameof(CachingOptions)))
+            .ValidateDataAnnotations()
+            .Validate(o => o.Redis?.Port > 0, "Redis.Port must be greater than 0.")
+            .ValidateOnStart();
+
         return services;
     }
 }

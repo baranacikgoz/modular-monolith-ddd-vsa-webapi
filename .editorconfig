@@ -547,6 +547,8 @@ dotnet_diagnostic.IDE0161.severity = silent
 dotnet_diagnostic.IDE0005.severity = silent
 
 [**/Migrations/*.cs]
+dotnet_diagnostic.IDE1006.severity = none
+dotnet_diagnostic.IDE0300.severity = none
 dotnet_diagnostic.IDE0161.severity = none
 dotnet_diagnostic.CS8981.severity = none
 dotnet_diagnostic.CA1861.severity = none

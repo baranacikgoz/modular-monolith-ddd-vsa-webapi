@@ -12,7 +12,6 @@ public static class Setup
 {
     public static IServiceCollection AddCommonEventBus(
         this IServiceCollection services,
-        IWebHostEnvironment env,
         IConfiguration configuration,
         params Assembly[] assemblies)
     => services
@@ -67,7 +66,12 @@ public static class Setup
                     configurator.ConfigureEndpoints(context);
                 });
                 break;
-
+            case MessageBrokerType.Kafka:
+                throw new NotImplementedException();
+            case MessageBrokerType.AzureServiceBus:
+                throw new NotImplementedException();
+            case MessageBrokerType.AmazonSQS:
+                throw new NotImplementedException();
             default:
                 throw new InvalidOperationException($"No registration set for the message broker {nameof(messageBrokerOptions.MessageBrokerType)}.");
         }

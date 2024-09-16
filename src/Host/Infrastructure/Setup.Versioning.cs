@@ -4,7 +4,7 @@ using Asp.Versioning.Conventions;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     public static IServiceCollection AddVersioning(this IServiceCollection services)
         => services

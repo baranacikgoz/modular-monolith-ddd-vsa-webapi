@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace Host.Swagger;
 
 # pragma warning disable CA1305, S3267
-public class SwaggerDefaultValues : IOperationFilter
+internal class SwaggerDefaultValues : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

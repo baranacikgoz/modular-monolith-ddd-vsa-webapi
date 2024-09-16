@@ -40,7 +40,8 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
             lastName.TrimmedUpperInvariantTransliterateTurkishChars(),
             phoneNumber,
             nationalIdentityNumber,
-            birthDate);
+            birthDate,
+            imageUrl);
 
         var user = new ApplicationUser();
         user.RaiseEvent(@event);

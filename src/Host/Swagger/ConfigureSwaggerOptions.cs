@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-public class ConfigureSwaggerOptions(
+internal class ConfigureSwaggerOptions(
     IApiVersionDescriptionProvider provider,
     IOptions<OpenApiOptions> openApiOptionsProvider
     ) : IConfigureOptions<SwaggerGenOptions>
