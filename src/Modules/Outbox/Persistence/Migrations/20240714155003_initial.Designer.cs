@@ -9,11 +9,11 @@ using Outbox.Persistence;
 
 #nullable disable
 
-namespace Common.Infrastructure.Persistence.Outbox.Migrations
+namespace Outbox.Persistence.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20240618203940_SwitchToDateTimeOffset")]
-    partial class SwitchToDateTimeOffset
+    [Migration("20240714155003_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace Common.Infrastructure.Persistence.Outbox.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Outbox")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

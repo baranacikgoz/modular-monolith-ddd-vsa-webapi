@@ -2,7 +2,7 @@ using Host.Middlewares;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     private static IServiceCollection AddGlobalExceptionHandlingMiddleware(this IServiceCollection services)
         => services.AddSingleton<GlobalExceptionHandlingMiddleware>();

@@ -13,12 +13,11 @@ public class CachedCaptchaService(
 {
     private readonly int _cacheCaptchaForMinutes = otpOptionsProvider.Value.ExpirationInMinutes;
     public Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
-    {
-        return cacheService.GetOrSetAsync(
-            CacheKey(captchaToken),
-            () => decoree.ValidateAsync(captchaToken, cancellationToken),
-            TimeSpan.FromMinutes(_cacheCaptchaForMinutes), cancellationToken: cancellationToken);
-    }
+        => cacheService.GetOrCreateAsync(
+            key: CacheKey(captchaToken),
+            factory: async ct => await decoree.ValidateAsync(captchaToken, ct),
+            absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_cacheCaptchaForMinutes),
+            cancellationToken: cancellationToken);
 
     public string GetClientKey() => decoree.GetClientKey();
     private static string CacheKey(string captchaToken) => $"captcha:{captchaToken}";

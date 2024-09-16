@@ -3,7 +3,7 @@ using Serilog.Context;
 
 namespace Host.Middlewares;
 
-public class EnrichLogsWithUserInfoMiddleware(ICurrentUser currentUser) : IMiddleware
+internal class EnrichLogsWithUserInfoMiddleware(ICurrentUser currentUser) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

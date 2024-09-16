@@ -1,98 +1,58 @@
 using System.Text.Json;
 using Common.Application.Caching;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Common.Infrastructure.Caching;
 
-public class CacheService(IDistributedCache cache) : ICacheService
+public class CacheService(HybridCache hybridCache) : ICacheService
 {
-    public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
-    {
-        var value = await cache.GetStringAsync(key, cancellationToken);
+    public async Task<T?> GetAsync<T>(
+        string cacheKey,
+        CancellationToken cancellationToken)
+        => await hybridCache.GetOrCreateAsync(
+            key: cacheKey,
+            factory: _ => new ValueTask<T?>(result: default),
+            cancellationToken: cancellationToken);
 
-        if (value is null)
-        {
-            return default;
-        }
+    public async Task<T> GetOrCreateAsync<T>(
+        string key,
+        Func<CancellationToken, ValueTask<T>> factory,
+        IEnumerable<string>? tags = null,
+        TimeSpan? absoluteExpirationRelativeToNow = null,
+        CancellationToken cancellationToken = default)
+        => await hybridCache.GetOrCreateAsync(
+            key: key,
+            tags: tags,
+            factory: factory,
+            options: new HybridCacheEntryOptions()
+            {
+                Expiration = absoluteExpirationRelativeToNow
+            },
+            cancellationToken: cancellationToken);
 
-        return JsonSerializer.Deserialize<T>(value);
-    }
+    public async Task SetAsync<T>(
+        string key,
+        T value,
+        IEnumerable<string>? tags = null,
+        TimeSpan? absoluteExpirationRelativeToNow = null,
+        CancellationToken token = default)
+        => await hybridCache.SetAsync(
+            key,
+            value,
+            options: new HybridCacheEntryOptions()
+            {
+                Expiration = absoluteExpirationRelativeToNow
+            },
+            tags,
+            token);
 
-    public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> func, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
-    {
-        var value = await cache.GetStringAsync(key, cancellationToken);
+    public async Task RemoveAsync(
+        string key,
+        CancellationToken cancellationToken = default)
+        => await hybridCache.RemoveAsync(key, cancellationToken);
 
-        if (value is not null)
-        {
-            return JsonSerializer.Deserialize<T>(value)!;
-        }
-
-        var result = await func();
-
-        if (result is null)
-        {
-            return default!;
-        }
-
-        await SetAsync(key, result, absoluteExpirationRelativeToNow, slidingExpiration, cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> GetOrSetAsync<T>(string key, Func<T> func, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
-    {
-        var value = await cache.GetStringAsync(key, cancellationToken);
-
-        if (value is not null)
-        {
-            return JsonSerializer.Deserialize<T>(value)!;
-        }
-
-        var result = func();
-
-        if (result is null)
-        {
-            return default!;
-        }
-
-        await SetAsync(key, result, absoluteExpirationRelativeToNow, slidingExpiration, cancellationToken);
-
-        return result;
-    }
-
-    public async Task<T> GetOrSetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
-    {
-        var result = await cache.GetStringAsync(key, cancellationToken);
-
-        if (result is not null)
-        {
-            return JsonSerializer.Deserialize<T>(result)!;
-        }
-
-        await SetAsync(key, value, absoluteExpirationRelativeToNow, slidingExpiration, cancellationToken);
-
-        return value;
-    }
-
-    public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
-    {
-        await cache.RemoveAsync(key, cancellationToken);
-    }
-
-    private Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null, CancellationToken cancellationToken = default)
-    {
-        var options = new DistributedCacheEntryOptions();
-
-        if (absoluteExpirationRelativeToNow is not null)
-        {
-            options.AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow;
-        }
-
-        if (slidingExpiration is not null)
-        {
-            options.SlidingExpiration = slidingExpiration;
-        }
-
-        return cache.SetStringAsync(key, JsonSerializer.Serialize(value), options, token: cancellationToken);
-    }
+    public async Task RemoveByTagAsync(
+        IEnumerable<string> tags,
+        CancellationToken cancellationToken = default)
+        => await hybridCache.RemoveByTagAsync(tags, cancellationToken);
 }

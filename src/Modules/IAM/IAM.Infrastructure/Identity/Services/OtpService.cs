@@ -19,16 +19,20 @@ internal sealed class OtpService(
     public Task<string> GetOtpAsync(string phoneNumber, CancellationToken cancellationToken)
     {
         var otp = RandomNumberGenerator.GetInt32(100000, 999999).ToString(CultureInfo.InvariantCulture);
-        var cacheKey = CacheKey(phoneNumber);
-        return cacheService.GetOrSetAsync(cacheKey, otp, TimeSpan.FromMinutes(_otpOptions.ExpirationInMinutes), cancellationToken: cancellationToken);
+        return cacheService.GetOrCreateAsync(
+            key: CacheKey(phoneNumber),
+            factory: _ => new ValueTask<string>(otp),
+            absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_otpOptions.ExpirationInMinutes),
+            cancellationToken: cancellationToken);
     }
 
     public async Task<Result> ValidateAsync(string otp, string phoneNumber, CancellationToken cancellationToken)
     {
         var cacheKey = CacheKey(phoneNumber);
+
         var code = await cacheService.GetAsync<string>(cacheKey, cancellationToken);
 
-        if (code.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(code))
         {
             return OtpErrors.InvalidOtp;
         }

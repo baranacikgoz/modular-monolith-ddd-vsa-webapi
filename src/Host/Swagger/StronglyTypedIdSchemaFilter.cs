@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-public class StronglyTypedIdSchemaFilter : ISchemaFilter
+internal class StronglyTypedIdSchemaFilter : ISchemaFilter
 {
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
