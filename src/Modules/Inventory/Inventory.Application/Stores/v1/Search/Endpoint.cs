@@ -26,7 +26,7 @@ internal static class Endpoint
         public SearchStoresSpec(Request request)
             : base(request)
             => Query
-                .Select(s => new Response(s.Id, s.Name, s.Description, s.LogoUrl, s.StoreProducts.Count))
+                .Select(s => new Response(s.Id, s.OwnerId, s.Name, s.Description, s.LogoUrl, s.StoreProducts.Count))
                 .Search(s => s.Name, $"%{request.Name!}%", condition: request.Name is not null)
                 .Search(s => s.Description, $"%{request.Description!}%", condition: request.Description is not null);
     }

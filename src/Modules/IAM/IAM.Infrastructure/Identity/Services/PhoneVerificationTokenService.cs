@@ -26,7 +26,7 @@ internal class PhoneVerificationTokenService(
     /// <summary>
     /// Initially, we were removing the token from the cache at the end of this <see cref="ValidateTokenAsync"/> method.
     /// But, for the new user registrations, since we are requesting token twice;
-    /// - First in <see cref="Application.Identity.VersionNeutral.Users.SelfRegister.Endpoint>
+    /// - First in <see cref="Application.Identity.VersionNeutral.Users.Register.Endpoint>
     /// - Then in <see cref="Application.Tokens.VersionNeutral.Create.Endpoint>
     /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound"/>
     /// And users will have to go back to the very first step of the registration process.

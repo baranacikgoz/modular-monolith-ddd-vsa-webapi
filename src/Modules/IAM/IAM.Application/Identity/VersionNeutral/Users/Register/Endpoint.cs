@@ -11,21 +11,21 @@ using IAM.Application.Identity.Services;
 using IAM.Application.Auth;
 using IAM.Application.Extensions;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.SelfRegister;
+namespace IAM.Application.Identity.VersionNeutral.Users.Register;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {
         usersApiGroup
-            .MapPost("self-register", SelfRegisterAsync)
-            .WithDescription("Self register a new user.")
+            .MapPost("register", RegisterAsync)
+            .WithDescription("Register a new user.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
             .TransformResultTo<Response>();
     }
 
-    private static async Task<Result<Response>> SelfRegisterAsync(
+    private static async Task<Result<Response>> RegisterAsync(
         [FromBody] Request request,
         [FromServices] IPhoneVerificationTokenService phoneVerificationTokenService,
         [FromServices] UserManager<ApplicationUser> userManager,
