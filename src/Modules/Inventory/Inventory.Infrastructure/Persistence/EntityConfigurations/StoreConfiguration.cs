@@ -1,9 +1,12 @@
+using Ardalis.Specification;
+using System.Linq.Expressions;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Inventory.Domain.Stores;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Infrastructure.Persistence.EntityConfigurations;
 
@@ -24,18 +27,18 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
 
         builder
             .Property(s => s.Name)
-            .HasMaxLength(Domain.Stores.Constants.NameMaxLength)
+            .HasMaxLength(Constants.NameMaxLength)
             .IsRequired();
 
         builder
             .Property(s => s.Description)
-            .HasMaxLength(Domain.Stores.Constants.DescriptionMaxLength)
+            .HasMaxLength(Constants.DescriptionMaxLength)
             .IsRequired();
 
         builder
             .Property(s => s.LogoUrl)
             .HasConversion<UriToStringConverter>()
-            .HasMaxLength(Domain.Stores.Constants.LogoUrlMaxLength)
+            .HasMaxLength(Constants.LogoUrlMaxLength)
             .IsRequired(false);
     }
 }

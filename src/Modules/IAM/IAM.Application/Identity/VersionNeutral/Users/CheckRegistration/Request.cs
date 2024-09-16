@@ -4,7 +4,8 @@ using FluentValidation;
 using IAM.Application.Common.Validations;
 using Microsoft.Extensions.Localization;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.InitiatePhoneOwnershipProcess;
+namespace IAM.Application.Identity.VersionNeutral.Users.CheckRegistration;
+
 public sealed record Request(string PhoneNumber);
 
 public class RequestValidator : CustomValidator<Request>

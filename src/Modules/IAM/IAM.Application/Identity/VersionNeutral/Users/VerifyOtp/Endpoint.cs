@@ -9,20 +9,20 @@ using Common.Application.Extensions;
 using IAM.Domain.Identity;
 using IAM.Application.Identity.Services;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.ProvePhoneOwnership;
+namespace IAM.Application.Identity.VersionNeutral.Users.VerifyOtp;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {
         usersApiGroup
-            .MapPost("prove-phone-ownership", ProvePhoneOwnershipAsync)
-            .WithDescription("Prove phone ownership by validating otp.")
+            .MapPost("verify-otp", VerifyOtpAsync)
+            .WithDescription("Verify otp sms.")
             .Produces<Response>(StatusCodes.Status200OK)
             .AllowAnonymous()
             .TransformResultTo<Response>();
     }
-    private static async Task<Result<Response>> ProvePhoneOwnershipAsync(
+    private static async Task<Result<Response>> VerifyOtpAsync(
         [FromBody] Request request,
         [FromServices] IOtpService otpService,
         [FromServices] IPhoneVerificationTokenService phoneVerificationTokenService,
@@ -32,10 +32,10 @@ internal static class Endpoint
             .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
             .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
             .MapAsync(async phoneVerificationToken => new Response(
-                                                        UserExists: await IsUserExistAsync(userManager, request.PhoneNumber, cancellationToken),
+                                                        IsRegistered: await IsRegisteredAsync(userManager, request.PhoneNumber, cancellationToken),
                                                         PhoneVerificationToken: phoneVerificationToken));
 
-    private static Task<bool> IsUserExistAsync(
+    private static Task<bool> IsRegisteredAsync(
         UserManager<ApplicationUser> userManager,
         string phoneNumber,
         CancellationToken cancellationToken)

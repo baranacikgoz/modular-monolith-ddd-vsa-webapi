@@ -5,22 +5,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace IAM.Application.Identity.VersionNeutral.Users.InitiatePhoneOwnershipProcess;
+namespace IAM.Application.Identity.VersionNeutral.Users.SendVerificationOtp;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder usersApiGroup)
     {
         usersApiGroup
-            .MapPost("initiate-phone-ownership-process", InitiatePhoneOwnershipProcessAsync)
-            .WithDescription("Initiate phone ownership process by sending sms otp.")
+            .MapPost("send-verification-otp", SendVerificationOtpAsync)
+            .WithDescription("Send verification otp sms.")
             .RequireRateLimiting(RateLimiting.Constants.Sms)
             .AllowAnonymous()
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }
 
-    private static async Task<Result> InitiatePhoneOwnershipProcessAsync(
+    private static async Task<Result> SendVerificationOtpAsync(
 #pragma warning disable S1172
         [FromBody] Request request,
 #pragma warning restore S1172

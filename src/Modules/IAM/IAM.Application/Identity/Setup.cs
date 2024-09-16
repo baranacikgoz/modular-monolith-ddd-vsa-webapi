@@ -12,15 +12,15 @@ public static class Setup
             .MapGroup("/users")
             .WithTags("Users");
 
-        VersionNeutral.Users.SelfRegister.Endpoint.MapEndpoint(usersApiGroup);
+        VersionNeutral.Users.Register.Endpoint.MapEndpoint(usersApiGroup);
         VersionNeutral.Users.Get.Endpoint.MapEndpoint(usersApiGroup);
-        VersionNeutral.Users.InitiatePhoneOwnershipProcess.Endpoint.MapEndpoint(usersApiGroup);
-        VersionNeutral.Users.ProvePhoneOwnership.Endpoint.MapEndpoint(usersApiGroup);
-        VersionNeutral.Users.CheckExistenceWithEmail.Endpoint.MapEndpoint(usersApiGroup);
+        VersionNeutral.Users.SendVerificationOtp.Endpoint.MapEndpoint(usersApiGroup);
+        VersionNeutral.Users.VerifyOtp.Endpoint.MapEndpoint(usersApiGroup);
+        VersionNeutral.Users.CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
 
         var currentUserApiGroup = usersApiGroup
-            .MapGroup("/current");
+            .MapGroup("/me");
 
-        VersionNeutral.Users.Current.Get.Endpoint.MapEndpoint(currentUserApiGroup);
+        VersionNeutral.Users.Me.Get.Endpoint.MapEndpoint(currentUserApiGroup);
     }
 }

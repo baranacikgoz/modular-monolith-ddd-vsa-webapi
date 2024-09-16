@@ -27,7 +27,7 @@ internal static class Endpoint
     {
         public StoreWithProductCountByIdSpec(StoreId id)
             => Query
-                .Select(s => new Response(s.Id, s.Name, s.Description, s.LogoUrl, s.StoreProducts.Count))
+                .Select(s => new Response(s.Id, s.OwnerId, s.Name, s.Description, s.LogoUrl, s.StoreProducts.Count))
                 .Where(s => s.Id == id);
     }
 
