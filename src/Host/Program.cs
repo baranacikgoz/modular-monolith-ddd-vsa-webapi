@@ -1,8 +1,7 @@
 using Host.Configurations;
-using Serilog;
 using Host.Swagger;
 using Host.Infrastructure;
-using Common.Infrastructure.Persistence;
+using Serilog;
 using Common.Infrastructure.Options;
 
 // Create the builder and add initially required services.
@@ -26,13 +25,13 @@ try
     builder
         .Services
             .AddInfrastructure(builder.Configuration, builder.Environment)
-            .AddModules(builder.Configuration, builder.Environment)
+            .AddModules(builder.Configuration)
             .AddCustomSwagger();
 
     // Build the app and configure pipeline.
     var app = builder.Build();
 
-    app.UseInfrastructure(builder.Environment, builder.Configuration);
+    app.UseInfrastructure();
 
     app.UseModules();
 

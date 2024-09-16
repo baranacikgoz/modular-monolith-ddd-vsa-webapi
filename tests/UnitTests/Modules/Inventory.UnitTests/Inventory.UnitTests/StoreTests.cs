@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Inventory.UnitTests;
 
-public class StoreTests : AggregateTests<Store, StoreId>
+internal class StoreTests : AggregateTests<Store, StoreId>
 {
     private static readonly ApplicationUserId _ownerId = ApplicationUserId.New();
     private const string Name = "Store Name";

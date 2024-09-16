@@ -1,6 +1,6 @@
 namespace Host.Infrastructure;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     public static OpenTelemetry.Exporter.OtlpExportProtocol ToOtlpExportProtocol(this string protocol)
         => protocol switch

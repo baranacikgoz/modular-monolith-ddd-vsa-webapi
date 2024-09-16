@@ -11,7 +11,7 @@ using OpenTelemetry.Trace;
 
 namespace Host.Infrastructure;
 
-public static partial class Setup
+internal static partial class Setup
 {
     public static IApplicationBuilder UseObservability(this IApplicationBuilder app)
     {

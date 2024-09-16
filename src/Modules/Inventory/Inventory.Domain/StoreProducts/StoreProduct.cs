@@ -8,7 +8,7 @@ namespace Inventory.Domain.StoreProducts;
 
 public readonly record struct StoreProductId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static StoreProductId New() => new(DefaultIdType.NewGuid());
+    public static StoreProductId New() => new(DefaultIdType.CreateVersion7());
     public override string ToString() => Value.ToString();
     public static bool TryParse(string str, out StoreProductId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
 }
