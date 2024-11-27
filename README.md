@@ -1,6 +1,6 @@
 # Modular Monolith, DDD, Vertical Slice Architecture WebAPI Boilerplate
 
-A .NET 8 Webapi boilerplate with Modular Monolith approach, Domain-Driven Design and Vertical Slices architecture along with Clean Architecture principles per feature.
+A .NET 9 Webapi boilerplate with Modular Monolith approach, Domain-Driven Design and Vertical Slices architecture along with Clean Architecture principles per feature.
 
 ## Table of Contents
 
