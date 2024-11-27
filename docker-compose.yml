@@ -45,7 +45,7 @@ services:
     container_name: mm.database
     restart: "no"
     volumes:
-      - ./.containers/net9.0/mm.database:/var/lib/postgresql/data
+      - ./.containers/mm.database:/var/lib/postgresql/data
     networks:
       - local_shared_network
     ports:
@@ -60,7 +60,7 @@ services:
   #   container_name: mm.redis
   #   restart: "no"
   #   volumes:
-  #     - ./.containers/net9.0/mm.redis:/data
+  #     - ./.containers/mm.redis:/data
   #   networks:
   #     - local_shared_network
   #   ports:
@@ -83,8 +83,8 @@ services:
       - "4444:4317" # OTLP gRPC receiver for jaeger
       - "5555:4318"
     volumes:
-      - ./.containers/net9.0/mm.jaeger/data:/badger/data
-      - ./.containers/net9.0/mm.jaeger/wal:/badger/wal
+      - ./.containers/mm.jaeger/data:/badger/data
+      - ./.containers/mm.jaeger/wal:/badger/wal
 
   mm.prometheus:
     container_name: mm.prometheus
@@ -95,7 +95,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./.containers/net9.0/mm.prometheus:/prometheus
+      - ./.containers/mm.prometheus:/prometheus
       - ./observability/prometheus:/etc/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -128,7 +128,7 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
-      - ./.containers/net9.0/mm.grafana:/var/lib/grafana
+      - ./.containers/mm.grafana:/var/lib/grafana
       - ./observability/grafana/provisioning:/etc/grafana/provisioning
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
       # - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
@@ -157,7 +157,7 @@ services:
     ports:
       - 5341:80
     volumes:
-      - ./.containers/net9.0/mm.seq:/data
+      - ./.containers/mm.seq:/data
     environment:
       - ACCEPT_EULA=Y
 
