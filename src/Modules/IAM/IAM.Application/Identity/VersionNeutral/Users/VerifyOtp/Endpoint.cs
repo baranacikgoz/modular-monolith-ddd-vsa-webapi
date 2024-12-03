@@ -31,9 +31,11 @@ internal static class Endpoint
         => await otpService
             .ValidateAsync(request.Otp, request.PhoneNumber, cancellationToken)
             .BindAsync(async () => await phoneVerificationTokenService.GetTokenAsync(request.PhoneNumber, cancellationToken))
-            .MapAsync(async phoneVerificationToken => new Response(
-                                                        IsRegistered: await IsRegisteredAsync(userManager, request.PhoneNumber, cancellationToken),
-                                                        PhoneVerificationToken: phoneVerificationToken));
+            .MapAsync(async phoneVerificationToken => new Response
+            {
+                IsRegistered = await IsRegisteredAsync(userManager, request.PhoneNumber, cancellationToken),
+                PhoneVerificationToken = phoneVerificationToken
+            });
 
     private static Task<bool> IsRegisteredAsync(
         UserManager<ApplicationUser> userManager,

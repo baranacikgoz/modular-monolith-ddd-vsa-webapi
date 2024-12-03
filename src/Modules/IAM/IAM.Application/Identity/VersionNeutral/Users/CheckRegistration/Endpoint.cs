@@ -28,7 +28,7 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await Result<bool>
             .CreateAsync(async () => await IsUserExistAsync(userManager, request.PhoneNumber, cancellationToken))
-            .MapAsync(userExists => new Response(userExists));
+            .MapAsync(userExists => new Response { IsRegistered = userExists });
 
     private static Task<bool> IsUserExistAsync(
         UserManager<ApplicationUser> userManager,

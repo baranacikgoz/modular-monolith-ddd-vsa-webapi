@@ -28,7 +28,16 @@ internal static class Endpoint
     {
         public ProductByIdSpec(ProductId id)
             => Query
-                .Select(p => new Response(p.Id, p.Name, p.Description))
+                .Select(p => new Response
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    CreatedBy = p.CreatedBy,
+                    CreatedOn = p.CreatedOn,
+                    LastModifiedBy = p.LastModifiedBy,
+                    LastModifiedOn = p.LastModifiedOn
+                })
                 .Where(p => p.Id == id);
     }
 

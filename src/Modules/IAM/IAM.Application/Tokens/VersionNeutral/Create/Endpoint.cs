@@ -31,9 +31,11 @@ internal static class Endpoint
             .ValidateTokenAsync(request.PhoneNumber, request.PhoneVerificationToken, cancellationToken)
             .BindAsync(async () => await userService.GetByPhoneNumberAsync(request.PhoneNumber, cancellationToken))
             .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user, cancellationToken))
-            .MapAsync(tokenDto => new Response(
-                                    tokenDto.AccessToken,
-                                    tokenDto.AccessTokenExpiresAt,
-                                    tokenDto.RefreshToken,
-                                    tokenDto.RefreshTokenExpiresAt));
+            .MapAsync(tokenDto => new Response
+            {
+                AccessToken = tokenDto.AccessToken,
+                AccessTokenExpiresAt = tokenDto.AccessTokenExpiresAt,
+                RefreshToken = tokenDto.RefreshToken,
+                RefreshTokenExpiresAt = tokenDto.RefreshTokenExpiresAt
+            });
 }

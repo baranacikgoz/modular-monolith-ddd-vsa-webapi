@@ -32,5 +32,5 @@ internal static class Endpoint
             .Create(() => Product.Create(request.Name, request.Description))
             .Tap(product => repository.Add(product))
             .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken))
-            .MapAsync(product => new Response(product.Id));
+            .MapAsync(product => new Response { Id = product.Id });
 }

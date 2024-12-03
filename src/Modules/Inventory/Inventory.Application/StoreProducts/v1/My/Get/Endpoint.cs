@@ -28,7 +28,18 @@ internal static class Endpoint
     {
         public StoreProductByStoreOwnerIdAndStoreProductIdSpec(ApplicationUserId ownerId, StoreProductId storeProductId)
             => Query
-                .Select(sp => new Response(sp.Id, sp.Product.Name, sp.Product.Description))
+                .Select(sp => new Response
+                {
+                    Id = sp.Id,
+                    Name = sp.Product.Name,
+                    Description = sp.Product.Description,
+                    Quantity = sp.Quantity,
+                    Price = sp.Price,
+                    CreatedBy = sp.CreatedBy,
+                    CreatedOn = sp.CreatedOn,
+                    LastModifiedBy = sp.LastModifiedBy,
+                    LastModifiedOn = sp.LastModifiedOn
+                })
                 .Include(sp => sp.Product)
                 .Where(sp => sp.Store.OwnerId == ownerId && sp.Id == storeProductId);
     }

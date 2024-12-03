@@ -35,13 +35,19 @@ internal static class Endpoint
                                                         .Select(x => new Dto(x.Id, x.Name, x.LastName, x.PhoneNumber!, x.NationalIdentityNumber, x.BirthDate))
                                                         .SingleOrDefaultAsync(cancellationToken),
                     errorIfValueNull: Error.NotFound(nameof(ApplicationUser), id))
-            .MapAsync(dto => new Response(
-                                    dto.Id,
-                                    dto.Name,
-                                    dto.LastName,
-                                    dto.PhoneNumber,
-                                    dto.NationalIdentityNumber,
-                                    dto.BirthDate));
+            .MapAsync(dto => new Response
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                LastName = dto.LastName,
+                PhoneNumber = dto.PhoneNumber,
+                NationalIdentityNumber = dto.NationalIdentityNumber,
+                BirthDate = dto.BirthDate,
+                CreatedBy = dto.Id,
+                CreatedOn = DateTime.UtcNow,
+                LastModifiedBy = dto.Id,
+                LastModifiedOn = DateTime.UtcNow
+            });
 
     private sealed record Dto(
         ApplicationUserId Id,

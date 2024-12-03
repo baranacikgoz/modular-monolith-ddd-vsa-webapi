@@ -65,6 +65,6 @@ internal static class Endpoint
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return new Response(storeProduct.Id);
+        return new Response { Id = storeProduct.Id };
     }
 }
