@@ -1,2 +1,6 @@
 namespace IAM.Application.Captcha.VersionNeutral.ClientKey.Get;
-public record Response(string ClientKey);
+
+public sealed record class Response
+{
+    public required string ClientKey { get; init; }
+}

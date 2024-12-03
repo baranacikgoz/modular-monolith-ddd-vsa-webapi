@@ -28,9 +28,11 @@ internal static class Endpoint
         => await tokenService.GetClaimsPrincipalByExpiredToken(request.RefreshToken, cancellationToken)
             .BindAsync(async claimsPrincipal => await userService.GetByClaimsPrincipalAsync(claimsPrincipal, cancellationToken))
             .BindAsync(async user => await tokenService.GenerateTokensAndUpdateUserAsync(user, cancellationToken))
-            .MapAsync(tokenDto => new Response(
-                                        tokenDto.AccessToken,
-                                        tokenDto.AccessTokenExpiresAt,
-                                        tokenDto.RefreshToken,
-                                        tokenDto.RefreshTokenExpiresAt));
+            .MapAsync(tokenDto => new Response
+            {
+                AccessToken = tokenDto.AccessToken,
+                AccessTokenExpiresAt = tokenDto.AccessTokenExpiresAt,
+                RefreshToken = tokenDto.RefreshToken,
+                RefreshTokenExpiresAt = tokenDto.RefreshTokenExpiresAt
+            });
 }

@@ -1,5 +1,15 @@
+using Common.Application.DTOs;
 using Common.Domain.StronglyTypedIds;
 using Inventory.Domain.Stores;
 
 namespace Inventory.Application.Stores.v1.My.Get;
-public sealed record Response(StoreId Id, ApplicationUserId OwnerId, string Name, string Description, Uri? LogoUrl, int ProductCount);
+
+public sealed record Response : AuditableEntityResponse<StoreId>
+{
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required int ProductCount { get; init; }
+    public Uri? LogoUrl { get; init; }
+    public ApplicationUserId OwnerId { get; init; }
+}
+
