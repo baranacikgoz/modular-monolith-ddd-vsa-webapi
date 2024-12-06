@@ -71,8 +71,9 @@ internal static partial class Setup
             {
                 context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}";
 
-                context.ProblemDetails.Extensions.Add("environment", env.EnvironmentName);
-                context.ProblemDetails.Extensions.Add("node", Environment.MachineName);
+                context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+                context.ProblemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+                context.ProblemDetails.Extensions.TryAdd("node", Environment.MachineName);
             };
         });
 
