@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Common.Application.Caching;
 using Microsoft.Extensions.Caching.Hybrid;
 

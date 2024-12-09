@@ -2,9 +2,7 @@ using Common.Application.BackgroundJobs;
 using Common.Infrastructure.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
-using MassTransit.Configuration;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

@@ -1,10 +1,10 @@
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Middlewares;
 using IAM.Infrastructure;
-using Inventory.Infrastructure;
 using Notifications.Infrastructure;
 using Outbox;
 using BackgroundJobs;
+using Products.Infrastructure;
 
 namespace Host.Infrastructure;
 
@@ -16,7 +16,7 @@ internal static partial class Setup
             .AddOutboxModule()
             .AddNotificationsModule()
             .AddIAMModule(configuration)
-            .AddInventoryModule()
+            .AddProductsModule()
             .AddRateLimiting(configuration);
 
     public static IApplicationBuilder UseModules(this WebApplication app)
@@ -41,7 +41,7 @@ internal static partial class Setup
         app.UseOutboxModule();
         app.UseNotificationsModule();
         app.UseIAMModule(versionNeutralApiGroup);
-        app.UseInventoryModule(versionedApiGroup);
+        app.UseProductsModule(versionedApiGroup);
         app.UseBackgroundJobsModule();
 
         return app;
@@ -51,5 +51,5 @@ internal static partial class Setup
         => services.AddRateLimiting(
                 configuration,
                 IAM.Infrastructure.RateLimiting.Policies.Get(),
-                Inventory.Infrastructure.RateLimiting.Policies.Get());
+                Products.Infrastructure.RateLimiting.Policies.Get());
 }

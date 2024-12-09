@@ -1,6 +1,5 @@
 using Common.Application.Caching;
 using Common.Infrastructure.Options;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

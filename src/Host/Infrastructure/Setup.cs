@@ -99,9 +99,9 @@ internal static partial class Setup
             typeof(IAM.Application.IAssemblyReference).Assembly,
             typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
 
-            typeof(Inventory.Domain.IAssemblyReference).Assembly,
-            typeof(Inventory.Application.IAssemblyReference).Assembly,
-            typeof(Inventory.Infrastructure.IAssemblyReference).Assembly,
+            typeof(Products.Domain.IAssemblyReference).Assembly,
+            typeof(Products.Application.IAssemblyReference).Assembly,
+            typeof(Products.Infrastructure.IAssemblyReference).Assembly,
 
             typeof(Notifications.Domain.IAssemblyReference).Assembly,
             typeof(Notifications.Application.IAssemblyReference).Assembly,

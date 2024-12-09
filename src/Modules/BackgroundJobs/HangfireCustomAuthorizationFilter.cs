@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Application.Auth;
-using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
 using Hangfire.Annotations;
 using Hangfire.Dashboard;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BackgroundJobs;
