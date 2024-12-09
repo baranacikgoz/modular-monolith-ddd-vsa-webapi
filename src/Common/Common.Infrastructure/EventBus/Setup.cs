@@ -2,7 +2,6 @@ using System.Reflection;
 using Common.Application.EventBus;
 using Common.Infrastructure.Options;
 using MassTransit;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

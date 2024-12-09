@@ -26,7 +26,7 @@ internal static class Setup
     /// <returns></returns>
     private static string SchemaIdGenerator(Type type)
     {
-        // For example, for: "Inventory.Application.Products.v1.Create.Request" return "Products.v1.Create.Request".
+        // For example, for: "Products.Application.Products.v1.Create.Request" return "Products.v1.Create.Request".
 
         var name = type.FullName ?? type.Name;
 

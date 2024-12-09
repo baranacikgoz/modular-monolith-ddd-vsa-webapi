@@ -6,7 +6,6 @@ using Common.Infrastructure.Options;
 using IAM.Application.Identity.Services;
 using IAM.Domain.Identity.Errors;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace IAM.Infrastructure.Identity.Services;
 

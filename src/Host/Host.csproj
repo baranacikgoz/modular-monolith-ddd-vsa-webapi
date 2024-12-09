@@ -48,7 +48,7 @@
     <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
     <ProjectReference Include="..\Modules\BackgroundJobs\BackgroundJobs.csproj" />
     <ProjectReference Include="..\Modules\IAM\IAM.Infrastructure\IAM.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Inventory\Inventory.Infrastructure\Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Products\Products.Infrastructure\Products.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Outbox\Outbox.csproj" />
   </ItemGroup>

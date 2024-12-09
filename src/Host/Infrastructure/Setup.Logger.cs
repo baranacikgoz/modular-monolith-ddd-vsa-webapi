@@ -1,14 +1,12 @@
 using System.Globalization;
 using Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using OpenTelemetry.Exporter;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Compact;
-using Serilog.Sinks.OpenTelemetry;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host.Infrastructure;

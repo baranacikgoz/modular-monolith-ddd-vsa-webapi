@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Common.Application.Validation;
 using FluentValidation;
 
