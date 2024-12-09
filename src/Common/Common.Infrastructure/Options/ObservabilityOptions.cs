@@ -1,50 +1,99 @@
 using System.ComponentModel.DataAnnotations;
+using Common.Application.Validation;
+using FluentValidation;
 
 namespace Common.Infrastructure.Options;
 
 public class ObservabilityOptions
 {
-    [Required(AllowEmptyStrings = false)]
-    public string AppName { get; set; } = null!;
+    public required string AppName { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string AppVersion { get; set; } = null!;
+    public required string AppVersion { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string MinimumLevel { get; set; } = null!;
+    public required string MinimumLevel { get; set; }
 
-    [Required]
     public Dictionary<string, string> MinimumLevelOverrides { get; } = [];
 
-    [Required]
     public bool WriteToConsole { get; set; }
 
-    [Required]
     public bool WriteToFile { get; set; }
 
-    [Required]
     public int ResponseTimeThresholdInMs { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string OtlpLoggingEndpoint { get; set; } = null!;
+    public required string OtlpLoggingEndpoint { get; set; }
 
-    [AllowedValues("HttpProtobuf", "Grpc")]
-    public string OtlpLoggingProtocol { get; set; } = null!;
+    public required string OtlpLoggingProtocol { get; set; }
 
-    [Required]
     public bool EnableMetrics { get; set; }
+
     public bool OtlpMetricsUsePrometheusDirectly { get; set; }
-    public string? OtlpMetricsEndpoint { get; set; } = null!;
 
-    [AllowedValues("HttpProtobuf", "Grpc")]
-    public string? OtlpMetricsProtocol { get; set; } = null!;
+    public string? OtlpMetricsEndpoint { get; set; }
 
-    [Required]
+    public string? OtlpMetricsProtocol { get; set; }
+
     public bool EnableTracing { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string OtlpTracingEndpoint { get; set; } = null!;
+    public required string OtlpTracingEndpoint { get; set; }
 
-    [AllowedValues("HttpProtobuf", "Grpc")]
-    public string OtlpTracingProtocol { get; set; } = null!;
+    public required string OtlpTracingProtocol { get; set; }
+}
+
+public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOptions>
+{
+    public ObservabilityOptionsValidator()
+    {
+        RuleFor(o => o.AppName)
+            .NotEmpty()
+            .WithMessage("AppName must not be empty.");
+
+        RuleFor(o => o.AppVersion)
+            .NotEmpty()
+            .WithMessage("AppVersion must not be empty.");
+
+        RuleFor(o => o.MinimumLevel)
+            .NotEmpty()
+            .WithMessage("MinimumLevel must not be empty.");
+
+        RuleFor(o => o.MinimumLevelOverrides)
+            .NotNull()
+            .WithMessage("MinimumLevelOverrides must not be null.")
+            .NotEmpty()
+            .WithMessage("MinimumLevelOverrides must contain at least one override.");
+
+        RuleFor(o => o.ResponseTimeThresholdInMs)
+            .GreaterThan(0)
+            .WithMessage("ResponseTimeThresholdInMs must be greater than 0.");
+
+        RuleFor(o => o.OtlpLoggingEndpoint)
+            .NotEmpty()
+            .WithMessage("OtlpLoggingEndpoint must not be empty.");
+
+        RuleFor(o => o.OtlpLoggingProtocol)
+            .NotEmpty()
+            .WithMessage("OtlpLoggingProtocol must not be empty.")
+            .Matches("HttpProtobuf|Grpc");
+
+        RuleFor(o => o.OtlpMetricsEndpoint)
+            .NotEmpty()
+            .WithMessage("OtlpMetricsEndpoint must not be empty.")
+            .When(o => o.EnableMetrics);
+
+        RuleFor(o => o.OtlpMetricsProtocol)
+            .NotEmpty()
+            .WithMessage("OtlpMetricsProtocol must not be empty.")
+            .Matches("HttpProtobuf|Grpc")
+            .When(o => o.EnableMetrics);
+
+        RuleFor(o => o.OtlpTracingEndpoint)
+            .NotEmpty()
+            .WithMessage("OtlpTracingEndpoint must not be empty.")
+            .When(o => o.EnableTracing);
+
+        RuleFor(o => o.OtlpTracingProtocol)
+            .NotEmpty()
+            .WithMessage("OtlpTracingProtocol must not be empty.")
+            .Matches("HttpProtobuf|Grpc")
+            .When(o => o.EnableTracing);
+    }
 }

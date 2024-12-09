@@ -1,27 +1,24 @@
 using System.ComponentModel.DataAnnotations;
+using Common.Application.Validation;
+using FluentValidation;
 
 namespace Common.Infrastructure.Options;
 
 public class EventBusOptions
 {
-    [Required]
     public bool UseInMemoryEventBus { get; set; }
-    public MessageBrokerOptions? MessageBrokerOptions { get; set; }
+    public MessageBroker? MessageBroker { get; set; }
 }
 
-public class MessageBrokerOptions
+public class MessageBroker
 {
-    [Required, AllowedValues(nameof(MessageBrokerType.RabbitMQ), nameof(MessageBrokerType.Kafka), nameof(MessageBrokerType.AzureServiceBus), nameof(MessageBrokerType.AmazonSQS))]
     public MessageBrokerType MessageBrokerType { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public Uri Uri { get; set; } = null!;
+    public required string Uri { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string Username { get; set; } = null!;
+    public required string Username { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string Password { get; set; } = null!;
+    public required string Password { get; set; }
 }
 
 public enum MessageBrokerType
@@ -30,4 +27,38 @@ public enum MessageBrokerType
     Kafka,
     AzureServiceBus,
     AmazonSQS
+}
+
+public class EventBusOptionsValidator : CustomValidator<EventBusOptions>
+{
+    public EventBusOptionsValidator()
+    {
+        RuleFor(o => o)
+            .Must(o => o.UseInMemoryEventBus || o.MessageBroker is not null)
+            .WithMessage("Either UseInMemoryEventBus must be true or MessageBrokerOptions must not be null.");
+    }
+}
+
+public class MessageBrokerOptionsValidator : CustomValidator<MessageBroker>
+{
+    public MessageBrokerOptionsValidator()
+    {
+        RuleFor(o => o.MessageBrokerType)
+            .IsInEnum()
+            .WithMessage("MessageBrokerType must be a valid enum value.");
+
+        RuleFor(o => o.Uri)
+            .NotEmpty()
+            .WithMessage("Uri must not be empty.")
+            .Must(x => Uri.TryCreate(x, UriKind.Absolute, out _))
+            .WithMessage("Uri must be a valid URL.");
+
+        RuleFor(o => o.Username)
+            .NotEmpty()
+            .WithMessage("Username must not be empty.");
+
+        RuleFor(o => o.Password)
+            .NotEmpty()
+            .WithMessage("Password must not be empty.");
+    }
 }

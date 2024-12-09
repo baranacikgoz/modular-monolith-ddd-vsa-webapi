@@ -39,8 +39,8 @@ public static class Setup
             }
             else
             {
-                var messageBrokerOptions = eventBusOptions.MessageBrokerOptions
-                    ?? throw new InvalidOperationException($"{nameof(useInMemoryEventBus)} is false but {nameof(MessageBrokerOptions)} is null.");
+                var messageBrokerOptions = eventBusOptions.MessageBroker
+                    ?? throw new InvalidOperationException($"{nameof(useInMemoryEventBus)} is false but {nameof(MessageBroker)} is null.");
 
                 x.UseAppropriateMessageBroker(messageBrokerOptions);
             }
@@ -49,7 +49,7 @@ public static class Setup
 
     private static void UseAppropriateMessageBroker(
         this IBusRegistrationConfigurator busRegistrationConfigurator,
-        MessageBrokerOptions messageBrokerOptions)
+        MessageBroker messageBrokerOptions)
     {
         switch (messageBrokerOptions.MessageBrokerType)
         {

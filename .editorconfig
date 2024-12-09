@@ -561,3 +561,6 @@ dotnet_diagnostic.CA1031.severity = none
 
 [*/tests/*] # Allow test projects to have underscores
 dotnet_diagnostic.CA1707.severity = none
+
+[**/*Options.cs]
+dotnet_diagnostic.CA1056.severity = none

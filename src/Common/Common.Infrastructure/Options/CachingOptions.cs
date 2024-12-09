@@ -4,23 +4,58 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Application.Validation;
+using FluentValidation;
 
 namespace Common.Infrastructure.Options;
+
 public class CachingOptions
 {
     public bool UseRedis { get; set; }
-    public RedisOptions? Redis { get; set; } = default!;
+    public Redis? Redis { get; set; }
 }
 
-public class RedisOptions
+public class Redis
 {
-    [Required(AllowEmptyStrings = false)]
-    public string Host { get; set; } = default!;
+    public required string Host { get; set; }
+
     public int Port { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string Password { get; set; } = default!;
+    public required string Password { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string AppName { get; set; } = default!;
+    public required string AppName { get; set; }
+}
+
+public class CachingOptionsValidator : CustomValidator<CachingOptions>
+{
+    public CachingOptionsValidator()
+    {
+#pragma warning disable CS8620
+        RuleFor(x => x.Redis)
+            .SetValidator(new RedisValidator())
+                .When(x => x.UseRedis);
+#pragma warning restore CS8620
+    }
+}
+
+public class RedisValidator : CustomValidator<Redis>
+{
+    public RedisValidator()
+    {
+        RuleFor(x => x.Host)
+            .NotEmpty()
+                .WithMessage("Host should not be empty.");
+
+        RuleFor(x => x.Port)
+            .GreaterThan(0)
+                .WithMessage("Port should be greater than 0.");
+
+        RuleFor(x => x.Password)
+            .NotEmpty()
+                .WithMessage("Password should not be empty.");
+
+        RuleFor(x => x.AppName)
+            .NotEmpty()
+                .WithMessage("AppName should not be empty.");
+    }
 }

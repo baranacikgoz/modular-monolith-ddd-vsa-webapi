@@ -38,8 +38,8 @@ internal static partial class Setup
                 env,
                 Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
             .AddCustomCors()
-            .AddCommonDependencies(configuration)
             .AddFluentValidationAndAutoValidation()
+            .AddCommonDependencies(configuration)
             .AddEnrichLogsWithUserInfoMiddlware();
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
@@ -93,6 +93,8 @@ internal static partial class Setup
 
     private static readonly Assembly[] _moduleAssemblies =
         [
+            typeof(Common.Infrastructure.IAssemblyReference).Assembly, // holding option classes which we validate using FluentValidation
+
             typeof(IAM.Domain.IAssemblyReference).Assembly,
             typeof(IAM.Application.IAssemblyReference).Assembly,
             typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
