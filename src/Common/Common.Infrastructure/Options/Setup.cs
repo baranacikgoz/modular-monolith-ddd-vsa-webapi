@@ -1,5 +1,11 @@
+using System.Reflection;
+using Common.Application.Validation;
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Common.Infrastructure.Options;
 
@@ -7,99 +13,63 @@ public static class Setup
 {
     public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            .AddOptions<ResxLocalizationOptions>()
-            .Bind(configuration.GetSection(nameof(ResxLocalizationOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.SupportedCultures.Count > 0, "SupportedCultures must contain at least one culture.")
-            .ValidateOnStart();
+        var namespaceToScan = "Common.Infrastructure.Options";
 
-        services
-            .AddOptions<DatabaseOptions>()
-            .Bind(configuration.GetSection(nameof(DatabaseOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        var assembly = Assembly.GetExecutingAssembly();
 
-        services
-            .AddOptions<ObservabilityOptions>()
-            .Bind(configuration.GetSection(nameof(ObservabilityOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.ResponseTimeThresholdInMs > 0, "ResponseTimeThresholdInMs must be greater than 0.")
-            .ValidateOnStart();
+        // Get all option classes in the specified namespace
+        var optionTypes = assembly.GetTypes()
+            .Where(
+                t => t.Namespace == namespaceToScan
+                     && t.IsClass
+                     && !t.IsAbstract
+                     && !(t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(CustomValidator<>)) // Omits validators' itselves
+                     && t.Name.EndsWith("Options", StringComparison.Ordinal));
 
-        services
-            .AddOptions<JwtOptions>()
-            .Bind(configuration.GetSection(nameof(JwtOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        var executedValidators = new HashSet<Type>();
 
-        services
-            .AddOptions<OtpOptions>()
-            .Bind(configuration.GetSection(nameof(OtpOptions)))
-            .Validate(o => o.ExpirationInMinutes > 0, "ExpirationInMinutes must be greater than 0.")
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        foreach (var type in optionTypes)
+        {
+            var sectionName = type.Name; // Use the class name as the section name
+            var section = configuration.GetSection(sectionName);
 
-        services
-            .AddOptions<CaptchaOptions>()
-            .Bind(configuration.GetSection(nameof(CaptchaOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+            // Validate settings using FluentValidation
+            var validatorType = typeof(IValidator<>).MakeGenericType(type);
 
-        // Even though we won't be using RateLimitingOptions via IOptions<RateLimitingOptions> in our code,
-        // (because we don't have an overload of the AddRateLimiter() that has ServiceProvider as parameter)
-        // we are validating it here to make sure that the options are valid.
-        // After this point, it is safe to use it like "Configuration.GetSection(nameof(RateLimitingOptions)).Get<RateLimitingOptions>();"
-        services
-            .AddOptions<CustomRateLimitingOptions>()
-            .Bind(configuration.GetSection(nameof(CustomRateLimitingOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.Global?.Limit > 0, "Global.Limit must be greater than 0.")
-            .Validate(o => o.Global?.PeriodInMs > 0, "Global.Period must be greater than 0.")
-            .Validate(o => o.Global?.QueueLimit >= 0, "Global.QueueLimit must be greater than or equal to 0.")
-            .Validate(o => o.Sms?.Limit > 0, "Sms.Limit must be greater than 0.")
-            .Validate(o => o.Sms?.PeriodInMs > 0, "Sms.Period must be greater than 0.")
-            .Validate(o => o.Sms?.QueueLimit >= 0, "Sms.QueueLimit must be greater than or equal to 0.")
-            .Validate(o => o.CreateStore?.Limit > 0, "CreateStore.Limit must be greater than 0.")
-            .Validate(o => o.CreateStore?.PeriodInMs > 0, "CreateStore.Period must be greater than 0.")
-            .Validate(o => o.CreateStore?.QueueLimit >= 0, "CreateStore.QueueLimit must be greater than or equal to 0.")
-            .ValidateOnStart();
+            if (!executedValidators.Contains(type) && services.BuildServiceProvider().GetService(validatorType) is IValidator validator)
+            {
+                var optionInstance = section.Get(type) ?? throw new InvalidOperationException($"Could not bind section {sectionName} to {type.Name}");
 
-        services
-            .AddOptions<OpenApiOptions>()
-            .Bind(configuration.GetSection(nameof(OpenApiOptions)))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+                var validationResult = validator.Validate(new ValidationContext<object>(optionInstance));
 
-        services
-            .AddOptions<EventBusOptions>()
-            .Bind(configuration.GetSection(nameof(EventBusOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => !(!o.UseInMemoryEventBus && o.MessageBrokerOptions is null), "Both UseInMemory false and MessageBrokerOptions are null. Use in memory or provide message broker options.")
-            .ValidateOnStart();
+                if (!validationResult.IsValid)
+                {
+                    var errors = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
+                    throw new ValidationException($"Validation for {type.Name} failed: {Environment.NewLine}{errors}");
+                }
 
-        services
-            .AddOptions<OutboxOptions>()
-            .Bind(configuration.GetSection(nameof(OutboxOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.BackgroundJobPeriodInSeconds >= 0, "BackgroundJobPeriodInSeconds must be greater than 0.")
-            .Validate(o => o.BatchSizePerExecution >= 0, "BatchSizePerExecution must be greater than 0.")
-            .Validate(o => o.MaxFailCountBeforeSentToDeadLetter >= 0, "MaxFailCountBeforeSentToDeadLetter must be greater than 0.")
-            .ValidateOnStart();
+                // Mark this type as validated
+                executedValidators.Add(type);
+            }
 
-        services
-            .AddOptions<BackgroundJobsOptions>()
-            .Bind(configuration.GetSection(nameof(BackgroundJobsOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.PollingFrequencyInSeconds > 0, "SchedulePollingIntervalSeconds must be greater than 0.")
-            .ValidateOnStart();
+            // Explicitly find the correct Configure<TOptions> method
+            var configureMethod = typeof(OptionsConfigurationServiceCollectionExtensions)
+                .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                .FirstOrDefault(m => m.Name == nameof(OptionsConfigurationServiceCollectionExtensions.Configure)
+                                      && m.GetParameters().Length == 2
+                                      && m.GetParameters()[0].ParameterType == typeof(IServiceCollection)
+                                      && m.GetParameters()[1].ParameterType == typeof(IConfiguration));
 
-        services
-            .AddOptions<CachingOptions>()
-            .Bind(configuration.GetSection(nameof(CachingOptions)))
-            .ValidateDataAnnotations()
-            .Validate(o => o.Redis?.Port > 0, "Redis.Port must be greater than 0.")
-            .ValidateOnStart();
+            if (configureMethod != null)
+            {
+                var genericMethod = configureMethod.MakeGenericMethod(type);
+                genericMethod.Invoke(null, [services, section]);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Could not find the Configure method for type {type.Name}");
+            }
+        }
 
         return services;
     }

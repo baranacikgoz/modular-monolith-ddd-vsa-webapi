@@ -61,7 +61,7 @@ internal class ConfigureSwaggerOptions(
             License = new OpenApiLicense
             {
                 Name = _openApiOptions.LicenseName,
-                Url = _openApiOptions.LicenseUrl
+                Url = Uri.TryCreate(_openApiOptions.LicenseUrl, UriKind.Absolute, out var uri) ? uri : null
             }
         };
 

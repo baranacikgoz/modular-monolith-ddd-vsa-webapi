@@ -1,20 +1,40 @@
 using System.ComponentModel.DataAnnotations;
+using Common.Application.Validation;
+using FluentValidation;
 
 namespace Common.Infrastructure.Options;
 
-#pragma warning disable CA1056
 public class CaptchaOptions
 {
-    [Required(AllowEmptyStrings = false), Url]
-    public string BaseUrl { get; set; } = default!;
+    public required string BaseUrl { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string CaptchaEndpoint { get; set; } = default!;
+    public required string CaptchaEndpoint { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string ClientKey { get; set; } = default!;
+    public required string ClientKey { get; set; }
 
-    [Required(AllowEmptyStrings = false)]
-    public string SecretKey { get; set; } = default!;
+    public required string SecretKey { get; set; }
 }
-#pragma warning restore CA1056
+
+public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
+{
+    public CaptchaOptionsValidator()
+    {
+        RuleFor(o => o.BaseUrl)
+            .NotEmpty()
+            .WithMessage("BaseUrl must not be empty.")
+            .Must(x => Uri.TryCreate(x, UriKind.Absolute, out _))
+            .WithMessage("BaseUrl must be a valid URL.");
+
+        RuleFor(o => o.CaptchaEndpoint)
+            .NotEmpty()
+            .WithMessage("CaptchaEndpoint must not be empty.");
+
+        RuleFor(o => o.ClientKey)
+            .NotEmpty()
+            .WithMessage("ClientKey must not be empty.");
+
+        RuleFor(o => o.SecretKey)
+            .NotEmpty()
+            .WithMessage("SecretKey must not be empty.");
+    }
+}
