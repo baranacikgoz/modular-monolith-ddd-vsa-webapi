@@ -1,15 +1,18 @@
 using Common.Application.Auth;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Common.Infrastructure.Persistence;
 
 public abstract partial class BaseDbContext(
     DbContextOptions options,
     ICurrentUser currentUser,
-    ILogger logger
+    ILogger logger,
+    IOptions<ObservabilityOptions> observabilityOptionsProvider
     ) : DbContext(options)
 {
     public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
@@ -40,6 +43,22 @@ public abstract partial class BaseDbContext(
 
             LogConcurrencyExceptionOccuredOnSingleEntity(logger, ex, typeAndTableName, userId);
             throw;
+        }
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+
+        if (observabilityOptionsProvider.Value.LogGeneratedSqlQueries)
+        {
+#pragma warning disable
+            optionsBuilder.LogTo(
+            sql => logger.LogDebug(sql),                  // Log the SQL query
+            new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
+            LogLevel.Information                           // Set the log level
+            );
+#pragma warning restore
         }
     }
 

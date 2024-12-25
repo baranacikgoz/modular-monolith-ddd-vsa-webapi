@@ -4,7 +4,7 @@ namespace Common.Domain.Entities;
 
 public interface IAuditableEntity
 {
-    DateTimeOffset CreatedOn { get; set; }
+    DateTimeOffset CreatedOn { get; }
     ApplicationUserId CreatedBy { get; set; }
     DateTimeOffset? LastModifiedOn { get; set; }
     ApplicationUserId? LastModifiedBy { get; set; }

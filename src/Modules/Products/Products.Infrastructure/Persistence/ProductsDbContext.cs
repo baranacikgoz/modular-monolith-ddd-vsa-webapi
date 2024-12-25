@@ -1,9 +1,11 @@
 using Common.Application.Auth;
 using Common.Domain.Events;
+using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Products.Domain.Products;
 using Products.Domain.StoreProducts;
 using Products.Domain.Stores;
@@ -13,8 +15,9 @@ namespace Products.Infrastructure.Persistence;
 internal sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
     ICurrentUser currentUser,
-    ILogger<ProductsDbContext> logger
-    ) : BaseDbContext(options, currentUser, logger)
+    ILogger<ProductsDbContext> logger,
+    IOptions<ObservabilityOptions> observabilityOptionsProvider
+    ) : BaseDbContext(options, currentUser, logger, observabilityOptionsProvider)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

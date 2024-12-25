@@ -1,7 +1,8 @@
 {
   "OutboxOptions": {
-    "BackgroundJobPeriodInSeconds": 5,
-    "BatchSizePerExecution": 20,
+    "BackgroundJobPeriodInMilliseconds": 4000,
+    "MaxBackoffDelayInMilliseconds": 7000,
+    "BatchSizePerExecution": 100,
     "MaxFailCountBeforeSentToDeadLetter": 3
   }
 }

@@ -17,6 +17,8 @@ public class ObservabilityOptions
 
     public bool WriteToFile { get; set; }
 
+    public bool LogGeneratedSqlQueries { get; set; }
+
     public int ResponseTimeThresholdInMs { get; set; }
 
     public required string OtlpLoggingEndpoint { get; set; }

@@ -1,8 +1,9 @@
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.Outbox;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Common.Infrastructure.Persistence.Outbox;
+namespace Outbox.Persistence;
 
 public class OutboxMessageConfig : AuditableEntityConfiguration<OutboxMessage>
 {
@@ -12,8 +13,7 @@ public class OutboxMessageConfig : AuditableEntityConfiguration<OutboxMessage>
 
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => x.CreatedOn);
-        builder.HasIndex(x => x.IsProcessed);
+        builder.HasIndex(x => new { x.CreatedOn, x.IsProcessed });
 
         builder.Property(x => x.Event)
             .HasConversion<DomainEventConverter>()
@@ -32,22 +32,3 @@ public class OutboxMessageConfig : AuditableEntityConfiguration<OutboxMessage>
             .IsRequired();
     }
 }
-
-public class DeadLetterMessageConfig : AuditableEntityConfiguration<DeadLetterMessage>
-{
-    public override void Configure(EntityTypeBuilder<DeadLetterMessage> builder)
-    {
-        base.Configure(builder);
-
-        builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Event)
-            .HasConversion<DomainEventConverter>()
-            .IsRequired();
-
-        builder
-            .Property(x => x.FailedCount)
-            .IsRequired();
-    }
-}
-

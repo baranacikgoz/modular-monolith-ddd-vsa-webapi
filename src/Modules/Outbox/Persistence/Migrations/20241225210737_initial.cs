@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -61,16 +62,10 @@ namespace Outbox.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_CreatedOn",
+                name: "IX_OutboxMessages_CreatedOn_IsProcessed",
                 schema: "Outbox",
                 table: "OutboxMessages",
-                column: "CreatedOn");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_IsProcessed",
-                schema: "Outbox",
-                table: "OutboxMessages",
-                column: "IsProcessed");
+                columns: new[] { "CreatedOn", "IsProcessed" });
         }
 
         /// <inheritdoc />

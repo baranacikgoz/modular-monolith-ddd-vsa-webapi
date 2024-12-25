@@ -30,7 +30,6 @@ public class ApplyAuditingInterceptor(
             {
                 case EntityState.Added:
                     entry.Entity.CreatedBy = userId;
-                    entry.Entity.CreatedOn = now;
                     entry.Entity.LastModifiedBy = userId;
                     entry.Entity.LastModifiedOn = now;
                     entry.Entity.LastModifiedIp = ipAddress;
