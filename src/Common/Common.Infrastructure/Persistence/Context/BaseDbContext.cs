@@ -10,7 +10,6 @@ namespace Common.Infrastructure.Persistence;
 
 public abstract partial class BaseDbContext(
     DbContextOptions options,
-    ICurrentUser currentUser,
     ILogger logger,
     IOptions<ObservabilityOptions> observabilityOptionsProvider
     ) : DbContext(options)
@@ -32,9 +31,6 @@ public abstract partial class BaseDbContext(
 #pragma warning restore
         }
     }
-
-    private static string MergeTypeAndTableName(string? typeName, string? tableName)
-        => $"{typeName ?? "N/A"} / ({tableName ?? "N/A"})";
 
     [LoggerMessage(
         Level = LogLevel.Information,

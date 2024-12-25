@@ -14,10 +14,9 @@ namespace Products.Infrastructure.Persistence;
 
 internal sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
-    ICurrentUser currentUser,
     ILogger<ProductsDbContext> logger,
     IOptions<ObservabilityOptions> observabilityOptionsProvider
-    ) : BaseDbContext(options, currentUser, logger, observabilityOptionsProvider)
+    ) : BaseDbContext(options, logger, observabilityOptionsProvider)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
