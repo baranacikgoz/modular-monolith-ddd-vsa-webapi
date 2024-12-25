@@ -12,6 +12,7 @@
     },
     "WriteToConsole": true,
     "WriteToFile": true,
+    "LogGeneratedSqlQueries": true,
     "ResponseTimeThresholdInMs": 1000,
     "OtlpLoggingEndpoint": "http://localhost:5341/ingest/otlp/v1/logs",
     "OtlpLoggingProtocol": "HttpProtobuf",

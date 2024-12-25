@@ -5,10 +5,9 @@ namespace Common.Infrastructure.Options;
 
 public class OutboxOptions
 {
-    public int BackgroundJobPeriodInSeconds { get; set; }
-
+    public int BackgroundJobPeriodInMilliseconds { get; set; }
+    public int MaxBackoffDelayInMilliseconds { get; set; }
     public int BatchSizePerExecution { get; set; }
-
     public int MaxFailCountBeforeSentToDeadLetter { get; set; }
 }
 
@@ -16,9 +15,13 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
 {
     public OutboxOptionsValidator()
     {
-        RuleFor(o => o.BackgroundJobPeriodInSeconds)
+        RuleFor(o => o.BackgroundJobPeriodInMilliseconds)
             .GreaterThan(0)
-            .WithMessage("BackgroundJobPeriodInSeconds must be greater than 0.");
+            .WithMessage("BackgroundJobPeriodInMilliseconds must be greater than 0.");
+
+        RuleFor(o => o.MaxBackoffDelayInMilliseconds)
+            .GreaterThan(0)
+            .WithMessage("MaxBackoffDelayInMilliseconds must be greater than 0.");
 
         RuleFor(o => o.BatchSizePerExecution)
             .GreaterThan(0)
