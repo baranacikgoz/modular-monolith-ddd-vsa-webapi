@@ -17,35 +17,6 @@ public abstract partial class BaseDbContext(
 {
     public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        var userId = currentUser.Id;
-
-        try
-        {
-            return await base.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            if (ex.Entries.Count > 1)
-            {
-                var typeAndTableNames = ex.Entries.Select(e => MergeTypeAndTableName(
-                                                                e.Entity.GetType().Name,
-                                                                e.Metadata.GetTableName()));
-
-                LogConcurrencyExceptionOccuredOnMultipleEntities(logger, ex, typeAndTableNames, userId);
-                throw;
-            }
-
-            var typeAndTableName = MergeTypeAndTableName(
-                    ex.Entries.Single().Entity.GetType().Name,
-                    ex.Entries.Single().Metadata.GetTableName());
-
-            LogConcurrencyExceptionOccuredOnSingleEntity(logger, ex, typeAndTableName, userId);
-            throw;
-        }
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
