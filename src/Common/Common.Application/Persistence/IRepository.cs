@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Ardalis.Specification;
+using Common.Application.DTOs;
 using Common.Application.Pagination;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
@@ -24,6 +25,8 @@ public interface IRepository<T>
     Task<List<TResult>> ListAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken);
     Task<PaginationResult<T>> PaginateAsync(PaginationSpec<T> paginationSpec, CancellationToken cancellationToken);
     Task<PaginationResult<TResult>> PaginateAsync<TResult>(PaginationSpec<T, TResult> paginationSpec, CancellationToken cancellationToken);
+    Task<PaginationResult<EventDto>> GetEventHistoryAsync<TId>(TId id, PaginationRequest request, CancellationToken cancellationToken)
+        where TId : IStronglyTypedId;
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<Result<int>> CountAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken);

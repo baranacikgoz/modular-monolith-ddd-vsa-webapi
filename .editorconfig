@@ -51,10 +51,10 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 
 # Namespace settings
-csharp_style_namespace_declarations = file_scoped
+csharp_style_namespace_declarations = file_scoped:silent
 
 # Brace settings
-csharp_prefer_braces = true # Prefer curly braces even for one line of code
+csharp_prefer_braces = true:silent# Prefer curly braces even for one line of code
 
 # PascalCase for public members, etc.
 
@@ -70,7 +70,7 @@ dotnet_naming_style.pascal_case.capitalization = pascal_case
 # name all constant fields using PascalCase
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
 dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case
 dotnet_naming_symbols.constant_fields.applicable_kinds   = field
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
@@ -78,11 +78,25 @@ dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 # internal and private fields should be _camelCase
 dotnet_naming_rule.camel_case_for_private_internal_fields.severity = warning
 dotnet_naming_rule.camel_case_for_private_internal_fields.symbols  = private_internal_fields
-dotnet_naming_rule.camel_case_for_private_internal_fields.style    = camel_case_underscore_style
+dotnet_naming_rule.camel_case_for_private_internal_fields.style = camel_case_underscore_style
 dotnet_naming_symbols.private_internal_fields.applicable_kinds = field
 dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = private, internal
 dotnet_naming_style.camel_case_underscore_style.required_prefix = _
 dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
+csharp_indent_labels = one_less_than_current
+csharp_using_directive_placement = outside_namespace:silent
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = true:suggestion
+csharp_prefer_system_threading_lock = true:suggestion
+csharp_style_expression_bodied_methods = false:silent
+csharp_style_expression_bodied_operators = false:silent
+csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_indexers = true:silent
+csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_lambdas = true:silent
+csharp_style_expression_bodied_local_functions = false:silent
 
 [*.{xml,config,*proj,nuspec,props,resx,targets,yml,tasks}]
 indent_size = 2
@@ -107,6 +121,7 @@ charset = utf-8-bom
 [*.{cs,vb}]
 
 dotnet_diagnostic.ASP0003.severity = silent
+dotnet_diagnostic.ASP0020.severity = silent
 
 # SYSLIB1054: Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time
 dotnet_diagnostic.SYSLIB1054.severity = warning
@@ -545,6 +560,10 @@ dotnet_diagnostic.IDE0161.severity = silent
 [{*/Shared/.cs,/microsoft.extensions.hostfactoryresolver.sources/*.{cs,vb}}]
 # IDE0005: Remove unused usings. Ignore for shared src files since imports for those depend on the projects in which they are included.
 dotnet_diagnostic.IDE0005.severity = silent
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4
+indent_size = 4
+end_of_line = crlf
 
 [**/Migrations/*.cs]
 dotnet_diagnostic.IDE1006.severity = none

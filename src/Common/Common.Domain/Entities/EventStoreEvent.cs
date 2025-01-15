@@ -1,24 +1,28 @@
-using Common.Domain.Entities;
 using Common.Domain.Events;
 
-namespace Common.Infrastructure.Persistence.EventSourcing;
+namespace Common.Domain.Entities;
+
 public class EventStoreEvent : AuditableEntity
 {
-    private EventStoreEvent(DefaultIdType aggregateId, long version, DomainEvent @event)
+    private EventStoreEvent(string aggregateType, DefaultIdType aggregateId, long version, DomainEvent @event)
     {
+        AggregateType = aggregateType;
         AggregateId = aggregateId;
         Event = @event;
         Version = version;
         EventType = @event.GetType().Name ?? throw new InvalidOperationException("Type Name can't be null.");
+
+        @event.CreatedOn = CreatedOn;
     }
 
+    public string AggregateType { get; }
     public DefaultIdType AggregateId { get; }
     public string EventType { get; }
     public DomainEvent Event { get; }
     public new long Version { get; }
 
-    public static EventStoreEvent Create(DefaultIdType aggregateId, long version, DomainEvent @event)
-        => new(aggregateId, version, @event);
+    public static EventStoreEvent Create(string aggregateType, DefaultIdType aggregateId, long version, DomainEvent @event)
+        => new(aggregateType, aggregateId, version, @event);
 
 #pragma warning disable CS8618
     public EventStoreEvent() { } // ORMs need parameterless ctor

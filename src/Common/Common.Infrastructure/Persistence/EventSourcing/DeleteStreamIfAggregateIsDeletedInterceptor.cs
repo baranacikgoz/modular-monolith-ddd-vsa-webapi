@@ -1,4 +1,5 @@
 using Common.Domain.Aggregates;
+using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

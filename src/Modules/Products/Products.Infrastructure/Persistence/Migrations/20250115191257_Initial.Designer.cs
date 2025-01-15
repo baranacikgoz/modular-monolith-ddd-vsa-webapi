@@ -12,8 +12,8 @@ using Products.Infrastructure.Persistence;
 namespace Products.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20241209221651_initial")]
-    partial class initial
+    [Migration("20250115191257_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,13 +26,18 @@ namespace Products.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Common.Infrastructure.Persistence.EventSourcing.EventStoreEvent", b =>
+            modelBuilder.Entity("Common.Domain.Entities.EventStoreEvent", b =>
                 {
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");
 
                     b.Property<long>("Version")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("AggregateType")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
@@ -42,7 +47,7 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Event")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -56,6 +61,10 @@ namespace Products.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("AggregateId", "Version");
+
+                    b.HasIndex("AggregateType");
+
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("EventStoreEvents", "Products");
                 });

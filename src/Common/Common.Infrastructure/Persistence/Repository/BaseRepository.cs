@@ -1,13 +1,20 @@
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text.Json;
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
 using Common.Application.Auth;
+using Common.Application.DTOs;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
+using MassTransit;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using StackExchange.Redis;
 
 namespace Common.Infrastructure.Persistence.Repository;
 
@@ -114,6 +121,49 @@ public class BaseRepository<T>(
             ? new PaginationResult<TResult>(queryResult, totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize)
             : new PaginationResult<TResult>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize);
     }
+
+    public async Task<PaginationResult<EventDto>> GetEventHistoryAsync<TId>(
+    TId id,
+    PaginationRequest request,
+    CancellationToken cancellationToken
+        ) where TId : IStronglyTypedId
+    {
+        const string Query = @"
+            SELECT
+                ""Event"" AS ""Event"",
+                ""CreatedBy"" AS ""CreatedBy"",
+                COUNT(*) OVER() AS ""TotalCount""
+            FROM
+                ""Products"".""EventStoreEvents""
+            WHERE
+                ""AggregateId"" = @id AND ""AggregateType"" = @aggregateType
+            ORDER BY 
+                ""CreatedOn"" DESC
+            OFFSET @Skip
+            LIMIT @Take;
+        ";
+
+        var results = await dbContext
+        .Database
+        .SqlQueryRaw<PaginatedEventDto>(Query,
+            new NpgsqlParameter("@id", id.Value),
+            new NpgsqlParameter("@aggregateType", typeof(T).Name),
+            new NpgsqlParameter("@Skip", request.Skip),
+            new NpgsqlParameter("@Take", request.PageSize))
+        .ToListAsync(cancellationToken);
+
+        if (results.Count == 0)
+        {
+            return new PaginationResult<EventDto>([], 0, request.PageNumber, request.PageSize);
+        }
+
+        var totalCount = results[0].TotalCount;
+        var eventDtos = results.Select(x => new EventDto(x.Event, x.CreatedBy)).ToList();
+
+        return new PaginationResult<EventDto>(eventDtos, totalCount, request.PageNumber, request.PageSize);
+    }
+
+    private sealed record PaginatedEventDto(JsonElement Event, DefaultIdType CreatedBy, int TotalCount);
 
     public async Task<Result<T>> SingleOrDefaultAsResultAsync(ISingleResultSpecification<T> specification, CancellationToken cancellationToken)
         => await Result<T>.CreateAsync(

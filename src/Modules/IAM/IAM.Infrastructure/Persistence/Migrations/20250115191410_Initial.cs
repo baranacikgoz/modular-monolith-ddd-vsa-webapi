@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IAM.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,10 +22,11 @@ namespace IAM.Infrastructure.Persistence.Migrations
                 {
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    Event = table.Column<string>(type: "text", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    AggregateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Event = table.Column<string>(type: "jsonb", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false)
                 },
@@ -54,9 +56,9 @@ namespace IAM.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
-                    LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -65,7 +67,7 @@ namespace IAM.Infrastructure.Persistence.Migrations
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
                     RefreshToken = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    RefreshTokenExpiresAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RefreshTokenExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -203,6 +205,18 @@ namespace IAM.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventStoreEvents_AggregateType",
+                schema: "IAM",
+                table: "EventStoreEvents",
+                column: "AggregateType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventStoreEvents_CreatedBy",
+                schema: "IAM",
+                table: "EventStoreEvents",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",

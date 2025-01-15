@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Products.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,8 @@ namespace Products.Infrastructure.Persistence.Migrations
                 {
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
-                    Event = table.Column<string>(type: "text", nullable: false),
+                    AggregateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Event = table.Column<string>(type: "jsonb", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -110,6 +111,18 @@ namespace Products.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventStoreEvents_AggregateType",
+                schema: "Products",
+                table: "EventStoreEvents",
+                column: "AggregateType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventStoreEvents_CreatedBy",
+                schema: "Products",
+                table: "EventStoreEvents",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoreProducts_ProductId",

@@ -17,7 +17,8 @@ internal static class Endpoint
         myStoresApiGroup
             .MapPost("search", SearchStoreProductsAsync)
             .WithDescription("Search store products.")
-            .MustHavePermission(CustomActions.Search, CustomResources.StoreProducts)
+            //.MustHavePermission(CustomActions.Search, CustomResources.StoreProducts)
+            .AllowAnonymous()
             .Produces<PaginationResult<Response>>(StatusCodes.Status200OK);
     }
 

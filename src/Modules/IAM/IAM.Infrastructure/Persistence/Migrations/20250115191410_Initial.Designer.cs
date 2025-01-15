@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IAM.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IAMDbContext))]
-    [Migration("20240618204037_SwitchToDateTimeOffset")]
-    partial class SwitchToDateTimeOffset
+    [Migration("20250115191410_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,18 +21,23 @@ namespace IAM.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("IAM")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Common.Infrastructure.Persistence.EventSourcing.EventStoreEvent", b =>
+            modelBuilder.Entity("Common.Domain.Entities.EventStoreEvent", b =>
                 {
                     b.Property<Guid>("AggregateId")
                         .HasColumnType("uuid");
 
                     b.Property<long>("Version")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("AggregateType")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
@@ -42,7 +47,7 @@ namespace IAM.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Event")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -56,6 +61,10 @@ namespace IAM.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("AggregateId", "Version");
+
+                    b.HasIndex("AggregateType");
+
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("EventStoreEvents", "IAM");
                 });

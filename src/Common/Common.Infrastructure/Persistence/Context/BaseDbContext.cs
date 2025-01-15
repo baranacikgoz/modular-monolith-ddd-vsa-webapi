@@ -1,7 +1,7 @@
 using Common.Application.Auth;
+using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Options;
-using Common.Infrastructure.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
