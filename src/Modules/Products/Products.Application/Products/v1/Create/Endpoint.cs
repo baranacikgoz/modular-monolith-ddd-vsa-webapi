@@ -18,8 +18,7 @@ internal static class Endpoint
         productsApiGroup
             .MapPost("", CreateProductAsync)
             .WithDescription("Create a product.")
-            //.MustHavePermission(CustomActions.Create, CustomResources.Products)
-            .AllowAnonymous()
+            .MustHavePermission(CustomActions.Create, CustomResources.Products)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
