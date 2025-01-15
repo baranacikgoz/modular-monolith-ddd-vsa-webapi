@@ -28,7 +28,6 @@ internal static class Endpoint
             .MapPost("{id}/history", GetStoreHistoryAsync)
             .WithDescription("Get Store's history.")
             .MustHavePermission(CustomActions.Read, CustomResources.Stores)
-            .AllowAnonymous()
             .Produces<PaginationResult<EventDto>>(StatusCodes.Status200OK);
     }
 
