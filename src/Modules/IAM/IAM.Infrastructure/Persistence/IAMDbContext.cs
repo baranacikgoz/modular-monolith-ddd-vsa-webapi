@@ -1,3 +1,4 @@
+using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Options;

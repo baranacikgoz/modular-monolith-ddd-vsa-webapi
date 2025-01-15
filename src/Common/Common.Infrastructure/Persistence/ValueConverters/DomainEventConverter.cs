@@ -10,6 +10,7 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
     private static readonly JsonSerializerOptions _options = new()
     {
         WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
             new PolymorphicDomainEventConverter(),
@@ -24,9 +25,9 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
     {
     }
 
-    private const string EventTypeNameFieldName = "EventType";
-    private const string EventTypeFullNameFieldName = "EventTypeFullName";
-    private const string EventDataFieldName = "EventData";
+    private const string EventTypeNameFieldName = "eventType";
+    private const string EventTypeFullNameFieldName = "eventTypeFullName";
+    private const string EventDataFieldName = "eventData";
     private sealed class PolymorphicDomainEventConverter : JsonConverter<DomainEvent>
     {
         public override DomainEvent Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
