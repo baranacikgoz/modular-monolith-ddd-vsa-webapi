@@ -15,7 +15,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPost("search", SearchStoreProductsAsync)
+            .MapGet("search", SearchStoreProductsAsync)
             .WithDescription("Search store products.")
             .MustHavePermission(CustomActions.Search, CustomResources.StoreProducts)
             .Produces<PaginationResult<Response>>(StatusCodes.Status200OK);
@@ -48,7 +48,7 @@ internal static class Endpoint
     }
 
     private static async Task<PaginationResult<Response>> SearchStoreProductsAsync(
-        [FromBody] Request request,
+        [AsParameters] Request request,
         [FromServices] IRepository<StoreProduct> repository,
         CancellationToken cancellationToken)
         => await repository
