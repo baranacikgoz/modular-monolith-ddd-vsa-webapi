@@ -1,12 +1,21 @@
 using Common.Application.Localization;
 using Common.Application.Pagination;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 namespace Products.Application.Stores.v1.Search;
 
-public sealed record Request(string? Name, string? Description, int PageNumber, int PageSize)
-    : PaginationRequest(PageNumber, PageSize);
+public sealed class Request : PaginationRequest
+{
+    [FromQuery(Name = "name")]
+    public string? Name { get; init; }
+
+    [FromQuery(Name = "description")]
+    public string? Description { get; init; }
+
+    public Request() { }
+}
 
 public sealed class RequestValidator : PaginationRequestValidator<Request>
 {

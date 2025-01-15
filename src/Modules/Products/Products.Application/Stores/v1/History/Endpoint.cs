@@ -25,7 +25,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder storeProductsApiGroup)
     {
         storeProductsApiGroup
-            .MapPost("{id}/history", GetStoreHistoryAsync)
+            .MapGet("{id}/history", GetStoreHistoryAsync)
             .WithDescription("Get Store's history.")
             .MustHavePermission(CustomActions.Read, CustomResources.Stores)
             .Produces<PaginationResult<EventDto>>(StatusCodes.Status200OK);
@@ -33,7 +33,7 @@ internal static class Endpoint
 
     private static async Task<PaginationResult<EventDto>> GetStoreHistoryAsync(
         [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] StoreId id,
-        [FromBody] Request request,
+        [AsParameters] Request request,
         [FromServices] IRepository<Store> repository,
         CancellationToken cancellationToken)
         => await repository.GetEventHistoryAsync(id, request, cancellationToken);
