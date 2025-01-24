@@ -3,7 +3,7 @@ using Common.Domain.StronglyTypedIds;
 
 namespace IAM.Application.Identity.VersionNeutral.Users.Get;
 
-public sealed record Response : AuditableEntityResponse<ApplicationUserId>
+public sealed record Response : AuditableEntityDto<ApplicationUserId>
 {
     public required string Name { get; init; }
     public required string LastName { get; init; }

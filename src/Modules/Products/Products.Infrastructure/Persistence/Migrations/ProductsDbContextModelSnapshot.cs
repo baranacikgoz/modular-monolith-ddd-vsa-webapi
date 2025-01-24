@@ -66,6 +66,59 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.ToTable("EventStoreEvents", "Products");
                 });
 
+            modelBuilder.Entity("Products.Domain.ProductTemplates.ProductTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LastModifiedIp")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.ToTable("Products", "Products");
+                });
+
             modelBuilder.Entity("Products.Domain.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -79,8 +132,7 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -95,44 +147,12 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<long>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products", "Products");
-                });
-
-            modelBuilder.Entity("Products.Domain.StoreProducts.StoreProduct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("LastModifiedBy")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("LastModifiedIp")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("ProductTemplateId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
@@ -141,17 +161,15 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
+                    b.Property<long>("Version")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductTemplateId");
 
-                    b.HasIndex("StoreId", "ProductId")
+                    b.HasIndex("StoreId", "ProductTemplateId")
                         .IsUnique();
 
                     b.ToTable("StoreProducts", "Products");
@@ -161,6 +179,11 @@ namespace Products.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
@@ -184,10 +207,6 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LogoUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -208,33 +227,33 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.ToTable("Stores", "Products");
                 });
 
-            modelBuilder.Entity("Products.Domain.StoreProducts.StoreProduct", b =>
+            modelBuilder.Entity("Products.Domain.Products.Product", b =>
                 {
-                    b.HasOne("Products.Domain.Products.Product", "Product")
-                        .WithMany("StoreProducts")
-                        .HasForeignKey("ProductId")
+                    b.HasOne("Products.Domain.ProductTemplates.ProductTemplate", "ProductTemplate")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductTemplateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Products.Domain.Stores.Store", "Store")
-                        .WithMany("StoreProducts")
+                        .WithMany("Products")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("ProductTemplate");
 
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("Products.Domain.Products.Product", b =>
+            modelBuilder.Entity("Products.Domain.ProductTemplates.ProductTemplate", b =>
                 {
-                    b.Navigation("StoreProducts");
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Products.Domain.Stores.Store", b =>
                 {
-                    b.Navigation("StoreProducts");
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,11 +11,29 @@ using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
 using IAM.Infrastructure;
 using Host.Middlewares;
+using Common.Infrastructure.CQS;
 
 namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
+    private static readonly Assembly[] _moduleAssemblies =
+        [
+            typeof(Common.Infrastructure.IAssemblyReference).Assembly,
+
+            typeof(IAM.Domain.IAssemblyReference).Assembly,
+            typeof(IAM.Application.IAssemblyReference).Assembly,
+            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
+
+            typeof(Products.Domain.IAssemblyReference).Assembly,
+            typeof(Products.Application.IAssemblyReference).Assembly,
+            typeof(Products.Infrastructure.IAssemblyReference).Assembly,
+
+            typeof(Notifications.Domain.IAssemblyReference).Assembly,
+            typeof(Notifications.Application.IAssemblyReference).Assembly,
+            typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
+        ];
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
         => services
             .Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(x =>
@@ -84,29 +102,13 @@ internal static partial class Setup
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
-            .AddCommonPersistence();
+            .AddCommonPersistence()
+            .AddCommonCommandsQueriesHandlers(_moduleAssemblies);
 
     private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
         => services
             .AddValidatorsFromAssemblies(_moduleAssemblies)
             .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
-
-    private static readonly Assembly[] _moduleAssemblies =
-        [
-            typeof(Common.Infrastructure.IAssemblyReference).Assembly, // holding option classes which we validate using FluentValidation
-
-            typeof(IAM.Domain.IAssemblyReference).Assembly,
-            typeof(IAM.Application.IAssemblyReference).Assembly,
-            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
-
-            typeof(Products.Domain.IAssemblyReference).Assembly,
-            typeof(Products.Application.IAssemblyReference).Assembly,
-            typeof(Products.Infrastructure.IAssemblyReference).Assembly,
-
-            typeof(Notifications.Domain.IAssemblyReference).Assembly,
-            typeof(Notifications.Application.IAssemblyReference).Assembly,
-            typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
-        ];
 
     private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
         => services.AddScoped<EnrichLogsWithUserInfoMiddleware>();

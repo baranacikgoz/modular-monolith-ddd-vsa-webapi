@@ -41,7 +41,7 @@
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.3.0.106239" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageVersion Include="NimbleMediator" Version="1.2.0" />
+    <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="MassTransit" Version="8.3.2" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />

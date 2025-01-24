@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Products.Application.Products;
-using Products.Application.StoreProducts;
-using Products.Application.Stores;
+using Products.Endpoints.Products;
+using Products.Endpoints.ProductTemplates;
+using Products.Endpoints.Stores;
 using Products.Infrastructure.Persistence;
 
 namespace Products.Infrastructure;
@@ -22,7 +22,7 @@ public static class ModuleInstaller
 
         versionedApiGroup.MapStoresEndpoints();
         versionedApiGroup.MapProductsEndpoints();
-        versionedApiGroup.MapStoreProductsEndpoints();
+        versionedApiGroup.MapProductTemplatesEndpoints();
 
         return app;
     }

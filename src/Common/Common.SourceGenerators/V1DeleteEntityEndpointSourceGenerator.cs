@@ -111,7 +111,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Common.Application.ModelBinders;
 using Ardalis.Specification;
 
-namespace {moduleName}.Application.{pluralClassName}.v1.Delete;
+namespace {moduleName}.Endpoints.{pluralClassName}.v1.Delete;
 
 internal static class Endpoint
 {{

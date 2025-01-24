@@ -8,4 +8,4 @@ public sealed record V1StoreCreatedDomainEvent(
     ApplicationUserId OwnerId,
     string Name,
     string Description,
-    Uri? LogoUrl) : DomainEvent;
+    string Address) : DomainEvent;

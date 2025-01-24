@@ -1,6 +1,9 @@
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Products.Domain.Products;
+using Products.Domain.ProductTemplates;
+using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.EntityConfigurations;
 
@@ -11,13 +14,35 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
         base.Configure(builder);
 
         builder
-            .Property(a => a.Name)
-            .HasMaxLength(Constants.NameMaxLength)
+            .HasIndex(sp => new { sp.StoreId, sp.ProductTemplateId })
+            .IsUnique();
+
+        builder
+            .Property(sp => sp.StoreId)
+            .HasConversion<StronglyTypedIdValueConverter<StoreId>>()
             .IsRequired();
 
         builder
-            .Property(a => a.Description)
-            .HasMaxLength(Constants.DescriptionMaxLength)
+            .HasOne(sp => sp.Store)
+            .WithMany(s => s.Products)
+            .HasForeignKey(sp => sp.StoreId);
+
+        builder
+            .Property(sp => sp.ProductTemplateId)
+            .HasConversion<StronglyTypedIdValueConverter<ProductTemplateId>>()
+            .IsRequired();
+
+        builder
+            .HasOne(sp => sp.ProductTemplate)
+            .WithMany(p => p.Products)
+            .HasForeignKey(sp => sp.ProductTemplateId);
+
+        builder
+            .Property(sp => sp.Quantity)
+            .IsRequired();
+
+        builder
+            .Property(sp => sp.Price)
             .IsRequired();
     }
 }

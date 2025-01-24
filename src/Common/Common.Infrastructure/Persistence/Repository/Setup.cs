@@ -27,8 +27,7 @@ public static class Setup
             services.AddScoped(repositoryType, serviceProvider =>
             {
                 var context = serviceProvider.GetRequiredService<TModuleContext>();
-                var currentUser = serviceProvider.GetRequiredService<ICurrentUser>();
-                return Activator.CreateInstance(repositoryImplementationType, context, currentUser) ?? throw new InvalidOperationException("Could not create repository.");
+                return Activator.CreateInstance(repositoryImplementationType, context) ?? throw new InvalidOperationException("Could not create repository.");
             });
         }
 
