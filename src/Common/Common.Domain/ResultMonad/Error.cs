@@ -24,7 +24,8 @@ public class Error
         {
             Key = nameof(ViolatesUniqueConstraint),
             ParameterName = parameterName,
-            Value = value
+            Value = value,
+            StatusCode = HttpStatusCode.BadRequest
         };
 
     /// <summary>
@@ -33,12 +34,13 @@ public class Error
     /// <param name="parameterName"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Error NotOwned(string parameterName, object value)
+    public static Error NotOwned<T>(object? value = null)
         => new()
         {
             Key = nameof(NotOwned),
-            ParameterName = parameterName,
-            Value = value
+            ParameterName = typeof(T).Name,
+            Value = value,
+            StatusCode = HttpStatusCode.Forbidden
         };
 
     /// <summary>
@@ -53,6 +55,7 @@ public class Error
         {
             Key = nameof(SameValue),
             ParameterName = parameterName,
-            Value = value
+            Value = value,
+            StatusCode = HttpStatusCode.BadRequest
         };
 }

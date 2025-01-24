@@ -16,10 +16,10 @@ internal sealed partial class Seeder(
     public async Task SeedDbAsync(CancellationToken cancellationToken = default)
     {
         var storeIds = await SeedStoresAsync(cancellationToken);
-        var productIds = await SeedProductsAsync(cancellationToken);
+        var productIds = await SeedProductTemplatesAsync(cancellationToken);
 
         var storeProductCountPerStore = ProductCount / StoreCount;
 
-        await SeedStoreProductAsync(storeIds, productIds, storeProductCountPerStore, cancellationToken);
+        await SeedProductAsync(storeIds, productIds, storeProductCountPerStore, cancellationToken);
     }
 }

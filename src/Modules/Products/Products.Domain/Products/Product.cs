@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products.DomainEvents.v1;
-using Products.Domain.StoreProducts;
+using Products.Domain.ProductTemplates;
+using Products.Domain.Stores;
+using Products.Domain.Stores.DomainEvents.v1;
 
 namespace Products.Domain.Products;
 
@@ -15,46 +18,99 @@ public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
 
 public class Product : AggregateRoot<ProductId>
 {
+    public StoreId StoreId { get; private set; }
+
+    [JsonIgnore]
+    public Store Store { get; } = default!;
+
+    public ProductTemplateId ProductTemplateId { get; private set; }
+
+    [JsonIgnore]
+    public ProductTemplate ProductTemplate { get; } = default!;
+
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+    public int Quantity { get; private set; }
+    public decimal Price { get; private set; }
 
-    private readonly List<StoreProduct> _storeProducts = [];
-    public IReadOnlyList<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
-
-    public static Product Create(string name, string description)
+    public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description, int quantity, decimal price)
     {
         var id = ProductId.New();
         var product = new Product();
 
-        var @event = new V1ProductCreatedDomainEvent(id, name, description);
+        var @event = new V1ProductCreatedDomainEvent(id, storeId, productTemplateId, name, description, quantity, price);
         product.RaiseEvent(@event);
 
         return product;
     }
 
-    public void Update(string? name, string? description)
+    public void Update(string? name, string? description, int? quantity, decimal? price)
     {
-        if (!string.IsNullOrWhiteSpace(name))
+        if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
         {
             UpdateName(name);
         }
 
-        if (!string.IsNullOrWhiteSpace(description))
+        if (!string.IsNullOrEmpty(description) && !string.Equals(Description, description, StringComparison.Ordinal))
         {
             UpdateDescription(description);
         }
+
+        if (quantity.HasValue && quantity.Value != Quantity)
+        {
+            UpdateQuantity(quantity.Value);
+        }
+
+        if (price.HasValue && price.Value != Price)
+        {
+            UpdatePrice(price.Value);
+        }
     }
 
-    private void UpdateName(string newName)
+    private void UpdateName(string name)
     {
-        var @event = new V1ProductNameUpdatedDomainEvent(Id, newName);
-        RaiseEvent(@event);
+        if (string.Equals(Name, name, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        RaiseEvent(new V1ProductNameUpdatedDomainEvent(Id, name));
     }
 
-    private void UpdateDescription(string newDescription)
+    private void UpdateDescription(string description)
     {
-        var @event = new V1ProductDescriptionUpdatedDomainEvent(Id, newDescription);
-        RaiseEvent(@event);
+        if (string.Equals(Description, description, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        RaiseEvent(new V1ProductDescriptionUpdatedDomainEvent(Id, description));
+    }
+
+    private void UpdateQuantity(int quantity)
+    {
+        if (quantity == Quantity)
+        {
+            return;
+        }
+
+        RaiseEvent(
+            quantity > Quantity
+            ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
+            : new V1ProductQuantityDecreasedDomainEvent(Id, quantity));
+    }
+
+    private void UpdatePrice(decimal price)
+    {
+        if (price == Price)
+        {
+            return;
+        }
+
+        RaiseEvent(
+            price > Price
+            ? new V1ProductPriceIncreasedDomainEvent(Id, price)
+            : new V1ProductPriceDecreasedDomainEvent(Id, price));
     }
 
     protected override void ApplyEvent(DomainEvent @event)
@@ -70,16 +126,32 @@ public class Product : AggregateRoot<ProductId>
             case V1ProductDescriptionUpdatedDomainEvent e:
                 Apply(e);
                 break;
+            case V1ProductQuantityIncreasedDomainEvent e:
+                Apply(e);
+                break;
+            case V1ProductQuantityDecreasedDomainEvent e:
+                Apply(e);
+                break;
+            case V1ProductPriceIncreasedDomainEvent e:
+                Apply(e);
+                break;
+            case V1ProductPriceDecreasedDomainEvent e:
+                Apply(e);
+                break;
             default:
-                throw new InvalidOperationException($"Unknown event {@event.GetType().Name}");
+                throw new InvalidOperationException($"Can not apply the unknown event {@event.GetType().Name}");
         }
     }
 
     private void Apply(V1ProductCreatedDomainEvent @event)
     {
-        Id = @event.Id;
+        Id = @event.ProductId;
+        StoreId = @event.StoreId;
+        ProductTemplateId = @event.ProductTemplateId;
         Name = @event.Name;
         Description = @event.Description;
+        Quantity = @event.Quantity;
+        Price = @event.Price;
     }
 
     private void Apply(V1ProductNameUpdatedDomainEvent @event)
@@ -92,5 +164,25 @@ public class Product : AggregateRoot<ProductId>
         Description = @event.Description;
     }
 
-    public Product() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
+    private void Apply(V1ProductQuantityIncreasedDomainEvent @event)
+    {
+        Quantity = @event.Quantity;
+    }
+
+    private void Apply(V1ProductQuantityDecreasedDomainEvent @event)
+    {
+        Quantity = @event.Quantity;
+    }
+
+    private void Apply(V1ProductPriceIncreasedDomainEvent @event)
+    {
+        Price = @event.Price;
+    }
+
+    private void Apply(V1ProductPriceDecreasedDomainEvent @event)
+    {
+        Price = @event.Price;
+    }
+
+    private Product() : base(new(DefaultIdType.Empty)) { } // ORMs need a parameterless ctor
 }

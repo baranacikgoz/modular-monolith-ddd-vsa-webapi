@@ -4,6 +4,7 @@ using Common.InterModuleRequests.IAM;
 using IAM.Application.Identity.Services;
 
 namespace IAM.Application.InterModuleRequestHandlers;
+
 public class HasManageHangfireDashboardPermissionRequestHandler(
     IUserService userService
     ) : InterModuleRequestHandler<HasManageHangfireDashboardPermissonRequest, HasManageHangfireDashboardPermissonResponse>

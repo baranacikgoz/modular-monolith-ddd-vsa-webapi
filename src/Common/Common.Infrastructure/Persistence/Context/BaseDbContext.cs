@@ -1,4 +1,3 @@
-using Common.Application.Auth;
 using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Options;

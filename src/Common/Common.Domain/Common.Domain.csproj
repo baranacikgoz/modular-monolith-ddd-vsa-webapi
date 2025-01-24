@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" />
-    <PackageReference Include="NimbleMediator" />
     <PackageReference Include="MassTransit" />
   </ItemGroup>
 

@@ -24,5 +24,5 @@ internal static class Endpoint
         [FromServices] ICaptchaService captchaService)
         => Result<string>
             .Success(captchaService.GetClientKey())
-            .Map(clientKey => new Response{ ClientKey = clientKey });
+            .Map(clientKey => new Response { ClientKey = clientKey });
 }

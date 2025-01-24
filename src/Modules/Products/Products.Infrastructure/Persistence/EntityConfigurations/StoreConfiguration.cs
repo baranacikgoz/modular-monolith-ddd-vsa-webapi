@@ -33,9 +33,8 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .IsRequired();
 
         builder
-            .Property(s => s.LogoUrl)
-            .HasConversion<UriToStringConverter>()
-            .HasMaxLength(Constants.LogoUrlMaxLength)
-            .IsRequired(false);
+            .Property(s => s.Address)
+            .HasMaxLength(Constants.AddressMaxLength)
+            .IsRequired();
     }
 }
