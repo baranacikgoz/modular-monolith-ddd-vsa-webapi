@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.Endpoints", "src\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Endpoints", "src\Common\Common.Endpoints\Common.Endpoints.csproj", "{7FA6B4B2-B890-4FA8-A385-6893FB2642C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAM.Endpoints", "src\Modules\IAM\IAM.Endpoints\IAM.Endpoints.csproj", "{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,6 +215,10 @@ Global
 		{7FA6B4B2-B890-4FA8-A385-6893FB2642C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FA6B4B2-B890-4FA8-A385-6893FB2642C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FA6B4B2-B890-4FA8-A385-6893FB2642C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -254,6 +260,7 @@ Global
 		{AFE2F3EE-D973-4952-95C9-26925FA2558C} = {F7D709B8-4AF0-4C92-BD63-854969999183}
 		{59DC8196-7E3E-4F74-9EDC-0E9DA9E48760} = {BF92B0F3-F0FB-4E74-A7E2-5D383A56D58C}
 		{7FA6B4B2-B890-4FA8-A385-6893FB2642C9} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
+		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04} = {1C87A8D6-AD2E-423B-86E0-BD35C94BE21A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}

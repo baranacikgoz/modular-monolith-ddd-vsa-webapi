@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Application.CQS;
 using Common.Application.DTOs;
 using Common.Application.Extensions;
 using Common.Application.Queries.Pagination;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
 using Products.Application.Stores.Features.History;
-using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.My.History;
 
@@ -20,7 +18,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder storeProductsApiGroup)
     {
         storeProductsApiGroup
-            .MapGet("history", GetStoreHistoryAsync)
+            .MapGet("my/history", GetStoreHistoryAsync)
             .WithDescription("Get my store's history.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
             .Produces<PaginationResult<EventDto>>(StatusCodes.Status200OK)

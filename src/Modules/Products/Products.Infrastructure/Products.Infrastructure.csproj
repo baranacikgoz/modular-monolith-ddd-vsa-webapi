@@ -4,7 +4,6 @@
     <ProjectReference Include="..\..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
     <ProjectReference Include="..\Products.Application\Products.Application.csproj" />
-    <ProjectReference Include="..\Products.Endpoints\Products.Endpoints.csproj" />
   </ItemGroup>
 
   <ItemGroup>

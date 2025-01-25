@@ -6,7 +6,6 @@ using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Products.Domain.Stores;
-using Common.Application.CQS;
 using Products.Application.Stores.Features.Create;
 using MediatR;
 
@@ -17,7 +16,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPost("", CreateMyStoreAsync)
+            .MapPost("my", CreateMyStoreAsync)
             .WithDescription("Create my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)

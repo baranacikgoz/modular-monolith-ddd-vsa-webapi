@@ -25,8 +25,15 @@ try
     builder
         .Services
             .AddInfrastructure(builder.Configuration, builder.Environment)
-            .AddModules(builder.Configuration)
-            .AddCustomSwagger();
+            .AddModules(builder.Configuration);
+
+    var isSwaggerEnabled = builder.Configuration
+                                .GetSection(nameof(OpenApiOptions))
+                                .Get<OpenApiOptions>()?.EnableSwagger ?? throw new InvalidOperationException($"{nameof(OpenApiOptions)} is null.");
+    if (isSwaggerEnabled)
+    {
+        builder.Services.AddCustomSwagger();
+    }
 
     // Build the app and configure pipeline.
     var app = builder.Build();
@@ -35,7 +42,12 @@ try
 
     app.UseModules();
 
-    app.MapGet("/", () => Results.Redirect("/swagger"));
+    app.MapModuleEndpoints();
+
+    if (isSwaggerEnabled)
+    {
+        app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
+    }
 
     app.UseCustomSwagger(builder.Environment);
 

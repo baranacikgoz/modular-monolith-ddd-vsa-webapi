@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Security.Cryptography;
 using Ardalis.Specification;
 using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;

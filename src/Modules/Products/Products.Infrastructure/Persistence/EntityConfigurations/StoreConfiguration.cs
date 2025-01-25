@@ -2,7 +2,6 @@ using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.EntityConfigurations;

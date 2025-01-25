@@ -7,8 +7,6 @@ using Common.Application.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.ModelBinders;
 using Products.Domain.ProductTemplates;
-using Products.Application.ProductTemplates.DTOs;
-using Common.Application.CQS;
 using Products.Application.ProductTemplates.Features.GetById;
 using MediatR;
 

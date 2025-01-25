@@ -4,9 +4,9 @@ namespace Common.Endpoints.Pagination;
 
 public record PaginationRequest
 {
-    [FromQuery(Name = "pageNumber")]
+    [FromQuery]
     public int PageNumber { get; set; }
 
-    [FromQuery(Name = "pageSize")]
+    [FromQuery]
     public int PageSize { get; set; }
 }

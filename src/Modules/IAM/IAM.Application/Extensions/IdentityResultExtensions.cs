@@ -1,6 +1,6 @@
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Identity;
-using IAM.Domain.Identity.Errors;
+using IAM.Domain.Errors;
 
 namespace IAM.Application.Extensions;
 

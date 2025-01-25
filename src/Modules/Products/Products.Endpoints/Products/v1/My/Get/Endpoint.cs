@@ -18,7 +18,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
         myProductsApiGroup
-            .MapGet("{id}", GetMyProductAsync)
+            .MapGet("my/{id}", GetMyProductAsync)
             .WithDescription("Get my product.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Products)
             .Produces<Response>(StatusCodes.Status200OK)

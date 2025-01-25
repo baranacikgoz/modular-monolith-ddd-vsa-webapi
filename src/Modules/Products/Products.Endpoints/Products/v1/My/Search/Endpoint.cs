@@ -3,18 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Ardalis.Specification;
-using Common.Application.Persistence;
-using Common.Domain.StronglyTypedIds;
-using Products.Domain.Products;
 using Common.Application.Queries.Pagination;
-using Products.Application.Products.Specifications;
-using Common.Application.CQS;
 using Products.Application.Products.Features.Search;
 using Products.Application.Products.DTOs;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
 using Common.Domain.ResultMonad;
-using Products.Domain.Stores;
 using MediatR;
 
 namespace Products.Endpoints.Products.v1.My.Search;
@@ -24,7 +17,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapGet("search", SearchMyProductsAsync)
+            .MapGet("my/search", SearchMyProductsAsync)
             .WithDescription("Search my store's products.")
             .MustHavePermission(CustomActions.SearchMy, CustomResources.Products)
             .Produces<PaginationResult<PaginationResult<ProductDto>>>(StatusCodes.Status200OK);

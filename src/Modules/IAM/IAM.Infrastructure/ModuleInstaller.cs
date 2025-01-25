@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IAM.Application.Identity;
-using IAM.Application.Captcha;
-using IAM.Application.Tokens;
 using IAM.Infrastructure.Identity;
 using IAM.Infrastructure.Captcha;
 using IAM.Infrastructure.Tokens;
@@ -43,15 +39,9 @@ public static class ModuleInstaller
         return app;
     }
 
-    public static WebApplication UseIAMModule(
-        this WebApplication app,
-        RouteGroupBuilder versionNeutralApiGroup)
+    public static WebApplication UseIAMModule(this WebApplication app)
     {
         app.UsePersistence();
-
-        versionNeutralApiGroup.MapIdentityEndpoints();
-        versionNeutralApiGroup.MapTokensEndpoints();
-        versionNeutralApiGroup.MapCaptchaEndpoints();
 
         return app;
     }

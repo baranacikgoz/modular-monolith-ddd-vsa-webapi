@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Products.Domain.ProductTemplates;
 using Products.Application.ProductTemplates.Features.Create;
-using Common.Application.CQS;
 using MediatR;
 
 namespace Products.Endpoints.ProductTemplates.v1.Create;

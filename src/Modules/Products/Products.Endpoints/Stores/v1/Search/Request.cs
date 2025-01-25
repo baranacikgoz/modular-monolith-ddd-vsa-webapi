@@ -5,13 +5,13 @@ namespace Products.Endpoints.Stores.v1.Search;
 
 public sealed record Request : PaginationRequest
 {
-    [FromQuery(Name = "name")]
+    [FromQuery]
     public string? Name { get; init; }
 
-    [FromQuery(Name = "description")]
+    [FromQuery]
     public string? Description { get; init; }
 
-    [FromQuery(Name = "address")]
+    [FromQuery]
     public string? Address { get; init; }
 
     public Request() { }

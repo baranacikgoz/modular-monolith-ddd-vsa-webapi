@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Products.Domain.Stores;
-using Common.Application.CQS;
 using Products.Application.Stores.Features.Create;
 using MediatR;
 

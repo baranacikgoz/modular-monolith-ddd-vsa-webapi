@@ -17,19 +17,16 @@ public static class Setup
         v1.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoresApiGroup);
-        //v1.Delete.Endpoint.MapEndpoint(v1StoresApiGroup)
         v1.History.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
-
-        var v1MyStoresApiGroup = v1StoresApiGroup.MapGroup("/my");
-        v1.My.Create.Endpoint.MapEndpoint(v1MyStoresApiGroup);
-        v1.My.Update.Endpoint.MapEndpoint(v1MyStoresApiGroup);
-        v1.My.Get.Endpoint.MapEndpoint(v1MyStoresApiGroup);
-        //v1.My.Delete.Endpoint.MapEndpoint(v1MyStoresApiGroup)
-        v1.My.History.Endpoint.MapEndpoint(v1MyStoresApiGroup);
-        v1.My.AddProduct.Endpoint.MapEndpoint(v1MyStoresApiGroup);
-        v1.My.RemoveProduct.Endpoint.MapEndpoint(v1MyStoresApiGroup);
+        v1.My.Create.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.History.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
+        
 
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")

@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Common.Application.Extensions;
 using Common.Application.Localization;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace IAM.Infrastructure.Auth.Jwt;
 
@@ -27,7 +30,23 @@ internal static class Setup
         .AddJwtBearer(options =>
         {
             options.SaveToken = true;
-            options.TokenValidationParameters = CustomTokenValidationParameters.Get(jwtOptions);
+            options.TokenValidationParameters = new()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions.Secret)),
+
+                ValidateIssuer = true,
+                ValidIssuer = jwtOptions.Issuer,
+
+                ValidateLifetime = true,
+
+                ValidAudience = jwtOptions.Audience,
+                ValidateAudience = true,
+
+                RoleClaimType = ClaimTypes.Role,
+
+                ClockSkew = TimeSpan.Zero
+            };
 
             options.Events = new JwtBearerEvents
             {
