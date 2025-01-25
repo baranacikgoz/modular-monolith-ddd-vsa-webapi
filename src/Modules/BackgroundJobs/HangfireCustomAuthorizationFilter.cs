@@ -1,6 +1,4 @@
 using Common.Application.Auth;
-using Common.InterModuleRequests.Contracts;
-using Common.InterModuleRequests.IAM;
 using Hangfire.Annotations;
 using Hangfire.Dashboard;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,19 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BackgroundJobs;
 public class HangfireCustomAuthorizationFilter : IDashboardAsyncAuthorizationFilter
 {
-    public async Task<bool> AuthorizeAsync([NotNull] DashboardContext context)
+    public Task<bool> AuthorizeAsync([NotNull] DashboardContext context)
     {
-        var currentUserId = context.GetHttpContext().RequestServices.GetRequiredService<ICurrentUser>().Id;
-        if (currentUserId.IsEmpty)
-        {
-            return false;
-        }
+        var currentUser = context.GetHttpContext().RequestServices.GetRequiredService<ICurrentUser>();
 
-        var requestClient = context.GetHttpContext().RequestServices.GetRequiredService<IInterModuleRequestClient<HasManageHangfireDashboardPermissonRequest, HasManageHangfireDashboardPermissonResponse>>();
+        var permissionName = CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire);
 
-        var hasPermissionRequest = new HasManageHangfireDashboardPermissonRequest(currentUserId);
-        var response = await requestClient.SendAsync(hasPermissionRequest, default);
+        var hasPermission = currentUser.HasPermission(permissionName);
 
-        return response.HasPermission;
+        return Task.FromResult(hasPermission);
     }
 }

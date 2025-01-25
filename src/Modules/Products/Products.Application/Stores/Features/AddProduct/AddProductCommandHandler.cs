@@ -7,7 +7,6 @@ using Products.Application.Stores.Specifications;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Products.Application.Stores.Features.AddProduct;
 

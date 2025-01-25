@@ -5,13 +5,13 @@ namespace Products.Endpoints.ProductTemplates.v1.Search;
 
 public sealed record Request : PaginationRequest
 {
-    [FromQuery(Name = "brand")]
+    [FromQuery]
     public string? Brand { get; init; }
 
-    [FromQuery(Name = "model")]
+    [FromQuery]
     public string? Model { get; init; }
 
-    [FromQuery(Name = "color")]
+    [FromQuery]
     public string? Color { get; init; }
 
     public Request() { }

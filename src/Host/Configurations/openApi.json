@@ -1,5 +1,6 @@
 {
   "OpenApiOptions": {
+    "EnableSwagger": true,
     "Title": "Modular Monolith, DDD, VSA WebApi Boilerplate",
     "Description": "A .NET 8 Webapi boilerplate with Modular Monolith approach, Domain-Driven Design and Vertical Slices architecture along with Clean Architecture principles per feature.",
     "ContactName": "Baran Açıkgöz",

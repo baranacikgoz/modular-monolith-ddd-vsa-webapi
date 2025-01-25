@@ -23,6 +23,7 @@ COPY ["src/Modules/BackgroundJobs/BackgroundJobs.csproj", "src/Modules/Backgroun
 COPY ["src/Modules/IAM/IAM.Infrastructure/IAM.Infrastructure.csproj", "src/Modules/IAM/IAM.Infrastructure/"]
 COPY ["src/Modules/IAM/IAM.Application/IAM.Application.csproj", "src/Modules/IAM/IAM.Application/"]
 COPY ["src/Modules/IAM/IAM.Domain/IAM.Domain.csproj", "src/Modules/IAM/IAM.Domain/"]
+COPY ["src/Modules/IAM/IAM.Endpoints/IAM.Endpoints.csproj", "src/Modules/IAM/IAM.Endpoints/"]
 COPY ["src/Modules/Products/Products.Infrastructure/Products.Infrastructure.csproj", "src/Modules/Products/Products.Infrastructure/"]
 COPY ["src/Modules/Products/Products.Application/Products.Application.csproj", "src/Modules/Products/Products.Application/"]
 COPY ["src/Modules/Products/Products.Domain/Products.Domain.csproj", "src/Modules/Products/Products.Domain/"]

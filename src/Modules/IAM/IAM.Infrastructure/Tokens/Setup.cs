@@ -8,5 +8,5 @@ internal static class Setup
 {
     public static IServiceCollection AddTokensInfrastructure(this IServiceCollection services)
         => services
-            .AddTransient<ITokenService, TokenService>();
+            .AddSingleton<ITokenService, TokenService>();
 }

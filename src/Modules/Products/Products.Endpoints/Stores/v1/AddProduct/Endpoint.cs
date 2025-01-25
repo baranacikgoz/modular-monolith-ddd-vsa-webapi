@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Application.CQS;
 using Common.Application.Extensions;
 using Common.Application.ModelBinders;
 using Common.Domain.ResultMonad;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Stores.Features.AddProduct;
-using Products.Domain.Products;
 using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.AddProduct;

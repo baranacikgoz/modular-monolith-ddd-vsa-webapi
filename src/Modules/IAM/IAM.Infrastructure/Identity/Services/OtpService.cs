@@ -1,43 +1,35 @@
-using System.Globalization;
 using System.Security.Cryptography;
-using Common.Application.Caching;
-using Common.Domain.ResultMonad;
 using Common.Infrastructure.Options;
-using IAM.Application.Identity.Services;
-using IAM.Domain.Identity.Errors;
+using IAM.Application.Users.Services;
 using Microsoft.Extensions.Options;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-internal sealed class OtpService(
-    ICacheService cacheService,
-    IOptions<OtpOptions> otpOptionsProvider
-    ) : IOtpService
+internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider) : IOtpService
 {
-    private readonly OtpOptions _otpOptions = otpOptionsProvider.Value;
-    public Task<string> GetOtpAsync(string phoneNumber, CancellationToken cancellationToken)
+    public string Generate()
     {
-        var otp = RandomNumberGenerator.GetInt32(100000, 999999).ToString(CultureInfo.InvariantCulture);
-        return cacheService.GetOrCreateAsync(
-            key: CacheKey(phoneNumber),
-            factory: _ => new ValueTask<string>(otp),
-            absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_otpOptions.ExpirationInMinutes),
-            cancellationToken: cancellationToken);
-    }
+        var length = otpOptionsProvider.Value.Length;
 
-    public async Task<Result> ValidateAsync(string otp, string phoneNumber, CancellationToken cancellationToken)
-    {
-        var cacheKey = CacheKey(phoneNumber);
-
-        var code = await cacheService.GetAsync<string>(cacheKey, cancellationToken);
-
-        if (string.IsNullOrEmpty(code))
+        if (length <= 0)
         {
-            return OtpErrors.InvalidOtp;
+            throw new ArgumentException("Length must be greater than zero.");
         }
 
-        return Result.Success;
-    }
+        // Allocate one buffer for all digits
+        var buffer = new byte[length];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(buffer);
+        }
 
-    private static string CacheKey(string phoneNumber) => $"otp:{phoneNumber}";
+        // Build the OTP efficiently
+        var otp = new char[length];
+        for (var i = 0; i < length; i++)
+        {
+            otp[i] = (char)('0' + (buffer[i] % 10));
+        }
+
+        return new string(otp);
+    }
 }

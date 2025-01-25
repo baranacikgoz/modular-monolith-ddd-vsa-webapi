@@ -1,6 +1,5 @@
 using System.Reflection;
 using Ardalis.Specification;
-using Common.Application.Auth;
 using Common.Application.Persistence;
 using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;

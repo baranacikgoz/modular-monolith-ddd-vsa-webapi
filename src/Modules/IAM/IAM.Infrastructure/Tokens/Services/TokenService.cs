@@ -2,120 +2,55 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Common.Domain.ResultMonad;
 using Common.Infrastructure.Options;
-using IAM.Domain.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using IAM.Application.Identity.Services;
 using IAM.Application.Tokens.Services;
-using IAM.Domain.Tokens;
-using IAM.Infrastructure.Auth;
-using IAM.Infrastructure.Auth.Jwt;
+using Common.Domain.StronglyTypedIds;
 
 namespace IAM.Infrastructure.Tokens.Services;
 
-internal class TokenService(
-    IOptions<JwtOptions> jwtOptionsProvider,
-    IUserService userService,
-    TimeProvider timeProvider)
-     : ITokenService
+internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenService
 {
-    private readonly JwtOptions _jwtOptions = jwtOptionsProvider.Value;
-
-    public async Task<Result<TokenDto>> GenerateTokensAndUpdateUserAsync(ApplicationUser user, CancellationToken cancellationToken)
+    public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now, ApplicationUserId userId, ICollection<string> roles)
     {
-        var tokens = GenerateTokens(user);
-        user.UpdateRefreshToken(tokens.RefreshToken, tokens.RefreshTokenExpiresAt);
+        var jwtOptions = jwtOptionsProvider.Value;
 
-        return await userService
-                        .UpdateAsync(user, cancellationToken)
-                        .MapAsync(() => tokens);
-    }
-    private TokenDto GenerateTokens(ApplicationUser user)
-    {
-        var (accessToken, accessTokenExpiresAt) = GenerateJwt(user);
-        var (refreshToken, refreshTokenExpiresAt) = GenerateRefreshToken();
+        var claims = new List<Claim>(2 + roles.Count)
+        {
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
-        return new TokenDto(accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt);
-    }
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-    private (string accessToken, DateTimeOffset accessTokenExpiresAt) GenerateJwt(ApplicationUser user)
-    {
-        var expiresAt = timeProvider.GetUtcNow().AddMinutes(_jwtOptions.AccessTokenExpirationInMinutes);
-        var accessToken = new JwtSecurityToken(
-           claims: GetClaims(user),
-           expires: expiresAt.DateTime,
-           signingCredentials: GetSigningCredentials(),
-           audience: _jwtOptions.Audience,
-           issuer: _jwtOptions.Issuer);
+        var accessTokenExpiresAt = now.AddMinutes(jwtOptions.AccessTokenExpirationInMinutes);
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+        var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        return new(tokenHandler.WriteToken(accessToken), expiresAt);
+        var rawAccessToken = new JwtSecurityToken(
+            audience: jwtOptions.Audience,
+            issuer: jwtOptions.Issuer,
+            claims: claims,
+            expires: accessTokenExpiresAt.UtcDateTime,
+            signingCredentials: signingCredentials);
+
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(rawAccessToken);
+
+        return (accessToken, accessTokenExpiresAt);
     }
 
-    private static List<Claim> GetClaims(ApplicationUser user)
-        => [new(ClaimTypes.NameIdentifier, user.Id.ToString())];
-
-    private SigningCredentials GetSigningCredentials()
+    public (byte[] refreshTokenBytes, DateTimeOffset expiresAt) GenerateRefreshToken(DateTimeOffset now)
     {
-        var secret = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
-        return new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256);
-    }
+        var jwtOptions = jwtOptionsProvider.Value;
 
-    private (string RefreshToken, DateTimeOffset RefreshTokenExpiresAt) GenerateRefreshToken()
-    {
+        var refreshTokenExpiresAt = now.AddDays(jwtOptions.RefreshTokenExpirationInDays);
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(randomNumber);
         }
-        var refreshToken = Convert.ToBase64String(randomNumber);
-        var refreshTokenExpiresAt = timeProvider.GetUtcNow().AddDays(_jwtOptions.RefreshTokenExpirationInDays);
 
-        return (refreshToken, refreshTokenExpiresAt);
-    }
-
-    public async Task<Result<ClaimsPrincipal>> GetClaimsPrincipalByExpiredToken(string refreshToken, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(refreshToken))
-        {
-            return TokenErrors.InvalidRefreshToken;
-        }
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-        if (!tokenHandler.CanReadToken(refreshToken))
-        {
-            return TokenErrors.InvalidToken;
-        }
-
-        var tokenValidationParameters = CustomTokenValidationParameters.Get(_jwtOptions);
-#pragma warning disable CA1849
-        var claimsPrincipal = tokenHandler.ValidateToken(refreshToken, tokenValidationParameters, out var securityToken);
-#pragma warning restore CA1849
-
-        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-            !jwtSecurityToken.Header.Alg.Equals(
-                SecurityAlgorithms.HmacSha256,
-                StringComparison.OrdinalIgnoreCase))
-        {
-            return TokenErrors.InvalidToken;
-        }
-
-        var userId = claimsPrincipal.GetUserId();
-
-        var refreshTokenExpiresAt = await userService.GetRefreshTokenExpiresAt(userId, refreshToken, cancellationToken);
-
-        if (refreshTokenExpiresAt is null)
-        {
-            return TokenErrors.InvalidRefreshToken;
-        }
-
-        if (refreshTokenExpiresAt < timeProvider.GetUtcNow())
-        {
-            return TokenErrors.RefreshTokenExpired;
-        }
-
-        return claimsPrincipal;
+        return (randomNumber, refreshTokenExpiresAt);
     }
 }

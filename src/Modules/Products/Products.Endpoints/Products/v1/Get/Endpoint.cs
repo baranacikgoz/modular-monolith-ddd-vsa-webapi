@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Application.CQS;
 using Common.Application.Extensions;
 using Common.Application.ModelBinders;
 using Common.Domain.ResultMonad;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Application.Products.DTOs;
 using Products.Application.Products.Features.GetById;
 using Products.Domain.Products;
 

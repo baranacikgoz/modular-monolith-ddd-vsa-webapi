@@ -2,16 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Common.Application.ModelBinders;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
-using Ardalis.Specification;
 using Products.Domain.Stores;
 using Products.Domain.Products;
-using Common.Application.CQS;
 using Products.Application.Products.Features.Update;
 using MediatR;
 

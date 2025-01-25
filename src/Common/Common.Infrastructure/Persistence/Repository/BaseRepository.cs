@@ -1,8 +1,6 @@
-using System.Linq.Expressions;
 using System.Text.Json;
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using Common.Application.Auth;
 using Common.Application.DTOs;
 using Common.Application.Persistence;
 using Common.Application.Queries.EventHistory;
@@ -10,7 +8,6 @@ using Common.Application.Queries.Pagination;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
-using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 

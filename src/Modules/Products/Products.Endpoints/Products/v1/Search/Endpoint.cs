@@ -3,16 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Ardalis.Specification;
-using Common.Application.Persistence;
-using Products.Domain.Products;
 using Common.Application.Queries.Pagination;
-using Common.Application.CQS;
 using Products.Application.Products.Features.Search;
 using Products.Application.Products.DTOs;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using MediatR;
 
 namespace Products.Endpoints.Products.v1.Search;

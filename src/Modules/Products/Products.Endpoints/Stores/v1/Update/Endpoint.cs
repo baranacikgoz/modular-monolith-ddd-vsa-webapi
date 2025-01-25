@@ -7,7 +7,6 @@ using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.ModelBinders;
 using Products.Domain.Stores;
-using Common.Application.CQS;
 using Products.Application.Stores.Features.Update;
 using MediatR;
 

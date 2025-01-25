@@ -20,7 +20,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myProductsApiGroup)
     {
         myProductsApiGroup
-            .MapPut("{id}", UpdateMyProductAsync)
+            .MapPut("my/{id}", UpdateMyProductAsync)
             .WithDescription("Update my product.")
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.Products)
             .Produces(StatusCodes.Status204NoContent)

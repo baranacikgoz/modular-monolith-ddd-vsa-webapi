@@ -2,7 +2,6 @@ using Common.Application.CQS;
 using Common.Application.Localization;
 using Common.Application.Validation;
 using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Localization;
 using Products.Application.Products.DTOs;
 using Products.Domain.Products;

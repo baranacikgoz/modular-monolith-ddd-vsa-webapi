@@ -5,7 +5,6 @@ using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products.DomainEvents.v1;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
-using Products.Domain.Stores.DomainEvents.v1;
 
 namespace Products.Domain.Products;
 

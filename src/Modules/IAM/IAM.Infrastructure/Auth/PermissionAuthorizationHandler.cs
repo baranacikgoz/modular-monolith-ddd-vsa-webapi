@@ -1,19 +1,19 @@
 using Common.Application.Auth;
-using IAM.Application.Identity.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace IAM.Infrastructure.Auth;
 
-internal class PermissionAuthorizationHandler(
-    ICurrentUser currentUser,
-    IUserService userService
-) : AuthorizationHandler<PermissionRequirement>
+internal class PermissionAuthorizationHandler(ICurrentUser currentUser) : AuthorizationHandler<PermissionRequirement>
 {
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        if (await userService.HasPermissionAsync(currentUser.Id, requirement.PermissionName, default))
+        var permissionName = requirement.PermissionName;
+
+        if (currentUser.HasPermission(permissionName))
         {
             context.Succeed(requirement);
         }
+
+        return Task.CompletedTask;
     }
 }

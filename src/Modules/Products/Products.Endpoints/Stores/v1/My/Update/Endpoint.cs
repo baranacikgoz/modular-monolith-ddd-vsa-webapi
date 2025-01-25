@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Common.Application.CQS;
 using Products.Application.Stores.Features.Update;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
-using Products.Domain.Stores;
 using MediatR;
 
 namespace Products.Endpoints.Stores.v1.My.Update;
@@ -18,7 +16,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
     {
         myStoresApiGroup
-            .MapPut("", UpdateMyStoreAsync)
+            .MapPut("my", UpdateMyStoreAsync)
             .WithDescription("Update my store.")
             .MustHavePermission(CustomActions.UpdateMy, CustomResources.Stores)
             .Produces(StatusCodes.Status204NoContent)

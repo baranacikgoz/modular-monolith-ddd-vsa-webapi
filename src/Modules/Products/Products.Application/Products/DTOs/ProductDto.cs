@@ -1,5 +1,4 @@
 using Common.Application.DTOs;
-using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
 using Products.Domain.Stores;
 

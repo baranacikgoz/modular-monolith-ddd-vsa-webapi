@@ -8,8 +8,6 @@ using Common.Application.Extensions;
 using Common.Application.ModelBinders;
 using Products.Domain.Stores;
 using Products.Application.Stores.Features.GetById;
-using Products.Application.Stores.DTOs;
-using Common.Application.CQS;
 using MediatR;
 
 namespace Products.Endpoints.Stores.v1.Get;

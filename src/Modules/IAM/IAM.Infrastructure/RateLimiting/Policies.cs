@@ -12,7 +12,7 @@ public static class Policies
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
         => rateLimiter
-            .AddFixedWindowLimiter(RateLimitingConstants.Sms, opt =>
+            .AddFixedWindowLimiter(Constants.Sms, opt =>
             {
                 var smsRateLimiting = options.Sms ?? throw new InvalidOperationException("Sms rate limiting is null.");
                 var permitLimit = smsRateLimiting.Limit;
