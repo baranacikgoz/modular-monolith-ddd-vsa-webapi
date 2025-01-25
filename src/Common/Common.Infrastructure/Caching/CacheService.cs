@@ -34,7 +34,7 @@ public class CacheService(HybridCache hybridCache) : ICacheService
         T value,
         IEnumerable<string>? tags = null,
         TimeSpan? absoluteExpirationRelativeToNow = null,
-        CancellationToken token = default)
+        CancellationToken cancellationToken = default)
         => await hybridCache.SetAsync(
             key,
             value,
@@ -43,7 +43,7 @@ public class CacheService(HybridCache hybridCache) : ICacheService
                 Expiration = absoluteExpirationRelativeToNow
             },
             tags,
-            token);
+            cancellationToken);
 
     public async Task RemoveAsync(
         string key,

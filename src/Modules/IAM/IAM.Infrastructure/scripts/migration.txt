@@ -1,3 +1,3 @@
 # Assumed executed directory is / root directory of the project
 
-dotnet ef migrations add initial --startup-project .\src\Host\ --project .\src\Modules\IAM\IAM.Infrastructure\ --context IAMDbContext -o Persistence/Migrations -v
+dotnet ef migrations add Initial --startup-project .\src\Host\ --project .\src\Modules\IAM\IAM.Infrastructure\ --context IAMDbContext -o Persistence/Migrations -v

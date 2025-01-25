@@ -1,36 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using Products.Domain.Products;
+using Products.Domain.ProductTemplates;
+using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.Seeding;
 internal sealed partial class Seeder
 {
-    private async Task<List<ProductId>> SeedProductsAsync(CancellationToken cancellationToken)
+    private async Task SeedProductAsync(List<StoreId> storeIds, List<ProductTemplateId> productTemplateIds, int storeProductCountPerStore, CancellationToken cancellationToken)
     {
-        var productIds = new List<ProductId>(ProductCount);
+        var random = new Random(123);
 
-        for (var i = 0; i < ProductCount; i++)
+        for (var i = 0; i < storeIds.Count; i++)
         {
-            var name = $"Seed Product {i + 1}";
+            for (var j = 0; j < storeProductCountPerStore; j++)
+            {
+                var storeId = storeIds[i];
+                var productTemplateId = productTemplateIds[i + j];
+                var name = $"Product {j + 1}";
 
-            productIds.Add(await SeedProductsAsync(name, cancellationToken));
+                if (await dbContext.StoreProducts.SingleOrDefaultAsync(sp => sp.StoreId == storeId && sp.ProductTemplateId == productTemplateId, cancellationToken)
+                    is not Product storeProduct)
+                {
+#pragma warning disable CA5394
+                    storeProduct = Product.Create(storeId, productTemplateId, name: name, description: "Seed", quantity: random.Next(1, 50), price: random.Next(500, 2000));
+#pragma warning restore CA5394
+                    dbContext.StoreProducts.Add(storeProduct);
+                }
+            }
         }
 
-        return productIds;
-    }
-
-    private async Task<ProductId> SeedProductsAsync(string name, CancellationToken cancellationToken)
-    {
-        if (await dbContext.Products.SingleOrDefaultAsync(product => product.Name == name, cancellationToken)
-            is not Product product)
-        {
-            product = Product.Create(
-                name: name,
-                description: "Seeded by system.");
-
-            await dbContext.Products.AddAsync(product, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        return product.Id;
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IAM.Domain.Identity;
 
+#pragma warning disable CA1819 // Properties should not return arrays
 public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, IAggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
@@ -16,7 +17,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     public string NationalIdentityNumber { get; private set; } = string.Empty;
     public DateOnly BirthDate { get; private set; }
     public Uri? ImageUrl { get; private set; }
-    public string RefreshToken { get; private set; } = string.Empty;
+    public byte[] RefreshTokenHash { get; private set; } = [];
     public DateTimeOffset RefreshTokenExpiresAt { get; private set; } = DateTimeOffset.MinValue;
 
     [ConcurrencyCheck]
@@ -54,13 +55,12 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         RaiseEvent(@event);
     }
 
-    public void UpdateRefreshToken(string refreshToken, DateTimeOffset refreshTokenExpiresAt)
+    public void UpdateRefreshToken(byte[] refreshTokenHash, DateTimeOffset refreshTokenExpiresAt)
     {
         // Intentionally did not follow the usual pattern here because did not want to expose token as parameter in event.
         // Events are persisted in somewhere which tokens should not be there unprotected.
-        // Hence, should a user's refresh token be recreatable/replayable?
 
-        RefreshToken = refreshToken;
+        RefreshTokenHash = refreshTokenHash;
         RefreshTokenExpiresAt = refreshTokenExpiresAt;
 
         var @event = new V1RefreshTokenUpdatedDomainEvent(Id);
@@ -104,11 +104,12 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
 #pragma warning disable CA1822, S1186, IDE0060
     private void Apply(V1RefreshTokenUpdatedDomainEvent @event)
     {
-        /// Nothing to do here, see the explanation in <see cref="UpdateRefreshToken(string, DateTime)"/>
+        // Nothing to do here, see the explanation in UpdateRefreshToken method.
     }
 #pragma warning restore CA1822, S1186, IDE0060
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
     private ApplicationUser() { }
 #pragma warning restore CS8618
+#pragma warning restore CA1819 // Properties should not return arrays
 }

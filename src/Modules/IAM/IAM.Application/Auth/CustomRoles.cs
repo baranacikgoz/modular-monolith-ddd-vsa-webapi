@@ -8,5 +8,5 @@ public static class CustomRoles
     // Level 1
     public const string Basic = nameof(Basic); // Refers to the individual users.
 
-    public static readonly IEnumerable<string> All = [SystemAdmin, Basic];
+    public static readonly HashSet<string> All = [SystemAdmin, Basic];
 }

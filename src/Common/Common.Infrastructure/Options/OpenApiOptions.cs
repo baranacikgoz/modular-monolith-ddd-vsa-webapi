@@ -5,6 +5,7 @@ namespace Common.Infrastructure.Options;
 
 public class OpenApiOptions
 {
+    public bool EnableSwagger { get; set; }
     public required string Title { get; set; }
 
     public required string Description { get; set; }

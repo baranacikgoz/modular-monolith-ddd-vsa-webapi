@@ -24,6 +24,6 @@ public static class CustomResources
     public const string ApplicationUsers = nameof(ApplicationUsers);
 
     public const string Stores = nameof(Stores);
+    public const string ProductTemplates = nameof(ProductTemplates);
     public const string Products = nameof(Products);
-    public const string StoreProducts = nameof(StoreProducts);
 }

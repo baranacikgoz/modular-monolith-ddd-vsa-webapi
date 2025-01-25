@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Common.Application\Common.Application.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Domain\Common.Domain.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />

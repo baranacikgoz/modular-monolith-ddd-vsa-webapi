@@ -1,20 +1,15 @@
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text.Json;
 using Ardalis.Specification;
 using Ardalis.Specification.EntityFrameworkCore;
-using Common.Application.Auth;
 using Common.Application.DTOs;
-using Common.Application.Pagination;
 using Common.Application.Persistence;
+using Common.Application.Queries.EventHistory;
+using Common.Application.Queries.Pagination;
+using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
-using Common.Domain.StronglyTypedIds;
-using MassTransit;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using StackExchange.Redis;
 
 namespace Common.Infrastructure.Persistence.Repository;
 
@@ -26,10 +21,7 @@ namespace Common.Infrastructure.Persistence.Repository;
 /// <param name="dbContext"></param>
 /// <param name="currentUser"></param>
 /// <param name="specificationEvaluator"></param>
-public class BaseRepository<T>(
-    DbContext dbContext,
-    ICurrentUser currentUser
-    ) : IRepository<T>
+public class BaseRepository<T>(DbContext dbContext) : IRepository<T>
     where T : class, IAuditableEntity
 {
     private readonly SpecificationEvaluator _specificationEvaluator = SpecificationEvaluator.Default;
@@ -61,12 +53,6 @@ public class BaseRepository<T>(
 
     public void DeleteRange(IEnumerable<T> entities) => dbContext.Set<T>().RemoveRange(entities);
 
-    public async Task<Result> EnsureOwnedByCurrentUserAsync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken)
-    {
-        var isOwnedBy = await IsOwnedByCurrentUserAync(idSelector, cancellationToken);
-        return isOwnedBy ? Result.Success : Error.NotOwned(nameof(T), currentUser.Id);
-    }
-
     public async Task<Result<T>> FirstOrDefaultAsResultAsync(ISpecification<T> specification, CancellationToken cancellationToken)
         => await Result<T>.CreateAsync(
             taskToAwaitValue: async () => await FirstOrDefaultAsync(specification, cancellationToken),
@@ -84,9 +70,6 @@ public class BaseRepository<T>(
     public async Task<TResult?> FirstOrDefaultAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken)
         => await ApplySpecification(specification)
                 .FirstOrDefaultAsync(cancellationToken);
-
-    public Task<bool> IsOwnedByCurrentUserAync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken)
-        => dbContext.Set<T>().AnyAsync(BuildIsOwnedByPredicate(idSelector, currentUser.Id), cancellationToken);
 
     public async Task<List<T>> ListAsync(ISpecification<T> specification, CancellationToken cancellationToken)
     {
@@ -108,8 +91,8 @@ public class BaseRepository<T>(
         var totalCount = await CountAsync(paginationSpec, cancellationToken);
 
         return paginationSpec.PostProcessingAction is null
-            ? new PaginationResult<T>(queryResult, totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize)
-            : new PaginationResult<T>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize);
+            ? new PaginationResult<T>(queryResult, totalCount, paginationSpec.PaginationQuery.PageNumber, paginationSpec.PaginationQuery.PageSize)
+            : new PaginationResult<T>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationQuery.PageNumber, paginationSpec.PaginationQuery.PageSize);
     }
 
     public async Task<PaginationResult<TResult>> PaginateAsync<TResult>(PaginationSpec<T, TResult> paginationSpec, CancellationToken cancellationToken)
@@ -118,15 +101,14 @@ public class BaseRepository<T>(
         var totalCount = await CountAsync(paginationSpec, cancellationToken);
 
         return paginationSpec.PostProcessingAction is null
-            ? new PaginationResult<TResult>(queryResult, totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize)
-            : new PaginationResult<TResult>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationRequest.PageNumber, paginationSpec.PaginationRequest.PageSize);
+            ? new PaginationResult<TResult>(queryResult, totalCount, paginationSpec.PaginationQuery.PageNumber, paginationSpec.PaginationQuery.PageSize)
+            : new PaginationResult<TResult>(paginationSpec.PostProcessingAction(queryResult).ToList(), totalCount, paginationSpec.PaginationQuery.PageNumber, paginationSpec.PaginationQuery.PageSize);
     }
 
-    public async Task<PaginationResult<EventDto>> GetEventHistoryAsync<TId>(
-    TId id,
-    PaginationRequest request,
+    public async Task<PaginationResult<EventDto>> GetEventHistoryAsync<TAggregate>(
+    EventHistoryQuery<TAggregate> query,
     CancellationToken cancellationToken
-        ) where TId : IStronglyTypedId
+        ) where TAggregate : class, IAggregateRoot
     {
         const string Query = @"
             SELECT
@@ -146,21 +128,21 @@ public class BaseRepository<T>(
         var results = await dbContext
         .Database
         .SqlQueryRaw<PaginatedEventDto>(Query,
-            new NpgsqlParameter("@id", id.Value),
+            new NpgsqlParameter("@id", query.AggregateId.Value),
             new NpgsqlParameter("@aggregateType", typeof(T).Name),
-            new NpgsqlParameter("@Skip", request.Skip),
-            new NpgsqlParameter("@Take", request.PageSize))
+            new NpgsqlParameter("@Skip", query.Skip),
+            new NpgsqlParameter("@Take", query.PageSize))
         .ToListAsync(cancellationToken);
 
         if (results.Count == 0)
         {
-            return new PaginationResult<EventDto>([], 0, request.PageNumber, request.PageSize);
+            return new PaginationResult<EventDto>([], 0, query.PageNumber, query.PageSize);
         }
 
         var totalCount = results[0].TotalCount;
         var eventDtos = results.Select(x => new EventDto(x.Event, x.CreatedBy)).ToList();
 
-        return new PaginationResult<EventDto>(eventDtos, totalCount, request.PageNumber, request.PageSize);
+        return new PaginationResult<EventDto>(eventDtos, totalCount, query.PageNumber, query.PageSize);
     }
 
     private sealed record PaginatedEventDto(JsonElement Event, DefaultIdType CreatedBy, int TotalCount);
@@ -200,16 +182,4 @@ public class BaseRepository<T>(
     /// <returns></returns>
     private IQueryable<TResult> ApplySpecification<TResult>(ISpecification<T, TResult> specification)
         => _specificationEvaluator.GetQuery(dbContext.Set<T>().AsQueryable(), specification);
-
-    private static Expression<Func<T, bool>> BuildIsOwnedByPredicate(
-        Expression<Func<T, ApplicationUserId>> idSelector,
-        ApplicationUserId id)
-    {
-        // Get the property expression and the constant value to compare against
-        var parameterExp = idSelector.Parameters[0];
-        var equalityExp = Expression.Equal(idSelector.Body, Expression.Constant(id, typeof(ApplicationUserId)));
-
-        // Build and return the lambda expression
-        return Expression.Lambda<Func<T, bool>>(equalityExp, parameterExp);
-    }
 }

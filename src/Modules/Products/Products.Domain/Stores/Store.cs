@@ -1,9 +1,7 @@
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
-using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
-using Products.Domain.StoreProducts;
 using Products.Domain.Stores.DomainEvents.v1;
 
 namespace Products.Domain.Stores;
@@ -20,23 +18,23 @@ public class Store : AggregateRoot<StoreId>
     public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; }
-    public Uri? LogoUrl { get; private set; }
+    public string Address { get; private set; }
 
-    private readonly List<StoreProduct> _storeProducts = [];
-    public IReadOnlyCollection<StoreProduct> StoreProducts => _storeProducts.AsReadOnly();
+    private readonly List<Product> _products = [];
+    public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-    public static Store Create(ApplicationUserId ownerId, string name, string description, Uri? logoUrl = null)
+    public static Store Create(ApplicationUserId ownerId, string name, string description, string address)
     {
         var id = StoreId.New();
         var store = new Store();
 
-        var @event = new V1StoreCreatedDomainEvent(id, ownerId, name, description, logoUrl);
+        var @event = new V1StoreCreatedDomainEvent(id, ownerId, name, description, address);
         store.RaiseEvent(@event);
 
         return store;
     }
 
-    public void Update(string? name, string? description)
+    public void Update(string? name, string? description, string? address)
     {
         if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
         {
@@ -47,74 +45,41 @@ public class Store : AggregateRoot<StoreId>
         {
             UpdateDescription(description);
         }
+
+        if (!string.IsNullOrEmpty(address) && !string.Equals(Address, address, StringComparison.Ordinal))
+        {
+            UpdateAddress(address);
+        }
     }
 
-    private void UpdateName(string newName)
+    private void UpdateName(string name)
     {
-        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, Name, newName);
+        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, name);
         RaiseEvent(storeNameUpdatedEvent);
     }
 
-    private void UpdateDescription(string newDescription)
+    private void UpdateDescription(string description)
     {
-        var storeDescriptionUpdatedEvent = new V1StoreDescriptionUpdatedDomainEvent(Id, Description, newDescription);
+        var storeDescriptionUpdatedEvent = new V1StoreDescriptionUpdatedDomainEvent(Id, description);
         RaiseEvent(storeDescriptionUpdatedEvent);
     }
 
-    public StoreProduct AddProduct(ProductId productId, int quantity, decimal price)
+    private void UpdateAddress(string address)
     {
-        var storeProduct = StoreProduct.Create(Id, productId, quantity, price);
-        var @event = new V1ProductAddedToStoreDomainEvent(Id, storeProduct);
+        var storeAddressUpdatedEvent = new V1StoreAddressUpdatedDomainEvent(Id, address);
+        RaiseEvent(storeAddressUpdatedEvent);
+    }
+
+    public void AddProduct(Product product)
+    {
+        var @event = new V1ProductAddedToStoreDomainEvent(Id, product);
         RaiseEvent(@event);
-
-        return storeProduct;
     }
 
-    public Result UpdateProduct(StoreProductId productId, int? newQuantity, decimal? newPrice)
-        => Result<StoreProduct>
-            .Create(
-                funcToGetValue: () => _storeProducts.SingleOrDefault(p => p.Id == productId),
-                errorIfValueNull: Error.NotFound(nameof(StoreProduct), productId))
-            .TapWhen(product => UpdateProductQuantity(product, newQuantity!.Value), when: () => newQuantity is not null)
-            .TapWhen(product => UpdateProductPrice(product, newPrice!.Value), when: () => newPrice is not null);
-
-    private void UpdateProductQuantity(StoreProduct product, int newQuantity)
+    public void RemoveProduct(Product product)
     {
-        if (newQuantity == product.Quantity)
-        {
-            return;
-        }
-
-        RaiseEvent(
-            newQuantity > product.Quantity
-            ? new V1ProductQuantityIncreasedDomainEvent(product, newQuantity)
-            : new V1ProductQuantityDecreasedDomainEvent(product, newQuantity));
-    }
-
-    private void UpdateProductPrice(StoreProduct product, decimal newPrice)
-    {
-        if (newPrice == product.Price)
-        {
-            return;
-        }
-
-        RaiseEvent(
-            newPrice > product.Price
-            ? new V1ProductPriceIncreasedDomainEvent(product, newPrice)
-            : new V1ProductPriceDecreasedDomainEvent(product, newPrice));
-    }
-
-    public Result RemoveProductFromStore(StoreProductId productId)
-    {
-        if (_storeProducts.SingleOrDefault(p => p.Id == productId) is not { } product)
-        {
-            return Error.NotFound(nameof(StoreProduct), productId);
-        }
-
         var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product);
         RaiseEvent(@event);
-
-        return Result.Success;
     }
 
     protected override void ApplyEvent(DomainEvent @event)
@@ -130,22 +95,13 @@ public class Store : AggregateRoot<StoreId>
             case V1StoreDescriptionUpdatedDomainEvent e:
                 Apply(e);
                 break;
+            case V1StoreAddressUpdatedDomainEvent e:
+                Apply(e);
+                break;
             case V1ProductAddedToStoreDomainEvent e:
                 Apply(e);
                 break;
             case V1ProductRemovedFromStoreDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductQuantityIncreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductQuantityDecreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductPriceIncreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductPriceDecreasedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -159,62 +115,35 @@ public class Store : AggregateRoot<StoreId>
         OwnerId = @event.OwnerId;
         Name = @event.Name;
         Description = @event.Description;
-        LogoUrl = @event.LogoUrl;
+        Address = @event.Address;
     }
 
     private void Apply(V1StoreNameUpdatedDomainEvent @event)
     {
-        Name = @event.NewName;
+        Name = @event.Name;
     }
 
     private void Apply(V1StoreDescriptionUpdatedDomainEvent @event)
     {
-        Description = @event.NewDescription;
+        Description = @event.Description;
+    }
+
+    private void Apply(V1StoreAddressUpdatedDomainEvent @event)
+    {
+        Address = @event.Address;
     }
 
     private void Apply(V1ProductAddedToStoreDomainEvent @event)
     {
-        _storeProducts.Add(@event.Product);
+        _products.Add(@event.Product);
     }
 
     private void Apply(V1ProductRemovedFromStoreDomainEvent @event)
     {
-        _storeProducts.Remove(@event.Product);
-    }
-
-    private static void Apply(V1ProductQuantityIncreasedDomainEvent @event)
-    {
-        var storeProduct = @event.Product;
-        var newQuantity = @event.NewQuantity;
-
-        storeProduct.UpdateQuantity(newQuantity);
-    }
-
-    private static void Apply(V1ProductQuantityDecreasedDomainEvent @event)
-    {
-        var storeProduct = @event.Product;
-        var newQuantity = @event.NewQuantity;
-
-        storeProduct.UpdateQuantity(newQuantity);
-    }
-
-    private static void Apply(V1ProductPriceIncreasedDomainEvent @event)
-    {
-        var storeProduct = @event.Product;
-        var newPrice = @event.NewPrice;
-
-        storeProduct.UpdatePrice(newPrice);
-    }
-
-    private static void Apply(V1ProductPriceDecreasedDomainEvent @event)
-    {
-        var storeProduct = @event.Product;
-        var newPrice = @event.NewPrice;
-
-        storeProduct.UpdatePrice(newPrice);
+        _products.Remove(@event.Product);
     }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public Store() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
+    private Store() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 }
