@@ -1,15 +1,14 @@
 namespace Common.Domain.ResultMonad;
 
-public sealed class Result
+public sealed class Result : IResult
 {
-    public Error? Error { get; }
-    public bool IsFailure { get; }
+    public Error? Error { get; set; }
+    public bool IsFailure => Error is not null;
 
-    private Result(Error? error)
-    {
-        Error = error;
-        IsFailure = error is not null;
-    }
+    // Do not remove this constructor. It is used by MediatR Validation Pipeline.
+    public Result() { }
+
+    private Result(Error? error) => Error = error;
 
     public static Result Success { get; } = new(null);
     public static Result Failure(Error error) => new(error);
@@ -22,11 +21,14 @@ public sealed class Result
 #pragma warning restore CA2225
 }
 
-public sealed class Result<T>
+public sealed class Result<T> : IResult
 {
     public T? Value { get; }
-    public Error? Error { get; }
-    public bool IsFailure { get; }
+    public Error? Error { get; set; }
+    public bool IsFailure => Error is not null;
+
+    // Do not remove this constructor. It is used by MediatR Validation Pipeline.
+    public Result() { }
 
     private Result(Error error) : this(default, error) { }
 
@@ -36,7 +38,6 @@ public sealed class Result<T>
     {
         Value = value;
         Error = error;
-        IsFailure = error is not null;
     }
 
 #pragma warning disable CA1000
