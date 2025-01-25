@@ -10,6 +10,14 @@ public class Error
     public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.BadRequest;
     public ICollection<string> SubErrors { get; init; } = [];
 
+    public static Error Validation(ICollection<string> errors)
+        => new()
+        {
+            Key = nameof(Validation),
+            StatusCode = HttpStatusCode.BadRequest,
+            SubErrors = errors
+        };
+
     public static Error NotFound(string parameterName, object? value = null)
         => new()
         {
