@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj" />
+    <ProjectReference Include="..\IAM.Application\IAM.Application.csproj" />
+    <ProjectReference Include="..\IAM.Infrastructure\IAM.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

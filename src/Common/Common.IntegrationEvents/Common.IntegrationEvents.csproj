@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="NimbleMediator" />
   </ItemGroup>
 
   <ItemGroup>

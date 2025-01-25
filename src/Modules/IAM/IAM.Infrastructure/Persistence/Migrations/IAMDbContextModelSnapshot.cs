@@ -146,13 +146,12 @@ namespace IAM.Infrastructure.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<DateTimeOffset>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("RefreshTokenHash")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -179,6 +178,8 @@ namespace IAM.Infrastructure.Persistence.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("RefreshTokenHash");
 
                     b.ToTable("Users", "IAM");
                 });

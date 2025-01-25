@@ -1,5 +1,6 @@
 {
   "OtpOptions": {
+    "Length": 6,
     "ExpirationInMinutes": 5
   }
 }

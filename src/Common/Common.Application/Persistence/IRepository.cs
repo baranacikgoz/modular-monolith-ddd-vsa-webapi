@@ -1,10 +1,10 @@
-using System.Linq.Expressions;
 using Ardalis.Specification;
 using Common.Application.DTOs;
-using Common.Application.Pagination;
+using Common.Application.Queries.EventHistory;
+using Common.Application.Queries.Pagination;
+using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
-using Common.Domain.StronglyTypedIds;
 
 namespace Common.Application.Persistence;
 public interface IRepository<T>
@@ -25,13 +25,11 @@ public interface IRepository<T>
     Task<List<TResult>> ListAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken);
     Task<PaginationResult<T>> PaginateAsync(PaginationSpec<T> paginationSpec, CancellationToken cancellationToken);
     Task<PaginationResult<TResult>> PaginateAsync<TResult>(PaginationSpec<T, TResult> paginationSpec, CancellationToken cancellationToken);
-    Task<PaginationResult<EventDto>> GetEventHistoryAsync<TId>(TId id, PaginationRequest request, CancellationToken cancellationToken)
-        where TId : IStronglyTypedId;
+    Task<PaginationResult<EventDto>> GetEventHistoryAsync<TAggregate>(EventHistoryQuery<TAggregate> query, CancellationToken cancellationToken)
+        where TAggregate : class, IAggregateRoot;
     Task<int> CountAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<Result<int>> CountAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<bool> AnyAsync(ISpecification<T> specification, CancellationToken cancellationToken);
     Task<Result<bool>> AnyAsyncAsResult(ISpecification<T> specification, CancellationToken cancellationToken);
     IAsyncEnumerable<T> AsAsyncEnumerable(ISpecification<T> specification);
-    Task<bool> IsOwnedByCurrentUserAync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken);
-    Task<Result> EnsureOwnedByCurrentUserAsync(Expression<Func<T, ApplicationUserId>> idSelector, CancellationToken cancellationToken);
 }

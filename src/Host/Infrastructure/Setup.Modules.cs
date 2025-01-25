@@ -5,6 +5,8 @@ using Notifications.Infrastructure;
 using Outbox;
 using BackgroundJobs;
 using Products.Infrastructure;
+using IAM.Endpoints;
+using Products.Endpoints;
 
 namespace Host.Infrastructure;
 
@@ -20,6 +22,17 @@ internal static partial class Setup
             .AddRateLimiting(configuration);
 
     public static IApplicationBuilder UseModules(this WebApplication app)
+    {
+        app.UseOutboxModule();
+        app.UseNotificationsModule();
+        app.UseIAMModule();
+        app.UseProductsModule();
+        app.UseBackgroundJobsModule();
+
+        return app;
+    }
+
+    public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
     {
         var versionNeutralApiGroup = app
                                     .MapGroup("/")
@@ -38,11 +51,8 @@ internal static partial class Setup
                                 .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
-        app.UseOutboxModule();
-        app.UseNotificationsModule();
-        app.UseIAMModule(versionNeutralApiGroup);
-        app.UseProductsModule(versionedApiGroup);
-        app.UseBackgroundJobsModule();
+        app.MapIAMModuleEndpoints(versionNeutralApiGroup);
+        app.MapProductsModuleEndpoints(versionedApiGroup);
 
         return app;
     }

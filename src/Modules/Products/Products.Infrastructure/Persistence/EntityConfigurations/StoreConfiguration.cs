@@ -2,7 +2,6 @@ using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.EntityConfigurations;
@@ -33,9 +32,8 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .IsRequired();
 
         builder
-            .Property(s => s.LogoUrl)
-            .HasConversion<UriToStringConverter>()
-            .HasMaxLength(Constants.LogoUrlMaxLength)
-            .IsRequired(false);
+            .Property(s => s.Address)
+            .HasMaxLength(Constants.AddressMaxLength)
+            .IsRequired();
     }
 }

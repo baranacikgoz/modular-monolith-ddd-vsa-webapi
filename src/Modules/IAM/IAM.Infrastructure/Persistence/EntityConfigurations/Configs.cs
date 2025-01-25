@@ -49,9 +49,11 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
                 str => str == null ? null : new Uri(str));
 
         builder
-            .Property(u => u.RefreshToken)
-            .IsRequired()
-            .HasMaxLength(Constants.RefreshTokenMaxLength);
+            .Property(u => u.RefreshTokenHash)
+            .IsRequired();
+
+        builder
+            .HasIndex(u => u.RefreshTokenHash);
 
         builder
             .Property(u => u.RefreshTokenExpiresAt)

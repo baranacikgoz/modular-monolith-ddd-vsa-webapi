@@ -1,54 +1,27 @@
-using Common.Application.Caching;
-using Common.Domain.Extensions;
-using Common.Domain.ResultMonad;
-using Common.Infrastructure.Options;
-using IAM.Application.Identity.Services;
-using IAM.Domain.Identity.Errors;
-using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
+using IAM.Application.Users.Services;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-internal class PhoneVerificationTokenService(
-    ICacheService cache,
-    IOptions<OtpOptions> otpOptionsProvider
-    ) : IPhoneVerificationTokenService
+internal class PhoneVerificationTokenService : IPhoneVerificationTokenService
 {
-    private readonly int _expirationInMinutes = otpOptionsProvider.Value.ExpirationInMinutes;
-    private const string ErrorKey = "PhoneVerificationToken";
+    private const int Length = 32;
+    private const string Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    public Task<string> GetTokenAsync(string phoneNumber, CancellationToken cancellationToken)
-     => cache.GetOrCreateAsync(
-        key: CacheKey(phoneNumber),
-        factory: _ => new ValueTask<string>(DefaultIdType.CreateVersion7().ToString("N")),
-        absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_expirationInMinutes),
-        cancellationToken: cancellationToken);
-
-    /// <summary>
-    /// Initially, we were removing the token from the cache at the end of this <see cref="ValidateTokenAsync"/> method.
-    /// But, for the new user registrations, since we are requesting token twice;
-    /// - First in <see cref="Application.Identity.VersionNeutral.Users.Register.Endpoint>
-    /// - Then in <see cref="Application.Tokens.VersionNeutral.Create.Endpoint>
-    /// If we remove the token from the cache after the first request, the second request will fail with <see cref="PhoneVerificationTokenErrors.PhoneVerificationTokenNotFound"/>
-    /// And users will have to go back to the very first step of the registration process.
-    /// </summary>
-    public async Task<Result> ValidateTokenAsync(string phoneNumber, string token, CancellationToken cancellationToken)
-        => await Result<string>
-                .CreateAsync(
-                    taskToAwaitValue: async () => await cache.GetAsync<string>(CacheKey(phoneNumber), cancellationToken),
-                    errorIfValueNull: Error.NotFound(ErrorKey, phoneNumber))
-                .TapAsync(cachedToken => StringExtensions.EnsureNotNullOrEmpty(cachedToken, ifNullOrEmpty: Error.NotFound(ErrorKey, phoneNumber)))
-                .TapAsync(cachedToken => EnsureTokensAreMatching(cachedToken, token));
-    private static Result<string> EnsureTokensAreMatching(string cachedToken, string token)
+    public string Generate()
     {
-        var boolResult = string.Equals(cachedToken, token, StringComparison.Ordinal);
-
-        if (boolResult)
+        var buffer = new byte[Length];
+        using (var rng = RandomNumberGenerator.Create())
         {
-            return cachedToken;
+            rng.GetBytes(buffer);
         }
 
-        return PhoneVerificationTokenErrors.PhoneVerificationTokensNotMatching;
-    }
+        var otp = new char[Length];
+        for (var i = 0; i < Length; i++)
+        {
+            otp[i] = Characters[buffer[i] % Characters.Length];
+        }
 
-    private static string CacheKey(string phoneNumber) => $"phone-verification-token:{phoneNumber}";
+        return new string(otp);
+    }
 }

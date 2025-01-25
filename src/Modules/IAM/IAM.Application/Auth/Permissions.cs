@@ -17,16 +17,16 @@ public static class CustomPermissions
         new("Update My Store", CustomActions.UpdateMy, CustomResources.Stores),
         new("Delete My Store", CustomActions.DeleteMy, CustomResources.Stores),
 
-        new("Read My Products", CustomActions.ReadMy, CustomResources.Products),
-        new("Read Products", CustomActions.Read, CustomResources.Products), // For individual users to see all products
-        new("Search Products", CustomActions.Search, CustomResources.Products),
+        new("Read My Products", CustomActions.ReadMy, CustomResources.ProductTemplates),
+        new("Read Products", CustomActions.Read, CustomResources.ProductTemplates), // For individual users to see all products
+        new("Search Products", CustomActions.Search, CustomResources.ProductTemplates),
 
-        new("Create My StoreProduct", CustomActions.CreateMy, CustomResources.StoreProducts),
-        new("Read My StoreProduct", CustomActions.ReadMy, CustomResources.StoreProducts),
-        new("Update My StoreProduct", CustomActions.UpdateMy, CustomResources.StoreProducts),
-        new("Delete My StoreProduct", CustomActions.DeleteMy, CustomResources.StoreProducts),
-        new("Search StoreProducts", CustomActions.Search, CustomResources.StoreProducts),
-        new("Search My Stores StoreProducts", CustomActions.SearchMy, CustomResources.StoreProducts), // For store owners to ssearch their own store's products
+        new("Create My StoreProduct", CustomActions.CreateMy, CustomResources.Products),
+        new("Read My StoreProduct", CustomActions.ReadMy, CustomResources.Products),
+        new("Update My StoreProduct", CustomActions.UpdateMy, CustomResources.Products),
+        new("Delete My StoreProduct", CustomActions.DeleteMy, CustomResources.Products),
+        new("Search StoreProducts", CustomActions.Search, CustomResources.Products),
+        new("Search My Stores StoreProducts", CustomActions.SearchMy, CustomResources.Products), // For store owners to ssearch their own store's products
     ];
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
@@ -45,10 +45,10 @@ public static class CustomPermissions
 
         // In this marketplace system, the products those store owners can sell are managed by the system admins
         // You may think of this as Trendyol, Hepsiburada, and sellers can only sell the products that are predefined by the system admins (then customize prices and etc. see ->StoreProduct entity).
-        new("Create Products", CustomActions.Create, CustomResources.Products),
-        new("Read Products", CustomActions.Read, CustomResources.Products),
-        new("Update Products", CustomActions.Update, CustomResources.Products),
-        new("Delete Products", CustomActions.Delete, CustomResources.Products),
+        new("Create Products", CustomActions.Create, CustomResources.ProductTemplates),
+        new("Read Products", CustomActions.Read, CustomResources.ProductTemplates),
+        new("Update Products", CustomActions.Update, CustomResources.ProductTemplates),
+        new("Delete Products", CustomActions.Delete, CustomResources.ProductTemplates),
     ];
 
     public static readonly IReadOnlySet<string> Basic =

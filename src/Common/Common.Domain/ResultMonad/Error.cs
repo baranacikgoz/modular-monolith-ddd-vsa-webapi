@@ -10,6 +10,14 @@ public class Error
     public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.BadRequest;
     public ICollection<string> SubErrors { get; init; } = [];
 
+    public static Error Validation(ICollection<string> errors)
+        => new()
+        {
+            Key = nameof(Validation),
+            StatusCode = HttpStatusCode.BadRequest,
+            SubErrors = errors
+        };
+
     public static Error NotFound(string parameterName, object? value = null)
         => new()
         {
@@ -24,7 +32,8 @@ public class Error
         {
             Key = nameof(ViolatesUniqueConstraint),
             ParameterName = parameterName,
-            Value = value
+            Value = value,
+            StatusCode = HttpStatusCode.BadRequest
         };
 
     /// <summary>
@@ -33,12 +42,13 @@ public class Error
     /// <param name="parameterName"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Error NotOwned(string parameterName, object value)
+    public static Error NotOwned<T>(object? value = null)
         => new()
         {
             Key = nameof(NotOwned),
-            ParameterName = parameterName,
-            Value = value
+            ParameterName = typeof(T).Name,
+            Value = value,
+            StatusCode = HttpStatusCode.Forbidden
         };
 
     /// <summary>
@@ -53,6 +63,7 @@ public class Error
         {
             Key = nameof(SameValue),
             ParameterName = parameterName,
-            Value = value
+            Value = value,
+            StatusCode = HttpStatusCode.BadRequest
         };
 }
