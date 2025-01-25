@@ -15,6 +15,7 @@ namespace Common.Infrastructure.CQS.PipelineBehaviours;
 public class ValidationPipelineBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : IResult, new()
 {
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
@@ -30,28 +31,12 @@ public class ValidationPipelineBehaviour<TRequest, TResponse>(IEnumerable<IValid
 
         if (errors.Count > 0)
         {
-            if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+            TResponse response = new()
             {
-                var resultType = typeof(TResponse).GetGenericArguments()[0];
-                var failureResult = typeof(Result<>)
-                    .MakeGenericType(resultType)
-                    .GetMethod(nameof(Result<int>.Failure), [typeof(Error)]);
+                Error = Error.Validation(errors)
+            };
 
-                if (failureResult != null)
-                {
-
-                    return (TResponse)failureResult.Invoke(null, [Error.Validation(errors)]);
-
-                }
-            }
-            else if (typeof(TResponse) == typeof(Result))
-            {
-                return (TResponse)(object)Result.Failure(Error.Validation(errors));
-            }
-            else
-            {
-                throw new InvalidOperationException("Invalid response type.");
-            }
+            return response;
 
         }
 
