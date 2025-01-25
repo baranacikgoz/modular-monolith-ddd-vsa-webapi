@@ -19,8 +19,7 @@ internal static class Endpoint
         myStoresApiGroup
             .MapGet("{id}", GetStoreAsync)
             .WithDescription("Get store.")
-            //.MustHavePermission(CustomActions.Read, CustomResources.Stores)
-            .AllowAnonymous()
+            .MustHavePermission(CustomActions.Read, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
