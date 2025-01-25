@@ -14,9 +14,9 @@ public sealed record SearchStoresQuery : PaginationQuery, IQuery<PaginationResul
     public string? Address { get; init; }
 }
 
-public sealed class SearchProductsQueryValidator : PaginationQueryValidator<SearchStoresQuery>
+public sealed class SearchStoresQueryValidator : PaginationQueryValidator<SearchStoresQuery>
 {
-    public SearchProductsQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : base(localizer)
+    public SearchStoresQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : base(localizer)
     {
         RuleFor(x => x.Name)
             .MaximumLength(Domain.Stores.Constants.NameMaxLength)

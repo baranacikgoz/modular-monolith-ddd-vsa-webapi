@@ -1,4 +1,6 @@
 using System.Reflection;
+using Common.Infrastructure.CQS.PipelineBehaviours;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Infrastructure.CQS;
@@ -13,6 +15,7 @@ public static class Setup
             //cfg.AddStreamBehavior<PingPongStreamBehavior>()
             //cfg.AddRequestPreProcessor<PingPreProcessor>()
             //cfg.AddRequestPostProcessor<PingPongPostProcessor>()
-            //cfg.AddOpenBehavior(typeof(GenericBehavior<,>))
+
+            cfg.AddOpenBehavior(typeof(ValidationPipelineBehaviour<,>));
         });
 }
