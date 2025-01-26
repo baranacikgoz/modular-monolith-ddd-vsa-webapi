@@ -16,9 +16,9 @@ public abstract class InterModuleRequestHandler<TRequest, TResponse> : IConsumer
 {
     public async Task Consume(ConsumeContext<TRequest> context)
     {
-        var response = await HandleAsync(context.Message, context.CancellationToken);
+        var response = await HandleAsync(context, context.Message, context.CancellationToken);
         await context.RespondAsync(response);
     }
 
-    protected abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
+    protected abstract Task<TResponse> HandleAsync(ConsumeContext<TRequest> context, TRequest request, CancellationToken cancellationToken);
 }

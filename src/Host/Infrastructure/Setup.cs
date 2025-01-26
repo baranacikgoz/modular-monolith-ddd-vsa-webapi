@@ -21,12 +21,12 @@ internal static partial class Setup
 
             typeof(IAM.Domain.IAssemblyReference).Assembly,
             typeof(IAM.Application.IAssemblyReference).Assembly,
-            typeof(IAM.Endpoints.IAssemblyReference).Assembly,
+            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
             typeof(IAM.Endpoints.IAssemblyReference).Assembly,
 
             typeof(Products.Domain.IAssemblyReference).Assembly,
             typeof(Products.Application.IAssemblyReference).Assembly,
-            typeof(Products.Endpoints.IAssemblyReference).Assembly,
+            typeof(Products.Infrastructure.IAssemblyReference).Assembly,
             typeof(Products.Endpoints.IAssemblyReference).Assembly,
 
             typeof(Notifications.Domain.IAssemblyReference).Assembly,
