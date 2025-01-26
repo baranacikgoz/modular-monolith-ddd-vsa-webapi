@@ -2,6 +2,7 @@ using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
 using IAM.Application.Auth;
 using IAM.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Infrastructure.InterModuleRequestHandlers;
@@ -12,7 +13,7 @@ namespace IAM.Infrastructure.InterModuleRequestHandlers;
 /// <param name="dbContext"></param>
 public class GetSeedUserIdsRequestHandler(IAMDbContext dbContext) : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
 {
-    protected override async Task<GetSeedUserIdsResponse> HandleAsync(GetSeedUserIdsRequest request, CancellationToken cancellationToken)
+    protected override async Task<GetSeedUserIdsResponse> HandleAsync(ConsumeContext<GetSeedUserIdsRequest> context, GetSeedUserIdsRequest request, CancellationToken cancellationToken)
     {
         var requestedUserCount = request.Count;
         var roleName = CustomRoles.Basic;

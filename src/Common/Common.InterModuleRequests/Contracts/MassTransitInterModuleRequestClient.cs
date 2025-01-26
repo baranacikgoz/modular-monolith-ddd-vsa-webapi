@@ -1,6 +1,7 @@
 using MassTransit;
 
 namespace Common.InterModuleRequests.Contracts;
+
 public class MassTransitInterModuleRequestClient<TRequest, TResponse>(
     IRequestClient<TRequest> requestClient
     ) : IInterModuleRequestClient<TRequest, TResponse>
