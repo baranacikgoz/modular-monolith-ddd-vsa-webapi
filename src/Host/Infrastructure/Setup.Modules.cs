@@ -1,4 +1,3 @@
-using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 using Host.Middlewares;
 using IAM.Infrastructure;
 using Notifications.Infrastructure;
@@ -19,11 +18,14 @@ internal static partial class Setup
             .AddNotificationsModule()
             .AddIAMModule(configuration)
             .AddProductsModule()
-            .AddRateLimiting(configuration);
+            .AddCustomRateLimiting(
+                configuration,
+                IAM.Infrastructure.RateLimiting.Policies.Get(),
+                Products.Infrastructure.RateLimiting.Policies.Get());
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
-        app.UseOutboxModule();
+        app.UseOutboxModule(); // Should be the first one to use
         app.UseNotificationsModule();
         app.UseIAMModule();
         app.UseProductsModule();
@@ -37,7 +39,6 @@ internal static partial class Setup
         var versionNeutralApiGroup = app
                                     .MapGroup("/")
                                     .RequireAuthorization()
-                                    .AddFluentValidationAutoValidation()
                                     .WithOpenApi();
 
         var apiVersionSet = app.GetApiVersionSet();
@@ -48,7 +49,6 @@ internal static partial class Setup
                                 .MapGroup("/v{version:apiVersion}")
                                 .WithApiVersionSet(apiVersionSet)
                                 .RequireAuthorization()
-                                .AddFluentValidationAutoValidation()
                                 .WithOpenApi();
 
         app.MapIAMModuleEndpoints(versionNeutralApiGroup);
@@ -56,10 +56,4 @@ internal static partial class Setup
 
         return app;
     }
-
-    private static IServiceCollection AddRateLimiting(this IServiceCollection services, IConfiguration configuration)
-        => services.AddRateLimiting(
-                configuration,
-                IAM.Infrastructure.RateLimiting.Policies.Get(),
-                Products.Infrastructure.RateLimiting.Policies.Get());
 }

@@ -1,6 +1,4 @@
 using FluentValidation;
-using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
-using Host.Validation;
 using Common.Application.JsonConverters;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Caching;
@@ -23,11 +21,13 @@ internal static partial class Setup
 
             typeof(IAM.Domain.IAssemblyReference).Assembly,
             typeof(IAM.Application.IAssemblyReference).Assembly,
-            typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
+            typeof(IAM.Endpoints.IAssemblyReference).Assembly,
+            typeof(IAM.Endpoints.IAssemblyReference).Assembly,
 
             typeof(Products.Domain.IAssemblyReference).Assembly,
             typeof(Products.Application.IAssemblyReference).Assembly,
-            typeof(Products.Infrastructure.IAssemblyReference).Assembly,
+            typeof(Products.Endpoints.IAssemblyReference).Assembly,
+            typeof(Products.Endpoints.IAssemblyReference).Assembly,
 
             typeof(Notifications.Domain.IAssemblyReference).Assembly,
             typeof(Notifications.Application.IAssemblyReference).Assembly,
@@ -56,7 +56,7 @@ internal static partial class Setup
                 env,
                 Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
             .AddCustomCors()
-            .AddFluentValidationAndAutoValidation()
+            .AddValidatorsFromAssemblies(_moduleAssemblies)
             .AddCommonDependencies(configuration)
             .AddEnrichLogsWithUserInfoMiddlware();
 
@@ -91,7 +91,6 @@ internal static partial class Setup
 
                 context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 context.ProblemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
-                context.ProblemDetails.Extensions.TryAdd("node", Environment.MachineName);
             };
         });
 
@@ -104,11 +103,6 @@ internal static partial class Setup
             .AddCommonOptions(config)
             .AddCommonPersistence()
             .AddCommonCommandsQueriesHandlers(_moduleAssemblies);
-
-    private static IServiceCollection AddFluentValidationAndAutoValidation(this IServiceCollection services)
-        => services
-            .AddValidatorsFromAssemblies(_moduleAssemblies)
-            .AddFluentValidationAutoValidation(cfg => cfg.OverrideDefaultResultFactoryWith<CustomFluentValidationResultFactory>());
 
     private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
         => services.AddScoped<EnrichLogsWithUserInfoMiddleware>();

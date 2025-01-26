@@ -366,7 +366,7 @@ dotnet_diagnostic.IDE0020.severity = warning
 dotnet_diagnostic.IDE0022.severity = silent
 
 # IDE0023:
-dotnet_diagnostic.IDE0023.severity = suggestion
+dotnet_diagnostic.IDE0023.severity = silent
 
 # IDE0024:
 dotnet_diagnostic.IDE0024.severity = suggestion

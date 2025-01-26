@@ -8,7 +8,7 @@ public class Error
     public string? ParameterName { get; init; }
     public object? Value { get; init; }
     public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.BadRequest;
-    public ICollection<string> SubErrors { get; init; } = [];
+    public ICollection<string>? SubErrors { get; init; }
 
     public static Error Validation(ICollection<string> errors)
         => new()

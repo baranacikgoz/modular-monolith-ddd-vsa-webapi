@@ -1,6 +1,7 @@
 using Common.Application.Extensions;
 using Common.Application.Localization;
 using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ namespace Common.Application.EndpointFilters;
 // In this filters, no service needed for succes paths.
 // So we don't have to eagerly load failure case's services. (on ctor as usual)
 // That's why we're using the service provider to get the error translator and localizer if and only if failure case occur.
-internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvider) : IEndpointFilter
+internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvider, IWebHostEnvironment env) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -29,22 +30,26 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-                var details = new ProblemDetails()
+                var problemDetails = new ProblemDetails()
                 {
                     Status = (int)error.StatusCode,
-                    Title = localizer.LocalizeFromError(error)
+                    Title = localizer.LocalizeFromError(error),
+                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}",
                 };
 
-                details.AddErrorKey(error);
-                details.AddErrors(error.SubErrors);
+                problemDetails.AddErrorKey(error.Key);
+                problemDetails.AddErrors(error.SubErrors);
 
-                return Results.Problem(details);
+                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+
+                return Results.Problem(problemDetails);
             }
         );
     }
 }
 
-internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider) : IEndpointFilter
+internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env) : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -61,16 +66,20 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-                var details = new ProblemDetails()
+                var problemDetails = new ProblemDetails()
                 {
                     Status = (int)error.StatusCode,
-                    Title = localizer.LocalizeFromError(error)
+                    Title = localizer.LocalizeFromError(error),
+                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}",
                 };
 
-                details.AddErrorKey(error.Key);
-                details.AddErrors(error.SubErrors);
+                problemDetails.AddErrorKey(error.Key);
+                problemDetails.AddErrors(error.SubErrors);
 
-                return Results.Problem(details);
+                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+
+                return Results.Problem(problemDetails);
             }
         );
     }
