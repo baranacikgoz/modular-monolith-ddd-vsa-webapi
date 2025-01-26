@@ -5,7 +5,7 @@ namespace Common.Application.EventBus;
 
 public abstract partial class EventHandlerBase<TEvent> : IEventHandler<TEvent> where TEvent : class, IEvent
 {
-    public Task Consume(ConsumeContext<TEvent> context) => HandleAsync(context.Message, context.CancellationToken);
+    public Task Consume(ConsumeContext<TEvent> context) => HandleAsync(context, context.Message, context.CancellationToken);
 
-    protected abstract Task HandleAsync(TEvent @event, CancellationToken cancellationToken);
+    protected abstract Task HandleAsync(ConsumeContext<TEvent> context, TEvent @event, CancellationToken cancellationToken);
 }

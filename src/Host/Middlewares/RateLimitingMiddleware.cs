@@ -12,7 +12,7 @@ namespace Host.Middlewares;
 
 internal static class RateLimitingMiddleware
 {
-    public static IServiceCollection AddRateLimiting(
+    public static IServiceCollection AddCustomRateLimiting(
         this IServiceCollection services,
         IConfiguration configuration,
         params IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>[] rateLimitingPoliciesPerModule)

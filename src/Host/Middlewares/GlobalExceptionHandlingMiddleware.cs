@@ -124,6 +124,14 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 statusCode: (int)HttpStatusCode.BadRequest,
                 title: localizer[nameof(BadHttpRequestException)]);
         }
+        catch (OperationCanceledException ex)
+        {
+            await HandleExceptionAsync(
+                context: context,
+                exception: ex,
+                statusCode: StatusCodes.Status499ClientClosedRequest, // Client Closed Request
+                title: localizer["ClientClosedRequest"]);
+        }
 #pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
@@ -131,7 +139,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context: context,
                 exception: ex,
                 statusCode: (int)HttpStatusCode.InternalServerError,
-                title: localizer[nameof(HttpStatusCode.InternalServerError), context.TraceIdentifier]);
+                title: localizer[nameof(HttpStatusCode.InternalServerError)]);
         }
 #pragma warning restore CA1031 // Do not catch general exception types
     }
