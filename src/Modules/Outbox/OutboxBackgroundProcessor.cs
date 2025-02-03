@@ -1,3 +1,4 @@
+using System.Threading;
 using Common.Application.EventBus;
 using Common.Domain.Events;
 using Common.Infrastructure.Options;
@@ -13,22 +14,22 @@ internal sealed partial class OutboxBackgroundProcessor(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptionsProvider,
     ILogger<OutboxBackgroundProcessor> logger
-    ) : IHostedService
+    ) : BackgroundService
 {
-    private readonly int _backgroundJobPeriodInMilliSeconds = outboxOptionsProvider.Value.BackgroundJobPeriodInMilliseconds;
-    private readonly int _maxBackoffInMilliSeconds = outboxOptionsProvider.Value.MaxBackoffDelayInMilliseconds;
-    private readonly int _batchSizePerExecution = outboxOptionsProvider.Value.BatchSizePerExecution;
-    private readonly int _maxFailCountBeforeSentToDeadLetter = outboxOptionsProvider.Value.MaxFailCountBeforeSentToDeadLetter;
-
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var backoffDelay = _backgroundJobPeriodInMilliSeconds;
+        var outboxOptions = outboxOptionsProvider.Value;
+        var backgroundJobPeriodInMilliSeconds = outboxOptions.BackgroundJobPeriodInMilliseconds;
+        var backoffDelay = outboxOptions.BackgroundJobPeriodInMilliseconds;
+        var maxBackoffDelay = outboxOptions.MaxBackoffDelayInMilliseconds;
+        var batchSizePerExecution = outboxOptions.BatchSizePerExecution;
+        var maxFailCountBeforeSentToDeadLetter = outboxOptions.MaxFailCountBeforeSentToDeadLetter;
 
         try
         {
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(backoffDelay, cancellationToken);
+                await Task.Delay(backoffDelay, stoppingToken);
 
                 LogBeginProcessingOutboxMessages(logger);
 
@@ -37,33 +38,32 @@ internal sealed partial class OutboxBackgroundProcessor(
                 var utcNow = scope.ServiceProvider.GetRequiredService<TimeProvider>().GetUtcNow();
                 var outboxDbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
 
-                await using var transaction = await outboxDbContext.Database.BeginTransactionAsync(cancellationToken);
+                await using var transaction = await outboxDbContext.Database.BeginTransactionAsync(stoppingToken);
 
                 var outboxMessages = await outboxDbContext
                                             .OutboxMessages
                                             .FromSqlRaw(
                                                 """
-                                                SELECT o."Id", o."CreatedBy", o."CreatedOn", o."Event", o."FailedCount", o."IsProcessed", o."LastFailedOn",                          o."LastModifiedBy",o."LastModifiedIp", o."LastModifiedOn", o."ProcessedOn", o.xmin
-
+                                                SELECT o."Id", o."CreatedBy", o."CreatedOn", o."Event", o."FailedCount", o."IsProcessed", o."LastFailedOn", o."LastModifiedBy",o."LastModifiedIp", o."LastModifiedOn", o."ProcessedOn", o.xmin
                                                 FROM "Outbox"."OutboxMessages" AS o
                                                 WHERE NOT (o."IsProcessed") ORDER BY o."CreatedOn"
                                                 LIMIT {0}
                                                 FOR UPDATE SKIP LOCKED
-                                                """, _batchSizePerExecution)
-                                            .ToListAsync(cancellationToken);
+                                                """, batchSizePerExecution)
+                                            .ToListAsync(stoppingToken);
 
                 if (outboxMessages.Count == 0)
                 {
                     LogZeroOutboxMessages(logger);
 
-                    await transaction.RollbackAsync(cancellationToken);
+                    await transaction.RollbackAsync(stoppingToken);
 
-                    backoffDelay = Math.Min(backoffDelay * 2, _maxBackoffInMilliSeconds);
+                    backoffDelay = Math.Min(backoffDelay * 2, maxBackoffDelay);
                     continue;
                 }
 
                 // Reset backoff when there are messages found to process
-                backoffDelay = _backgroundJobPeriodInMilliSeconds;
+                backoffDelay = backgroundJobPeriodInMilliSeconds;
 
                 LogFoundOutboxMessages(logger, outboxMessages.Count);
                 var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
@@ -73,7 +73,7 @@ internal sealed partial class OutboxBackgroundProcessor(
                     try
                     {
                         var @event = outboxMessage.Event;
-                        await eventBus.PublishAsync(@event, cancellationToken);
+                        await eventBus.PublishAsync(@event, stoppingToken);
                         outboxMessage.MarkAsProcessed(utcNow);
                     }
 #pragma warning disable CA1031
@@ -89,7 +89,7 @@ internal sealed partial class OutboxBackgroundProcessor(
 
                         outboxMessage.MarkAsFailed(utcNow);
 
-                        if (outboxMessage.FailedCount >= _maxFailCountBeforeSentToDeadLetter)
+                        if (outboxMessage.FailedCount >= maxFailCountBeforeSentToDeadLetter)
                         {
                             outboxDbContext.OutboxMessages.Remove(outboxMessage);
                             outboxDbContext.DeadLetterMessages.Add(DeadLetterMessage.CreateFrom(outboxMessage));
@@ -99,15 +99,15 @@ internal sealed partial class OutboxBackgroundProcessor(
 
                 try
                 {
-                    await outboxDbContext.SaveChangesAsync(cancellationToken);
-                    await transaction.CommitAsync(cancellationToken);
+                    await outboxDbContext.SaveChangesAsync(stoppingToken);
+                    await transaction.CommitAsync(stoppingToken);
                     LogProcessedOutboxMessages(logger, outboxMessages.Count);
                 }
 #pragma warning disable CA1031
                 catch (Exception ex)
 #pragma warning restore CA1031
                 {
-                    await transaction.RollbackAsync(cancellationToken);
+                    await transaction.RollbackAsync(stoppingToken);
                     LogExceptionOccuredDuringSavingChanges(logger, ex);
                 }
             }
@@ -120,9 +120,6 @@ internal sealed partial class OutboxBackgroundProcessor(
             LogUncaughtFatalExceptionOccuredWhileProcessingOutboxMessages(logger, ex);
         }
     }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-        => Task.CompletedTask;
 
     [LoggerMessage(
         Level = LogLevel.Trace,

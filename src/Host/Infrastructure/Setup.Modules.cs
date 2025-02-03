@@ -13,7 +13,7 @@ internal static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
         => services
-            .AddBackgroundJobsModule()
+            .AddBackgroundJobsModule(configuration)
             .AddOutboxModule()
             .AddNotificationsModule()
             .AddIAMModule(configuration)
