@@ -15,7 +15,7 @@ public static class ModuleInstaller
         => services
             .AddScoped<IOutboxDbContext, OutboxDbContext>()
             .AddOutboxDbContextAndInterceptor()
-            .AddOutboxHostedService();
+            .AddHostedService<OutboxBackgroundProcessor>();
 
     public static WebApplication UseOutboxModule(this WebApplication app)
     {
@@ -44,9 +44,4 @@ public static class ModuleInstaller
                     connectionString,
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)));
             });
-
-    private static IServiceCollection AddOutboxHostedService(this IServiceCollection services)
-        => services
-            .AddSingleton<OutboxBackgroundProcessor>()
-            .AddHostedService<OutboxBackgroundProcessor>();
 }

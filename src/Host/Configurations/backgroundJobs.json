@@ -1,5 +1,6 @@
 {
   "BackgroundJobsOptions": {
+    "IsServer": true,
     "PollingFrequencyInSeconds": 2,
     "DashboardPath": "/hangfire"
   }

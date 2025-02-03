@@ -5,8 +5,8 @@ namespace Common.Infrastructure.Options;
 
 public class BackgroundJobsOptions
 {
+    public required bool IsServer { get; set; } // Whether this instance of the application should run the Hangfire server or not
     public required int PollingFrequencyInSeconds { get; set; }
-
     public required string DashboardPath { get; set; }
 }
 
