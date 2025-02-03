@@ -1,6 +1,7 @@
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using IAM.Application.OTP.Features.VerifyThenRemove;
+using IAM.Application.Tokens.DTOs;
 using IAM.Application.Tokens.Features.Create;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -19,10 +20,10 @@ internal static class Endpoint
             .WithDescription("Create tokens.")
             .AllowAnonymous()
             .Produces(StatusCodes.Status204NoContent)
-            .TransformResultToNoContentResponse();
+            .TransformResultTo<Response>();
     }
 
-    private static async Task<Result> Create(
+    private static async Task<Result<Response>> Create(
         [FromBody] Request request,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
