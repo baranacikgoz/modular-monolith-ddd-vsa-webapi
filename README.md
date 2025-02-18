@@ -4,33 +4,34 @@ A .NET 9 Webapi boilerplate with Modular Monolith approach, Domain-Driven Design
 
 ## Table of Contents
 
-<!-- - [Introduction](#introduction)
+- [Introduction](#introduction)
 - [Features](#features)
-- [Requirements](#requirements) -->
+- [Requirements](#requirements)
 - [Getting Started](#getting-started)
-<!-- - [API Documentation](#api-documentation)
+- [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [License](#license) -->
+- [License](#license)
 
-<!-- ## Introduction
+## Introduction
 
-Brief introduction to the project, its purpose, and goals.
+This project is a boilerplate for building a WebAPI using a Modular Monolith approach, Domain-Driven Design, and Vertical Slices architecture. It aims to provide a scalable and maintainable architecture for modern web applications.
 
 ## Features
 
-List of key features provided by the boilerplate:
+Key features of this boilerplate include:
 
-- Feature 1
-- Feature 2
-- ...
+- Modular Monolith architecture
+- Domain-Driven Design principles
+- Vertical Slices for feature-based organization
+- Clean Architecture principles
 
 ## Requirements
 
-List of prerequisites to use or contribute to the project:
+To use or contribute to this project, you will need:
 
-- .NET Core SDK version X.X.X
+- .NET 9 SDK
+- Docker
 - SQL Server (if applicable)
-- ... -->
 
 ## Getting Started
 
@@ -69,14 +70,14 @@ List of prerequisites to use or contribute to the project:
 
 - Start application
 
-<!-- ## API Documentation
+## API Documentation
 
-Links to API documentation (if available), or instructions on how to generate it.
+API documentation can be generated using Swagger. To access the API documentation, run the application and navigate to `/swagger` in your web browser.
 
 ## Contributing
 
-Guidelines for contributing to the project, including how to report bugs, suggest features, or submit pull requests.
+We welcome contributions to this project. Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the project's coding standards and includes appropriate tests.
 
 ## License
 
-Information about the project's license. -->
+This project is licensed under the MIT License. See the LICENSE file for more details.
