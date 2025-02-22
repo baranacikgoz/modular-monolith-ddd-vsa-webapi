@@ -109,7 +109,7 @@ jobs:
           cat <<EOF >> ~/.ssh/config
           Host ${{ secrets.SERVER }}
             IdentityFile ~/.ssh/server_rsa
-            User ${{ secrets.SERVER_SSH_USER }}
+            User ${{ secrets.SSH_USER }}
             ProxyCommand cloudflared access ssh --hostname %h
           EOF
           chmod 600 ~/.ssh/config
