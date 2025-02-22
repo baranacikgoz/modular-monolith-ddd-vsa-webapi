@@ -121,15 +121,14 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            # Export global variables on the remote host
-            export SERVICE_NAME="${{ env.SERVICE_NAME }}"
-            export VERSION="${{ env.VERSION }}"
-            export USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+            SERVICE_NAME="${{ env.SERVICE_NAME }}"
+            VERSION="${{ env.VERSION }}"
+            USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
             cd /${SERVICE_NAME}
             # Update the docker-compose file image tag
             sed -i "s|${USERNAME}/${SERVICE_NAME}:[^ ]*|${USERNAME}/${SERVICE_NAME}:${VERSION}|" docker-compose.yml
             # Log in to Docker Hub
-            docker login --username ${USERNAME} --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+            echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login --username "${USERNAME}" --password-stdin
             # Pull and restart the container
             docker compose pull ${SERVICE_NAME}
             docker compose stop ${SERVICE_NAME} || true
