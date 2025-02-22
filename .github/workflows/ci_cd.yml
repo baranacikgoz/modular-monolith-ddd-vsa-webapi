@@ -110,6 +110,8 @@ jobs:
             IdentityFile ~/.ssh/server_rsa
             User ${{ secrets.SSH_USER }}
             ProxyCommand cloudflared access ssh --hostname %h
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
           EOF
           chmod 600 ~/.ssh/config
 
