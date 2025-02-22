@@ -6,22 +6,22 @@ scrape_configs:
     static_configs:
       - targets: ["mm.prometheus:9090"]
 
-  # - job_name: "webapi" -> switched to otel-collector
-  #   static_configs:
-  #     - targets: ["mm.host:8080"]
+  - job_name: "webapi"
+    static_configs:
+      - targets: ["mm.host:5001"]
  
   - job_name: "postgres"
     static_configs:
       - targets: ["mm.postgres-exporter:9187"]
 
-  - job_name: "otel-collector"
-    static_configs:
-      - targets: ["mm.otel-collector:9464"]
-  
-  # - job_name: "cadvisor"
+  # - job_name: "otel-collector" -> Currently not working
   #   static_configs:
-  #     - targets: ["cadvisor:8080"]
+  #     - targets: ["mm.otel-collector:8889"]
+  
+  # - job_name: "mm.cadvisor"
+  #   static_configs:
+  #     - targets: ["mm.cadvisor:8080"]
 
   # - job_name: "node"
   #   static_configs:
-  #     - targets: ["node-exporter:9100"]
+  #     - targets: ["mm.node-exporter:9100"]
