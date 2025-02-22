@@ -21,15 +21,15 @@ services:
       - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - EventBusOptions__UseInMemoryEventBus=true
       - ObservabilityOptions__AppVersion=1.0.0
-      - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.otel-collector:4317
-      - ObservabilityOptions__OtlpLoggingProtocol=Grpc
+      - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq/ingest/otlp/v1/logs
+      - ObservabilityOptions__OtlpLoggingProtocol=HttpProtobuf
       - ObservabilityOptions__LogGeneratedSqlQueries=true
       - ObservabilityOptions__EnableMetrics=true
-      - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=false
-      - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.otel-collector:4317
-      - ObservabilityOptions__OtlpMetricsProtocol=Grpc
+      - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=true
+      # - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.otel-collector:4317
+      # - ObservabilityOptions__OtlpMetricsProtocol=Grpc
       - ObservabilityOptions__EnableTracing=true
-      - ObservabilityOptions__OtlpTracingEndpoint=http://mm.otel-collector:4317
+      - ObservabilityOptions__OtlpTracingEndpoint=http://mm.jaeger:4317
       - ObservabilityOptions__OtlpTracingProtocol=Grpc
       - JwtOptions__AccessTokenExpirationInMinutes=1440
       - CachingOptions__UseRedis=false
