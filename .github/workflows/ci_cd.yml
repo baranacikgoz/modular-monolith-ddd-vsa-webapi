@@ -1,5 +1,8 @@
 name: CI/CD Workflow
 
+env:
+  SERVICE_NAME: modular-monolith-ddd-vsa-webapi
+
 on:
   push:
   workflow_dispatch:
@@ -38,9 +41,10 @@ jobs:
           rm ModularMonolith.sln
           mv Temp_ModularMonolith.sln ModularMonolith.sln
 
-  deploy:
+  deploy_to_docker_registry:
     needs: build
     if: >
+      startsWith(github.ref, 'refs/heads/main') ||
       startsWith(github.ref, 'refs/heads/release/') ||
       startsWith(github.ref, 'refs/heads/hotfix/') ||
       github.event_name == 'workflow_dispatch'
@@ -73,21 +77,61 @@ jobs:
         with:
           file: src/Host/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/webapi:${{ env.VERSION }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.SERVICE_NAME }}:latest
 
-      # - name: Update and Deploy on Remote Server # Updates the remote docker compose file with the new image tag and runs the new image
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_SSH_USER }}
-      #     key: ${{ secrets.SERVER_SSH_KEY }}
-      #     script: |
-      #       cd ~/backend
-      #       VERSION=${{ env.VERSION }}
-      #       USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-      #       sudo sed -i "s|$USERNAME/webapi:[^ ]*|$USERNAME/webapi:$VERSION|" docker-compose.yml
-      #       sudo docker login --username $USERNAME --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-      #       sudo docker compose pull webapi
-      #       sudo docker container stop webapi
-      #       sudo docker container rm webapi
-      #       sudo docker compose up -d --no-deps webapi
+  deploy_to_server:
+    needs: deploy_to_docker_registry
+    if: >
+      startsWith(github.ref, 'refs/heads/main') ||
+      startsWith(github.ref, 'refs/heads/release/') ||
+      startsWith(github.ref, 'refs/heads/hotfix/') ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Cloudflared on Runner
+        run: |
+          sudo mkdir -p --mode=0755 /usr/share/keyrings
+          curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+          sudo apt-get update && sudo apt-get install -y cloudflared
+
+      - name: Set Up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/server_rsa
+          chmod 600 ~/.ssh/server_rsa
+
+      - name: Configure SSH for Cloudflare Tunnel
+        run: |
+          mkdir -p ~/.ssh
+          cat <<EOF >> ~/.ssh/config
+          Host ${{ secrets.SERVER }}
+            IdentityFile ~/.ssh/server_rsa
+            User ${{ secrets.SERVER_SSH_USER }}
+            ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy Updated Web API to Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Export global variables on the remote host
+            export SERVICE_NAME="${{ env.SERVICE_NAME }}"
+            export VERSION="${{ env.VERSION }}"
+            export USERNAME="${{ secrets.DOCKERHUB_USERNAME }}"
+            cd /${SERVICE_NAME}
+            # Update the docker-compose file image tag
+            sed -i "s|${USERNAME}/${SERVICE_NAME}:[^ ]*|${USERNAME}/${SERVICE_NAME}:${VERSION}|" docker-compose.yml
+            # Log in to Docker Hub
+            docker login --username ${USERNAME} --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+            # Pull and restart the container
+            docker compose pull ${SERVICE_NAME}
+            docker compose stop ${SERVICE_NAME} || true
+            docker compose rm ${SERVICE_NAME} || true
+            docker compose up -d --no-deps ${SERVICE_NAME}
