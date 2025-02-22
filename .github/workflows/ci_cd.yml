@@ -103,6 +103,19 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/server_rsa
           chmod 600 ~/.ssh/server_rsa
 
+      - name: Configure SSH for Cloudflare Tunnel
+        run: |
+          cat <<EOF >> ~/.ssh/config
+          Host ${{ secrets.SERVER }}
+            IdentityFile ~/.ssh/server_rsa
+            User ${{ secrets.SSH_USER }}
+            ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Test SSH connection
+        run: ssh -vvv ${{ secrets.SERVER }} 'whoami'
+
       - name: Deploy Updated Web API to Server
         uses: appleboy/ssh-action@v0.1.6
         with:
