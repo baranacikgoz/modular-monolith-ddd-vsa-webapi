@@ -16,12 +16,12 @@
     "ResponseTimeThresholdInMs": 1000,
     "OtlpLoggingEndpoint": "http://localhost:5341/ingest/otlp/v1/logs",
     "OtlpLoggingProtocol": "HttpProtobuf",
-    "EnableMetrics": false,
+    "EnableMetrics": true,
     "OtlpMetricsUsePrometheusDirectly": true,
-    "OtlpMetricsEndpoint": "http://localhost:4317",
-    "OtlpMetricsProtocol": "HttpProtobuf",
-    "EnableTracing": false,
-    "OtlpTracingEndpoint": "http://localhost:5341/ingest/otlp/v1/traces",
+//    "OtlpMetricsEndpoint": "http://localhost:4317",
+//    "OtlpMetricsProtocol": "HttpProtobuf",
+    "EnableTracing": true,
+    "OtlpTracingEndpoint": "http://localhost:4317",
     "OtlpTracingProtocol": "HttpProtobuf"
   }
 }
