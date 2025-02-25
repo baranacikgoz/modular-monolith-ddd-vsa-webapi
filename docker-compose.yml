@@ -23,7 +23,7 @@ services:
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq/ingest/otlp/v1/logs
       - ObservabilityOptions__OtlpLoggingProtocol=HttpProtobuf
-      - ObservabilityOptions__LogGeneratedSqlQueries=true
+      - ObservabilityOptions__LogGeneratedSqlQueries=false
       - ObservabilityOptions__EnableMetrics=true
       - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=true
       # - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.otel-collector:4317
@@ -63,7 +63,7 @@ services:
   #     - local_shared_network
   #   ports:
   #     - 6379:6379
-  #     - 8001:8001 
+  #     - 8001:8001
   #   environment:
   #     - REDIS_PASSWORD=admin
   #   command: redis-server --requirepass admin
@@ -133,18 +133,18 @@ services:
     depends_on:
       - mm.prometheus
 
-  mm.otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    container_name: mm.otel-collector
-    networks:
-      - local_shared_network
-    ports:
-      - "4317:4317" # OTLP gRPC receiver
-      - "4318:4318" # OTLP HTTP receiver"
-      - "9464:9464" # Prometheus exporter port
-    volumes:
-      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
-    command: ["--config=/etc/otel-collector-config.yml"]
+#  mm.otel-collector:
+#    image: otel/opentelemetry-collector-contrib:latest
+#    container_name: mm.otel-collector
+#    networks:
+#      - local_shared_network
+#    ports:
+#      - "4317:4317" # OTLP gRPC receiver
+#      - "4318:4318" # OTLP HTTP receiver"
+#      - "9464:9464" # Prometheus exporter port
+#    volumes:
+#      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
+#    command: ["--config=/etc/otel-collector-config.yml"]
 
   mm.seq:
     image: datalust/seq:latest
