@@ -35,12 +35,14 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await sender
                 .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new VerifyOwnershipCommand<Product, ProductId, StoreId>(id, storeId, x => x.StoreId), cancellationToken))
-                .BindAsync(_ => sender.Send(new UpdateProductCommand(
+                .BindAsync(storeId => sender.Send(new UpdateProductCommand(
                     Id: id,
                     Name: request.Name,
                     Description: request.Description,
                     Quantity: request.Quantity,
-                    Price: request.Price),
+                    Price: request.Price)
+                {
+                    EnsureOwnership = product => product.StoreId == storeId
+                },
                     cancellationToken));
 }

@@ -26,7 +26,7 @@ public static class Setup
         v1.My.History.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
-        
+
 
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")

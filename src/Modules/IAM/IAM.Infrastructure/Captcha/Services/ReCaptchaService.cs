@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Options;
 using IAM.Application.Captcha.Services;
 using IAM.Domain.Captcha;
 using Microsoft.Extensions.Logging;

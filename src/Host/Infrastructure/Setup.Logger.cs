@@ -1,5 +1,5 @@
 using System.Globalization;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Configuration;

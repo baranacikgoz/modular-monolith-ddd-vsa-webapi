@@ -1,6 +1,6 @@
 using System.Data;
 using System.Diagnostics;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;

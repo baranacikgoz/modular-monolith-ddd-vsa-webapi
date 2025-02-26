@@ -1,5 +1,6 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence.Seeding;
 

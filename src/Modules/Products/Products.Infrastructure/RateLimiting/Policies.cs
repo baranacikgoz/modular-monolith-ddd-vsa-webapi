@@ -1,4 +1,4 @@
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace Products.Infrastructure.RateLimiting;

@@ -1,27 +1,18 @@
 using Common.Application.CQS;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using Products.Application.Products.DTOs;
-using Products.Application.Products.Specifications;
-using Products.Domain.Products;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
 
 namespace Products.Application.Products.Features.GetById;
 
-public sealed class GetProductByIdQueryHandler(IRepository<Product> repository) : IQueryHandler<GetProductByIdQuery, ProductDto>
+public sealed class GetProductByIdQueryHandler<TDto>(ProductsDbContext dbContext) : IQueryHandler<GetProductByIdQuery<TDto>, TDto>
 {
-    public async Task<Result<ProductDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductByIdSpec<ProductDto>(query.Id, x => new ProductDto
-            {
-                Id = x.Id,
-                StoreId = x.StoreId,
-                Name = x.Name,
-                Description = x.Description,
-                Quantity = x.Quantity,
-                Price = x.Price,
-                CreatedBy = x.CreatedBy,
-                CreatedOn = x.CreatedOn,
-                LastModifiedBy = x.LastModifiedBy,
-                LastModifiedOn = x.LastModifiedOn
-            }), cancellationToken);
+    public async Task<Result<TDto>> Handle(GetProductByIdQuery<TDto> request, CancellationToken cancellationToken)
+        => await dbContext
+            .Products
+            .AsNoTracking()
+            .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Select(request.Selector)
+            .SingleAsResultAsync(cancellationToken);
 }
