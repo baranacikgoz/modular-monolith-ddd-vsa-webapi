@@ -1,4 +1,5 @@
-using Common.Infrastructure.Options;
+using Common.Application.Options;
+using Common.Infrastructure.Persistence.Auditing;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Common.Infrastructure.Persistence.Outbox;
 using EntityFramework.Exceptions.PostgreSQL;
@@ -23,9 +24,7 @@ public static class Setup
                 .UseExceptionProcessor()
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>(),
-                    sp.GetRequiredService<InsertOutboxMessagesInterceptor>(),
                     sp.GetRequiredService<InsertEventStoreEventsInterceptor>(),
-                    sp.GetRequiredService<ClearAggregateEventsInterceptor>(),
-                    sp.GetRequiredService<DeleteStreamIfAggregateIsDeletedInterceptor>());
+                    sp.GetRequiredService<InsertOutboxMessagesAndClearEventsInterceptor>());
         });
 }

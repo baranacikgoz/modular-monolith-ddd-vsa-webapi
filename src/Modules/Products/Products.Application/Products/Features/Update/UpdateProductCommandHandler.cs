@@ -4,6 +4,7 @@ using Common.Application.Persistence;
 using Products.Domain.Products;
 using Products.Application.Products.Specifications;
 using Common.Application.CQS;
+using Microsoft.EntityFrameworkCore;
 
 namespace Products.Application.Products.Features.Update;
 
@@ -13,8 +14,8 @@ public sealed class UpdateProductCommandHandler(
     ) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductByIdSpec(command.Id), cancellationToken)
-            .TapAsync(product => product.Update(command.Name, command.Description, command.Quantity, command.Price))
-            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+    //=> await repository
+    //    .SingleOrDefaultAsResultAsync(new ProductByIdSpec(command.Id), cancellationToken)
+    //    .TapAsync(product => product.Update(command.Name, command.Description, command.Quantity, command.Price))
+    //    .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken))
 }

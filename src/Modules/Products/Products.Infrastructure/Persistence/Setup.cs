@@ -6,6 +6,7 @@ using Common.Infrastructure.Persistence.UoW;
 using Microsoft.EntityFrameworkCore;
 using Common.Infrastructure.Persistence.Repository;
 using Products.Infrastructure.Persistence.Seeding;
+using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence;
 

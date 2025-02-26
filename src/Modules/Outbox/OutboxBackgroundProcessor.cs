@@ -1,7 +1,7 @@
 using System.Threading;
 using Common.Application.EventBus;
+using Common.Application.Options;
 using Common.Domain.Events;
-using Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

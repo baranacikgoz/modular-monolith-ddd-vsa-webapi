@@ -1,6 +1,6 @@
 using Common.Application.Caching;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Options;
 using IAM.Application.Captcha.Services;
 using Microsoft.Extensions.Options;
 

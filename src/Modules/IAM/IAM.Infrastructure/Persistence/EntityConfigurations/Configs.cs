@@ -1,5 +1,5 @@
+using Common.Application.ValueConverters;
 using Common.Domain.StronglyTypedIds;
-using Common.Infrastructure.Persistence.ValueConverters;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

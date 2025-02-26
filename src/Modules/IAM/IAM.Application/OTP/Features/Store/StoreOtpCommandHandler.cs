@@ -1,7 +1,7 @@
 using Common.Application.Caching;
 using Common.Application.CQS;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace IAM.Application.OTP.Features.Store;

@@ -15,10 +15,3 @@ public abstract record EventHistoryQuery<TAggregate> : PaginationQuery, IQuery<P
 {
     public required IStronglyTypedId AggregateId { get; init; }
 }
-
-public abstract class EventHistoryQueryHandler<TAggregate>(IRepository<TAggregate> repository) : IQueryHandler<EventHistoryQuery<TAggregate>, PaginationResult<EventDto>>
-    where TAggregate : class, IAggregateRoot
-{
-    public async Task<Result<PaginationResult<EventDto>>> Handle(EventHistoryQuery<TAggregate> query, CancellationToken cancellationToken)
-        => await repository.GetEventHistoryAsync(query, cancellationToken);
-}

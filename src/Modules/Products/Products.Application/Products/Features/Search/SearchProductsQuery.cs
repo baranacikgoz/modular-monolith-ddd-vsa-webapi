@@ -1,14 +1,15 @@
+using System.Linq.Expressions;
 using Common.Application.CQS;
 using Common.Application.Localization;
 using Common.Application.Queries.Pagination;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
-using Products.Application.Products.DTOs;
+using Products.Domain.Products;
 using Products.Domain.Stores;
 
 namespace Products.Application.Products.Features.Search;
 
-public sealed record SearchProductsQuery : PaginationQuery, IQuery<PaginationResult<ProductDto>>
+public sealed record SearchProductsQuery<TDto> : PaginationQuery<Product, TDto>, IQuery<PaginationResult<TDto>>
 {
     public StoreId? StoreId { get; init; }
     public string? Name { get; init; }
@@ -19,7 +20,7 @@ public sealed record SearchProductsQuery : PaginationQuery, IQuery<PaginationRes
     public decimal? MaxPrice { get; init; }
 }
 
-public sealed class SearchProductsQueryValidator : PaginationQueryValidator<SearchProductsQuery>
+public sealed class SearchProductsQueryValidator<TDto> : PaginationQueryValidator<SearchProductsQuery<TDto>>
 {
     public SearchProductsQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : base(localizer)
     {

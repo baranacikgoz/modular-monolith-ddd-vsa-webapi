@@ -1,7 +1,7 @@
+using Common.Application.Options;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
-using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence.EventSourcing;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;

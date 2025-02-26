@@ -1,4 +1,4 @@
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Common.Infrastructure.Persistence.Outbox;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +35,7 @@ public static class ModuleInstaller
 
     private static IServiceCollection AddOutboxDbContextAndInterceptor(this IServiceCollection services)
         => services
-            .AddScoped<InsertOutboxMessagesInterceptor>()
+            .AddScoped<InsertOutboxMessagesAndClearEventsInterceptor>()
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;

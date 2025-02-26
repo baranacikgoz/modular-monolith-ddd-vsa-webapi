@@ -12,4 +12,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Products\DTOs\" />
+  </ItemGroup>
+
 </Project>

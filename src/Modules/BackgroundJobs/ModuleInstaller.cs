@@ -1,5 +1,5 @@
 using Common.Application.BackgroundJobs;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
