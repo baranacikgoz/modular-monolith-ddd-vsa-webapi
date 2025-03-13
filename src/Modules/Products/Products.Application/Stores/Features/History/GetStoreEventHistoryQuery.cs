@@ -7,6 +7,7 @@ namespace Products.Application.Stores.Features.History;
 
 public sealed record GetStoreEventHistoryQuery : EventHistoryQuery<Store>;
 
-public sealed class GetStoreEventHistoryQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : EventHistoryQueryValidator<Store>(localizer)
+public sealed class GetStoreEventHistoryQueryValidator(IStringLocalizer<ResxLocalizer> localizer)
+    : EventHistoryQueryValidator<GetStoreEventHistoryQuery, Store>(localizer)
 {
 }

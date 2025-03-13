@@ -1,5 +1,4 @@
-
-
+using System.Linq.Expressions;
 using Common.Application.Queries.Pagination;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
@@ -29,51 +28,19 @@ public static class DbContextExtensions
             taskToAwaitValue: () => queryable.FirstOrDefaultAsync(cancellationToken),
             errorIfValueNull: Error.NotFound(typeof(TEntity).Name));
 
-    public static async Task<PaginationResult<TDto>> PaginateAsync<TEntity, TDto>(this IQueryable<TEntity> queryable, PaginationQuery<TEntity, TDto> paginationQuery, CancellationToken cancellationToken)
-        where TEntity : IAuditableEntity
-    {
-        queryable = queryable
-            .Skip(paginationQuery.Skip)
-            .Take(paginationQuery.Take);
+    public static async Task<Result<bool>> AnyAsResultAsync<TEntity>(this IQueryable<TEntity> queryable,
+        CancellationToken cancellationToken)
+        => await Result<bool>.CreateAsync(
+            taskToAwaitValue: () => queryable.AnyAsync(cancellationToken));
 
-        IOrderedQueryable<TEntity> orderedQueryable;
-        if (paginationQuery.OrderByDescending is not null)
+    public static IQueryable<TEntity> TagWith<TEntity>(this IQueryable<TEntity> queryable, params object[] parameters)
+        => parameters.Length switch
         {
-            orderedQueryable = queryable.OrderByDescending<TEntity, object>(paginationQuery.OrderByDescending);
-
-            if (paginationQuery.ThenByDescending is not null)
-            {
-                orderedQueryable = orderedQueryable.ThenByDescending<TEntity, object>(paginationQuery.ThenByDescending);
-                goto ExecuteQuery;
-            }
-
-            if (paginationQuery.ThenBy is not null)
-            {
-                orderedQueryable = orderedQueryable.ThenBy<TEntity, object>(paginationQuery.ThenBy);
-                goto ExecuteQuery;
-            }
-        }
-
-        if (paginationQuery.OrderBy is not null)
-        {
-            orderedQueryable = queryable.OrderBy(paginationQuery.OrderBy);
-
-            if (paginationQuery.ThenByDescending is not null)
-            {
-                orderedQueryable = orderedQueryable.ThenByDescending<TEntity, object>(paginationQuery.ThenByDescending);
-                goto ExecuteQuery;
-            }
-
-            if (paginationQuery.ThenBy is not null)
-            {
-                orderedQueryable = orderedQueryable.ThenBy<TEntity, object>(paginationQuery.ThenBy);
-                goto ExecuteQuery;
-            }
-        }
-
-    ExecuteQuery:
-
-        var totalCount = orderedQueryable.CountAsync(cancellationToken);
-        var data = await orderedQueryable.Select(paginationQuery.Selector).ToListAsync(cancellationToken);
-    }
+            1 => queryable.TagWith(tag: parameters[0].ToString() ?? string.Empty),
+            2 => queryable.TagWith(tag: $"({parameters[0]})-({parameters[1]})"),
+            _ => queryable.TagWith(tag: parameters.Aggregate(
+                        seed: string.Empty,
+                        func: (acc, next) => acc + $"({next})-",
+                        resultSelector: (acc) => acc.Remove(acc.Length - 1)))
+        };
 }

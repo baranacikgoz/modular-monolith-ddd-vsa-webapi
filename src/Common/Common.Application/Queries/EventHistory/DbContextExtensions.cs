@@ -13,7 +13,7 @@ using Npgsql;
 
 namespace Common.Application.Queries.EventHistory;
 
-public static class Query
+public static class DbContextExtensions
 {
     public static async Task<PaginationResult<EventDto>> GetEventHistoryAsync<TAggregate>(this DbContext context, EventHistoryQuery<TAggregate> query, CancellationToken cancellationToken)
         where TAggregate : class, IAggregateRoot
@@ -27,7 +27,7 @@ public static class Query
                 ""Products"".""EventStoreEvents""
             WHERE
                 ""AggregateId"" = @id AND ""AggregateType"" = @aggregateType
-            ORDER BY 
+            ORDER BY
                 ""CreatedOn"" DESC
             OFFSET @Skip
             LIMIT @Take;

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Common.Infrastructure.EventBus;
 
 public partial class MassTransitEventBus(
-    IBus bus,
+    IPublishEndpoint publishEndpoint,
     ILogger<MassTransitEventBus> logger
     ) : IEventBus
 {
@@ -16,7 +16,7 @@ public partial class MassTransitEventBus(
 
         LogPublishingEvent(logger, eventName);
 
-        await bus.Publish(@event, cancellationToken);
+        await publishEndpoint.Publish(@event, cancellationToken);
 
         LogPublishedEvent(logger, eventName);
     }
