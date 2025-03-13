@@ -1,7 +1,9 @@
 using Common.Application.CQS;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using MassTransit.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Products.Application.Persistence;
 using Products.Application.ProductTemplates.Specifications;
 using Products.Application.Stores.Specifications;
 using Products.Domain.Products;
@@ -10,31 +12,35 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.AddProduct;
 
-public sealed class AddProductCommandHandler(
-    IRepository<Store> storeRepository,
-    IRepository<ProductTemplate> productTemplateRepository,
-    [FromKeyedServices(nameof(Products))] IUnitOfWork unitOfWork
-    ) : ICommandHandler<AddProductCommand, ProductId>
+public sealed class AddProductCommandHandler(ProductsDbContext dbContext) : ICommandHandler<AddProductCommand, ProductId>
 {
     public async Task<Result<ProductId>> Handle(AddProductCommand command, CancellationToken cancellationToken)
-    {
-        var storeResult = await storeRepository.SingleOrDefaultAsResultAsync(new StoreByIdSpec(command.StoreId), cancellationToken);
-        if (storeResult.IsFailure)
-        {
-            return storeResult.Error!;
-        }
-        var store = storeResult.Value!;
-
-        var activeProductTemplateResult = await productTemplateRepository.SingleOrDefaultAsResultAsync(new ActiveProductTemplateByIdSpec(command.ProductTemplateId), cancellationToken);
-        if (activeProductTemplateResult.IsFailure)
-        {
-            return activeProductTemplateResult.Error!;
-        }
-        var productTemplate = activeProductTemplateResult.Value!;
-        var product = Product.Create(store.Id, productTemplate.Id, command.Name, command.Description, command.Quantity, command.Price);
-        store.AddProduct(product);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return product.Id;
-    }
+        => await dbContext
+            .Stores
+            .TagWith(nameof(AddProductCommand), "StoreById", command.StoreId)
+            .Where(s => s.Id == command.StoreId)
+            .SingleAsResultAsync(cancellationToken)
+            .CombineAsync(store => dbContext
+                .ProductTemplates
+                .TagWith(nameof(AddProductCommand), "ActiveProductTemplateById", command.ProductTemplateId)
+                .Where(pt => pt.IsActive)
+                .Where(pt => pt.Id == command.ProductTemplateId)
+                .SingleAsResultAsync(cancellationToken))
+            .CombineAsync<Store, ProductTemplate, Product>(tuple =>
+            {
+                var (store, productTemplate) = tuple;
+                return Product.Create(store.Id, productTemplate.Id, command.Name, command.Description, command.Quantity,
+                    command.Price);
+            })
+            .TapAsync(triple =>
+            {
+                var (store, productTemplate, product) = triple;
+                store.AddProduct(product);
+            })
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .MapAsync(triple =>
+            {
+                var (store, productTemplate, product) = triple;
+                return product.Id;
+            });
 }

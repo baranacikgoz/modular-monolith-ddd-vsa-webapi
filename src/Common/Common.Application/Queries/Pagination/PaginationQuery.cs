@@ -10,11 +10,10 @@ public record PaginationQuery<TEntity, TDto> where TEntity : IAuditableEntity
     public int Skip => (PageNumber - 1) * PageSize;
     public int Take => PageSize;
 
-
     public required Expression<Func<TEntity, TDto>> Selector { get; init; }
     public Expression<Func<TEntity, bool>>? EnsureOwnership { get; init; }
-    public required Func<TEntity, object>? OrderBy { get; init; }
-    public required Func<TEntity, object>? OrderByDescending { get; init; }
-    public Func<TEntity, object>? ThenBy { get; init; }
-    public Func<TEntity, object>? ThenByDescending { get; init; }
+    public required Expression<Func<TEntity, object>>? OrderBy { get; init; }
+    public required Expression<Func<TEntity, object>>? OrderByDescending { get; init; }
+    public Expression<Func<TEntity, object>>? ThenBy { get; init; }
+    public Expression<Func<TEntity, object>>? ThenByDescending { get; init; }
 }

@@ -17,5 +17,5 @@ public sealed class SearchProductsQueryHandler<TDto>(ProductsDbContext dbContext
             .Products
             .AsNoTracking()
             .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
-            .PaginateAsync<TDto>(request, cancellationToken);
+            .PaginateAsync< TDto>(request, cancellationToken);
 }
