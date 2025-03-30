@@ -34,7 +34,9 @@ internal static class Endpoint
             Description = request.Description,
             Address = request.Address,
             PageNumber = request.PageNumber,
-            PageSize = request.PageSize
+            PageSize = request.PageSize,
+            OrderBy = null,
+            OrderByDescending = s => s.CreatedOn
         },
         cancellationToken);
 }

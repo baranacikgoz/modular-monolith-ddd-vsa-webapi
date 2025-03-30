@@ -7,6 +7,7 @@ namespace Products.Application.Products.Features.History;
 
 public sealed record GetProductEventHistoryQuery : EventHistoryQuery<Product>;
 
-public sealed class GetProductEventHistoryQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : EventHistoryQueryValidator<Product>(localizer)
+public sealed class GetProductEventHistoryQueryValidator(IStringLocalizer<ResxLocalizer> localizer)
+    : EventHistoryQueryValidator<GetProductEventHistoryQuery, Product>(localizer)
 {
 }

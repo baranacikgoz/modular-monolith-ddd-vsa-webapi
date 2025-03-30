@@ -2,7 +2,6 @@ using Common.Application.Options;
 using Common.Application.Persistence;
 using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Events;
-using Common.Infrastructure.Persistence.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

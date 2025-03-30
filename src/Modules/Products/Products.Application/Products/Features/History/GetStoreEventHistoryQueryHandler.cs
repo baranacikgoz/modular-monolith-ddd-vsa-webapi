@@ -1,5 +1,4 @@
 using Common.Application.DTOs;
-using Common.Application.Persistence;
 using Common.Application.Queries.EventHistory;
 using Common.Application.Queries.Pagination;
 using Common.Domain.ResultMonad;
@@ -9,8 +8,6 @@ using Products.Domain.Products;
 
 namespace Products.Application.Products.Features.History;
 
-public sealed class GetProductEventHistoryQueryHandler(ProductsDbContext dbContext) : IRequestHandler<GetProductEventHistoryQuery, Result<PaginationResult<EventDto>>>
+public sealed class GetProductEventHistoryQueryHandler(ProductsDbContext dbContext) : EventHistoryQueryHandler<Product>(dbContext)
 {
-    public async Task<Result<PaginationResult<EventDto>>> Handle(GetProductEventHistoryQuery request, CancellationToken cancellationToken)
-        => await dbContext.GetEventHistoryAsync(request, cancellationToken);
 }

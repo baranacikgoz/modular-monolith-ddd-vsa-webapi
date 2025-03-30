@@ -4,17 +4,17 @@ using Common.Application.Localization;
 using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
+using Products.Application.Products.DTOs;
 using Products.Domain.Products;
 
 namespace Products.Application.Products.Features.GetById;
 
-public sealed record GetProductByIdQuery<TDto>(ProductId Id) : IQuery<TDto>
+public sealed record GetProductByIdQuery(ProductId Id) : IQuery<ProductDto>
 {
-    public required Expression<Func<Product, TDto>> Selector { get; init; }
     public Expression<Func<Product, bool>>? EnsureOwnership { get; init; }
 }
 
-public sealed class GetProductByIdQueryValidator<TDto> : CustomValidator<GetProductByIdQuery<TDto>>
+public sealed class GetProductByIdQueryValidator : CustomValidator<GetProductByIdQuery>
 {
     public GetProductByIdQueryValidator(IStringLocalizer<ResxLocalizer> localizer)
     {

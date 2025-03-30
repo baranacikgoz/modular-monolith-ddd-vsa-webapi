@@ -1,4 +1,3 @@
-﻿using Common.Application.Persistence;
 using Common.Application.Queries.EventHistory;
 using Products.Application.Persistence;
 using Products.Domain.Stores;

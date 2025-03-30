@@ -18,13 +18,13 @@ internal sealed partial class Seeder
                 var productTemplateId = productTemplateIds[i + j];
                 var name = $"Product {j + 1}";
 
-                if (await dbContext.StoreProducts.SingleOrDefaultAsync(sp => sp.StoreId == storeId && sp.ProductTemplateId == productTemplateId, cancellationToken)
+                if (await dbContext.Products.SingleOrDefaultAsync(sp => sp.StoreId == storeId && sp.ProductTemplateId == productTemplateId, cancellationToken)
                     is not Product storeProduct)
                 {
 #pragma warning disable CA5394
                     storeProduct = Product.Create(storeId, productTemplateId, name: name, description: "Seed", quantity: random.Next(1, 50), price: random.Next(500, 2000));
 #pragma warning restore CA5394
-                    dbContext.StoreProducts.Add(storeProduct);
+                    dbContext.Products.Add(storeProduct);
                 }
             }
         }

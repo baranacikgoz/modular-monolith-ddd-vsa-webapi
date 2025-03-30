@@ -4,17 +4,18 @@ using Common.Application.Queries.Pagination;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 using Products.Application.ProductTemplates.DTOs;
+using Products.Domain.ProductTemplates;
 
 namespace Products.Application.ProductTemplates.Features.Search;
 
-public sealed record SearchProductTemplatesQuery : PaginationQuery, IQuery<PaginationResult<ProductTemplateDto>>
+public sealed record SearchProductTemplatesQuery : PaginationQuery<ProductTemplate>, IQuery<PaginationResult<ProductTemplateDto>>
 {
     public string? Brand { get; init; }
     public string? Model { get; init; }
     public string? Color { get; init; }
 }
 
-public sealed class SearchProductsQueryValidator : PaginationQueryValidator<SearchProductTemplatesQuery>
+public sealed class SearchProductsQueryValidator : PaginationQueryValidator<SearchProductTemplatesQuery, ProductTemplate>
 {
     public SearchProductsQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : base(localizer)
     {

@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Common.Infrastructure.Persistence.Context;
+namespace Common.Infrastructure.Persistence.DbContext;
 public static class Setup
 {
     public static IServiceCollection AddModuleDbContext<TModuleContext>(this IServiceCollection services, string moduleName)
-        where TModuleContext : DbContext
+        where TModuleContext : Microsoft.EntityFrameworkCore.DbContext
         => services.AddDbContext<TModuleContext>((sp, options) =>
         {
             var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
@@ -20,7 +20,7 @@ public static class Setup
             options
                 .UseNpgsql(
                     connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
+                    o => o.MigrationsHistoryTable(tableName: HistoryRepository.DefaultTableName, schema: moduleName))
                 .UseExceptionProcessor()
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>(),

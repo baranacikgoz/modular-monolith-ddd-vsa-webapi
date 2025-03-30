@@ -1,4 +1,3 @@
-using System.Threading;
 using Common.Application.EventBus;
 using Common.Application.Options;
 using Common.Domain.Events;

@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Application.Queries.Pagination;
 using Products.Application.Products.Features.Search;
-using Products.Application.Products.DTOs;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
 using Common.Domain.ResultMonad;
 using MediatR;
+using Products.Application.Products.DTOs;
 
 namespace Products.Endpoints.Products.v1.My.Search;
 
@@ -30,7 +30,7 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await sender
                 .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new SearchProductsQuery<Response>
+                .BindAsync(storeId => sender.Send(new SearchProductsQuery
                 {
                     StoreId = storeId,
                     Name = request.Name,
@@ -40,18 +40,10 @@ internal static class Endpoint
                     MinPrice = request.MinPrice,
                     MaxPrice = request.MaxPrice,
 
-                    Selector = p => new Response
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Description = p.Description,
-                        Quantity = p.Quantity,
-                        Price = p.Price,
-                        CreatedBy = p.CreatedBy,
-                        CreatedOn = p.CreatedOn,
-                        LastModifiedBy = p.LastModifiedBy,
-                        LastModifiedOn = p.LastModifiedOn
-                    },
-                    OrderBy = p => p.Id
+                    OrderBy = p => p.Id,
+                    OrderByDescending = null,
+                    PageNumber = request.PageNumber,
+                    PageSize = request.PageSize,
+
                 }, cancellationToken));
 }

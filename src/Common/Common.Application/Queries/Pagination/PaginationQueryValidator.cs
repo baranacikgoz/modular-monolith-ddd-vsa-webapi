@@ -6,9 +6,9 @@ using Microsoft.Extensions.Localization;
 
 namespace Common.Application.Queries.Pagination;
 
-public class PaginationQueryValidator<T, TEntity, TDto> : CustomValidator<T>
+public class PaginationQueryValidator<T, TEntity> : CustomValidator<T>
     where TEntity : IAuditableEntity
-    where T : PaginationQuery<TEntity, TDto>
+    where T : PaginationQuery<TEntity>
 {
     private const int PageNumberGreaterThanOrEqualTo = 1;
     private const int PageSizeInclusiveMin = 1;

@@ -1,6 +1,5 @@
 using System.Reflection;
 using Common.Infrastructure.CQS.PipelineBehaviours;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Infrastructure.CQS;

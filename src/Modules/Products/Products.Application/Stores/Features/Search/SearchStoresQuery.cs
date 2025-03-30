@@ -8,14 +8,14 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.Search;
 
-public sealed record SearchStoresQuery : PaginationQuery<Store, StoreDto>, IQuery<PaginationResult<StoreDto>>
+public sealed record SearchStoresQuery : PaginationQuery<Store>, IQuery<PaginationResult<StoreDto>>
 {
     public string? Name { get; init; }
     public string? Description { get; init; }
     public string? Address { get; init; }
 }
 
-public sealed class SearchStoresQueryValidator : PaginationQueryValidator<SearchStoresQuery, Store, StoreDto>
+public sealed class SearchStoresQueryValidator : PaginationQueryValidator<SearchStoresQuery, Store>
 {
     public SearchStoresQueryValidator(IStringLocalizer<ResxLocalizer> localizer) : base(localizer)
     {

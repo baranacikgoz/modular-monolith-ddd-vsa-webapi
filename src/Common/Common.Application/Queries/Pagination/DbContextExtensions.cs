@@ -9,7 +9,8 @@ public static class DbContextExtensions
 {
     public static async Task<PaginationResult<TDto>> PaginateAsync<TEntity, TDto>(
         this IQueryable<TEntity> queryable,
-        PaginationQuery<TEntity, TDto> paginationQuery,
+        PaginationQuery<TEntity> paginationQuery,
+        Expression<Func<TEntity, TDto>> selector,
         CancellationToken cancellationToken)
         where TEntity : IAuditableEntity
     {
@@ -51,7 +52,7 @@ public static class DbContextExtensions
         var data = await orderedQueryable
             .Skip(paginationQuery.Skip)
             .Take(paginationQuery.Take)
-            .Select(paginationQuery.Selector)
+            .Select(selector)
             .ToListAsync(cancellationToken);
 
         return new PaginationResult<TDto>(data, totalCount, paginationQuery.PageNumber, data.Count);
