@@ -6,12 +6,10 @@ using Common.Application.ModelBinders;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Products.Domain.Stores;
 using Products.Domain.Products;
 using Products.Application.Products.Features.Update;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
 using MediatR;
-using Common.Application.Queries.IsOwnedBy;
 
 namespace Products.Endpoints.Products.v1.My.Update;
 

@@ -1,11 +1,7 @@
 using Common.Application.CQS;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MassTransit.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using Products.Application.Persistence;
-using Products.Application.ProductTemplates.Specifications;
-using Products.Application.Stores.Specifications;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
@@ -34,13 +30,13 @@ public sealed class AddProductCommandHandler(ProductsDbContext dbContext) : ICom
             })
             .TapAsync(triple =>
             {
-                var (store, productTemplate, product) = triple;
+                var (store, _, product) = triple;
                 store.AddProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
             .MapAsync(triple =>
             {
-                var (store, productTemplate, product) = triple;
+                var (_, _, product) = triple;
                 return product.Id;
             });
 }

@@ -1,20 +1,19 @@
 using Common.Application.CQS;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using Microsoft.Extensions.DependencyInjection;
-using Products.Application.ProductTemplates.Specifications;
-using Products.Domain.ProductTemplates;
+using Products.Application.Persistence;
 
 namespace Products.Application.ProductTemplates.Features.ActivateDeactivate;
 
-public sealed class ActivateDeactivateProductTemplateCommandHandler(
-    IRepository<ProductTemplate> repository,
-    [FromKeyedServices(nameof(Products))] IUnitOfWork unitOfWork
-    ) : ICommandHandler<ActivateDeactivateProductTemplateCommand>
+public sealed class ActivateDeactivateProductTemplateCommandHandler(ProductsDbContext dbContext) : ICommandHandler<ActivateDeactivateProductTemplateCommand>
 {
     public async Task<Result> Handle(ActivateDeactivateProductTemplateCommand command, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductTemplateByIdSpec(command.Id), cancellationToken)
+        => await dbContext
+            .ProductTemplates
+            .TagWith(nameof(ActivateDeactivateProductTemplateCommand), command.Id, $"activate:{command.Activate}")
+            .Where(p => p.Id == command.Id)
+            .SingleAsResultAsync(cancellationToken)
             .TapAsync(productTemplate => command.Activate ? productTemplate.Activate() : productTemplate.Deactivate())
-            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
+
 }

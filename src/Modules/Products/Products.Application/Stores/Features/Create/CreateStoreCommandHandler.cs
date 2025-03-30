@@ -1,10 +1,9 @@
 using Common.Domain.ResultMonad;
-using Microsoft.Extensions.DependencyInjection;
 using Common.Application.Persistence;
 using Products.Domain.Stores;
 using Common.Application.CQS;
 using Products.Application.Persistence;
-using Products.Application.Stores.Specifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Products.Application.Stores.Features.Create;
 
@@ -13,7 +12,8 @@ public sealed class CreateStoreCommandHandler(ProductsDbContext dbContext) : ICo
     public async Task<Result<StoreId>> Handle(CreateStoreCommand command, CancellationToken cancellationToken)
         => await dbContext
             .Stores
-            .TagWith(nameof(CreateStoreCommand), "StoreByOwnerId", command.OwnerId)
+            .AsNoTracking()
+            .TagWith(nameof(CreateStoreCommand), "GetStoreByOwnerId", command.OwnerId)
             .Where(s => s.OwnerId == command.OwnerId)
             .AnyAsResultAsync(cancellationToken)
             .TapAsync(any => any ? Error.ViolatesUniqueConstraint(nameof(Store)) : Result.Success)

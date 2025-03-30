@@ -4,7 +4,6 @@ using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 using Products.Domain.Products;
-using Products.Domain.Stores;
 
 namespace Products.Application.Products.Features.Update;
 

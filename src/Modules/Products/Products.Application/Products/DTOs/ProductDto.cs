@@ -1,13 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Common.Application.DTOs;
 using Products.Domain.Products;
 
-namespace Products.Endpoints.Products.v1.My.Search;
+namespace Products.Application.Products.DTOs;
 
-public sealed record Response : AuditableEntityDto<ProductId>
+public record ProductDto : AuditableEntityDto<ProductId>
 {
     public required string Name { get; init; }
     public required string Description { get; init; }
     public required int Quantity { get; init; }
     public required decimal Price { get; init; }
 }
-

@@ -1,6 +1,6 @@
 using IAM.Application.Auth;
 using IAM.Application.Auth.Services;
-using IAM.Infrastructure.Persistence;
+using IAM.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Infrastructure.Auth.Services;

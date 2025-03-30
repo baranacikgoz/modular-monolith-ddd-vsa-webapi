@@ -15,6 +15,5 @@ public abstract class EventHistoryQueryHandler<TAggregate>(BaseDbContext dbConte
 
     public async Task<Result<PaginationResult<EventDto>>> Handle(EventHistoryQuery<TAggregate> request,
         CancellationToken cancellationToken)
-        => await dbContext
-            .GetEventHistoryAsync(request, cancellationToken);
+        => await dbContext.GetEventHistoryAsync(request, cancellationToken);
 }

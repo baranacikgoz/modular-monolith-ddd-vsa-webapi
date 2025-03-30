@@ -29,19 +29,17 @@ internal static class Endpoint
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => await sender
-                .Send(new GetProductByIdQuery<Response>(id)
+                .Send(new GetProductByIdQuery(id), cancellationToken)
+                .MapAsync(productDto => new Response
                 {
-                    Selector = p => new Response
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Description = p.Description,
-                        Quantity = p.Quantity,
-                        Price = p.Price,
-                        CreatedBy = p.CreatedBy,
-                        CreatedOn = p.CreatedOn,
-                        LastModifiedBy = p.LastModifiedBy,
-                        LastModifiedOn = p.LastModifiedOn
-                    }
-                }, cancellationToken);
+                    Id = productDto.Id,
+                    Name = productDto.Name,
+                    Description = productDto.Description,
+                    Quantity = productDto.Quantity,
+                    Price = productDto.Price,
+                    CreatedBy = productDto.CreatedBy,
+                    CreatedOn = productDto.CreatedOn,
+                    LastModifiedBy = productDto.LastModifiedBy,
+                    LastModifiedOn = productDto.LastModifiedOn,
+                });
 }

@@ -1,4 +1,3 @@
-using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Common.Application.Extensions;

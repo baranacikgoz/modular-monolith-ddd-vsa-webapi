@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Common.Application.CQS;
 using Common.Application.Localization;
 using Common.Application.Validation;
@@ -8,7 +9,10 @@ using Products.Domain.ProductTemplates;
 
 namespace Products.Application.ProductTemplates.Features.GetById;
 
-public sealed record GetProductTemplateByIdQuery(ProductTemplateId Id) : IQuery<ProductTemplateDto>;
+public sealed record GetProductTemplateByIdQuery(ProductTemplateId Id) : IQuery<ProductTemplateDto>
+{
+    public Expression<Func<ProductTemplate, bool>>? EnsureOwnership { get; init; }
+}
 
 public sealed class GetProductTemplateByIdQueryValidator : CustomValidator<GetProductTemplateByIdQuery>
 {

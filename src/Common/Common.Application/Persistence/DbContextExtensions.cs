@@ -1,6 +1,4 @@
 using System.Linq.Expressions;
-using Common.Application.Queries.Pagination;
-using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +39,6 @@ public static class DbContextExtensions
             _ => queryable.TagWith(tag: parameters.Aggregate(
                         seed: string.Empty,
                         func: (acc, next) => acc + $"({next})-",
-                        resultSelector: (acc) => acc.Remove(acc.Length - 1)))
+                        resultSelector: (acc) => acc[..^1]))
         };
 }

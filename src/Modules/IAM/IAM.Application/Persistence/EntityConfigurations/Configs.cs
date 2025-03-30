@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace IAM.Infrastructure.Persistence.EntityConfigurations;
+namespace IAM.Application.Persistence.EntityConfigurations;
 
 internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 {

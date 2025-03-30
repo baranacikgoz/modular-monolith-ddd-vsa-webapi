@@ -7,9 +7,9 @@ using Microsoft.Extensions.Localization;
 
 namespace IAM.Application.Tokens.Features.Refresh;
 
-public sealed record RefreshTokenCommand(string RefreshToken) : ICommand<AccessTokenDto>;
+public sealed record RefreshTokenQuery(string RefreshToken) : IQuery<AccessTokenDto>;
 
-public sealed class RefreshTokenCommandValidator : CustomValidator<RefreshTokenCommand>
+public sealed class RefreshTokenCommandValidator : CustomValidator<RefreshTokenQuery>
 {
     public RefreshTokenCommandValidator(IStringLocalizer<ResxLocalizer> localizer)
     {

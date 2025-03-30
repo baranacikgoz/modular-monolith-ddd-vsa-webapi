@@ -3,11 +3,7 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Products.Application.Persistence;
-using Products.Application.Stores.Specifications;
-using Products.Domain.Products;
-using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.RemoveProduct;
 

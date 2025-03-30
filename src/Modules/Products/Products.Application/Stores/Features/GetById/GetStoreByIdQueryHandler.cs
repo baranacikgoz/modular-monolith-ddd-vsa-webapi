@@ -1,35 +1,33 @@
 using Common.Domain.ResultMonad;
 using Common.Application.Persistence;
-using Products.Domain.Stores;
 using Products.Application.Stores.DTOs;
-using Products.Application.Stores.Specifications;
 using Common.Application.CQS;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
+using Products.Application.Products.Features.GetById;
 
 namespace Products.Application.Stores.Features.GetById;
 
 public sealed class GetStoreByIdQueryHandler(ProductsDbContext dbContext) : IQueryHandler<GetStoreByIdQuery, StoreDto>
 {
-    public async Task<Result<StoreDto>> Handle(GetStoreByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<StoreDto>> Handle(GetStoreByIdQuery request, CancellationToken cancellationToken)
         => await dbContext
             .Stores
             .AsNoTracking()
-            .TagWith(nameof(GetStoreByIdQuery), query.Id)
-            .Where(s => s.Id == query.Id)
-            .Select(s => new StoreDto
+            .TagWith(nameof(GetStoreByIdQuery), request.Id)
+            .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Select(store => new StoreDto
             {
-                Id = s.Id,
-                OwnerId = s.OwnerId,
-                Name = s.Name,
-                Description = s.Description,
-                Address = s.Address,
-                ProductCount = s.Products.Count,
-                CreatedBy = s.CreatedBy,
-                CreatedOn = s.CreatedOn,
-                LastModifiedBy = s.LastModifiedBy,
-                LastModifiedOn = s.LastModifiedOn
+                Id = store.Id,
+                OwnerId = store.OwnerId,
+                Name = store.Name,
+                Description = store.Description,
+                Address = store.Address,
+                ProductCount = store.Products.Count,
+                CreatedBy = store.CreatedBy,
+                CreatedOn = store.CreatedOn,
+                LastModifiedBy = store.LastModifiedBy,
+                LastModifiedOn = store.LastModifiedOn,
             })
             .SingleAsResultAsync(cancellationToken);
-
 }
