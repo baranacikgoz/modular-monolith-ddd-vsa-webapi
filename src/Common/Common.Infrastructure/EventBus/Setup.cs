@@ -1,6 +1,6 @@
 using System.Reflection;
 using Common.Application.EventBus;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

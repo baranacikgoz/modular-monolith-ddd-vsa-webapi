@@ -1,4 +1,4 @@
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Host.Middlewares;
 using Microsoft.Extensions.Options;
 

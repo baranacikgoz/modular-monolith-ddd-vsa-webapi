@@ -41,6 +41,6 @@ internal static class Endpoint
                     CreatedBy = storeDto.CreatedBy,
                     CreatedOn = storeDto.CreatedOn,
                     LastModifiedBy = storeDto.LastModifiedBy,
-                    LastModifiedOn = storeDto.LastModifiedOn
+                    LastModifiedOn = storeDto.LastModifiedOn,
                 });
 }

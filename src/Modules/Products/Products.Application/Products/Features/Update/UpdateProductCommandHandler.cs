@@ -1,20 +1,19 @@
-using Microsoft.Extensions.DependencyInjection;
 using Common.Domain.ResultMonad;
 using Common.Application.Persistence;
-using Products.Domain.Products;
-using Products.Application.Products.Specifications;
 using Common.Application.CQS;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
 
 namespace Products.Application.Products.Features.Update;
 
-public sealed class UpdateProductCommandHandler(
-    IRepository<Product> repository,
-    [FromKeyedServices(nameof(Products))] IUnitOfWork unitOfWork
-    ) : ICommandHandler<UpdateProductCommand>
+public sealed class UpdateProductCommandHandler(IProductsDbContext dbContext) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductByIdSpec(command.Id), cancellationToken)
+        => await dbContext
+            .Products
+            .TagWith(nameof(UpdateProductCommand), command.Id)
+            .Where(p => p.Id == command.Id)
+            .SingleAsResultAsync(cancellationToken)
             .TapAsync(product => product.Update(command.Name, command.Description, command.Quantity, command.Price))
-            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
 }

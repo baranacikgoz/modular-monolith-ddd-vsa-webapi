@@ -26,7 +26,7 @@ internal static class Endpoint
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
         => await sender
-                .Send(new RefreshTokenCommand(request.RefreshToken), cancellationToken)
+                .Send(new RefreshTokenQuery(request.RefreshToken), cancellationToken)
                 .MapAsync(tokensDto => new Response
                 {
                     AccessToken = tokensDto.AccessToken,

@@ -1,4 +1,4 @@
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Common.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

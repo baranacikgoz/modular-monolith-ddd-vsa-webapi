@@ -1,10 +1,10 @@
 using Common.Domain.StronglyTypedIds;
 using IAM.Infrastructure.Identity.Services;
-using IAM.Infrastructure.Persistence;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using IAM.Application.Users.Services;
+using IAM.Infrastructure.Persistence;
 
 namespace IAM.Infrastructure.Identity;
 

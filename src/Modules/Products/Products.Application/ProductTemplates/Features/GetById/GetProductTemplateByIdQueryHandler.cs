@@ -1,25 +1,30 @@
 using Common.Domain.ResultMonad;
 using Common.Application.Persistence;
-using Products.Domain.ProductTemplates;
-using Products.Application.ProductTemplates.DTOs;
-using Products.Application.ProductTemplates.Specifications;
 using Common.Application.CQS;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
+using Products.Application.ProductTemplates.DTOs;
 
 namespace Products.Application.ProductTemplates.Features.GetById;
 
-public class GetProductTemplateByIdQueryHandler(IRepository<ProductTemplate> repository) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateDto>
+public class GetProductTemplateByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateDto>
 {
-    public async Task<Result<ProductTemplateDto>> Handle(GetProductTemplateByIdQuery query, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductTemplateByIdSpec<ProductTemplateDto>(query.Id, x => new ProductTemplateDto
+    public async Task<Result<ProductTemplateDto>> Handle(GetProductTemplateByIdQuery request, CancellationToken cancellationToken)
+        => await dbContext
+            .ProductTemplates
+            .AsNoTracking()
+            .TagWith(nameof(GetProductTemplateByIdQuery), request.Id)
+            .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Select(pt => new ProductTemplateDto
             {
-                Id = x.Id,
-                Brand = x.Brand,
-                Model = x.Model,
-                Color = x.Color,
-                CreatedOn = x.CreatedOn,
-                CreatedBy = x.CreatedBy,
-                LastModifiedOn = x.LastModifiedOn,
-                LastModifiedBy = x.LastModifiedBy
-            }), cancellationToken);
+                Id = pt.Id,
+                Brand = pt.Brand,
+                Model = pt.Model,
+                Color = pt.Color,
+                CreatedBy = pt.CreatedBy,
+                CreatedOn = pt.CreatedOn,
+                LastModifiedBy = pt.LastModifiedBy,
+                LastModifiedOn = pt.LastModifiedOn,
+            })
+            .SingleAsResultAsync(cancellationToken);
 }

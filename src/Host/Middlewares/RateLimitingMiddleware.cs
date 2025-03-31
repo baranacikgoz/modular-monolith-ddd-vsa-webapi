@@ -1,12 +1,12 @@
 using System.Net;
 using System.Threading.RateLimiting;
-using Common.Infrastructure.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
 using Common.Infrastructure.Extensions;
 using Common.Application.Localization;
 using Common.Application.Extensions;
+using Common.Application.Options;
 
 namespace Host.Middlewares;
 

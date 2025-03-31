@@ -1,7 +1,6 @@
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using IAM.Application.OTP.Features.VerifyThenRemove;
-using IAM.Application.Tokens.DTOs;
 using IAM.Application.Tokens.Features.Create;
 using MediatR;
 using Microsoft.AspNetCore.Builder;

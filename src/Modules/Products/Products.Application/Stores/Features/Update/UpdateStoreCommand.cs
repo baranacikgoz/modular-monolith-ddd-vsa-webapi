@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Common.Application.CQS;
 using Common.Application.Localization;
 using Common.Application.Validation;
@@ -7,7 +8,13 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.Update;
 
-public sealed record UpdateStoreCommand(StoreId Id, string? Name, string? Description, string? Address) : ICommand;
+public sealed record UpdateStoreCommand(StoreId Id, string? Name, string? Description, string? Address) : ICommand
+{
+    /// <summary>
+    /// To prevent somebody from updating a store that does not belong to them.
+    /// </summary>
+    public Expression<Func<Store, bool>>? EnsureOwnership { get; init; }
+}
 
 public sealed class UpdateStoreCommandValidator : CustomValidator<UpdateStoreCommand>
 {

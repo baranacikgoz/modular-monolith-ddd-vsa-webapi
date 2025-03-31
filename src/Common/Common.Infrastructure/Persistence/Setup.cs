@@ -1,4 +1,4 @@
-using Common.Infrastructure.Persistence.Context;
+using Common.Infrastructure.Persistence.Auditing;
 using Common.Infrastructure.Persistence.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,5 +8,5 @@ public static class Setup
     public static IServiceCollection AddCommonPersistence(this IServiceCollection services)
         => services
             .AddEventSourcingInterceptors()
-            .AddScoped<ApplyAuditingInterceptor>();
+            .AddAuditingInterceptors();
 }

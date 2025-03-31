@@ -1,5 +1,5 @@
 using System.Globalization;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;

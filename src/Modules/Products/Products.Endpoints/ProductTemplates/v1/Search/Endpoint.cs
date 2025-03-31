@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Application.Queries.Pagination;
-using Products.Application.ProductTemplates.Features.Search;
 using Products.Application.ProductTemplates.DTOs;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using MediatR;
+using Products.Application.ProductTemplates.Features.Search;
 
 namespace Products.Endpoints.ProductTemplates.v1.Search;
 
@@ -34,6 +34,8 @@ internal static class Endpoint
             Model = request.Model,
             Color = request.Color,
             PageNumber = request.PageNumber,
-            PageSize = request.PageSize
+            PageSize = request.PageSize,
+            OrderBy = null,
+            OrderByDescending = x => x.CreatedOn
         }, cancellationToken);
 }

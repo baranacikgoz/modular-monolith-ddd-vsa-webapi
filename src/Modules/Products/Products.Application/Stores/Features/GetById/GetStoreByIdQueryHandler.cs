@@ -1,31 +1,32 @@
 using Common.Domain.ResultMonad;
 using Common.Application.Persistence;
-using Products.Domain.Stores;
 using Products.Application.Stores.DTOs;
-using Products.Application.Stores.Specifications;
 using Common.Application.CQS;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
 
 namespace Products.Application.Stores.Features.GetById;
 
-public sealed class GetStoreByIdQueryHandler(IRepository<Store> repository) : IQueryHandler<GetStoreByIdQuery, StoreDto>
+public sealed class GetStoreByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetStoreByIdQuery, StoreDto>
 {
-    public async Task<Result<StoreDto>> Handle(GetStoreByIdQuery query, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new StoreByIdSpec<StoreDto>(
-                query.Id,
-                x => new StoreDto
-                {
-                    Id = x.Id,
-                    OwnerId = x.OwnerId,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Address = x.Address,
-                    ProductCount = x.Products.Count,
-                    CreatedBy = x.CreatedBy,
-                    CreatedOn = x.CreatedOn,
-                    LastModifiedBy = x.LastModifiedBy,
-                    LastModifiedOn = x.LastModifiedOn
-                }),
-            cancellationToken);
-
+    public async Task<Result<StoreDto>> Handle(GetStoreByIdQuery request, CancellationToken cancellationToken)
+        => await dbContext
+            .Stores
+            .AsNoTracking()
+            .TagWith(nameof(GetStoreByIdQuery), request.Id)
+            .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Select(store => new StoreDto
+            {
+                Id = store.Id,
+                OwnerId = store.OwnerId,
+                Name = store.Name,
+                Description = store.Description,
+                Address = store.Address,
+                ProductCount = store.Products.Count,
+                CreatedBy = store.CreatedBy,
+                CreatedOn = store.CreatedOn,
+                LastModifiedBy = store.LastModifiedBy,
+                LastModifiedOn = store.LastModifiedOn,
+            })
+            .SingleAsResultAsync(cancellationToken);
 }
