@@ -7,7 +7,7 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.GetStoreIdByOwnerId;
 
-public sealed class GetStoreIdByOwnerIdQueryHandler(ProductsDbContext dbContext) : IQueryHandler<GetStoreIdByOwnerIdQuery, StoreId>
+public sealed class GetStoreIdByOwnerIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetStoreIdByOwnerIdQuery, StoreId>
 {
     public async Task<Result<StoreId>> Handle(GetStoreIdByOwnerIdQuery query, CancellationToken cancellationToken)
         => await dbContext

@@ -1,6 +1,5 @@
-using Common.Application.DTOs;
 using Common.Application.Localization;
-using Common.Application.Queries.Pagination;
+using Common.Application.Persistence;
 using Common.Application.Validation;
 using Common.Domain.Aggregates;
 using FluentValidation;
@@ -10,9 +9,10 @@ namespace Common.Application.Queries.EventHistory;
 
 #pragma warning disable S2326 // Unused type parameters should be removed
 
-public class EventHistoryQueryValidator<T, TAggregate> : CustomValidator<T>
-    where T : EventHistoryQuery<TAggregate>
+public class EventHistoryQueryValidator<T, TAggregate, TDbContext> : CustomValidator<T>
+    where T : EventHistoryQuery<TAggregate, TDbContext>
     where TAggregate : class, IAggregateRoot
+    where TDbContext : IDbContext
 {
     private const int PageNumberGreaterThanOrEqualTo = 1;
     private const int PageSizeInclusiveMin = 1;

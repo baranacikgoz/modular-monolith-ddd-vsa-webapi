@@ -10,15 +10,12 @@ public static class Setup
 {
     public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        var namespaceToScan = typeof(DatabaseOptions).Assembly.FullName; // Use an arbitrary option to get the namespace
-
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = typeof(DatabaseOptions).Assembly; // Use an arbitrary option to get the namespace
 
         // Get all option classes in the specified namespace
         var optionTypes = assembly.GetTypes()
             .Where(
-                t => t.Namespace == namespaceToScan
-                     && t.IsClass
+                t => t.IsClass
                      && !t.IsAbstract
                      && !(t.BaseType != null && t.BaseType.IsGenericType && t.BaseType.GetGenericTypeDefinition() == typeof(CustomValidator<>)) // Omits validators' itselves
                      && t.Name.EndsWith("Options", StringComparison.Ordinal));

@@ -144,9 +144,9 @@ public class Delete{className}CommandValidator : CustomValidator<Delete{classNam
 
 public sealed class Delete{className}CommandHandler : ICommandHandler<Delete{className}Command>
 {{
-    private readonly {moduleName}DbContext _dbContext;
+    private readonly I{moduleName}DbContext _dbContext;
 
-    public Delete{className}CommandHandler({moduleName}DbContext dbContext) => _dbContext = dbContext;
+    public Delete{className}CommandHandler(I{moduleName}DbContext dbContext) => _dbContext = dbContext;
 
     public async Task<Result> Handle(Delete{className}Command command, CancellationToken cancellationToken)
         => await _dbContext

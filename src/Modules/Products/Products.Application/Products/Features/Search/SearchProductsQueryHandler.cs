@@ -8,7 +8,7 @@ using Products.Application.Products.DTOs;
 
 namespace Products.Application.Products.Features.Search;
 
-public sealed class SearchProductsQueryHandler(ProductsDbContext dbContext) : IQueryHandler<SearchProductsQuery, PaginationResult<ProductDto>>
+public sealed class SearchProductsQueryHandler(IProductsDbContext dbContext) : IQueryHandler<SearchProductsQuery, PaginationResult<ProductDto>>
 {
     public async Task<Result<PaginationResult<ProductDto>>> Handle(SearchProductsQuery request, CancellationToken cancellationToken)
         => await dbContext

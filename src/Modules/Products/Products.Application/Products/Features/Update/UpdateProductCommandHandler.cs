@@ -6,7 +6,7 @@ using Products.Application.Persistence;
 
 namespace Products.Application.Products.Features.Update;
 
-public sealed class UpdateProductCommandHandler(ProductsDbContext dbContext) : ICommandHandler<UpdateProductCommand>
+public sealed class UpdateProductCommandHandler(IProductsDbContext dbContext) : ICommandHandler<UpdateProductCommand>
 {
     public async Task<Result> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
         => await dbContext

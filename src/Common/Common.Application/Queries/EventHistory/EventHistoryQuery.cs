@@ -1,5 +1,6 @@
 using Common.Application.CQS;
 using Common.Application.DTOs;
+using Common.Application.Persistence;
 using Common.Application.Queries.Pagination;
 using Common.Domain.Aggregates;
 using Common.Domain.StronglyTypedIds;
@@ -8,8 +9,9 @@ namespace Common.Application.Queries.EventHistory;
 
 #pragma warning disable S2326 // Unused type parameters should be removed
 
-public abstract record EventHistoryQuery<TAggregate> : IQuery<PaginationResult<EventDto>>
+public abstract record EventHistoryQuery<TAggregate, TDbContext> : IQuery<PaginationResult<EventDto>>
     where TAggregate : class, IAggregateRoot
+    where TDbContext : IDbContext
 {
     public required IStronglyTypedId AggregateId { get; init; }
     public required int PageNumber { get; init; }

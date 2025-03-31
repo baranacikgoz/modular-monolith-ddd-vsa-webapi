@@ -13,7 +13,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<IAMDbContext>(moduleName: nameof(IAM));
+            .AddModuleDbContext<IIAMDbContext, IAMDbContext>(moduleName: nameof(IAM));
 
     public static WebApplication UsePersistence(this WebApplication app)
     {

@@ -9,7 +9,7 @@ using Common.Application.Persistence;
 namespace IAM.Application.Tokens.Features.Create;
 
 public sealed class CreateTokensCommandHandler(
-    IAMDbContext dbContext,
+    IIAMDbContext dbContext,
     TimeProvider timeProvider,
     ITokenService tokenService
     ) : ICommandHandler<CreateTokensCommand, TokensDto>

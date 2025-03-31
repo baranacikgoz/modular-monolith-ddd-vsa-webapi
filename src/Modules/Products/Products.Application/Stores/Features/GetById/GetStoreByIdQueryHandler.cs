@@ -4,11 +4,10 @@ using Products.Application.Stores.DTOs;
 using Common.Application.CQS;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
-using Products.Application.Products.Features.GetById;
 
 namespace Products.Application.Stores.Features.GetById;
 
-public sealed class GetStoreByIdQueryHandler(ProductsDbContext dbContext) : IQueryHandler<GetStoreByIdQuery, StoreDto>
+public sealed class GetStoreByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetStoreByIdQuery, StoreDto>
 {
     public async Task<Result<StoreDto>> Handle(GetStoreByIdQuery request, CancellationToken cancellationToken)
         => await dbContext

@@ -3,11 +3,10 @@ using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using IAM.Application.Persistence;
 using IAM.Application.Users.DTOs;
-using IAM.Domain.Identity;
 
 namespace IAM.Application.Users.Features.GetById;
 
-public sealed class GetUserByIdQueryHandler(IAMDbContext dbContext) : IQueryHandler<GetUserByIdQuery, ApplicationUserDto>
+public sealed class GetUserByIdQueryHandler(IIAMDbContext dbContext) : IQueryHandler<GetUserByIdQuery, ApplicationUserDto>
 {
     public async Task<Result<ApplicationUserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         => await dbContext

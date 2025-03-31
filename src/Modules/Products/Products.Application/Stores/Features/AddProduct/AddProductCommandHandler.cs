@@ -8,7 +8,7 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.AddProduct;
 
-public sealed class AddProductCommandHandler(ProductsDbContext dbContext) : ICommandHandler<AddProductCommand, ProductId>
+public sealed class AddProductCommandHandler(IProductsDbContext dbContext) : ICommandHandler<AddProductCommand, ProductId>
 {
     public async Task<Result<ProductId>> Handle(AddProductCommand command, CancellationToken cancellationToken)
         => await dbContext
