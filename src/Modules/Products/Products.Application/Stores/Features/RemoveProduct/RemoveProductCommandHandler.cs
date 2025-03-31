@@ -1,29 +1,26 @@
 using Common.Application.CQS;
+using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using Microsoft.Extensions.DependencyInjection;
-using Products.Application.Stores.Specifications;
-using Products.Domain.Products;
-using Products.Domain.Stores;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
 
 namespace Products.Application.Stores.Features.RemoveProduct;
 
-public sealed class RemoveProductCommandHandler(
-    IRepository<Store> storeRepository,
-    IRepository<Product> productRepository,
-    [FromKeyedServices(nameof(Products))] IUnitOfWork unitOfWork
-    ) : ICommandHandler<RemoveProductCommand>
+public sealed class RemoveProductCommandHandler(IProductsDbContext dbContext) : ICommandHandler<RemoveProductCommand>
 {
     public async Task<Result> Handle(RemoveProductCommand command, CancellationToken cancellationToken)
-        => await storeRepository
-            .SingleOrDefaultAsResultAsync(new StoreByIdWithProductsSpec(command.StoreId, command.ProductId), cancellationToken)
-            .BindAsync(store =>
+        => await dbContext
+            .Stores
+            .TagWith(nameof(RemoveProductCommand), "StoreById", command.StoreId)
+            .Where(s => s.Id == command.StoreId)
+            .Include(s => s.Products.Where(p => p.Id == command.ProductId))
+            .SingleAsResultAsync(cancellationToken)
+            .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == command.ProductId))
+            .TapAsync(tuple =>
             {
-                var product = store.Products.Single(x => x.Id == command.ProductId);
-
-                return new { Store = store, Product = product };
+                var (store, product) = tuple;
+                store.RemoveProduct(product);
             })
-            .TapAsync(x => x.Store.RemoveProduct(x.Product))
-            .TapAsync(x => productRepository.Delete(x.Product))
-            .TapAsync(async _ => await unitOfWork.SaveChangesAsync(cancellationToken));
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
 }

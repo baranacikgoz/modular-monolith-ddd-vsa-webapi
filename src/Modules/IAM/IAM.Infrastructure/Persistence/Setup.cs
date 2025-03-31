@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using IAM.Persistence.Seeding;
 using MassTransit;
-using Common.Infrastructure.Persistence.Context;
-using Common.Infrastructure.Persistence.UoW;
-using Common.Infrastructure.Persistence.Repository;
+using Common.Infrastructure.Persistence.DbContext;
+using IAM.Application.Persistence;
 
 namespace IAM.Infrastructure.Persistence;
 
@@ -14,9 +13,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<IAMDbContext>(moduleName: nameof(IAM))
-            .AddModuleUnitOfWork<IAMDbContext>(moduleName: nameof(IAM))
-            .AddModuleRepositories<IAMDbContext>(assemblyContainingEntities: typeof(Domain.IAssemblyReference).Assembly);
+            .AddModuleDbContext<IIAMDbContext, IAMDbContext>(moduleName: nameof(IAM));
 
     public static WebApplication UsePersistence(this WebApplication app)
     {

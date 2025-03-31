@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Application.Queries.Pagination;
-using Products.Application.Products.Features.Search;
-using Products.Application.Products.DTOs;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using MediatR;
+using Products.Application.Products.Features.Search;
+using Products.Application.Products.DTOs;
 
 namespace Products.Endpoints.Products.v1.Search;
 
@@ -36,7 +36,11 @@ internal static class Endpoint
             MaxQuantity = request.MaxQuantity,
             MinPrice = request.MinPrice,
             MaxPrice = request.MaxPrice,
+
             PageNumber = request.PageNumber,
-            PageSize = request.PageSize
+            PageSize = request.PageSize,
+            OrderBy = x => x.CreatedOn,
+            OrderByDescending = null,
+
         }, cancellationToken);
 }

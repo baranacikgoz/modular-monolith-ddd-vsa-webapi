@@ -18,7 +18,7 @@ namespace Products.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Products")
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -116,7 +116,7 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("IsActive");
 
-                    b.ToTable("Products", "Products");
+                    b.ToTable("ProductTemplates", "Products");
                 });
 
             modelBuilder.Entity("Products.Domain.Products.Product", b =>
@@ -172,7 +172,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.HasIndex("StoreId", "ProductTemplateId")
                         .IsUnique();
 
-                    b.ToTable("StoreProducts", "Products");
+                    b.ToTable("Products", "Products");
                 });
 
             modelBuilder.Entity("Products.Domain.Stores.Store", b =>

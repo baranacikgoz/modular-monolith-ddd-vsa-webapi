@@ -5,11 +5,11 @@ using Common.Infrastructure.Caching;
 using System.Reflection;
 using Common.Infrastructure.EventBus;
 using Common.InterModuleRequests;
-using Common.Infrastructure.Options;
 using Common.Infrastructure.Persistence;
 using IAM.Infrastructure;
 using Host.Middlewares;
 using Common.Infrastructure.CQS;
+using Common.Application.Options;
 
 namespace Host.Infrastructure;
 

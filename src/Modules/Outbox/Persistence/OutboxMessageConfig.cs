@@ -1,6 +1,6 @@
-using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Application.Persistence.EntityConfigurations;
+using Common.Application.ValueConverters;
 using Common.Infrastructure.Persistence.Outbox;
-using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Outbox.Persistence;

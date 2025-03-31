@@ -1,27 +1,31 @@
 using Common.Application.CQS;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Microsoft.EntityFrameworkCore;
+using Products.Application.Persistence;
 using Products.Application.Products.DTOs;
-using Products.Application.Products.Specifications;
-using Products.Domain.Products;
 
 namespace Products.Application.Products.Features.GetById;
 
-public sealed class GetProductByIdQueryHandler(IRepository<Product> repository) : IQueryHandler<GetProductByIdQuery, ProductDto>
+public sealed class GetProductByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetProductByIdQuery, ProductDto>
 {
-    public async Task<Result<ProductDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
-        => await repository
-            .SingleOrDefaultAsResultAsync(new ProductByIdSpec<ProductDto>(query.Id, x => new ProductDto
+    public async Task<Result<ProductDto>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
+        => await dbContext
+            .Products
+            .AsNoTracking()
+            .TagWith(nameof(GetProductByIdQuery), request.Id)
+            .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Select(p => new ProductDto
             {
-                Id = x.Id,
-                StoreId = x.StoreId,
-                Name = x.Name,
-                Description = x.Description,
-                Quantity = x.Quantity,
-                Price = x.Price,
-                CreatedBy = x.CreatedBy,
-                CreatedOn = x.CreatedOn,
-                LastModifiedBy = x.LastModifiedBy,
-                LastModifiedOn = x.LastModifiedOn
-            }), cancellationToken);
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Quantity = p.Quantity,
+                Price = p.Price,
+                CreatedBy = p.CreatedBy,
+                CreatedOn = p.CreatedOn,
+                LastModifiedBy = p.LastModifiedBy,
+                LastModifiedOn = p.LastModifiedOn
+            })
+            .SingleAsResultAsync(cancellationToken);
 }

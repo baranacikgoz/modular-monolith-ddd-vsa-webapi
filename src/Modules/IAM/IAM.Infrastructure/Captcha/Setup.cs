@@ -2,9 +2,9 @@ using IAM.Application.Captcha.Infrastructure;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Common.Infrastructure.Options;
 using Common.Application.Caching;
 using IAM.Application.Captcha.Services;
+using Common.Application.Options;
 
 namespace IAM.Infrastructure.Captcha;
 

@@ -6,12 +6,10 @@ using Common.Application.ModelBinders;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Products.Domain.Stores;
 using Products.Domain.Products;
 using Products.Application.Products.Features.Update;
 using Products.Application.Stores.Features.GetStoreIdByOwnerId;
 using MediatR;
-using Common.Application.Queries.IsOwnedBy;
 
 namespace Products.Endpoints.Products.v1.My.Update;
 
@@ -35,12 +33,14 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await sender
                 .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new VerifyOwnershipCommand<Product, ProductId, StoreId>(id, storeId, x => x.StoreId), cancellationToken))
-                .BindAsync(_ => sender.Send(new UpdateProductCommand(
+                .BindAsync(storeId => sender.Send(new UpdateProductCommand(
                     Id: id,
                     Name: request.Name,
                     Description: request.Description,
                     Quantity: request.Quantity,
-                    Price: request.Price),
+                    Price: request.Price)
+                {
+                    EnsureOwnership = product => product.StoreId == storeId
+                },
                     cancellationToken));
 }

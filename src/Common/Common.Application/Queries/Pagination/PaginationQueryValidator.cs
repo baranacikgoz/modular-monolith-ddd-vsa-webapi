@@ -1,12 +1,14 @@
 using Common.Application.Localization;
 using Common.Application.Validation;
+using Common.Domain.Entities;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
 namespace Common.Application.Queries.Pagination;
 
-public class PaginationQueryValidator<T> : CustomValidator<T>
-    where T : PaginationQuery
+public class PaginationQueryValidator<T, TEntity> : CustomValidator<T>
+    where TEntity : IAuditableEntity
+    where T : PaginationQuery<TEntity>
 {
     private const int PageNumberGreaterThanOrEqualTo = 1;
     private const int PageSizeInclusiveMin = 1;

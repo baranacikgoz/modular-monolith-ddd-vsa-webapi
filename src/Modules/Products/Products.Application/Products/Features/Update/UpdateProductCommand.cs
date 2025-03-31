@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Common.Application.CQS;
 using Common.Application.Validation;
 using FluentValidation;
@@ -6,7 +7,13 @@ using Products.Domain.Products;
 
 namespace Products.Application.Products.Features.Update;
 
-public sealed record UpdateProductCommand(ProductId Id, string? Name, string? Description, int? Quantity, decimal? Price) : ICommand;
+public sealed record UpdateProductCommand(ProductId Id, string? Name, string? Description, int? Quantity, decimal? Price) : ICommand
+{
+    /// <summary>
+    /// To prevent somebody from updating a product that does not belong to them.
+    /// </summary>
+    public Expression<Func<Product, bool>>? EnsureOwnership { get; init; }
+}
 
 public class UpdateProductCommandValidator : CustomValidator<UpdateProductCommand>
 {

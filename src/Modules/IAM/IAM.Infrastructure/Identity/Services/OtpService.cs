@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using Common.Infrastructure.Options;
+using Common.Application.Options;
 using IAM.Application.Users.Services;
 using Microsoft.Extensions.Options;
 

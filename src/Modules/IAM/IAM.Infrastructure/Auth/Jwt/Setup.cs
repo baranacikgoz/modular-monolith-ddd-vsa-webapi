@@ -1,5 +1,4 @@
 using System.Net;
-using Common.Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +11,7 @@ using Common.Application.Localization;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Common.Application.Options;
 
 namespace IAM.Infrastructure.Auth.Jwt;
 

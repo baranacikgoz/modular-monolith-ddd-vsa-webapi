@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using MassTransit;
-using Common.Infrastructure.Persistence.Context;
-using Common.Infrastructure.Persistence.UoW;
 using Microsoft.EntityFrameworkCore;
-using Common.Infrastructure.Persistence.Repository;
 using Products.Infrastructure.Persistence.Seeding;
+using Common.Infrastructure.Persistence.DbContext;
+using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence;
 
@@ -14,9 +13,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<ProductsDbContext>(moduleName: nameof(Products))
-            .AddModuleUnitOfWork<ProductsDbContext>(moduleName: nameof(Products))
-            .AddModuleRepositories<ProductsDbContext>(assemblyContainingEntities: typeof(Domain.IAssemblyReference).Assembly);
+            .AddModuleDbContext<IProductsDbContext, ProductsDbContext>(moduleName: nameof(Products));
 
     public static WebApplication UsePersistence(this WebApplication app)
     {

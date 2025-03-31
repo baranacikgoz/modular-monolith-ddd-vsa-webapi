@@ -23,15 +23,15 @@ internal sealed partial class Seeder
 
     private async Task<ProductTemplateId> SeedProductsAsync(string brand, string model, string color, CancellationToken cancellationToken)
     {
-        if (await dbContext.Products.SingleOrDefaultAsync(product => product.Brand == brand, cancellationToken)
-            is not ProductTemplate product)
+        if (await dbContext.ProductTemplates.SingleOrDefaultAsync(product => product.Brand == brand, cancellationToken)
+            is not ProductTemplate productTemplate)
         {
-            product = ProductTemplate.Create(brand, model, color);
+            productTemplate = ProductTemplate.Create(brand, model, color);
 
-            await dbContext.Products.AddAsync(product, cancellationToken);
+            await dbContext.ProductTemplates.AddAsync(productTemplate, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        return product.Id;
+        return productTemplate.Id;
     }
 }
