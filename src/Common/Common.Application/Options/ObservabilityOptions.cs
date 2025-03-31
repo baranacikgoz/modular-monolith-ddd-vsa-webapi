@@ -78,13 +78,13 @@ public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOption
         RuleFor(o => o.OtlpMetricsEndpoint)
             .NotEmpty()
             .WithMessage("OtlpMetricsEndpoint must not be empty.")
-            .When(o => o.EnableMetrics);
+            .When(o => o.EnableMetrics && !o.OtlpMetricsUsePrometheusDirectly);
 
         RuleFor(o => o.OtlpMetricsProtocol)
             .NotEmpty()
             .WithMessage("OtlpMetricsProtocol must not be empty.")
             .Matches("HttpProtobuf|Grpc")
-            .When(o => o.EnableMetrics);
+            .When(o => o.EnableMetrics && !o.OtlpMetricsUsePrometheusDirectly);
 
         RuleFor(o => o.OtlpTracingEndpoint)
             .NotEmpty()
