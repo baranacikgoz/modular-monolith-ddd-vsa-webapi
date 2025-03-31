@@ -11,9 +11,10 @@ using Microsoft.Extensions.Options;
 namespace Common.Infrastructure.Persistence.DbContext;
 public static class Setup
 {
-    public static IServiceCollection AddModuleDbContext<TModuleContext>(this IServiceCollection services, string moduleName)
-        where TModuleContext : Microsoft.EntityFrameworkCore.DbContext
-        => services.AddDbContext<TModuleContext>((sp, options) =>
+    public static IServiceCollection AddModuleDbContext<TContextInterface, TContextImplementation>(this IServiceCollection services, string moduleName)
+        where TContextImplementation : Microsoft.EntityFrameworkCore.DbContext
+    {
+        services.AddDbContext<TContextImplementation>((sp, options) =>
         {
             var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
 
@@ -27,4 +28,16 @@ public static class Setup
                     sp.GetRequiredService<InsertEventStoreEventsInterceptor>(),
                     sp.GetRequiredService<InsertOutboxMessagesAndClearEventsInterceptor>());
         });
+
+        var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TContextImplementation));
+        if (descriptor != null)
+        {
+            services.Add(new ServiceDescriptor(
+                typeof(TContextInterface),
+                sp => sp.GetRequiredService<TContextImplementation>(),
+                descriptor.Lifetime));
+        }
+
+        return services;
+    }
 }

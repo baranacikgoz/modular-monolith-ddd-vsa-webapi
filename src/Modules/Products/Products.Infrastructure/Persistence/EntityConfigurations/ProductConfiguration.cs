@@ -5,7 +5,7 @@ using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 
-namespace Products.Application.Persistence.EntityConfigurations;
+namespace Products.Infrastructure.Persistence.EntityConfigurations;
 
 internal sealed class ProductConfiguration : AuditableEntityConfiguration<Product, ProductId>
 {

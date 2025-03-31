@@ -11,7 +11,7 @@ namespace IAM.Application.Tokens.Features.Refresh;
 
 public sealed class RefreshTokenQueryHandler(
     TimeProvider timeProvider,
-    IAMDbContext dbContext,
+    IIAMDbContext dbContext,
     ITokenService tokenService
     ) : IQueryHandler<RefreshTokenQuery, AccessTokenDto>
 {

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Products.Application.Stores.Features.Create;
 
-public sealed class CreateStoreCommandHandler(ProductsDbContext dbContext) : ICommandHandler<CreateStoreCommand, StoreId>
+public sealed class CreateStoreCommandHandler(IProductsDbContext dbContext) : ICommandHandler<CreateStoreCommand, StoreId>
 {
     public async Task<Result<StoreId>> Handle(CreateStoreCommand command, CancellationToken cancellationToken)
         => await dbContext

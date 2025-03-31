@@ -5,11 +5,10 @@ using Common.Application.Queries.Pagination;
 using Common.Application.CQS;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
-using Products.Application.Products.Features.Search;
 
 namespace Products.Application.Stores.Features.Search;
 
-public sealed class SearchStoresQueryHandler(ProductsDbContext dbContext) : IQueryHandler<SearchStoresQuery, PaginationResult<StoreDto>>
+public sealed class SearchStoresQueryHandler(IProductsDbContext dbContext) : IQueryHandler<SearchStoresQuery, PaginationResult<StoreDto>>
 {
     public async Task<Result<PaginationResult<StoreDto>>> Handle(SearchStoresQuery request, CancellationToken cancellationToken)
         => await dbContext

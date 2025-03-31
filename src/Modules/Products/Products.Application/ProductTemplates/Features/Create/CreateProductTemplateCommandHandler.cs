@@ -5,7 +5,7 @@ using Products.Application.Persistence;
 
 namespace Products.Application.ProductTemplates.Features.Create;
 
-public sealed class CreateProductTemplateCommandHandler(ProductsDbContext dbContext)
+public sealed class CreateProductTemplateCommandHandler(IProductsDbContext dbContext)
     : ICommandHandler<CreateProductTemplateCommand, ProductTemplateId>
 {
     public async Task<Result<ProductTemplateId>> Handle(CreateProductTemplateCommand command, CancellationToken cancellationToken)

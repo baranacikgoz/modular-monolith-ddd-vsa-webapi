@@ -6,7 +6,7 @@ namespace Products.Infrastructure.Persistence.Seeding;
 
 internal sealed partial class Seeder(
     IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse> requestClient,
-    ProductsDbContext dbContext
+    IProductsDbContext dbContext
     )
 {
     /// <summary>

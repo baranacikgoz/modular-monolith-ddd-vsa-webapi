@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -34,7 +35,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "ProductTemplates",
                 schema: "Products",
                 columns: table => new
                 {
@@ -52,7 +53,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("PK_ProductTemplates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,7 +79,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StoreProducts",
+                name: "Products",
                 schema: "Products",
                 columns: table => new
                 {
@@ -98,16 +99,16 @@ namespace Products.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StoreProducts", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StoreProducts_Products_ProductTemplateId",
+                        name: "FK_Products_ProductTemplates_ProductTemplateId",
                         column: x => x.ProductTemplateId,
                         principalSchema: "Products",
-                        principalTable: "Products",
+                        principalTable: "ProductTemplates",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StoreProducts_Stores_StoreId",
+                        name: "FK_Products_Stores_StoreId",
                         column: x => x.StoreId,
                         principalSchema: "Products",
                         principalTable: "Stores",
@@ -128,23 +129,23 @@ namespace Products.Infrastructure.Persistence.Migrations
                 column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_IsActive",
+                name: "IX_Products_ProductTemplateId",
                 schema: "Products",
                 table: "Products",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StoreProducts_ProductTemplateId",
-                schema: "Products",
-                table: "StoreProducts",
                 column: "ProductTemplateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoreProducts_StoreId_ProductTemplateId",
+                name: "IX_Products_StoreId_ProductTemplateId",
                 schema: "Products",
-                table: "StoreProducts",
+                table: "Products",
                 columns: new[] { "StoreId", "ProductTemplateId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTemplates_IsActive",
+                schema: "Products",
+                table: "ProductTemplates",
+                column: "IsActive");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stores_OwnerId",
@@ -162,11 +163,11 @@ namespace Products.Infrastructure.Persistence.Migrations
                 schema: "Products");
 
             migrationBuilder.DropTable(
-                name: "StoreProducts",
+                name: "Products",
                 schema: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products",
+                name: "ProductTemplates",
                 schema: "Products");
 
             migrationBuilder.DropTable(

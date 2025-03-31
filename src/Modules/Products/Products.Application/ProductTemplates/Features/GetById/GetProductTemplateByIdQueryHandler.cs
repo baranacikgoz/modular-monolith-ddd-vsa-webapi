@@ -7,7 +7,7 @@ using Products.Application.ProductTemplates.DTOs;
 
 namespace Products.Application.ProductTemplates.Features.GetById;
 
-public class GetProductTemplateByIdQueryHandler(ProductsDbContext dbContext) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateDto>
+public class GetProductTemplateByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateDto>
 {
     public async Task<Result<ProductTemplateDto>> Handle(GetProductTemplateByIdQuery request, CancellationToken cancellationToken)
         => await dbContext

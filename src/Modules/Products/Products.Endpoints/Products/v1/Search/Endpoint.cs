@@ -8,9 +8,6 @@ using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using MediatR;
 using Products.Application.Products.Features.Search;
-using Common.Application.DTOs;
-using Products.Domain.Products;
-using Products.Domain.Stores;
 using Products.Application.Products.DTOs;
 
 namespace Products.Endpoints.Products.v1.Search;

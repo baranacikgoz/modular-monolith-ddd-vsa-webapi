@@ -2,7 +2,7 @@ using Common.Application.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Products.Domain.ProductTemplates;
 
-namespace Products.Application.Persistence.EntityConfigurations;
+namespace Products.Infrastructure.Persistence.EntityConfigurations;
 
 internal sealed class ProductTemplateConfiguration : AuditableEntityConfiguration<ProductTemplate, ProductTemplateId>
 {

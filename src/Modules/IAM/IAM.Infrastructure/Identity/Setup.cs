@@ -4,7 +4,7 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using IAM.Application.Users.Services;
-using IAM.Application.Persistence;
+using IAM.Infrastructure.Persistence;
 
 namespace IAM.Infrastructure.Identity;
 

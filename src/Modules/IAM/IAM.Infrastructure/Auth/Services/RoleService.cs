@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace IAM.Infrastructure.Auth.Services;
 
 public class RoleService(
-    IAMDbContext dbContext
+    IIAMDbContext dbContext
     ) : IRoleService
 {
     public async Task<DefaultIdType?> GetRoleIdByName(string roleName, CancellationToken cancellationToken)

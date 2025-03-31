@@ -9,7 +9,7 @@ using Products.Application.ProductTemplates.DTOs;
 
 namespace Products.Application.ProductTemplates.Features.Search;
 
-public sealed class SearchProductTemplatesQueryHandler(ProductsDbContext dbContext) : IQueryHandler<SearchProductTemplatesQuery, PaginationResult<ProductTemplateDto>>
+public sealed class SearchProductTemplatesQueryHandler(IProductsDbContext dbContext) : IQueryHandler<SearchProductTemplatesQuery, PaginationResult<ProductTemplateDto>>
 {
     public async Task<Result<PaginationResult<ProductTemplateDto>>> Handle(SearchProductTemplatesQuery request, CancellationToken cancellationToken)
         => await dbContext

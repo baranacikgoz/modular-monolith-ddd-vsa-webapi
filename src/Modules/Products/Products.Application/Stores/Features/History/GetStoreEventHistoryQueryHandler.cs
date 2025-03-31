@@ -4,6 +4,6 @@ using Products.Domain.Stores;
 
 namespace Products.Application.Stores.Features.History;
 
-public sealed class GetStoreEventHistoryQueryHandler(ProductsDbContext dbContext) : EventHistoryQueryHandler<Store>(dbContext)
+public sealed class GetStoreEventHistoryQueryHandler(IProductsDbContext dbContext) : EventHistoryQueryHandler<Store, IProductsDbContext>(dbContext)
 {
 }

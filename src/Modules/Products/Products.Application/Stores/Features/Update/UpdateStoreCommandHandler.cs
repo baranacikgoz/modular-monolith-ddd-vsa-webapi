@@ -1,13 +1,11 @@
 using Common.Domain.ResultMonad;
-using Microsoft.Extensions.DependencyInjection;
-using Products.Domain.Stores;
 using Common.Application.CQS;
 using Products.Application.Persistence;
 using Common.Application.Persistence;
 
 namespace Products.Application.Stores.Features.Update;
 
-public sealed class UpdateStoreCommandHandler(ProductsDbContext dbContext) : ICommandHandler<UpdateStoreCommand>
+public sealed class UpdateStoreCommandHandler(IProductsDbContext dbContext) : ICommandHandler<UpdateStoreCommand>
 {
     public async Task<Result> Handle(UpdateStoreCommand command, CancellationToken cancellationToken)
         => await dbContext

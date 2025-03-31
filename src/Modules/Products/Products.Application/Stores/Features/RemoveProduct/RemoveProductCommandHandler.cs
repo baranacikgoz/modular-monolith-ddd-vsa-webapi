@@ -7,7 +7,7 @@ using Products.Application.Persistence;
 
 namespace Products.Application.Stores.Features.RemoveProduct;
 
-public sealed class RemoveProductCommandHandler(ProductsDbContext dbContext) : ICommandHandler<RemoveProductCommand>
+public sealed class RemoveProductCommandHandler(IProductsDbContext dbContext) : ICommandHandler<RemoveProductCommand>
 {
     public async Task<Result> Handle(RemoveProductCommand command, CancellationToken cancellationToken)
         => await dbContext

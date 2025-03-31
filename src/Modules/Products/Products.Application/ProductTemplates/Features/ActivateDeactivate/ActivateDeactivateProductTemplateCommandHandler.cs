@@ -5,7 +5,7 @@ using Products.Application.Persistence;
 
 namespace Products.Application.ProductTemplates.Features.ActivateDeactivate;
 
-public sealed class ActivateDeactivateProductTemplateCommandHandler(ProductsDbContext dbContext) : ICommandHandler<ActivateDeactivateProductTemplateCommand>
+public sealed class ActivateDeactivateProductTemplateCommandHandler(IProductsDbContext dbContext) : ICommandHandler<ActivateDeactivateProductTemplateCommand>
 {
     public async Task<Result> Handle(ActivateDeactivateProductTemplateCommand command, CancellationToken cancellationToken)
         => await dbContext

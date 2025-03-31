@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using Common.Application.Localization;
 using FluentValidation;
 using Common.Application.CQS;
-using Products.Domain.Products;
 using System.Linq.Expressions;
 
 namespace Products.Application.Stores.Features.GetById;
