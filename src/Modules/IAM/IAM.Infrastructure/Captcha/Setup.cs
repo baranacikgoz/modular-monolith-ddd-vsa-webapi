@@ -1,4 +1,3 @@
-using IAM.Application.Captcha.Infrastructure;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
