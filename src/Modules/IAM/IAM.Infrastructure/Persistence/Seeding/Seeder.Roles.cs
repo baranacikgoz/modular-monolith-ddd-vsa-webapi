@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace IAM.Persistence.Seeding;
+namespace IAM.Infrastructure.Persistence.Seeding;
 
 internal partial class Seeder
 {

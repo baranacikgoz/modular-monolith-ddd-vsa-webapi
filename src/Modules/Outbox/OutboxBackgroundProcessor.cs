@@ -1,6 +1,7 @@
 using Common.Application.EventBus;
 using Common.Application.Options;
 using Common.Domain.Events;
+using Common.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Outbox.Persistence;
 
-namespace Common.Infrastructure.Persistence.Outbox;
+namespace Outbox;
+
 internal sealed partial class OutboxBackgroundProcessor(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptionsProvider,

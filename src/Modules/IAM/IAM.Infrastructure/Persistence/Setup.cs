@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
-using IAM.Persistence.Seeding;
 using MassTransit;
 using Common.Infrastructure.Persistence.DbContext;
 using IAM.Application.Persistence;
+using IAM.Infrastructure.Persistence.Seeding;
 
 namespace IAM.Infrastructure.Persistence;
 

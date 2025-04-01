@@ -7,7 +7,7 @@ using IAM.Domain.Captcha;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace IAM.Application.Captcha.Infrastructure;
+namespace IAM.Infrastructure.Captcha.Services;
 
 internal partial class ReCaptchaService(
     HttpClient httpClient,

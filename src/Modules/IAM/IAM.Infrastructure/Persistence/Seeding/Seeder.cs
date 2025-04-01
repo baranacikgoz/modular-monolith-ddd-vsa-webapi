@@ -3,7 +3,7 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace IAM.Persistence.Seeding;
+namespace IAM.Infrastructure.Persistence.Seeding;
 
 internal sealed partial class Seeder(
     ILogger<Seeder> logger,
