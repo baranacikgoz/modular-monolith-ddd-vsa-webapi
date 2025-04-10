@@ -2,8 +2,8 @@ name: mm-local-development
 
 services:
   host:
-    image: ${DOCKER_REGISTRY-}host
     container_name: mm.host
+    image: ${DOCKER_REGISTRY-}host
     restart: "no"
     build:
       context: .
@@ -11,14 +11,14 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 5001:5001
+      - "5001:5001"
     depends_on:
-      - mm.database
+      - mm.postgres
       # - mm.rabbitmq
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
-      - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - EventBusOptions__UseInMemoryEventBus=true
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq/ingest/otlp/v1/logs
@@ -38,16 +38,16 @@ services:
       - CachingOptions__Redis__Password=admin
       - CachingOptions__Redis__AppName=modular-monolith-
 
-  mm.database:
+  mm.postgres:
+    container_name: mm.postgres
     image: postgres:latest
-    container_name: mm.database
     restart: "no"
     volumes:
-      - ./.containers/mm.database:/var/lib/postgresql/data
+      - ./.containers/mm.postgres:/var/lib/postgresql/data
     networks:
       - local_shared_network
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -69,8 +69,8 @@ services:
   #   command: redis-server --requirepass admin
 
   mm.jaeger:
-    image: jaegertracing/all-in-one:latest
     container_name: mm.jaeger
+    image: jaegertracing/all-in-one:latest
     restart: "no"
     networks:
       - local_shared_network
@@ -91,7 +91,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./.containers/mm.prometheus:/prometheus
       - ./observability/prometheus:/etc/prometheus
@@ -103,15 +103,15 @@ services:
       - --web.console.templates=/usr/share/prometheus/consoles
 
   mm.postgres-exporter:
-    image: prometheuscommunity/postgres-exporter
     container_name: mm.postgres-exporter
+    image: prometheuscommunity/postgres-exporter
     restart: "no"
     networks:
       - local_shared_network
     ports:
-      - 9187:9187  # Expose PostgreSQL exporter metrics
+      - "9187:9187"  # Expose PostgreSQL exporter metrics
     environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.database:5432/postgres?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.postgres:5432/postgres?sslmode=disable
 
   mm.grafana:
     container_name: mm.grafana
@@ -120,7 +120,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
       - GF_SECURITY_ADMIN_USER=admin
@@ -153,11 +153,63 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 5341:80
+      - "5341:80"
     volumes:
       - ./.containers/mm.seq:/data
     environment:
       - ACCEPT_EULA=Y
+
+  mm.kafka:
+    container_name: mm.kafka
+    image: docker.io/bitnami/kafka:3.9
+    restart: unless-stopped
+    networks:
+      - local_shared_network
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    volumes:
+      - ./.containers/mm.kafka:/bitnami
+    environment:
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@mm.kafka:9093
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+
+  mm.kafka-ui:
+    container_name: mm.kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    networks:
+      - local_shared_network
+    ports:
+      - "8080:8080"
+    environment:
+      - DYNAMIC_CONFIG_ENABLED=true
+
+  mm.debezium:
+    container_name: mm.debezium
+    image: debezium/connect:2.7.3.Final
+    depends_on:
+      - mm.kafka
+      - mm.postgres
+    networks:
+      - local_shared_network
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: mm.kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
 
 networks:
   local_shared_network:

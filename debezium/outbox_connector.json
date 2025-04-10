@@ -1,0 +1,65 @@
+{
+  "name": "outbox-connector-3",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "tasks.max": "1",
+    "database.hostname": "mm.postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "modular-monolith-db",
+    "database.server.name": "mm_postgres",
+    "topic.prefix": "outbox_topic",
+    "table.include.list": "\"Outbox\".\"OutboxMessages\"",
+    "slot.name": "debezium_slot",
+    "publication.name": "dbz_outbox_publication",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState"
+  }
+}
+
+
+{
+  "name": "outbox-connector-3",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "tasks.max": "1",
+    "database.hostname": "mm.postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "modular-monolith-db",
+    "database.server.name": "mm_postgres",
+    "topic.prefix": "outbox_topic",
+    "table.include.list": "\"Outbox\".\"OutboxMessages\"",
+    "slot.name": "debezium_slot",
+    "publication.name": "dbz_outbox_publication",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState"
+  }
+}
+
+{
+  "name": "outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "tasks.max": "1",
+    "database.hostname": "mm.postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "modular-monolith-db",
+    "database.server.name": "mm.postgres",
+    "topic.prefix": "outbox_topic",
+    "table.include.list": "\"Outbox\".\"OutboxMessages\"",
+    "slot.name": "debezium_slot",
+    "publication.name": "dbz_outbox_publication",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.delete.handling.mode": "rewrite"
+  }
+}
