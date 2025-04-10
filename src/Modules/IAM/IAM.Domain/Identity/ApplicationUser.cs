@@ -109,7 +109,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
 #pragma warning restore CA1822, S1186, IDE0060
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
-    private ApplicationUser() { }
+    public ApplicationUser() { }
 #pragma warning restore CS8618
 #pragma warning restore CA1819 // Properties should not return arrays
 }

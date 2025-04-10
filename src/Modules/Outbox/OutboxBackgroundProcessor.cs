@@ -45,7 +45,7 @@ internal sealed partial class OutboxBackgroundProcessor(
                                             .OutboxMessages
                                             .FromSqlRaw(
                                                 """
-                                                SELECT o."Id", o."CreatedBy", o."CreatedOn", o."Event", o."FailedCount", o."IsProcessed", o."LastFailedOn", o."LastModifiedBy",o."LastModifiedIp", o."LastModifiedOn", o."ProcessedOn", o.xmin
+                                                SELECT o."Id", o."CreatedBy", o."CreatedOn", o."Event", o."FailedCount", o."IsProcessed", o."LastFailedOn", o."LastModifiedBy", o."LastModifiedOn", o."ProcessedOn", o.xmin
                                                 FROM "Outbox"."OutboxMessages" AS o
                                                 WHERE NOT (o."IsProcessed") ORDER BY o."CreatedOn"
                                                 LIMIT {0}

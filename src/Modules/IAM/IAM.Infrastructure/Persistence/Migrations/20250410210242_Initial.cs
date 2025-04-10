@@ -23,12 +23,12 @@ namespace IAM.Infrastructure.Persistence.Migrations
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
                     AggregateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EventType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Event = table.Column<string>(type: "jsonb", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false)
+                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,10 +57,9 @@ namespace IAM.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     NationalIdentityNumber = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
@@ -211,12 +210,6 @@ namespace IAM.Infrastructure.Persistence.Migrations
                 schema: "IAM",
                 table: "EventStoreEvents",
                 column: "AggregateType");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EventStoreEvents_CreatedBy",
-                schema: "IAM",
-                table: "EventStoreEvents",
-                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",

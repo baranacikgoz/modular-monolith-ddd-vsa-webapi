@@ -32,8 +32,7 @@ internal static class Setup
             {
                 var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
                 var user = httpContext?.User;
-                var ipAddress = httpContext?.GetIpAddress();
 
-                return new CurrentUser(user, ipAddress);
+                return new CurrentUser(user);
             });
 }

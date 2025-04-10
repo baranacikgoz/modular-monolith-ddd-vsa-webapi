@@ -8,11 +8,10 @@ namespace Common.Domain.Entities;
 /// </summary>
 public abstract class AuditableEntity : IAuditableEntity
 {
-    public DateTimeOffset CreatedOn { get; } = DateTimeOffset.UtcNow;
-    public ApplicationUserId CreatedBy { get; set; }
+    public DateTimeOffset CreatedOn { get; set; }
+    public ApplicationUserId? CreatedBy { get; set; }
     public DateTimeOffset? LastModifiedOn { get; set; }
     public ApplicationUserId? LastModifiedBy { get; set; }
-    public string LastModifiedIp { get; set; } = string.Empty;
 
     [Timestamp]
     public uint Version { get; set; }

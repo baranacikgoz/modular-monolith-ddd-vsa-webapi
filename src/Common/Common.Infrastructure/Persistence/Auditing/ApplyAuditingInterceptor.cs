@@ -1,5 +1,6 @@
 using Common.Application.Auth;
 using Common.Domain.Entities;
+using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -21,31 +22,24 @@ public class ApplyAuditingInterceptor(
         }
 
         var now = timeProvider.GetUtcNow();
-        var userId = currentUser.Id;
-        var ipAddress = currentUser.IpAddress ?? "N/A";
+        ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
 
-        foreach (var entry in dbContext.ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in dbContext
+                             .ChangeTracker
+                             .Entries<IAuditableEntity>()
+                             .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
         {
             switch (entry.State)
             {
                 case EntityState.Added:
+                    entry.Entity.CreatedOn = now;
                     entry.Entity.CreatedBy = userId;
-                    entry.Entity.LastModifiedBy = userId;
-                    entry.Entity.LastModifiedOn = now;
-                    entry.Entity.LastModifiedIp = ipAddress;
                     break;
                 case EntityState.Modified:
                     entry.Entity.LastModifiedBy = userId;
                     entry.Entity.LastModifiedOn = now;
-                    entry.Entity.LastModifiedIp = ipAddress;
-                    break;
-                case EntityState.Detached:
-                    break;
-                case EntityState.Unchanged:
                     break;
                 case EntityState.Deleted:
-                    break;
-                default:
                     break;
             }
         }
