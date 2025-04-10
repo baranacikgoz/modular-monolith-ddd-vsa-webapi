@@ -15,7 +15,8 @@ public static class ModuleInstaller
         => services
             .AddScoped<IOutboxDbContext, OutboxDbContext>()
             .AddOutboxDbContextAndInterceptor()
-            .AddHostedService<OutboxBackgroundProcessor>();
+            // .AddHostedService<OutboxBackgroundProcessor>()
+            .AddHostedService<OutboxKafkaProcessor>();
 
     public static WebApplication UseOutboxModule(this WebApplication app)
     {
