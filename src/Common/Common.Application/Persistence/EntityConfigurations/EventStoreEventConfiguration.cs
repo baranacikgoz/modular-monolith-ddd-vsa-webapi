@@ -39,8 +39,5 @@ public class EventStoreEventConfiguration : AuditableEntityConfiguration<EventSt
         builder
             .Property(storeEvent => storeEvent.Version)
             .IsRequired();
-
-        builder
-            .HasIndex(storeEvent => storeEvent.CreatedBy);
     }
 }

@@ -12,7 +12,7 @@ using Products.Infrastructure.Persistence;
 namespace Products.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20250410191200_Initial")]
+    [Migration("20250410210229_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -57,19 +57,12 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("LastModifiedIp")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
-
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("AggregateId", "Version");
 
                     b.HasIndex("AggregateType");
-
-                    b.HasIndex("CreatedBy");
 
                     b.ToTable("EventStoreEvents", "Products");
                 });
@@ -89,7 +82,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -100,11 +93,6 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("LastModifiedIp")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
 
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
@@ -132,7 +120,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -144,11 +132,6 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("LastModifiedIp")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
 
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
@@ -193,7 +176,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("CreatedBy")
+                    b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedOn")
@@ -206,11 +189,6 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
-
-                    b.Property<string>("LastModifiedIp")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
 
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
