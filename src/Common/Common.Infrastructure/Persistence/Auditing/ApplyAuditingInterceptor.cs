@@ -24,11 +24,15 @@ public class ApplyAuditingInterceptor(
         var userId = currentUser.Id;
         var ipAddress = currentUser.IpAddress ?? "N/A";
 
-        foreach (var entry in dbContext.ChangeTracker.Entries<IAuditableEntity>())
+        foreach (var entry in dbContext
+                             .ChangeTracker
+                             .Entries<IAuditableEntity>()
+                             .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
         {
             switch (entry.State)
             {
                 case EntityState.Added:
+                    entry.Entity.CreatedOn = now;
                     entry.Entity.CreatedBy = userId;
                     entry.Entity.LastModifiedBy = userId;
                     entry.Entity.LastModifiedOn = now;
@@ -39,13 +43,7 @@ public class ApplyAuditingInterceptor(
                     entry.Entity.LastModifiedOn = now;
                     entry.Entity.LastModifiedIp = ipAddress;
                     break;
-                case EntityState.Detached:
-                    break;
-                case EntityState.Unchanged:
-                    break;
                 case EntityState.Deleted:
-                    break;
-                default:
                     break;
             }
         }

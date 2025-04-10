@@ -12,7 +12,7 @@ using Products.Infrastructure.Persistence;
 namespace Products.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20250331094538_Initial")]
+    [Migration("20250410191200_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -48,6 +48,11 @@ namespace Products.Infrastructure.Persistence.Migrations
                     b.Property<string>("Event")
                         .IsRequired()
                         .HasColumnType("jsonb");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");

@@ -22,6 +22,7 @@ namespace Products.Infrastructure.Persistence.Migrations
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
                     AggregateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EventType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Event = table.Column<string>(type: "jsonb", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),

@@ -11,8 +11,6 @@ public class EventStoreEvent : AuditableEntity
         Event = @event;
         Version = version;
         EventType = @event.GetType().Name ?? throw new InvalidOperationException("Type Name can't be null.");
-
-        @event.CreatedOn = CreatedOn;
     }
 
     public string AggregateType { get; }

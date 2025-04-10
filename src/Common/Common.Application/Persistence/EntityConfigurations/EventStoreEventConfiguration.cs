@@ -26,6 +26,11 @@ public class EventStoreEventConfiguration : AuditableEntityConfiguration<EventSt
             .IsRequired();
 
         builder
+            .Property(storeEvent => storeEvent.EventType)
+            .HasMaxLength(256)
+            .IsRequired();
+
+        builder
             .Property(storeEvent => storeEvent.Event)
             .HasColumnType("jsonb")
             .HasConversion<DomainEventConverter>()

@@ -23,7 +23,7 @@ services:
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq/ingest/otlp/v1/logs
       - ObservabilityOptions__OtlpLoggingProtocol=HttpProtobuf
-      - ObservabilityOptions__LogGeneratedSqlQueries=false
+      - ObservabilityOptions__LogGeneratedSqlQueries=true
       - ObservabilityOptions__EnableMetrics=true
       - ObservabilityOptions__OtlpMetricsUsePrometheusDirectly=true
       # - ObservabilityOptions__OtlpMetricsEndpoint=http://mm.otel-collector:4317
