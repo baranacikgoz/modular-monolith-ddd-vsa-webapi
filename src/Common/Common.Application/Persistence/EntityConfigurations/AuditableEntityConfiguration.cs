@@ -8,7 +8,6 @@ namespace Common.Application.Persistence.EntityConfigurations;
 public abstract class AuditableEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : class, IAuditableEntity
 {
-    private const int IpMaxLength = 25; // It sometimes assign weird ip addresses exceeding 15 chars while local development with docker.
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         builder
@@ -18,7 +17,7 @@ public abstract class AuditableEntityConfiguration<TEntity> : IEntityTypeConfigu
         builder
             .Property(e => e.CreatedBy)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(e => e.LastModifiedOn)
@@ -28,11 +27,6 @@ public abstract class AuditableEntityConfiguration<TEntity> : IEntityTypeConfigu
             .Property(e => e.LastModifiedBy)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
             .IsRequired(false);
-
-        builder
-            .Property(e => e.LastModifiedIp)
-            .HasMaxLength(IpMaxLength)
-            .IsRequired();
     }
 }
 

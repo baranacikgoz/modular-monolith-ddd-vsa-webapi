@@ -1,6 +1,7 @@
 using Common.Application.Auth;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
+using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Common.Infrastructure.Persistence.EventSourcing;
@@ -18,23 +19,21 @@ public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurre
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        List<EventStoreEvent>? eventsToAdd = null;
-        DateTimeOffset? utcNow = null;
+        List<EventStoreEvent> eventsToAdd = [];
+        var utcNow = timeProvider.GetUtcNow();
+        ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
         foreach (var aggregateRoot in dbContext
                                       .ChangeTracker
                                       .Entries<IAggregateRoot>()
                                       .Where(e => e.Entity.Events.Count > 0)
                                       .Select(e => e.Entity))
         {
-            eventsToAdd ??= [];
-            utcNow ??= timeProvider.GetUtcNow();
-
             foreach (var @event in aggregateRoot.Events)
             {
-                @event.CreatedOn = utcNow.Value;
+                @event.CreatedOn = utcNow;
                 var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.GetType().Name, aggregateRoot.Id.Value, @event.Version, @event);
-                eventStoreEvent.CreatedOn = utcNow.Value;
-                eventStoreEvent.CreatedBy = currentUser.Id;
+                eventStoreEvent.CreatedOn = utcNow;
+                eventStoreEvent.CreatedBy = userId;
                 eventsToAdd.Add(eventStoreEvent);
 
                 // Do not add to DbSet directly here, it throws collection modified exception

@@ -9,7 +9,6 @@ namespace IAM.Infrastructure.Persistence.EntityConfigurations;
 
 internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 {
-    private const int IpMaxLength = 25; // It sometimes assign weird ip addresses exceeding 15 chars while local development with docker.
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
         builder.ToTable("Users");
@@ -66,7 +65,7 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
         builder
             .Property(u => u.CreatedBy)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .Property(u => u.LastModifiedOn)
@@ -76,11 +75,6 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .Property(u => u.LastModifiedBy)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
             .IsRequired(false);
-
-        builder
-            .Property(u => u.LastModifiedIp)
-            .HasMaxLength(IpMaxLength)
-            .IsRequired();
     }
 }
 

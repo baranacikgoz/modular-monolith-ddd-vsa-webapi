@@ -7,11 +7,10 @@ namespace IAM.Infrastructure.Identity.Services;
 
 internal sealed class CurrentUser : ICurrentUser
 {
-    public CurrentUser(ClaimsPrincipal? user, string? ipAddress)
+    public CurrentUser(ClaimsPrincipal? user)
     {
         var isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
 
-        IpAddress = ipAddress;
         IdAsString = isAuthenticated
             ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
             : string.Empty;
@@ -22,8 +21,6 @@ internal sealed class CurrentUser : ICurrentUser
             ? user?.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList() ?? []
             : [];
     }
-
-    public string? IpAddress { get; }
 
     public ApplicationUserId Id { get; }
 
