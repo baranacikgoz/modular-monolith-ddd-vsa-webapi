@@ -22,12 +22,12 @@ namespace Products.Infrastructure.Persistence.Migrations
                     AggregateId = table.Column<Guid>(type: "uuid", nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false),
                     AggregateType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EventType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Event = table.Column<string>(type: "jsonb", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false)
+                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,10 +45,9 @@ namespace Products.Infrastructure.Persistence.Migrations
                     Model = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     Color = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
@@ -67,10 +66,9 @@ namespace Products.Infrastructure.Persistence.Migrations
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Address = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -91,10 +89,9 @@ namespace Products.Infrastructure.Persistence.Migrations
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    LastModifiedIp = table.Column<string>(type: "character varying(25)", maxLength: 25, nullable: false),
                     Version = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -121,12 +118,6 @@ namespace Products.Infrastructure.Persistence.Migrations
                 schema: "Products",
                 table: "EventStoreEvents",
                 column: "AggregateType");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EventStoreEvents_CreatedBy",
-                schema: "Products",
-                table: "EventStoreEvents",
-                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ProductTemplateId",
