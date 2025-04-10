@@ -5,5 +5,5 @@ public static class Setup
 {
     public static IServiceCollection AddEventSourcingInterceptors(this IServiceCollection services)
         => services
-            .AddSingleton<InsertEventStoreEventsInterceptor>();
+            .AddScoped<InsertEventStoreEventsInterceptor>();
 }

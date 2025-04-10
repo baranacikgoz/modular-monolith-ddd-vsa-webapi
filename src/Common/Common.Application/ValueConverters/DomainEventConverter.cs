@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Common.Application.JsonConverters;
 using Common.Domain.Events;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -7,25 +8,37 @@ namespace Common.Application.ValueConverters;
 
 public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
 {
-    private static readonly JsonSerializerOptions _options = new()
+    private static readonly JsonSerializerOptions _writeOptions = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
             new PolymorphicDomainEventConverter(),
-            new JsonStringEnumConverter()
+            new JsonStringEnumConverter(),
+            new StronglyTypedIdWriteOnlyJsonConverter()
+        }
+    };
+
+    private static readonly JsonSerializerOptions _readOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters =
+        {
+            new PolymorphicDomainEventConverter(),
+            new JsonStringEnumConverter(),
+            new StronglyTypedIdReadOnlyJsonConverter()
         }
     };
 
     public DomainEventConverter() : base(
-            eventItem => JsonSerializer.Serialize(eventItem, _options),
-            json => JsonSerializer.Deserialize<DomainEvent>(json, _options)!
+            eventItem => JsonSerializer.Serialize(eventItem, _writeOptions),
+            json => JsonSerializer.Deserialize<DomainEvent>(json, _readOptions)!
         )
     {
     }
 
-    private const string EventTypeNameFieldName = "eventType";
     private const string EventTypeFullNameFieldName = "eventTypeFullName";
     private const string EventDataFieldName = "eventData";
     private sealed class PolymorphicDomainEventConverter : JsonConverter<DomainEvent>
@@ -47,7 +60,6 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
         {
             writer.WriteStartObject();  // Start the enclosing object.
             writer.WriteString(EventTypeFullNameFieldName, value.GetType().AssemblyQualifiedName); // Write the type information.
-            writer.WriteString(EventTypeNameFieldName, value.GetType().Name); // Write the type name.
 
             writer.WritePropertyName(EventDataFieldName);
             JsonSerializer.Serialize(writer, value, value.GetType(), options);

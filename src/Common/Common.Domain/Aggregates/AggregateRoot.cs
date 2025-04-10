@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
@@ -10,7 +11,9 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
 {
     IStronglyTypedId IAggregateRoot.Id => Id;
 
+    [JsonIgnore]
     private readonly List<DomainEvent> _events = [];
+    [JsonIgnore]
     public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
     public void LoadFromHistory(IEnumerable<DomainEvent> events)
     {

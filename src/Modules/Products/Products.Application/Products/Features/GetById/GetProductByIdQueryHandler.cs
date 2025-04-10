@@ -15,6 +15,7 @@ public sealed class GetProductByIdQueryHandler(IProductsDbContext dbContext) : I
             .AsNoTracking()
             .TagWith(nameof(GetProductByIdQuery), request.Id)
             .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
+            .Where(p => p.Id == request.Id)
             .Select(p => new ProductDto
             {
                 Id = p.Id,

@@ -1,3 +1,7 @@
 # Assumed executed directory is / root directory of the project
 
+# Windows
 dotnet ef migrations add Initial --startup-project .\src\Host\ --project .\src\Modules\Products\Products.Infrastructure\ --context ProductsDbContext -o Persistence/Migrations -v
+
+# Unix
+dotnet ef migrations add Initial --startup-project src/Host/ --project src/Modules/Products/Products.Infrastructure/ --context ProductsDbContext -o Persistence/Migrations -v

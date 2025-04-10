@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IAM.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IAMDbContext))]
-    [Migration("20250331094510_Initial")]
+    [Migration("20250410191521_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -48,6 +48,11 @@ namespace IAM.Infrastructure.Persistence.Migrations
                     b.Property<string>("Event")
                         .IsRequired()
                         .HasColumnType("jsonb");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");

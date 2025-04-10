@@ -183,5 +183,5 @@ public class Product : AggregateRoot<ProductId>
         Price = @event.Price;
     }
 
-    private Product() : base(new(DefaultIdType.Empty)) { } // ORMs need a parameterless ctor
+    public Product() : base(new(DefaultIdType.Empty)) { } // ORMs need a parameterless ctor
 }

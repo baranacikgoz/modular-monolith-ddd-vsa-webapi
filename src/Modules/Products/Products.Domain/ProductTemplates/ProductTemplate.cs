@@ -52,5 +52,5 @@ public class ProductTemplate : AuditableEntity<ProductTemplateId>
         return Result.Success;
     }
 
-    private ProductTemplate() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
+    public ProductTemplate() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
 }
