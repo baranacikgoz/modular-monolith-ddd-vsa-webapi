@@ -1,8 +1,20 @@
 {
   "OutboxOptions": {
-    "BackgroundJobPeriodInMilliseconds": 4000,
-    "MaxBackoffDelayInMilliseconds": 7000,
-    "BatchSizePerExecution": 100,
-    "MaxFailCountBeforeSentToDeadLetter": 3
+    "KafkaConsumer" : {
+      "BootstrapServers" : "localhost:9092",
+      "GroupId" : "outbox-consumer-group",
+      "TopicName": "outbox_topic.Outbox.OutboxMessages",
+      "AutoOffsetReset" : "Earliest",
+      "SessionTimeoutMs" : 30000,
+      "HeartbeatIntervalMs" : 7000,
+      "EnablePartitionEof" : false
+    },
+    "KafkaDlqConsumer": {
+      "BootstrapServers" : "localhost:9092",
+      "TopicName": "outbox_topic.Outbox.OutboxMessages_dlq"
+    },
+    "SetupRetryDelaySeconds": 10,
+    "ConsumeErrorDelaySeconds": 5,
+    "ProcessingErrorDelaySeconds": 1
   }
 }

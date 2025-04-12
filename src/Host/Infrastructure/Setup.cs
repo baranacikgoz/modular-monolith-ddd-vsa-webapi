@@ -54,7 +54,7 @@ internal static partial class Setup
             .AddObservability(
                 configuration,
                 env,
-                Outbox.OpenTelemetry.Tracing.Filters.EfCoreInstrumentationFilters())
+                [])
             .AddCustomCors()
             .AddValidatorsFromAssemblies(_moduleAssemblies)
             .AddCommonDependencies(configuration)
@@ -67,7 +67,7 @@ internal static partial class Setup
             .UseRateLimiter()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware()
-            .UseAuth(betweenAuthenticationAndAuthorization: app => app.UseMiddleware<EnrichLogsWithUserInfoMiddleware>())
+            .UseAuth(betweenAuthenticationAndAuthorization: x => x.UseMiddleware<EnrichLogsWithUserInfoMiddleware>())
             .UseObservability();
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)

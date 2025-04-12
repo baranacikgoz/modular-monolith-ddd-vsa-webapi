@@ -117,10 +117,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Endpoints", "src\Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAM.Endpoints", "src\Modules\IAM\IAM.Endpoints\IAM.Endpoints.csproj", "{F5BB94BF-9F4A-441F-AD14-0C53042B2D04}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium", "debezium", "{CA281998-F18E-4CEA-BA8E-6342CFB23871}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium-init", "debezium-init", "{CA281998-F18E-4CEA-BA8E-6342CFB23871}"
 	ProjectSection(SolutionItems) = preProject
-		debezium\outbox_connector.json = debezium\outbox_connector.json
-		debezium\outbox_publication.sql = debezium\outbox_publication.sql
+		debezium-init\outbox-connector.json = debezium-init\outbox-connector.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "db-init", "db-init", "{A2A3ED86-DC4C-456B-A197-DF1B898D2F27}"
+	ProjectSection(SolutionItems) = preProject
+		db-init\alter-wal.sql = db-init\alter-wal.sql
+		db-init\create-publication.sql = db-init\create-publication.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kafka-init", "kafka-init", "{2C6D3416-63E1-4718-B69B-91EE36914896}"
+	ProjectSection(SolutionItems) = preProject
+		kafka-init\create-outbox-topic.sh = kafka-init\create-outbox-topic.sh
 	EndProjectSection
 EndProject
 Global
@@ -268,6 +278,8 @@ Global
 		{7FA6B4B2-B890-4FA8-A385-6893FB2642C9} = {C161B31F-974B-4C9E-B1B2-9CC1EC0DA774}
 		{F5BB94BF-9F4A-441F-AD14-0C53042B2D04} = {1C87A8D6-AD2E-423B-86E0-BD35C94BE21A}
 		{CA281998-F18E-4CEA-BA8E-6342CFB23871} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{A2A3ED86-DC4C-456B-A197-DF1B898D2F27} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{2C6D3416-63E1-4718-B69B-91EE36914896} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}
