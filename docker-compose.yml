@@ -13,8 +13,16 @@ services:
     ports:
       - "5001:5001"
     depends_on:
-      - mm.postgres
-      # - mm.rabbitmq
+      # Wait for main services to be healthy
+      mm.postgres:
+        condition: service_healthy
+      mm.kafka:
+        condition: service_healthy
+      mm.debezium:
+        condition: service_healthy
+      # Wait for init tasks to complete successfully
+      init-kafka-topics:
+        condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
@@ -37,6 +45,20 @@ services:
       - CachingOptions__Redis__Port=6379
       - CachingOptions__Redis__Password=admin
       - CachingOptions__Redis__AppName=modular-monolith-
+      - OutboxOptions__KafkaConsumer__BootstrapServers=mm.kafka:9092
+      - OutboxOptions__KafkaDlqProducer__BootstrapServers=mm.kafka:9092
+    healthcheck:
+      # Use curl to hit the root endpoint inside the container
+      # Assumes your app returns 2xx on '/' - ADJUST URL IF NEEDED
+      # -f: Fail silently on server errors (non-2xx status)
+      # -s: Silent mode
+      # -o /dev/null: Discard output
+      # || exit 1: Fail if curl itself errors (e.g., connection refused)
+      test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/swagger || exit 1" ]
+      interval: 5s        # Check every 15 seconds
+      timeout: 5s          # Wait max 5 seconds for response
+      retries: 3           # Mark as unhealthy after 3 consecutive failures
+      start_period: 15s    # Grace period for startup (adjust as needed)
 
   mm.postgres:
     container_name: mm.postgres
@@ -52,6 +74,48 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # This is required for debezium connector
+  # Init container to execute separate SQL scripts for PostgreSQL initialization.
+  init-db-publication:
+    image: postgres:latest
+    container_name: mm.init-db-publication
+    restart: "no"
+    depends_on:
+      mm.postgres:
+        condition: service_healthy
+#      host:
+#        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./db-init:/sql
+    environment:
+      - PGPASSWORD=postgres
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Command now handles potential "already exists" errors more gracefully
+    command: >
+      "echo 'Waiting for PostgreSQL health check...' &&
+       # This assumes mm.postgres becomes healthy first due to depends_on
+       echo 'Waiting for Outbox.OutboxMessages table to be created...' &&
+       until psql -h mm.postgres -U postgres -d modular-monolith-db -c \"SELECT 1 FROM \\\"Outbox\\\".\\\"OutboxMessages\\\" LIMIT 1;\" > /dev/null 2>&1; do
+         echo 'Table not found. Waiting 5 seconds...'; sleep 5;
+       done;
+       echo 'Table found.' &&
+       echo 'Executing ALTER SYSTEM...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -f /sql/alter-wal.sql &&
+       echo 'Reloading configuration...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -c \"SELECT pg_reload_conf();\" &&
+       echo 'Executing CREATE PUBLICATION...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -f /sql/create-publication.sql ||
+       ( echo 'CREATE PUBLICATION might have failed (possibly already exists, which is OK)' && exit 0 ) &&
+       echo 'Database publication init script completed successfully.'"
 
   # mm.redis:
   #   image: redis/redis-stack:latest
@@ -171,7 +235,9 @@ services:
     volumes:
       - ./.containers/mm.kafka:/bitnami
     environment:
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      # Create internal topics here, for other topics use init-kafka-topics container
+      - KAFKA_CREATE_TOPICS=my_connect_configs:1:1:compact,my_connect_offsets:3:1:compact,my_connect_statuses:1:1:compact
+      # - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       # KRaft settings
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -182,6 +248,30 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list > /dev/null || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  init-kafka-topics:
+    image: docker.io/bitnami/kafka:3.9
+    container_name: mm.init-kafka-topics
+    restart: "no"
+    depends_on:
+      mm.kafka:
+        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./kafka-init:/tmp/scripts
+    entrypoint: ["/bin/sh", "-c"]
+    # Improved command with check and handling "already exists"
+    command: >
+      "echo 'Kafka is healthy. Checking/Creating topic...' &&
+       sh /tmp/scripts/create-outbox-topic.sh &&
+       echo 'Kafka topic init script completed successfully.'"
 
   mm.kafka-ui:
     container_name: mm.kafka-ui
@@ -210,6 +300,44 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8083/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # This is for applying outbox-connector to debezium
+  # Init container to deploy the Debezium connector using config from a file.
+  init-debezium-connector:
+    image: curlimages/curl:latest
+    container_name: mm.init-debezium-connector
+    restart: "no" # Ensure it only runs once
+    depends_on:
+      mm.debezium: # Depends on Debezium running
+        condition: service_healthy # Wait for Debezium API to be healthy
+#      host:
+#        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./debezium-init:/connector-config
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Improved command: loop until POST succeeds or fails definitively
+    command: >
+      "echo 'Debezium is healthy. Attempting to deploy connector...' &&
+       tries=0 &&
+       max_tries=12 &&
+       # Loop until success (201 Created) or conflict (409 Already Exists)
+       until curl -v -o /dev/null --fail -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d @/connector-config/outbox-connector.json http://mm.debezium:8083/connectors | grep -E '^(201|409)$$'; do
+         tries=$$(($$tries + 1)) &&
+         if [ $$tries -ge $$max_tries ]; then
+           echo 'Failed to deploy connector after multiple attempts.' >&2; exit 1;
+         fi;
+         echo 'Failed to deploy connector (maybe API not fully ready?), retrying in 5 seconds... ($$tries/$$max_tries)' >&2;
+         sleep 5;
+       done &&
+       echo 'Debezium connector deployed (or already exists) successfully.'"
 
 networks:
   local_shared_network:

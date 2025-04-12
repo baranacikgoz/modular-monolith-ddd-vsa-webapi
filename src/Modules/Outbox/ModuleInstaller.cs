@@ -1,5 +1,8 @@
 using Common.Application.Options;
+using Common.Infrastructure.Persistence.Auditing;
+using Common.Infrastructure.Persistence.EventSourcing;
 using Common.Infrastructure.Persistence.Outbox;
+using EntityFramework.Exceptions.PostgreSQL;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +44,11 @@ public static class ModuleInstaller
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
                 options
-                .UseNpgsql(
-                    connectionString,
-                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)));
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
+                    .UseExceptionProcessor()
+                    .AddInterceptors(
+                        sp.GetRequiredService<ApplyAuditingInterceptor>());
             });
 }

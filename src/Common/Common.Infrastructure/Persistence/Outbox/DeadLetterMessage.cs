@@ -13,4 +13,8 @@ public class DeadLetterMessage : OutboxMessageBase
 
     public static DeadLetterMessage CreateFrom(OutboxMessage outboxMessage)
         => new(outboxMessage.Event, outboxMessage.FailedCount, outboxMessage.LastFailedOn);
+
+    // Required for deserialization
+    public DeadLetterMessage() : base(null!)
+    {}
 }

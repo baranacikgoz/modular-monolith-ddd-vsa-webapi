@@ -12,7 +12,7 @@ using Products.Infrastructure.Persistence;
 namespace Products.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20250410210229_Initial")]
+    [Migration("20250410211438_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

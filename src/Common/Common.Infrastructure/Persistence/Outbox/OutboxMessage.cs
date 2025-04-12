@@ -20,4 +20,8 @@ public class OutboxMessage : OutboxMessageBase
         IsProcessed = true;
         ProcessedOn = processedOn;
     }
+
+    // Required for deserialization
+    public OutboxMessage() : base(null!)
+    {}
 }
