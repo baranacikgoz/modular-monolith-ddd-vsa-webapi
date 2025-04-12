@@ -9,7 +9,7 @@
       "HeartbeatIntervalMs" : 7000,
       "EnablePartitionEof" : false
     },
-    "KafkaDlqConsumer": {
+    "KafkaDlqProducer": {
       "BootstrapServers" : "localhost:9092",
       "TopicName": "outbox_topic.Outbox.OutboxMessages_dlq"
     },
