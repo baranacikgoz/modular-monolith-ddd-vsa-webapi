@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Common.Application.Options;
+using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,16 +50,18 @@ public class OutboxKafkaProcessor(
             catch (OperationCanceledException)
             {
                 logger.LogInformation("OutboxKafkaProcessor stopping due to cancellation request.");
-                break; // Exit the main while loop
+                break;
             }
             catch (Exception ex) // Catch build errors or unhandled ConsumeLoop errors
             {
                 logger.LogCritical(ex,
                     "Unhandled exception during client setup or ConsumeLoop execution. Retrying connection/setup in {DelaySeconds} seconds...",
                     setupRetryDelay.TotalSeconds);
+
                 // --- Ensure disposal if partially created before error ---
                 consumer?.Dispose();
                 dlqProducer?.Dispose();
+
                 try
                 {
                     await Task.Delay(setupRetryDelay, stoppingToken);
@@ -66,7 +69,7 @@ public class OutboxKafkaProcessor(
                 catch (OperationCanceledException)
                 {
                     logger.LogInformation("Retry delay cancelled. OutboxKafkaProcessor stopping.");
-                    break; // Exit if cancelled during delay
+                    break;
                 }
             }
         }
@@ -76,10 +79,9 @@ public class OutboxKafkaProcessor(
 
     private async Task ConsumeLoop(
         IConsumer<Ignore, OutboxMessageDto> consumer,
-        IProducer<Null, string> dlqProducer, // Guaranteed non-null if this point is reached
+        IProducer<Null, string> dlqProducer,
         CancellationToken stoppingToken)
     {
-        // DLQ Topic Name is guaranteed by options validation
         var dlqTopicName = _outboxOptions.KafkaDlqProducer.TopicName;
 
         var consumeErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ConsumeErrorDelaySeconds);
@@ -94,28 +96,22 @@ public class OutboxKafkaProcessor(
             ConsumeResult<Ignore, OutboxMessageDto>? consumeResult = null;
             try
             {
-                // Blocking Consume call - simplification from Task.Run
                 consumeResult = consumer.Consume(stoppingToken);
 
-                // Handle PartitionEOF if enabled (usually only for diagnostics/specific logic)
                 if (_outboxOptions.KafkaConsumer.EnablePartitionEof && consumeResult.IsPartitionEOF)
                 {
                     logger.LogInformation("Reached end of partition {Partition}, offset {Offset}.",
                         consumeResult.Partition, consumeResult.Offset);
-                    continue; // Continue to next Consume call
+                    continue;
                 }
 
-                // Log consumption at Debug level
                 logger.LogDebug("Consumed message from {TopicPartitionOffset}",
                     consumeResult.TopicPartitionOffset);
 
-                // Process the message within a dependency injection scope
                 using (var scope = serviceScopeFactory.CreateScope())
                 {
                     // ProcessMessageAsync MUST throw an exception for processing failures
                     // that should trigger DLQ (e.g., validation, business rule, dependency failure).
-                    // It should handle DbUpdateConcurrencyException internally by re-throwing
-                    // to prevent commit without sending to DLQ.
                     await ProcessMessageAsync(scope.ServiceProvider, consumeResult, stoppingToken);
                 }
 
@@ -137,8 +133,7 @@ public class OutboxKafkaProcessor(
                         "Non-fatal Kafka error during commit for offset {Offset}. Processing succeeded but commit failed.",
                         consumeResult.TopicPartitionOffset);
                     // IMPORTANT: Ensure ProcessMessageAsync logic is idempotent, as this message
-                    // might be redelivered and reprocessed if the commit failure persists.
-                    // Consider adding metrics/alerts for frequent commit failures.
+                    // might be redelivered and reprocessed if the commit failure persists.ü
                 }
             }
             catch (ConsumeException ex)
@@ -161,9 +156,15 @@ public class OutboxKafkaProcessor(
             }
             catch (OperationCanceledException)
             {
-                // Expected when stoppingToken is cancelled during Consume()
                 logger.LogInformation("Consume loop cancellation requested during Consume operation.");
-                throw; // Rethrow to exit ConsumeLoop and be caught by ExecuteAsync
+                throw;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var failedOffset = consumeResult?.TopicPartitionOffset.ToString() ?? "N/A";
+                // The offset will NOT be committed, allowing Kafka to redeliver.
+                logger.LogWarning(ex,
+                    "{ExcetionType} occured within ProcessMessageAsync for offset {Offset}. Offset not committed.", ex.GetType(), failedOffset);
             }
             catch (Exception ex) // Catch exceptions from ProcessMessageAsync or other logic
             {
@@ -172,17 +173,7 @@ public class OutboxKafkaProcessor(
                     "Error processing message at offset {Offset}. Sending to DLQ topic {DlqTopicName}...",
                     failedOffset, dlqTopicName);
 
-                // ProcessMessageAsync should handle DbConcurrencyException itself by rethrowing it
-                // If we catch it here, it means some other processing error occurred.
-                if (ex is DbUpdateConcurrencyException)
-                {
-                    // This case indicates the ProcessMessageAsync didn't handle it as expected. Log critically.
-                    // The offset will NOT be committed, allowing Kafka to redeliver.
-                    logger.LogCritical(ex,
-                        "DbUpdateConcurrencyException was not handled within ProcessMessageAsync for offset {Offset}. Offset not committed.",
-                        failedOffset);
-                }
-                else if (consumeResult != null) // Ensure we have a message to DLQ
+                if (consumeResult != null) // Ensure we have a message to DLQ
                 {
                     var dlqSuccess = await SendToDlqAsync(dlqProducer, dlqTopicName, consumeResult, ex, stoppingToken);
 
