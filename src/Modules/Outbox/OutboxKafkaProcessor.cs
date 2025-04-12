@@ -1,8 +1,11 @@
 using System.Text.Json;
+using Common.Application.EventBus;
 using Common.Application.Options;
 using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Outbox.Persistence;
+using Common.Application.Persistence;
 
 namespace Outbox;
 
@@ -17,6 +20,7 @@ using System.Threading.Tasks;
 public class OutboxKafkaProcessor(
     IOptions<OutboxOptions> outboxOptionsProvider,
     IServiceScopeFactory serviceScopeFactory,
+    TimeProvider timeProvider,
     ILogger<OutboxKafkaProcessor> logger
 ) : BackgroundService
 {
@@ -87,7 +91,7 @@ public class OutboxKafkaProcessor(
         var consumeErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ConsumeErrorDelaySeconds);
         var processingErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ProcessingErrorDelaySeconds);
 
-        // CONSIDER: Ensure the MaxPollIntervalMs (Kafka consumer config, default 5 min)
+        // CONSIdER: Ensure the MaxPollIntervalMs (Kafka consumer config, default 5 min)
         // is longer than the maximum expected time for ProcessMessageAsync to complete,
         // otherwise the consumer might be kicked out of the group.
 
@@ -133,7 +137,7 @@ public class OutboxKafkaProcessor(
                         "Non-fatal Kafka error during commit for offset {Offset}. Processing succeeded but commit failed.",
                         consumeResult.TopicPartitionOffset);
                     // IMPORTANT: Ensure ProcessMessageAsync logic is idempotent, as this message
-                    // might be redelivered and reprocessed if the commit failure persists.ü
+                    // might be redelivered and reprocessed if the commit failure persists.
                 }
             }
             catch (ConsumeException ex)
@@ -229,11 +233,11 @@ public class OutboxKafkaProcessor(
         ConsumeResult<Ignore, OutboxMessageDto> consumeResult,
         CancellationToken cancellationToken)
     {
-        var messageValue = consumeResult.Message.Value;
+        var outboxMessageDto = consumeResult.Message.Value;
         var offset = consumeResult.TopicPartitionOffset;
 
         // Handle potential null message value (e.g., Kafka tombstone if config changes)
-        if (messageValue == null)
+        if (outboxMessageDto == null)
         {
             logger.LogWarning(
                 "Received null message value at offset {Offset}. Committing offset and skipping processing.", offset);
@@ -242,81 +246,27 @@ public class OutboxKafkaProcessor(
             return;
         }
 
-        logger.LogInformation("Starting processing for message ID {MessageId} at {Offset}...", messageValue.Id, offset);
+        logger.LogInformation("Starting processing for message Id {MessageId} at {Offset}...", outboxMessageDto.Id, offset);
 
-        // --- Placeholder for Required Logic ---
-        // var dbContext = serviceProvider.GetRequiredService<YourDbContext>();
-        // var someOtherService = serviceProvider.GetRequiredService<ISomeService>();
+        var dbContext = serviceProvider.GetRequiredService<OutboxDbContext>();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
 
-        try
+        var outboxMessage = await dbContext
+            .OutboxMessages
+            .TagWith(nameof(OutboxKafkaProcessor), outboxMessageDto.Id)
+            .SingleOrDefaultAsync(x => x.Id == outboxMessageDto.Id, cancellationToken);
+
+        if (outboxMessage is null)
         {
-            // 1. Fetch entity from DB using dbContext and messageValue.Id
-            //    var entityToUpdate = await dbContext.OutboxMessages.FindAsync(new object[] { messageValue.Id }, cancellationToken);
-            //    if (entityToUpdate == null) { logger.LogWarning("..."); return; /* Commit offset */ }
-
-            // 2. Check if already processed in DB state (optional but good practice)
-            //    if (entityToUpdate.IsProcessed) { logger.LogInformation("..."); return; /* Commit offset */ }
-
-            // 3. Deserialize inner event from messageValue.Event
-            //    DomainEvent? domainEvent = null;
-            //    if (!string.IsNullOrWhiteSpace(messageValue.Event)) {
-            //        try {
-            //             var innerEventOptions = ...; // Options with PolymorphicConverter etc.
-            //             domainEvent = JsonSerializer.Deserialize<DomainEvent>(messageValue.Event, innerEventOptions);
-            //        } catch (JsonException jsonEx) {
-            //             logger.LogError(jsonEx, "Failed inner event deserialization...");
-            //             throw; // Rethrow to trigger DLQ
-            //        }
-            //    } else { logger.LogWarning("..."); /* Decide if this requires DLQ */ }
-            //    if (domainEvent == null) { throw new InvalidOperationException("DomainEvent is null after deserialization or was missing."); }
-
-
-            // 4. Perform actual business logic based on inner domainEvent
-            //    await someOtherService.HandleEventAsync(domainEvent, cancellationToken); // This might throw!
-
-            // 5. Mark fetched entity as processed
-            //    entityToUpdate.IsProcessed = true;
-            //    entityToUpdate.ProcessedOn = DateTimeOffset.UtcNow;
-
-            // 6. Call dbContext.SaveChangesAsync() with concurrency handling
-            //    try
-            //    {
-            //        await dbContext.SaveChangesAsync(cancellationToken);
-            //    }
-            //    catch (DbUpdateConcurrencyException dbConcurrencyEx)
-            //    {
-            //        logger.LogWarning(dbConcurrencyEx, "Concurrency conflict saving OutboxMessage ID {MessageId}. Will not commit offset, allowing retry.", messageValue.Id);
-            //        // DO NOT DLQ here - let Kafka redeliver for retry
-            //        throw; // Rethrow to prevent commit in ConsumeLoop
-            //    }
-            //    catch (Exception dbEx) { // Catch other specific DB errors if needed
-            //         logger.LogError(dbEx, "Database error saving OutboxMessage ID {MessageId}.", messageValue.Id);
-            //         throw; // Rethrow general DB errors to trigger DLQ
-            //    }
-
-            // Simulate work for now
-            await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationToken);
-
-            // If ANY step above fails (validation, deserialization, business logic, non-concurrency DB error),
-            // ensure an exception is THROWN to trigger the DLQ in ConsumeLoop.
-            // Example:
-            // bool success = await someOtherService.HandleEventAsync(domainEvent, cancellationToken);
-            // if (!success) {
-            //    throw new InvalidOperationException($"Business logic failed for event {domainEvent.GetType().Name} from OutboxMessage {messageValue.Id}");
-            // }
-        }
-        catch (Exception ex)
-        {
-            // Catch any other exception during processing
-            logger.LogError(ex, "Unhandled exception during ProcessMessageAsync for Outbox ID {OutboxId}",
-                messageValue.Id);
-            // Rethrow to trigger DLQ in the main ConsumeLoop
-            throw;
+            throw new Exception($"Could not find outbox message with Id {outboxMessageDto.Id}.");
         }
 
-        // --- END BUSINESS LOGIC ---
+        var @event = outboxMessage.Event;
+        await eventBus.PublishAsync(@event, cancellationToken);
+        outboxMessage.MarkAsProcessed(timeProvider.GetUtcNow());
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("Successfully processed message ID {MessageId} at {Offset}.", messageValue.Id, offset);
+        logger.LogInformation("Successfully processed message Id {MessageId} at {Offset}.", outboxMessageDto.Id, offset);
     }
 #pragma warning restore
 
