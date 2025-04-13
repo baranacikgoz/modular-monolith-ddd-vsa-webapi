@@ -5,16 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Outbox.Persistence;
 using Common.Application.Persistence;
-
-namespace Outbox;
-
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options; // Required for IOptions
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+
+namespace Outbox;
 
 public class OutboxKafkaProcessor(
     IOptions<OutboxOptions> outboxOptionsProvider,
@@ -62,7 +58,6 @@ public class OutboxKafkaProcessor(
                     "Unhandled exception during client setup or ConsumeLoop execution. Retrying connection/setup in {DelaySeconds} seconds...",
                     setupRetryDelay.TotalSeconds);
 
-                // --- Ensure disposal if partially created before error ---
                 consumer?.Dispose();
                 dlqProducer?.Dispose();
 
@@ -87,15 +82,15 @@ public class OutboxKafkaProcessor(
         CancellationToken stoppingToken)
     {
         var dlqTopicName = _outboxOptions.KafkaDlqProducer.TopicName;
-
         var consumeErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ConsumeErrorDelaySeconds);
         var processingErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ProcessingErrorDelaySeconds);
 
-        // CONSIdER: Ensure the MaxPollIntervalMs (Kafka consumer config, default 5 min)
+        // CONSIDER: Ensure the MaxPollIntervalMs (Kafka consumer config, default 5 min)
         // is longer than the maximum expected time for ProcessMessageAsync to complete,
         // otherwise the consumer might be kicked out of the group.
 
         var firstConsume = true;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             ConsumeResult<Ignore, OutboxMessageDto>? consumeResult = null;
@@ -107,7 +102,6 @@ public class OutboxKafkaProcessor(
                     // if the first consume call is 'consumer.Consume(stoppingToken);' and  if there is no message to fetch at first, it blocks the application startup.
                     consumeResult = await Task.Run(() => consumer.Consume(0), stoppingToken);
                     firstConsume = false;
-
                     if (consumeResult is null)
                     {
                         continue;
@@ -118,15 +112,19 @@ public class OutboxKafkaProcessor(
                     consumeResult = consumer.Consume(stoppingToken);
                 }
 
+                var currentTopic = consumeResult.Topic;
+                var currentPartition = consumeResult.Partition.Value;
+                var currentOffset = consumeResult.Offset.Value;
+
                 if (_outboxOptions.KafkaConsumer.EnablePartitionEof && consumeResult.IsPartitionEOF)
                 {
-                    logger.LogInformation("Reached end of partition {Partition}, offset {Offset}.",
-                        consumeResult.Partition, consumeResult.Offset);
+                    logger.LogInformation("Reached end of Partition {Partition} at Offset {Offset} (Topic: {Topic})",
+                        currentPartition, currentOffset, currentTopic);
                     continue;
                 }
 
-                logger.LogDebug("Consumed message from {TopicPartitionOffset}",
-                    consumeResult.TopicPartitionOffset);
+                logger.LogDebug("Consumed message from Topic {Topic}, Partition {Partition}, Offset {Offset}",
+                    currentTopic, currentPartition, currentOffset);
 
                 using (var scope = serviceScopeFactory.CreateScope())
                 {
@@ -139,19 +137,21 @@ public class OutboxKafkaProcessor(
                 try
                 {
                     consumer.Commit(consumeResult);
-                    logger.LogDebug("Committed offset {Offset}", consumeResult.TopicPartitionOffset);
+                    logger.LogDebug("Committed Offset {Offset} for Topic {Topic}, Partition {Partition}",
+                        currentOffset, currentTopic, currentPartition);
                 }
                 catch (KafkaException kex) when (kex.Error.IsFatal)
                 {
-                    logger.LogCritical(kex, "FATAL Kafka error during commit for offset {Offset}. Stopping consumer.",
-                        consumeResult.TopicPartitionOffset);
+                    logger.LogCritical(kex,
+                        "FATAL Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Stopping consumer.",
+                        currentOffset, currentTopic, currentPartition);
                     throw; // Rethrow fatal commit errors to stop the processor
                 }
                 catch (KafkaException ex)
                 {
                     logger.LogError(ex,
-                        "Non-fatal Kafka error during commit for offset {Offset}. Processing succeeded but commit failed.",
-                        consumeResult.TopicPartitionOffset);
+                        "Non-fatal Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Processing succeeded but commit failed.",
+                        currentOffset, currentTopic, currentPartition);
                     // IMPORTANT: Ensure ProcessMessageAsync logic is idempotent, as this message
                     // might be redelivered and reprocessed if the commit failure persists.
                 }
@@ -181,47 +181,71 @@ public class OutboxKafkaProcessor(
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                var failedOffset = consumeResult?.TopicPartitionOffset.ToString() ?? "N/A";
                 // The offset will NOT be committed, allowing Kafka to redeliver.
-                logger.LogWarning(ex,
-                    "{ExcetionType} occured within ProcessMessageAsync for offset {Offset}. Offset not committed.", ex.GetType(), failedOffset);
-            }
-            catch (Exception ex) // Catch exceptions from ProcessMessageAsync or other logic
-            {
-                var failedOffset = consumeResult?.TopicPartitionOffset.ToString() ?? "N/A";
-                logger.LogError(ex,
-                    "Error processing message at offset {Offset}. Sending to DLQ topic {DlqTopicName}...",
-                    failedOffset, dlqTopicName);
-
-                if (consumeResult != null) // Ensure we have a message to DLQ
+                if (consumeResult != null)
                 {
+                    logger.LogWarning(ex,
+                        "{ExceptionType} occured within ProcessMessageAsync for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Offset not committed.",
+                        ex.GetType().Name,
+                        consumeResult.Offset.Value,
+                        consumeResult.Topic,
+                        consumeResult.Partition.Value);
+                }
+                else
+                {
+                    logger.LogWarning(ex,
+                        "{ExceptionType} occured within ProcessMessageAsync but ConsumeResult is null. Offset not committed.",
+                        ex.GetType().Name);
+                }
+
+                await Task.Delay(processingErrorDelay, stoppingToken);
+            }
+            catch (Exception ex) // Catch other processing exceptions
+            {
+                if (consumeResult != null)
+                {
+                    logger.LogError(ex,
+                        "Error processing message at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Sending to DLQ topic {DlqTopicName}...",
+                        consumeResult.Offset.Value,
+                        consumeResult.Topic,
+                        consumeResult.Partition.Value,
+                        dlqTopicName);
+
                     var dlqSuccess = await SendToDlqAsync(dlqProducer, dlqTopicName, consumeResult, ex, stoppingToken);
 
                     if (dlqSuccess)
                     {
                         logger.LogInformation(
-                            "Successfully sent message from offset {Offset} to DLQ topic {DlqTopicName}. Committing original offset.", failedOffset, dlqTopicName);
-                        // Commit original offset ONLY AFTER successful DLQ
+                            "Successfully sent message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ topic {DlqTopicName}. Committing original offset.",
+                            consumeResult.Offset.Value,
+                            consumeResult.Topic,
+                            consumeResult.Partition.Value,
+                            dlqTopicName);
                         try
                         {
                             consumer.Commit(consumeResult); // Remove poison pill
                         }
                         catch (KafkaException kex) when (kex.Error.IsFatal)
                         {
-                            logger.LogCritical(kex, "FATAL Kafka error during commit for DLQ'd offset {Offset}.",
-                                failedOffset);
+                            logger.LogCritical(kex,
+                                "FATAL Kafka error during commit for DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}).",
+                                consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
                             throw; // Stop if we can't commit past a DLQ'd message
                         }
                         catch (KafkaException kex)
                         {
                             logger.LogError(kex,
-                                "Non-fatal Kafka error committing DLQ'd offset {Offset}. Consumer may reprocess.", failedOffset);
+                                "Non-fatal Kafka error committing DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Consumer may reprocess.",
+                                consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
                         }
                     }
                     else
                     {
                         logger.LogError(
-                            "Failed to send message from offset {Offset} to DLQ. **Offset will not be committed.** Consumer will retry processing and DLQ.", failedOffset);
+                            "Failed to send message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ. **Offset will not be committed.**",
+                            consumeResult.Offset.Value,
+                            consumeResult.Topic,
+                            consumeResult.Partition.Value);
                         // Consider adding retry logic within SendToDlqAsync for transient errors
                         // or implementing a circuit breaker if DLQ production fails persistently.
                     }
@@ -237,26 +261,22 @@ public class OutboxKafkaProcessor(
         }
     }
 
-    /// <summary>
-    /// Processes the consumed message. Includes fetching from DB, business logic,
-    /// and updating the OutboxMessage status.
-    /// MUST throw exceptions for processing errors that require DLQ intervention.
-    /// SHOULD handle DbUpdateConcurrencyException by logging and re-throwing to prevent commit without DLQ.
-    /// </summary>
     private async Task ProcessMessageAsync(
         IServiceProvider serviceProvider,
         ConsumeResult<Ignore, OutboxMessageDto> consumeResult,
         CancellationToken cancellationToken)
     {
         var outboxMessageDto = consumeResult.Message.Value;
-        var offset = consumeResult.TopicPartitionOffset;
 
-        // Handle potential null message value (e.g., Kafka tombstone if config changes)
+        var topic = consumeResult.Topic;
+        var partition = consumeResult.Partition.Value;
+        var offset = consumeResult.Offset.Value;
+
         if (outboxMessageDto == null)
         {
-            logger.LogCritical(
-                "Received null message value at offset {Offset}. Committing offset and skipping processing.", offset);
-            // Treat as processed/ignorable - return normally so offset gets committed.
+            logger.LogWarning(
+                "Received null message value at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping processing.",
+                offset, topic, partition);
             return;
         }
 
@@ -264,13 +284,14 @@ public class OutboxKafkaProcessor(
         {
             // This should not happen! Usually indicates an issue upstream or unexpected DB update captured by Debezium
             logger.LogWarning(
-                "Outbox message Id {MessageId} (Offset: {Offset}) was already marked 'IsProcessed=true' in the Kafka message payload. This might indicate an upstream issue. Skipping processing and committing offset.",
-                outboxMessageDto.Id, offset);
-
+                "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Kafka message payload. Skipping processing and committing offset.",
+                outboxMessageDto.Id, topic, partition, offset);
             return;
         }
 
-        logger.LogInformation("Starting processing for message Id {MessageId} at {Offset}...", outboxMessageDto.Id, offset);
+        logger.LogInformation(
+            "Starting processing for message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset})...",
+            outboxMessageDto.Id, topic, partition, offset);
 
         var dbContext = serviceProvider.GetRequiredService<OutboxDbContext>();
 
@@ -279,77 +300,103 @@ public class OutboxKafkaProcessor(
             .TagWith(nameof(OutboxKafkaProcessor), outboxMessageDto.Id)
             .SingleOrDefaultAsync(x => x.Id == outboxMessageDto.Id, cancellationToken);
 
-        if (outboxMessage is null)
+        if (outboxMessage == null)
         {
-            // Throw exception and trigger DLQ
-            throw new InvalidOperationException($"Could not find outbox message with Id {outboxMessageDto.Id}.");
+            logger.LogWarning(
+                "OutboxMessage Id {MessageId} not found in database for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.",
+                outboxMessageDto.Id, offset, topic, partition);
+            return;
         }
 
         if (outboxMessage.IsProcessed)
         {
-            // By low chance, but probably processed by another instance. Not an issue.
-            logger.LogInformation("Outbox message Id {MessageId} (Offset: {Offset}) was already marked 'IsProcessed=true' in the Database. Likely processed by another instance. Committing offset.",
-                outboxMessage.Id, offset);
+            logger.LogInformation(
+                "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Database. Committing offset.",
+                outboxMessage.Id, topic, partition, offset);
             return;
         }
 
+        // --- Proceed with processing ---
         var @event = outboxMessage.Event;
-        await eventBus.PublishAsync(@event, cancellationToken);
-        outboxMessage.MarkAsProcessed(timeProvider.GetUtcNow());
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await eventBus.PublishAsync(@event, cancellationToken); // Pass injected eventBus
+        outboxMessage.MarkAsProcessed(timeProvider.GetUtcNow()); // Pass injected timeProvider
 
-        logger.LogInformation("Successfully processed message Id {MessageId} at {Offset}.", outboxMessageDto.Id, offset);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException dbConcurrencyEx)
+        {
+            logger.LogWarning(dbConcurrencyEx,
+                "Concurrency conflict saving OutboxMessage ID {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}). Rethrowing to allow retry.",
+                outboxMessageDto.Id, topic, partition, offset);
+            throw;
+        }
+
+        logger.LogInformation(
+            "Successfully processed message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}).",
+            outboxMessageDto.Id, topic, partition, offset);
     }
 
     private async Task<bool> SendToDlqAsync(IProducer<Null, string> dlqProducer, string dlqTopic,
         ConsumeResult<Ignore, OutboxMessageDto> failedResult,
         Exception exception, CancellationToken cancellationToken)
     {
+        var originalTopic = failedResult.Topic;
+        var originalPartition = failedResult.Partition.Value;
+        var originalOffset = failedResult.Offset.Value;
+
         try
         {
-            var dlqMessage = new DlqMessage<OutboxMessageDto> // Define this helper class
+            var dlqMessage = new DlqMessage<OutboxMessageDto>
             {
                 FailedTimestampUtc = DateTimeOffset.UtcNow,
-                OriginalTopic = failedResult.Topic,
-                OriginalPartition = failedResult.Partition.Value,
-                OriginalOffset = failedResult.Offset.Value,
-                ConsumerGroupId = outboxOptionsProvider.Value.KafkaConsumer.GroupId,
+                OriginalTopic = originalTopic,
+                OriginalPartition = originalPartition,
+                OriginalOffset = originalOffset,
+                ConsumerGroupId = _outboxOptions.KafkaConsumer.GroupId, // Use stored options
                 ExceptionType = exception.GetType().FullName,
                 ExceptionMessage = exception.Message,
-                ExceptionStackTrace = exception.StackTrace, // Be cautious with stack trace size/sensitivity
-                OriginalMessage = failedResult.Message.Value // Include the original message payload
+                OriginalMessage = failedResult.Message.Value
             };
 
-            // Serialize the DLQ message info to JSON
-            var dlqPayload =
-                JsonSerializer.Serialize(dlqMessage, _dlqSerializerOptions); // Use options consistent with needs
+            var dlqPayload = JsonSerializer.Serialize(dlqMessage, _dlqSerializerOptions);
 
             logger.LogWarning(
-                "Sending failed message from {OriginalTopicPartitionOffset} to DLQ topic {DlqTopic} due to error: {ErrorMessage}",
-                failedResult.TopicPartitionOffset, dlqTopic, exception.Message);
+                "Sending failed message from Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}) to DLQ topic {DlqTopic} due to error: {ErrorMessage}",
+                originalOffset, originalTopic, originalPartition, dlqTopic, exception.Message);
 
-            // Produce the message to the DLQ topic. Use the original message's timestamp if desired.
-            // Using Message<Null, string> for the DLQ message itself.
             var kafkaMessage = new Message<Null, string> { Value = dlqPayload };
             var deliveryResult = await dlqProducer.ProduceAsync(dlqTopic, kafkaMessage, cancellationToken);
 
-            logger.LogInformation("Message successfully produced to DLQ topic {DlqTopicPartitionOffset}",
-                deliveryResult.TopicPartitionOffset);
-            return true; // Indicate success
+            logger.LogInformation(
+                "Message successfully produced to DLQ topic {DlqTopic}, Partition {Partition}, Offset {Offset}",
+                deliveryResult.Topic,
+                deliveryResult.Partition.Value,
+                deliveryResult.Offset.Value);
+
+            return true;
         }
         catch (ProduceException<Null, string> pex)
         {
             logger.LogCritical(pex,
-                "FATAL error producing message to DLQ topic {DlqTopic} for original offset {OriginalOffset}. Error: {Reason}",
-                dlqTopic, failedResult.TopicPartitionOffset, pex.Error.Reason);
-            return false; // Indicate failure
+                "FATAL error producing message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}). Error: {Reason}",
+                dlqTopic, originalOffset, originalTopic, originalPartition, pex.Error.Reason);
+            return false;
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogWarning(
+                "DLQ production cancelled for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).",
+                originalOffset, originalTopic, originalPartition);
+            return false;
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
-                "Unexpected error sending message to DLQ topic {DlqTopic} for original offset {OriginalOffset}.",
-                dlqTopic, failedResult.TopicPartitionOffset);
-            return false; // Indicate failure
+                "Unexpected error sending message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).",
+                dlqTopic, originalOffset, originalTopic, originalPartition);
+            return false;
         }
     }
 
@@ -366,7 +413,8 @@ public class OutboxKafkaProcessor(
     private IConsumer<Ignore, OutboxMessageDto> BuildConsumer()
     {
         var kafkaConsumerOptions = outboxOptionsProvider.Value.KafkaConsumer;
-        if (!Enum.TryParse(kafkaConsumerOptions.AutoOffsetReset, out AutoOffsetReset autoOffsetReset))
+        if (!Enum.TryParse(kafkaConsumerOptions.AutoOffsetReset, true,
+                out AutoOffsetReset autoOffsetReset)) // Added ignoreCase=true
         {
             throw new ArgumentException(
                 $"Auto offset reset parameter {kafkaConsumerOptions.AutoOffsetReset} is invalid, could not be parsed into a valid AutoOffsetReset.");
