@@ -1,19 +1,27 @@
+using System.ComponentModel.DataAnnotations;
 using Common.Domain.Events;
 
 namespace Common.Infrastructure.Persistence.Outbox;
 
-public class OutboxMessage : OutboxMessageBase
+public class OutboxMessage
 {
-    private OutboxMessage(DomainEvent @event)
-        : base(@event)
+    private OutboxMessage(DateTimeOffset createdOn, DomainEvent @event)
     {
+        CreatedOn = createdOn;
+        Event = @event;
     }
 
+    public int Id { get; set; }
+    public DateTimeOffset CreatedOn { get; set; }
+    public DomainEvent Event { get; }
     public bool IsProcessed { get; protected set; }
     public DateTimeOffset? ProcessedOn { get; protected set; }
 
-    public static OutboxMessage Create(DomainEvent @event)
-        => new(@event);
+    [Timestamp]
+    public uint Version { get; set; }
+
+    public static OutboxMessage Create(DateTimeOffset createdOn, DomainEvent @event)
+        => new(createdOn, @event);
 
     public void MarkAsProcessed(DateTimeOffset processedOn)
     {
@@ -21,7 +29,8 @@ public class OutboxMessage : OutboxMessageBase
         ProcessedOn = processedOn;
     }
 
-    // Required for deserialization
-    public OutboxMessage() : base(null!)
+#pragma warning disable
+    public OutboxMessage() // Required for deserialization
     {}
+    #pragma warning restore
 }

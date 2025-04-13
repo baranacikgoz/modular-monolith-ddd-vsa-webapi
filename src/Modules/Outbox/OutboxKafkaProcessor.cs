@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Options;
-using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Outbox.Persistence;
@@ -21,6 +20,7 @@ public class OutboxKafkaProcessor(
     IOptions<OutboxOptions> outboxOptionsProvider,
     IServiceScopeFactory serviceScopeFactory,
     TimeProvider timeProvider,
+    IEventBus eventBus,
     ILogger<OutboxKafkaProcessor> logger
 ) : BackgroundService
 {
@@ -95,12 +95,28 @@ public class OutboxKafkaProcessor(
         // is longer than the maximum expected time for ProcessMessageAsync to complete,
         // otherwise the consumer might be kicked out of the group.
 
+        var firstConsume = true;
         while (!stoppingToken.IsCancellationRequested)
         {
             ConsumeResult<Ignore, OutboxMessageDto>? consumeResult = null;
             try
             {
-                consumeResult = consumer.Consume(stoppingToken);
+                if (firstConsume)
+                {
+                    // The first consume attempt must be wrapped in a Task with immediate consume (0 millisecond timeout) due
+                    // if the first consume call is 'consumer.Consume(stoppingToken);' and  if there is no message to fetch at first, it blocks the application startup.
+                    consumeResult = await Task.Run(() => consumer.Consume(0), stoppingToken);
+                    firstConsume = false;
+
+                    if (consumeResult is null)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    consumeResult = consumer.Consume(stoppingToken);
+                }
 
                 if (_outboxOptions.KafkaConsumer.EnablePartitionEof && consumeResult.IsPartitionEOF)
                 {
@@ -227,7 +243,6 @@ public class OutboxKafkaProcessor(
     /// MUST throw exceptions for processing errors that require DLQ intervention.
     /// SHOULD handle DbUpdateConcurrencyException by logging and re-throwing to prevent commit without DLQ.
     /// </summary>
-#pragma warning disable
     private async Task ProcessMessageAsync(
         IServiceProvider serviceProvider,
         ConsumeResult<Ignore, OutboxMessageDto> consumeResult,
@@ -239,17 +254,25 @@ public class OutboxKafkaProcessor(
         // Handle potential null message value (e.g., Kafka tombstone if config changes)
         if (outboxMessageDto == null)
         {
-            logger.LogWarning(
+            logger.LogCritical(
                 "Received null message value at offset {Offset}. Committing offset and skipping processing.", offset);
             // Treat as processed/ignorable - return normally so offset gets committed.
-            // If null is an error state, throw new InvalidOperationException("Null message value received.");
+            return;
+        }
+
+        if (outboxMessageDto.IsProcessed)
+        {
+            // This should not happen! Usually indicates an issue upstream or unexpected DB update captured by Debezium
+            logger.LogWarning(
+                "Outbox message Id {MessageId} (Offset: {Offset}) was already marked 'IsProcessed=true' in the Kafka message payload. This might indicate an upstream issue. Skipping processing and committing offset.",
+                outboxMessageDto.Id, offset);
+
             return;
         }
 
         logger.LogInformation("Starting processing for message Id {MessageId} at {Offset}...", outboxMessageDto.Id, offset);
 
         var dbContext = serviceProvider.GetRequiredService<OutboxDbContext>();
-        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
 
         var outboxMessage = await dbContext
             .OutboxMessages
@@ -258,7 +281,16 @@ public class OutboxKafkaProcessor(
 
         if (outboxMessage is null)
         {
-            throw new Exception($"Could not find outbox message with Id {outboxMessageDto.Id}.");
+            // Throw exception and trigger DLQ
+            throw new InvalidOperationException($"Could not find outbox message with Id {outboxMessageDto.Id}.");
+        }
+
+        if (outboxMessage.IsProcessed)
+        {
+            // By low chance, but probably processed by another instance. Not an issue.
+            logger.LogInformation("Outbox message Id {MessageId} (Offset: {Offset}) was already marked 'IsProcessed=true' in the Database. Likely processed by another instance. Committing offset.",
+                outboxMessage.Id, offset);
+            return;
         }
 
         var @event = outboxMessage.Event;
@@ -268,7 +300,6 @@ public class OutboxKafkaProcessor(
 
         logger.LogInformation("Successfully processed message Id {MessageId} at {Offset}.", outboxMessageDto.Id, offset);
     }
-#pragma warning restore
 
     private async Task<bool> SendToDlqAsync(IProducer<Null, string> dlqProducer, string dlqTopic,
         ConsumeResult<Ignore, OutboxMessageDto> failedResult,
