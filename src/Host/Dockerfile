@@ -4,7 +4,17 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER app
 WORKDIR /app
+EXPOSE 5001
 
+# -------- INSTALL CURL IN THE BASE STAGE --------
+# Switch to root user to install packages
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    # Clean up cache to keep image size down
+    && rm -rf /var/lib/apt/lists/*
+# Switch back to the non-root app user (important for security)
+USER app
+# -------- END OF CURL INSTALLATION --------
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build

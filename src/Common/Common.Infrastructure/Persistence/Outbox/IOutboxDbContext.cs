@@ -10,6 +10,5 @@ public interface IOutboxDbContext
 {
     DatabaseFacade Database { get; }
     DbSet<OutboxMessage> OutboxMessages { get; }
-    DbSet<DeadLetterMessage> DeadLetterMessages { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

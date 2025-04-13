@@ -5,30 +5,33 @@ namespace Common.Application.Options;
 
 public class OutboxOptions
 {
-    public int BackgroundJobPeriodInMilliseconds { get; set; }
-    public int MaxBackoffDelayInMilliseconds { get; set; }
-    public int BatchSizePerExecution { get; set; }
-    public int MaxFailCountBeforeSentToDeadLetter { get; set; }
+    public required KafkaConsumer KafkaConsumer { get; set; }
+    public required KafkaProducer KafkaDlqProducer { get; set; }
+    public required int SetupRetryDelaySeconds { get; set; }
+    public required int ConsumeErrorDelaySeconds { get; set; }
+    public required int ProcessingErrorDelaySeconds { get; set; }
 }
 
 public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
 {
     public OutboxOptionsValidator()
     {
-        RuleFor(o => o.BackgroundJobPeriodInMilliseconds)
-            .GreaterThan(0)
-            .WithMessage("BackgroundJobPeriodInMilliseconds must be greater than 0.");
+        RuleFor(o => o.KafkaConsumer)
+            .SetValidator(new KafkaConsumerValidator());
 
-        RuleFor(o => o.MaxBackoffDelayInMilliseconds)
-            .GreaterThan(0)
-            .WithMessage("MaxBackoffDelayInMilliseconds must be greater than 0.");
+        RuleFor(o => o.KafkaDlqProducer)
+            .SetValidator(new KafkaProducerValidator());
 
-        RuleFor(o => o.BatchSizePerExecution)
-            .GreaterThan(0)
-            .WithMessage("BatchSizePerExecution must be greater than 0.");
+        RuleFor(o => o.SetupRetryDelaySeconds)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("SetupRetryDelaySeconds must be at least 1.");
 
-        RuleFor(o => o.MaxFailCountBeforeSentToDeadLetter)
-            .GreaterThan(0)
-            .WithMessage("MaxFailCountBeforeSentToDeadLetter must be greater than 0.");
+        RuleFor(o => o.ConsumeErrorDelaySeconds)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("ConsumeErrorDelaySeconds must be at least 1.");
+
+        RuleFor(o => o.ProcessingErrorDelaySeconds)
+            .GreaterThanOrEqualTo(0) // Allow 0 for immediate retry, though >=1 is often better
+            .WithMessage("ProcessingErrorDelaySeconds cannot be negative.");
     }
 }
