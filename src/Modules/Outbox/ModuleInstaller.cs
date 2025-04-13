@@ -1,7 +1,5 @@
 using Common.Application.Options;
-using Common.Infrastructure.Persistence.Auditing;
-using Common.Infrastructure.Persistence.EventSourcing;
-using Common.Infrastructure.Persistence.Outbox;
+using Common.Application.Persistence.Outbox;
 using EntityFramework.Exceptions.PostgreSQL;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -18,12 +16,10 @@ public static class ModuleInstaller
     public static IServiceCollection AddOutboxModule(this IServiceCollection services)
         => services
             .AddScoped<IOutboxDbContext, OutboxDbContext>()
-            .AddScoped<InsertOutboxMessagesAndClearEventsInterceptor>()
             .AddDbContextPool<OutboxDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
                 var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
-                var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
 
                 options
                     .UseNpgsql(
@@ -33,6 +29,7 @@ public static class ModuleInstaller
 
                 if (observabilityOptions.LogGeneratedSqlQueries)
                 {
+                    var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
 #pragma warning disable
                     options.LogTo(
                         sql => logger.LogDebug(sql),                  // Log the SQL query

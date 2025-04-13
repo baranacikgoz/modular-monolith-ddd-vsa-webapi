@@ -1,10 +1,8 @@
-using Common.Application.Options;
 using Common.Application.Persistence;
 using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Events;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
@@ -14,9 +12,8 @@ namespace Products.Infrastructure.Persistence;
 
 public sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
-    ILogger<ProductsDbContext> logger,
-    IOptions<ObservabilityOptions> observabilityOptionsProvider
-    ) : BaseDbContext(options, logger, observabilityOptionsProvider), IProductsDbContext
+    IServiceScopeFactory serviceScopeFactory
+    ) : BaseDbContext(options, serviceScopeFactory), IProductsDbContext
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

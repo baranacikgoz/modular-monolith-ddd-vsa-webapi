@@ -1,9 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
-using Common.Application.ValueConverters;
-using Common.Domain.Events;
-using Common.Infrastructure.Persistence.Outbox;
 using Confluent.Kafka;
 
 namespace Outbox;

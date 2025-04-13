@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Common.Domain.Events;
 
-namespace Common.Infrastructure.Persistence.Outbox;
+namespace Common.Application.Persistence.Outbox;
 
 public class OutboxMessage
 {

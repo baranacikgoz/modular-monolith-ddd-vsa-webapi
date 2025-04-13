@@ -1,5 +1,3 @@
-using Common.Domain.StronglyTypedIds;
-
 namespace Outbox;
 
 public class OutboxMessageDto
