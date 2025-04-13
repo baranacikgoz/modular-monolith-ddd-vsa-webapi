@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Outbox.Persistence;
 
@@ -17,8 +18,30 @@ public static class ModuleInstaller
     public static IServiceCollection AddOutboxModule(this IServiceCollection services)
         => services
             .AddScoped<IOutboxDbContext, OutboxDbContext>()
-            .AddOutboxDbContextAndInterceptor()
-            // .AddHostedService<OutboxBackgroundProcessor>()
+            .AddScoped<InsertOutboxMessagesAndClearEventsInterceptor>()
+            .AddDbContextPool<OutboxDbContext>((sp, options) =>
+            {
+                var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
+                var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+                var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
+
+                options
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
+                    .UseExceptionProcessor();
+
+                if (observabilityOptions.LogGeneratedSqlQueries)
+                {
+#pragma warning disable
+                    options.LogTo(
+                        sql => logger.LogDebug(sql),                  // Log the SQL query
+                        new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
+                        LogLevel.Information                           // Set the log level
+                    );
+#pragma warning restore
+                }
+            })
             .AddHostedService<OutboxKafkaProcessor>();
 
     public static WebApplication UseOutboxModule(this WebApplication app)
@@ -36,19 +59,4 @@ public static class ModuleInstaller
 
         return app;
     }
-
-    private static IServiceCollection AddOutboxDbContextAndInterceptor(this IServiceCollection services)
-        => services
-            .AddScoped<InsertOutboxMessagesAndClearEventsInterceptor>()
-            .AddDbContext<OutboxDbContext>((sp, options) =>
-            {
-                var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-                options
-                    .UseNpgsql(
-                        connectionString,
-                        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
-                    .UseExceptionProcessor()
-                    .AddInterceptors(
-                        sp.GetRequiredService<ApplyAuditingInterceptor>());
-            });
 }
