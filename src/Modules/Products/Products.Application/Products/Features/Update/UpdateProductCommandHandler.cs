@@ -1,7 +1,6 @@
 using Common.Domain.ResultMonad;
 using Common.Application.Persistence;
 using Common.Application.CQS;
-using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
 namespace Products.Application.Products.Features.Update;

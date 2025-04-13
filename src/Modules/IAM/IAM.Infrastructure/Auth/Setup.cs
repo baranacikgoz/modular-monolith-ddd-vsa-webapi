@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Infrastructure.Extensions;
 using IAM.Application.Auth.Services;
 using IAM.Infrastructure.Auth.Jwt;
 using IAM.Infrastructure.Auth.Services;

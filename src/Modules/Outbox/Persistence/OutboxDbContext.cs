@@ -1,8 +1,5 @@
-using Common.Application.Options;
-using Common.Infrastructure.Persistence.Outbox;
+using Common.Application.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Outbox.Persistence;
 
