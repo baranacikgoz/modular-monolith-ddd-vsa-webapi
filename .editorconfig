@@ -134,6 +134,8 @@ dotnet_diagnostic.CS1591.severity = none
 # CA1018: Mark attributes with AttributeUsageAttribute
 dotnet_diagnostic.CA1018.severity = warning
 
+dotnet_diagnostic.CA1031.severity = suggestion
+
 dotnet_diagnostic.CA1034.severity = none
 
 dotnet_diagnostic.CA1040.severity = suggestion
@@ -182,7 +184,7 @@ dotnet_diagnostic.CA1725.severity = warning
 dotnet_diagnostic.CA1802.severity = warning
 
 # CA1805: Do not initialize unnecessarily
-dotnet_diagnostic.CA1805.severity = warning
+dotnet_diagnostic.CA1805.severity = suggestion
 
 # CA1810: Do not initialize unnecessarily
 dotnet_diagnostic.CA1810.severity = warning
@@ -338,6 +340,8 @@ dotnet_diagnostic.CA2249.severity = warning
 # Set severity for SonarAnalyzer rule S2094
 dotnet_diagnostic.S2094.severity = none
 
+dotnet_diagnostic.S2139.severity = suggestion
+
 dotnet_diagnostic.S2699.severity = silent
 
 # Set severity for SonarAnalyzer rule S3267
@@ -347,6 +351,8 @@ dotnet_diagnostic.S3267.severity = none
 dotnet_diagnostic.S3604.severity = suggestion
 
 dotnet_diagnostic.S4136.severity = none
+
+dotnet_diagnostic.S6667.severity = none
 
 dotnet_diagnostic.S6964.severity = none
 
@@ -574,9 +580,6 @@ dotnet_diagnostic.CA1861.severity = none
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1825.severity = none
 dotnet_diagnostic.S4581.severity = none
-
-[**/ExceptionHandlingMiddleware.cs] # Allow general "Exception" catch
-dotnet_diagnostic.CA1031.severity = none
 
 [*/tests/*] # Allow test projects to have underscores
 dotnet_diagnostic.CA1707.severity = none

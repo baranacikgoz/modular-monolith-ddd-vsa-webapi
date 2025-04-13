@@ -87,5 +87,6 @@
     <PackageVersion Include="OpenTelemetry.Exporter.Zipkin" Version="1.11.1" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    <PackageVersion Include="Confluent.Kafka" Version="2.9.0" />
   </ItemGroup>
 </Project>

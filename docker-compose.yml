@@ -2,8 +2,8 @@ name: mm-local-development
 
 services:
   host:
-    image: ${DOCKER_REGISTRY-}host
     container_name: mm.host
+    image: ${DOCKER_REGISTRY-}host
     restart: "no"
     build:
       context: .
@@ -11,14 +11,22 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 5001:5001
+      - "5001:5001"
     depends_on:
-      - mm.database
-      # - mm.rabbitmq
+      # Wait for main services to be healthy
+      mm.postgres:
+        condition: service_healthy
+      mm.kafka:
+        condition: service_healthy
+      mm.debezium:
+        condition: service_healthy
+      # Wait for init tasks to complete successfully
+      init-kafka-topics:
+        condition: service_completed_successfully
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
-      - DatabaseOptions__ConnectionString=Server=mm.database;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - EventBusOptions__UseInMemoryEventBus=true
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__OtlpLoggingEndpoint=http://mm.seq/ingest/otlp/v1/logs
@@ -37,21 +45,77 @@ services:
       - CachingOptions__Redis__Port=6379
       - CachingOptions__Redis__Password=admin
       - CachingOptions__Redis__AppName=modular-monolith-
+      - OutboxOptions__KafkaConsumer__BootstrapServers=mm.kafka:9092
+      - OutboxOptions__KafkaDlqProducer__BootstrapServers=mm.kafka:9092
+    healthcheck:
+      # Use curl to hit the root endpoint inside the container
+      # Assumes your app returns 2xx on '/' - ADJUST URL IF NEEDED
+      # -f: Fail silently on server errors (non-2xx status)
+      # -s: Silent mode
+      # -o /dev/null: Discard output
+      # || exit 1: Fail if curl itself errors (e.g., connection refused)
+      test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/swagger || exit 1" ]
+      interval: 5s        # Check every 15 seconds
+      timeout: 5s          # Wait max 5 seconds for response
+      retries: 3           # Mark as unhealthy after 3 consecutive failures
+      start_period: 15s    # Grace period for startup (adjust as needed)
 
-  mm.database:
+  mm.postgres:
+    container_name: mm.postgres
     image: postgres:latest
-    container_name: mm.database
     restart: "no"
     volumes:
-      - ./.containers/mm.database:/var/lib/postgresql/data
+      - ./.containers/mm.postgres:/var/lib/postgresql/data
     networks:
       - local_shared_network
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # This is required for debezium connector
+  # Init container to execute separate SQL scripts for PostgreSQL initialization.
+  init-db-publication:
+    image: postgres:latest
+    container_name: mm.init-db-publication
+    restart: "no"
+    depends_on:
+      mm.postgres:
+        condition: service_healthy
+#      host:
+#        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./db-init:/sql
+    environment:
+      - PGPASSWORD=postgres
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Command now handles potential "already exists" errors more gracefully
+    command: >
+      "echo 'Waiting for PostgreSQL health check...' &&
+       # This assumes mm.postgres becomes healthy first due to depends_on
+       echo 'Waiting for Outbox.OutboxMessages table to be created...' &&
+       until psql -h mm.postgres -U postgres -d modular-monolith-db -c \"SELECT 1 FROM \\\"Outbox\\\".\\\"OutboxMessages\\\" LIMIT 1;\" > /dev/null 2>&1; do
+         echo 'Table not found. Waiting 5 seconds...'; sleep 5;
+       done;
+       echo 'Table found.' &&
+       echo 'Executing ALTER SYSTEM...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -f /sql/alter-wal.sql &&
+       echo 'Reloading configuration...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -c \"SELECT pg_reload_conf();\" &&
+       echo 'Executing CREATE PUBLICATION...' &&
+       psql -h mm.postgres -U postgres -d modular-monolith-db -f /sql/create-publication.sql ||
+       ( echo 'CREATE PUBLICATION might have failed (possibly already exists, which is OK)' && exit 0 ) &&
+       echo 'Database publication init script completed successfully.'"
 
   # mm.redis:
   #   image: redis/redis-stack:latest
@@ -69,8 +133,8 @@ services:
   #   command: redis-server --requirepass admin
 
   mm.jaeger:
-    image: jaegertracing/all-in-one:latest
     container_name: mm.jaeger
+    image: jaegertracing/all-in-one:latest
     restart: "no"
     networks:
       - local_shared_network
@@ -91,7 +155,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
       - ./.containers/mm.prometheus:/prometheus
       - ./observability/prometheus:/etc/prometheus
@@ -103,15 +167,15 @@ services:
       - --web.console.templates=/usr/share/prometheus/consoles
 
   mm.postgres-exporter:
-    image: prometheuscommunity/postgres-exporter
     container_name: mm.postgres-exporter
+    image: prometheuscommunity/postgres-exporter
     restart: "no"
     networks:
       - local_shared_network
     ports:
-      - 9187:9187  # Expose PostgreSQL exporter metrics
+      - "9187:9187"  # Expose PostgreSQL exporter metrics
     environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.database:5432/postgres?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.postgres:5432/postgres?sslmode=disable
 
   mm.grafana:
     container_name: mm.grafana
@@ -120,7 +184,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
       - GF_SECURITY_ADMIN_USER=admin
@@ -153,11 +217,127 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 5341:80
+      - "5341:80"
     volumes:
       - ./.containers/mm.seq:/data
     environment:
       - ACCEPT_EULA=Y
+
+  mm.kafka:
+    container_name: mm.kafka
+    image: docker.io/bitnami/kafka:3.9
+    restart: unless-stopped
+    networks:
+      - local_shared_network
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    volumes:
+      - ./.containers/mm.kafka:/bitnami
+    environment:
+      # Create internal topics here, for other topics use init-kafka-topics container
+      - KAFKA_CREATE_TOPICS=my_connect_configs:1:1:compact,my_connect_offsets:3:1:compact,my_connect_statuses:1:1:compact
+      # - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@mm.kafka:9093
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list > /dev/null || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  init-kafka-topics:
+    image: docker.io/bitnami/kafka:3.9
+    container_name: mm.init-kafka-topics
+    restart: "no"
+    depends_on:
+      mm.kafka:
+        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./kafka-init:/tmp/scripts
+    entrypoint: ["/bin/sh", "-c"]
+    # Improved command with check and handling "already exists"
+    command: >
+      "echo 'Kafka is healthy. Checking/Creating topic...' &&
+       sh /tmp/scripts/create-outbox-topic.sh &&
+       echo 'Kafka topic init script completed successfully.'"
+
+  mm.kafka-ui:
+    container_name: mm.kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    networks:
+      - local_shared_network
+    ports:
+      - "8080:8080"
+    environment:
+      - DYNAMIC_CONFIG_ENABLED=true
+
+  mm.debezium:
+    container_name: mm.debezium
+    image: debezium/connect:2.7.3.Final
+    depends_on:
+      - mm.kafka
+      - mm.postgres
+    networks:
+      - local_shared_network
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: mm.kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8083/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # This is for applying outbox-connector to debezium
+  # Init container to deploy the Debezium connector using config from a file.
+  init-debezium-connector:
+    image: curlimages/curl:latest
+    container_name: mm.init-debezium-connector
+    restart: "no" # Ensure it only runs once
+    depends_on:
+      mm.debezium: # Depends on Debezium running
+        condition: service_healthy # Wait for Debezium API to be healthy
+#      host:
+#        condition: service_healthy
+    networks:
+      - local_shared_network
+    volumes:
+      - ./debezium-init:/connector-config
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Improved command: loop until POST succeeds or fails definitively
+    command: >
+      "echo 'Debezium is healthy. Attempting to deploy connector...' &&
+       tries=0 &&
+       max_tries=12 &&
+       # Loop until success (201 Created) or conflict (409 Already Exists)
+       until curl -v -o /dev/null --fail -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d @/connector-config/outbox-connector.json http://mm.debezium:8083/connectors | grep -E '^(201|409)$$'; do
+         tries=$$(($$tries + 1)) &&
+         if [ $$tries -ge $$max_tries ]; then
+           echo 'Failed to deploy connector after multiple attempts.' >&2; exit 1;
+         fi;
+         echo 'Failed to deploy connector (maybe API not fully ready?), retrying in 5 seconds... ($$tries/$$max_tries)' >&2;
+         sleep 5;
+       done &&
+       echo 'Debezium connector deployed (or already exists) successfully.'"
 
 networks:
   local_shared_network:

@@ -8,7 +8,8 @@ namespace Common.Infrastructure.Persistence.Outbox;
 /// </summary>
 /// <param name="outboxDbContext"></param>
 public class InsertOutboxMessagesAndClearEventsInterceptor(
-    IOutboxDbContext outboxDbContext
+    IOutboxDbContext outboxDbContext,
+    TimeProvider timeProvider
     ) : SaveChangesInterceptor
 {
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -23,6 +24,7 @@ public class InsertOutboxMessagesAndClearEventsInterceptor(
         }
 
         List<OutboxMessage>? outboxMessages = null;
+        var utcNow = timeProvider.GetUtcNow();
 
         foreach (var aggregateRoot in dbContext
                                       .ChangeTracker
@@ -34,7 +36,7 @@ public class InsertOutboxMessagesAndClearEventsInterceptor(
 
             foreach (var @event in aggregateRoot.Events)
             {
-                outboxMessages.Add(OutboxMessage.Create(@event));
+                outboxMessages.Add(OutboxMessage.Create(utcNow, @event));
             }
 
             aggregateRoot.ClearEvents();
