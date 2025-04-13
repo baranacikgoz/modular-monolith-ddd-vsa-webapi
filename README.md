@@ -25,14 +25,14 @@ This repository includes the following features:
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
-- **Event-Sourcing Aggregates**: Supports event sourcing for audit/event logging with future plans for full event sourcing.
+- **Event-Sourcing Aggregates**: Supports event sourcing infrastructure for audit/event logging currently, with future plans for full event sourcing.
 - **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Seq for observability.
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
-- **Repository Pattern with Ardalis Specifications**: Implements repository pattern adhering to the Open-Closed Principle.
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
 - **Hangfire**: Supports background job processing.
 - **MassTransit & RabbitMQ**: Facilitates message-based communication.
 - **Transactional Outbox Pattern**: Ensures reliable message delivery.
+- **CDC - Kafka & Debezium**: Processes outbox messages with Kafka & Debezium.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
 - **Localization & Multi-Language Support**: Supports multiple languages and localization.
@@ -43,6 +43,7 @@ This repository includes the following features:
 - **Functional Programming & Railway-Oriented Syntax**: Encourages functional programming practices and method chaining.
 - **Docker-Compose Support**: Simplifies development setup with Docker-Compose.
 - **Grafana Templates for Monitoring**: Includes Grafana templates for monitoring and observability.
+and more.
 
 ## Requirements
 
@@ -50,8 +51,6 @@ To use or contribute to this project, you will need:
 
 - .NET 9 SDK
 - Docker
-- Access to a SQL Server instance (if applicable)
-- Other dependencies as specified in the project files
 
 ## Getting Started
 
