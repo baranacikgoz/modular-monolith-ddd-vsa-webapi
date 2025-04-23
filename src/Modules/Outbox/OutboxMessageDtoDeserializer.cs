@@ -7,7 +7,7 @@ namespace Outbox;
 
 public class OutboxMessageDtoDeserializer : IDeserializer<OutboxMessageDto>
 {
-    private static readonly JsonSerializerOptions _erializerOptions =
+    private static readonly JsonSerializerOptions _serializerOptions =
         new()
         {
             PropertyNameCaseInsensitive = true,
@@ -25,6 +25,6 @@ public class OutboxMessageDtoDeserializer : IDeserializer<OutboxMessageDto>
             throw new ArgumentNullException(nameof(data));
         }
 
-        return JsonSerializer.Deserialize<OutboxMessageDto>(data, _erializerOptions) ?? throw new ArgumentNullException(nameof(data));
+        return JsonSerializer.Deserialize<OutboxMessageDto>(data, _serializerOptions) ?? throw new ArgumentNullException(nameof(data));
     }
 }
