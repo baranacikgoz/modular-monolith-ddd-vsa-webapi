@@ -6,14 +6,14 @@ using IAM.Application.Users.DTOs;
 
 namespace IAM.Application.Users.Features.GetById;
 
-public sealed class GetUserByIdQueryHandler(IIAMDbContext dbContext) : IQueryHandler<GetUserByIdQuery, ApplicationUserDto>
+public sealed class GetUserByIdQueryHandler(IIAMDbContext dbContext) : IQueryHandler<GetUserByIdQuery, ApplicationUserResponse>
 {
-    public async Task<Result<ApplicationUserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ApplicationUserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         => await dbContext
                 .Users
                 .TagWith(nameof(GetUserByIdQueryHandler), request.Id)
                 .Where(u => u.Id == request.Id)
-                .Select(u => new ApplicationUserDto
+                .Select(u => new ApplicationUserResponse
                 {
                     Id = u.Id,
                     Name = u.Name,

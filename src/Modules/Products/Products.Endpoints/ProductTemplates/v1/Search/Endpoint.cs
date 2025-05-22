@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Application.Queries.Pagination;
 using Products.Application.ProductTemplates.DTOs;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
+using Common.Application.Pagination;
 using MediatR;
 using Products.Application.ProductTemplates.Features.Search;
 
@@ -20,15 +20,15 @@ internal static class Endpoint
             .MapGet("search", SearchProductTemplatesAsync)
             .WithDescription("Search product templates.")
             .MustHavePermission(CustomActions.Search, CustomResources.ProductTemplates)
-            .Produces<PaginationResult<ProductTemplateDto>>(StatusCodes.Status200OK)
-            .TransformResultTo<PaginationResult<ProductTemplateDto>>();
+            .Produces<PaginationResponse<ProductTemplateResponse>>(StatusCodes.Status200OK)
+            .TransformResultTo<PaginationResponse<ProductTemplateResponse>>();
     }
 
-    private static async Task<Result<PaginationResult<ProductTemplateDto>>> SearchProductTemplatesAsync(
+    private static async Task<Result<PaginationResponse<ProductTemplateResponse>>> SearchProductTemplatesAsync(
         [AsParameters] Request request,
         [FromServices] ISender sender,
         CancellationToken cancellationToken)
-        => await sender.Send(new SearchProductTemplatesQuery
+        => await sender.Send(new SearchProductTemplatesRequest
         {
             Brand = request.Brand,
             Model = request.Model,

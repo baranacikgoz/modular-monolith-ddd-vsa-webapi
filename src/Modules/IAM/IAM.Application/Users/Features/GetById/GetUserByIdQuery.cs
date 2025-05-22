@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace IAM.Application.Users.Features.GetById;
 
-public sealed record GetUserByIdQuery(ApplicationUserId Id) : IQuery<ApplicationUserDto>;
+public sealed record GetUserByIdQuery(ApplicationUserId Id) : IQuery<ApplicationUserResponse>;
 
 public sealed class GetUserByIdQueryValidator : CustomValidator<GetUserByIdQuery>
 {

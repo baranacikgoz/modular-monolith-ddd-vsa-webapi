@@ -7,15 +7,15 @@ using Products.Application.ProductTemplates.DTOs;
 
 namespace Products.Application.ProductTemplates.Features.GetById;
 
-public class GetProductTemplateByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateDto>
+public class GetProductTemplateByIdQueryHandler(IProductsDbContext dbContext) : IQueryHandler<GetProductTemplateByIdQuery, ProductTemplateResponse>
 {
-    public async Task<Result<ProductTemplateDto>> Handle(GetProductTemplateByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ProductTemplateResponse>> Handle(GetProductTemplateByIdQuery request, CancellationToken cancellationToken)
         => await dbContext
             .ProductTemplates
             .AsNoTracking()
             .TagWith(nameof(GetProductTemplateByIdQuery), request.Id)
             .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
-            .Select(pt => new ProductTemplateDto
+            .Select(pt => new ProductTemplateResponse
             {
                 Id = pt.Id,
                 Brand = pt.Brand,

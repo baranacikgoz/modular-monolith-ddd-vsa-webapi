@@ -1,27 +1,27 @@
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Products.Application.Stores.DTOs;
-using Common.Application.Queries.Pagination;
 using Common.Application.CQS;
+using Common.Application.Pagination;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
 namespace Products.Application.Stores.Features.Search;
 
-public sealed class SearchStoresQueryHandler(IProductsDbContext dbContext) : IQueryHandler<SearchStoresQuery, PaginationResult<StoreDto>>
+public sealed class SearchStoresQueryHandler(IProductsDbContext dbContext) : IQueryHandler<SearchStoresRequest, PaginationResponse<StoreResponse>>
 {
-    public async Task<Result<PaginationResult<StoreDto>>> Handle(SearchStoresQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginationResponse<StoreResponse>>> Handle(SearchStoresRequest request, CancellationToken cancellationToken)
         => await dbContext
             .Stores
             .AsNoTracking()
-            .TagWith(nameof(SearchStoresQuery))
+            .TagWith(nameof(SearchStoresRequest))
             .WhereIf(request.EnsureOwnership!, condition: request.EnsureOwnership is not null)
             .WhereIf(s => EF.Functions.ILike(s.Name, $"%{request.Name}%"), condition: !string.IsNullOrWhiteSpace(request.Name))
             .WhereIf(s => EF.Functions.ILike(s.Description, $"%{request.Description}%"), condition: !string.IsNullOrWhiteSpace(request.Description))
             .WhereIf(s => EF.Functions.ILike(s.Address, $"%{request.Address}%"), condition: !string.IsNullOrWhiteSpace(request.Address))
             .PaginateAsync(
-                paginationQuery: request,
-                selector: s => new StoreDto
+                request: request,
+                selector: s => new StoreResponse
                 {
                     Id = s.Id,
                     OwnerId = s.OwnerId,

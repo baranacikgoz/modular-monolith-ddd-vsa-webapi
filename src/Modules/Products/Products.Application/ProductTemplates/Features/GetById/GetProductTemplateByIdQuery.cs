@@ -9,7 +9,7 @@ using Products.Domain.ProductTemplates;
 
 namespace Products.Application.ProductTemplates.Features.GetById;
 
-public sealed record GetProductTemplateByIdQuery(ProductTemplateId Id) : IQuery<ProductTemplateDto>
+public sealed record GetProductTemplateByIdQuery(ProductTemplateId Id) : IQuery<ProductTemplateResponse>
 {
     public Expression<Func<ProductTemplate, bool>>? EnsureOwnership { get; init; }
 }

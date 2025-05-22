@@ -1,15 +1,14 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.ModelBinders;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Products.Application.Stores.Features.RemoveProduct;
-using Products.Domain.Products;
-using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.RemoveProduct;
 
@@ -26,12 +25,20 @@ internal static class Endpoint
     }
 
     private static async Task<Result> RemoveProductAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] StoreId id,
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>] ProductId productId,
-        [FromServices] ISender sender,
+        [AsParameters] Request request,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender.Send(new RemoveProductCommand(
-                StoreId: id,
-                ProductId: productId),
-            cancellationToken);
+        => await dbContext
+            .Stores
+            .TagWith(nameof(RemoveProductCommand), "StoreById", request.Id)
+            .Where(s => s.Id == request.Id)
+            .Include(s => s.Products.Where(p => p.Id == request.ProductId))
+            .SingleAsResultAsync(cancellationToken)
+            .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == request.ProductId))
+            .TapAsync(tuple =>
+            {
+                var (store, product) = tuple;
+                store.RemoveProduct(product);
+            })
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
 }

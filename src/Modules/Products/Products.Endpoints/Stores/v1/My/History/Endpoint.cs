@@ -1,7 +1,7 @@
 using Common.Application.Auth;
 using Common.Application.DTOs;
 using Common.Application.Extensions;
-using Common.Application.Queries.Pagination;
+using Common.Application.Pagination;
 using Common.Domain.ResultMonad;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -21,11 +21,11 @@ internal static class Endpoint
             .MapGet("my/history", GetStoreHistoryAsync)
             .WithDescription("Get my store's history.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
-            .Produces<PaginationResult<EventDto>>(StatusCodes.Status200OK)
-            .TransformResultTo<PaginationResult<EventDto>>();
+            .Produces<PaginationResponse<EventDto>>(StatusCodes.Status200OK)
+            .TransformResultTo<PaginationResponse<EventDto>>();
     }
 
-    private static async Task<Result<PaginationResult<EventDto>>> GetStoreHistoryAsync(
+    private static async Task<Result<PaginationResponse<EventDto>>> GetStoreHistoryAsync(
         [AsParameters] Request request,
         [FromServices] ICurrentUser currentUser,
         [FromServices] ISender sender,
