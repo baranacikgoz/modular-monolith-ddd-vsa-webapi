@@ -1,42 +1,63 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Application.Stores.Features.AddProduct;
-using Products.Application.Stores.Features.GetStoreIdByOwnerId;
+using Products.Domain.Products;
+using Products.Domain.ProductTemplates;
+using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.My.AddProduct;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder storesApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder v1StoresApiGroup)
     {
-        storesApiGroup
-            .MapPost("my/products", AddProductAsync)
+        v1StoresApiGroup
+            .MapPost("my/products", AddProductToMyStoreAsync)
             .WithDescription("Add product to my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Products)
             .Produces(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
 
-    private static async Task<Result<Response>> AddProductAsync(
+    private static async Task<Result<Response>> AddProductToMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
-        [FromServices] ISender sender,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new AddProductCommand(
-                    StoreId: storeId,
-                    ProductTemplateId: request.ProductTemplateId,
-                    Name: request.Name,
-                    Description: request.Description,
-                    Quantity: request.Quantity,
-                    Price: request.Price),
-                    cancellationToken))
-                .MapAsync(productId => new Response { Id = productId });
+        => await dbContext
+            .Stores
+            .TagWith(nameof(AddProductToMyStoreAsync), "StoreByOwner", currentUser.Id)
+            .Where(s => s.OwnerId == currentUser.Id)
+            .SingleAsResultAsync(cancellationToken)
+            .CombineAsync(store => dbContext
+                .ProductTemplates
+                .TagWith(nameof(AddProductToMyStoreAsync), "ActiveProductTemplateById", request.ProductTemplateId)
+                .Where(pt => pt.IsActive)
+                .Where(pt => pt.Id == request.ProductTemplateId)
+                .SingleAsResultAsync(cancellationToken))
+            .CombineAsync<Store, ProductTemplate, Product>(tuple =>
+            {
+                var (store, productTemplate) = tuple;
+                return Product.Create(store.Id, productTemplate.Id, request.Name, request.Description, request.Quantity, request.Price);
+            })
+            .TapAsync(triple =>
+            {
+                var (store, _, product) = triple;
+                store.AddProduct(product);
+            })
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .MapAsync(triple =>
+            {
+                var (_, _, product) = triple;
+                return new Response
+                {
+                    Id = product.Id,
+                };
+            });
 }

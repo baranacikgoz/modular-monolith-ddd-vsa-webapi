@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Endpoint = Products.Endpoints.Stores.v1.EventHistory.Endpoint;
 
 namespace Products.Endpoints.Stores;
 
@@ -18,9 +17,10 @@ public static class Setup
         v1.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoresApiGroup);
-        Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.EventHistory.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
+        
         v1.My.Create.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.Get.Endpoint.MapEndpoint(v1StoresApiGroup);

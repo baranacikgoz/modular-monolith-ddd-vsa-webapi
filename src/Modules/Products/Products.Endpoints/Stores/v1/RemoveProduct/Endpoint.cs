@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Products.Application.Stores.Features.RemoveProduct;
 using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.RemoveProduct;
@@ -30,7 +29,7 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await dbContext
             .Stores
-            .TagWith(nameof(RemoveProductCommand), "StoreById", request.Id)
+            .TagWith(nameof(RemoveProductAsync), "StoreById", request.Id)
             .Where(s => s.Id == request.Id)
             .Include(s => s.Products.Where(p => p.Id == request.ProductId))
             .SingleAsResultAsync(cancellationToken)

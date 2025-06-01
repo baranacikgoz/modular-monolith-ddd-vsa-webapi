@@ -2,9 +2,9 @@ using Common.Application.DTOs;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Stores;
 
-namespace Products.Application.Stores.DTOs;
+namespace Products.Endpoints.Stores.v1.Search;
 
-public sealed record StoreResponse : AuditableEntityResponse<StoreId>
+public sealed record Response : AuditableEntityResponse<StoreId>
 {
     public required ApplicationUserId OwnerId { get; init; }
     public required string Name { get; init; }

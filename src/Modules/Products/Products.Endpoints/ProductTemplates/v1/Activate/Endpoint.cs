@@ -1,14 +1,12 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.ModelBinders;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Application.ProductTemplates.Features.ActivateDeactivate;
-using Products.Domain.ProductTemplates;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Activate;
 
@@ -25,8 +23,14 @@ internal static class Endpoint
     }
 
     private static async Task<Result> ActivateProductTemplateAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductTemplateId>>] ProductTemplateId id,
-        [FromServices] ISender sender,
+        [AsParameters] Request request,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender.Send(new ActivateDeactivateProductTemplateCommand(id, Activate: true), cancellationToken);
+        => await dbContext
+            .ProductTemplates
+            .TagWith(nameof(ActivateProductTemplateAsync), request.Id)
+            .Where(p => p.Id == request.Id)
+            .SingleAsResultAsync(cancellationToken)
+            .TapAsync(productTemplate => productTemplate.Activate())
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
 }

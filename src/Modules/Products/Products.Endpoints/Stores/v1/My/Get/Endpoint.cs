@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
-using Products.Application.Stores.Features.GetById;
-using Products.Application.Stores.Features.GetStoreIdByOwnerId;
-using MediatR;
+using Common.Application.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.My.Get;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder myStoresApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder v1StoresApiGroup)
     {
-        myStoresApiGroup
+        v1StoresApiGroup
             .MapGet("my", GetMyStoreAsync)
             .WithDescription("Get my store.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
@@ -25,22 +25,24 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> GetMyStoreAsync(
         [FromServices] ICurrentUser currentUser,
-        [FromServices] ISender sender,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new GetStoreByIdQuery(storeId), cancellationToken))
-                .MapAsync(storeDto => new Response
-                {
-                    Id = storeDto.Id,
-                    OwnerId = storeDto.OwnerId,
-                    Name = storeDto.Name,
-                    Description = storeDto.Description,
-                    Address = storeDto.Address,
-                    ProductCount = storeDto.ProductCount,
-                    CreatedBy = storeDto.CreatedBy,
-                    CreatedOn = storeDto.CreatedOn,
-                    LastModifiedBy = storeDto.LastModifiedBy,
-                    LastModifiedOn = storeDto.LastModifiedOn,
-                });
+        => await dbContext
+            .Stores
+            .AsNoTracking()
+            .TagWith(nameof(GetMyStoreAsync), currentUser.Id)
+            .Select(store => new Response
+            {
+                Id = store.Id,
+                OwnerId = store.OwnerId,
+                Name = store.Name,
+                Description = store.Description,
+                Address = store.Address,
+                ProductCount = store.Products.Count,
+                CreatedBy = store.CreatedBy,
+                CreatedOn = store.CreatedOn,
+                LastModifiedBy = store.LastModifiedBy,
+                LastModifiedOn = store.LastModifiedOn,
+            })
+            .SingleAsResultAsync(cancellationToken);
 }
