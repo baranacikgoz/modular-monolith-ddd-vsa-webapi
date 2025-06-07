@@ -1,5 +1,3 @@
-using Common.Domain.ResultMonad;
-
 namespace Common.Application.Pagination;
 
 public record PaginationResponse<T>(ICollection<T> Data, int TotalCount, int PageNumber, int PageSize)

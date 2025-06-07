@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Common.Application.Localization;
+using Common.Application.ModelBinders;
 using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,8 @@ namespace Products.Endpoints.Stores.v1.AddProduct;
 
 public sealed record Request
 {
-    [FromRoute, JsonConverter(typeof(StronglyTypedIdReadOnlyJsonConverter<StoreId>))]
-    public required StoreId StoreId { get; init; }
+    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    public required StoreId Id { get; init; }
 
     [FromBody]
     public required RequestBody Body { get; init; }
@@ -33,7 +34,7 @@ public sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
-        RuleFor(x => x.StoreId)
+        RuleFor(x => x.Id)
             .NotEmpty()
             .WithMessage(localizer["Stores.v1.AddProduct.StoreId.NotEmpty"]);
 

@@ -8,7 +8,6 @@ using Common.InterModuleRequests;
 using Common.Infrastructure.Persistence;
 using IAM.Infrastructure;
 using Host.Middlewares;
-using Common.Infrastructure.CQS;
 using Common.Application.Options;
 
 namespace Host.Infrastructure;
@@ -101,8 +100,7 @@ internal static partial class Setup
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
-            .AddCommonPersistence()
-            .AddCommonCommandsQueriesHandlers(_moduleAssemblies);
+            .AddCommonPersistence();
 
     private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
         => services.AddScoped<EnrichLogsWithUserInfoMiddleware>();

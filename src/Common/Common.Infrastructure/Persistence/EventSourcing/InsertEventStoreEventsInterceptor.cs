@@ -38,6 +38,8 @@ public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurre
 
                 // Do not add to DbSet directly here, it throws collection modified exception
             }
+
+            aggregateRoot.ClearEvents();
         }
 
         if (eventsToAdd?.Count > 0)

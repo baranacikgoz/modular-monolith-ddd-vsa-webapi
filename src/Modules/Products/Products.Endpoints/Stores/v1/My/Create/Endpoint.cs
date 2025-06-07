@@ -21,7 +21,7 @@ internal static class Endpoint
             .WithDescription("Create my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
             .Produces<Response>(StatusCodes.Status200OK)
-            .TransformResultTo<StoreId>();
+            .TransformResultTo<Response>();
     }
 
     private static async Task<Result<Response>> CreateMyStoreAsync(

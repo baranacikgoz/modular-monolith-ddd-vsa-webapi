@@ -1,7 +1,6 @@
 using Common.Application.Localization;
 using Common.Application.ModelBinders;
 using Common.Application.Pagination;
-using Common.Application.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Products.Domain.Stores;

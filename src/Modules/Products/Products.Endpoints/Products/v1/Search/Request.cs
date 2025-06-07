@@ -11,10 +11,10 @@ namespace Products.Endpoints.Products.v1.Search;
 
 public sealed record Request : PaginationRequest
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    [FromQuery, ModelBinder<StronglyTypedIdBinder<StoreId>>]
     public StoreId? StoreId { get; set; }
 
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>]
+    [FromQuery, ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>]
     public ApplicationUserId? OwnerId { get; set; }
 
     [FromQuery]

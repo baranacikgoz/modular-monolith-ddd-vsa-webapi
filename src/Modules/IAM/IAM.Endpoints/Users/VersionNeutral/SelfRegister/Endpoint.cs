@@ -1,13 +1,15 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using MediatR;
-using IAM.Application.OTP.Features.VerifyThenRemove;
-using IAM.Application.Users.Features.Register;
 using IAM.Application.Auth;
+using IAM.Application.Extensions;
+using IAM.Application.Otp.Services;
+using IAM.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace IAM.Endpoints.Users.VersionNeutral.SelfRegister;
 
@@ -25,17 +27,26 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> RegisterAsync(
         [FromBody] Request request,
-        [FromServices] ISender sender,
+        [FromServices] UserManager<ApplicationUser> userManager,
+        [FromServices] IOtpService otpService,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new VerifyThenRemoveOtpCommand(request.PhoneNumber, request.Otp), cancellationToken)
-                .BindAsync(() => sender.Send(new RegisterUserCommand(
-                    PhoneNumber: request.PhoneNumber,
-                    Name: request.Name,
-                    LastName: request.LastName,
-                    NationalIdentityNumber: request.NationalIdentityNumber,
-                    BirthDate: request.BirthDate,
-                    Roles: [CustomRoles.Basic]
-                    ), cancellationToken))
-                .MapAsync(id => new Response { Id = id });
+        => await otpService
+            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, cancellationToken)
+            .BindAsync(() => ApplicationUser.Create(
+                request.Name,
+                request.LastName,
+                request.PhoneNumber,
+                request.NationalIdentityNumber,
+                DateOnly.ParseExact(request.BirthDate, Domain.Constants.TurkishDateFormat, CultureInfo.InvariantCulture)))
+            .BindAsync(async user =>
+            {
+                var identityResult = await userManager.CreateAsync(user);
+                return identityResult.ToResult(user);
+            })
+            .BindAsync(async user =>
+            {
+                var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
+                return identityResult.ToResult(user);
+            })
+            .MapAsync(user => new Response { Id = user.Id });
 }

@@ -31,6 +31,7 @@ internal static class Endpoint
             .ProductTemplates
             .AsNoTracking()
             .TagWith(nameof(GetProductTemplateAsync), request.Id)
+            .Where(p => p.Id == request.Id)
             .Select(pt => new Response
             {
                 Id = pt.Id,

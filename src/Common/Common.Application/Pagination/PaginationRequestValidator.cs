@@ -1,6 +1,5 @@
 using Common.Application.Localization;
 using Common.Application.Validation;
-using Common.Domain.Entities;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 

@@ -31,8 +31,8 @@ internal static class Endpoint
         CancellationToken cancellationToken)
         => await dbContext
             .Stores
-            .TagWith(nameof(AddProductAsync), "StoreById", request.StoreId)
-            .Where(s => s.Id == request.StoreId)
+            .TagWith(nameof(AddProductAsync), "StoreById", request.Id)
+            .Where(s => s.Id == request.Id)
             .SingleAsResultAsync(cancellationToken)
             .CombineAsync(store => dbContext
                 .ProductTemplates
