@@ -1,12 +1,11 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
-using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence.Seeding;
 
 internal sealed partial class Seeder(
     IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse> requestClient,
-    IProductsDbContext dbContext
+    ProductsDbContext dbContext
     )
 {
     /// <summary>

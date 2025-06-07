@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Common.Application.ModelBinders;
-using Products.Domain.Stores;
-using Products.Application.Stores.Features.Update;
-using MediatR;
+using Common.Application.Persistence;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.Update;
 
@@ -25,14 +23,14 @@ internal static class Endpoint
     }
 
     private static async Task<Result> UpdateStoreAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] StoreId id,
-        [FromBody] Request request,
-        [FromServices] ISender sender,
+        [AsParameters] Request request,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender.Send(new UpdateStoreCommand(
-                Id: id,
-                Name: request.Name,
-                Description: request.Description,
-                Address: request.Address),
-            cancellationToken);
+        => await dbContext
+            .Stores
+            .TagWith(nameof(UpdateStoreAsync), request.Id)
+            .Where(s => s.Id == request.Id)
+            .SingleAsResultAsync(cancellationToken)
+            .TapAsync(store => store.Update(request.Body.Name, request.Body.Description, request.Body.Address))
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
 }

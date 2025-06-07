@@ -1,14 +1,15 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.ModelBinders;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Application.Stores.Features.AddProduct;
+using Products.Domain.Products;
+using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.AddProduct;
 
@@ -25,18 +26,37 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> AddProductAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] StoreId id,
-        [FromBody] Request request,
-        [FromServices] ISender sender,
+        [AsParameters] Request request,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new AddProductCommand(
-                    StoreId: id,
-                    ProductTemplateId: request.ProductTemplateId,
-                    Name: request.Name,
-                    Description: request.Description,
-                    Quantity: request.Quantity,
-                    Price: request.Price),
-                    cancellationToken)
-                .MapAsync(productId => new Response { Id = productId });
+        => await dbContext
+            .Stores
+            .TagWith(nameof(AddProductAsync), "StoreById", request.Id)
+            .Where(s => s.Id == request.Id)
+            .SingleAsResultAsync(cancellationToken)
+            .CombineAsync(store => dbContext
+                .ProductTemplates
+                .TagWith(nameof(AddProductAsync), "ActiveProductTemplateById", request.Body.ProductTemplateId)
+                .Where(pt => pt.IsActive)
+                .Where(pt => pt.Id == request.Body.ProductTemplateId)
+                .SingleAsResultAsync(cancellationToken))
+            .CombineAsync<Store, ProductTemplate, Product>(tuple =>
+            {
+                var (store, productTemplate) = tuple;
+                return Product.Create(store.Id, productTemplate.Id, request.Body.Name, request.Body.Description, request.Body.Quantity, request.Body.Price);
+            })
+            .TapAsync(triple =>
+            {
+                var (store, _, product) = triple;
+                store.AddProduct(product);
+            })
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .MapAsync(triple =>
+            {
+                var (_, _, product) = triple;
+                return new Response
+                {
+                    Id = product.Id,
+                };
+            });
 }

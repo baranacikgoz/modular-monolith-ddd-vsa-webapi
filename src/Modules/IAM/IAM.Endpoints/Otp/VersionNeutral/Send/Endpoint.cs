@@ -1,13 +1,13 @@
+using Common.Application.Caching;
 using Common.Application.Extensions;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
-using IAM.Application.OTP.Features.Send;
-using IAM.Application.OTP.Features.Store;
-using IAM.Application.Users.Services;
-using MediatR;
+using IAM.Application.Otp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace IAM.Endpoints.Otp.VersionNeutral.Send;
 
@@ -27,10 +27,21 @@ internal static class Endpoint
     private static async Task<Result> SendOtp(
         [FromBody] Request request,
         [FromServices] IOtpService otpService,
-        [FromServices] ISender sender,
+        [FromServices] IOptions<OtpOptions> otpOptionsProvider,
+        [FromServices] ICacheService cache,
         CancellationToken cancellationToken)
         => await Result<string>
-                .Create(() => otpService.Generate())
-                .TapAsync(otp => sender.Send(new StoreOtpCommand(request.PhoneNumber, otp), cancellationToken))
-                .TapAsync(otp => sender.Send(new SendOtpCommand(request.PhoneNumber, otp), cancellationToken));
+            .Create(() => otpService.Generate())
+            .TapAsync(async otp => await cache.SetAsync(
+                key: CacheKeys.For.Otp(request.PhoneNumber),
+                value: otp,
+                absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes),
+                cancellationToken: cancellationToken))
+            .TapAsync(async _ =>
+            {
+                // Sending sms logic comes here...
+
+                // Simulate some delay for sending sms
+                await Task.Delay(100, cancellationToken);
+            });
 }

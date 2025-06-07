@@ -1,15 +1,12 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.ModelBinders;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Application.Products.Features.GetById;
-using Products.Application.Stores.Features.GetStoreIdByOwnerId;
-using Products.Domain.Products;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Products.v1.My.Get;
 
@@ -26,23 +23,25 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> GetMyProductAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>] ProductId id,
-        [FromServices] ICurrentUser currentUser,
-        [FromServices] ISender sender,
-        CancellationToken cancellationToken)
-        => await sender
-                .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(_ => sender.Send(new GetProductByIdQuery(id), cancellationToken))
-                .MapAsync(productDto => new Response
-                {
-                    Id = productDto.Id,
-                    Name = productDto.Name,
-                    Description = productDto.Description,
-                    Quantity = productDto.Quantity,
-                    Price = productDto.Price,
-                    CreatedBy = productDto.CreatedBy,
-                    CreatedOn = productDto.CreatedOn,
-                    LastModifiedBy = productDto.LastModifiedBy,
-                    LastModifiedOn = productDto.LastModifiedOn
-                });
+            [AsParameters] Request request,
+            [FromServices] ICurrentUser currentUser,
+            [FromServices] ProductsDbContext dbContext,
+            CancellationToken cancellationToken)
+    => await dbContext
+        .Products
+        .TagWith(nameof(GetMyProductAsync), request.Id)
+        .Where(p => p.Store.OwnerId == currentUser.Id && p.Id == request.Id)
+        .Select(p => new Response
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            Price = p.Price,
+            Quantity = p.Quantity,
+            CreatedBy = p.CreatedBy,
+            CreatedOn = p.CreatedOn,
+            LastModifiedBy = p.LastModifiedBy,
+            LastModifiedOn = p.LastModifiedOn
+        })
+        .SingleAsResultAsync(cancellationToken);
 }

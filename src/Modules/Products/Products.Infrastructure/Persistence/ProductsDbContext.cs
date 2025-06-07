@@ -6,14 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
-using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence;
 
 public sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
     IServiceScopeFactory serviceScopeFactory
-    ) : BaseDbContext(options, serviceScopeFactory), IProductsDbContext
+    ) : BaseDbContext(options, serviceScopeFactory)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

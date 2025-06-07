@@ -6,6 +6,7 @@ using BackgroundJobs;
 using Products.Infrastructure;
 using IAM.Endpoints;
 using Products.Endpoints;
+using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace Host.Infrastructure;
 
@@ -21,7 +22,8 @@ internal static partial class Setup
             .AddCustomRateLimiting(
                 configuration,
                 IAM.Infrastructure.RateLimiting.Policies.Get(),
-                Products.Infrastructure.RateLimiting.Policies.Get());
+                Products.Infrastructure.RateLimiting.Policies.Get())
+            .AddFluentValidationAutoValidation();
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
@@ -38,6 +40,7 @@ internal static partial class Setup
     {
         var versionNeutralApiGroup = app
                                     .MapGroup("/")
+                                    .AddFluentValidationAutoValidation()
                                     .RequireAuthorization()
                                     .WithOpenApi();
 
@@ -47,6 +50,7 @@ internal static partial class Setup
         // So decided to create it from scratch.
         var versionedApiGroup = app
                                 .MapGroup("/v{version:apiVersion}")
+                                .AddFluentValidationAutoValidation()
                                 .WithApiVersionSet(apiVersionSet)
                                 .RequireAuthorization()
                                 .WithOpenApi();

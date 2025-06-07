@@ -11,10 +11,10 @@ using Microsoft.Extensions.Options;
 namespace Common.Infrastructure.Persistence.DbContext;
 public static class Setup
 {
-    public static IServiceCollection AddModuleDbContext<TContextInterface, TContextImplementation>(this IServiceCollection services, string moduleName)
-        where TContextImplementation : Microsoft.EntityFrameworkCore.DbContext
+    public static IServiceCollection AddModuleDbContext<TContext>(this IServiceCollection services, string moduleName)
+        where TContext : Microsoft.EntityFrameworkCore.DbContext
     {
-        services.AddDbContext<TContextImplementation>((sp, options) =>
+        services.AddDbContext<TContext>((sp, options) =>
         {
             var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
             var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
@@ -30,7 +30,7 @@ public static class Setup
 
             if (observabilityOptions.LogGeneratedSqlQueries)
             {
-                var logger = sp.GetRequiredService<ILogger<TContextImplementation>>();
+                var logger = sp.GetRequiredService<ILogger<TContext>>();
 
 #pragma warning disable
                 options.LogTo(
@@ -41,15 +41,6 @@ public static class Setup
 #pragma warning restore
             }
         });
-
-        var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TContextImplementation));
-        if (descriptor != null)
-        {
-            services.Add(new ServiceDescriptor(
-                typeof(TContextInterface),
-                sp => sp.GetRequiredService<TContextImplementation>(),
-                descriptor.Lifetime));
-        }
 
         return services;
     }

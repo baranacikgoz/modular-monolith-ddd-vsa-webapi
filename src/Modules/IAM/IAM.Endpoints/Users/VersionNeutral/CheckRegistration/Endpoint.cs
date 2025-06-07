@@ -1,7 +1,7 @@
 using Common.Application.Extensions;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using IAM.Application.Users.Features.CheckRegistration;
-using MediatR;
+using IAM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +23,12 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> IsRegisteredAsync(
         [AsParameters] Request request,
-        [FromServices] ISender sender,
+        [FromServices] IAMDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new CheckRegistrationQuery(request.PhoneNumber), cancellationToken)
-                .MapAsync(IsRegistered => new Response { IsRegistered = IsRegistered });
+        => await dbContext
+            .Users
+            .TagWith(nameof(IsRegisteredAsync))
+            .Where(u => u.PhoneNumber == request.PhoneNumber)
+            .AnyAsResultAsync(cancellationToken)
+            .MapAsync(any => new Response { IsRegistered = any });
 }

@@ -1,4 +1,4 @@
-using Common.Endpoints.Pagination;
+using Common.Application.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Products.Endpoints.ProductTemplates.v1.Search;

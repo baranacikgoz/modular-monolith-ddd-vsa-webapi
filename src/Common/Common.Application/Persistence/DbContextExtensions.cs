@@ -36,6 +36,7 @@ public static class DbContextExtensions
         {
             1 => queryable.TagWith(tag: parameters[0].ToString() ?? string.Empty),
             2 => queryable.TagWith(tag: $"({parameters[0]})-({parameters[1]})"),
+            3 => queryable.TagWith(tag: $"({parameters[0]})-({parameters[1]})-({parameters[2]})"),
             _ => queryable.TagWith(tag: parameters.Aggregate(
                         seed: string.Empty,
                         func: (acc, next) => acc + $"({next})-",

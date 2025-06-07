@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Application.Queries.Pagination;
-using Products.Application.Products.Features.Search;
-using Products.Application.Stores.Features.GetStoreIdByOwnerId;
+using Common.Application.Extensions;
+using Common.Application.Pagination;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using MediatR;
-using Products.Application.Products.DTOs;
+using Microsoft.EntityFrameworkCore;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Products.v1.My.Search;
 
@@ -20,30 +20,39 @@ internal static class Endpoint
             .MapGet("my/search", SearchMyProductsAsync)
             .WithDescription("Search my store's products.")
             .MustHavePermission(CustomActions.SearchMy, CustomResources.Products)
-            .Produces<PaginationResult<PaginationResult<ProductDto>>>(StatusCodes.Status200OK);
+            .Produces<PaginationResponse<Response>>(StatusCodes.Status200OK)
+            .TransformResultTo<PaginationResponse<Response>>();
     }
 
-    private static async Task<Result<PaginationResult<ProductDto>>> SearchMyProductsAsync(
+    private static async Task<Result<PaginationResponse<Response>>> SearchMyProductsAsync(
         [AsParameters] Request request,
         [FromServices] ICurrentUser currentUser,
-        [FromServices] ISender sender,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new GetStoreIdByOwnerIdQuery(currentUser.Id), cancellationToken)
-                .BindAsync(storeId => sender.Send(new SearchProductsQuery
+        => await dbContext
+            .Products
+            .TagWith(nameof(SearchMyProductsAsync))
+            .Where(p => p.Store.OwnerId == currentUser.Id)
+            .WhereIf(p => EF.Functions.ILike(p.Name, $"%{request.Name}%"), condition: !string.IsNullOrWhiteSpace(request.Name))
+            .WhereIf(p => EF.Functions.ILike(p.Description, $"%{request.Description}%"), condition: !string.IsNullOrWhiteSpace(request.Description))
+            .WhereIf(p => p.Quantity >= request.MinQuantity!, condition: request.MinQuantity is not null)
+            .WhereIf(p => p.Quantity <= request.MaxQuantity!, condition: request.MaxQuantity is not null)
+            .WhereIf(p => p.Price >= request.MinPrice!, condition: request.MinPrice is not null)
+            .WhereIf(p => p.Price <= request.MaxPrice!, condition: request.MaxPrice is not null)
+            .PaginateAsync(
+                request: request,
+                selector: p => new Response
                 {
-                    StoreId = storeId,
-                    Name = request.Name,
-                    Description = request.Description,
-                    MinQuantity = request.MinQuantity,
-                    MaxQuantity = request.MaxQuantity,
-                    MinPrice = request.MinPrice,
-                    MaxPrice = request.MaxPrice,
-
-                    OrderBy = p => p.Id,
-                    OrderByDescending = null,
-                    PageNumber = request.PageNumber,
-                    PageSize = request.PageSize,
-
-                }, cancellationToken));
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Quantity = p.Quantity,
+                    Price = p.Price,
+                    CreatedBy = p.CreatedBy,
+                    CreatedOn = p.CreatedOn,
+                    LastModifiedBy = p.LastModifiedBy,
+                    LastModifiedOn = p.LastModifiedOn
+                },
+                orderByDescending: p => p.CreatedOn,
+                cancellationToken: cancellationToken);
 }

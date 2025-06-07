@@ -13,6 +13,22 @@ public sealed class Result : IResult
     public static Result Success { get; } = new(null);
     public static Result Failure(Error error) => new(error);
     public static Result Create() => Success;
+    public static async Task<Result> CreateAsync(Func<Task> taskToAwaitValue)
+    {
+        await taskToAwaitValue();
+        return Success;
+    }
+
+    public static async Task<Result> CreateAsync(Func<Task<Result>> taskToAwaitValue)
+    {
+        var result = await taskToAwaitValue();
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.Error!);
+        }
+
+        return Success;
+    }
 
 #pragma warning disable CA2225
     public static implicit operator Result(Error error) => Failure(error);

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Products.Application.ProductTemplates.Features.Create;
-using MediatR;
+using Products.Domain.ProductTemplates;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Create;
 
@@ -24,9 +24,11 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> CreateProductTemplateAsync(
         [FromBody] Request request,
-        [FromServices] ISender sender,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new CreateProductTemplateCommand(request.Brand, request.Model, request.Color), cancellationToken)
-                .MapAsync(id => new Response { Id = id });
+        => await Result<ProductTemplate>
+            .Create(() => ProductTemplate.Create(request.Brand, request.Model, request.Color))
+            .Tap(product => dbContext.ProductTemplates.Add(product))
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
+            .MapAsync(product => new Response { Id = product.Id });
 }

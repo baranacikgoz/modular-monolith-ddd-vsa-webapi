@@ -157,8 +157,7 @@ namespace Products.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductTemplateId");
 
-                    b.HasIndex("StoreId", "ProductTemplateId")
-                        .IsUnique();
+                    b.HasIndex("StoreId");
 
                     b.ToTable("Products", "Products");
                 });
