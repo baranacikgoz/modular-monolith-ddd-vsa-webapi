@@ -38,9 +38,9 @@ internal static class Endpoint
                 PhoneNumber = u.PhoneNumber!,
                 BirthDate = u.BirthDate,
                 CreatedBy = u.Id,
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = u.CreatedOn,
                 LastModifiedBy = u.Id,
-                LastModifiedOn = DateTime.UtcNow
+                LastModifiedOn = u.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
 }
