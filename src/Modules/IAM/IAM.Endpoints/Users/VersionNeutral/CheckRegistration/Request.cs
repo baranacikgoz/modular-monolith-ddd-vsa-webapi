@@ -19,7 +19,7 @@ public class RequestValidator : CustomValidator<Request>
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-               .WithMessage(localizer["Telefon numarası boş olamaz."]);
+               .WithMessage(localizer["Users.CheckRegistration.PhoneNumber.NotEmpty"]);
 
         RuleFor(x => x.PhoneNumber)
             .PhoneNumberValidation(localizer)

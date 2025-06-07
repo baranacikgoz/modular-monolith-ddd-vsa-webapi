@@ -1,13 +1,11 @@
 using IAM.Application.Auth;
 using IAM.Application.Auth.Services;
-using IAM.Application.Persistence;
+using IAM.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Infrastructure.Auth.Services;
 
-public class RoleService(
-    IIAMDbContext dbContext
-    ) : IRoleService
+public class RoleService(IAMDbContext dbContext) : IRoleService
 {
     public async Task<DefaultIdType?> GetRoleIdByName(string roleName, CancellationToken cancellationToken)
     {

@@ -3,7 +3,6 @@ using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
-using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,7 +18,7 @@ public class IAMDbContext(
     DbContextOptions<IAMDbContext> options,
     IOptions<ObservabilityOptions> observabilityOptionsProvider,
     ILogger<IAMDbContext> logger
-    ) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId, IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>, IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
+    ) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId, IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>, IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options)
 {
     public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
 

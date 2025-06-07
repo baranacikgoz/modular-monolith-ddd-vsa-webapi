@@ -1,12 +1,31 @@
 using System.Security.Cryptography;
+using Common.Application.Caching;
 using Common.Application.Options;
-using IAM.Application.Users.Services;
+using Common.Domain.ResultMonad;
+using IAM.Application.Otp.Services;
+using IAM.Domain.Errors;
 using Microsoft.Extensions.Options;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider) : IOtpService
+internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, ICacheService cache) : IOtpService
 {
+    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp, CancellationToken cancellationToken)
+    {
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+
+        var otpFromCache = await cache.GetAsync<string>(cacheKey, cancellationToken);
+
+        if (!string.Equals(otpFromCache, otp, StringComparison.Ordinal))
+        {
+            return OtpErrors.InvalidOtp;
+        }
+
+        await cache.RemoveAsync(cacheKey, cancellationToken);
+
+        return Result.Success;
+    }
+
     public string Generate()
     {
         var length = otpOptionsProvider.Value.Length;

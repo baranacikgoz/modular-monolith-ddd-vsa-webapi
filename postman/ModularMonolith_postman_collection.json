@@ -1,0 +1,674 @@
+{
+  "info": {
+    "_postman_id": "7f0259b3-4c7b-496d-92c4-0d81275772be",
+    "name": "Modular Monolith, DDD, VSA WebApi Boilerplate",
+    "description": "Postman collection with end-to-end test flows for different user roles.\n\n**Order of Operations:**\n1.  **Admin Flow:** Run the requests in this folder first to log in as admin and create a product template.\n2.  **New User Flow:** Run the `Authentication Flows -> 1. New User Registration` to create a basic user.\n3.  **Store Owner Flow:** Run the requests in this folder to test store and product creation using the basic user's account and the admin's template.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "20929383"
+  },
+  "item": [
+    {
+      "name": "Authentication Flows",
+      "item": [
+        {
+          "name": "1. New User Registration",
+          "item": [
+            {
+              "name": "[1] Check Registration (New User)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.environment.set(\"newPhoneNumber\", `90500${Math.floor(1000000 + Math.random() * 9000000)}`);"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"User should not be registered\", () => {",
+                      "    pm.expect(pm.response.json().isRegistered).to.be.false;",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/check-registration?PhoneNumber={{newPhoneNumber}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "check-registration"
+                  ],
+                  "query": [
+                    {
+                      "key": "PhoneNumber",
+                      "value": "{{newPhoneNumber}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[2] Request OTP",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204 No Content\", () => pm.response.to.have.status(204));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{newPhoneNumber}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/otp",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "otp"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[3] Register User & Get ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Response contains user ID\", () => {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.id).to.be.a('string');",
+                      "    pm.environment.set(\"newlyRegisteredUserId\", jsonData.id);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{newPhoneNumber}}\",\n  \"otp\": \"{{staticOtp}}\",\n  \"name\": \"{{$randomFirstName}}\",\n  \"lastName\": \"{{$randomLastName}}\",\n  \"nationalIdentityNumber\": \"12143678953\",\n  \"birthDate\": \"2001-06-20\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/register/self",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "register",
+                    "self"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[4] Login (Basic User)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Access and Refresh tokens received in response body\", function () {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.accessToken).to.be.a('string').and.not.to.be.empty;",
+                      "    pm.expect(jsonData.refreshToken).to.be.a('string').and.not.to.be.empty;",
+                      "    pm.environment.set(\"accessToken\", jsonData.accessToken);",
+                      "    pm.environment.set(\"refreshToken\", jsonData.refreshToken);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{newPhoneNumber}}\",\n  \"otp\": \"{{staticOtp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/tokens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "tokens"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "Registers a completely new basic user and saves their tokens."
+        }
+      ],
+      "description": "Contains the end-to-end flows for user registration and login. Run these first."
+    },
+    {
+      "name": "Admin Flow - Product Template Management",
+      "item": [
+        {
+          "name": "[1] Login as Admin",
+          "item": [
+            {
+              "name": "[1A] Request OTP (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204 No Content\", () => pm.response.to.have.status(204));"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{adminPhoneNumber}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/otp",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "otp"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "[1B] Get Tokens (Admin)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"ADMIN Access and Refresh tokens received\", function () {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.accessToken).to.be.a('string');",
+                      "    pm.expect(jsonData.refreshToken).to.be.a('string');",
+                      "    pm.environment.set(\"adminAccessToken\", jsonData.accessToken);",
+                      "    pm.environment.set(\"adminRefreshToken\", jsonData.refreshToken);",
+                      "    console.log(\"Admin tokens have been set.\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{adminPhoneNumber}}\",\n  \"otp\": \"{{staticOtp}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/tokens",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "tokens"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "description": "Logs in the pre-seeded admin user."
+        },
+        {
+          "name": "[2] Create Product Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response contains new product template ID\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.environment.set(\"adminCreatedProductTemplateId\", jsonData.id);",
+                  "    console.log(\"Admin Created Product Template ID set to: \", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"{{$randomCompanyName}}\",\n  \"model\": \"Pro Max {{$randomInt}}\",\n  \"color\": \"{{$randomColor}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/product-templates",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[3] Get Product Template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/product-templates/{{adminCreatedProductTemplateId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                "{{adminCreatedProductTemplateId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[4] Activate Product Template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/product-templates/{{adminCreatedProductTemplateId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                "{{adminCreatedProductTemplateId}}",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[5] Deactivate Product Template",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/product-templates/{{adminCreatedProductTemplateId}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                "{{adminCreatedProductTemplateId}}",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "A flow for an Admin user to log in and manage product templates."
+    },
+    {
+      "name": "Store Owner Flow - Store and Product Management",
+      "item": [
+        {
+          "name": "[1] Create My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response contains new store ID\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.environment.set(\"userCreatedStoreId\", jsonData.id);",
+                  "    console.log(\"User Created Store ID set to: \", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{$randomAdjective}} Goods\",\n  \"description\": \"A store that sells {{$randomCatchPhrase}}\",\n  \"address\": \"{{$randomInt}} {{$randomStreetName}}, {{$randomCity}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/stores/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[2] Get My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response contains the correct store ID\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(pm.environment.get(\"userCreatedStoreId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stores/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[3] Add Product To My Store",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "if (!pm.environment.get(\"adminCreatedProductTemplateId\")) {",
+                  "    console.error(\"Cannot run 'Add Product'. Please run the 'Admin Flow' to create a product template first.\");",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Response contains new product ID\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.environment.set(\"userCreatedProductId\", jsonData.id);",
+                  "    console.log(\"User Created Product ID set to: \", jsonData.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productTemplateId\": \"{{adminCreatedProductTemplateId}}\",\n  \"name\": \"{{$randomProductName}}\",\n  \"description\": \"A very high quality product based on an admin template.\",\n  \"quantity\": {{$randomInt(1,100)}},\n  \"price\": {{$randomPrice}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/stores/my/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my",
+                "products"
+              ]
+            },
+            "description": "Adds a new product to the authenticated user's store. This requires a `productTemplateId` to have been created first by an admin."
+          },
+          "response": []
+        },
+        {
+          "name": "[4] Get My Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/products/my/{{userCreatedProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                "{{userCreatedProductId}}"
+              ]
+            },
+            "description": "Retrieves a specific product that belongs to the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "[5] Update My Product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated - {{$randomProductName}}\",\n  \"description\": \"An even better, updated product.\",\n  \"price\": {{$randomPrice}},\n  \"quantity\": {{$randomInt(1,50)}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/products/my/{{userCreatedProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                "{{userCreatedProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[6] Search My Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/products/my/search?PageNumber=1&PageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[7] Remove Product From My Store",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stores/my/products/{{userCreatedProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my",
+                "products",
+                "{{userCreatedProductId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "A flow for a basic user to create and manage their own store and products, using templates created by an Admin."
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  }
+}

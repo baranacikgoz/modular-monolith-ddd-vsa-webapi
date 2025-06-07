@@ -133,6 +133,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kafka-init", "kafka-init", 
 		kafka-init\create-outbox-topic.sh = kafka-init\create-outbox-topic.sh
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postman", "postman", "{080CAD1D-B14F-4B0B-9B51-9D221DA058EF}"
+	ProjectSection(SolutionItems) = preProject
+		postman\ModularMonolith_postman_collection.json = postman\ModularMonolith_postman_collection.json
+		postman\ModularMonolith-Local_postman_environment.json = postman\ModularMonolith-Local_postman_environment.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -280,6 +286,7 @@ Global
 		{CA281998-F18E-4CEA-BA8E-6342CFB23871} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
 		{A2A3ED86-DC4C-456B-A197-DF1B898D2F27} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
 		{2C6D3416-63E1-4718-B69B-91EE36914896} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
+		{080CAD1D-B14F-4B0B-9B51-9D221DA058EF} = {E6709333-F3E8-45BD-9052-1BEECF0D3904}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63C0CEE2-E69F-4EFC-AF54-926D251EB97C}

@@ -1,7 +1,7 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
 using IAM.Application.Auth;
-using IAM.Application.Persistence;
+using IAM.Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +11,7 @@ namespace IAM.Infrastructure.InterModuleRequestHandlers;
 /// This query is for seeding other modules requiring some basic seed users, where a userId is required.
 /// </summary>
 /// <param name="dbContext"></param>
-public class GetSeedUserIdsRequestHandler(IIAMDbContext dbContext) : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
+public class GetSeedUserIdsRequestHandler(IAMDbContext dbContext) : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
 {
     protected override async Task<GetSeedUserIdsResponse> HandleAsync(ConsumeContext<GetSeedUserIdsRequest> context, GetSeedUserIdsRequest request, CancellationToken cancellationToken)
     {

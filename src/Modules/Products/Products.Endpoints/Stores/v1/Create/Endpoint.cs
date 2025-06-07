@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Products.Application.Stores.Features.Create;
-using MediatR;
+using Common.Application.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.Create;
 
@@ -24,14 +26,20 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> CreateStoreAsync(
         [FromBody] Request request,
-        [FromServices] ISender sender,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender
-                .Send(new CreateStoreCommand(
-                    request.OwnerId,
-                    request.Name,
-                    request.Description,
-                    request.Address),
-                    cancellationToken)
-                .MapAsync(id => new Response { Id = id });
+        => await dbContext
+            .Stores
+            .AsNoTracking()
+            .TagWith(nameof(CreateStoreAsync), "GetStoreByOwnerId", request.OwnerId)
+            .Where(s => s.OwnerId == request.OwnerId)
+            .AnyAsResultAsync(cancellationToken)
+            .TapAsync(any => any ? Error.ViolatesUniqueConstraint(nameof(Store)) : Result.Success)
+            .BindAsync(_ => Store.Create(request.OwnerId, request.Name, request.Description, request.Address))
+            .TapAsync(store => dbContext.Stores.Add(store))
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .MapAsync(store => new Response
+            {
+                Id = store.Id,
+            });
 }

@@ -2,14 +2,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Common.Application.ModelBinders;
 using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
-using Products.Domain.Stores;
-using Products.Domain.Products;
-using Products.Application.Products.Features.Update;
-using MediatR;
+using Common.Application.Persistence;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Products.v1.Update;
 
@@ -26,15 +23,14 @@ internal static class Endpoint
     }
 
     private static async Task<Result> UpdateProductAsync(
-        [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>] ProductId id,
-        [FromBody] Request request,
-        [FromServices] ISender sender,
+        [AsParameters] Request request,
+        [FromServices] ProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await sender.Send(new UpdateProductCommand(
-            Id: id,
-            Name: request.Name,
-            Description: request.Description,
-            Quantity: request.Quantity,
-            Price: request.Price),
-            cancellationToken);
+        => await dbContext
+            .Products
+            .TagWith(nameof(UpdateProductAsync), request.Id)
+            .Where(p => p.Id == request.Id)
+            .SingleAsResultAsync(cancellationToken)
+            .TapAsync(product => product.Update(request.Body.Name, request.Body.Description, request.Body.Quantity, request.Body.Price))
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
 }

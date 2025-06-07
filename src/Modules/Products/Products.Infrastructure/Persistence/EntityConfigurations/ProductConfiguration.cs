@@ -14,10 +14,6 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
         base.Configure(builder);
 
         builder
-            .HasIndex(sp => new { sp.StoreId, sp.ProductTemplateId })
-            .IsUnique();
-
-        builder
             .Property(sp => sp.StoreId)
             .HasConversion<StronglyTypedIdValueConverter<StoreId>>()
             .IsRequired();
