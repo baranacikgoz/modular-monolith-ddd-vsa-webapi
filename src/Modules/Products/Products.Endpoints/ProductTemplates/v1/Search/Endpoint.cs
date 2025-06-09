@@ -8,7 +8,7 @@ using Common.Application.Extensions;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Search;
 
@@ -26,7 +26,7 @@ internal static class Endpoint
 
     private static async Task<Result<PaginationResponse<Response>>> SearchProductTemplatesAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .ProductTemplates

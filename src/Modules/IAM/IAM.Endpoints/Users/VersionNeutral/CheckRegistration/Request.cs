@@ -1,7 +1,7 @@
 using Common.Application.Localization;
 using Common.Application.Validation;
 using FluentValidation;
-using IAM.Application.Common.Validations;
+using IAM.Endpoints.Common.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 

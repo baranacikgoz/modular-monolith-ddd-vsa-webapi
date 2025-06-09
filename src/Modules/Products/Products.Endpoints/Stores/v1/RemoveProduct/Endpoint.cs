@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.Stores.v1.RemoveProduct;
 
@@ -25,7 +25,7 @@ internal static class Endpoint
 
     private static async Task<Result> RemoveProductAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Stores

@@ -1,7 +1,7 @@
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
-using IAM.Infrastructure.Persistence;
+using IAM.Application.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> IsRegisteredAsync(
         [AsParameters] Request request,
-        [FromServices] IAMDbContext dbContext,
+        [FromServices] IIAMDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Users

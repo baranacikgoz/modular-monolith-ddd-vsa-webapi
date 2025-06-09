@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using Microsoft.AspNetCore.Mvc;
 using IAM.Application.Captcha.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 
-namespace IAM.Application.Captcha.VersionNeutral.ClientKey.Get;
+namespace IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get;
 
 internal static class Endpoint
 {
@@ -20,8 +20,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static Result<Response> GetClientKey(
-        [FromServices] ICaptchaService captchaService)
+    private static Result<Response> GetClientKey([FromServices] ICaptchaService captchaService)
         => Result<string>
             .Success(captchaService.GetClientKey())
             .Map(clientKey => new Response { ClientKey = clientKey });

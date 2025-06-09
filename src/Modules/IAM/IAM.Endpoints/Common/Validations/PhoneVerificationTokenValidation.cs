@@ -2,7 +2,7 @@ using Common.Application.Localization;
 using FluentValidation;
 using Microsoft.Extensions.Localization;
 
-namespace IAM.Application.Common.Validations;
+namespace IAM.Endpoints.Common.Validations;
 
 public static partial class CommonValidations
 {

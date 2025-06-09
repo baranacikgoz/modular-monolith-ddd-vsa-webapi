@@ -2,9 +2,9 @@ using System.Security.Cryptography;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;
-using IAM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> RefreshToken(
         [FromBody] Request request,
-        [FromServices] IAMDbContext dbContext,
+        [FromServices] IIAMDbContext dbContext,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ITokenService tokenService,
         CancellationToken cancellationToken)

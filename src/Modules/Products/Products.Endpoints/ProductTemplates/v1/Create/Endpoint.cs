@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Products.Application.Persistence;
 using Products.Domain.ProductTemplates;
-using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Create;
 
@@ -24,7 +24,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> CreateProductTemplateAsync(
         [FromBody] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await Result<ProductTemplate>
             .Create(() => ProductTemplate.Create(request.Brand, request.Model, request.Color))

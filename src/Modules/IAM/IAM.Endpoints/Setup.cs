@@ -1,3 +1,4 @@
+using IAM.Endpoints.Captcha.VersionNeutral;
 using IAM.Endpoints.Otp.VersionNeutral;
 using IAM.Endpoints.Tokens.VersionNeutral;
 using IAM.Endpoints.Users.VersionNeutral;
@@ -13,6 +14,7 @@ public static class Setup
         versionNeutralApiGroup.MapUsersEndpoints();
         versionNeutralApiGroup.MapTokensEndpoints();
         versionNeutralApiGroup.MapOtpEndpoints();
+        versionNeutralApiGroup.MapCaptchaEndpoints();
 
         return app;
     }

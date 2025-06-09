@@ -6,7 +6,7 @@ using Common.Application.Auth;
 using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.Products.v1.Update;
 
@@ -24,7 +24,7 @@ internal static class Endpoint
 
     private static async Task<Result> UpdateProductAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Products

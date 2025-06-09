@@ -8,7 +8,7 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Products.Domain.Stores;
 using Microsoft.EntityFrameworkCore;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.Stores.v1.My.Create;
 
@@ -27,7 +27,7 @@ internal static class Endpoint
     private static async Task<Result<Response>> CreateMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Stores

@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Common.Application.EventHistory;
 using Common.Application.Pagination;
+using Products.Application.Persistence;
 using Products.Domain.Products;
-using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Products.v1.EventHistory;
 
@@ -27,7 +27,7 @@ internal static class Endpoint
 
     private static async Task<Result<PaginationResponse<EventDto>>> GetProductEventHistoryAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .GetEventHistoryAsync<Product, ProductId>(

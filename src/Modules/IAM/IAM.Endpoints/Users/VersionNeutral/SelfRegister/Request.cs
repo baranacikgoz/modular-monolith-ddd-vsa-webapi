@@ -3,7 +3,7 @@ using Common.Application.Localization;
 using Common.Application.Validation;
 using Common.Domain.Extensions;
 using FluentValidation;
-using IAM.Application.Common.Validations;
+using IAM.Endpoints.Common.Validations;
 using Microsoft.Extensions.Localization;
 
 namespace IAM.Endpoints.Users.VersionNeutral.SelfRegister;

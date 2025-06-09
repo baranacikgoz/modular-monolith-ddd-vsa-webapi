@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Common.Application.DTOs;
 using Common.Application.Pagination;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -56,7 +57,7 @@ public static class DbContextExtensions
     //     "
 
     public static async Task<Result<PaginationResponse<EventDto>>> GetEventHistoryAsync<TAggregate, TId>(
-        this DbContext dbContext,
+        this IDbContext dbContext,
         string moduleName,
         TId id,
         PaginationRequest request,
