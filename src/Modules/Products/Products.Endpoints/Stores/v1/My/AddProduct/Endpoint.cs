@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
-using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.My.AddProduct;
 
@@ -28,7 +28,7 @@ internal static class Endpoint
     private static async Task<Result<Response>> AddProductToMyStoreAsync(
         [FromBody] Request request,
         [FromServices] ICurrentUser currentUser,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Stores

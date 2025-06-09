@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Products.Infrastructure.Persistence.Seeding;
 using Common.Infrastructure.Persistence.DbContext;
+using Products.Application.Persistence;
 
 namespace Products.Infrastructure.Persistence;
 
@@ -12,7 +13,7 @@ internal static class Setup
     public static IServiceCollection AddPersistence(this IServiceCollection services)
         => services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<ProductsDbContext>(moduleName: nameof(Products));
+            .AddModuleDbContext<IProductsDbContext, ProductsDbContext>(moduleName: nameof(Products));
 
     public static WebApplication UsePersistence(this WebApplication app)
     {

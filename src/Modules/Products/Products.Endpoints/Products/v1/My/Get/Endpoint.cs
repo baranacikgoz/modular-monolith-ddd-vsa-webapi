@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.Products.v1.My.Get;
 
@@ -25,7 +25,7 @@ internal static class Endpoint
     private static async Task<Result<Response>> GetMyProductAsync(
             [AsParameters] Request request,
             [FromServices] ICurrentUser currentUser,
-            [FromServices] ProductsDbContext dbContext,
+            [FromServices] IProductsDbContext dbContext,
             CancellationToken cancellationToken)
     => await dbContext
         .Products

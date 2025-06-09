@@ -3,9 +3,9 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using IAM.Application.Otp.Services;
+using IAM.Application.Persistence;
 using IAM.Application.Tokens.DTOs;
 using IAM.Application.Tokens.Services;
-using IAM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> CreateTokens(
         [FromBody] Request request,
-        [FromServices] IAMDbContext dbContext,
+        [FromServices] IIAMDbContext dbContext,
         [FromServices] ITokenService tokenService,
         [FromServices] IOtpService otpService,
         [FromServices] TimeProvider timeProvider,
@@ -43,8 +43,10 @@ internal static class Endpoint
                 RefreshTokenExpiresAt = tokensDto.RefreshTokenExpiresAt
             });
 
-    private static async Task<Result<TokensDto>> CreateTokensAsync(Request request, ITokenService tokenService,
-        IAMDbContext dbContext, TimeProvider timeProvider, CancellationToken cancellationToken)
+    private static async Task<Result<TokensDto>> CreateTokensAsync(
+        Request request,
+        ITokenService tokenService,
+        IIAMDbContext dbContext, TimeProvider timeProvider, CancellationToken cancellationToken)
     {
         var userResult = await dbContext
             .Users

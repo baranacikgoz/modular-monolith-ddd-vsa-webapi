@@ -1,4 +1,4 @@
-namespace IAM.Application.Captcha.VersionNeutral.ClientKey.Get;
+namespace IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get;
 
 public sealed record class Response
 {

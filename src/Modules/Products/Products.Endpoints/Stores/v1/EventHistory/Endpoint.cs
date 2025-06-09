@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Products.Application.Persistence;
 using Products.Domain.Stores;
-using Products.Infrastructure.Persistence;
 
 namespace Products.Endpoints.Stores.v1.EventHistory;
 
@@ -27,7 +27,7 @@ internal static class Endpoint
 
     private static async Task<Result<PaginationResponse<EventDto>>> GetStoreHistoryAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .GetEventHistoryAsync<Store, StoreId>(

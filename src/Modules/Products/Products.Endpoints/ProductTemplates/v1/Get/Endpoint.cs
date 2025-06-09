@@ -7,7 +7,7 @@ using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Get;
 
@@ -25,7 +25,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> GetProductTemplateAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .ProductTemplates

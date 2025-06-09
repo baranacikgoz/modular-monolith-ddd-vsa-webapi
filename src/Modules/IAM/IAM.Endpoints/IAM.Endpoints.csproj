@@ -10,4 +10,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Captcha\" />
+    <Folder Include="Common\" />
+  </ItemGroup>
 </Project>

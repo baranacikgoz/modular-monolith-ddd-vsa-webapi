@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Products.Infrastructure.Persistence;
+using Products.Application.Persistence;
 
 namespace Products.Endpoints.Stores.v1.Get;
 
@@ -25,7 +25,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> GetStoreAsync(
         [AsParameters] Request request,
-        [FromServices] ProductsDbContext dbContext,
+        [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
         => await dbContext
             .Stores
