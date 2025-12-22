@@ -21,7 +21,7 @@ internal static class Endpoint
             .MapPost("", CreateTokens)
             .WithDescription("Create tokens.")
             .AllowAnonymous()
-            .Produces(StatusCodes.Status204NoContent)
+            .Produces<Response>(StatusCodes.Status200OK)
             .TransformResultTo<Response>();
     }
 
