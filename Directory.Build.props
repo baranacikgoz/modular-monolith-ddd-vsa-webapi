@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework Condition="!$(MSBuildProjectName.Contains('SourceGenerators'))">net9.0</TargetFramework>
+    <TargetFramework Condition="'$(MSBuildProjectExtension)' == '.csproj' And !$(MSBuildProjectName.Contains('SourceGenerators'))">net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>

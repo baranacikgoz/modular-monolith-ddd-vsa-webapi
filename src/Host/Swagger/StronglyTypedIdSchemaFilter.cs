@@ -1,19 +1,23 @@
 using Common.Domain.StronglyTypedIds;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-internal class StronglyTypedIdSchemaFilter : ISchemaFilter
+internal sealed class StronglyTypedIdSchemaFilter : ISchemaFilter
 {
-    public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+    public void Apply(IOpenApiSchema schema, SchemaFilterContext context)
     {
-        var typeInfo = context.Type;
-        if (typeof(IStronglyTypedId).IsAssignableFrom(typeInfo))
+        if (schema is not OpenApiSchema concreteSchema)
         {
-            schema.Type = "string";
-            schema.Format = "uuid";
-            schema.Properties?.Clear();
+            return;
+        }
+
+        if (typeof(IStronglyTypedId).IsAssignableFrom(context.Type))
+        {
+            concreteSchema.Type = JsonSchemaType.String;
+            concreteSchema.Format = "uuid";
+            concreteSchema.Properties?.Clear();
         }
     }
 }

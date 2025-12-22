@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Application.DTOs;
 using Common.Application.EventHistory;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
