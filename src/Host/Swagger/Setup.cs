@@ -14,27 +14,28 @@ internal static class Setup
                 cfg.OperationFilter<SwaggerDefaultValues>();
                 cfg.CustomSchemaIds(SchemaIdGenerator);
                 cfg.OperationFilter<DefaultResponsesOperationFilter>();
-                cfg.SchemaFilter<DateOnlySchemaFilter>();
                 cfg.SchemaFilter<StronglyTypedIdSchemaFilter>();
                 cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
             });
 
-    /// <summary>
-    /// This method is used to shorten the schema names to generate shorter names for openapi generator for the front-end.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
     private static string SchemaIdGenerator(Type type)
     {
-        // For example, for: "Products.Application.Products.v1.Create.Request" return "Products.v1.Create.Request".
+        var fullName = type.FullName ?? type.Name;
 
-        var name = type.FullName ?? type.Name;
+        var splitted = fullName.Split('.');
 
-        var splitted = name.Split('.').ToList();
+        var cutOffIndex = Array.IndexOf(splitted, "Application");
+        if (cutOffIndex == -1)
+        {
+            cutOffIndex = Array.IndexOf(splitted, "Endpoints");
+        }
 
-        var indexOfApplication = splitted.IndexOf("Application");
+        if (cutOffIndex == -1 || cutOffIndex == splitted.Length - 1)
+        {
+            return fullName.Replace('+', '.');
+        }
 
-        return string.Join('.', splitted[(indexOfApplication + 1)..]).Replace('+', '.');
+        return string.Join('.', splitted[(cutOffIndex + 1)..]).Replace('+', '.');
     }
 
     public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,20 +45,20 @@ internal static class Setup
             throw new InvalidOperationException("This method can only be called on a WebApplication");
         }
 
-        // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI(
-                options =>
+            app.UseSwaggerUI(options =>
+            {
+                foreach (var description in webApplication.DescribeApiVersions())
                 {
-                    foreach (var description in webApplication.DescribeApiVersions())
-                    {
-                        options.SwaggerEndpoint(
-                            $"/swagger/{description.GroupName}/swagger.json",
-                            description.GroupName);
-                    }
-                });
+                    options.SwaggerEndpoint(
+                        $"/swagger/{description.GroupName}/swagger.json",
+                        description.GroupName);
+                }
+
+                options.ConfigObject.AdditionalItems["persistAuthorization"] = true;
+            });
         }
 
         return app;

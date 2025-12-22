@@ -1,5 +1,4 @@
 using Common.Application.Auth;
-using Common.Application.DTOs;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Builder;

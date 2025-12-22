@@ -1,32 +1,37 @@
-using System.Text.Json;
+using System.Globalization;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-# pragma warning disable CA1305, S3267
-internal class SwaggerDefaultValues : IOperationFilter
+internal sealed class SwaggerDefaultValues : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var apiDescription = context.ApiDescription;
         operation.Deprecated |= apiDescription.IsDeprecated();
 
-        foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
+        if (operation.Responses != null)
         {
-            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
-            if (!operation.Responses.TryGetValue(responseKey, out var response))
+            foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
             {
-                continue;
-            }
+                var responseKey = responseType.IsDefaultResponse
+                    ? "default"
+                    : responseType.StatusCode.ToString(CultureInfo.InvariantCulture);
 
-            foreach (var contentType in response.Content.Keys)
-            {
-                if (responseType.ApiResponseFormats.All(x => x.MediaType != contentType))
+                if (!operation.Responses.TryGetValue(responseKey, out var response))
                 {
-                    response.Content.Remove(contentType);
+                    continue;
+                }
+
+                foreach (var contentType in response.Content?.Keys.ToList() ?? [])
+                {
+                    if (responseType.ApiResponseFormats.All(x => x.MediaType != contentType))
+                    {
+                        response.Content?.Remove(contentType);
+                    }
                 }
             }
         }
@@ -38,23 +43,58 @@ internal class SwaggerDefaultValues : IOperationFilter
 
         foreach (var parameter in operation.Parameters)
         {
-            var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
+            var description = apiDescription.ParameterDescriptions.FirstOrDefault(p => p.Name == parameter.Name);
 
-            parameter.Description ??= description.ModelMetadata?.Description;
-
-            if (parameter.Schema.Default == null &&
-                 description.DefaultValue != null &&
-                 description.DefaultValue is not DBNull &&
-                 description.ModelMetadata is ModelMetadata modelMetadata)
+            if (description == null)
             {
-                // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
-                var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
-                parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
+                continue;
             }
 
-            parameter.Required |= description.IsRequired;
+            // 2. Cast to Concrete Class (OpenApiParameter)
+            // Microsoft.OpenApi v2 interfaces (IOpenApiParameter) often do not have setters.
+            if (parameter is not OpenApiParameter concreteParameter)
+            {
+                continue;
+            }
+
+            concreteParameter.Description ??= description.ModelMetadata?.Description;
+
+            // 3. Fix Schema Default (IOpenApiAny -> JsonNode)
+            if (concreteParameter.Schema is OpenApiSchema concreteSchema &&
+                 concreteSchema.Default == null &&
+                 description.DefaultValue != null &&
+                 description.DefaultValue is not DBNull &&
+                 description.ModelMetadata is { } _)
+            {
+                concreteSchema.Default = MapToJsonNode(description.DefaultValue);
+            }
+
+            concreteParameter.Required |= description.IsRequired;
         }
     }
-}
 
-# pragma warning restore CA1305, S3267
+    /// <summary>
+    /// Microsoft.OpenApi v2 replaces IOpenApiAny with System.Text.Json.Nodes.JsonNode
+    /// </summary>
+    private static JsonValue? MapToJsonNode(object? value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        return value switch
+        {
+            bool b => JsonValue.Create(b),
+            int i => JsonValue.Create(i),
+            long l => JsonValue.Create(l),
+            float f => JsonValue.Create(f),
+            double d => JsonValue.Create(d),
+            string s => JsonValue.Create(s),
+            DateTime dt => JsonValue.Create(dt),
+            DateTimeOffset dto => JsonValue.Create(dto),
+            Guid g => JsonValue.Create(g),
+            _ => JsonValue.Create(value.ToString())
+        };
+    }
+}

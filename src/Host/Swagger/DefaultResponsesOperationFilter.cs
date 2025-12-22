@@ -1,32 +1,35 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
 internal sealed class DefaultResponsesOperationFilter : IOperationFilter
 {
-    private static OpenApiResponse CreateErrorResponse(string description, OperationFilterContext context)
-    {
-        return new OpenApiResponse
-        {
-            Description = description,
-            Content = new Dictionary<string, OpenApiMediaType>
-            {
-                ["application/problem+json"] = new OpenApiMediaType
-                {
-                    Schema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails), context.SchemaRepository)
-                }
-            }
-        };
-    }
-
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        operation.Responses["400"] = CreateErrorResponse("Bad Request", context);
-        operation.Responses["401"] = CreateErrorResponse("Unauthorized", context);
-        operation.Responses["403"] = CreateErrorResponse("Forbidden", context);
-        operation.Responses["404"] = CreateErrorResponse("Not Found", context);
-        operation.Responses["500"] = CreateErrorResponse("Internal Server Error", context);
+        AddResponse(operation, "400", "Bad Request", context);
+        AddResponse(operation, "401", "Unauthorized", context);
+        AddResponse(operation, "403", "Forbidden", context);
+        AddResponse(operation, "404", "Not Found", context);
+        AddResponse(operation, "500", "Internal Server Error", context);
+    }
+
+    private static void AddResponse(OpenApiOperation operation, string statusCode, string description, OperationFilterContext context)
+    {
+        if ((!operation.Responses?.ContainsKey(statusCode) ?? false) && operation.Responses is not null)
+        {
+            operation.Responses[statusCode] = new OpenApiResponse
+            {
+                Description = description,
+                Content = new Dictionary<string, OpenApiMediaType>
+                {
+                    ["application/problem+json"] = new OpenApiMediaType
+                    {
+                        Schema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails), context.SchemaRepository)
+                    }
+                }
+            };
+        }
     }
 }

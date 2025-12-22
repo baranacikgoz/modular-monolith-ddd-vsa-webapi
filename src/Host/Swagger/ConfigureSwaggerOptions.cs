@@ -2,17 +2,18 @@ using Asp.Versioning.ApiExplorer;
 using Common.Application.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Host.Swagger;
 
-internal class ConfigureSwaggerOptions(
+internal sealed class ConfigureSwaggerOptions(
     IApiVersionDescriptionProvider provider,
     IOptions<OpenApiOptions> openApiOptionsProvider
     ) : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly OpenApiOptions _openApiOptions = openApiOptionsProvider.Value;
+
     public void Configure(SwaggerGenOptions options)
     {
         foreach (var description in provider.ApiVersionDescriptions)
@@ -23,32 +24,27 @@ internal class ConfigureSwaggerOptions(
         options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
         {
             Name = "Authorization",
-            Description = "Enter your Bearer token without Bearer prefix.",
+            Description = "Enter your Bearer token without 'Bearer ' prefix.",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.Http,
             BearerFormat = "JWT",
-            Scheme = JwtBearerDefaults.AuthenticationScheme
+            Scheme = "Bearer"
         });
 
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        options.AddSecurityRequirement(document =>
         {
+            var schemeReference = new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);
+
+            return new OpenApiSecurityRequirement
             {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                        Type = ReferenceType.SecurityScheme
-                    }
-                },
-                Array.Empty<string>()
-            }
+                [schemeReference] = [..Array.Empty<string>()]
+            };
         });
     }
 
     private OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
-        var info = new OpenApiInfo()
+        var info = new OpenApiInfo
         {
             Title = _openApiOptions.Title,
             Version = description.ApiVersion.ToString(),
@@ -60,14 +56,19 @@ internal class ConfigureSwaggerOptions(
             },
             License = new OpenApiLicense
             {
-                Name = _openApiOptions.LicenseName,
-                Url = Uri.TryCreate(_openApiOptions.LicenseUrl, UriKind.Absolute, out var uri) ? uri : null
+                Name = _openApiOptions.LicenseName
             }
         };
 
+        if (!string.IsNullOrEmpty(_openApiOptions.LicenseUrl) &&
+            Uri.TryCreate(_openApiOptions.LicenseUrl, UriKind.Absolute, out var uri))
+        {
+            info.License.Url = uri;
+        }
+
         if (description.IsDeprecated)
         {
-            info.Description += " This API version has been deprecated!";
+            info.Description += " **This API version has been deprecated!**";
         }
 
         return info;

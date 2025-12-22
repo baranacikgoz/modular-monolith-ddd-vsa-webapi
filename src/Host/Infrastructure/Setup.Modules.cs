@@ -39,21 +39,19 @@ internal static partial class Setup
     public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
     {
         var versionNeutralApiGroup = app
-                                    .MapGroup("/")
-                                    .AddFluentValidationAutoValidation()
-                                    .RequireAuthorization()
-                                    .WithOpenApi();
+            .MapGroup("/")
+            .AddFluentValidationAutoValidation()
+            .RequireAuthorization();
 
         var apiVersionSet = app.GetApiVersionSet();
 
         // I did not extend this group from "/" root group because I got errors doing so (probably because of versioning)
         // So decided to create it from scratch.
         var versionedApiGroup = app
-                                .MapGroup("/v{version:apiVersion}")
-                                .AddFluentValidationAutoValidation()
-                                .WithApiVersionSet(apiVersionSet)
-                                .RequireAuthorization()
-                                .WithOpenApi();
+            .MapGroup("/v{version:apiVersion}")
+            .AddFluentValidationAutoValidation()
+            .WithApiVersionSet(apiVersionSet)
+            .RequireAuthorization();
 
         app.MapIAMModuleEndpoints(versionNeutralApiGroup);
         app.MapProductsModuleEndpoints(versionedApiGroup);
