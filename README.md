@@ -53,7 +53,7 @@ This repository includes the following features:
 
 To use or contribute to this project, you will need:
 
-- .NET 9 SDK
+- .NET 10 SDK
 - Docker
 
 ## Getting Started
