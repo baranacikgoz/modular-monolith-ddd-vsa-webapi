@@ -8,9 +8,10 @@ namespace Common.Infrastructure.EventBus;
 public partial class MassTransitEventBus(
     IBus bus,
     ILogger<MassTransitEventBus> logger
-    ) : IEventBus
+) : IEventBus
 {
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        where TEvent : IEvent
     {
         var eventName = @event.GetType().Name;
 

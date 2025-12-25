@@ -17,7 +17,7 @@ internal static class Endpoint
         usersApiGroup
             .MapGet("me", GetMeAsync)
             .WithDescription("Get current user.")
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .MustHavePermission(CustomActions.ReadMy, CustomResources.ApplicationUsers)
             .TransformResultTo<Response>();
     }
@@ -26,7 +26,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IIAMDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Users
             .TagWith(nameof(GetMeAsync), currentUser.Id)
             .Where(u => u.Id == currentUser.Id)
@@ -43,4 +44,5 @@ internal static class Endpoint
                 LastModifiedOn = u.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
+    }
 }

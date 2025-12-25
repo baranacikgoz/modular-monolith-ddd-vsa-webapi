@@ -7,8 +7,10 @@ namespace Products.Infrastructure;
 public static class ModuleInstaller
 {
     public static IServiceCollection AddProductsModule(this IServiceCollection services)
-        => services
+    {
+        return services
             .AddPersistence();
+    }
 
     public static WebApplication UseProductsModule(this WebApplication app)
     {

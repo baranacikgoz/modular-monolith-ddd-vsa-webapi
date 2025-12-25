@@ -7,6 +7,8 @@ public class OutboxDbContext(
     DbContextOptions<OutboxDbContext> options)
     : DbContext(options), IOutboxDbContext
 {
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -14,6 +16,4 @@ public class OutboxDbContext(
 
         modelBuilder.ApplyConfiguration(new OutboxMessageConfig());
     }
-
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 }

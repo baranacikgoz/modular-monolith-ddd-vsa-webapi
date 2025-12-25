@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("{id}/history", GetStoreHistoryAsync)
             .WithDescription("Get Store's history.")
             .MustHavePermission(CustomActions.Read, CustomResources.Stores)
-            .Produces<PaginationResponse<EventDto>>(StatusCodes.Status200OK)
+            .Produces<PaginationResponse<EventDto>>()
             .TransformResultTo<PaginationResponse<EventDto>>();
     }
 
@@ -28,10 +28,12 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .GetEventHistoryAsync<Store, StoreId>(
-                moduleName: nameof(Products),
-                id: request.Id,
-                request: request,
-                cancellationToken: cancellationToken);
+                nameof(Products),
+                request.Id,
+                request,
+                cancellationToken);
+    }
 }

@@ -7,6 +7,7 @@ namespace Products.Endpoints.Products.v1.EventHistory;
 
 public sealed record Request : PaginationRequest
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ProductId>>]
     public ProductId Id { get; set; }
 }

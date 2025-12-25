@@ -5,10 +5,10 @@ namespace IAM.Domain.Identity;
 
 public sealed partial class ApplicationUser
 {
-    [JsonIgnore]
-    private readonly List<DomainEvent> _events = [];
-    [JsonIgnore]
-    public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
+    [JsonIgnore] private readonly List<DomainEvent> _events = [];
+
+    [JsonIgnore] public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
+
     public void LoadFromHistory(IEnumerable<DomainEvent> events)
     {
         foreach (var @event in events)
@@ -16,8 +16,17 @@ public sealed partial class ApplicationUser
             RaiseEvent(@event);
         }
     }
-    public void AddEvent(DomainEvent @event) => _events.Add(@event);
-    public void ClearEvents() => _events.Clear();
+
+    public void ClearEvents()
+    {
+        _events.Clear();
+    }
+
+    public void AddEvent(DomainEvent @event)
+    {
+        _events.Add(@event);
+    }
+
     private void RaiseEvent(DomainEvent @event)
     {
         Version++;

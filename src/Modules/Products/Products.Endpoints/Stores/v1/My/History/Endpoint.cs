@@ -22,7 +22,7 @@ internal static class Endpoint
             .MapGet("my/history", GetMyStoreHistoryAsync)
             .WithDescription("Get my store's history.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
-            .Produces<PaginationResponse<EventDto>>(StatusCodes.Status200OK)
+            .Produces<PaginationResponse<EventDto>>()
             .TransformResultTo<PaginationResponse<EventDto>>();
     }
 
@@ -31,7 +31,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .TagWith(nameof(GetMyStoreHistoryAsync), currentUser.Id)
             .AsNoTracking()
@@ -40,9 +41,9 @@ internal static class Endpoint
             .SingleAsResultAsync(cancellationToken)
             .BindAsync(async id => await dbContext
                 .GetEventHistoryAsync<Store, StoreId>(
-                    moduleName: nameof(Products),
-                    id: id,
-                    request: request,
-                    cancellationToken: cancellationToken));
-
+                    nameof(Products),
+                    id,
+                    request,
+                    cancellationToken));
+    }
 }

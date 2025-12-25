@@ -90,8 +90,8 @@ services:
     depends_on:
       mm.postgres:
         condition: service_healthy
-#      host:
-#        condition: service_healthy
+    #      host:
+    #        condition: service_healthy
     networks:
       - local_shared_network
     volumes:
@@ -197,18 +197,18 @@ services:
     depends_on:
       - mm.prometheus
 
-#  mm.otel-collector:
-#    image: otel/opentelemetry-collector-contrib:latest
-#    container_name: mm.otel-collector
-#    networks:
-#      - local_shared_network
-#    ports:
-#      - "4317:4317" # OTLP gRPC receiver
-#      - "4318:4318" # OTLP HTTP receiver"
-#      - "9464:9464" # Prometheus exporter port
-#    volumes:
-#      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
-#    command: ["--config=/etc/otel-collector-config.yml"]
+  #  mm.otel-collector:
+  #    image: otel/opentelemetry-collector-contrib:latest
+  #    container_name: mm.otel-collector
+  #    networks:
+  #      - local_shared_network
+  #    ports:
+  #      - "4317:4317" # OTLP gRPC receiver
+  #      - "4318:4318" # OTLP HTTP receiver"
+  #      - "9464:9464" # Prometheus exporter port
+  #    volumes:
+  #      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
+  #    command: ["--config=/etc/otel-collector-config.yml"]
 
   mm.seq:
     image: datalust/seq:latest
@@ -266,7 +266,7 @@ services:
       - local_shared_network
     volumes:
       - ./kafka-init:/tmp/scripts
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     # Improved command with check and handling "already exists"
     command: >
       "echo 'Kafka is healthy. Checking/Creating topic...' &&
@@ -316,8 +316,8 @@ services:
     depends_on:
       mm.debezium: # Depends on Debezium running
         condition: service_healthy # Wait for Debezium API to be healthy
-#      host:
-#        condition: service_healthy
+    #      host:
+    #        condition: service_healthy
     networks:
       - local_shared_network
     volumes:

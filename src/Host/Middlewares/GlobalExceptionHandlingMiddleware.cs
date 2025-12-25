@@ -12,7 +12,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
     IStringLocalizer<ResxLocalizer> localizer
-    ) : IMiddleware
+) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -23,10 +23,10 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         catch (DbUpdateConcurrencyException ex)
         {
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.Conflict,
-                title: localizer[nameof(DbUpdateConcurrencyException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.Conflict,
+                localizer[nameof(DbUpdateConcurrencyException)]);
         }
         catch (UniqueConstraintException ex)
         {
@@ -37,12 +37,12 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             }
 
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: columnName is not null
-                        ? $"{localizer[columnName]} {localizer[nameof(UniqueConstraintException)]}"
-                        : localizer[nameof(UniqueConstraintException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                columnName is not null
+                    ? $"{localizer[columnName]} {localizer[nameof(UniqueConstraintException)]}"
+                    : localizer[nameof(UniqueConstraintException)]);
         }
         catch (CannotInsertNullException ex)
         {
@@ -53,12 +53,12 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             }
 
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: columnName is not null
-                        ? $"{localizer[columnName]} {localizer[nameof(CannotInsertNullException)]}"
-                        : localizer[nameof(CannotInsertNullException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                columnName is not null
+                    ? $"{localizer[columnName]} {localizer[nameof(CannotInsertNullException)]}"
+                    : localizer[nameof(CannotInsertNullException)]);
         }
         catch (MaxLengthExceededException ex)
         {
@@ -69,12 +69,12 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             }
 
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: columnName is not null
-                        ? $"{localizer[columnName]} {localizer[nameof(MaxLengthExceededException)]}"
-                        : localizer[nameof(MaxLengthExceededException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                columnName is not null
+                    ? $"{localizer[columnName]} {localizer[nameof(MaxLengthExceededException)]}"
+                    : localizer[nameof(MaxLengthExceededException)]);
         }
         catch (NumericOverflowException ex)
         {
@@ -85,12 +85,12 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             }
 
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: columnName is not null
-                        ? $"{localizer[columnName]} {localizer[nameof(NumericOverflowException)]}"
-                        : localizer[nameof(NumericOverflowException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                columnName is not null
+                    ? $"{localizer[columnName]} {localizer[nameof(NumericOverflowException)]}"
+                    : localizer[nameof(NumericOverflowException)]);
         }
         catch (ReferenceConstraintException ex)
         {
@@ -101,45 +101,46 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             }
 
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: columnName is not null
-                        ? $"{localizer[columnName]} {localizer[nameof(ReferenceConstraintException)]}"
-                        : localizer[nameof(ReferenceConstraintException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                columnName is not null
+                    ? $"{localizer[columnName]} {localizer[nameof(ReferenceConstraintException)]}"
+                    : localizer[nameof(ReferenceConstraintException)]);
         }
-        catch (DbUpdateException ex) // Should not happen because we use EntityFramework.Exceptions and ".UseExceptionProcessor()"in the DbContext setup, but just in case
+        catch (DbUpdateException
+               ex) // Should not happen because we use EntityFramework.Exceptions and ".UseExceptionProcessor()"in the DbContext setup, but just in case
         {
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.InternalServerError,
-                title: localizer[nameof(HttpStatusCode.InternalServerError)]);
+                context,
+                ex,
+                (int)HttpStatusCode.InternalServerError,
+                localizer[nameof(HttpStatusCode.InternalServerError)]);
         }
         catch (BadHttpRequestException ex)
         {
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.BadRequest,
-                title: localizer[nameof(BadHttpRequestException)]);
+                context,
+                ex,
+                (int)HttpStatusCode.BadRequest,
+                localizer[nameof(BadHttpRequestException)]);
         }
         catch (OperationCanceledException ex)
         {
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: StatusCodes.Status499ClientClosedRequest, // Client Closed Request
-                title: localizer["ClientClosedRequest"]);
+                context,
+                ex,
+                StatusCodes.Status499ClientClosedRequest, // Client Closed Request
+                localizer["ClientClosedRequest"]);
         }
 #pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
         {
             await HandleExceptionAsync(
-                context: context,
-                exception: ex,
-                statusCode: (int)HttpStatusCode.InternalServerError,
-                title: localizer[nameof(HttpStatusCode.InternalServerError)]);
+                context,
+                ex,
+                (int)HttpStatusCode.InternalServerError,
+                localizer[nameof(HttpStatusCode.InternalServerError)]);
         }
 #pragma warning restore CA1031 // Do not catch general exception types
     }
@@ -154,18 +155,12 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             return;
         }
 
-        var details = new ProblemDetails()
-        {
-            Status = statusCode,
-            Title = title
-        };
+        var details = new ProblemDetails { Status = statusCode, Title = title };
 
         context.Response.StatusCode = statusCode;
-        await problemDetailsService.WriteAsync(new ProblemDetailsContext()
+        await problemDetailsService.WriteAsync(new ProblemDetailsContext
         {
-            HttpContext = context,
-            Exception = exception,
-            ProblemDetails = details,
+            HttpContext = context, Exception = exception, ProblemDetails = details
         });
     }
 

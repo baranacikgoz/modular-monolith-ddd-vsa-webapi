@@ -10,7 +10,8 @@ namespace IAM.Infrastructure.Identity.Services;
 
 internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, ICacheService cache) : IOtpService
 {
-    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp, CancellationToken cancellationToken)
+    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp,
+        CancellationToken cancellationToken)
     {
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
 
@@ -46,7 +47,7 @@ internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, ICache
         var otp = new char[length];
         for (var i = 0; i < length; i++)
         {
-            otp[i] = (char)('0' + (buffer[i] % 10));
+            otp[i] = (char)('0' + buffer[i] % 10);
         }
 
         return new string(otp);

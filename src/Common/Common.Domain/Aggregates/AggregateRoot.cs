@@ -9,12 +9,12 @@ namespace Common.Domain.Aggregates;
 public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAggregateRoot
     where TId : IStronglyTypedId
 {
+    [JsonIgnore] private readonly List<DomainEvent> _events = [];
+
     IStronglyTypedId IAggregateRoot.Id => Id;
 
-    [JsonIgnore]
-    private readonly List<DomainEvent> _events = [];
-    [JsonIgnore]
-    public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
+    [JsonIgnore] public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
+
     public void LoadFromHistory(IEnumerable<DomainEvent> events)
     {
         foreach (var @event in events)
@@ -23,10 +23,18 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
         }
     }
 
-    [ConcurrencyCheck]
-    public new long Version { get; set; }
-    protected void AddEvent(DomainEvent @event) => _events.Add(@event);
-    public void ClearEvents() => _events.Clear();
+    [ConcurrencyCheck] public new long Version { get; set; }
+
+    public void ClearEvents()
+    {
+        _events.Clear();
+    }
+
+    protected void AddEvent(DomainEvent @event)
+    {
+        _events.Add(@event);
+    }
+
     protected abstract void ApplyEvent(DomainEvent @event);
 
 #pragma warning disable CA1030

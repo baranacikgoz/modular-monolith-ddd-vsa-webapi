@@ -6,4 +6,3 @@ public sealed record Response
 {
     public required StoreId Id { get; init; }
 }
-

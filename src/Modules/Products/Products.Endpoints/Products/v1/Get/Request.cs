@@ -10,7 +10,8 @@ namespace Products.Endpoints.Products.v1.Get;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ProductId>>]
     public ProductId Id { get; set; }
 }
 

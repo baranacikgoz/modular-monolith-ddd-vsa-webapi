@@ -13,38 +13,37 @@ public static class Setup
         this IServiceCollection services,
         IConfiguration configuration,
         params Assembly[] assemblies)
-    => services
-        .AddSingleton<IEventBus, MassTransitEventBus>()
-        .AddMassTransit(x =>
-        {
-            x.SetKebabCaseEndpointNameFormatter();
-
-            foreach (var assembly in assemblies)
+    {
+        return services
+            .AddSingleton<IEventBus, MassTransitEventBus>()
+            .AddMassTransit(x =>
             {
-                x.AddConsumers(assembly);
-            }
+                x.SetKebabCaseEndpointNameFormatter();
 
-            var eventBusOptions = configuration.GetSection(nameof(EventBusOptions)).Get<EventBusOptions>()
-                ?? throw new InvalidOperationException($"{nameof(EventBusOptions)} is null");
-
-            var useInMemoryEventBus = eventBusOptions.UseInMemoryEventBus;
-
-            if (useInMemoryEventBus)
-            {
-                x.UsingInMemory((context, configurator) =>
+                foreach (var assembly in assemblies)
                 {
-                    configurator.ConfigureEndpoints(context);
-                });
-            }
-            else
-            {
-                var messageBrokerOptions = eventBusOptions.MessageBroker
-                    ?? throw new InvalidOperationException($"{nameof(useInMemoryEventBus)} is false but {nameof(MessageBroker)} is null.");
+                    x.AddConsumers(assembly);
+                }
 
-                x.UseAppropriateMessageBroker(messageBrokerOptions);
-            }
+                var eventBusOptions = configuration.GetSection(nameof(EventBusOptions)).Get<EventBusOptions>()
+                                      ?? throw new InvalidOperationException($"{nameof(EventBusOptions)} is null");
 
-        });
+                var useInMemoryEventBus = eventBusOptions.UseInMemoryEventBus;
+
+                if (useInMemoryEventBus)
+                {
+                    x.UsingInMemory((context, configurator) => { configurator.ConfigureEndpoints(context); });
+                }
+                else
+                {
+                    var messageBrokerOptions = eventBusOptions.MessageBroker
+                                               ?? throw new InvalidOperationException(
+                                                   $"{nameof(useInMemoryEventBus)} is false but {nameof(MessageBroker)} is null.");
+
+                    x.UseAppropriateMessageBroker(messageBrokerOptions);
+                }
+            });
+    }
 
     private static void UseAppropriateMessageBroker(
         this IBusRegistrationConfigurator busRegistrationConfigurator,
@@ -55,7 +54,6 @@ public static class Setup
             case MessageBrokerType.RabbitMQ:
                 busRegistrationConfigurator.UsingRabbitMq((context, configurator) =>
                 {
-
                     configurator.Host(messageBrokerOptions.Uri, h =>
                     {
                         h.Username(messageBrokerOptions.Username);
@@ -72,8 +70,8 @@ public static class Setup
             case MessageBrokerType.AmazonSQS:
                 throw new NotImplementedException();
             default:
-                throw new InvalidOperationException($"No registration set for the message broker {nameof(messageBrokerOptions.MessageBrokerType)}.");
+                throw new InvalidOperationException(
+                    $"No registration set for the message broker {nameof(messageBrokerOptions.MessageBrokerType)}.");
         }
     }
-
 }

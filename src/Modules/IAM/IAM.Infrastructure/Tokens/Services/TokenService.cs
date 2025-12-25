@@ -2,17 +2,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Common.Application.Options;
+using Common.Domain.StronglyTypedIds;
+using IAM.Application.Tokens.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using IAM.Application.Tokens.Services;
-using Common.Domain.StronglyTypedIds;
-using Common.Application.Options;
 
 namespace IAM.Infrastructure.Tokens.Services;
 
 internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenService
 {
-    public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now, ApplicationUserId userId, ICollection<string> roles)
+    public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now,
+        ApplicationUserId userId, ICollection<string> roles)
     {
         var jwtOptions = jwtOptionsProvider.Value;
 

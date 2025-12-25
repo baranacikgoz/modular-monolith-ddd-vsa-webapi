@@ -1,3 +1,5 @@
 namespace Common.InterModuleRequests;
 
-public interface IAssemblyReference { }
+public interface IAssemblyReference
+{
+}

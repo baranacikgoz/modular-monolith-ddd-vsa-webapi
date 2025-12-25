@@ -6,4 +6,4 @@ public sealed record UserRegisteredIntegrationEvent(
     ApplicationUserId UserId,
     string Name,
     string PhoneNumber
-    ) : IntegrationEvent;
+) : IntegrationEvent;

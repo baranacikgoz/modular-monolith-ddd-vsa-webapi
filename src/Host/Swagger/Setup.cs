@@ -6,7 +6,8 @@ namespace Host.Swagger;
 internal static class Setup
 {
     public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
-        => services
+    {
+        return services
             .AddEndpointsApiExplorer()
             .AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>()
             .AddSwaggerGen(cfg =>
@@ -17,6 +18,7 @@ internal static class Setup
                 cfg.SchemaFilter<StronglyTypedIdSchemaFilter>();
                 cfg.OperationFilter<RemoveDefaultResponseSchemaFilter>();
             });
+    }
 
     private static string SchemaIdGenerator(Type type)
     {

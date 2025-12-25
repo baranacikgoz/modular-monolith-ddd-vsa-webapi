@@ -15,48 +15,48 @@ namespace Products.Infrastructure.RateLimiting;
 public static partial class Policies
 {
     private static void CreateStorePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
-        => rateLimiter
+    {
+        rateLimiter
             .AddPolicy<string, CreateStoreRateLimitingPolicy>(RateLimitingConstants.CreateStore);
+    }
 
     private sealed class CreateStoreRateLimitingPolicy(
         IProblemDetailsService problemDetailsService,
         IStringLocalizer<CreateStoreRateLimitingPolicy> localizer,
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider
-        ) : IRateLimiterPolicy<string>
+    ) : IRateLimiterPolicy<string>
     {
         private readonly CustomRateLimitingOptions _rateLimitingOptions = rateLimitingOptionsProvider.Value;
+
         public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => (context, cancellationToken) =>
         {
             var localizedMessage = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
                 ? LocalizedMessage(retryAfter)
                 : LocalizedMessage(TimeSpan.FromMilliseconds(_rateLimitingOptions.CreateStore!.PeriodInMs!));
 
-            var problemDetails = new ProblemDetails()
+            var problemDetails = new ProblemDetails
             {
                 Status = (int)HttpStatusCode.TooManyRequests,
                 Title = localizedMessage,
-                Instance = context.HttpContext.Request.Path,
+                Instance = context.HttpContext.Request.Path
             };
 
             problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
 
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-            return problemDetailsService.WriteAsync(new ProblemDetailsContext()
+            return problemDetailsService.WriteAsync(new ProblemDetailsContext
             {
-                HttpContext = context.HttpContext,
-                ProblemDetails = problemDetails,
+                HttpContext = context.HttpContext, ProblemDetails = problemDetails
             });
         };
 
-        private LocalizedString LocalizedMessage(TimeSpan retryAfter)
-            => localizer["En az {0} sonra yeni bir mağaza oluşturabilirsiniz.", retryAfter];
         public RateLimitPartition<string> GetPartition(HttpContext httpContext)
         {
             var userId = httpContext
-                        .RequestServices
-                        .GetRequiredService<ICurrentUser>()
-                        .IdAsString
-                        ?? throw new InvalidOperationException("User is not authenticated.");
+                             .RequestServices
+                             .GetRequiredService<ICurrentUser>()
+                             .IdAsString
+                         ?? throw new InvalidOperationException("User is not authenticated.");
 
             return RateLimitPartition.GetFixedWindowLimiter(userId, opt =>
                 new FixedWindowRateLimiterOptions
@@ -65,6 +65,11 @@ public static partial class Policies
                     PermitLimit = _rateLimitingOptions.CreateStore!.Limit!,
                     QueueLimit = _rateLimitingOptions.CreateStore!.QueueLimit!
                 });
+        }
+
+        private LocalizedString LocalizedMessage(TimeSpan retryAfter)
+        {
+            return localizer["En az {0} sonra yeni bir mağaza oluşturabilirsiniz.", retryAfter];
         }
     }
 }

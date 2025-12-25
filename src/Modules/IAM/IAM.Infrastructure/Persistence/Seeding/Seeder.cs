@@ -10,7 +10,6 @@ internal sealed partial class Seeder(
     RoleManager<IdentityRole<ApplicationUserId>> roleManager,
     UserManager<ApplicationUser> userManager)
 {
-
     public async Task SeedDbAsync()
     {
         await SeedRolesAsync();

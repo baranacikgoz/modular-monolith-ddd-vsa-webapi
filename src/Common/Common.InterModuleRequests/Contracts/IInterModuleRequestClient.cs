@@ -1,4 +1,5 @@
 namespace Common.InterModuleRequests.Contracts;
+
 public interface IInterModuleRequestClient<TRequest, TResponse>
     where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class

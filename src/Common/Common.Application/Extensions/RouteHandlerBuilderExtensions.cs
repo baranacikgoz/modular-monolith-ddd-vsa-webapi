@@ -7,7 +7,12 @@ namespace Common.Application.Extensions;
 public static class RouteHandlerBuilderExtensions
 {
     public static RouteHandlerBuilder TransformResultToNoContentResponse(this RouteHandlerBuilder builder)
-        => builder.AddEndpointFilter<ResultToResponseTransformer>();
+    {
+        return builder.AddEndpointFilter<ResultToResponseTransformer>();
+    }
+
     public static RouteHandlerBuilder TransformResultTo<T>(this RouteHandlerBuilder builder)
-        => builder.AddEndpointFilter<ResultToResponseTransformer<T>>();
+    {
+        return builder.AddEndpointFilter<ResultToResponseTransformer<T>>();
+    }
 }

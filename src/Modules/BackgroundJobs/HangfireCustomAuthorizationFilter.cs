@@ -4,6 +4,7 @@ using Hangfire.Dashboard;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BackgroundJobs;
+
 public class HangfireCustomAuthorizationFilter : IDashboardAsyncAuthorizationFilter
 {
     public Task<bool> AuthorizeAsync([NotNull] DashboardContext context)

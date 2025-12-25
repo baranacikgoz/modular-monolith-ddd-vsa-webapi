@@ -11,7 +11,8 @@ namespace BackgroundJobs;
 
 public static class ModuleInstaller
 {
-    public static IServiceCollection AddBackgroundJobsModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddBackgroundJobsModule(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddSingleton<IBackgroundJobs, BackgroundJobsService>()
@@ -21,23 +22,22 @@ public static class ModuleInstaller
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
 
                 cfg.UseSimpleAssemblyNameTypeSerializer()
-                   .UseRecommendedSerializerSettings()
-                   .UsePostgreSqlStorage(pgs => pgs.UseNpgsqlConnection(connectionString), new PostgreSqlStorageOptions()
-                   {
-                       SchemaName = nameof(BackgroundJobs)
-                   });
+                    .UseRecommendedSerializerSettings()
+                    .UsePostgreSqlStorage(pgs => pgs.UseNpgsqlConnection(connectionString),
+                        new PostgreSqlStorageOptions { SchemaName = nameof(BackgroundJobs) });
             });
 
         var isServer = configuration
-                      .GetSection(nameof(BackgroundJobsOptions))
-                      .Get<BackgroundJobsOptions>()?
-                      .IsServer ?? throw new InvalidOperationException("BackgroundJobsOptions is not configured.");
+            .GetSection(nameof(BackgroundJobsOptions))
+            .Get<BackgroundJobsOptions>()?
+            .IsServer ?? throw new InvalidOperationException("BackgroundJobsOptions is not configured.");
 
         if (isServer)
         {
             services.AddHangfireServer((sp, cfg) =>
             {
-                var pollingFrequencyInSeconds = sp.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.PollingFrequencyInSeconds;
+                var pollingFrequencyInSeconds = sp.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value
+                    .PollingFrequencyInSeconds;
                 cfg.SchedulePollingInterval = TimeSpan.FromSeconds(pollingFrequencyInSeconds);
             });
         }
@@ -49,10 +49,8 @@ public static class ModuleInstaller
     {
         var dashboardPath = app.Services.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.DashboardPath;
 
-        app.UseHangfireDashboard(dashboardPath, new DashboardOptions()
-        {
-            AsyncAuthorization = [new HangfireCustomAuthorizationFilter()]
-        });
+        app.UseHangfireDashboard(dashboardPath,
+            new DashboardOptions { AsyncAuthorization = [new HangfireCustomAuthorizationFilter()] });
 
         return app;
     }

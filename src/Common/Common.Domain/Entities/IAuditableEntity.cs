@@ -9,4 +9,3 @@ public interface IAuditableEntity
     DateTimeOffset? LastModifiedOn { get; set; }
     ApplicationUserId? LastModifiedBy { get; set; }
 }
-

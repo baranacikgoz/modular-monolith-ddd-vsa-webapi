@@ -27,7 +27,7 @@ public class CachingOptionsValidator : CustomValidator<CachingOptions>
 #pragma warning disable CS8620
         RuleFor(x => x.Redis)
             .SetValidator(new RedisValidator())
-                .When(x => x.UseRedis);
+            .When(x => x.UseRedis);
 #pragma warning restore CS8620
     }
 }
@@ -38,18 +38,18 @@ public class RedisValidator : CustomValidator<Redis>
     {
         RuleFor(x => x.Host)
             .NotEmpty()
-                .WithMessage("Host should not be empty.");
+            .WithMessage("Host should not be empty.");
 
         RuleFor(x => x.Port)
             .GreaterThan(0)
-                .WithMessage("Port should be greater than 0.");
+            .WithMessage("Port should be greater than 0.");
 
         RuleFor(x => x.Password)
             .NotEmpty()
-                .WithMessage("Password should not be empty.");
+            .WithMessage("Password should not be empty.");
 
         RuleFor(x => x.AppName)
             .NotEmpty()
-                .WithMessage("AppName should not be empty.");
+            .WithMessage("AppName should not be empty.");
     }
 }

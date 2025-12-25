@@ -601,9 +601,9 @@ public static class AsyncExtensions
     }
 
     public static async Task<Result<TCurrent>> TapWhenAsync<TCurrent>(
-       this Task<Result<TCurrent>> resultTask,
-       Func<TCurrent, Result> tap,
-       Func<bool> when)
+        this Task<Result<TCurrent>> resultTask,
+        Func<TCurrent, Result> tap,
+        Func<bool> when)
     {
         var result = await resultTask.ConfigureAwait(false);
 
@@ -713,5 +713,4 @@ public static class AsyncExtensions
         var nextValue = mapper();
         return Result<TOut>.Success(nextValue);
     }
-
 }

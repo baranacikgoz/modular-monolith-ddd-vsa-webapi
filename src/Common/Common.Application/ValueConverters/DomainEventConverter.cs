@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Common.Application.ValueConverters;
 
-public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
+public class DomainEventConverter : ValueConverter<DomainEvent, string>
 {
     private static readonly JsonSerializerOptions _writeOptions = new()
     {
@@ -33,9 +33,9 @@ public partial class DomainEventConverter : ValueConverter<DomainEvent, string>
     };
 
     public DomainEventConverter() : base(
-            eventItem => JsonSerializer.Serialize(eventItem, _writeOptions),
-            json => JsonSerializer.Deserialize<DomainEvent>(json, _readOptions)!
-        )
+        eventItem => JsonSerializer.Serialize(eventItem, _writeOptions),
+        json => JsonSerializer.Deserialize<DomainEvent>(json, _readOptions)!
+    )
     {
     }
 }

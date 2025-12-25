@@ -83,6 +83,7 @@ public static class DbContextExtensions
         {
             return new PaginationResponse<EventDto>([], 0, request.PageNumber, request.PageSize);
         }
+
         var totalCount = results[0].TotalCount;
         var eventDtos = results.Select(x => new EventDto(x.Event, x.CreatedBy)).ToList();
 

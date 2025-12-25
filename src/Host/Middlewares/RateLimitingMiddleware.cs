@@ -1,12 +1,12 @@
 using System.Net;
 using System.Threading.RateLimiting;
+using Common.Application.Extensions;
+using Common.Application.Localization;
+using Common.Application.Options;
+using Common.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Localization;
-using Common.Infrastructure.Extensions;
-using Common.Application.Localization;
-using Common.Application.Extensions;
-using Common.Application.Options;
 
 namespace Host.Middlewares;
 
@@ -16,7 +16,8 @@ internal static class RateLimitingMiddleware
         this IServiceCollection services,
         IConfiguration configuration,
         params IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>[] rateLimitingPoliciesPerModule)
-        => services
+    {
+        return services
             .AddRateLimiter(opt =>
             {
                 var customRateLimitingOptions = GetCustomRateLimitingOptions(configuration);
@@ -32,31 +33,36 @@ internal static class RateLimitingMiddleware
                     policy(opt, customRateLimitingOptions);
                 }
             });
+    }
 
     private static CustomRateLimitingOptions GetCustomRateLimitingOptions(IConfiguration configuration)
-        => configuration
-            .GetSection(nameof(CustomRateLimitingOptions))
-            .Get<CustomRateLimitingOptions>()
-            ?? throw new InvalidOperationException("Custom rate limiting options are null.");
+    {
+        return configuration
+                   .GetSection(nameof(CustomRateLimitingOptions))
+                   .Get<CustomRateLimitingOptions>()
+               ?? throw new InvalidOperationException("Custom rate limiting options are null.");
+    }
+
     private static PartitionedRateLimiter<HttpContext> GlobalRateLimiter(CustomRateLimitingOptions rateLimitingOptions)
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: httpContext.GetIpAddress() ?? "N/A",
-                        factory: _ =>
-                        {
-                            var globalRateLimiting = rateLimitingOptions.Global ?? throw new InvalidOperationException("Global rate limiting is null.");
-                            var permitLimit = globalRateLimiting.Limit;
-                            var periodInMs = globalRateLimiting.PeriodInMs;
+            RateLimitPartition.GetFixedWindowLimiter(
+                httpContext.GetIpAddress() ?? "N/A",
+                _ =>
+                {
+                    var globalRateLimiting = rateLimitingOptions.Global ??
+                                             throw new InvalidOperationException("Global rate limiting is null.");
+                    var permitLimit = globalRateLimiting.Limit;
+                    var periodInMs = globalRateLimiting.PeriodInMs;
 
-                            return new FixedWindowRateLimiterOptions()
-                            {
-                                PermitLimit = permitLimit,
-                                Window = TimeSpan.FromMilliseconds(periodInMs),
-                                QueueLimit = globalRateLimiting.QueueLimit
-                            };
-                        }
-                ));
+                    return new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = permitLimit,
+                        Window = TimeSpan.FromMilliseconds(periodInMs),
+                        QueueLimit = globalRateLimiting.QueueLimit
+                    };
+                }
+            ));
     }
 
     private static Func<OnRejectedContext, CancellationToken, ValueTask> WriteTooManyRequestsToResponse()
@@ -65,11 +71,12 @@ internal static class RateLimitingMiddleware
         {
             var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-            var problemDetailsService = context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
-            var problemDetails = new ProblemDetails()
+            var problemDetailsService =
+                context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
+            var problemDetails = new ProblemDetails
             {
                 Status = (int)HttpStatusCode.TooManyRequests,
-                Title = localizer[nameof(HttpStatusCode.TooManyRequests)],
+                Title = localizer[nameof(HttpStatusCode.TooManyRequests)]
             };
 
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
@@ -80,10 +87,9 @@ internal static class RateLimitingMiddleware
             problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
 
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-            return problemDetailsService.WriteAsync(new ProblemDetailsContext()
+            return problemDetailsService.WriteAsync(new ProblemDetailsContext
             {
-                HttpContext = context.HttpContext,
-                ProblemDetails = problemDetails
+                HttpContext = context.HttpContext, ProblemDetails = problemDetails
             });
         };
     }

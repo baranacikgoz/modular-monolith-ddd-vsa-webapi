@@ -1,7 +1,8 @@
 namespace Common.Application.Localization;
 
 /// <summary>
-/// This is a marker class for localization to use with IStringLocalizer<T> as T.
+///     This is a marker class for localization to use with IStringLocalizer<T> as T.
 /// </summary>
 public sealed class ResxLocalizer
-{ }
+{
+}

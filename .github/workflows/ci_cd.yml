@@ -23,13 +23,13 @@ jobs:
         run: |
           cp ModularMonolith.sln Temp_ModularMonolith.sln
           dotnet sln ModularMonolith.sln remove ./docker-compose.dcproj
-        
+
       - name: Restore dependencies
         run: dotnet restore ModularMonolith.sln
-        
+
       - name: Build
         run: dotnet build ModularMonolith.sln --configuration Release --no-restore
-        
+
       - name: Test
         run: dotnet test ModularMonolith.sln --configuration Release --no-restore --verbosity normal
 

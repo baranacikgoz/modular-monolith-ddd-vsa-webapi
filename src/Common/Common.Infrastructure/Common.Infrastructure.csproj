@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Compile Remove="Persistence\Specifications\**" />
-    <EmbeddedResource Remove="Persistence\Specifications\**" />
-    <None Remove="Persistence\Specifications\**" />
+    <Compile Remove="Persistence\Specifications\**"/>
+    <EmbeddedResource Remove="Persistence\Specifications\**"/>
+    <None Remove="Persistence\Specifications\**"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
-    <PackageReference Include="MassTransit.RabbitMQ" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
-    <PackageReference Include="Scrutor" />
+    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"/>
+    <PackageReference Include="MassTransit.RabbitMQ"/>
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid"/>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>
+    <PackageReference Include="Scrutor"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
-    <ProjectReference Include="..\Common.IntegrationEvents\Common.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\Common.Application\Common.Application.csproj"/>
+    <ProjectReference Include="..\Common.IntegrationEvents\Common.IntegrationEvents.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

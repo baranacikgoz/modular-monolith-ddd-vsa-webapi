@@ -15,13 +15,15 @@ internal static class Endpoint
         captchaApiGroup
             .MapGet("client-key", GetClientKey)
             .WithDescription("Get the client key for captcha.")
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .AllowAnonymous()
             .TransformResultTo<Response>();
     }
 
     private static Result<Response> GetClientKey([FromServices] ICaptchaService captchaService)
-        => Result<string>
+    {
+        return Result<string>
             .Success(captchaService.GetClientKey())
             .Map(clientKey => new Response { ClientKey = clientKey });
+    }
 }

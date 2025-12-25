@@ -22,11 +22,11 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp]
-      exporters: [otlp/jaeger]
+      receivers: [ otlp ]
+      exporters: [ otlp/jaeger ]
     metrics:
-      receivers: [otlp]
-      exporters: [prometheus]
+      receivers: [ otlp ]
+      exporters: [ prometheus ]
     logs:
-      receivers: [otlp]
-      exporters: [otlphttp]
+      receivers: [ otlp ]
+      exporters: [ otlphttp ]

@@ -9,7 +9,9 @@ public class StronglyTypedIdReadOnlyJsonConverter<T> : JsonConverter<T>
     where T : IStronglyTypedId, new()
 {
     public override bool CanConvert(Type typeToConvert)
-        => typeof(IStronglyTypedId).IsAssignableFrom(typeToConvert);
+    {
+        return typeof(IStronglyTypedId).IsAssignableFrom(typeToConvert);
+    }
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -19,14 +21,16 @@ public class StronglyTypedIdReadOnlyJsonConverter<T> : JsonConverter<T>
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-        => throw new NotImplementedException(
+    {
+        throw new NotImplementedException(
             "Direct serialization is not supported, use [JsonConverter(typeof(StronglyTypedIdWriteOnlyJsonConverter))]");
+    }
 }
 
 public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTypedId>
 {
     /// <summary>
-    /// The converter will only handle types implementing IStronglyTypedId whose names end with "Id".
+    ///     The converter will only handle types implementing IStronglyTypedId whose names end with "Id".
     /// </summary>
     public override bool CanConvert(Type typeToConvert)
     {
@@ -34,7 +38,7 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
     }
 
     /// <summary>
-    /// Reads a JSON string and converts it into the appropriate strongly typed ID instance.
+    ///     Reads a JSON string and converts it into the appropriate strongly typed ID instance.
     /// </summary>
     /// <param name="reader">The JSON reader</param>
     /// <param name="typeToConvert">The target type (a strongly typed ID)</param>
@@ -43,7 +47,7 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
     public override IStronglyTypedId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         // Read JSON as string
-        string? stringValue = reader.GetString();
+        var stringValue = reader.GetString();
         if (string.IsNullOrWhiteSpace(stringValue))
         {
             throw new JsonException("The ID value is null or empty.");
@@ -61,11 +65,11 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
         }
 
         // If the type is nullable, obtain its underlying type.
-        Type effectiveType = Nullable.GetUnderlyingType(typeToConvert) ?? typeToConvert;
+        var effectiveType = Nullable.GetUnderlyingType(typeToConvert) ?? typeToConvert;
 
         // Create an instance of the effective (non-nullable) type.
-        object instance = Activator.CreateInstance(effectiveType)
-                          ?? throw new JsonException($"Could not create an instance of {effectiveType}.");
+        var instance = Activator.CreateInstance(effectiveType)
+                       ?? throw new JsonException($"Could not create an instance of {effectiveType}.");
 
         // Ensure the instance implements IStronglyTypedId.
         if (instance is not IStronglyTypedId stronglyTypedId)
@@ -93,7 +97,7 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
     }
 
     /// <summary>
-    /// Writing is not supported in this converter.
+    ///     Writing is not supported in this converter.
     /// </summary>
     public override void Write(Utf8JsonWriter writer, IStronglyTypedId value, JsonSerializerOptions options)
     {

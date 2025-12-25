@@ -14,7 +14,6 @@ public static class CustomActions
     public const string SearchMy = nameof(SearchMy);
 
     public const string Manage = nameof(Manage);
-
 }
 
 public static class CustomResources

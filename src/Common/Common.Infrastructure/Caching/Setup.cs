@@ -10,9 +10,10 @@ public static class Setup
     public static IServiceCollection AddCommonCaching(this IServiceCollection services, IConfiguration configuration)
     {
         var cachingOptions = configuration
-                            .GetSection(nameof(CachingOptions))
-                            .Get<CachingOptions>()
-                            ?? throw new InvalidOperationException($"Configuration for {nameof(CachingOptions)} is null.");
+                                 .GetSection(nameof(CachingOptions))
+                                 .Get<CachingOptions>()
+                             ?? throw new InvalidOperationException(
+                                 $"Configuration for {nameof(CachingOptions)} is null.");
 
         if (cachingOptions.UseRedis)
         {
@@ -23,7 +24,8 @@ public static class Setup
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}";
+                options.Configuration =
+                    $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}";
             });
         }
 

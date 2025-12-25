@@ -10,7 +10,7 @@
     <DockerServiceName>host</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.yml" />
-    <None Include=".dockerignore" />
+    <None Include="docker-compose.yml"/>
+    <None Include=".dockerignore"/>
   </ItemGroup>
 </Project>

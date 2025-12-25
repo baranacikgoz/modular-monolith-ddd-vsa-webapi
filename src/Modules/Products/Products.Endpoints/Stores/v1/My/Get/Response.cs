@@ -12,4 +12,3 @@ public sealed record Response : AuditableEntityResponse<StoreId>
     public required string Address { get; init; }
     public required int ProductCount { get; init; }
 }
-

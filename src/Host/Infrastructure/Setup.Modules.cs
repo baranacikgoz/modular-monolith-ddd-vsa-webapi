@@ -1,11 +1,12 @@
+using BackgroundJobs;
 using Host.Middlewares;
+using IAM.Endpoints;
 using IAM.Infrastructure;
+using IAM.Infrastructure.RateLimiting;
 using Notifications.Infrastructure;
 using Outbox;
-using BackgroundJobs;
-using Products.Infrastructure;
-using IAM.Endpoints;
 using Products.Endpoints;
+using Products.Infrastructure;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace Host.Infrastructure;
@@ -13,7 +14,8 @@ namespace Host.Infrastructure;
 internal static partial class Setup
 {
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
-        => services
+    {
+        return services
             .AddBackgroundJobsModule(configuration)
             .AddOutboxModule()
             .AddNotificationsModule()
@@ -21,9 +23,10 @@ internal static partial class Setup
             .AddProductsModule()
             .AddCustomRateLimiting(
                 configuration,
-                IAM.Infrastructure.RateLimiting.Policies.Get(),
+                Policies.Get(),
                 Products.Infrastructure.RateLimiting.Policies.Get())
             .AddFluentValidationAutoValidation();
+    }
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {

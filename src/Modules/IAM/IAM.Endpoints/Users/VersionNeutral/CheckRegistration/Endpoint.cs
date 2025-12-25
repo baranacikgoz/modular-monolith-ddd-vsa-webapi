@@ -17,7 +17,7 @@ internal static class Endpoint
             .MapGet("check-registration", IsRegisteredAsync)
             .WithDescription("Check if a user is registered by given phone number.")
             .AllowAnonymous()
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -25,10 +25,12 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IIAMDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Users
             .TagWith(nameof(IsRegisteredAsync))
             .Where(u => u.PhoneNumber == request.PhoneNumber)
             .AnyAsResultAsync(cancellationToken)
             .MapAsync(any => new Response { IsRegistered = any });
+    }
 }

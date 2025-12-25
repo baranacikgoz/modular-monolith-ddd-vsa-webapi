@@ -21,7 +21,8 @@ internal sealed partial class Seeder
         return productIds;
     }
 
-    private async Task<ProductTemplateId> SeedProductsAsync(string brand, string model, string color, CancellationToken cancellationToken)
+    private async Task<ProductTemplateId> SeedProductsAsync(string brand, string model, string color,
+        CancellationToken cancellationToken)
     {
         if (await dbContext.ProductTemplates.SingleOrDefaultAsync(product => product.Brand == brand, cancellationToken)
             is not ProductTemplate productTemplate)

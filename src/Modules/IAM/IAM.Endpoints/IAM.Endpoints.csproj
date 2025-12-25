@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj" />
-    <ProjectReference Include="..\IAM.Application\IAM.Application.csproj" />
-    <ProjectReference Include="..\IAM.Infrastructure\IAM.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj"/>
+    <ProjectReference Include="..\IAM.Application\IAM.Application.csproj"/>
+    <ProjectReference Include="..\IAM.Infrastructure\IAM.Infrastructure.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="SonarAnalyzer.CSharp">
@@ -11,7 +11,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Captcha\" />
-    <Folder Include="Common\" />
+    <Folder Include="Captcha\"/>
+    <Folder Include="Common\"/>
   </ItemGroup>
 </Project>

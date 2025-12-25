@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Common.Application\Common.Application.csproj" />
-    <ProjectReference Include="..\Products.Domain\Products.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Application\Common.Application.csproj"/>
+    <ProjectReference Include="..\Products.Domain\Products.Domain.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Products\" />
-    <Folder Include="ProductTemplates\" />
+    <Folder Include="Products\"/>
+    <Folder Include="ProductTemplates\"/>
   </ItemGroup>
 
 </Project>

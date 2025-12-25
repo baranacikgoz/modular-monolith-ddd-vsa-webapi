@@ -1,19 +1,21 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Builder;
-using MassTransit;
 using Common.Infrastructure.Persistence.DbContext;
 using IAM.Application.Persistence;
 using IAM.Infrastructure.Persistence.Seeding;
+using MassTransit;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IAM.Infrastructure.Persistence;
 
 internal static class Setup
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
-        => services
+    {
+        return services
             .AddTransient<Seeder>()
-            .AddModuleDbContext<IIAMDbContext, IAMDbContext>(moduleName: nameof(IAM));
+            .AddModuleDbContext<IIAMDbContext, IAMDbContext>(nameof(IAM));
+    }
 
     public static WebApplication UsePersistence(this WebApplication app)
     {

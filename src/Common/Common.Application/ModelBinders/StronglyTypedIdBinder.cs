@@ -2,6 +2,7 @@ using Common.Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Common.Application.ModelBinders;
+
 public class StronglyTypedIdBinder<TId> : IModelBinder where TId : IStronglyTypedId, new()
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
@@ -28,7 +29,7 @@ public class StronglyTypedIdBinder<TId> : IModelBinder where TId : IStronglyType
             return Task.CompletedTask;
         }
 
-        var stronglyTypedId = new TId() { Value = guid };
+        var stronglyTypedId = new TId { Value = guid };
 
         bindingContext.Result = ModelBindingResult.Success(stronglyTypedId);
 

@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
 
 namespace Products.Endpoints.Stores.v1.Update;
@@ -26,11 +26,13 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .TagWith(nameof(UpdateStoreAsync), request.Id)
             .Where(s => s.Id == request.Id)
             .SingleAsResultAsync(cancellationToken)
             .TapAsync(store => store.Update(request.Body.Name, request.Body.Description, request.Body.Address))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
+    }
 }

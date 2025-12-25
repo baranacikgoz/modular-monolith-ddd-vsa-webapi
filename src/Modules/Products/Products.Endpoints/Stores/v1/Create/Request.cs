@@ -13,6 +13,7 @@ public sealed record Request
 {
     [JsonConverter(typeof(StronglyTypedIdReadOnlyJsonConverter<ApplicationUserId>))]
     public ApplicationUserId OwnerId { get; init; }
+
     public required string Name { get; init; }
     public required string Description { get; init; }
     public required string Address { get; init; }
@@ -41,6 +42,5 @@ public sealed class RequestValidator : CustomValidator<Request>
             .WithMessage(localizer["Stores.v1.Create.Address.NotEmpty"])
             .MaximumLength(Constants.AddressMaxLength)
             .WithMessage(localizer["Stores.v1.Create.Address.MaxLength {0}", Constants.AddressMaxLength]);
-
     }
 }

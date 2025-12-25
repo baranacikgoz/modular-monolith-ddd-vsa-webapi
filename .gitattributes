@@ -1,0 +1,13 @@
+# Normalize line endings to LF on commit, but convert to native OS ending on checkout
+* text=auto
+
+# Explicitly force C# files to be treated as text
+*.cs text diff=csharp
+
+# Force bash scripts to always use LF (important for Windows users running scripts in WSL/Git Bash)
+*.sh text eol=lf
+
+# Binary files (don't mess with line endings here)
+*.png binary
+*.jpg binary
+*.dll binary

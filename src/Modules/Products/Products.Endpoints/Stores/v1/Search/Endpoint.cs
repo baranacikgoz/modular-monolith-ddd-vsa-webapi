@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("search", SearchStoresAsync)
             .WithDescription("Search stores.")
             .MustHavePermission(CustomActions.Search, CustomResources.Stores)
-            .Produces<PaginationResponse<Response>>(StatusCodes.Status200OK)
+            .Produces<PaginationResponse<Response>>()
             .TransformResultTo<PaginationResponse<Response>>();
     }
 
@@ -28,13 +28,16 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .AsNoTracking()
             .TagWith(nameof(SearchStoresAsync))
-            .WhereIf(s => EF.Functions.ILike(s.Name, $"%{request.Name}%"), condition: !string.IsNullOrWhiteSpace(request.Name))
-            .WhereIf(s => EF.Functions.ILike(s.Description, $"%{request.Description}%"), condition: !string.IsNullOrWhiteSpace(request.Description))
-            .WhereIf(s => EF.Functions.ILike(s.Address, $"%{request.Address}%"), condition: !string.IsNullOrWhiteSpace(request.Address))
+            .WhereIf(s => EF.Functions.ILike(s.Name, $"%{request.Name}%"), !string.IsNullOrWhiteSpace(request.Name))
+            .WhereIf(s => EF.Functions.ILike(s.Description, $"%{request.Description}%"),
+                !string.IsNullOrWhiteSpace(request.Description))
+            .WhereIf(s => EF.Functions.ILike(s.Address, $"%{request.Address}%"),
+                !string.IsNullOrWhiteSpace(request.Address))
             .PaginateAsync(
                 request: request,
                 selector: s => new Response
@@ -51,4 +54,5 @@ internal static class Endpoint
                     LastModifiedOn = s.LastModifiedOn
                 },
                 cancellationToken: cancellationToken);
+    }
 }

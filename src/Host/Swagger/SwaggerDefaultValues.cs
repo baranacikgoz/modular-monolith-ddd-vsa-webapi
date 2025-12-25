@@ -61,10 +61,10 @@ internal sealed class SwaggerDefaultValues : IOperationFilter
 
             // 3. Fix Schema Default (IOpenApiAny -> JsonNode)
             if (concreteParameter.Schema is OpenApiSchema concreteSchema &&
-                 concreteSchema.Default == null &&
-                 description.DefaultValue != null &&
-                 description.DefaultValue is not DBNull &&
-                 description.ModelMetadata is { } _)
+                concreteSchema.Default == null &&
+                description.DefaultValue != null &&
+                description.DefaultValue is not DBNull &&
+                description.ModelMetadata is { } _)
             {
                 concreteSchema.Default = MapToJsonNode(description.DefaultValue);
             }
@@ -74,7 +74,7 @@ internal sealed class SwaggerDefaultValues : IOperationFilter
     }
 
     /// <summary>
-    /// Microsoft.OpenApi v2 replaces IOpenApiAny with System.Text.Json.Nodes.JsonNode
+    ///     Microsoft.OpenApi v2 replaces IOpenApiAny with System.Text.Json.Nodes.JsonNode
     /// </summary>
     private static JsonValue? MapToJsonNode(object? value)
     {

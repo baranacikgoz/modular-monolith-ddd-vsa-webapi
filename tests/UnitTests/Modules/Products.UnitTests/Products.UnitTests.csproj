@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="FluentAssertions"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="xunit.runner.console">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Modules\Products\Products.Domain\Products.Domain.csproj" />
-    <ProjectReference Include="..\..\UnitTests.Common\UnitTests.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Modules\Products\Products.Domain\Products.Domain.csproj"/>
+    <ProjectReference Include="..\..\UnitTests.Common\UnitTests.Common.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

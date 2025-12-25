@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Common.Infrastructure.Persistence.EventSourcing;
 
-public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurrentUser currentUser) : SaveChangesInterceptor
+public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurrentUser currentUser)
+    : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
-    DbContextEventData eventData,
-    InterceptionResult<int> result,
-    CancellationToken cancellationToken = default)
+        DbContextEventData eventData,
+        InterceptionResult<int> result,
+        CancellationToken cancellationToken = default)
     {
         var dbContext = eventData.Context;
         if (dbContext == null)
@@ -23,15 +24,16 @@ public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurre
         var utcNow = timeProvider.GetUtcNow();
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
         foreach (var aggregateRoot in dbContext
-                                      .ChangeTracker
-                                      .Entries<IAggregateRoot>()
-                                      .Where(e => e.Entity.Events.Count > 0)
-                                      .Select(e => e.Entity))
+                     .ChangeTracker
+                     .Entries<IAggregateRoot>()
+                     .Where(e => e.Entity.Events.Count > 0)
+                     .Select(e => e.Entity))
         {
             foreach (var @event in aggregateRoot.Events)
             {
                 @event.CreatedOn = utcNow;
-                var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.GetType().Name, aggregateRoot.Id.Value, @event.Version, @event);
+                var eventStoreEvent = EventStoreEvent.Create(aggregateRoot.GetType().Name, aggregateRoot.Id.Value,
+                    @event.Version, @event);
                 eventStoreEvent.CreatedOn = utcNow;
                 eventStoreEvent.CreatedBy = userId;
                 eventsToAdd.Add(eventStoreEvent);
@@ -52,5 +54,4 @@ public class InsertEventStoreEventsInterceptor(TimeProvider timeProvider, ICurre
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
-
 }

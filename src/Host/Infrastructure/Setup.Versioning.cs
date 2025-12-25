@@ -7,7 +7,8 @@ namespace Host.Infrastructure;
 internal static partial class Setup
 {
     public static IServiceCollection AddVersioning(this IServiceCollection services)
-        => services
+    {
+        return services
             .AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -21,12 +22,15 @@ internal static partial class Setup
                 options.AssumeDefaultVersionWhenUnspecified = false;
             })
             .Services;
+    }
 
     public static ApiVersionSet GetApiVersionSet(this WebApplication app)
-        => app
+    {
+        return app
             .NewApiVersionSet()
             .HasApiVersion(1)
             // .HasApiVersion(2)
             // .HasApiVersion(3)
             .Build();
+    }
 }

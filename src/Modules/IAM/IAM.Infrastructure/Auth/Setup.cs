@@ -12,7 +12,8 @@ namespace IAM.Infrastructure.Auth;
 
 internal static class Setup
 {
-    internal static IServiceCollection AddAuthInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddAuthInfrastructure(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>()
@@ -25,8 +26,9 @@ internal static class Setup
         return services;
     }
 
-    private static IServiceCollection AddCurrentUser(this IServiceCollection services) =>
-        services
+    private static IServiceCollection AddCurrentUser(this IServiceCollection services)
+    {
+        return services
             .AddScoped<ICurrentUser, CurrentUser>(sp =>
             {
                 var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -34,4 +36,5 @@ internal static class Setup
 
                 return new CurrentUser(user);
             });
+    }
 }

@@ -9,50 +9,50 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
-    <PackageReference Include="Serilog" />
-    <PackageReference Include="Serilog.AspNetCore" />
-    <PackageReference Include="Serilog.Enrichers.Environment" />
-    <PackageReference Include="Serilog.Enrichers.Process" />
-    <PackageReference Include="Serilog.Enrichers.Thread" />
-    <PackageReference Include="Serilog.Enrichers.Span" />
-    <PackageReference Include="Serilog.Exceptions" />
-    <PackageReference Include="Serilog.Extensions.Logging" />
-    <PackageReference Include="Serilog.Sinks.Async" />
-    <PackageReference Include="Serilog.Sinks.Console" />
-    <PackageReference Include="Serilog.Sinks.File" />
-    <PackageReference Include="Serilog.Sinks.Seq" />
-    <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
-    <PackageReference Include="Serilog.Formatting.Compact" />
-    <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" />
-    <PackageReference Include="Swashbuckle.AspNetCore" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
-    <PackageReference Include="Npgsql.OpenTelemetry" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" />
-    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
-    <PackageReference Include="Asp.Versioning.Http" />
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"/>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.AspNetCore"/>
+    <PackageReference Include="Serilog.Enrichers.Environment"/>
+    <PackageReference Include="Serilog.Enrichers.Process"/>
+    <PackageReference Include="Serilog.Enrichers.Thread"/>
+    <PackageReference Include="Serilog.Enrichers.Span"/>
+    <PackageReference Include="Serilog.Exceptions"/>
+    <PackageReference Include="Serilog.Extensions.Logging"/>
+    <PackageReference Include="Serilog.Sinks.Async"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.File"/>
+    <PackageReference Include="Serilog.Sinks.Seq"/>
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry"/>
+    <PackageReference Include="Serilog.Formatting.Compact"/>
+    <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints"/>
+    <PackageReference Include="Swashbuckle.AspNetCore"/>
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime"/>
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.Process"/>
+    <PackageReference Include="Npgsql.OpenTelemetry"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore"/>
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore"/>
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol"/>
+    <PackageReference Include="Asp.Versioning.Http"/>
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj" />
-    <ProjectReference Include="..\Modules\BackgroundJobs\BackgroundJobs.csproj" />
-    <ProjectReference Include="..\Modules\IAM\IAM.Endpoints\IAM.Endpoints.csproj" />
-    <ProjectReference Include="..\Modules\IAM\IAM.Infrastructure\IAM.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Products\Products.Endpoints\Products.Endpoints.csproj" />
-    <ProjectReference Include="..\Modules\Products\Products.Infrastructure\Products.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Outbox\Outbox.csproj" />
+    <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj"/>
+    <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj"/>
+    <ProjectReference Include="..\Modules\BackgroundJobs\BackgroundJobs.csproj"/>
+    <ProjectReference Include="..\Modules\IAM\IAM.Endpoints\IAM.Endpoints.csproj"/>
+    <ProjectReference Include="..\Modules\IAM\IAM.Infrastructure\IAM.Infrastructure.csproj"/>
+    <ProjectReference Include="..\Modules\Products\Products.Endpoints\Products.Endpoints.csproj"/>
+    <ProjectReference Include="..\Modules\Products\Products.Infrastructure\Products.Infrastructure.csproj"/>
+    <ProjectReference Include="..\Modules\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj"/>
+    <ProjectReference Include="..\Modules\Outbox\Outbox.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -18,7 +18,7 @@ internal static class Endpoint
             .MapGet("{id}", GetAsync)
             .WithDescription("Get a user by id.")
             .MustHavePermission(CustomActions.Read, CustomResources.ApplicationUsers)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -26,7 +26,8 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IIAMDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Users
             .TagWith(nameof(GetAsync), request.Id)
             .Where(u => u.Id == request.Id)
@@ -43,4 +44,5 @@ internal static class Endpoint
                 LastModifiedOn = u.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
+    }
 }

@@ -10,7 +10,8 @@ namespace Products.Endpoints.Stores.v1.My.RemoveProduct;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ProductId>>]
     public ProductId Id { get; init; }
 }
 

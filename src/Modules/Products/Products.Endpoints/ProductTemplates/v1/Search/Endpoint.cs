@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("search", SearchProductTemplatesAsync)
             .WithDescription("Search product templates.")
             .MustHavePermission(CustomActions.Search, CustomResources.ProductTemplates)
-            .Produces<PaginationResponse<Response>>(StatusCodes.Status200OK)
+            .Produces<PaginationResponse<Response>>()
             .TransformResultTo<PaginationResponse<Response>>();
     }
 
@@ -28,13 +28,14 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .ProductTemplates
             .AsNoTracking()
             .TagWith(nameof(SearchProductTemplatesAsync))
-            .WhereIf(p => EF.Functions.ILike(p.Brand, $"%{request.Brand}%"), condition: !string.IsNullOrWhiteSpace(request.Brand))
-            .WhereIf(p => EF.Functions.ILike(p.Model, $"%{request.Model}%"), condition: !string.IsNullOrWhiteSpace(request.Model))
-            .WhereIf(p => EF.Functions.ILike(p.Color, $"%{request.Color}%"), condition: !string.IsNullOrWhiteSpace(request.Color))
+            .WhereIf(p => EF.Functions.ILike(p.Brand, $"%{request.Brand}%"), !string.IsNullOrWhiteSpace(request.Brand))
+            .WhereIf(p => EF.Functions.ILike(p.Model, $"%{request.Model}%"), !string.IsNullOrWhiteSpace(request.Model))
+            .WhereIf(p => EF.Functions.ILike(p.Color, $"%{request.Color}%"), !string.IsNullOrWhiteSpace(request.Color))
             .PaginateAsync(
                 request: request,
                 selector: p => new Response
@@ -46,7 +47,8 @@ internal static class Endpoint
                     CreatedBy = p.CreatedBy,
                     CreatedOn = p.CreatedOn,
                     LastModifiedBy = p.LastModifiedBy,
-                    LastModifiedOn = p.LastModifiedOn,
+                    LastModifiedOn = p.LastModifiedOn
                 },
                 cancellationToken: cancellationToken);
+    }
 }

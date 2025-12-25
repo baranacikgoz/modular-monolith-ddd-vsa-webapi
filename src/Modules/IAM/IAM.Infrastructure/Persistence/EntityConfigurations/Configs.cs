@@ -80,54 +80,66 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 
 internal class ApplicationRoleConfig : IEntityTypeConfiguration<IdentityRole<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityRole<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityRole<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("Roles")
             .Property(u => u.Id)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }
 
 internal class IdentityRoleClaimConfig : IEntityTypeConfiguration<IdentityRoleClaim<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityRoleClaim<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityRoleClaim<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("RoleClaims")
             .Property(u => u.RoleId)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }
 
 internal class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserRole<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserRole<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("UserRoles")
             .Property(u => u.UserId)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }
 
 internal class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserClaim<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserClaim<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("UserClaims")
             .Property(u => u.UserId)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }
 
 internal class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserLogin<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserLogin<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("UserLogins")
             .Property(u => u.UserId)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }
 
 internal class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<ApplicationUserId>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserToken<ApplicationUserId>> builder) =>
+    public void Configure(EntityTypeBuilder<IdentityUserToken<ApplicationUserId>> builder)
+    {
         builder
             .ToTable("UserTokens")
             .Property(u => u.UserId)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
+    }
 }

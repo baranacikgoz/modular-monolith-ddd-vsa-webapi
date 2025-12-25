@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Endpoint = IAM.Endpoints.Tokens.VersionNeutral.Create.Endpoint;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral;
 
@@ -12,7 +13,7 @@ public static class Setup
             .MapGroup("/tokens")
             .WithTags("Tokens");
 
-        Create.Endpoint.MapEndpoint(tokensApiGroup);
+        Endpoint.MapEndpoint(tokensApiGroup);
         Refresh.Endpoint.MapEndpoint(tokensApiGroup);
     }
 }

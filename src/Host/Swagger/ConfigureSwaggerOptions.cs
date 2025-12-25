@@ -10,7 +10,7 @@ namespace Host.Swagger;
 internal sealed class ConfigureSwaggerOptions(
     IApiVersionDescriptionProvider provider,
     IOptions<OpenApiOptions> openApiOptionsProvider
-    ) : IConfigureOptions<SwaggerGenOptions>
+) : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly OpenApiOptions _openApiOptions = openApiOptionsProvider.Value;
 
@@ -21,24 +21,22 @@ internal sealed class ConfigureSwaggerOptions(
             options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
         }
 
-        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Description = "Enter your Bearer token without 'Bearer ' prefix.",
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.Http,
-            BearerFormat = "JWT",
-            Scheme = "Bearer"
-        });
+        options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
+            new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter your Bearer token without 'Bearer ' prefix.",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer"
+            });
 
         options.AddSecurityRequirement(document =>
         {
             var schemeReference = new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);
 
-            return new OpenApiSecurityRequirement
-            {
-                [schemeReference] = [..Array.Empty<string>()]
-            };
+            return new OpenApiSecurityRequirement { [schemeReference] = [..Array.Empty<string>()] };
         });
     }
 
@@ -51,13 +49,9 @@ internal sealed class ConfigureSwaggerOptions(
             Description = _openApiOptions.Description,
             Contact = new OpenApiContact
             {
-                Name = _openApiOptions.ContactName,
-                Email = _openApiOptions.ContactEmail
+                Name = _openApiOptions.ContactName, Email = _openApiOptions.ContactEmail
             },
-            License = new OpenApiLicense
-            {
-                Name = _openApiOptions.LicenseName
-            }
+            License = new OpenApiLicense { Name = _openApiOptions.LicenseName }
         };
 
         if (!string.IsNullOrEmpty(_openApiOptions.LicenseUrl) &&

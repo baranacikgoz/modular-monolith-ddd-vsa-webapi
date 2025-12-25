@@ -11,7 +11,8 @@ public static class Policies
     }
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
-        => rateLimiter
+    {
+        rateLimiter
             .AddFixedWindowLimiter(Constants.Sms, opt =>
             {
                 var smsRateLimiting = options.Sms ?? throw new InvalidOperationException("Sms rate limiting is null.");
@@ -22,4 +23,5 @@ public static class Policies
                 opt.Window = TimeSpan.FromMilliseconds(periodInMs);
                 opt.QueueLimit = smsRateLimiting.QueueLimit;
             });
+    }
 }

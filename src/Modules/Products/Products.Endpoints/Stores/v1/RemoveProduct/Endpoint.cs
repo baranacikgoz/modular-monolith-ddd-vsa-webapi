@@ -27,7 +27,8 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .TagWith(nameof(RemoveProductAsync), "StoreById", request.Id)
             .Where(s => s.Id == request.Id)
@@ -40,4 +41,5 @@ internal static class Endpoint
                 store.RemoveProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+    }
 }

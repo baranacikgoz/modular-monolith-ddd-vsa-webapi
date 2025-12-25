@@ -11,10 +11,12 @@ namespace Products.Endpoints.Stores.v1.RemoveProduct;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<StoreId>>]
     public required StoreId Id { get; init; }
 
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ProductId>>]
     public required ProductId ProductId { get; init; }
 }
 
@@ -31,4 +33,3 @@ public sealed class RequestValidator : CustomValidator<Request>
             .WithMessage(localizer["Stores.RemoveProduct.ProductId.NotEmpty"]);
     }
 }
-

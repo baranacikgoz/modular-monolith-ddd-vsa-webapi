@@ -1,11 +1,11 @@
 using Common.Application.Auth;
+using Common.Application.Extensions;
+using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
@@ -19,7 +19,7 @@ internal static class Endpoint
             .MapGet("my", GetMyStoreAsync)
             .WithDescription("Get my store.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -27,7 +27,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .AsNoTracking()
             .TagWith(nameof(GetMyStoreAsync), currentUser.Id)
@@ -43,7 +44,8 @@ internal static class Endpoint
                 CreatedBy = store.CreatedBy,
                 CreatedOn = store.CreatedOn,
                 LastModifiedBy = store.LastModifiedBy,
-                LastModifiedOn = store.LastModifiedOn,
+                LastModifiedOn = store.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
+    }
 }

@@ -5,5 +5,9 @@ public record CustomPermission(string Description, string Action, string Resourc
 #pragma warning restore CA1711
 {
     public string Name => NameFor(Action, Resource);
-    public static string NameFor(string action, string resource) => $"Permissions.{resource}.{action}";
+
+    public static string NameFor(string action, string resource)
+    {
+        return $"Permissions.{resource}.{action}";
+    }
 }

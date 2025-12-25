@@ -19,7 +19,9 @@ public class IAMDbContext(
     DbContextOptions<IAMDbContext> options,
     IOptions<ObservabilityOptions> observabilityOptionsProvider,
     ILogger<IAMDbContext> logger
-    ) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId, IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>, IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
+) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId,
+    IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>,
+    IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
 {
     public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
 
@@ -42,12 +44,11 @@ public class IAMDbContext(
         {
 #pragma warning disable
             optionsBuilder.LogTo(
-            sql => logger.LogDebug(sql),                  // Log the SQL query
-            new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
-            LogLevel.Information                           // Set the log level
+                sql => logger.LogDebug(sql), // Log the SQL query
+                new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
+                LogLevel.Information // Set the log level
             );
 #pragma warning restore
         }
-
     }
 }

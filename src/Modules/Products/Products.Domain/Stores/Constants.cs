@@ -1,4 +1,5 @@
 namespace Products.Domain.Stores;
+
 public static class Constants
 {
     public const int NameMaxLength = 200;
