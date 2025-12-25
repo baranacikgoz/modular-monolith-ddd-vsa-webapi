@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 
 namespace Common.Application.BackgroundJobs;
+
 public interface IRecurringBackgroundJobs
 {
     void AddOrUpdate(string recurringJobId, Expression<Action> methodCall, Func<string> cronExpression);

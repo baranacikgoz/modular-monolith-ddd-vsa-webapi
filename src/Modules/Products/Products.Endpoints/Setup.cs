@@ -8,7 +8,8 @@ namespace Products.Endpoints;
 
 public static class Setup
 {
-    public static WebApplication MapProductsModuleEndpoints(this WebApplication app, RouteGroupBuilder versionedApiGroup)
+    public static WebApplication MapProductsModuleEndpoints(this WebApplication app,
+        RouteGroupBuilder versionedApiGroup)
     {
         versionedApiGroup.MapStoresEndpoints();
         versionedApiGroup.MapProductsEndpoints();

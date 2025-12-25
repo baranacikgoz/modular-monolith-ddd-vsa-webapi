@@ -1,17 +1,18 @@
 using Common.Domain.StronglyTypedIds;
 using IAM.Application.Otp.Services;
-using IAM.Infrastructure.Identity.Services;
 using IAM.Domain.Identity;
+using IAM.Infrastructure.Identity.Services;
+using IAM.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using IAM.Infrastructure.Persistence;
 
 namespace IAM.Infrastructure.Identity;
 
 internal static class Setup
 {
     public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)
-        => services
+    {
+        return services
             //.AddSingleton<IOtpService, OtpService>()
             .AddSingleton<IOtpService, DummyOtpService>()
             .AddIdentity<ApplicationUser, IdentityRole<ApplicationUserId>>(options =>
@@ -26,4 +27,5 @@ internal static class Setup
             .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
             .AddDefaultTokenProviders()
             .Services;
+    }
 }

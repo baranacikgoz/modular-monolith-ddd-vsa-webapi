@@ -11,7 +11,7 @@ internal class RemoveDefaultResponseSchemaFilter : IOperationFilter
         {
             value.Content?.Clear();
 
-            operation.Responses.Remove("200", out var _);
+            operation.Responses.Remove("200", out _);
         }
     }
 }

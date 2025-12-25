@@ -3,6 +3,7 @@ using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using IAM.Application.Otp.Services;
+using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ internal static class Endpoint
         usersApiGroup
             .MapPost("", SendOtp)
             .WithDescription("Send otp sms.")
-            .RequireRateLimiting(Infrastructure.RateLimiting.Constants.Sms)
+            .RequireRateLimiting(Constants.Sms)
             .AllowAnonymous()
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
@@ -30,11 +31,12 @@ internal static class Endpoint
         [FromServices] IOptions<OtpOptions> otpOptionsProvider,
         [FromServices] ICacheService cache,
         CancellationToken cancellationToken)
-        => await Result<string>
+    {
+        return await Result<string>
             .Create(() => otpService.Generate())
             .TapAsync(async otp => await cache.SetAsync(
-                key: CacheKeys.For.Otp(request.PhoneNumber),
-                value: otp,
+                CacheKeys.For.Otp(request.PhoneNumber),
+                otp,
                 absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes),
                 cancellationToken: cancellationToken))
             .TapAsync(async _ =>
@@ -44,4 +46,5 @@ internal static class Endpoint
                 // Simulate some delay for sending sms
                 await Task.Delay(100, cancellationToken);
             });
+    }
 }

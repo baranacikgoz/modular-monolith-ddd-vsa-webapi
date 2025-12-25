@@ -18,8 +18,8 @@
     "OtlpLoggingProtocol": "HttpProtobuf",
     "EnableMetrics": true,
     "OtlpMetricsUsePrometheusDirectly": true,
-//    "OtlpMetricsEndpoint": "http://localhost:4317",
-//    "OtlpMetricsProtocol": "HttpProtobuf",
+    //    "OtlpMetricsEndpoint": "http://localhost:4317",
+    //    "OtlpMetricsProtocol": "HttpProtobuf",
     "EnableTracing": true,
     "OtlpTracingEndpoint": "http://localhost:4317",
     "OtlpTracingProtocol": "HttpProtobuf"

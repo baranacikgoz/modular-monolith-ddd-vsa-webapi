@@ -9,7 +9,8 @@ namespace IAM.Endpoints;
 
 public static class Setup
 {
-    public static WebApplication MapIAMModuleEndpoints(this WebApplication app, RouteGroupBuilder versionNeutralApiGroup)
+    public static WebApplication MapIAMModuleEndpoints(this WebApplication app,
+        RouteGroupBuilder versionNeutralApiGroup)
     {
         versionNeutralApiGroup.MapUsersEndpoints();
         versionNeutralApiGroup.MapTokensEndpoints();

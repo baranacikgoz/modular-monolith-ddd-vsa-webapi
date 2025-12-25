@@ -21,7 +21,7 @@ internal static class Endpoint
             .MapPost("refresh", RefreshToken)
             .WithDescription("Refresh token.")
             .AllowAnonymous()
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -61,6 +61,7 @@ internal static class Endpoint
         {
             return Result<Response>.Failure(userResult.Error!);
         }
+
         var user = userResult.Value!;
 
         if (user.RefreshTokenExpiresAt < timeProvider.GetUtcNow())
@@ -72,10 +73,6 @@ internal static class Endpoint
 
         var (accessToken, accessTokenExpiresAt) = tokenService.GenerateAccessToken(utcNow, user.Id, user.Roles);
 
-        return new Response
-        {
-            AccessToken = accessToken,
-            AccessTokenExpiresAt = accessTokenExpiresAt
-        };
+        return new Response { AccessToken = accessToken, AccessTokenExpiresAt = accessTokenExpiresAt };
     }
 }

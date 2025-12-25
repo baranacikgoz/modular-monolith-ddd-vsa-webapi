@@ -10,7 +10,8 @@ namespace Products.Endpoints.ProductTemplates.v1.Activate;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ProductTemplateId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ProductTemplateId>>]
     public required ProductTemplateId Id { get; init; }
 }
 

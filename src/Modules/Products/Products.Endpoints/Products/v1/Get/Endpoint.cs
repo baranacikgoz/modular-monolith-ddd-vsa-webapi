@@ -20,14 +20,15 @@ internal static class Endpoint
             .WithDescription("Get Product.")
             .MustHavePermission(CustomActions.Read, CustomResources.Products)
             .TransformResultTo<Response>()
-            .Produces<Response>(StatusCodes.Status200OK);
+            .Produces<Response>();
     }
 
     private static async Task<Result<Response>> GetProductAsync(
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Products
             .AsNoTracking()
             .TagWith(nameof(GetProductAsync), request.Id)
@@ -45,4 +46,5 @@ internal static class Endpoint
                 LastModifiedOn = p.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
+    }
 }

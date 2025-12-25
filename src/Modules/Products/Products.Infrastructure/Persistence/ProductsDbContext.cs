@@ -13,8 +13,12 @@ namespace Products.Infrastructure.Persistence;
 public sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
     IServiceScopeFactory serviceScopeFactory
-    ) : BaseDbContext(options, serviceScopeFactory), IProductsDbContext
+) : BaseDbContext(options, serviceScopeFactory), IProductsDbContext
 {
+    public DbSet<Store> Stores => Set<Store>();
+    public DbSet<ProductTemplate> ProductTemplates => Set<ProductTemplate>();
+    public DbSet<Product> Products => Set<Product>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -25,8 +29,4 @@ public sealed class ProductsDbContext(
         modelBuilder.Ignore<DomainEvent>();
         modelBuilder.ApplyConfiguration(new EventStoreEventConfiguration());
     }
-
-    public DbSet<Store> Stores => Set<Store>();
-    public DbSet<ProductTemplate> ProductTemplates => Set<ProductTemplate>();
-    public DbSet<Product> Products => Set<Product>();
 }

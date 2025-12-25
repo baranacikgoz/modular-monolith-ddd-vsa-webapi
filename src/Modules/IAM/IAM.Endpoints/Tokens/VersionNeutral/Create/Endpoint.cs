@@ -21,7 +21,7 @@ internal static class Endpoint
             .MapPost("", CreateTokens)
             .WithDescription("Create tokens.")
             .AllowAnonymous()
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -32,7 +32,8 @@ internal static class Endpoint
         [FromServices] IOtpService otpService,
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
-        => await otpService
+    {
+        return await otpService
             .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, cancellationToken)
             .BindAsync(() => CreateTokensAsync(request, tokenService, dbContext, timeProvider, cancellationToken))
             .MapAsync(tokensDto => new Response
@@ -42,6 +43,7 @@ internal static class Endpoint
                 RefreshToken = tokensDto.RefreshToken,
                 RefreshTokenExpiresAt = tokensDto.RefreshTokenExpiresAt
             });
+    }
 
     private static async Task<Result<TokensDto>> CreateTokensAsync(
         Request request,

@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
-using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
 using Products.Domain.ProductTemplates;
 
@@ -18,7 +18,7 @@ internal static class Endpoint
             .MapPost("", CreateProductTemplateAsync)
             .WithDescription("Create a product template.")
             .MustHavePermission(CustomActions.Create, CustomResources.ProductTemplates)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -26,9 +26,11 @@ internal static class Endpoint
         [FromBody] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await Result<ProductTemplate>
+    {
+        return await Result<ProductTemplate>
             .Create(() => ProductTemplate.Create(request.Brand, request.Model, request.Color))
             .Tap(product => dbContext.ProductTemplates.Add(product))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
             .MapAsync(product => new Response { Id = product.Id });
+    }
 }

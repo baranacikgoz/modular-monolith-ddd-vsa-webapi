@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Outbox.Persistence;
 
 namespace Outbox;
+
 public static class ModuleInstaller
 {
     public static IServiceCollection AddOutboxModule(this IServiceCollection services)
@@ -32,9 +33,9 @@ public static class ModuleInstaller
                     var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
 #pragma warning disable
                     options.LogTo(
-                        sql => logger.LogDebug(sql),                  // Log the SQL query
+                        sql => logger.LogDebug(sql), // Log the SQL query
                         new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
-                        LogLevel.Information                           // Set the log level
+                        LogLevel.Information // Set the log level
                     );
 #pragma warning restore
                 }

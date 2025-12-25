@@ -6,7 +6,6 @@ namespace Common.Application.Options;
 public class DatabaseOptions
 {
     public required string ConnectionString { get; set; }
-
 }
 
 public class DatabaseOptionsValidator : CustomValidator<DatabaseOptions>

@@ -1,11 +1,11 @@
+using IAM.Infrastructure.Auth;
+using IAM.Infrastructure.Captcha;
+using IAM.Infrastructure.Identity;
+using IAM.Infrastructure.Persistence;
+using IAM.Infrastructure.Tokens;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IAM.Infrastructure.Identity;
-using IAM.Infrastructure.Captcha;
-using IAM.Infrastructure.Tokens;
-using IAM.Infrastructure.Persistence;
-using IAM.Infrastructure.Auth;
 
 namespace IAM.Infrastructure;
 

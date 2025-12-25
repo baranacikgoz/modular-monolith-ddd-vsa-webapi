@@ -14,15 +14,18 @@ namespace Host.Infrastructure;
 internal static partial class Setup
 {
     public static IHostBuilder UseCustomizedSerilog(this IHostBuilder hostBuilder)
-        => hostBuilder.UseSerilog((ctx, sp, serilog) =>
+    {
+        return hostBuilder.UseSerilog((ctx, sp, serilog) =>
         {
             var options = sp.GetRequiredService<IOptions<ObservabilityOptions>>()?.Value
-                ?? throw new InvalidOperationException($"{nameof(ObservabilityOptions)} is null.");
+                          ?? throw new InvalidOperationException($"{nameof(ObservabilityOptions)} is null.");
 
             serilog.ApplyConfigurations(options, ctx.HostingEnvironment);
         });
+    }
 
-    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog, ObservabilityOptions options, IHostEnvironment env)
+    public static LoggerConfiguration ApplyConfigurations(this LoggerConfiguration serilog,
+        ObservabilityOptions options, IHostEnvironment env)
     {
         serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
 
@@ -35,7 +38,8 @@ internal static partial class Setup
         return serilog;
     }
 
-    private static LoggerMinimumLevelConfiguration ParseFrom(this LoggerMinimumLevelConfiguration minLevel, string level)
+    private static LoggerMinimumLevelConfiguration ParseFrom(this LoggerMinimumLevelConfiguration minLevel,
+        string level)
     {
         if (level.IsDebug())
         {
@@ -86,26 +90,29 @@ internal static partial class Setup
         }
     }
 
-    private static void ConfigureEnrichers(this LoggerConfiguration serilog, ObservabilityOptions options, IHostEnvironment env)
-        => serilog
-                .Enrich
-                    .WithProperty("Application", options.AppName)
-                .Enrich
-                    .WithProperty("Environment", env.EnvironmentName)
-                .Enrich
-                    .WithProperty("AppVersion", options.AppVersion)
-                .Enrich
-                    .FromLogContext()
-                .Enrich
-                    .WithExceptionDetails()
-                .Enrich
-                    .WithMachineName()
-                .Enrich
-                    .WithProcessId()
-                .Enrich
-                    .WithThreadId()
-                .Enrich
-                    .WithSpan();
+    private static void ConfigureEnrichers(this LoggerConfiguration serilog, ObservabilityOptions options,
+        IHostEnvironment env)
+    {
+        serilog
+            .Enrich
+            .WithProperty("Application", options.AppName)
+            .Enrich
+            .WithProperty("Environment", env.EnvironmentName)
+            .Enrich
+            .WithProperty("AppVersion", options.AppVersion)
+            .Enrich
+            .FromLogContext()
+            .Enrich
+            .WithExceptionDetails()
+            .Enrich
+            .WithMachineName()
+            .Enrich
+            .WithProcessId()
+            .Enrich
+            .WithThreadId()
+            .Enrich
+            .WithSpan();
+    }
 
     private static void ConfigureWriteTos(this LoggerConfiguration serilog, ObservabilityOptions options)
     {
@@ -113,35 +120,47 @@ internal static partial class Setup
         {
             serilog
                 .WriteTo
-                    .Async(wt => wt.Console(
-                            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-                            theme: SystemConsoleTheme.Literate,
-                            formatProvider: CultureInfo.InvariantCulture));
+                .Async(wt => wt.Console(
+                    outputTemplate:
+                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    theme: SystemConsoleTheme.Literate,
+                    formatProvider: CultureInfo.InvariantCulture));
         }
 
         if (options.WriteToFile)
         {
             serilog
                 .WriteTo
-                    .Async(wt => wt.File(new CompactJsonFormatter(),
-                                        $"logs/{options.AppName}-.logs",
-                                        rollingInterval: RollingInterval.Day,
-                                        rollOnFileSizeLimit: true,
-                                        fileSizeLimitBytes: 10 * 1024 * 1024,
-                                        retainedFileCountLimit: 10,
-                                        restrictedToMinimumLevel: LogEventLevel.Information));
+                .Async(wt => wt.File(new CompactJsonFormatter(),
+                    $"logs/{options.AppName}-.logs",
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true,
+                    fileSizeLimitBytes: 10 * 1024 * 1024,
+                    retainedFileCountLimit: 10,
+                    restrictedToMinimumLevel: LogEventLevel.Information));
         }
 
         serilog
             .WriteTo
-                .Async(wt => wt.OpenTelemetry(
-                                    endpoint: options.OtlpLoggingEndpoint,
-                                    protocol: options.OtlpLoggingProtocol.ToOtlpProtocol(),
-                                    resourceAttributes: new Dictionary<string, object>() { { "service.name", options.AppName } }
-                                    ));
+            .Async(wt => wt.OpenTelemetry(
+                options.OtlpLoggingEndpoint,
+                options.OtlpLoggingProtocol.ToOtlpProtocol(),
+                resourceAttributes: new Dictionary<string, object> { { "service.name", options.AppName } }
+            ));
     }
 
-    private static bool IsDebug(this string level) => string.Equals("Debug", level, StringComparison.OrdinalIgnoreCase);
-    private static bool IsInformation(this string level) => string.Equals("Information", level, StringComparison.OrdinalIgnoreCase);
-    private static bool IsWarning(this string level) => string.Equals("Warning", level, StringComparison.OrdinalIgnoreCase);
+    private static bool IsDebug(this string level)
+    {
+        return string.Equals("Debug", level, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsInformation(this string level)
+    {
+        return string.Equals("Information", level, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsWarning(this string level)
+    {
+        return string.Equals("Warning", level, StringComparison.OrdinalIgnoreCase);
+    }
 }

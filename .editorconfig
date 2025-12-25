@@ -18,9 +18,11 @@ indent_style = space
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+end_of_line = crlf
 
 [*.cs]
 indent_size = 4
+tab_width = 4
 dotnet_sort_system_directives_first = true
 
 # Don't use this. qualifier
@@ -54,7 +56,7 @@ csharp_new_line_before_members_in_anonymous_types = true
 csharp_style_namespace_declarations = file_scoped:silent
 
 # Brace settings
-csharp_prefer_braces = true:silent# Prefer curly braces even for one line of code
+csharp_prefer_braces = true:silent # Prefer curly braces even for one line of code
 
 # PascalCase for public members, etc.
 
@@ -69,15 +71,15 @@ dotnet_naming_style.pascal_case.capitalization = pascal_case
 
 # name all constant fields using PascalCase
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case
-dotnet_naming_symbols.constant_fields.applicable_kinds   = field
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 # internal and private fields should be _camelCase
 dotnet_naming_rule.camel_case_for_private_internal_fields.severity = warning
-dotnet_naming_rule.camel_case_for_private_internal_fields.symbols  = private_internal_fields
+dotnet_naming_rule.camel_case_for_private_internal_fields.symbols = private_internal_fields
 dotnet_naming_rule.camel_case_for_private_internal_fields.style = camel_case_underscore_style
 dotnet_naming_symbols.private_internal_fields.applicable_kinds = field
 dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = private, internal
@@ -393,7 +395,7 @@ dotnet_diagnostic.IDE0032.severity = suggestion
 dotnet_diagnostic.IDE0035.severity = warning
 
 # IDE0036: Order modifiers
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
 dotnet_diagnostic.IDE0036.severity = warning
 
 # IDE0038: Use pattern matching to avoid is check followed by a cast (without variable)

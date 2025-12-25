@@ -2,18 +2,27 @@ namespace Common.Domain.StronglyTypedIds;
 
 public readonly record struct ApplicationUserId : IStronglyTypedId
 {
-    public DefaultIdType Value { get; init; }
-    public bool IsEmpty => Value == DefaultIdType.Empty;
-
     // Parameterless constructor for EF
-    public ApplicationUserId() : this(DefaultIdType.CreateVersion7()) { }
-
-    public ApplicationUserId(DefaultIdType value)
+    public ApplicationUserId() : this(DefaultIdType.CreateVersion7())
     {
-        Value = value;
     }
 
-    public static ApplicationUserId New() => new(DefaultIdType.CreateVersion7());
-    public override string ToString() => Value.ToString();
-    public static bool TryParse(string str, out ApplicationUserId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
+    public ApplicationUserId(DefaultIdType value) => Value = value;
+    public bool IsEmpty => Value == DefaultIdType.Empty;
+    public DefaultIdType Value { get; init; }
+
+    public static ApplicationUserId New()
+    {
+        return new ApplicationUserId(DefaultIdType.CreateVersion7());
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
+    public static bool TryParse(string str, out ApplicationUserId id)
+    {
+        return StronglyTypedIdHelper.TryDeserialize(str, out id);
+    }
 }

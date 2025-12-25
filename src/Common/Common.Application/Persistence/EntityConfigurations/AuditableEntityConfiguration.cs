@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Common.Application.Persistence.EntityConfigurations;
+
 public abstract class AuditableEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : class, IAuditableEntity
 {

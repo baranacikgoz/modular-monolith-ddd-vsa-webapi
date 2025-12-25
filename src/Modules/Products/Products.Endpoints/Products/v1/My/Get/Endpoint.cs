@@ -18,30 +18,32 @@ internal static class Endpoint
             .MapGet("my/{id}", GetMyProductAsync)
             .WithDescription("Get my product.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Products)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
     private static async Task<Result<Response>> GetMyProductAsync(
-            [AsParameters] Request request,
-            [FromServices] ICurrentUser currentUser,
-            [FromServices] IProductsDbContext dbContext,
-            CancellationToken cancellationToken)
-    => await dbContext
-        .Products
-        .TagWith(nameof(GetMyProductAsync), request.Id)
-        .Where(p => p.Store.OwnerId == currentUser.Id && p.Id == request.Id)
-        .Select(p => new Response
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Description = p.Description,
-            Price = p.Price,
-            Quantity = p.Quantity,
-            CreatedBy = p.CreatedBy,
-            CreatedOn = p.CreatedOn,
-            LastModifiedBy = p.LastModifiedBy,
-            LastModifiedOn = p.LastModifiedOn
-        })
-        .SingleAsResultAsync(cancellationToken);
+        [AsParameters] Request request,
+        [FromServices] ICurrentUser currentUser,
+        [FromServices] IProductsDbContext dbContext,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext
+            .Products
+            .TagWith(nameof(GetMyProductAsync), request.Id)
+            .Where(p => p.Store.OwnerId == currentUser.Id && p.Id == request.Id)
+            .Select(p => new Response
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Quantity = p.Quantity,
+                CreatedBy = p.CreatedBy,
+                CreatedOn = p.CreatedOn,
+                LastModifiedBy = p.LastModifiedBy,
+                LastModifiedOn = p.LastModifiedOn
+            })
+            .SingleAsResultAsync(cancellationToken);
+    }
 }

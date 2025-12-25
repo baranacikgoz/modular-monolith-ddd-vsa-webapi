@@ -1,6 +1,8 @@
 # Modular Monolith, DDD, Vertical Slice Architecture WebAPI Boilerplate
 
-This repository provides a .NET 9 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (DDD), and Vertical Slices architecture, along with Clean Architecture principles per feature. It is designed to facilitate the development of scalable and maintainable applications.
+This repository provides a .NET 9 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (
+DDD), and Vertical Slices architecture, along with Clean Architecture principles per feature. It is designed to
+facilitate the development of scalable and maintainable applications.
 
 ## Table of Contents
 
@@ -14,7 +16,8 @@ This repository provides a .NET 9 WebAPI boilerplate implementing a Modular Mono
 
 ## Introduction
 
-This boilerplate serves as a starting point for building applications with a focus on modularity, scalability, and maintainability. It leverages modern architectural patterns and practices to ensure a robust and flexible codebase.
+This boilerplate serves as a starting point for building applications with a focus on modularity, scalability, and
+maintainability. It leverages modern architectural patterns and practices to ensure a robust and flexible codebase.
 
 ## Features
 
@@ -25,7 +28,8 @@ This repository includes the following features:
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
-- **Event-Sourcing Aggregates**: Supports event sourcing infrastructure for audit/event logging currently, with future plans for full event sourcing.
+- **Event-Sourcing Aggregates**: Supports event sourcing infrastructure for audit/event logging currently, with future
+  plans for full event sourcing.
 - **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Seq for observability.
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
@@ -43,7 +47,7 @@ This repository includes the following features:
 - **Functional Programming & Railway-Oriented Syntax**: Encourages functional programming practices and method chaining.
 - **Docker-Compose Support**: Simplifies development setup with Docker-Compose.
 - **Grafana Templates for Monitoring**: Includes Grafana templates for monitoring and observability.
-and more.
+  and more.
 
 ## Requirements
 
@@ -59,18 +63,22 @@ To use or contribute to this project, you will need:
 ### VSCode
 
 #### One-time setup
+
 - Use appropriate ``tasks.json`` depending on your OS
     - Copy ``tasks.windows.json`` or ``tasks.unix.json``, into a new file with the name ``tasks.json``.
 
 ##### Unix only
+
 - Make before and after restore & build scripts executable
     - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
     - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
     - ``chmod +x .vscode/revert_exclude.sh``
 
 #### Development
+
 - Run required services
-    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select ``Compose Up - Select Services``. Select the following services:
+    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
+      ``Compose Up - Select Services``. Select the following services:
         - ``mm.database``
         - ``mm.rabbitmq``
         - ``mm.seq`` - Optional but recommended
@@ -82,6 +90,7 @@ To use or contribute to this project, you will need:
     - Press ``F5`` to start the application in debug mode
 
 ### Visual Studio
+
 - Open the solution file ``ModularMonolith.sln`` in Visual Studio
 
 - Set ``Docker Compose`` as the startup project
@@ -108,18 +117,22 @@ Information about the project's license.
 ### VSCode
 
 #### One-time setup
+
 - Use appropriate ``tasks.json`` depending on your OS
     - Copy ``tasks.windows.json`` or ``tasks.unix.json``, into a new file with the name ``tasks.json``.
 
 ##### Unix only
+
 - Make before and after restore & build scripts executable
     - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
     - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
     - ``chmod +x .vscode/revert_exclude.sh``
 
 #### Development
+
 - Run required services
-    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select ``Compose Up - Select Services``. Select the following services:
+    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
+      ``Compose Up - Select Services``. Select the following services:
         - ``mm.database``
         - ``mm.rabbitmq``
         - ``mm.seq`` - Optional but recommended
@@ -131,6 +144,7 @@ Information about the project's license.
     - Press ``F5`` to start the application in debug mode
 
 ### Visual Studio
+
 - Open the solution file ``ModularMonolith.sln`` in Visual Studio
 
 - Set ``Docker Compose`` as the startup project

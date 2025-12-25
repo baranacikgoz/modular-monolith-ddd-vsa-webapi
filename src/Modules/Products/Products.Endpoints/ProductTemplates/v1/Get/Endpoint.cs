@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Common.Domain.ResultMonad;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 
@@ -19,7 +19,7 @@ internal static class Endpoint
             .MapGet("{id}", GetProductTemplateAsync)
             .WithDescription("Get a product template.")
             .MustHavePermission(CustomActions.Read, CustomResources.ProductTemplates)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -27,7 +27,8 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .ProductTemplates
             .AsNoTracking()
             .TagWith(nameof(GetProductTemplateAsync), request.Id)
@@ -41,7 +42,8 @@ internal static class Endpoint
                 CreatedBy = pt.CreatedBy,
                 CreatedOn = pt.CreatedOn,
                 LastModifiedBy = pt.LastModifiedBy,
-                LastModifiedOn = pt.LastModifiedOn,
+                LastModifiedOn = pt.LastModifiedOn
             })
             .SingleAsResultAsync(cancellationToken);
+    }
 }

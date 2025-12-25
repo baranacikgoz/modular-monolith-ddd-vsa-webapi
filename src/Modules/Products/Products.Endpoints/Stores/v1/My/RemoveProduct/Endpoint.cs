@@ -28,7 +28,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .TagWith(nameof(RemoveMyProductAsync), "StoreByOwner", currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
@@ -41,4 +42,5 @@ internal static class Endpoint
                 store.RemoveProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+    }
 }

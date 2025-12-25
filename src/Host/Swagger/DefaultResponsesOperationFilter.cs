@@ -15,7 +15,8 @@ internal sealed class DefaultResponsesOperationFilter : IOperationFilter
         AddResponse(operation, "500", "Internal Server Error", context);
     }
 
-    private static void AddResponse(OpenApiOperation operation, string statusCode, string description, OperationFilterContext context)
+    private static void AddResponse(OpenApiOperation operation, string statusCode, string description,
+        OperationFilterContext context)
     {
         if ((!operation.Responses?.ContainsKey(statusCode) ?? false) && operation.Responses is not null)
         {
@@ -24,9 +25,10 @@ internal sealed class DefaultResponsesOperationFilter : IOperationFilter
                 Description = description,
                 Content = new Dictionary<string, OpenApiMediaType>
                 {
-                    ["application/problem+json"] = new OpenApiMediaType
+                    ["application/problem+json"] = new()
                     {
-                        Schema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails), context.SchemaRepository)
+                        Schema = context.SchemaGenerator.GenerateSchema(typeof(ProblemDetails),
+                            context.SchemaRepository)
                     }
                 }
             };

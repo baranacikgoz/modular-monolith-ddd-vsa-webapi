@@ -10,9 +10,10 @@ namespace Notifications.Application.IntegrationEventHandlers;
 public partial class UserRegisteredIntegrationEventHandler(
     IBackgroundJobs backgroundJobs,
     ILogger<UserRegisteredIntegrationEventHandler> logger
-    ) : EventHandlerBase<UserRegisteredIntegrationEvent>
+) : EventHandlerBase<UserRegisteredIntegrationEvent>
 {
-    protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context, UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)
+    protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context,
+        UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)
     {
         LogEnqueuingSendingWelcomeSms(logger, @event.UserId);
 
@@ -22,7 +23,7 @@ public partial class UserRegisteredIntegrationEventHandler(
     }
 
     [LoggerMessage(
-    Level = LogLevel.Debug,
-    Message = "Enqueuing sending welcome sms job to the new user {UserId}.")]
+        Level = LogLevel.Debug,
+        Message = "Enqueuing sending welcome sms job to the new user {UserId}.")]
     private static partial void LogEnqueuingSendingWelcomeSms(ILogger logger, ApplicationUserId userId);
 }

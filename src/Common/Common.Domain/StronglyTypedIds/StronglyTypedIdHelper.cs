@@ -10,7 +10,7 @@ public static class StronglyTypedIdHelper
             return false;
         }
 
-        id = new TId() { Value = guid };
+        id = new TId { Value = guid };
         return true;
     }
 }

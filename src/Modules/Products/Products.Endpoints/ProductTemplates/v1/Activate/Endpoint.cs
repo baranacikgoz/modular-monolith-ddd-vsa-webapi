@@ -26,11 +26,13 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .ProductTemplates
             .TagWith(nameof(ActivateProductTemplateAsync), request.Id)
             .Where(p => p.Id == request.Id)
             .SingleAsResultAsync(cancellationToken)
             .TapAsync(productTemplate => productTemplate.Activate())
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
+    }
 }

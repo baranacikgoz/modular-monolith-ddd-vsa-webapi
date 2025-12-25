@@ -1,94 +1,132 @@
 using Common.Application.Localization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 
 namespace IAM.Infrastructure.Identity;
 
 internal class LocalizedIdentityErrorDescriber(
     IStringLocalizer<ResxLocalizer> localizer
-    ) : Microsoft.AspNetCore.Identity.IdentityErrorDescriber
+) : IdentityErrorDescriber
 {
-    public override Microsoft.AspNetCore.Identity.IdentityError ConcurrencyFailure()
-        => Create(nameof(ConcurrencyFailure));
+    public override IdentityError ConcurrencyFailure()
+    {
+        return Create(nameof(ConcurrencyFailure));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError DefaultError()
-        => Create(nameof(DefaultError));
+    public override IdentityError DefaultError()
+    {
+        return Create(nameof(DefaultError));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError InvalidEmail(string? email)
-        => Create(nameof(InvalidEmail), email ?? string.Empty);
+    public override IdentityError InvalidEmail(string? email)
+    {
+        return Create(nameof(InvalidEmail), email ?? string.Empty);
+    }
 
     // We use PhoneNumber as UserName
-    public override Microsoft.AspNetCore.Identity.IdentityError InvalidUserName(string? userName)
-        => Create(nameof(InvalidUserName), userName ?? string.Empty);
-    public override Microsoft.AspNetCore.Identity.IdentityError DuplicateEmail(string email)
-        => Create(nameof(DuplicateEmail), email);
+    public override IdentityError InvalidUserName(string? userName)
+    {
+        return Create(nameof(InvalidUserName), userName ?? string.Empty);
+    }
+
+    public override IdentityError DuplicateEmail(string email)
+    {
+        return Create(nameof(DuplicateEmail), email);
+    }
 
     // We use PhoneNumber as UserName
-    public override Microsoft.AspNetCore.Identity.IdentityError DuplicateUserName(string userName)
-        => Create(nameof(DuplicateUserName), userName);
+    public override IdentityError DuplicateUserName(string userName)
+    {
+        return Create(nameof(DuplicateUserName), userName);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError UserNotInRole(string role)
-        => Create(nameof(UserNotInRole), role);
+    public override IdentityError UserNotInRole(string role)
+    {
+        return Create(nameof(UserNotInRole), role);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError DuplicateRoleName(string role)
-        => Create(nameof(DuplicateRoleName), role);
+    public override IdentityError DuplicateRoleName(string role)
+    {
+        return Create(nameof(DuplicateRoleName), role);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError InvalidRoleName(string? role)
-        => Create(nameof(InvalidRoleName), role ?? string.Empty);
+    public override IdentityError InvalidRoleName(string? role)
+    {
+        return Create(nameof(InvalidRoleName), role ?? string.Empty);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError InvalidToken()
-        => Create(nameof(InvalidToken));
+    public override IdentityError InvalidToken()
+    {
+        return Create(nameof(InvalidToken));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError LoginAlreadyAssociated()
-        => Create(nameof(LoginAlreadyAssociated));
+    public override IdentityError LoginAlreadyAssociated()
+    {
+        return Create(nameof(LoginAlreadyAssociated));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordMismatch()
-        => Create(nameof(PasswordMismatch));
+    public override IdentityError PasswordMismatch()
+    {
+        return Create(nameof(PasswordMismatch));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordRequiresDigit()
-        => Create(nameof(PasswordRequiresDigit));
+    public override IdentityError PasswordRequiresDigit()
+    {
+        return Create(nameof(PasswordRequiresDigit));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordRequiresLower()
-        => Create(nameof(PasswordRequiresLower));
+    public override IdentityError PasswordRequiresLower()
+    {
+        return Create(nameof(PasswordRequiresLower));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordRequiresNonAlphanumeric()
-        => Create(nameof(PasswordRequiresNonAlphanumeric));
+    public override IdentityError PasswordRequiresNonAlphanumeric()
+    {
+        return Create(nameof(PasswordRequiresNonAlphanumeric));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordRequiresUniqueChars(int uniqueChars)
-        => Create(nameof(PasswordRequiresUniqueChars), uniqueChars);
+    public override IdentityError PasswordRequiresUniqueChars(int uniqueChars)
+    {
+        return Create(nameof(PasswordRequiresUniqueChars), uniqueChars);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordRequiresUpper()
-        => Create(nameof(PasswordRequiresUpper));
+    public override IdentityError PasswordRequiresUpper()
+    {
+        return Create(nameof(PasswordRequiresUpper));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError PasswordTooShort(int length)
-        => Create(nameof(PasswordTooShort), length);
+    public override IdentityError PasswordTooShort(int length)
+    {
+        return Create(nameof(PasswordTooShort), length);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError UserAlreadyHasPassword()
-        => Create(nameof(UserAlreadyHasPassword));
+    public override IdentityError UserAlreadyHasPassword()
+    {
+        return Create(nameof(UserAlreadyHasPassword));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError UserAlreadyInRole(string role)
-        => Create(nameof(UserAlreadyInRole), role);
+    public override IdentityError UserAlreadyInRole(string role)
+    {
+        return Create(nameof(UserAlreadyInRole), role);
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError RecoveryCodeRedemptionFailed()
-        => Create(nameof(RecoveryCodeRedemptionFailed));
+    public override IdentityError RecoveryCodeRedemptionFailed()
+    {
+        return Create(nameof(RecoveryCodeRedemptionFailed));
+    }
 
-    public override Microsoft.AspNetCore.Identity.IdentityError UserLockoutNotEnabled()
-        => Create(nameof(UserLockoutNotEnabled));
+    public override IdentityError UserLockoutNotEnabled()
+    {
+        return Create(nameof(UserLockoutNotEnabled));
+    }
 
-    private Microsoft.AspNetCore.Identity.IdentityError Create(string key, object? parameter = null)
+    private IdentityError Create(string key, object? parameter = null)
     {
         if (parameter is null)
         {
-            return new Microsoft.AspNetCore.Identity.IdentityError
-            {
-                Code = key,
-                Description = localizer[key]
-            };
+            return new IdentityError { Code = key, Description = localizer[key] };
         }
 
-        return new Microsoft.AspNetCore.Identity.IdentityError
-        {
-            Code = key,
-            Description = localizer[key, parameter]
-        };
+        return new IdentityError { Code = key, Description = localizer[key, parameter] };
     }
 }

@@ -1,14 +1,14 @@
 using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Options;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Outbox.Persistence;
 using Common.Application.Persistence;
 using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Outbox.Persistence;
 
 namespace Outbox;
 
@@ -20,8 +20,8 @@ public class OutboxKafkaProcessor(
     ILogger<OutboxKafkaProcessor> logger
 ) : BackgroundService
 {
-    private readonly OutboxOptions _outboxOptions = outboxOptionsProvider.Value;
     private readonly JsonSerializerOptions _dlqSerializerOptions = new() { WriteIndented = false };
+    private readonly OutboxOptions _outboxOptions = outboxOptionsProvider.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -428,7 +428,7 @@ public class OutboxKafkaProcessor(
             EnableAutoCommit = false, // Explicitly disable auto-commit for manual control
             EnablePartitionEof = kafkaConsumerOptions.EnablePartitionEof,
             SessionTimeoutMs = kafkaConsumerOptions.SessionTimeoutMs,
-            HeartbeatIntervalMs = kafkaConsumerOptions.HeartbeatIntervalMs,
+            HeartbeatIntervalMs = kafkaConsumerOptions.HeartbeatIntervalMs
         };
 
         // Build the consumer with handlers

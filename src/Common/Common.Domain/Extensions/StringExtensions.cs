@@ -5,13 +5,19 @@ namespace Common.Domain.Extensions;
 
 public static class StringExtensions
 {
+    private static readonly SearchValues<char> _turkishAlphabet =
+        SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
+
+    private static readonly SearchValues<char> _turkishAlphabetWithEmptySpace =
+        SearchValues.Create(" abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
+
     public static Result EnsureNotNullOrEmpty(string? value, Error ifNullOrEmpty)
-        => string.IsNullOrEmpty(value)
+    {
+        return string.IsNullOrEmpty(value)
             ? Result.Failure(ifNullOrEmpty)
             : Result.Success;
+    }
 
-    private static readonly SearchValues<char> _turkishAlphabet = SearchValues.Create("abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
-    private static readonly SearchValues<char> _turkishAlphabetWithEmptySpace = SearchValues.Create(" abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
     public static bool ContainsOnlyTurkishCharacters(this string s, bool allowWhiteSpace)
     {
         if (string.IsNullOrEmpty(s))
@@ -51,12 +57,11 @@ public static class StringExtensions
                     'Ü' => 'U',
                     'ı' => 'I',
                     'İ' => 'I',
-                    _ => char.ToUpperInvariant(c),
+                    _ => char.ToUpperInvariant(c)
                 };
 
                 chars[i] = result;
             }
         });
     }
-
 }

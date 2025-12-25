@@ -13,13 +13,13 @@ public abstract class AggregateTests<TAggregate, TId>
     where TAggregate : AggregateRoot<TId>, new()
     where TId : IStronglyTypedId
 {
+    private Result<TAggregate>? _aggregateResult;
+    private Error? _error;
+    private object? _objectUnderTheTestAlongWithAggregate;
+    private Result? _plainResult;
 #pragma warning disable CA1051 // Do not declare visible instance fields
     protected TAggregate Aggregate = new();
 #pragma warning restore CA1051 // Do not declare visible instance fields
-    private object? _objectUnderTheTestAlongWithAggregate;
-    private Result<TAggregate>? _aggregateResult;
-    private Result? _plainResult;
-    private Error? _error;
 
     public AggregateTests<TAggregate, TId> Given(Func<TAggregate> func)
     {
@@ -87,9 +87,9 @@ public abstract class AggregateTests<TAggregate, TId>
         where TDomainEvent : DomainEvent
     {
         var events = Aggregate
-                    .Events
-                    .OfType<TDomainEvent>()
-                    .ToList();
+            .Events
+            .OfType<TDomainEvent>()
+            .ToList();
 
         events.Should().NotBeNull();
         events.Should().NotBeEmpty();
@@ -111,9 +111,9 @@ public abstract class AggregateTests<TAggregate, TId>
         where TDomainEvent : DomainEvent
     {
         var events = Aggregate
-                    .Events
-                    .OfType<TDomainEvent>()
-                    .ToList();
+            .Events
+            .OfType<TDomainEvent>()
+            .ToList();
 
         events.Should().NotBeNull();
         events.Should().NotBeEmpty();
@@ -131,13 +131,14 @@ public abstract class AggregateTests<TAggregate, TId>
         return this;
     }
 
-    public AggregateTests<TAggregate, TId> Then<TDomainEvent>(params Action<TAggregate, object, TDomainEvent>[] assertions)
+    public AggregateTests<TAggregate, TId> Then<TDomainEvent>(
+        params Action<TAggregate, object, TDomainEvent>[] assertions)
         where TDomainEvent : DomainEvent
     {
         var events = Aggregate
-                    .Events
-                    .OfType<TDomainEvent>()
-                    .ToList();
+            .Events
+            .OfType<TDomainEvent>()
+            .ToList();
 
         events.Should().NotBeNull();
         events.Should().NotBeEmpty();
@@ -161,9 +162,9 @@ public abstract class AggregateTests<TAggregate, TId>
         where TDomainEvent : DomainEvent
     {
         var events = Aggregate
-                    .Events
-                    .OfType<TDomainEvent>()
-                    .ToList();
+            .Events
+            .OfType<TDomainEvent>()
+            .ToList();
 
         events.Should().NotBeNull();
         events.Should().BeEmpty();

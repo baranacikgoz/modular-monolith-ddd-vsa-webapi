@@ -1,12 +1,12 @@
 using Common.Application.Auth;
+using Common.Application.EventHistory;
 using Common.Application.Extensions;
+using Common.Application.Pagination;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Common.Application.EventHistory;
-using Common.Application.Pagination;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 
@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("{id}/event-history", GetProductEventHistoryAsync)
             .WithDescription("Get Product.")
             .MustHavePermission(CustomActions.Read, CustomResources.Products)
-            .Produces<PaginationResponse<EventDto>>(StatusCodes.Status200OK)
+            .Produces<PaginationResponse<EventDto>>()
             .TransformResultTo<PaginationResponse<EventDto>>();
     }
 
@@ -28,10 +28,12 @@ internal static class Endpoint
         [AsParameters] Request request,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .GetEventHistoryAsync<Product, ProductId>(
-                moduleName: nameof(Products),
-                id: request.Id,
-                request: request,
-                cancellationToken: cancellationToken);
+                nameof(Products),
+                request.Id,
+                request,
+                cancellationToken);
+    }
 }

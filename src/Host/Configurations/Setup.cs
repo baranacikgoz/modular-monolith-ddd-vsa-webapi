@@ -29,7 +29,7 @@ internal static class Setup
 
     private static void AddJsonFile(ConfigurationManager configuration, string environment, string filePath)
     {
-        configuration.AddJsonFile($"{filePath}.json", optional: false, reloadOnChange: true);
-        configuration.AddJsonFile($"{filePath}.{environment}.json", optional: true, reloadOnChange: true);
+        configuration.AddJsonFile($"{filePath}.json", false, true);
+        configuration.AddJsonFile($"{filePath}.{environment}.json", true, true);
     }
 }

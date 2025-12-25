@@ -5,7 +5,8 @@ namespace IAM.Infrastructure.Auth;
 
 internal class PermissionAuthorizationHandler(ICurrentUser currentUser) : AuthorizationHandler<PermissionRequirement>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        PermissionRequirement requirement)
     {
         var permissionName = requirement.PermissionName;
 

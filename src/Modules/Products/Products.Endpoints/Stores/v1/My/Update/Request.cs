@@ -18,7 +18,8 @@ public sealed class RequestValidator : CustomValidator<Request>
     public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x)
-            .Must(x => !string.IsNullOrWhiteSpace(x.Name) || !string.IsNullOrWhiteSpace(x.Description) || !string.IsNullOrWhiteSpace(x.Address))
+            .Must(x => !string.IsNullOrWhiteSpace(x.Name) || !string.IsNullOrWhiteSpace(x.Description) ||
+                       !string.IsNullOrWhiteSpace(x.Address))
             .WithMessage(localizer["Stores.My.Update.AtLeastOnePropertyIsRequired"]);
 
         RuleFor(x => x.Name)

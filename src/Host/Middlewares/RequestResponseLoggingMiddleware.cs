@@ -8,10 +8,11 @@ namespace Host.Middlewares;
 internal partial class RequestResponseLoggingMiddleware(
     ILogger<RequestResponseLoggingMiddleware> logger,
     IOptions<ObservabilityOptions> loggingOptionsProvider
-    ) : IMiddleware
+) : IMiddleware
 {
-    private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
     private const string LogTemplate = "HTTP {Method} {Path} responded {StatusCode} in {Elapsed:0} ms";
+    private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -33,7 +34,8 @@ internal partial class RequestResponseLoggingMiddleware(
         await next(context);
     }
 
-    private static void LogResponse(ILogger<RequestResponseLoggingMiddleware> logger, HttpContext context, double elapsedMs, bool isSlow)
+    private static void LogResponse(ILogger<RequestResponseLoggingMiddleware> logger, HttpContext context,
+        double elapsedMs, bool isSlow)
     {
         var statusCode = context.Response.StatusCode;
         var method = context.Request.Method;
@@ -67,6 +69,7 @@ internal partial class RequestResponseLoggingMiddleware(
         string path,
         int statusCode,
         double elapsed);
+
     [LoggerMessage(
         Level = LogLevel.Warning,
         Message = LogTemplate)]
@@ -96,5 +99,4 @@ internal partial class RequestResponseLoggingMiddleware(
         string path,
         int statusCode,
         double elapsed);
-
 }

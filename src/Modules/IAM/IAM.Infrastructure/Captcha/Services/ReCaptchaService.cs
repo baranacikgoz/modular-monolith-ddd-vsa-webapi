@@ -13,16 +13,22 @@ internal partial class ReCaptchaService(
     HttpClient httpClient,
     IOptions<CaptchaOptions> captchaOptionsProvider,
     ILogger<ReCaptchaService> logger
-    ) : ICaptchaService
+) : ICaptchaService
 {
     private readonly CaptchaOptions _captchaOptions = captchaOptionsProvider.Value;
-    public string GetClientKey() => _captchaOptions.ClientKey;
+
+    public string GetClientKey()
+    {
+        return _captchaOptions.ClientKey;
+    }
+
     public async Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
     {
         HttpResponseMessage? httpResponseMessage;
         using (var requestContent = GetRequestParameters(captchaToken, _captchaOptions.SecretKey))
         {
-            httpResponseMessage = await httpClient.PostAsync(new Uri(_captchaOptions.CaptchaEndpoint), requestContent, cancellationToken);
+            httpResponseMessage = await httpClient.PostAsync(new Uri(_captchaOptions.CaptchaEndpoint), requestContent,
+                cancellationToken);
         }
 
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
@@ -44,28 +50,9 @@ internal partial class ReCaptchaService(
 
     private static FormUrlEncodedContent GetRequestParameters(string captchaToken, string secretKey)
     {
-        var parameters = new Dictionary<string, string>
-        {
-            ["secret"] = secretKey,
-            ["response"] = captchaToken
-        };
+        var parameters = new Dictionary<string, string> { ["secret"] = secretKey, ["response"] = captchaToken };
 
         return new FormUrlEncodedContent(parameters);
-    }
-
-    private sealed class ReCaptchaResponse
-    {
-        [JsonPropertyName("success")]
-        public bool Success { get; set; }
-
-        [JsonPropertyName("challenge_ts")]
-        public DateTime ChallengeTs { get; set; }
-
-        [JsonPropertyName("hostname")]
-        public string Hostname { get; set; } = default!;
-
-        [JsonPropertyName("error-codes")]
-        public string[] ErrorCodes { get; set; } = default!;
     }
 
     [LoggerMessage(
@@ -77,4 +64,15 @@ internal partial class ReCaptchaService(
         Level = LogLevel.Error,
         Message = "Captcha validation failed with response {Response}")]
     private static partial void LogCaptchaValidationFailedWithResponse(ILogger logger, ReCaptchaResponse? response);
+
+    private sealed class ReCaptchaResponse
+    {
+        [JsonPropertyName("success")] public bool Success { get; set; }
+
+        [JsonPropertyName("challenge_ts")] public DateTime ChallengeTs { get; set; }
+
+        [JsonPropertyName("hostname")] public string Hostname { get; set; } = default!;
+
+        [JsonPropertyName("error-codes")] public string[] ErrorCodes { get; set; } = default!;
+    }
 }

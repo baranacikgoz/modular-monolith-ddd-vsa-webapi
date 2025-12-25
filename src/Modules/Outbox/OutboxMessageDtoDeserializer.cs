@@ -11,11 +11,7 @@ public class OutboxMessageDtoDeserializer : IDeserializer<OutboxMessageDto>
         new()
         {
             PropertyNameCaseInsensitive = true,
-            Converters =
-            {
-                new JsonStringEnumConverter(),
-                new StronglyTypedIdReadOnlyJsonConverter(),
-            }
+            Converters = { new JsonStringEnumConverter(), new StronglyTypedIdReadOnlyJsonConverter() }
         };
 
     public OutboxMessageDto Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
@@ -25,6 +21,7 @@ public class OutboxMessageDtoDeserializer : IDeserializer<OutboxMessageDto>
             throw new ArgumentNullException(nameof(data));
         }
 
-        return JsonSerializer.Deserialize<OutboxMessageDto>(data, _serializerOptions) ?? throw new ArgumentNullException(nameof(data));
+        return JsonSerializer.Deserialize<OutboxMessageDto>(data, _serializerOptions) ??
+               throw new ArgumentNullException(nameof(data));
     }
 }

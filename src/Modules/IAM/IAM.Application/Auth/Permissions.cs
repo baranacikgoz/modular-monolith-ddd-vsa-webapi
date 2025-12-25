@@ -17,7 +17,8 @@ public static class CustomPermissions
         new("Update My Store", CustomActions.UpdateMy, CustomResources.Stores),
         new("Delete My Store", CustomActions.DeleteMy, CustomResources.Stores),
 
-        new("Read Products", CustomActions.Read, CustomResources.ProductTemplates), // For individual users to see all products
+        new("Read Products", CustomActions.Read,
+            CustomResources.ProductTemplates), // For individual users to see all products
         new("Search Products", CustomActions.Search, CustomResources.ProductTemplates),
 
         new("Create My Product", CustomActions.CreateMy, CustomResources.Products),
@@ -25,7 +26,8 @@ public static class CustomPermissions
         new("Update My Product", CustomActions.UpdateMy, CustomResources.Products),
         new("Delete My Product", CustomActions.DeleteMy, CustomResources.Products),
         new("Search Products", CustomActions.Search, CustomResources.Products),
-        new("Search My Stores Products", CustomActions.SearchMy, CustomResources.Products), // For store owners to ssearch their own store's products
+        new("Search My Stores Products", CustomActions.SearchMy,
+            CustomResources.Products) // For store owners to ssearch their own store's products
     ];
 
     private static readonly HashSet<CustomPermission> _systemAdmin =
@@ -53,17 +55,17 @@ public static class CustomPermissions
         new("Read Product", CustomActions.Read, CustomResources.Products),
         new("Update Product", CustomActions.Update, CustomResources.Products),
         new("Delete Product", CustomActions.Delete, CustomResources.Products),
-        new("Search Products", CustomActions.Search, CustomResources.Products),
+        new("Search Products", CustomActions.Search, CustomResources.Products)
     ];
 
     public static readonly IReadOnlySet<string> Basic =
         _basic
-        .Select(r => r.Name)
-        .ToFrozenSet();
+            .Select(r => r.Name)
+            .ToFrozenSet();
 
     public static readonly IReadOnlySet<string> SystemAdmin =
         _basic
-        .Concat(_systemAdmin)
-        .Select(r => r.Name)
-        .ToFrozenSet();
+            .Concat(_systemAdmin)
+            .Select(r => r.Name)
+            .ToFrozenSet();
 }

@@ -8,19 +8,35 @@ namespace Products.Domain.Stores;
 
 public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static StoreId New() => new(DefaultIdType.CreateVersion7());
-    public override string ToString() => Value.ToString();
-    public static bool TryParse(string str, out StoreId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
+    public static StoreId New()
+    {
+        return new StoreId(DefaultIdType.CreateVersion7());
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
+    public static bool TryParse(string str, out StoreId id)
+    {
+        return StronglyTypedIdHelper.TryDeserialize(str, out id);
+    }
 }
 
 public class Store : AggregateRoot<StoreId>
 {
+    private readonly List<Product> _products = [];
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public Store() : base(new StoreId(DefaultIdType.Empty))
+    {
+    } // ORMs need parameterlers ctor
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public ApplicationUserId OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; }
     public string Address { get; private set; }
-
-    private readonly List<Product> _products = [];
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
     public static Store Create(ApplicationUserId ownerId, string name, string description, string address)
@@ -142,8 +158,4 @@ public class Store : AggregateRoot<StoreId>
     {
         _products.Remove(@event.Product);
     }
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public Store() : base(new(DefaultIdType.Empty)) { } // ORMs need parameterlers ctor
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 }

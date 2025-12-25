@@ -13,6 +13,7 @@ public class KafkaConsumer
 
     // How long the consumer can be out of contact before being considered dead.
     public required int SessionTimeoutMs { get; set; }
+
     // Controls how often consumer heartbeats to broker. Lower values detect failures faster.
     public required int HeartbeatIntervalMs { get; set; }
     // Optional: Max time between Consume calls before considered failed. Needs coordination with processing time.
@@ -25,7 +26,9 @@ public class KafkaConsumer
 
 public class KafkaConsumerValidator : CustomValidator<KafkaConsumer>
 {
-    private static readonly HashSet<string> _allowedAutoOffsetResets = new(StringComparer.Ordinal) { "Latest", "Earliest", "Error" };
+    private static readonly HashSet<string> _allowedAutoOffsetResets =
+        new(StringComparer.Ordinal) { "Latest", "Earliest", "Error" };
+
     public KafkaConsumerValidator()
     {
         RuleFor(x => x.BootstrapServers)

@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Common.Infrastructure.Persistence.Auditing;
+
 public class ApplyAuditingInterceptor(
     ICurrentUser currentUser,
     TimeProvider timeProvider
-    ) : SaveChangesInterceptor
+) : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
@@ -25,9 +26,9 @@ public class ApplyAuditingInterceptor(
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
 
         foreach (var entry in dbContext
-                             .ChangeTracker
-                             .Entries<IAuditableEntity>()
-                             .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
+                     .ChangeTracker
+                     .Entries<IAuditableEntity>()
+                     .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted))
         {
             switch (entry.State)
             {

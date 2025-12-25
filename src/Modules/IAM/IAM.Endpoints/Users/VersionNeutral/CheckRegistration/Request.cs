@@ -9,8 +9,7 @@ namespace IAM.Endpoints.Users.VersionNeutral.CheckRegistration;
 
 public sealed record Request
 {
-    [FromQuery]
-    public required string PhoneNumber { get; init; }
+    [FromQuery] public required string PhoneNumber { get; init; }
 }
 
 public class RequestValidator : CustomValidator<Request>
@@ -19,10 +18,10 @@ public class RequestValidator : CustomValidator<Request>
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-               .WithMessage(localizer["Users.CheckRegistration.PhoneNumber.NotEmpty"]);
+            .WithMessage(localizer["Users.CheckRegistration.PhoneNumber.NotEmpty"]);
 
         RuleFor(x => x.PhoneNumber)
             .PhoneNumberValidation(localizer)
-        .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
+            .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
     }
 }

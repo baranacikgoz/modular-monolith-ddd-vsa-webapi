@@ -30,7 +30,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .TagWith(nameof(AddProductToMyStoreAsync), "StoreByOwner", currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
@@ -44,7 +45,8 @@ internal static class Endpoint
             .CombineAsync<Store, ProductTemplate, Product>(tuple =>
             {
                 var (store, productTemplate) = tuple;
-                return Product.Create(store.Id, productTemplate.Id, request.Name, request.Description, request.Quantity, request.Price);
+                return Product.Create(store.Id, productTemplate.Id, request.Name, request.Description, request.Quantity,
+                    request.Price);
             })
             .TapAsync(triple =>
             {
@@ -55,9 +57,7 @@ internal static class Endpoint
             .MapAsync(triple =>
             {
                 var (_, _, product) = triple;
-                return new Response
-                {
-                    Id = product.Id,
-                };
+                return new Response { Id = product.Id };
             });
+    }
 }

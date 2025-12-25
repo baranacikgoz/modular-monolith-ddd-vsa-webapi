@@ -10,34 +10,49 @@ namespace Products.Domain.Products;
 
 public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
 {
-    public static ProductId New() => new(DefaultIdType.CreateVersion7());
-    public override string ToString() => Value.ToString();
-    public static bool TryParse(string str, out ProductId id) => StronglyTypedIdHelper.TryDeserialize(str, out id);
+    public static ProductId New()
+    {
+        return new ProductId(DefaultIdType.CreateVersion7());
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
+    public static bool TryParse(string str, out ProductId id)
+    {
+        return StronglyTypedIdHelper.TryDeserialize(str, out id);
+    }
 }
 
 public class Product : AggregateRoot<ProductId>
 {
+    public Product() : base(new ProductId(DefaultIdType.Empty))
+    {
+    } // ORMs need a parameterless ctor
+
     public StoreId StoreId { get; private set; }
 
-    [JsonIgnore]
-    public Store Store { get; } = default!;
+    [JsonIgnore] public Store Store { get; } = default!;
 
     public ProductTemplateId ProductTemplateId { get; private set; }
 
-    [JsonIgnore]
-    public ProductTemplate ProductTemplate { get; } = default!;
+    [JsonIgnore] public ProductTemplate ProductTemplate { get; } = default!;
 
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
 
-    public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description, int quantity, decimal price)
+    public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description,
+        int quantity, decimal price)
     {
         var id = ProductId.New();
         var product = new Product();
 
-        var @event = new V1ProductCreatedDomainEvent(id, storeId, productTemplateId, name, description, quantity, price);
+        var @event =
+            new V1ProductCreatedDomainEvent(id, storeId, productTemplateId, name, description, quantity, price);
         product.RaiseEvent(@event);
 
         return product;
@@ -95,8 +110,8 @@ public class Product : AggregateRoot<ProductId>
 
         RaiseEvent(
             quantity > Quantity
-            ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
-            : new V1ProductQuantityDecreasedDomainEvent(Id, quantity));
+                ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
+                : new V1ProductQuantityDecreasedDomainEvent(Id, quantity));
     }
 
     private void UpdatePrice(decimal price)
@@ -108,8 +123,8 @@ public class Product : AggregateRoot<ProductId>
 
         RaiseEvent(
             price > Price
-            ? new V1ProductPriceIncreasedDomainEvent(Id, price)
-            : new V1ProductPriceDecreasedDomainEvent(Id, price));
+                ? new V1ProductPriceIncreasedDomainEvent(Id, price)
+                : new V1ProductPriceDecreasedDomainEvent(Id, price));
     }
 
     protected override void ApplyEvent(DomainEvent @event)
@@ -182,6 +197,4 @@ public class Product : AggregateRoot<ProductId>
     {
         Price = @event.Price;
     }
-
-    public Product() : base(new(DefaultIdType.Empty)) { } // ORMs need a parameterless ctor
 }

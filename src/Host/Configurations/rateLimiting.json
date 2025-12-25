@@ -12,7 +12,8 @@
     },
     "CreateStore": {
       "Limit": 1,
-      "PeriodInMs": 604800000, // 7 days
+      "PeriodInMs": 604800000,
+      // 7 days
       "QueueLimit": 0
     }
   }

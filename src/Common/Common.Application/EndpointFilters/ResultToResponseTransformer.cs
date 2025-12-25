@@ -13,7 +13,8 @@ namespace Common.Application.EndpointFilters;
 // In this filters, no service needed for succes paths.
 // So we don't have to eagerly load failure case's services. (on ctor as usual)
 // That's why we're using the service provider to get the error translator and localizer if and only if failure case occur.
-internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvider, IWebHostEnvironment env) : IEndpointFilter
+internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvider, IWebHostEnvironment env)
+    : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -21,20 +22,21 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
 
         if (resultObj is not Result result)
         {
-            throw new InvalidOperationException($"{nameof(ResultToResponseTransformer)} can only be used with Result type.");
+            throw new InvalidOperationException(
+                $"{nameof(ResultToResponseTransformer)} can only be used with Result type.");
         }
 
         return result.Match(
-            onSuccess: () => Results.NoContent(),
-            onFailure: error =>
+            () => Results.NoContent(),
+            error =>
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-                var problemDetails = new ProblemDetails()
+                var problemDetails = new ProblemDetails
                 {
                     Status = (int)error.StatusCode,
                     Title = localizer.LocalizeFromError(error),
-                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}",
+                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
                 };
 
                 problemDetails.AddErrorKey(error.Key);
@@ -49,7 +51,8 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
     }
 }
 
-internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env) : IEndpointFilter
+internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env)
+    : IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
@@ -57,20 +60,21 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
 
         if (resultObj is not Result<T> result)
         {
-            throw new InvalidOperationException($"{nameof(ResultToResponseTransformer<T>)} can only be used with Result<{nameof(T)}> type.");
+            throw new InvalidOperationException(
+                $"{nameof(ResultToResponseTransformer<T>)} can only be used with Result<{nameof(T)}> type.");
         }
 
         return result.Match(
-            onSuccess: value => Results.Ok(value),
-            onFailure: error =>
+            value => Results.Ok(value),
+            error =>
             {
                 var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-                var problemDetails = new ProblemDetails()
+                var problemDetails = new ProblemDetails
                 {
                     Status = (int)error.StatusCode,
                     Title = localizer.LocalizeFromError(error),
-                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}",
+                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
                 };
 
                 problemDetails.AddErrorKey(error.Key);

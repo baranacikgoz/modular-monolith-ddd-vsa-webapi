@@ -2,6 +2,7 @@ using Common.Domain.ResultMonad;
 using FluentAssertions;
 
 namespace UnitTests.Common;
+
 internal static class ErrorExtensions
 {
     public static void ShouldBe(this Error currentError, Error expectedError)

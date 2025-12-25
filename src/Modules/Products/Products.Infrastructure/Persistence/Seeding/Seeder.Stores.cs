@@ -1,13 +1,16 @@
 using Common.Domain.StronglyTypedIds;
+using Common.InterModuleRequests.IAM;
 using Microsoft.EntityFrameworkCore;
 using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.Seeding;
+
 internal sealed partial class Seeder
 {
     private async Task<List<StoreId>> SeedStoresAsync(CancellationToken cancellationToken)
     {
-        var getSeedUserIdsResponse = await requestClient.SendAsync(new(StoreCount), cancellationToken);
+        var getSeedUserIdsResponse =
+            await requestClient.SendAsync(new GetSeedUserIdsRequest(StoreCount), cancellationToken);
         var userIds = getSeedUserIdsResponse.UserIds;
 
         var storeIds = new List<StoreId>(StoreCount);
@@ -23,9 +26,11 @@ internal sealed partial class Seeder
         return storeIds;
     }
 
-    private async Task<StoreId> SeedStore(ApplicationUserId userId, string storeName, CancellationToken cancellationToken)
+    private async Task<StoreId> SeedStore(ApplicationUserId userId, string storeName,
+        CancellationToken cancellationToken)
     {
-        if (await dbContext.Stores.SingleOrDefaultAsync(store => store.OwnerId == userId || store.Name == storeName, cancellationToken)
+        if (await dbContext.Stores.SingleOrDefaultAsync(store => store.OwnerId == userId || store.Name == storeName,
+                cancellationToken)
             is not Store store)
         {
             store = Store.Create(userId, storeName, "Seeded by system.", "Dummy Adress");

@@ -19,7 +19,7 @@ internal partial class Seeder
     private async Task<IdentityRole<ApplicationUserId>> SeedRoleAsync(string roleName)
     {
         if (await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName)
-                is not IdentityRole<ApplicationUserId> role)
+            is not IdentityRole<ApplicationUserId> role)
         {
             LogRoleCreation(logger, roleName);
 

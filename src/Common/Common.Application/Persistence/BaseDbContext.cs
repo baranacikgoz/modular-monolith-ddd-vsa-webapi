@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Common.Application.Persistence;
 
-public abstract partial class BaseDbContext(
+public abstract class BaseDbContext(
     DbContextOptions options,
     IServiceScopeFactory serviceScopeFactory
 ) : DbContext(options)

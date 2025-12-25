@@ -4,11 +4,17 @@ namespace Common.Domain;
 // which bypasses the constructor or the static create method, therefore resulting in invalid objects and unexpected behavior.
 public abstract class ValueObject : IComparable<ValueObject>
 {
+    public abstract int CompareTo(ValueObject? other);
+
     protected static bool EqualOperator(ValueObject left, ValueObject right)
-        => !(left is null ^ right is null) && (left is null || left.Equals(right));
+    {
+        return !(left is null ^ right is null) && (left is null || left.Equals(right));
+    }
 
     protected static bool NotEqualOperator(ValueObject left, ValueObject right)
-        => !EqualOperator(left, right);
+    {
+        return !EqualOperator(left, right);
+    }
 
     protected abstract IEnumerable<object> GetEqualityComponents();
 
@@ -24,23 +30,39 @@ public abstract class ValueObject : IComparable<ValueObject>
     }
 
     public override int GetHashCode()
-        => GetEqualityComponents()
+    {
+        return GetEqualityComponents()
             .Select(x => x != null ? x.GetHashCode() : 0)
             .Aggregate((x, y) => x ^ y);
-    public abstract int CompareTo(ValueObject? other);
+    }
+
     public static bool operator ==(ValueObject left, ValueObject right)
-        => EqualOperator(left, right);
+    {
+        return EqualOperator(left, right);
+    }
+
     public static bool operator !=(ValueObject left, ValueObject right)
-        => NotEqualOperator(left, right);
+    {
+        return NotEqualOperator(left, right);
+    }
+
     public static bool operator <(ValueObject left, ValueObject right)
-        => left.CompareTo(right) < 0;
+    {
+        return left.CompareTo(right) < 0;
+    }
 
     public static bool operator <=(ValueObject left, ValueObject right)
-        => left.CompareTo(right) <= 0;
+    {
+        return left.CompareTo(right) <= 0;
+    }
 
     public static bool operator >(ValueObject left, ValueObject right)
-        => left.CompareTo(right) > 0;
+    {
+        return left.CompareTo(right) > 0;
+    }
 
     public static bool operator >=(ValueObject left, ValueObject right)
-        => left.CompareTo(right) >= 0;
+    {
+        return left.CompareTo(right) >= 0;
+    }
 }

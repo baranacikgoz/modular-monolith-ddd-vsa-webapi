@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 
 namespace Common.Application.BackgroundJobs;
+
 public interface IBackgroundJobs
 {
     string Enqueue(Expression<Action> methodCall);

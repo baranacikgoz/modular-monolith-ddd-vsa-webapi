@@ -8,12 +8,14 @@ using Microsoft.EntityFrameworkCore;
 namespace IAM.Infrastructure.InterModuleRequestHandlers;
 
 /// <summary>
-/// This query is for seeding other modules requiring some basic seed users, where a userId is required.
+///     This query is for seeding other modules requiring some basic seed users, where a userId is required.
 /// </summary>
 /// <param name="dbContext"></param>
-public class GetSeedUserIdsRequestHandler(IIAMDbContext dbContext) : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
+public class GetSeedUserIdsRequestHandler(IIAMDbContext dbContext)
+    : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
 {
-    protected override async Task<GetSeedUserIdsResponse> HandleAsync(ConsumeContext<GetSeedUserIdsRequest> context, GetSeedUserIdsRequest request, CancellationToken cancellationToken)
+    protected override async Task<GetSeedUserIdsResponse> HandleAsync(ConsumeContext<GetSeedUserIdsRequest> context,
+        GetSeedUserIdsRequest request, CancellationToken cancellationToken)
     {
         var requestedUserCount = request.Count;
         var roleName = CustomRoles.Basic;

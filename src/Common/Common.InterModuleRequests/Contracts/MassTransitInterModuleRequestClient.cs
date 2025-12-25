@@ -4,7 +4,7 @@ namespace Common.InterModuleRequests.Contracts;
 
 public class MassTransitInterModuleRequestClient<TRequest, TResponse>(
     IRequestClient<TRequest> requestClient
-    ) : IInterModuleRequestClient<TRequest, TResponse>
+) : IInterModuleRequestClient<TRequest, TResponse>
     where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class
 {

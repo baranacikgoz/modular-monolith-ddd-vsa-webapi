@@ -8,8 +8,8 @@ internal class PermissionPolicyProvider : IAuthorizationPolicyProvider
     public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
     {
         var defaultPolicy = new AuthorizationPolicyBuilder()
-                            .RequireAuthenticatedUser()
-                            .Build();
+            .RequireAuthenticatedUser()
+            .Build();
 
         return Task.FromResult(defaultPolicy);
     }

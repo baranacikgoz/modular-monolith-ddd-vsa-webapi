@@ -14,7 +14,7 @@ internal sealed class CurrentUser : ICurrentUser
         IdAsString = isAuthenticated
             ? user?.FindFirstValue(ClaimTypes.NameIdentifier)
             : string.Empty;
-        Id = new(string.IsNullOrEmpty(IdAsString)
+        Id = new ApplicationUserId(string.IsNullOrEmpty(IdAsString)
             ? DefaultIdType.Empty
             : DefaultIdType.Parse(IdAsString));
         Roles = isAuthenticated
@@ -39,18 +39,17 @@ internal sealed class CurrentUser : ICurrentUser
                     {
                         return true;
                     }
+
                     break;
                 case CustomRoles.Basic:
                     if (CustomPermissions.Basic.Contains(permission))
                     {
                         return true;
                     }
+
                     break;
 
                 // Populate as more roles are added
-
-                default:
-                    break;
             }
         }
 

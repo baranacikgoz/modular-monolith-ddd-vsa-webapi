@@ -9,7 +9,8 @@ internal class DummyOtpService(ICacheService cache) : IOtpService
 {
     private const string DummyOtp = "123456";
 
-    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp, CancellationToken cancellationToken)
+    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp,
+        CancellationToken cancellationToken)
     {
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
 
@@ -25,5 +26,8 @@ internal class DummyOtpService(ICacheService cache) : IOtpService
         return Result.Success;
     }
 
-    public string Generate() => DummyOtp;
+    public string Generate()
+    {
+        return DummyOtp;
+    }
 }

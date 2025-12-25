@@ -10,11 +10,11 @@ namespace Products.Endpoints.Stores.v1.Update;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<StoreId>>]
     public required StoreId Id { get; init; }
 
-    [FromBody]
-    public required RequestBody Body { get; init; }
+    [FromBody] public required RequestBody Body { get; init; }
 
     public class RequestBody
     {
@@ -44,7 +44,8 @@ public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
     public RequestBodyValidator(IStringLocalizer<ResxLocalizer> localizer)
     {
         RuleFor(x => x)
-            .Must(x => !string.IsNullOrWhiteSpace(x.Name) || !string.IsNullOrWhiteSpace(x.Description) || !string.IsNullOrWhiteSpace(x.Address))
+            .Must(x => !string.IsNullOrWhiteSpace(x.Name) || !string.IsNullOrWhiteSpace(x.Description) ||
+                       !string.IsNullOrWhiteSpace(x.Address))
             .WithMessage(localizer["Stores.Update.AtLeastOnePropertyIsRequired"]);
 
         RuleFor(x => x.Name)

@@ -25,7 +25,7 @@ public static class Setup
             options
                 .UseNpgsql(
                     connectionString,
-                    o => o.MigrationsHistoryTable(tableName: HistoryRepository.DefaultTableName, schema: moduleName))
+                    o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
                 .UseExceptionProcessor()
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>(),

@@ -10,7 +10,8 @@ namespace Products.Endpoints.Stores.v1.Get;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<StoreId>>]
     public StoreId Id { get; init; }
 }
 

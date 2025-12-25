@@ -1,14 +1,14 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc;
 using Common.Application.Auth;
-using Common.Domain.ResultMonad;
 using Common.Application.Extensions;
 using Common.Application.Persistence;
-using Products.Domain.Stores;
+using Common.Domain.ResultMonad;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
+using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.My.Create;
 
@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapPost("my", CreateMyStoreAsync)
             .WithDescription("Create my store.")
             .MustHavePermission(CustomActions.CreateMy, CustomResources.Stores)
-            .Produces<Response>(StatusCodes.Status200OK)
+            .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
@@ -29,7 +29,8 @@ internal static class Endpoint
         [FromServices] ICurrentUser currentUser,
         [FromServices] IProductsDbContext dbContext,
         CancellationToken cancellationToken)
-        => await dbContext
+    {
+        return await dbContext
             .Stores
             .AsNoTracking()
             .TagWith(nameof(CreateMyStoreAsync), "GetStoreByOwnerId", currentUser.Id)
@@ -39,8 +40,6 @@ internal static class Endpoint
             .BindAsync(_ => Store.Create(currentUser.Id, request.Name, request.Description, request.Address))
             .TapAsync(store => dbContext.Stores.Add(store))
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
-            .MapAsync(store => new Response
-            {
-                Id = store.Id,
-            });
+            .MapAsync(store => new Response { Id = store.Id });
+    }
 }

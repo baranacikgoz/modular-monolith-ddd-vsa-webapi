@@ -7,11 +7,10 @@ namespace Common.Application.Persistence;
 // This is not the best way, and actually I hate it, but I don't want to move all DbContext, EntityConfigurations, and Migrations to Application layer.
 public interface IDbContext : IDisposable
 {
-    DbSet<TEntity> Set<TEntity>() where TEntity : class;
-
     ChangeTracker ChangeTracker { get; }
 
     DatabaseFacade Database { get; }
+    DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

@@ -20,11 +20,9 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     public byte[] RefreshTokenHash { get; private set; } = [];
     public DateTimeOffset RefreshTokenExpiresAt { get; private set; } = DateTimeOffset.MinValue;
 
-    [ConcurrencyCheck]
-    public long Version { get; set; }
+    [ConcurrencyCheck] public long Version { get; set; }
 
-    [NotMapped]
-    IStronglyTypedId IAggregateRoot.Id => Id;
+    [NotMapped] IStronglyTypedId IAggregateRoot.Id => Id;
 
     public static ApplicationUser Create(
         string name,
@@ -109,7 +107,6 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
 #pragma warning restore CA1822, S1186, IDE0060
 
 #pragma warning disable CS8618 // Orms need parameterless constructors
-    public ApplicationUser() { }
 #pragma warning restore CS8618
 #pragma warning restore CA1819 // Properties should not return arrays
 }

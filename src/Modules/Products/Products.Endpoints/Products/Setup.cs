@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Endpoint = Products.Endpoints.Products.v1.Get.Endpoint;
 
 namespace Products.Endpoints.Products;
 
@@ -13,7 +14,7 @@ public static class Setup
             .WithTags("Products")
             .MapToApiVersion(1);
 
-        v1.Get.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.Update.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1ProductsApiGroup);

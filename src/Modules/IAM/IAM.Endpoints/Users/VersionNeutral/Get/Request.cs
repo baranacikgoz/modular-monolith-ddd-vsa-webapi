@@ -10,7 +10,8 @@ namespace IAM.Endpoints.Users.VersionNeutral.Get;
 
 public sealed record Request
 {
-    [FromRoute, ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>]
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>]
     public required ApplicationUserId Id { get; set; }
 }
 

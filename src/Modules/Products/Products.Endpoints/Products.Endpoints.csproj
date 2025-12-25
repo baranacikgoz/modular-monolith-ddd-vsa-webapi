@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj" />
-    <ProjectReference Include="..\Products.Application\Products.Application.csproj" />
-    <ProjectReference Include="..\Products.Infrastructure\Products.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj"/>
+    <ProjectReference Include="..\Products.Application\Products.Application.csproj"/>
+    <ProjectReference Include="..\Products.Infrastructure\Products.Infrastructure.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="SonarAnalyzer.CSharp">

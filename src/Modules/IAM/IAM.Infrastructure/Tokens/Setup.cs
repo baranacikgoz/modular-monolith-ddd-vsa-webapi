@@ -7,6 +7,8 @@ namespace IAM.Infrastructure.Tokens;
 internal static class Setup
 {
     public static IServiceCollection AddTokensInfrastructure(this IServiceCollection services)
-        => services
+    {
+        return services
             .AddSingleton<ITokenService, TokenService>();
+    }
 }

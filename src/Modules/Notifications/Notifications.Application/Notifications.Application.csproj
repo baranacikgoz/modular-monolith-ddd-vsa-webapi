@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Common.Application\Common.Application.csproj" />
-    <ProjectReference Include="..\..\..\Common\Common.Domain\Common.Domain.csproj" />
-    <ProjectReference Include="..\Notifications.Domain\Notifications.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Application\Common.Application.csproj"/>
+    <ProjectReference Include="..\..\..\Common\Common.Domain\Common.Domain.csproj"/>
+    <ProjectReference Include="..\Notifications.Domain\Notifications.Domain.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

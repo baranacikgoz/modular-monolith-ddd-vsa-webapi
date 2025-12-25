@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <PackageReference
-      Include="SonarAnalyzer.CSharp" />
+      Include="SonarAnalyzer.CSharp"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="System.Guid" Alias="DefaultIdType" />
+    <Using Include="System.Guid" Alias="DefaultIdType"/>
   </ItemGroup>
 
   <ItemGroup>

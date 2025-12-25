@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Endpoint = IAM.Endpoints.Users.VersionNeutral.SelfRegister.Endpoint;
 
 namespace IAM.Endpoints.Users.VersionNeutral;
 
@@ -12,7 +13,7 @@ public static class Setup
             .MapGroup("/users")
             .WithTags("Users");
 
-        SelfRegister.Endpoint.MapEndpoint(usersApiGroup);
+        Endpoint.MapEndpoint(usersApiGroup);
         Get.Endpoint.MapEndpoint(usersApiGroup);
         CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
         Me.Get.Endpoint.MapEndpoint(usersApiGroup);
