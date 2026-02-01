@@ -1,6 +1,6 @@
 # Modular Monolith, DDD, Vertical Slice Architecture WebAPI Boilerplate
 
-This repository provides a .NET 10 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (
+This repository provides a .NET 9 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (
 DDD), and Vertical Slices architecture, along with Clean Architecture principles per feature. It is designed to
 facilitate the development of scalable and maintainable applications.
 
@@ -34,7 +34,7 @@ This repository includes the following features:
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
 - **Hangfire**: Supports background job processing.
-- **MassTransit & Kafka**: Facilitates message-based communication (Kafka used for Outbox, RabbitMQ supported optionally).
+- **MassTransit & RabbitMQ**: Facilitates message-based communication.
 - **Transactional Outbox Pattern**: Ensures reliable message delivery.
 - **CDC - Kafka & Debezium**: Processes outbox messages with Kafka & Debezium.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
@@ -79,12 +79,12 @@ To use or contribute to this project, you will need:
 - Run required services
     - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
       ``Compose Up - Select Services``. Select the following services:
-        - ``mm.postgres``
-        - ``mm.kafka``
+        - ``mm.database``
+        - ``mm.rabbitmq``
         - ``mm.seq`` - Optional but recommended
     - Or run the following command in terminal:
         ```bash
-        docker compose -f "docker-compose.yml" up -d --build mm.postgres mm.kafka mm.seq
+        docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
         ```
 - Run the application
     - Press ``F5`` to start the application in debug mode
@@ -110,3 +110,56 @@ Guidelines for contributing to the project, including how to report bugs, sugges
 
 Information about the project's license.
 
+## Getting Started
+
+- Clone the repository: `git@github.com:baranacikgoz/modular-monolith-ddd-vsa-webapi.git`
+
+### VSCode
+
+#### One-time setup
+
+- Use appropriate ``tasks.json`` depending on your OS
+    - Copy ``tasks.windows.json`` or ``tasks.unix.json``, into a new file with the name ``tasks.json``.
+
+##### Unix only
+
+- Make before and after restore & build scripts executable
+    - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
+    - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
+    - ``chmod +x .vscode/revert_exclude.sh``
+
+#### Development
+
+- Run required services
+    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
+      ``Compose Up - Select Services``. Select the following services:
+        - ``mm.database``
+        - ``mm.rabbitmq``
+        - ``mm.seq`` - Optional but recommended
+    - Or run the following command in terminal:
+        ```bash
+        docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
+        ```
+- Run the application
+    - Press ``F5`` to start the application in debug mode
+
+### Visual Studio
+
+- Open the solution file ``ModularMonolith.sln`` in Visual Studio
+
+- Set ``Docker Compose`` as the startup project
+    - Right click on the ``Docker Compose`` project and select ``Set as Startup Project`` if it's not already set
+
+- Start application
+
+<!-- ## API Documentation
+
+Links to API documentation (if available), or instructions on how to generate it.
+
+## Contributing
+
+Guidelines for contributing to the project, including how to report bugs, suggest features, or submit pull requests.
+
+## License
+
+Information about the project's license. -->
