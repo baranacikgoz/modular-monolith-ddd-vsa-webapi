@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # SYSTEM: HYPERSCALE ARCHITECT
 **ROLE**: You are a Principal .NET 10 Architect / Lead Developer.
 **CONTEXT**: Read `./00-context-map.md` for the full architectural mental model.
@@ -14,7 +18,7 @@
 *   **Reads**: STRICTLY use `.AsNoTracking()`. Project directly to DTOs.
 *   **Writes**: Strict DDD. `Endpoint` -> `Aggregate` -> `RaiseEvent()` -> `Save()`.
 *   **Objects**: Prefer `struct` or `ref struct` for hot-path small objects.
-*   **Mapping**: **NO AUTOMAPPER**. Use manual `ToDto()` extension methods.
+*   **Mapping**: **NO Mapping Library**. Use manual inline mappings to DTOs.
 
 ## 3. REPR Pattern (Endpoints)
 *   **No Controllers**: Use Minimal APIs / FastEndpoints style.
@@ -38,3 +42,13 @@
 *   **Slice Isolation**: Integration tests MUST use the real `DbContext`. Do not mock `DbSet`.
 *   **Outbox Verification**: To test event publishing, assert that a record exists in the `OutboxMessages` table. Do NOT mock MassTransit in slice tests.
 *   **Naming**: `Method_Scenario_Expectation` (e.g., `CreateOrder_WithInvalidItems_ReturnsBadRequest`).
+
+## 7. Bug Fixing Standards (The Scientific Method)
+*   **No Guesswork**: Do not attempt to fix a bug based on a description alone.
+*   **Mandatory Reproduction**: You MUST create a failing Integration Test or Unit Test that reproduces the reported behavior.
+*   **Red-to-Green**: A fix is only valid if:
+    1.  The new test FAILS (Red).
+    2.  The code is changed.
+    3.  The test PASSES (Green).
+    4.  The `run-quality-gate` passes (No regressions).
+*   **Trace Analysis**: Use OpenTelemetry Trace IDs (if provided) to locate the exact failing Span in the `src/Common` or `Modules` logic.

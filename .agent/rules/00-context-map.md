@@ -44,3 +44,8 @@ The system handles these cross-cutting concerns automatically. **Do not write ma
 *   **Assertion Rule**:
     *   **Writes**: Verify side-effects (Entity in DB? Outbox Message in DB?).
     *   **Reads**: Verify Response DTO matches expectation.
+
+## 6. Observability in Debugging
+- **Traceparent/TraceID**: Every request carries a TraceID. When a bug is reported via logs, the Agent should search for this ID in the `Host` or `Common` logs.
+- **Span Events**: Look for 'Exception' events in OpenTelemetry spans. These contain the stack trace and the state of the local variables at the time of failure.
+- **Database Logs**: Use the EF Core 'SensitiveDataLogging' (in Dev only) to see the exact SQL generated that caused the failure.

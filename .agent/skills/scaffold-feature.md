@@ -22,7 +22,7 @@ skill:
 
     3. **Endpoint Layer (REPR)**:
        - Create `src/Modules/{{module}}/Endpoints/{{aggregate}}/v1/{{feature}}/`.
-       - **Request.cs**: `sealed record Request` with `required` props + `AbstractValidator`.
+       - **Request.cs**: `sealed record Request` with `required` props + `CustomValidator`.
        - **Response.cs**: `sealed record Response`.
        - **Endpoint.cs**:
          - Inherit `Endpoint<Request, Result<Response>>`.
