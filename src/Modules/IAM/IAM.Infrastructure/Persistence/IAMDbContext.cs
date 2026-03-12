@@ -1,8 +1,8 @@
 using Common.Application.Options;
-using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.Persistence.EntityConfigurations;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;

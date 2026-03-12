@@ -1,7 +1,8 @@
+using Common.Application.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Common.Application.Persistence.Outbox;
+namespace Common.Infrastructure.Persistence.Outbox;
 
 /// <summary>
 ///     This is a hack to be able to move OutboxDbContext to the Modules/Outbox

@@ -1,11 +1,12 @@
 using System.Text.Json;
+using Common.Application.EventHistory;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace Common.Application.EventHistory;
+namespace Common.Infrastructure.Persistence.Extensions;
 
 public static class DbContextExtensions
 {

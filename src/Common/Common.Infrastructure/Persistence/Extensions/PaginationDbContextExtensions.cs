@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using Common.Application.Pagination;
 using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Common.Application.Pagination;
+namespace Common.Infrastructure.Persistence.Extensions;
 
-public static class DbContextExtensions
+public static class PaginationQueryableExtensions
 {
     public static async Task<PaginationResponse<TDto>> PaginateAsync<TEntity, TDto>(
         this IQueryable<TEntity> queryable,

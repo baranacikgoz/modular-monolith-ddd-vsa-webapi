@@ -4,7 +4,7 @@ using Common.Application.JsonConverters;
 using Common.Domain.Events;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Common.Application.ValueConverters;
+namespace Common.Infrastructure.Persistence.ValueConverters;
 
 public class DomainEventConverter : ValueConverter<DomainEvent, string>
 {

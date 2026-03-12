@@ -1,10 +1,10 @@
-using Common.Application.ValueConverters;
+using Common.Infrastructure.Persistence.ValueConverters;
 using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Common.Application.Persistence.EntityConfigurations;
+namespace Common.Infrastructure.Persistence.EntityConfigurations;
 
 public abstract class AuditableEntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
     where TEntity : class, IAuditableEntity

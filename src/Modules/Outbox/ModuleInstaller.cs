@@ -1,5 +1,5 @@
 using Common.Application.Options;
-using Common.Application.Persistence.Outbox;
+using Common.Infrastructure.Persistence.Outbox;
 using EntityFramework.Exceptions.PostgreSQL;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;

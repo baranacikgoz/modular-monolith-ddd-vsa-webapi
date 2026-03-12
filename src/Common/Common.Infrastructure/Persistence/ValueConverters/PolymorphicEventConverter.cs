@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Common.Application.ValueConverters;
+namespace Common.Infrastructure.Persistence.ValueConverters;
 
 public sealed class PolymorphicEventConverter<T> : JsonConverter<T>
 {

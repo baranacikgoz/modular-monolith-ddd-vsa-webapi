@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;

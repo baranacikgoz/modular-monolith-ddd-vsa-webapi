@@ -1,7 +1,7 @@
 using Common.Domain.ResultMonad;
 using FluentAssertions;
 
-namespace UnitTests.Common;
+namespace Common.Tests;
 
 internal static class ErrorExtensions
 {

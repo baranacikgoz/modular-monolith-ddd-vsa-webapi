@@ -1,17 +1,18 @@
 using System.Transactions;
 using Common.Application.Persistence.Outbox;
+using Common.Infrastructure.Persistence.Outbox;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Common.Application.Persistence;
+namespace Common.Infrastructure.Persistence;
 
 public abstract class BaseDbContext(
     DbContextOptions options,
     IServiceScopeFactory serviceScopeFactory
-) : DbContext(options)
+) : Microsoft.EntityFrameworkCore.DbContext(options)
 {
     public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
 

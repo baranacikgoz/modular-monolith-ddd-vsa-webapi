@@ -33,6 +33,22 @@ trigger: always_on
 *   **Constructors**: Use Primary Constructors.
 *   **Properties**: Use `required` for DTOs to ensure compile-time mapping safety.
 
+### 1. Functional Pipeline (The "Golden Path")
+*   **NO Imperative Checks**: Do NOT write `if (result.IsFailure) return ...`.
+*   **Use Extensions**:
+    *   `TapAsync`: For side effects (updating properties, logging, saving DB).
+    *   `BindAsync`: For chaining operations that *might fail* (returning a new Result).
+    *   `Map`: For projecting data (Entity -> DTO).
+*   **Endpoint Return**: The Endpoint handler must return `Task<Result>` or `Task<Result<Response>>`.
+
+### 2. Persistence Patterns
+*   **Retrieval**: Never use `Find/FirstOrDefault`.
+    *   *Correct*: `query.TagWith(...).SingleAsResultAsync(cancellationToken)`
+*   **Modification**:
+    *   *Correct*: `.TapAsync(entity => entity.Update(...))`
+*   **Saving**:
+    *   *Correct*: `.TapAsync(_ => db.SaveChangesAsync(ct))`
+
 ## 5. Migration Management
 *   **Contexts**: Each module has its own `DbContext`.
 *   **Command**: Always specify `--context [Module]DbContext`.

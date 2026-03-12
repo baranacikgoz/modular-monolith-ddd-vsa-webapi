@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Options;
-using Common.Application.Persistence;
+using Common.Infrastructure.Persistence.Extensions;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

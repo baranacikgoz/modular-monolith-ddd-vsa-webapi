@@ -8,16 +8,6 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="xunit"/>
-    <PackageReference Include="xunit.abstractions"/>
-    <PackageReference Include="xunit.analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="xunit.assert"/>
-    <PackageReference Include="xunit.core"/>
-    <PackageReference Include="xunit.extensibility.core"/>
-    <PackageReference Include="xunit.extensibility.execution"/>
     <PackageReference Include="xunit.runner.console">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Common\Common.Domain\Common.Domain.csproj"/>
+    <ProjectReference Include="..\Products.Domain\Products.Domain.csproj"/>
+    <ProjectReference Include="..\..\..\Common\Common.Tests\Common.Tests.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

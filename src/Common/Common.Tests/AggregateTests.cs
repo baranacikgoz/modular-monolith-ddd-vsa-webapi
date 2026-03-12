@@ -5,12 +5,12 @@ using Common.Domain.StronglyTypedIds;
 using FluentAssertions;
 using Xunit;
 
-namespace UnitTests.Common;
+namespace Common.Tests;
 
 #pragma warning disable CA1515 // Consider making public types internal
 public abstract class AggregateTests<TAggregate, TId>
 #pragma warning restore CA1515 // Consider making public types internal
-    where TAggregate : AggregateRoot<TId>, new()
+    where TAggregate : class, IAggregateRoot, new()
     where TId : IStronglyTypedId
 {
     private Result<TAggregate>? _aggregateResult;

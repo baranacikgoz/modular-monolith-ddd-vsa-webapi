@@ -1,9 +1,9 @@
-using Common.Application.ValueConverters;
+using Common.Infrastructure.Persistence.ValueConverters;
 using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Common.Application.Persistence.EntityConfigurations;
+namespace Common.Infrastructure.Persistence.EntityConfigurations;
 
 public class EventStoreEventConfiguration : AuditableEntityConfiguration<EventStoreEvent>
 {

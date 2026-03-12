@@ -1,7 +1,7 @@
 using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Common.Application.ValueConverters;
+namespace Common.Infrastructure.Persistence.ValueConverters;
 
 public class StronglyTypedIdValueConverter<TStronglyTypedId> : ValueConverter<TStronglyTypedId, DefaultIdType>
     where TStronglyTypedId : IStronglyTypedId, new()
