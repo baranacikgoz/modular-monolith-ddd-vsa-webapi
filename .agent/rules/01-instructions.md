@@ -21,11 +21,19 @@ trigger: always_on
 *   **Mapping**: **NO Mapping Library**. Use manual inline mappings to DTOs.
 
 ## 3. REPR Pattern (Endpoints)
-*   **No Controllers**: Use Minimal APIs / FastEndpoints style.
+*   **No Controllers**: Use Minimal APIs style.
 *   **Structure**: `Endpoint.cs` (Handler), `Request.cs` (DTO+Validator), `Response.cs`.
 *   **Logic**:
     *   *Complex*: Encapsulate in Domain Aggregate.
     *   *Simple*: Logic allowed in Endpoint (VSA style).
+*   **Creating Endpoints Recipe**:
+    *   Define an `internal static class Endpoint` containing an `internal static void MapEndpoint(RouteGroupBuilder [groupName]group)` method.
+    *   Map the HTTP verb (e.g., `.MapGet()`), configure OpenAPI semantics (`.WithDescription()`), apply authorization (`.MustHavePermission()`), and define the mapper (`.TransformResultTo<Response>()`).
+    *   The handler method itself must be static and follow the functional pipeline signature returning `Task<Result<Response>>` or `Task<Result>`.
+*   **Registering Endpoints Recipe**:
+    *   Locate the feature's `Setup.cs` file (e.g., `[Module]/[Module].Endpoints/[Feature]/Setup.cs`).
+    *   Create a versioned group using `.MapGroup("/feature").WithTags("Feature").MapToApiVersion(1)`.
+    *   Call the `MapEndpoint` method of each specific endpoint class, passing the versioned group (e.g., `v1.My.Get.Endpoint.MapEndpoint(v1FeatureApiGroup)`).
 
 ## 4. Coding Standards (C# 14)
 *   **Zero Warnings**: Treat warnings as errors.
@@ -34,7 +42,7 @@ trigger: always_on
 *   **Properties**: Use `required` for DTOs to ensure compile-time mapping safety.
 
 ### 1. Functional Pipeline (The "Golden Path")
-*   **NO Imperative Checks**: Do NOT write `if (result.IsFailure) return ...`.
+*   **NO Imperative Checks**: Do NOT write `if (result.IsFailure) return ...` unless functional programming can not be applied at the time.
 *   **Use Extensions**:
     *   `TapAsync`: For side effects (updating properties, logging, saving DB).
     *   `BindAsync`: For chaining operations that *might fail* (returning a new Result).

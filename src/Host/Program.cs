@@ -66,3 +66,8 @@ finally
     Log.Information("Server Shutting down...");
     await Log.CloseAndFlushAsync();
 }
+
+public partial class Program 
+{ 
+    protected Program() { } 
+}

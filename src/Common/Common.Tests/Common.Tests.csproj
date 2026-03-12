@@ -3,11 +3,15 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+    <PackageReference Include="Testcontainers.PostgreSql"/>
+    <PackageReference Include="Respawn"/>
     <PackageReference Include="xunit"/>
     <PackageReference Include="xunit.abstractions"/>
     <PackageReference Include="xunit.analyzers">
@@ -30,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Domain\Common.Domain.csproj"/>
+    <ProjectReference Include="..\..\Host\Host.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
