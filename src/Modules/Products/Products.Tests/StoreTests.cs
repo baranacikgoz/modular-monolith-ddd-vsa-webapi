@@ -1,6 +1,5 @@
 
 using Common.Domain.StronglyTypedIds;
-using FluentAssertions;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
@@ -24,10 +23,10 @@ public class StoreTests : AggregateTests<Store, StoreId>
     {
         Given(() => Store.Create(_ownerId, Name, Description, Address))
             .Then<V1StoreCreatedDomainEvent>(
-                @event => @event.OwnerId.Should().Be(_ownerId),
-                @event => @event.Name.Should().Be(Name),
-                @event => @event.Description.Should().Be(Description),
-                @event => @event.Address.Should().Be(Address));
+                @event => Assert.Equal(_ownerId, @event.OwnerId),
+                @event => Assert.Equal(Name, @event.Name),
+                @event => Assert.Equal(Description, @event.Description),
+                @event => Assert.Equal(Address, @event.Address));
     }
 
     [Fact]
@@ -37,9 +36,9 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, Address))
             .When(store => store.Update(name: newName, description: null, address: null))
-            .Then(store => store.Name.Should().Be(newName))
+            .Then(store => Assert.Equal(newName, store.Name))
             .Then<V1StoreNameUpdatedDomainEvent>(
-                @event => @event.Name.Should().Be(newName));
+                @event => Assert.Equal(newName, @event.Name));
     }
 
     [Fact]
@@ -49,9 +48,9 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => Store.Create(_ownerId, Name, Description, Address))
             .When(store => store.Update(name: null, description: newDescription, address: null))
-            .Then(store => store.Description.Should().Be(newDescription))
+            .Then(store => Assert.Equal(newDescription, store.Description))
             .Then<V1StoreDescriptionUpdatedDomainEvent>(
-                @event => @event.Description.Should().Be(newDescription));
+                @event => Assert.Equal(newDescription, @event.Description));
     }
 
     [Fact]
@@ -67,12 +66,12 @@ public class StoreTests : AggregateTests<Store, StoreId>
 
         Given(() => store)
             .When(store => store.AddProduct(product))
-            .Then(store => store.Products.Should().ContainSingle(p => p.Id == product.Id))
+            .Then(store => Assert.Single(store.Products, p => p.Id == product.Id))
             .Then<V1ProductAddedToStoreDomainEvent>(
-                @event => @event.StoreId.Should().Be(Aggregate.Id),
-                @event => @event.Product.Id.Should().Be(product.Id),
-                @event => @event.Product.Quantity.Should().Be(quantity),
-                @event => @event.Product.Price.Should().Be(price));
+                @event => Assert.Equal(Aggregate.Id, @event.StoreId),
+                @event => Assert.Equal(product.Id, @event.Product.Id),
+                @event => Assert.Equal(quantity, @event.Product.Quantity),
+                @event => Assert.Equal(price, @event.Product.Price));
     }
 
     [Fact]
@@ -89,8 +88,8 @@ public class StoreTests : AggregateTests<Store, StoreId>
         Given(() => store)
             .When(store => store.AddProduct(product))
             .When(store => store.RemoveProduct(product))
-            .Then(store => store.Products.Should().BeEmpty())
+            .Then(store => Assert.Empty(store.Products))
             .Then<V1ProductRemovedFromStoreDomainEvent>(
-                @event => @event.Product.Should().Be(product));
+                @event => Assert.Equal(product, @event.Product));
     }
 }

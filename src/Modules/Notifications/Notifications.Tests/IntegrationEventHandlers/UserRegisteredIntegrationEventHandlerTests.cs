@@ -2,7 +2,6 @@
 using Common.Application.BackgroundJobs;
 using Common.IntegrationEvents;
 using Common.Domain.StronglyTypedIds;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Notifications.Application;

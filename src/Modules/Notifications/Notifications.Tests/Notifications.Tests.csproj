@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="xunit.runner.console">
       <PrivateAssets>all</PrivateAssets>
@@ -20,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Notifications.Application\Notifications.Application.csproj"/>
-    <ProjectReference Include="..\..\..\Common\Common.Tests\Common.Tests.csproj"/>
+    <ProjectReference Include="..\Notifications.Application\Notifications.Application.csproj" />
+    <ProjectReference Include="..\..\..\Common\Common.Tests\Common.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

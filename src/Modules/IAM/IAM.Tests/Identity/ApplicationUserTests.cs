@@ -1,6 +1,5 @@
 
 using Common.Domain.StronglyTypedIds;
-using FluentAssertions;
 using Common.Tests;
 using Xunit;
 using IAM.Domain.Identity;
@@ -22,12 +21,12 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
     {
         Given(() => ApplicationUser.Create(Name, LastName, PhoneNumber, NationalIdentityNumber, BirthDate, ImageUrl))
             .Then<V1UserRegisteredDomainEvent>(
-                @event => @event.Name.Should().Be(Name.ToUpperInvariant()), // Domain logic enforces upper case
-                @event => @event.LastName.Should().Be(LastName.ToUpperInvariant()),
-                @event => @event.PhoneNumber.Should().Be(PhoneNumber),
-                @event => @event.NationalIdentityNumber.Should().Be(NationalIdentityNumber),
-                @event => @event.BirthDate.Should().Be(BirthDate),
-                @event => @event.ImageUrl.Should().Be(ImageUrl));
+                @event => Assert.Equal(Name.ToUpperInvariant(), @event.Name), // Domain logic enforces upper case
+                @event => Assert.Equal(LastName.ToUpperInvariant(), @event.LastName),
+                @event => Assert.Equal(PhoneNumber, @event.PhoneNumber),
+                @event => Assert.Equal(NationalIdentityNumber, @event.NationalIdentityNumber),
+                @event => Assert.Equal(BirthDate, @event.BirthDate),
+                @event => Assert.Equal(ImageUrl, @event.ImageUrl));
     }
 
     [Fact]
@@ -37,9 +36,9 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
 
         Given(() => ApplicationUser.Create(Name, LastName, PhoneNumber, NationalIdentityNumber, BirthDate, ImageUrl))
             .When(user => user.UpdateImageUrl(newImageUrl))
-            .Then(user => user.ImageUrl.Should().Be(newImageUrl))
+            .Then(user => Assert.Equal(newImageUrl, user.ImageUrl))
             .Then<V1UserImageUrlUpdatedDomainEvent>(
-                @event => @event.ImageUrl.Should().Be(newImageUrl));
+                @event => Assert.Equal(newImageUrl, @event.ImageUrl));
     }
 
     [Fact]
@@ -50,8 +49,8 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
 
         Given(() => ApplicationUser.Create(Name, LastName, PhoneNumber, NationalIdentityNumber, BirthDate, ImageUrl))
             .When(user => user.UpdateRefreshToken(refreshTokenHash, expiresAt))
-            .Then(user => user.RefreshTokenHash.Should().BeEquivalentTo(refreshTokenHash))
-            .Then(user => user.RefreshTokenExpiresAt.Should().Be(expiresAt))
+            .Then(user => Assert.Equivalent(refreshTokenHash, user.RefreshTokenHash))
+            .Then(user => Assert.Equal(expiresAt, user.RefreshTokenExpiresAt))
             .Then<V1RefreshTokenUpdatedDomainEvent>(
                 _ => { });
     }

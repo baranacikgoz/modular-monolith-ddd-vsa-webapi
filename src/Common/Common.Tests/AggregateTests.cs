@@ -2,7 +2,6 @@ using Common.Domain.Aggregates;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
-using FluentAssertions;
 using Xunit;
 
 namespace Common.Tests;
@@ -57,7 +56,7 @@ public abstract class AggregateTests<TAggregate, TId>
 
     public AggregateTests<TAggregate, TId> When(Func<TAggregate, object, Result> func)
     {
-        _objectUnderTheTestAlongWithAggregate.Should().NotBeNull();
+        Assert.NotNull(_objectUnderTheTestAlongWithAggregate);
         var result = func(Aggregate, _objectUnderTheTestAlongWithAggregate!);
         _plainResult = result;
         _error = result.Error;
@@ -75,9 +74,7 @@ public abstract class AggregateTests<TAggregate, TId>
     {
         if (assertions.Length > 0)
         {
-            assertions
-                .Should()
-                .AllSatisfy(assert => assert(Aggregate));
+            Assert.All(assertions, assert => assert(Aggregate));
         }
 
         return this;
@@ -91,17 +88,15 @@ public abstract class AggregateTests<TAggregate, TId>
             .OfType<TDomainEvent>()
             .ToList();
 
-        events.Should().NotBeNull();
-        events.Should().NotBeEmpty();
-        events.Should().ContainSingle();
+        Assert.NotNull(events);
+        Assert.NotEmpty(events);
+        Assert.Single(events);
 
         var @event = events[0];
 
         if (assertions.Length > 0)
         {
-            assertions
-                .Should()
-                .AllSatisfy(assert => assert(@event));
+            Assert.All(assertions, assert => assert(@event));
         }
 
         return this;
@@ -115,17 +110,15 @@ public abstract class AggregateTests<TAggregate, TId>
             .OfType<TDomainEvent>()
             .ToList();
 
-        events.Should().NotBeNull();
-        events.Should().NotBeEmpty();
-        events.Should().ContainSingle();
+        Assert.NotNull(events);
+        Assert.NotEmpty(events);
+        Assert.Single(events);
 
         var @event = events[0];
 
         if (assertions.Length > 0)
         {
-            assertions
-                .Should()
-                .AllSatisfy(assert => assert(Aggregate, @event));
+            Assert.All(assertions, assert => assert(Aggregate, @event));
         }
 
         return this;
@@ -140,19 +133,17 @@ public abstract class AggregateTests<TAggregate, TId>
             .OfType<TDomainEvent>()
             .ToList();
 
-        events.Should().NotBeNull();
-        events.Should().NotBeEmpty();
-        events.Should().ContainSingle();
+        Assert.NotNull(events);
+        Assert.NotEmpty(events);
+        Assert.Single(events);
 
         var @event = events[0];
 
-        _objectUnderTheTestAlongWithAggregate.Should().NotBeNull();
+        Assert.NotNull(_objectUnderTheTestAlongWithAggregate);
 
         if (assertions.Length > 0)
         {
-            assertions
-                .Should()
-                .AllSatisfy(assert => assert(Aggregate, _objectUnderTheTestAlongWithAggregate!, @event));
+            Assert.All(assertions, assert => assert(Aggregate, _objectUnderTheTestAlongWithAggregate!, @event));
         }
 
         return this;
@@ -166,8 +157,8 @@ public abstract class AggregateTests<TAggregate, TId>
             .OfType<TDomainEvent>()
             .ToList();
 
-        events.Should().NotBeNull();
-        events.Should().BeEmpty();
+        Assert.NotNull(events);
+        Assert.Empty(events);
 
         return this;
     }
@@ -187,13 +178,11 @@ public abstract class AggregateTests<TAggregate, TId>
 
         _error = _aggregateResult is not null ? _aggregateResult.Error : _plainResult!.Error;
 
-        _error.Should().NotBeNull();
+        Assert.NotNull(_error);
 
         if (assertions.Length > 0)
         {
-            assertions
-                .Should()
-                .AllSatisfy(assert => assert(_error!));
+            Assert.All(assertions, assert => assert(_error!));
         }
 
         return this;

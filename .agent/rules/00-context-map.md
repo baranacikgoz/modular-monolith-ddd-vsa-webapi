@@ -47,7 +47,7 @@ The system handles these cross-cutting concerns automatically. **Do not write ma
 -   **mm.debezium**: The Bridge (Postgres -> Kafka).
 
 ## 6. Testing Strategy (The Safety Net)
-*   **Framework**: xUnit + FluentAssertions.
+*   **Framework**: xUnit.
 *   **Mocking**: NSubstitute (Only for external 3rd party APIs).
 *   **Data**: Bogus (for generating fake test data).
 *   **Integration**: **Testcontainers**. We run tests against a REAL Postgres instance.
