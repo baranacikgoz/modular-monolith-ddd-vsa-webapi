@@ -1,9 +1,9 @@
 
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
-using Xunit;
 using IAM.Domain.Identity;
 using IAM.Domain.Identity.DomainEvents.v1;
+using Xunit;
 
 namespace IAM.UnitTests;
 

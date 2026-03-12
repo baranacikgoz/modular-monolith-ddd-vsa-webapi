@@ -21,6 +21,21 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         Scope = factory.Services.CreateScope();
     }
 
+    private System.Text.Json.JsonSerializerOptions? _jsonSerializerOptions;
+    protected System.Text.Json.JsonSerializerOptions JsonSerializerOptions
+    {
+        get
+        {
+            if (_jsonSerializerOptions == null)
+            {
+                var options = Scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>().Value.SerializerOptions;
+                _jsonSerializerOptions = new System.Text.Json.JsonSerializerOptions(options);
+                _jsonSerializerOptions.Converters.Insert(0, new Common.Tests.SystemTextJson.NullableStronglyTypedIdReadOnlyJsonConverter());
+            }
+            return _jsonSerializerOptions;
+        }
+    }
+
     public virtual async Task InitializeAsync()
     {
         if (_respawner == null)
@@ -31,8 +46,8 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
             _respawner = await Respawner.CreateAsync(conn, new RespawnerOptions
             {
                 DbAdapter = DbAdapter.Postgres,
-                SchemasToInclude = new[] { "public" },
-                TablesToIgnore = new[] { new Table("__EFMigrationsHistory") }
+                SchemasToInclude = new[] { "public", "IAM", "Products", "BackgroundJobs", "Notifications" },
+                TablesToIgnore = new[] { new Table("__EFMigrationsHistory"), new Table("AspNetRoles", "IAM"), new Table("AspNetRoleClaims", "IAM") }
             });
         }
 
