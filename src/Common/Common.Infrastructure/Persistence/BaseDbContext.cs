@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Common.Infrastructure.Persistence;
 
-public abstract class BaseDbContext(
+public abstract partial class BaseDbContext(
     DbContextOptions options,
     IServiceScopeFactory serviceScopeFactory
 ) : Microsoft.EntityFrameworkCore.DbContext(options)
@@ -43,16 +43,11 @@ public abstract class BaseDbContext(
         // If no events, run normal SaveChangesAsync.
         if (outboxMessages is null || outboxMessages.Count == 0)
         {
-            logger.LogDebug("No domain events found. Calling base SaveChangesAsync.");
+            LoggerMessages.LogNoDomainEvents(logger);
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        if (logger.IsEnabled(LogLevel.Debug))
-        {
-            logger.LogDebug(
-                "Found {EventCount} domain events. Executing primary save and Outbox insertion within TransactionScope.",
-                outboxMessages.Count);
-        }
+        LoggerMessages.LogFoundDomainEvents(logger, outboxMessages.Count);
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         try
@@ -68,8 +63,20 @@ public abstract class BaseDbContext(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error saving changes to the database.");
+            LoggerMessages.LogSavingError(logger, ex);
             throw;
         }
+    }
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Debug, Message = "No domain events found. Calling base SaveChangesAsync.")]
+        public static partial void LogNoDomainEvents(ILogger logger);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Found {EventCount} domain events. Executing primary save and Outbox insertion within TransactionScope.")]
+        public static partial void LogFoundDomainEvents(ILogger logger, int eventCount);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Error saving changes to the database.")]
+        public static partial void LogSavingError(ILogger logger, Exception ex);
     }
 }

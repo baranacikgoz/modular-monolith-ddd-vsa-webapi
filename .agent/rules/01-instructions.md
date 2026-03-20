@@ -40,6 +40,9 @@ trigger: always_on
 *   **Nullability**: Enabled and enforced.
 *   **Constructors**: Use Primary Constructors.
 *   **Properties**: Use `required` for DTOs to ensure compile-time mapping safety.
+*   **Logging**: **STRICTLY** use the `LoggerMessage` pattern (Source Generation) for all logging.
+    *   *Implementation*: Private nested `partial static class LoggerMessages` with `[LoggerMessage]` attributes.
+    *   *Rationale*: Prevents `CA1873` errors, avoids boxing, and skips argument evaluation if the log level is disabled.
 
 ### 1. Functional Pipeline (The "Golden Path")
 *   **NO Imperative Checks**: Do NOT write `if (result.IsFailure) return ...` unless functional programming can not be applied at the time.
