@@ -21,7 +21,7 @@ internal partial class Seeder
         const string nationalIdentityNumber = "11111111111";
 
         var admin = await SeedUser(phoneNumber, name, surname, nationalIdentityNumber, new DateOnly(2001, 6, 20),
-            LogSeedingAdmingUser);
+            LogSeedingAdminUser);
         await SeedAdminToAllRolesAsync(admin);
     }
 
@@ -79,14 +79,14 @@ internal partial class Seeder
         string surname,
         string nationalIdentityNumber,
         DateOnly birthDate,
-        Action<ILogger, string> logSeedingUser)
+        Action<ILogger, string, string> logSeedingUser)
     {
         if (await userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber) is ApplicationUser user)
         {
             return user;
         }
 
-        logSeedingUser(logger, $"{name} {surname}");
+        logSeedingUser(logger, name, surname);
 
         user = ApplicationUser.Create(
             name,
@@ -132,8 +132,8 @@ internal partial class Seeder
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the admin {Name} user.")]
-    private static partial void LogSeedingAdmingUser(ILogger logger, string name);
+        Message = "Seeding the admin {FirstName} {LastName} user.")]
+    private static partial void LogSeedingAdminUser(ILogger logger, string firstName, string lastName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
@@ -142,8 +142,8 @@ internal partial class Seeder
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the basic {Name} user.")]
-    private static partial void LogSeedingBasicUser(ILogger logger, string name);
+        Message = "Seeding the basic {FirstName} {LastName} user.")]
+    private static partial void LogSeedingBasicUser(ILogger logger, string firstName, string lastName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
