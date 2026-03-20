@@ -3,7 +3,11 @@
 # Include the .env file
 include .env
 
-.PHONY: sonar
+.PHONY: sonar test
+
+test:
+	@echo "Executing unified test suite via run-tests.sh..."
+	@bash ./run-tests.sh
 
 sonar:
 	@echo "Beginning SonarQube analysis..."

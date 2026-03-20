@@ -38,10 +38,24 @@ public class UserRegisteredIntegrationEventHandlerTests
         var context = Substitute.For<ConsumeContext<UserRegisteredIntegrationEvent>>();
         context.Message.Returns(@event);
 
+        Expression<Func<ISmsService, Task>>? capturedExpression = null;
+        _backgroundJobs.When(x => x.Enqueue(Arg.Any<Expression<Func<ISmsService, Task>>>()))
+            .Do(ci => capturedExpression = ci.Arg<Expression<Func<ISmsService, Task>>>());
+
         // Act
         await _handler.Consume(context);
 
         // Assert
         _backgroundJobs.Received(1).Enqueue(Arg.Any<Expression<Func<ISmsService, Task>>>());
+        
+        Assert.NotNull(capturedExpression);
+
+        // Compile and invoke the captured expression against a mock ISmsService
+        // to verify that SendWelcomeSmsAsync (or SendWelcomeAsync) is called with correct parameters.
+        var smsServiceMock = Substitute.For<ISmsService>();
+        var func = capturedExpression.Compile();
+        await func(smsServiceMock);
+
+        await smsServiceMock.Received(1).SendWelcomeAsync(@event.Name, @event.PhoneNumber);
     }
 }
