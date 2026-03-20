@@ -47,9 +47,12 @@ public abstract class BaseDbContext(
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        logger.LogDebug(
-            "Found {EventCount} domain events. Executing primary save and Outbox insertion within TransactionScope.",
-            outboxMessages.Count);
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            logger.LogDebug(
+                "Found {EventCount} domain events. Executing primary save and Outbox insertion within TransactionScope.",
+                outboxMessages.Count);
+        }
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         try
