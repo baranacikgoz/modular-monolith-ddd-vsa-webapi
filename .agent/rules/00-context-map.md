@@ -50,8 +50,8 @@ The system handles these cross-cutting concerns automatically. **Do not write ma
 *   **Framework**: xUnit.
 *   **Mocking**: NSubstitute (Only for external 3rd party APIs).
 *   **Data**: Bogus (for generating fake test data).
-*   **Integration**: **Testcontainers**. We run tests against a REAL Postgres instance.
-    *   *Mechanism*: `Respawn` resets the DB checkpoint after every test (milliseconds overhead).
+*   **Integration**: **Testcontainers**. We run tests against REAL Postgres (and Kafka where applicable) instances.
+    *   *Mechanism*: `Respawn` resets the Postgres DB checkpoint after every test (milliseconds overhead), while Kafka topics isolate messages to specific consumer groups.
 *   **Assertion Rule**:
     *   **Writes**: Verify side-effects (Entity in DB? Outbox Message in DB?).
     *   **Reads**: Verify Response DTO matches expectation.
