@@ -107,7 +107,7 @@ internal partial class Seeder
         {
             if (!await userManager.IsInRoleAsync(admin, roleName!))
             {
-                LogSeedingRoleToAdmin(logger, roleName!, FullName(admin));
+                LogSeedingRoleToAdmin(logger, roleName!, admin.Name, admin.LastName);
                 await userManager.AddToRoleAsync(admin, roleName!);
             }
         }
@@ -120,14 +120,9 @@ internal partial class Seeder
 
         if (!await userManager.IsInRoleAsync(basicUser, basicRole.Name!))
         {
-            LogSeedingRoleToBasic(logger, basicRole.Name!, FullName(basicUser));
+            LogSeedingRoleToBasic(logger, basicRole.Name!, basicUser.Name, basicUser.LastName);
             await userManager.AddToRoleAsync(basicUser, basicRole.Name!);
         }
-    }
-
-    private static string FullName(ApplicationUser user)
-    {
-        return $"{user.Name} {user.LastName}";
     }
 
     [LoggerMessage(
@@ -137,8 +132,8 @@ internal partial class Seeder
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the admin {Name} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string name);
+        Message = "Seeding the admin {FirstName} {LastName} user to {RoleName} role.")]
+    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string firstName, string lastName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
@@ -147,6 +142,6 @@ internal partial class Seeder
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the basic {Name} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string name);
+        Message = "Seeding the basic {FirstName} {LastName} user to {RoleName} role.")]
+    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string firstName, string lastName);
 }
