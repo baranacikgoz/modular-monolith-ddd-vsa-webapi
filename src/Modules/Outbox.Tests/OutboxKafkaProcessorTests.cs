@@ -74,13 +74,26 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         using var producer = new ProducerBuilder<Null, string>(config).Build();
         
         var message = new Message<Null, string> { Value = JsonSerializer.Serialize(dto) };
-        await producer.ProduceAsync("test-outbox-topic", message);
+        
+        // Simple retry for cold-start Kafka metadata readiness on CI
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            {
+                await producer.ProduceAsync("test-outbox-topic", message);
+                break;
+            }
+            catch (ProduceException<Null, string>) when (i < 2)
+            {
+                await Task.Delay(1000);
+            }
+        }
 
         // 3. Assert: Wait for OutboxKafkaProcessor to pick it up and process it
         bool isProcessed = false;
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var endTime = DateTime.UtcNow.AddSeconds(30);
         
-        while (!cts.IsCancellationRequested)
+        while (DateTime.UtcNow < endTime)
         {
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -131,7 +144,20 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         using var producer = new ProducerBuilder<Null, string>(config).Build();
         
         var message = new Message<Null, string> { Value = JsonSerializer.Serialize(dto) };
-        await producer.ProduceAsync("test-outbox-topic", message);
+        
+        // Simple retry for cold-start Kafka metadata readiness on CI
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            {
+                await producer.ProduceAsync("test-outbox-topic", message);
+                break;
+            }
+            catch (ProduceException<Null, string>) when (i < 2)
+            {
+                await Task.Delay(1000);
+            }
+        }
 
         // 3. Assert: Setup a Kafka consumer to read from the DLQ topic and wait for the message
         var consumerConfig = new ConsumerConfig
@@ -146,30 +172,41 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         consumer.Subscribe("test-dlq-topic");
 
         bool dlqReceived = false;
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        var endTime = DateTime.UtcNow.AddSeconds(30);
         
         try
         {
-            while (!cts.IsCancellationRequested)
+            while (DateTime.UtcNow < endTime)
             {
-                var consumeResult = consumer.Consume(cts.Token);
-                if (consumeResult.IsPartitionEOF)
+                ConsumeResult<Ignore, string>? consumeResult;
+                try
+                {
+                    consumeResult = consumer.Consume(TimeSpan.FromSeconds(1));
+                }
+                catch (ConsumeException)
+                {
+                    // Ignore transient consume errors from Kafka on CI
+                    continue;
+                }
+
+                if (consumeResult == null || consumeResult.IsPartitionEOF)
                 {
                     continue;
                 }
 
                 // If we get here, a message was produced to the DLQ topic!
                 // We could optionally deserialize it and verify the original offset/topic, but receiving any message here means success for this targeted test payload.
-                if (consumeResult.Message.Value.Contains("Simulated processing failure for DLQ.", StringComparison.Ordinal))
+                if (consumeResult.Message?.Value != null && consumeResult.Message.Value.Contains("Simulated processing failure for DLQ.", StringComparison.Ordinal))
                 {
                     dlqReceived = true;
                     break;
                 }
             }
         }
-        catch (OperationCanceledException)
+        catch (Exception ex)
         {
-            // Timeout reached
+            // Specifically catching unhandled stuff to at least delay failures if any Kafka error happens.
+            Console.WriteLine($"Test crashed with: {ex.Message}");
         }
         finally
         {

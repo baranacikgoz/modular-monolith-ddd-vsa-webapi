@@ -50,6 +50,8 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
     {
         await base.InitializeAsync();
         await _kafkaContainer.StartAsync();
+        // Warm-up delay for Kafka metadata synchronization on CI runners
+        await Task.Delay(5000);
     }
 
     async Task IAsyncLifetime.DisposeAsync()
