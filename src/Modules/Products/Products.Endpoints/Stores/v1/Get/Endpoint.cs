@@ -33,6 +33,7 @@ internal static class Endpoint
             .Stores
             .AsNoTracking()
             .TagWith(nameof(GetStoreAsync), request.Id)
+            .Where(store => store.Id == request.Id)
             .Select(store => new Response
             {
                 Id = store.Id,

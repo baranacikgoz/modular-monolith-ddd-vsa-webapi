@@ -1,10 +1,10 @@
 
 using Common.Domain.StronglyTypedIds;
+using Common.Tests;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 using Products.Domain.Stores.DomainEvents.v1;
-using Common.Tests;
 using Xunit;
 
 namespace Products.UnitTests;

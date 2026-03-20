@@ -3,6 +3,7 @@ using Common.Application.EventHistory;
 using Common.Application.Pagination;
 using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -61,7 +62,7 @@ public static class DbContextExtensions
         string moduleName,
         TId id,
         PaginationRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken) where TId : IStronglyTypedId
     {
         var query = moduleName switch
         {
@@ -74,7 +75,7 @@ public static class DbContextExtensions
         var results = await dbContext
             .Database
             .SqlQueryRaw<PaginatedEventDto>(query,
-                new NpgsqlParameter("@id", id),
+                new NpgsqlParameter("@id", id.Value),
                 new NpgsqlParameter("@aggregateType", typeof(TAggregate).Name),
                 new NpgsqlParameter("@Skip", request.Skip),
                 new NpgsqlParameter("@Take", request.PageSize))

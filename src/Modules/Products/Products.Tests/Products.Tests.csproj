@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.runner.console">
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Products.Domain\Products.Domain.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Tests\Common.Tests.csproj" />
+    <ProjectReference Include="..\Products.Infrastructure\Products.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

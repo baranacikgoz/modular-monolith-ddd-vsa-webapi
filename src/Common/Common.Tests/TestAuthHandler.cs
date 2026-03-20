@@ -17,6 +17,13 @@ public class TestAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        // If no Authorization header is present, consider the request unauthenticated.
+        // This allows tests that call endpoints without setting Authorization to correctly receive 401.
+        if (!Request.Headers.ContainsKey("Authorization"))
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+
         var nameIdentifier = DefaultUserId.ToString();
         if (Request.Headers.TryGetValue("X-Test-User-Id", out var overrideId))
         {
@@ -41,8 +48,12 @@ public class TestAuthHandler(
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, AuthenticationScheme);
 
-        var result = AuthenticateResult.Success(ticket);
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
 
-        return Task.FromResult(result);
+    protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = 401;
+        return Task.CompletedTask;
     }
 }
