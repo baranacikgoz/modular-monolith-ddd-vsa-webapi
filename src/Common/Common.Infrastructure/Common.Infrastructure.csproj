@@ -7,7 +7,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"/>
     <PackageReference Include="MassTransit.RabbitMQ"/>
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid"/>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>

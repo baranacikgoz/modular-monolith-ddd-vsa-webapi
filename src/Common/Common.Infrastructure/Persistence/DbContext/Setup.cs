@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Common.Infrastructure.Persistence.DbContext;
 
-public static class Setup
+public static partial class Setup
 {
     public static IServiceCollection AddModuleDbContext<TContextInterface, TContextImplementation>(
         this IServiceCollection services,
@@ -35,13 +35,11 @@ public static class Setup
             {
                 var logger = sp.GetRequiredService<ILogger<TContextImplementation>>();
 
-#pragma warning disable
                 options.LogTo(
-                    sql => logger.LogDebug(sql), // Log the SQL query
+                    sql => LoggerMessages.LogSql(logger, sql), // Log the SQL query
                     new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
                     LogLevel.Information // Set the log level
                 );
-#pragma warning restore
             }
         });
 
@@ -55,5 +53,11 @@ public static class Setup
         }
 
         return services;
+    }
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
+        public static partial void LogSql(ILogger logger, string sql);
     }
 }

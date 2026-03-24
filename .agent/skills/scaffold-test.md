@@ -10,11 +10,11 @@ skill:
       description: "READ or WRITE"
 
   instructions: |
-    1. **Context Load**: Read `src/Modules/{{module}}/Tests` to find the `IntegrationTestWebAppFactory`.
+    1. **Context Load**: Load `src/Common/Common.Tests/IntegrationTestFactory.cs` (or any module-specific child factory).
 
     2. **Generate Test File**:
        - Path: `src/Modules/{{module}}/Tests/Endpoints/{{feature}}Tests.cs`
-       - Class: `public class {{feature}}Tests : IClassFixture<IntegrationTestWebAppFactory>`
+       - Class: `public class {{feature}}Tests : IClassFixture<IntegrationTestFactory>`
 
     3. **Implement Test Logic (WRITE)**:
        - Arrange: Create valid Request DTO using `Bogus`.
@@ -27,6 +27,6 @@ skill:
     4. **Implement Test Logic (READ)**:
        - Arrange: Seed the DB with an entity.
        - Act: `client.GetAsync("/route/id")`.
-       - Assert: Response JSON matches the seeded entity.
+       - Assert: Response JSON matches the seeded entity. (Reminder: Use built-in xUnit Assert. Do NOT use FluentAssertions).
 
     5. **Run**: Execute `dotnet test` targeting this file to verify.

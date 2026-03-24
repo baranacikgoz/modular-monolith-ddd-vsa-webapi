@@ -21,23 +21,51 @@ trigger: always_on
 *   **Mapping**: **NO Mapping Library**. Use manual inline mappings to DTOs.
 
 ## 3. REPR Pattern (Endpoints)
-*   **No Controllers**: Use Minimal APIs / FastEndpoints style.
+*   **No Controllers**: Use Minimal APIs style.
 *   **Structure**: `Endpoint.cs` (Handler), `Request.cs` (DTO+Validator), `Response.cs`.
 *   **Logic**:
     *   *Complex*: Encapsulate in Domain Aggregate.
     *   *Simple*: Logic allowed in Endpoint (VSA style).
+*   **Creating Endpoints Recipe**:
+    *   Define an `internal static class Endpoint` containing an `internal static void MapEndpoint(RouteGroupBuilder [groupName]group)` method.
+    *   Map the HTTP verb (e.g., `.MapGet()`), configure OpenAPI semantics (`.WithDescription()`), apply authorization (`.MustHavePermission()`), and define the mapper (`.TransformResultTo<Response>()`).
+    *   The handler method itself must be static and follow the functional pipeline signature returning `Task<Result<Response>>` or `Task<Result>`.
+*   **Registering Endpoints Recipe**:
+    *   Locate the feature's `Setup.cs` file (e.g., `[Module]/[Module].Endpoints/[Feature]/Setup.cs`).
+    *   Create a versioned group using `.MapGroup("/feature").WithTags("Feature").MapToApiVersion(1)`.
+    *   Call the `MapEndpoint` method of each specific endpoint class, passing the versioned group (e.g., `v1.My.Get.Endpoint.MapEndpoint(v1FeatureApiGroup)`).
 
 ## 4. Coding Standards (C# 14)
 *   **Zero Warnings**: Treat warnings as errors.
 *   **Nullability**: Enabled and enforced.
 *   **Constructors**: Use Primary Constructors.
 *   **Properties**: Use `required` for DTOs to ensure compile-time mapping safety.
+*   **Logging**: **STRICTLY** use the `LoggerMessage` pattern (Source Generation) for all logging.
+    *   *Implementation*: Private nested `partial static class LoggerMessages` with `[LoggerMessage]` attributes.
+    *   *Rationale*: Prevents `CA1873` errors, avoids boxing, and skips argument evaluation if the log level is disabled.
+
+### 1. Functional Pipeline (The "Golden Path")
+*   **NO Imperative Checks**: Do NOT write `if (result.IsFailure) return ...` unless functional programming can not be applied at the time.
+*   **Use Extensions**:
+    *   `TapAsync`: For side effects (updating properties, logging, saving DB).
+    *   `BindAsync`: For chaining operations that *might fail* (returning a new Result).
+    *   `Map`: For projecting data (Entity -> DTO).
+*   **Endpoint Return**: The Endpoint handler must return `Task<Result>` or `Task<Result<Response>>`.
+
+### 2. Persistence Patterns
+*   **Retrieval**: Never use `Find/FirstOrDefault`.
+    *   *Correct*: `query.TagWith(...).SingleAsResultAsync(cancellationToken)`
+*   **Modification**:
+    *   *Correct*: `.TapAsync(entity => entity.Update(...))`
+*   **Saving**:
+    *   *Correct*: `.TapAsync(_ => db.SaveChangesAsync(ct))`
 
 ## 5. Migration Management
 *   **Contexts**: Each module has its own `DbContext`.
 *   **Command**: Always specify `--context [Module]DbContext`.
 
 ## 6. Testing Standards
+*   **Assertions**: Do NOT use FluentAssertions or any other assertion library. Use built-in xUnit Assert methods (`Assert.Equal`, `Assert.NotNull`, etc.).
 *   **No Flakiness**: Tests must be deterministic. Use `IClassFixture` for Docker containers.
 *   **Slice Isolation**: Integration tests MUST use the real `DbContext`. Do not mock `DbSet`.
 *   **Outbox Verification**: To test event publishing, assert that a record exists in the `OutboxMessages` table. Do NOT mock MassTransit in slice tests.

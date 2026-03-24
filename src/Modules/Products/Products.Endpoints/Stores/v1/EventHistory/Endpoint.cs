@@ -3,6 +3,7 @@ using Common.Application.EventHistory;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

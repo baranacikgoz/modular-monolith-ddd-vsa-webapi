@@ -10,7 +10,6 @@ internal partial class RequestResponseLoggingMiddleware(
     IOptions<ObservabilityOptions> loggingOptionsProvider
 ) : IMiddleware
 {
-    private const string LogTemplate = "HTTP {Method} {Path} responded {StatusCode} in {Elapsed:0} ms";
     private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -39,64 +38,41 @@ internal partial class RequestResponseLoggingMiddleware(
     {
         var statusCode = context.Response.StatusCode;
         var method = context.Request.Method;
-        var path = context.Request.Path;
+        var path = context.Request.Path.Value ?? string.Empty;
 
         // Log critical if response is slow, regardless of status code.
         if (isSlow)
         {
-            LogCriticalResponse(logger, method, path, statusCode, elapsedMs);
+            LoggerMessages.LogCriticalResponse(logger, method, path, statusCode, elapsedMs);
         }
         else if (statusCode >= 500)
         {
-            LogErrorResponse(logger, method, path, statusCode, elapsedMs);
+            LoggerMessages.LogErrorResponse(logger, method, path, statusCode, elapsedMs);
         }
         else if (statusCode >= 400)
         {
-            LogWarningResponse(logger, method, path, statusCode, elapsedMs);
+            LoggerMessages.LogWarningResponse(logger, method, path, statusCode, elapsedMs);
         }
         else
         {
-            LogInformationResponse(logger, method, path, statusCode, elapsedMs);
+            LoggerMessages.LogInformationResponse(logger, method, path, statusCode, elapsedMs);
         }
     }
 
-    [LoggerMessage(
-        Level = LogLevel.Information,
-        Message = LogTemplate)]
-    private static partial void LogInformationResponse(
-        ILogger logger,
-        string method,
-        string path,
-        int statusCode,
-        double elapsed);
+    private static partial class LoggerMessages
+    {
+        private const string LogTemplate = "HTTP {Method} {Path} responded {StatusCode} in {Elapsed:0} ms";
 
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = LogTemplate)]
-    private static partial void LogWarningResponse(
-        ILogger logger,
-        string method,
-        string path,
-        int statusCode,
-        double elapsed);
+        [LoggerMessage(Level = LogLevel.Information, Message = LogTemplate)]
+        public static partial void LogInformationResponse(ILogger logger, string method, string path, int statusCode, double elapsed);
 
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = LogTemplate)]
-    private static partial void LogErrorResponse(
-        ILogger logger,
-        string method,
-        string path,
-        int statusCode,
-        double elapsed);
+        [LoggerMessage(Level = LogLevel.Warning, Message = LogTemplate)]
+        public static partial void LogWarningResponse(ILogger logger, string method, string path, int statusCode, double elapsed);
 
-    [LoggerMessage(
-        Level = LogLevel.Critical,
-        Message = LogTemplate)]
-    private static partial void LogCriticalResponse(
-        ILogger logger,
-        string method,
-        string path,
-        int statusCode,
-        double elapsed);
+        [LoggerMessage(Level = LogLevel.Error, Message = LogTemplate)]
+        public static partial void LogErrorResponse(ILogger logger, string method, string path, int statusCode, double elapsed);
+
+        [LoggerMessage(Level = LogLevel.Critical, Message = LogTemplate)]
+        public static partial void LogCriticalResponse(ILogger logger, string method, string path, int statusCode, double elapsed);
+    }
 }

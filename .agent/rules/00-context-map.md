@@ -7,8 +7,19 @@
     - **Coupling**: Modules communicate *only* via `IntegrationEvents` (Async) or `Common.InterModuleRequests` (Sync).
     - **Consistency**: Transactional Outbox (Atomic Save + Publish).
     - **Observability**: OpenTelemetry Tracing/Metrics are mandatory.
+- **Coding Style**: **Functional / Railway Oriented Programming**.
+    -   We use a custom `Result<T>` Monad.
+    -   We prefer **Method Chaining** over imperative `if/else` blocks.
+    -   We use `Common.Infrastructure.Persistence.Extensions` for DB interactions.
 
-## 2. Directory Structure Strategy
+## 2. The Result Monad Pipeline
+The application flow is a pipeline of operations. If any step fails, the pipeline stops and returns the error.
+*   **Query**: `db.Set<T>().SingleAsResultAsync(...)` (Returns `Result<T>`)
+*   **Validate/Logic**: `.BindAsync(...)` or `.TapAsync(...)`
+*   **Side Effect**: `.TapAsync(async _ => await db.SaveChangesAsync())`
+*   **Response**: `.TransformResultTo...Response()`
+
+## 3. Directory Structure Strategy
 | Path | Responsibility | Rules |
 | :--- | :--- | :--- |
 | `/src/Host` | Composition Root | Configures DI, middleware, mounts modules. |
@@ -17,7 +28,7 @@
 | `/src/Modules/*/Endpoints` | **REPR Pattern** | Minimal APIs. One class per file. |
 | `/src/Modules/*/Infrastructure` | Persistence | EF Core, Repositories, ModuleInstaller. |
 
-## 3. The "Magic" (Do Not Re-implement)
+## 4. The "Magic" (Do Not Re-implement)
 The system handles these cross-cutting concerns automatically. **Do not write manual code for these:**
 
 1.  **Transactional Outbox**:
@@ -30,22 +41,22 @@ The system handles these cross-cutting concerns automatically. **Do not write ma
 3.  **Auditing**:
     -   *System Action*: `AuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc.
 
-## 4. Infrastructure Services
+## 5. Infrastructure Services
 -   **mm.postgres**: Logical WAL enabled (Source of Truth).
 -   **mm.kafka**: KRaft mode (Event Bus).
 -   **mm.debezium**: The Bridge (Postgres -> Kafka).
 
-## 5. Testing Strategy (The Safety Net)
-*   **Framework**: xUnit + FluentAssertions.
+## 6. Testing Strategy (The Safety Net)
+*   **Framework**: xUnit.
 *   **Mocking**: NSubstitute (Only for external 3rd party APIs).
 *   **Data**: Bogus (for generating fake test data).
-*   **Integration**: **Testcontainers**. We run tests against a REAL Postgres instance.
-    *   *Mechanism*: `Respawn` resets the DB checkpoint after every test (milliseconds overhead).
+*   **Integration**: **Testcontainers**. We run tests against REAL Postgres (and Kafka where applicable) instances.
+    *   *Mechanism*: `Respawn` resets the Postgres DB checkpoint after every test (milliseconds overhead), while Kafka topics isolate messages to specific consumer groups.
 *   **Assertion Rule**:
     *   **Writes**: Verify side-effects (Entity in DB? Outbox Message in DB?).
     *   **Reads**: Verify Response DTO matches expectation.
 
-## 6. Observability in Debugging
+## 7. Observability in Debugging
 - **Traceparent/TraceID**: Every request carries a TraceID. When a bug is reported via logs, the Agent should search for this ID in the `Host` or `Common` logs.
 - **Span Events**: Look for 'Exception' events in OpenTelemetry spans. These contain the stack trace and the state of the local variables at the time of failure.
 - **Database Logs**: Use the EF Core 'SensitiveDataLogging' (in Dev only) to see the exact SQL generated that caused the failure.

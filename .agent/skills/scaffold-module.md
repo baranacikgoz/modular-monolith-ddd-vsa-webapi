@@ -28,7 +28,7 @@ skill:
     5. **Create Test Project**:
        - Run: `dotnet new xunit -n {{module_name}}.Tests -o src/Modules/{{module_name}}/Tests`
        - Add Ref: `dotnet add src/Modules/{{module_name}}/Tests reference src/Modules/{{module_name}}`
-       - Add Packages: `FluentAssertions`, `Testcontainers.PostgreSql`, `Bogus`, `NSubstitute`, `Respawn`.
+       - Add Packages: `Testcontainers.PostgreSql`, `Bogus`, `NSubstitute`, `Respawn`.
 
     6. **Create Integration Fixture**:
        - Create `IntegrationTestWebAppFactory.cs` in Tests folder.

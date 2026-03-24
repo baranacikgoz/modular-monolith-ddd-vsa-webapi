@@ -33,7 +33,7 @@ public class Error
             Key = nameof(ViolatesUniqueConstraint),
             ParameterName = parameterName,
             Value = value,
-            StatusCode = HttpStatusCode.BadRequest
+            StatusCode = HttpStatusCode.Conflict
         };
     }
 

@@ -40,7 +40,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
                 };
 
                 problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.SubErrors);
+                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
 
                 problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
@@ -78,7 +78,7 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
                 };
 
                 problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.SubErrors);
+                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
 
                 problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);

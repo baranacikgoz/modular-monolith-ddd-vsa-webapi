@@ -1,13 +1,14 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
+using Products.Domain.ProductTemplates;
 
 namespace Products.Endpoints.ProductTemplates.v1.Get;
 
@@ -44,6 +45,7 @@ internal static class Endpoint
                 LastModifiedBy = pt.LastModifiedBy,
                 LastModifiedOn = pt.LastModifiedOn
             })
-            .SingleAsResultAsync(cancellationToken);
+            .SingleAsResultAsync(resourceName: nameof(ProductTemplate), cancellationToken);
+
     }
 }

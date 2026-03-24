@@ -7,6 +7,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="BackgroundJobs.Tests\**" />
+    <EmbeddedResource Remove="BackgroundJobs.Tests\**" />
+    <None Remove="BackgroundJobs.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj"/>
     <ProjectReference Include="..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj"/>
     <ProjectReference Include="..\..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj"/>

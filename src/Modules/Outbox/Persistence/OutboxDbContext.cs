@@ -1,4 +1,5 @@
 using Common.Application.Persistence.Outbox;
+using Common.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace Outbox.Persistence;

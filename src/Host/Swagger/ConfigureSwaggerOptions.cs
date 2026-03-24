@@ -36,7 +36,7 @@ internal sealed class ConfigureSwaggerOptions(
         {
             var schemeReference = new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);
 
-            return new OpenApiSecurityRequirement { [schemeReference] = [..Array.Empty<string>()] };
+            return new OpenApiSecurityRequirement { [schemeReference] = [] };
         });
     }
 

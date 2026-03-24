@@ -1,5 +1,5 @@
 using Common.Application.Options;
-using Common.Application.Persistence.Outbox;
+using Common.Infrastructure.Persistence.Outbox;
 using EntityFramework.Exceptions.PostgreSQL;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +12,7 @@ using Outbox.Persistence;
 
 namespace Outbox;
 
-public static class ModuleInstaller
+public static partial class ModuleInstaller
 {
     public static IServiceCollection AddOutboxModule(this IServiceCollection services)
         => services
@@ -31,13 +31,11 @@ public static class ModuleInstaller
                 if (observabilityOptions.LogGeneratedSqlQueries)
                 {
                     var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
-#pragma warning disable
                     options.LogTo(
-                        sql => logger.LogDebug(sql), // Log the SQL query
+                        sql => LoggerMessages.LogSql(logger, sql), // Log the SQL query
                         new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
                         LogLevel.Information // Set the log level
                     );
-#pragma warning restore
                 }
             })
             .AddHostedService<OutboxKafkaProcessor>();
@@ -56,5 +54,11 @@ public static class ModuleInstaller
         }
 
         return app;
+    }
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
+        public static partial void LogSql(ILogger logger, string sql);
     }
 }

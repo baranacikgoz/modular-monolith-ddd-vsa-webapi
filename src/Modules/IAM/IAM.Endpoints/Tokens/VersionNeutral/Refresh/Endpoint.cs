@@ -1,8 +1,10 @@
 using System.Security.Cryptography;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
+using IAM.Domain.Identity;
+
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;
 using Microsoft.AspNetCore.Builder;
@@ -55,7 +57,7 @@ internal static class Endpoint
                     .Select(name => name!)
                     .ToList()
             })
-            .SingleAsResultAsync(cancellationToken);
+            .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
 
         if (userResult.IsFailure)
         {

@@ -1,13 +1,14 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
+using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.Get;
 
@@ -32,6 +33,7 @@ internal static class Endpoint
             .Stores
             .AsNoTracking()
             .TagWith(nameof(GetStoreAsync), request.Id)
+            .Where(store => store.Id == request.Id)
             .Select(store => new Response
             {
                 Id = store.Id,
@@ -45,6 +47,6 @@ internal static class Endpoint
                 LastModifiedBy = store.LastModifiedBy,
                 LastModifiedOn = store.LastModifiedOn
             })
-            .SingleAsResultAsync(cancellationToken);
+            .SingleAsResultAsync(nameof(Store), cancellationToken);
     }
 }

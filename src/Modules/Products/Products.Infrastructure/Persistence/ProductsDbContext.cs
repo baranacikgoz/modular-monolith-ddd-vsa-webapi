@@ -1,6 +1,6 @@
-using Common.Application.Persistence;
-using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Events;
+using Common.Infrastructure.Persistence;
+using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Products.Application.Persistence;
