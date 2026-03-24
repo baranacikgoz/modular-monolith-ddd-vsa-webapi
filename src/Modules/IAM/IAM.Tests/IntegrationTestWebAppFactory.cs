@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Common.Tests;
 using IAM.Application.Persistence;
 using Microsoft.EntityFrameworkCore;

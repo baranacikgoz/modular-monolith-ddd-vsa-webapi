@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
+using Products.Domain.ProductTemplates;
 
 namespace Products.Endpoints.ProductTemplates.v1.Deactivate;
 
@@ -31,7 +32,8 @@ internal static class Endpoint
             .ProductTemplates
             .TagWith(nameof(DeactivateProductTemplateAsync), request.Id)
             .Where(p => p.Id == request.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(resourceName: nameof(ProductTemplate), cancellationToken)
+
             .TapAsync(productTemplate => productTemplate.Deactivate())
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
     }

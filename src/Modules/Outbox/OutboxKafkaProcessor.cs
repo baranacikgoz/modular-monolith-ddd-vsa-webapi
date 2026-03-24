@@ -149,7 +149,8 @@ public partial class OutboxKafkaProcessor(
             catch (ConsumeException ex)
             {
                 // Handle errors during the Consume call itself
-                LoggerMessages.LogConsumeError(logger, ex, ex.Error.Reason, ex.Error.Code, ex.Error.IsFatal, ex.Error.IsLocalError, ex.Error.IsBrokerError);
+                LoggerMessages.LogConsumeError(logger, ex, ex.Error.Reason, ex.Error.Code, ex.Error.IsFatal,
+                    ex.Error.IsLocalError, ex.Error.IsBrokerError);
 
                 if (ex.Error.IsFatal)
                 {
@@ -171,7 +172,8 @@ public partial class OutboxKafkaProcessor(
                 // The offset will NOT be committed, allowing Kafka to redeliver.
                 if (consumeResult != null)
                 {
-                    LoggerMessages.LogProcessConcurrencyError(logger, ex, ex.GetType().Name, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
+                    LoggerMessages.LogProcessConcurrencyError(logger, ex, ex.GetType().Name, consumeResult.Offset.Value,
+                        consumeResult.Topic, consumeResult.Partition.Value);
                 }
                 else
                 {
@@ -184,30 +186,35 @@ public partial class OutboxKafkaProcessor(
             {
                 if (consumeResult != null)
                 {
-                    LoggerMessages.LogProcessingError(logger, ex, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value, dlqTopicName);
+                    LoggerMessages.LogProcessingError(logger, ex, consumeResult.Offset.Value, consumeResult.Topic,
+                        consumeResult.Partition.Value, dlqTopicName);
 
                     var dlqSuccess = await SendToDlqAsync(dlqProducer, dlqTopicName, consumeResult, ex, stoppingToken);
 
                     if (dlqSuccess)
                     {
-                        LoggerMessages.LogDlqSuccess(logger, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value, dlqTopicName);
+                        LoggerMessages.LogDlqSuccess(logger, consumeResult.Offset.Value, consumeResult.Topic,
+                            consumeResult.Partition.Value, dlqTopicName);
                         try
                         {
                             consumer.Commit(consumeResult); // Remove poison pill
                         }
                         catch (KafkaException kex) when (kex.Error.IsFatal)
                         {
-                            LoggerMessages.LogFatalDlqCommitError(logger, kex, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
+                            LoggerMessages.LogFatalDlqCommitError(logger, kex, consumeResult.Offset.Value,
+                                consumeResult.Topic, consumeResult.Partition.Value);
                             throw; // Stop if we can't commit past a DLQ'd message
                         }
                         catch (KafkaException kex)
                         {
-                            LoggerMessages.LogNonFatalDlqCommitError(logger, kex, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
+                            LoggerMessages.LogNonFatalDlqCommitError(logger, kex, consumeResult.Offset.Value,
+                                consumeResult.Topic, consumeResult.Partition.Value);
                         }
                     }
                     else
                     {
-                        LoggerMessages.LogDlqFailure(logger, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
+                        LoggerMessages.LogDlqFailure(logger, consumeResult.Offset.Value, consumeResult.Topic,
+                            consumeResult.Partition.Value);
                         // Consider adding retry logic within SendToDlqAsync for transient errors
                         // or implementing a circuit breaker if DLQ production fails persistently.
                     }
@@ -279,7 +286,8 @@ public partial class OutboxKafkaProcessor(
         }
         catch (DbUpdateConcurrencyException dbConcurrencyEx)
         {
-            LoggerMessages.LogConcurrencyConflict(logger, dbConcurrencyEx, outboxMessageDto.Id, topic, partition, offset);
+            LoggerMessages.LogConcurrencyConflict(logger, dbConcurrencyEx, outboxMessageDto.Id, topic, partition,
+                offset);
             throw;
         }
 
@@ -310,18 +318,21 @@ public partial class OutboxKafkaProcessor(
 
             var dlqPayload = JsonSerializer.Serialize(dlqMessage, _dlqSerializerOptions);
 
-            LoggerMessages.LogSendingToDlq(logger, originalOffset, originalTopic, originalPartition, dlqTopic, exception.Message);
+            LoggerMessages.LogSendingToDlq(logger, originalOffset, originalTopic, originalPartition, dlqTopic,
+                exception.Message);
 
             var kafkaMessage = new Message<Null, string> { Value = dlqPayload };
             var deliveryResult = await dlqProducer.ProduceAsync(dlqTopic, kafkaMessage, cancellationToken);
 
-            LoggerMessages.LogProducedToDlq(logger, deliveryResult.Topic, deliveryResult.Partition.Value, deliveryResult.Offset.Value);
+            LoggerMessages.LogProducedToDlq(logger, deliveryResult.Topic, deliveryResult.Partition.Value,
+                deliveryResult.Offset.Value);
 
             return true;
         }
         catch (ProduceException<Null, string> pex)
         {
-            LoggerMessages.LogFatalDlqProduceError(logger, pex, dlqTopic, originalOffset, originalTopic, originalPartition, pex.Error.Reason);
+            LoggerMessages.LogFatalDlqProduceError(logger, pex, dlqTopic, originalOffset, originalTopic,
+                originalPartition, pex.Error.Reason);
             return false;
         }
         catch (OperationCanceledException)
@@ -331,7 +342,8 @@ public partial class OutboxKafkaProcessor(
         }
         catch (Exception ex)
         {
-            LoggerMessages.LogDlqUnexpectedError(logger, ex, dlqTopic, originalOffset, originalTopic, originalPartition);
+            LoggerMessages.LogDlqUnexpectedError(logger, ex, dlqTopic, originalOffset, originalTopic,
+                originalPartition);
             return false;
         }
     }
@@ -415,22 +427,28 @@ public partial class OutboxKafkaProcessor(
 
     private static partial class LoggerMessages
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "OutboxKafkaProcessor starting. Subscribing to topic: {TopicName}")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "OutboxKafkaProcessor starting. Subscribing to topic: {TopicName}")]
         public static partial void LogStarting(ILogger logger, string topicName);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "DLQ configured for topic: {DlqTopicName}")]
         public static partial void LogDlqConfigured(ILogger logger, string dlqTopicName);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Consumer subscribed successfully. Starting consume loop.")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Consumer subscribed successfully. Starting consume loop.")]
         public static partial void LogConsumerSubscribed(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Consume loop finished gracefully (likely cancellation).")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Consume loop finished gracefully (likely cancellation).")]
         public static partial void LogConsumeLoopFinished(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "OutboxKafkaProcessor stopping due to cancellation request.")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "OutboxKafkaProcessor stopping due to cancellation request.")]
         public static partial void LogStopping(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Critical, Message = "Unhandled exception during client setup or ConsumeLoop execution. Retrying connection/setup in {DelaySeconds} seconds...")]
+        [LoggerMessage(Level = LogLevel.Critical,
+            Message =
+                "Unhandled exception during client setup or ConsumeLoop execution. Retrying connection/setup in {DelaySeconds} seconds...")]
         public static partial void LogUnhandledException(ILogger logger, Exception ex, double delaySeconds);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Retry delay cancelled. OutboxKafkaProcessor stopping.")]
@@ -439,94 +457,163 @@ public partial class OutboxKafkaProcessor(
         [LoggerMessage(Level = LogLevel.Information, Message = "OutboxKafkaProcessor stopped.")]
         public static partial void LogStopped(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Reached end of Partition {Partition} at Offset {Offset} (Topic: {Topic})")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Reached end of Partition {Partition} at Offset {Offset} (Topic: {Topic})")]
         public static partial void LogPartitionEof(ILogger logger, int partition, long offset, string topic);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Consumed message from Topic {Topic}, Partition {Partition}, Offset {Offset}")]
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Consumed message from Topic {Topic}, Partition {Partition}, Offset {Offset}")]
         public static partial void LogMessageConsumed(ILogger logger, string topic, int partition, long offset);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Committed Offset {Offset} for Topic {Topic}, Partition {Partition}")]
+        [LoggerMessage(Level = LogLevel.Debug,
+            Message = "Committed Offset {Offset} for Topic {Topic}, Partition {Partition}")]
         public static partial void LogOffsetCommitted(ILogger logger, long offset, string topic, int partition);
 
-        [LoggerMessage(Level = LogLevel.Critical, Message = "FATAL Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Stopping consumer.")]
-        public static partial void LogFatalCommitError(ILogger logger, Exception ex, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Critical,
+            Message =
+                "FATAL Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Stopping consumer.")]
+        public static partial void LogFatalCommitError(ILogger logger, Exception ex, long offset, string topic,
+            int partition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Non-fatal Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Processing succeeded but commit failed.")]
-        public static partial void LogNonFatalCommitError(ILogger logger, Exception ex, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Non-fatal Kafka error during commit for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Processing succeeded but commit failed.")]
+        public static partial void LogNonFatalCommitError(ILogger logger, Exception ex, long offset, string topic,
+            int partition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Consume error: {Reason}. Code: {Code}, IsFatal: {IsFatal}, IsLocal: {IsLocal}, IsBroker: {IsBroker}")]
-        public static partial void LogConsumeError(ILogger logger, Exception ex, string reason, ErrorCode code, bool isFatal, bool isLocal, bool isBroker);
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Consume error: {Reason}. Code: {Code}, IsFatal: {IsFatal}, IsLocal: {IsLocal}, IsBroker: {IsBroker}")]
+        public static partial void LogConsumeError(ILogger logger, Exception ex, string reason, ErrorCode code,
+            bool isFatal, bool isLocal, bool isBroker);
 
-        [LoggerMessage(Level = LogLevel.Critical, Message = "Fatal Kafka consume error encountered. Stopping processor.")]
+        [LoggerMessage(Level = LogLevel.Critical,
+            Message = "Fatal Kafka consume error encountered. Stopping processor.")]
         public static partial void LogFatalConsumeError(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Non-fatal consume error. Delaying {DelaySeconds} seconds before next attempt...")]
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Non-fatal consume error. Delaying {DelaySeconds} seconds before next attempt...")]
         public static partial void LogNonFatalConsumeError(ILogger logger, double delaySeconds);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Consume loop cancellation requested during Consume operation.")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Consume loop cancellation requested during Consume operation.")]
         public static partial void LogConsumeLoopCancelled(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "{ExceptionType} occured within ProcessMessageAsync for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Offset not committed.")]
-        public static partial void LogProcessConcurrencyError(ILogger logger, Exception ex, string exceptionType, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "{ExceptionType} occured within ProcessMessageAsync for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Offset not committed.")]
+        public static partial void LogProcessConcurrencyError(ILogger logger, Exception ex, string exceptionType,
+            long offset, string topic, int partition);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "{ExceptionType} occured within ProcessMessageAsync but ConsumeResult is null. Offset not committed.")]
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "{ExceptionType} occured within ProcessMessageAsync but ConsumeResult is null. Offset not committed.")]
         public static partial void LogProcessErrorNullResult(ILogger logger, Exception ex, string exceptionType);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Error processing message at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Sending to DLQ topic {DlqTopicName}...")]
-        public static partial void LogProcessingError(ILogger logger, Exception ex, long offset, string topic, int partition, string dlqTopicName);
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Error processing message at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Sending to DLQ topic {DlqTopicName}...")]
+        public static partial void LogProcessingError(ILogger logger, Exception ex, long offset, string topic,
+            int partition, string dlqTopicName);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Successfully sent message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ topic {DlqTopicName}. Committing original offset.")]
-        public static partial void LogDlqSuccess(ILogger logger, long offset, string topic, int partition, string dlqTopicName);
+        [LoggerMessage(Level = LogLevel.Information,
+            Message =
+                "Successfully sent message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ topic {DlqTopicName}. Committing original offset.")]
+        public static partial void LogDlqSuccess(ILogger logger, long offset, string topic, int partition,
+            string dlqTopicName);
 
-        [LoggerMessage(Level = LogLevel.Critical, Message = "FATAL Kafka error during commit for DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}).")]
-        public static partial void LogFatalDlqCommitError(ILogger logger, Exception ex, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Critical,
+            Message =
+                "FATAL Kafka error during commit for DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}).")]
+        public static partial void LogFatalDlqCommitError(ILogger logger, Exception ex, long offset, string topic,
+            int partition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Non-fatal Kafka error committing DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Consumer may reprocess.")]
-        public static partial void LogNonFatalDlqCommitError(ILogger logger, Exception ex, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Non-fatal Kafka error committing DLQ'd Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Consumer may reprocess.")]
+        public static partial void LogNonFatalDlqCommitError(ILogger logger, Exception ex, long offset, string topic,
+            int partition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to send message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ. **Offset will not be committed.**")]
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Failed to send message from Offset {Offset} (Topic: {Topic}, Partition: {Partition}) to DLQ. **Offset will not be committed.**")]
         public static partial void LogDlqFailure(ILogger logger, long offset, string topic, int partition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Processing error occurred but ConsumeResult was null. Cannot DLQ or commit.")]
+        [LoggerMessage(Level = LogLevel.Error,
+            Message = "Processing error occurred but ConsumeResult was null. Cannot DLQ or commit.")]
         public static partial void LogProcessingErrorNullConsumeResult(ILogger logger, Exception ex);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Received null message value at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping processing.")]
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Received null message value at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping processing.")]
         public static partial void LogNullMessage(ILogger logger, long offset, string topic, int partition);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Kafka message payload. Skipping processing and committing offset.")]
-        public static partial void LogAlreadyProcessedPayload(ILogger logger, int messageId, string topic, int partition, long offset);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Kafka message payload. Skipping processing and committing offset.")]
+        public static partial void LogAlreadyProcessedPayload(ILogger logger, int messageId, string topic,
+            int partition, long offset);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Starting processing for message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset})...")]
-        public static partial void LogStartProcessing(ILogger logger, int messageId, string topic, int partition, long offset);
+        [LoggerMessage(Level = LogLevel.Information,
+            Message =
+                "Starting processing for message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset})...")]
+        public static partial void LogStartProcessing(ILogger logger, int messageId, string topic, int partition,
+            long offset);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "OutboxMessage Id {MessageId} not found in database for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.")]
-        public static partial void LogMessageNotFound(ILogger logger, int messageId, long offset, string topic, int partition);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "OutboxMessage Id {MessageId} not found in database for Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.")]
+        public static partial void LogMessageNotFound(ILogger logger, int messageId, long offset, string topic,
+            int partition);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Database. Committing offset.")]
-        public static partial void LogAlreadyProcessedDb(ILogger logger, int messageId, string topic, int partition, long offset);
+        [LoggerMessage(Level = LogLevel.Information,
+            Message =
+                "Outbox message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}) was already marked 'IsProcessed=true' in the Database. Committing offset.")]
+        public static partial void LogAlreadyProcessedDb(ILogger logger, int messageId, string topic, int partition,
+            long offset);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Concurrency conflict saving OutboxMessage ID {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}). Rethrowing to allow retry.")]
-        public static partial void LogConcurrencyConflict(ILogger logger, Exception ex, int messageId, string topic, int partition, long offset);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Concurrency conflict saving OutboxMessage ID {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}). Rethrowing to allow retry.")]
+        public static partial void LogConcurrencyConflict(ILogger logger, Exception ex, int messageId, string topic,
+            int partition, long offset);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Successfully processed message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}).")]
-        public static partial void LogProcessSuccess(ILogger logger, int messageId, string topic, int partition, long offset);
+        [LoggerMessage(Level = LogLevel.Information,
+            Message =
+                "Successfully processed message Id {MessageId} (Topic: {Topic}, Partition: {Partition}, Offset: {Offset}).")]
+        public static partial void LogProcessSuccess(ILogger logger, int messageId, string topic, int partition,
+            long offset);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Sending failed message from Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}) to DLQ topic {DlqTopic} due to error: {ErrorMessage}")]
-        public static partial void LogSendingToDlq(ILogger logger, long originalOffset, string originalTopic, int originalPartition, string dlqTopic, string errorMessage);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Sending failed message from Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}) to DLQ topic {DlqTopic} due to error: {ErrorMessage}")]
+        public static partial void LogSendingToDlq(ILogger logger, long originalOffset, string originalTopic,
+            int originalPartition, string dlqTopic, string errorMessage);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Message successfully produced to DLQ topic {DlqTopic}, Partition {Partition}, Offset {Offset}")]
+        [LoggerMessage(Level = LogLevel.Information,
+            Message = "Message successfully produced to DLQ topic {DlqTopic}, Partition {Partition}, Offset {Offset}")]
         public static partial void LogProducedToDlq(ILogger logger, string dlqTopic, int partition, long offset);
 
-        [LoggerMessage(Level = LogLevel.Critical, Message = "FATAL error producing message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}). Error: {Reason}")]
-        public static partial void LogFatalDlqProduceError(ILogger logger, Exception ex, string dlqTopic, long originalOffset, string originalTopic, int originalPartition, string reason);
+        [LoggerMessage(Level = LogLevel.Critical,
+            Message =
+                "FATAL error producing message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}). Error: {Reason}")]
+        public static partial void LogFatalDlqProduceError(ILogger logger, Exception ex, string dlqTopic,
+            long originalOffset, string originalTopic, int originalPartition, string reason);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "DLQ production cancelled for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).")]
-        public static partial void LogDlqCancelled(ILogger logger, long originalOffset, string originalTopic, int originalPartition);
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "DLQ production cancelled for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).")]
+        public static partial void LogDlqCancelled(ILogger logger, long originalOffset, string originalTopic,
+            int originalPartition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Unexpected error sending message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).")]
-        public static partial void LogDlqUnexpectedError(ILogger logger, Exception ex, string dlqTopic, long originalOffset, string originalTopic, int originalPartition);
+        [LoggerMessage(Level = LogLevel.Error,
+            Message =
+                "Unexpected error sending message to DLQ topic {DlqTopic} for original Offset {OriginalOffset} (Topic: {OriginalTopic}, Partition: {OriginalPartition}).")]
+        public static partial void LogDlqUnexpectedError(ILogger logger, Exception ex, string dlqTopic,
+            long originalOffset, string originalTopic, int originalPartition);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Kafka Consumer Error: {Reason} (Code: {Code}, IsFatal: {IsFatal})")]
+        [LoggerMessage(Level = LogLevel.Error,
+            Message = "Kafka Consumer Error: {Reason} (Code: {Code}, IsFatal: {IsFatal})")]
         public static partial void LogKafkaConsumerError(ILogger logger, string reason, ErrorCode code, bool isFatal);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Kafka Consumer Log: [{Facility}] {Message}")]

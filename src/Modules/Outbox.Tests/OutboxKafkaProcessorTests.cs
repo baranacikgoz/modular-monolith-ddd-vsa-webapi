@@ -1,12 +1,11 @@
-using System.Text.Json;
 using System.Collections.Concurrent;
+using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Persistence.Outbox;
 using Common.Domain.Events;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Outbox;
 using Outbox.Persistence;
 using Xunit;
 
@@ -21,14 +20,14 @@ public class SpyEventBus : IEventBus
     private readonly ConcurrentBag<IEvent> _publishedEvents = new();
     public IReadOnlyCollection<IEvent> PublishedEvents => _publishedEvents;
     public bool ShouldThrow { get; set; }
-    
+
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
         if (ShouldThrow)
         {
             throw new InvalidOperationException("Simulated processing failure for DLQ.");
         }
-        
+
         _publishedEvents.Add(@event);
         return Task.CompletedTask;
     }
@@ -51,7 +50,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         // 1. Arrange: Seed a message in the PostgreSQL Outbox table
         var eventData = new TestDomainEvent("IntegrationTest");
         int messageId;
-        
+
         using (var scope = _scopeFactory.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -72,11 +71,11 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
 
         var config = new ProducerConfig { BootstrapServers = _factory.KafkaBootstrapAddress };
         using var producer = new ProducerBuilder<Null, string>(config).Build();
-        
+
         var message = new Message<Null, string> { Value = JsonSerializer.Serialize(dto) };
-        
+
         // Simple retry for cold-start Kafka metadata readiness on CI
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
             try
             {
@@ -90,20 +89,21 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         }
 
         // 3. Assert: Wait for OutboxKafkaProcessor to pick it up and process it
-        bool isProcessed = false;
+        var isProcessed = false;
         var endTime = DateTime.UtcNow.AddSeconds(30);
-        
+
         while (DateTime.UtcNow < endTime)
         {
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
             var msg = await dbContext.OutboxMessages.FirstOrDefaultAsync(x => x.Id == messageId);
-            
+
             if (msg != null && msg.IsProcessed)
             {
                 isProcessed = true;
                 break;
             }
+
             await Task.Delay(500);
         }
 
@@ -121,7 +121,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         // 1. Arrange: Seed a message in the PostgreSQL Outbox table
         var eventData = new TestDomainEvent("DlqTest");
         int messageId;
-        
+
         using (var scope = _scopeFactory.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -142,11 +142,11 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
 
         var config = new ProducerConfig { BootstrapServers = _factory.KafkaBootstrapAddress };
         using var producer = new ProducerBuilder<Null, string>(config).Build();
-        
+
         var message = new Message<Null, string> { Value = JsonSerializer.Serialize(dto) };
-        
+
         // Simple retry for cold-start Kafka metadata readiness on CI
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
             try
             {
@@ -171,9 +171,9 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         using var consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build();
         consumer.Subscribe("test-dlq-topic");
 
-        bool dlqReceived = false;
+        var dlqReceived = false;
         var endTime = DateTime.UtcNow.AddSeconds(30);
-        
+
         try
         {
             while (DateTime.UtcNow < endTime)
@@ -196,7 +196,9 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
 
                 // If we get here, a message was produced to the DLQ topic!
                 // We could optionally deserialize it and verify the original offset/topic, but receiving any message here means success for this targeted test payload.
-                if (consumeResult.Message?.Value != null && consumeResult.Message.Value.Contains("Simulated processing failure for DLQ.", StringComparison.Ordinal))
+                if (consumeResult.Message?.Value != null &&
+                    consumeResult.Message.Value.Contains("Simulated processing failure for DLQ.",
+                        StringComparison.Ordinal))
                 {
                     dlqReceived = true;
                     break;

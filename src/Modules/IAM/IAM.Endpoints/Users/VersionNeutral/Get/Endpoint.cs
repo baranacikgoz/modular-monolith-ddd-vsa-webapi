@@ -1,9 +1,10 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
+using IAM.Domain.Identity;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,7 @@ internal static class Endpoint
                 LastModifiedBy = u.Id,
                 LastModifiedOn = u.LastModifiedOn
             })
-            .SingleAsResultAsync(cancellationToken);
+            .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
+
     }
 }

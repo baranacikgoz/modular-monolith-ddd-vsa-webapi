@@ -6,8 +6,8 @@ namespace Common.Infrastructure.Persistence.Extensions;
 
 public static class PersistenceQueryableExtensions
 {
-    public static IQueryable<TEntity> WhereIf<TEntity>(this IQueryable<TEntity> query,
-        Expression<Func<TEntity, bool>> predicate, bool condition)
+    public static IQueryable<T> WhereIf<T>(this IQueryable<T> query,
+        Expression<Func<T, bool>> predicate, bool condition)
     {
         if (condition)
         {
@@ -17,29 +17,33 @@ public static class PersistenceQueryableExtensions
         return query;
     }
 
-    public static async Task<Result<TEntity>> SingleAsResultAsync<TEntity>(this IQueryable<TEntity> queryable,
+    public static async Task<Result<T>> SingleAsResultAsync<T>(
+        this IQueryable<T> queryable,
+        string resourceName,
         CancellationToken cancellationToken)
     {
-        return await Result<TEntity>.CreateAsync(
+        return await Result<T>.CreateAsync(
             () => queryable.SingleOrDefaultAsync(cancellationToken),
-            Error.NotFound(typeof(TEntity).Name));
+            Error.NotFound(resourceName));
     }
 
-    public static async Task<Result<TEntity>> FirstAsResultAsync<TEntity>(this IQueryable<TEntity> queryable,
+    public static async Task<Result<T>> FirstAsResultAsync<T>(
+        this IQueryable<T> queryable,
+        string resourceName,
         CancellationToken cancellationToken)
     {
-        return await Result<TEntity>.CreateAsync(
+        return await Result<T>.CreateAsync(
             () => queryable.FirstOrDefaultAsync(cancellationToken),
-            Error.NotFound(typeof(TEntity).Name));
+            Error.NotFound(resourceName));
     }
 
-    public static async Task<Result<bool>> AnyAsResultAsync<TEntity>(this IQueryable<TEntity> queryable,
+    public static async Task<Result<bool>> AnyAsResultAsync<T>(this IQueryable<T> queryable,
         CancellationToken cancellationToken)
     {
         return await Result<bool>.CreateAsync(() => queryable.AnyAsync(cancellationToken));
     }
 
-    public static IQueryable<TEntity> TagWith<TEntity>(this IQueryable<TEntity> queryable, params object[] parameters)
+    public static IQueryable<T> TagWith<T>(this IQueryable<T> queryable, params object[] parameters)
     {
         return parameters.Length switch
         {

@@ -1,6 +1,5 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
+using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.My.Update;
 
@@ -33,7 +33,7 @@ internal static class Endpoint
             .Stores
             .TagWith(nameof(UpdateMyStoreAsync), currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(nameof(Store), cancellationToken)
             .TapAsync(store => store.Update(request.Name, request.Description, request.Address))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
     }

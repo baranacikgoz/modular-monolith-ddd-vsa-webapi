@@ -1,22 +1,21 @@
-
+using System.Linq.Expressions;
 using Common.Application.BackgroundJobs;
-using Common.IntegrationEvents;
 using Common.Domain.StronglyTypedIds;
+using Common.IntegrationEvents;
+using MassTransit;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 using Notifications.Application;
 using Notifications.Application.IntegrationEventHandlers;
+using NSubstitute;
 using Xunit;
-using System.Linq.Expressions;
-using MassTransit;
 
 namespace Notifications.Tests.IntegrationEventHandlers;
 
 public class UserRegisteredIntegrationEventHandlerTests
 {
     private readonly IBackgroundJobs _backgroundJobs;
-    private readonly ILogger<UserRegisteredIntegrationEventHandler> _logger;
     private readonly UserRegisteredIntegrationEventHandler _handler;
+    private readonly ILogger<UserRegisteredIntegrationEventHandler> _logger;
 
     public UserRegisteredIntegrationEventHandlerTests()
     {
@@ -47,7 +46,7 @@ public class UserRegisteredIntegrationEventHandlerTests
 
         // Assert
         _backgroundJobs.Received(1).Enqueue(Arg.Any<Expression<Func<ISmsService, Task>>>());
-        
+
         Assert.NotNull(capturedExpression);
 
         // Compile and invoke the captured expression against a mock ISmsService

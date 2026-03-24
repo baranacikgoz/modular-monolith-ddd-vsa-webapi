@@ -1,5 +1,5 @@
+using System.Text.Json;
 using Common.Tests;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace IAM.Tests.Endpoints.Captcha;
@@ -14,7 +14,6 @@ public class ClientKeyGetTests : BaseIntegrationTest
     [Fact]
     public async Task GetClientKey_ReturnsOkAndKey()
     {
-
         // Arrange
         var client = Factory.CreateClient();
 
@@ -27,10 +26,11 @@ public class ClientKeyGetTests : BaseIntegrationTest
             var err = await response.Content.ReadAsStringAsync();
             Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
         }
+
         response.EnsureSuccessStatusCode();
 
         var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        using var doc = JsonDocument.Parse(rawJson);
         var root = doc.RootElement;
 
         Assert.True(root.TryGetProperty("clientKey", out var clientKey));

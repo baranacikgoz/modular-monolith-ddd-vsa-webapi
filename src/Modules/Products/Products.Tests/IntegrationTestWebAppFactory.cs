@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

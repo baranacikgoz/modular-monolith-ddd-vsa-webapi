@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
-using Testcontainers.PostgreSql;
-using Xunit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace Common.Tests;
 
@@ -18,6 +18,18 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithUsername("postgres")
         .WithPassword("postgres")
         .Build();
+
+    public string ConnectionString => _dbContainer.GetConnectionString();
+
+    public virtual async Task InitializeAsync()
+    {
+        await _dbContainer.StartAsync();
+    }
+
+    Task IAsyncLifetime.DisposeAsync()
+    {
+        return _dbContainer.StopAsync();
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -40,7 +52,8 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         builder.ConfigureTestServices(services =>
         {
             services.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
+                    options => { });
 
             services.Configure<AuthenticationOptions>(options =>
             {
@@ -53,19 +66,9 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                     .AddAuthenticationSchemes(TestAuthHandler.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build());
-                    
+
             services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
         });
-    }
-
-    public virtual async Task InitializeAsync()
-    {
-        await _dbContainer.StartAsync();
-    }
-
-    Task IAsyncLifetime.DisposeAsync()
-    {
-        return _dbContainer.StopAsync();
     }
 
     public override async ValueTask DisposeAsync()
@@ -74,6 +77,4 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         await base.DisposeAsync();
         GC.SuppressFinalize(this);
     }
-
-    public string ConnectionString => _dbContainer.GetConnectionString();
 }

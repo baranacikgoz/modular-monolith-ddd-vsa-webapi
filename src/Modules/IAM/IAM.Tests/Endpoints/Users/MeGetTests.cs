@@ -1,6 +1,9 @@
-using System.Net;
+using System.Globalization;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using Bogus;
 using Common.Tests;
+using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -19,25 +22,25 @@ public class MeGetTests : BaseIntegrationTest
     [Fact]
     public async Task MeGet_WithValidAuth_ReturnsCurrentUser()
     {
-
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         var user = ApplicationUser.Create(
             _faker.Name.FirstName(),
             _faker.Name.LastName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            _faker.Random.Long(10000000000L, 99999999999L).ToString(CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
         client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
 
         // Act
@@ -49,10 +52,11 @@ public class MeGetTests : BaseIntegrationTest
             var err = await response.Content.ReadAsStringAsync();
             Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
         }
+
         response.EnsureSuccessStatusCode();
 
         var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        using var doc = JsonDocument.Parse(rawJson);
         var root = doc.RootElement;
 
         Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());

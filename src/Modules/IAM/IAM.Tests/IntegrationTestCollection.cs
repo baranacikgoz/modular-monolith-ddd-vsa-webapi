@@ -1,4 +1,3 @@
-using Common.Tests;
 using Xunit;
 
 namespace IAM.Tests;

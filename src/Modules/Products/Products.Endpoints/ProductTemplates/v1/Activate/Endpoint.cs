@@ -1,6 +1,5 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
+using Products.Domain.ProductTemplates;
 
 namespace Products.Endpoints.ProductTemplates.v1.Activate;
 
@@ -32,7 +32,7 @@ internal static class Endpoint
             .ProductTemplates
             .TagWith(nameof(ActivateProductTemplateAsync), request.Id)
             .Where(p => p.Id == request.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(nameof(ProductTemplate), cancellationToken)
             .TapAsync(productTemplate => productTemplate.Activate())
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
     }

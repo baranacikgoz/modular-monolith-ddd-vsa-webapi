@@ -38,7 +38,8 @@ internal static class Endpoint
             .AsNoTracking()
             .Where(x => x.OwnerId == currentUser.Id)
             .Select(x => x.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
+
             .BindAsync(async id => await dbContext
                 .GetEventHistoryAsync<Store, StoreId>(
                     nameof(Products),

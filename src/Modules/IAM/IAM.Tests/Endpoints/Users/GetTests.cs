@@ -1,10 +1,12 @@
+using System.Globalization;
 using System.Net;
-using System.Net.Http.Json;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using Bogus;
-using Common.Domain.StronglyTypedIds;
 using Common.Tests;
+using IAM.Application.Persistence;
 using IAM.Domain.Identity;
-using IAM.Endpoints.Users.VersionNeutral.Get;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -22,27 +24,24 @@ public class GetTests : BaseIntegrationTest
     [Fact]
     public async Task GetUser_WithValidId_ReturnsUserResponse()
     {
-
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
         var user = ApplicationUser.Create(
             _faker.Name.FirstName(),
             _faker.Name.LastName(),
             "555" + _faker.Random.Number(1000000, 9999999), // Valid looking TR phone
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture), // valid looking TC NO
+            _faker.Random.Long(10000000000L, 99999999999L)
+                .ToString(CultureInfo.InvariantCulture), // valid looking TC NO
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
-        var client = Factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("TestScheme");
+        var client = Factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Simulating the auth context since we bypass it for now or assume internal/authorized
         // We'd typically inject an admin token but since permission is required (CustomActions.Read, CustomResources.ApplicationUsers), 
@@ -62,7 +61,7 @@ public class GetTests : BaseIntegrationTest
         response.EnsureSuccessStatusCode();
 
         var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        using var doc = JsonDocument.Parse(rawJson);
         var root = doc.RootElement;
 
         Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());
