@@ -24,7 +24,7 @@ public static class PersistenceQueryableExtensions
     {
         return await Result<T>.CreateAsync(
             () => queryable.SingleOrDefaultAsync(cancellationToken),
-            Error.NotFound(resourceName));
+            () => Error.NotFound(resourceName));
     }
 
     public static async Task<Result<T>> FirstAsResultAsync<T>(
@@ -34,7 +34,7 @@ public static class PersistenceQueryableExtensions
     {
         return await Result<T>.CreateAsync(
             () => queryable.FirstOrDefaultAsync(cancellationToken),
-            Error.NotFound(resourceName));
+            () => Error.NotFound(resourceName));
     }
 
     public static async Task<Result<bool>> AnyAsResultAsync<T>(this IQueryable<T> queryable,
