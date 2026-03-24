@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "ModularMonolith.sln",
+    "projects": [
+      "src/Common/Common.Tests/Common.Tests.csproj","src/Modules/Products/Products.Tests/Products.Tests.csproj","src/Modules/IAM/IAM.Tests/IAM.Tests.csproj","src/Modules/Notifications/Notifications.Tests/Notifications.Tests.csproj","src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj","src/Modules/Outbox.Tests/Outbox.Tests.csproj"
+    ]
+  }
+}

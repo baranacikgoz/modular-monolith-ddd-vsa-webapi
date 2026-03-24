@@ -19,6 +19,16 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithPassword("postgres")
         .Build();
 
+    protected virtual string[] GetActiveModules() => ["*"];
+
+    public IntegrationTestFactory()
+    {
+#pragma warning disable CA2214
+        var overrideModule = string.Join(",", GetActiveModules());
+        Environment.SetEnvironmentVariable("TestModuleOverride", overrideModule);
+#pragma warning restore CA2214
+    }
+
     public string ConnectionString => _dbContainer.GetConnectionString();
 
     public virtual async Task InitializeAsync()

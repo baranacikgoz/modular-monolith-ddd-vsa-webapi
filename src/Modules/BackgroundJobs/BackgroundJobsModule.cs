@@ -1,18 +1,21 @@
 using Common.Application.BackgroundJobs;
 using Common.Application.Options;
+using Common.Infrastructure.Modules;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace BackgroundJobs;
 
-public static class ModuleInstaller
+public sealed class BackgroundJobsModule : IModule
 {
-    public static IServiceCollection AddBackgroundJobsModule(this IServiceCollection services,
-        IConfiguration configuration)
+    public string Name => "BackgroundJobs";
+
+    public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddSingleton<IBackgroundJobs, BackgroundJobsService>()
@@ -41,17 +44,17 @@ public static class ModuleInstaller
                 cfg.SchedulePollingInterval = TimeSpan.FromSeconds(pollingFrequencyInSeconds);
             });
         }
-
-        return services;
     }
 
-    public static WebApplication UseBackgroundJobsModule(this WebApplication app)
+    public void UseModule(IApplicationBuilder app)
     {
-        var dashboardPath = app.Services.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.DashboardPath;
+        var dashboardPath = app.ApplicationServices.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.DashboardPath;
 
         app.UseHangfireDashboard(dashboardPath,
             new DashboardOptions { AsyncAuthorization = [new HangfireCustomAuthorizationFilter()] });
+    }
 
-        return app;
+    public void MapEndpoints(IEndpointRouteBuilder endpoints)
+    {
     }
 }

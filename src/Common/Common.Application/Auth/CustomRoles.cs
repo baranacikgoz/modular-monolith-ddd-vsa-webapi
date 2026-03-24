@@ -1,4 +1,4 @@
-namespace IAM.Application.Auth;
+namespace Common.Application.Auth;
 
 public static class CustomRoles
 {

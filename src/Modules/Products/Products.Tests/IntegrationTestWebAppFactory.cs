@@ -7,6 +7,8 @@ namespace Products.Tests;
 
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
+    protected override string[] GetActiveModules() => ["Products", "Outbox"];
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

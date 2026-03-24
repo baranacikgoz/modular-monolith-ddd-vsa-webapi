@@ -1,5 +1,6 @@
 using IAM.Application.Auth;
 using IAM.Domain.Identity;
+using Common.Application.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

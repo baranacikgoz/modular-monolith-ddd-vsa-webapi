@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IAM.Infrastructure.Tokens;
 
-internal static class Setup
+public static class Setup
 {
     public static IServiceCollection AddTokensInfrastructure(this IServiceCollection services)
     {

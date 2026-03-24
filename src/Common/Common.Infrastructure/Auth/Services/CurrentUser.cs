@@ -1,9 +1,7 @@
 using System.Security.Claims;
 using Common.Application.Auth;
 using Common.Domain.StronglyTypedIds;
-using IAM.Application.Auth;
-
-namespace IAM.Infrastructure.Identity.Services;
+namespace Common.Infrastructure.Auth.Services;
 
 internal sealed class CurrentUser : ICurrentUser
 {
