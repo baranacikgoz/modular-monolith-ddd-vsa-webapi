@@ -1,34 +1,60 @@
 skill:
   name: "scaffold-feature"
-  description: "Scaffolds a new REPR vertical slice (Read or Write) adhering to the Constitution."
+  description: "Scaffolds a new REPR vertical slice using the Result Monad Pipeline."
   inputs:
     - name: module
-      description: "Target module name (e.g., Products)"
     - name: aggregate
-      description: "Aggregate name (e.g., Product)"
     - name: feature
-      description: "Feature name (e.g., UpdatePrice)"
     - name: type
-      description: "READ (Query) or WRITE (Command)"
+      description: "READ or WRITE"
 
   instructions: |
-    1. **Analyze Context**: Load `src/Modules/{{module}}`.
+    1. **Endpoint Generation**:
+       - Create `src/Modules/{{module}}/Endpoints/{{aggregate}}/v1/{{feature}}/Endpoint.cs`.
+       - **Template (WRITE)**:
+         ```csharp
+         internal static class Endpoint
+         {
+             internal static void MapEndpoint(RouteGroupBuilder group)
+             {
+                 group.MapPut("{{aggregate}}s/{id}", HandleAsync)
+                      .WithDescription("{{feature}} action")
+                      .Produces(StatusCodes.Status204NoContent)
+                      .TransformResultToNoContentResponse();
+             }
 
-    2. **Domain Layer (Write Only)**:
-       - If {{type}} is WRITE:
-         - Ensure method exists in Aggregate `{{aggregate}}.cs`.
-         - Ensure Domain Event is defined: `{{feature}}DomainEvent`.
-         - Ensure `RaiseEvent` is called in the Aggregate.
+             private static async Task<Result> HandleAsync(
+                 [AsParameters] Request request,
+                 [FromServices] I{{module}}DbContext dbContext,
+                 CancellationToken ct)
+             {
+                 return await dbContext.{{aggregate}}s
+                     .TagWith(nameof(HandleAsync), request.Id)
+                     .Where(x => x.Id == request.Id)
+                     .SingleAsResultAsync(ct)
+                     .TapAsync(agg => agg.{{feature}}(request.Data))
+                     .TapAsync(_ => dbContext.SaveChangesAsync(ct));
+             }
+         }
+         ```
+       - **Template (READ)**:
+         ```csharp
+         // ... MapGet ... .TransformResultToOkResponse();
 
-    3. **Endpoint Layer (REPR)**:
-       - Create `src/Modules/{{module}}/Endpoints/{{aggregate}}/v1/{{feature}}/`.
-       - **Request.cs**: `sealed record Request` with `required` props + `CustomValidator`.
-       - **Response.cs**: `sealed record Response`.
-       - **Endpoint.cs**:
-         - Inherit `Endpoint<Request, Result<Response>>`.
-         - Inject `I{{module}}DbContext`.
-         - **Logic (READ)**: `db.Aggregates.AsNoTracking().Where(...).Select(x => x.ToResponse()).SingleAsync()`
-         - **Logic (WRITE)**: `var agg = await db.Aggregates.FindAsync(id); agg.{{feature}}(...); await db.SaveChangesAsync();`
+         private static async Task<Result<Response>> HandleAsync(...)
+         {
+             return await dbContext.{{aggregate}}s.AsNoTracking()
+                 .TagWith(nameof(HandleAsync), request.Id)
+                 .Where(x => x.Id == request.Id)
+                 .Select(x => x.ToResponse()) // Manual Map
+                 .SingleAsResultAsync(ct);
+         }
+         ```
 
-    4. **Register**:
-       - Add mapping to `{{module}}ModuleEndpoints.cs`.
+    2. **Request/Response**:
+       - Create `Request.cs`: `public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);`
+       - Create `Body.cs`: `public sealed record Body(string Prop, ...);`
+
+    3. **Domain Method (If WRITE)**:
+       - Ensure `{{aggregate}}` has method `{{feature}}` that calls `RaiseEvent`.
+       - Ensure `ApplyEvent` handles the state change.

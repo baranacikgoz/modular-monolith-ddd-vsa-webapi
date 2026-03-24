@@ -91,6 +91,12 @@ public sealed class Result<T> : IResult
         return value is null ? Failure(errorIfValueNull) : Success(value);
     }
 
+    public static async Task<Result<T>> CreateAsync(Func<Task<T?>> taskToAwaitValue, Func<Error> errorFactoryIfValueNull)
+    {
+        var value = await taskToAwaitValue();
+        return value is null ? Failure(errorFactoryIfValueNull()) : Success(value);
+    }
+
     public static Result<T> Create(Func<T> funcToGetValue)
     {
         var value = funcToGetValue();
@@ -101,6 +107,12 @@ public sealed class Result<T> : IResult
     {
         var value = funcToGetValue();
         return value is null ? Failure(errorIfValueNull) : Success(value);
+    }
+
+    public static Result<T> Create(Func<T?> funcToGetValue, Func<Error> errorFactoryIfValueNull)
+    {
+        var value = funcToGetValue();
+        return value is null ? Failure(errorFactoryIfValueNull()) : Success(value);
     }
 
     public static Result<T> Success(T value)

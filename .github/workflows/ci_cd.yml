@@ -17,26 +17,13 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.x'
+          dotnet-version: '10.x'
 
-      - name: Remove docker-compose.dcproj # See https://github.com/dotnet/sdk/issues/35134
-        run: |
-          cp ModularMonolith.sln Temp_ModularMonolith.sln
-          dotnet sln ModularMonolith.sln remove ./docker-compose.dcproj
-
-      - name: Restore dependencies
-        run: dotnet restore ModularMonolith.sln
-
-      - name: Build
-        run: dotnet build ModularMonolith.sln --configuration Release --no-restore
+      - name: Restore & Build
+        run: dotnet build src/Host/Host.csproj --configuration Release
 
       - name: Test
-        run: dotnet test ModularMonolith.sln --configuration Release --no-restore --verbosity normal
-
-      - name: Revert removal of docker-compose.dcproj # See https://github.com/dotnet/sdk/issues/35134
-        run: |
-          rm ModularMonolith.sln
-          mv Temp_ModularMonolith.sln ModularMonolith.sln
+        run: bash ./run-tests.sh
 
   deploy:
     needs: build
@@ -74,20 +61,3 @@ jobs:
           file: src/Host/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/webapi:${{ env.VERSION }}
-
-      # - name: Update and Deploy on Remote Server # Updates the remote docker compose file with the new image tag and runs the new image
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}
-      #     username: ${{ secrets.SERVER_SSH_USER }}
-      #     key: ${{ secrets.SERVER_SSH_KEY }}
-      #     script: |
-      #       cd ~/backend
-      #       VERSION=${{ env.VERSION }}
-      #       USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-      #       sudo sed -i "s|$USERNAME/webapi:[^ ]*|$USERNAME/webapi:$VERSION|" docker-compose.yml
-      #       sudo docker login --username $USERNAME --password ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-      #       sudo docker compose pull webapi
-      #       sudo docker container stop webapi
-      #       sudo docker container rm webapi
-      #       sudo docker compose up -d --no-deps webapi

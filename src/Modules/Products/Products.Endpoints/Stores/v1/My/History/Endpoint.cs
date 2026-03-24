@@ -2,8 +2,8 @@ using Common.Application.Auth;
 using Common.Application.EventHistory;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,8 @@ internal static class Endpoint
             .AsNoTracking()
             .Where(x => x.OwnerId == currentUser.Id)
             .Select(x => x.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
+
             .BindAsync(async id => await dbContext
                 .GetEventHistoryAsync<Store, StoreId>(
                     nameof(Products),

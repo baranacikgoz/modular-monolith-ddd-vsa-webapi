@@ -12,7 +12,7 @@ skill:
        - *Note*: This project typically contains `NetArchTest` rules like "Domain cannot depend on Infrastructure".
 
     3. **Run Suite**:
-       - Command: `dotnet test --no-restore --verbosity minimal`
+       - Command: `bash ./run-tests.sh` (This implicitly handles all test projects safely via a dynamic `.slnf` avoiding `.dcproj` evaluation errors).
 
     4. **Report**:
        - If any test fails, analyze the stack trace and fix the code.

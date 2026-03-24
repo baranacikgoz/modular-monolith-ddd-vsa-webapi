@@ -1,5 +1,5 @@
 using Common.Application.Persistence.Outbox;
-using Common.Application.ValueConverters;
+using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

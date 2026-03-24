@@ -1,13 +1,14 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
+using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.My.RemoveProduct;
 
@@ -34,7 +35,7 @@ internal static class Endpoint
             .TagWith(nameof(RemoveMyProductAsync), "StoreByOwner", currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
             .Include(s => s.Products.Where(p => p.Id == request.Id))
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(nameof(Store), cancellationToken)
             .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == request.Id))
             .TapAsync(tuple =>
             {

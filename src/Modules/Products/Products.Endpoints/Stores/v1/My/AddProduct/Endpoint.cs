@@ -1,7 +1,7 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,13 +35,15 @@ internal static class Endpoint
             .Stores
             .TagWith(nameof(AddProductToMyStoreAsync), "StoreByOwner", currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
+
             .CombineAsync(store => dbContext
                 .ProductTemplates
                 .TagWith(nameof(AddProductToMyStoreAsync), "ActiveProductTemplateById", request.ProductTemplateId)
                 .Where(pt => pt.IsActive)
                 .Where(pt => pt.Id == request.ProductTemplateId)
-                .SingleAsResultAsync(cancellationToken))
+                .SingleAsResultAsync(resourceName: nameof(ProductTemplate), cancellationToken))
+
             .CombineAsync<Store, ProductTemplate, Product>(tuple =>
             {
                 var (store, productTemplate) = tuple;

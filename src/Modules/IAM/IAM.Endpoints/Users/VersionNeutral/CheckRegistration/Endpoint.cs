@@ -1,6 +1,6 @@
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

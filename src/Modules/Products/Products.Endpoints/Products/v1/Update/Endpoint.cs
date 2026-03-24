@@ -1,12 +1,13 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Persistence;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
+using Products.Domain.Products;
 
 namespace Products.Endpoints.Products.v1.Update;
 
@@ -31,7 +32,7 @@ internal static class Endpoint
             .Products
             .TagWith(nameof(UpdateProductAsync), request.Id)
             .Where(p => p.Id == request.Id)
-            .SingleAsResultAsync(cancellationToken)
+            .SingleAsResultAsync(nameof(Product), cancellationToken)
             .TapAsync(product => product.Update(request.Body.Name, request.Body.Description, request.Body.Quantity,
                 request.Body.Price))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));

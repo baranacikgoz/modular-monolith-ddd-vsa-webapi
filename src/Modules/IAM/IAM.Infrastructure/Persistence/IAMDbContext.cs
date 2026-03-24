@@ -1,8 +1,8 @@
 using Common.Application.Options;
-using Common.Application.Persistence.EntityConfigurations;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.Persistence.EntityConfigurations;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace IAM.Infrastructure.Persistence;
 
 #pragma warning disable S101 // Types should be named in PascalCase
-public class IAMDbContext(
+public partial class IAMDbContext(
 #pragma warning restore S101 // Types should be named in PascalCase
     DbContextOptions<IAMDbContext> options,
     IOptions<ObservabilityOptions> observabilityOptionsProvider,
@@ -42,13 +42,17 @@ public class IAMDbContext(
 
         if (observabilityOptionsProvider.Value.LogGeneratedSqlQueries)
         {
-#pragma warning disable
             optionsBuilder.LogTo(
-                sql => logger.LogDebug(sql), // Log the SQL query
+                sql => LoggerMessages.LogSql(logger, sql), // Log the SQL query
                 new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
                 LogLevel.Information // Set the log level
             );
-#pragma warning restore
         }
+    }
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
+        public static partial void LogSql(ILogger logger, string sql);
     }
 }
