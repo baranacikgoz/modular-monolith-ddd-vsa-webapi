@@ -35,7 +35,8 @@ internal static partial class Setup
             }
             catch (Exception ex)
             {
-                LoggerMessages.LogAssemblyLoadFailed(bootLogger, Path.GetFileName(dll), ex);
+                var fileName = Path.GetFileName(dll);
+                LoggerMessages.LogAssemblyLoadFailed(bootLogger, fileName, ex);
             }
         }
 
