@@ -7,7 +7,7 @@ namespace Products.Tests;
 
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
-    protected override string[] GetActiveModules() => ["Products", "Outbox"];
+    protected override string[] GetActiveModules() => ["Products", "Outbox", "IAM"];
 
     public override async Task InitializeAsync()
     {

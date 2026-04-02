@@ -12,9 +12,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Products\"/>
-    <Folder Include="ProductTemplates\"/>
-  </ItemGroup>
-
 </Project>

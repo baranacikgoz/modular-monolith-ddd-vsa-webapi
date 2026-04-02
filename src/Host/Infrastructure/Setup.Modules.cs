@@ -142,11 +142,31 @@ internal static partial class Setup
         }
     }
 
-    public static Assembly[] GetActiveModuleAssemblies(this IServiceCollection services)
+    public static Assembly[] GetActiveModuleAssemblies(IConfiguration configuration)
     {
-        var registry = (ModuleRegistry?)services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance;
-        var activeModuleNames = registry?.ActiveModuleNames.ToHashSet() ?? new HashSet<string>();
-        activeModuleNames.Add("Common");
+        var overrideModule = Environment.GetEnvironmentVariable("TestModuleOverride");
+        IReadOnlyList<string>? activeModulesConfig = null;
+
+        if (!string.IsNullOrWhiteSpace(overrideModule))
+        {
+            activeModulesConfig = overrideModule.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        }
+        else
+        {
+            var options = configuration.GetSection("Modules").Get<ModulesOptions>();
+            activeModulesConfig = options?.EnabledModules;
+        }
+
+        var loadAll = activeModulesConfig != null && activeModulesConfig.Contains("*");
+        var activeModuleNames = new HashSet<string> { "Common" };
+
+        if (!loadAll && activeModulesConfig != null)
+        {
+            foreach (var mod in activeModulesConfig)
+            {
+                activeModuleNames.Add(mod);
+            }
+        }
 
         return AppDomain.CurrentDomain.GetAssemblies()
             .Where(a =>
@@ -155,6 +175,11 @@ internal static partial class Setup
                 if (name == null)
                 {
                     return false;
+                }
+
+                if (loadAll)
+                {
+                    return true;
                 }
 
                 return activeModuleNames.Contains(name) ||
