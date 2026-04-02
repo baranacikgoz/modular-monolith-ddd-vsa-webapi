@@ -1,17 +1,33 @@
 namespace Host.Tests;
 
-public class SanityTests
+public class SanityTests : IAsyncLifetime
 {
     [Fact]
-    public void Boot_WithAllModules_ShouldResolveDependencies()
+    public async Task Boot_WithAllModules_ShouldResolveDependencies()
     {
         // Arrange
-        using var factory = new HostTestFactory();
+        var factory = new HostTestFactory();
+        await factory.InitializeAsync();
 
-        // Act & Assert
-        // Creating a client triggers the server boot and DI graph resolution.
-        var exception = Record.Exception(() => _ = factory.CreateClient());
+        try
+        {
+            // Act & Assert
+            // Creating a client triggers the server boot and DI graph resolution.
+            var exception = await Record.ExceptionAsync(async () =>
+            {
+                _ = factory.CreateClient();
+                await Task.CompletedTask;
+            });
 
-        Assert.Null(exception);
+            Assert.Null(exception);
+        }
+        finally
+        {
+            await factory.DisposeAsync();
+        }
     }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public Task DisposeAsync() => Task.CompletedTask;
 }

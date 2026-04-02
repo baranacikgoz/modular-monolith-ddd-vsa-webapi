@@ -1,11 +1,19 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
+using Testcontainers.PostgreSql;
+using Xunit;
 
 namespace Host.Tests;
 
-public class HostTestFactory : WebApplicationFactory<Program>
+public class HostTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
+        .WithImage("postgres:15-alpine")
+        .WithDatabase("host_test_db")
+        .WithUsername("postgres")
+        .WithPassword("postgres")
+        .Build();
+
     private string? _moduleOverride;
 
     public HostTestFactory WithModules(string modules)
@@ -14,11 +22,21 @@ public class HostTestFactory : WebApplicationFactory<Program>
         return this;
     }
 
+    public async Task InitializeAsync()
+    {
+        await _dbContainer.StartAsync();
+    }
+
+    async Task IAsyncLifetime.DisposeAsync()
+    {
+        await _dbContainer.StopAsync();
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // UseSetting is applied early to the builder's configuration.
-        builder.UseSetting("ConnectionString", "Host=localhost;Database=dummy;Username=postgres;Password=postgres");
-        builder.UseSetting("DatabaseOptions:ConnectionString", "Host=localhost;Database=dummy;Username=postgres;Password=postgres");
+        var connectionString = _dbContainer.GetConnectionString();
+        builder.UseSetting("ConnectionString", connectionString);
+        builder.UseSetting("DatabaseOptions:ConnectionString", connectionString);
 
         if (_moduleOverride != null)
         {
@@ -31,5 +49,12 @@ public class HostTestFactory : WebApplicationFactory<Program>
         }
 
         builder.UseEnvironment("Testing");
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await _dbContainer.DisposeAsync();
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 }
