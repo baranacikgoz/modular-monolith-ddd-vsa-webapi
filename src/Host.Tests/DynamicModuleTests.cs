@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Host.Tests;
 
+// Each test boots an independent host to verify module selection isolation.
+// Sharing a factory (IClassFixture) is intentionally avoided because tests require different module combinations.
 public class DynamicModuleTests
 {
     [Fact]

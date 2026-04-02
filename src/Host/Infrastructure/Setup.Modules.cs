@@ -11,7 +11,7 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    private sealed record ModuleRegistry(IReadOnlyList<string> ActiveModuleNames, IReadOnlyList<string> SkippedModuleNames);
+    private sealed record ModuleRegistry(IReadOnlyList<IModule> OrderedModules, IReadOnlyList<string> ActiveModuleNames, IReadOnlyList<string> SkippedModuleNames);
 
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
     {
@@ -72,6 +72,22 @@ internal static partial class Setup
             }
         }
 
+        if (!loadAll && activeModulesConfig != null)
+        {
+            var discoveredNames = modulesToLoad
+                .Select(m => m.Name)
+                .Concat(modulesToSkip)
+                .ToHashSet(StringComparer.Ordinal);
+
+            foreach (var requested in activeModulesConfig)
+            {
+                if (!discoveredNames.Contains(requested))
+                {
+                    LoggerMessages.LogUnknownModuleRequested(bootLogger, requested);
+                }
+            }
+        }
+
         var orderedModules = modulesToLoad.OrderBy(m => m.StartupPriority).ToList();
         foreach (var module in orderedModules)
         {
@@ -84,7 +100,7 @@ internal static partial class Setup
             }
         }
 
-        services.AddSingleton(new ModuleRegistry(orderedModules.Select(m => m.Name).ToList(), modulesToSkip));
+        services.AddSingleton(new ModuleRegistry(orderedModules, orderedModules.Select(m => m.Name).ToList(), modulesToSkip));
 
         services.AddCustomRateLimiting(configuration, rateLimitingPolicies.ToArray());
         services.AddFluentValidationAutoValidation();
@@ -94,10 +110,9 @@ internal static partial class Setup
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
-        var modules = app.Services.GetServices<IModule>().OrderBy(m => m.StartupPriority).ToList();
         var registry = app.Services.GetRequiredService<ModuleRegistry>();
         
-        var loaded = string.Join(", ", modules.Select(m => m.Name));
+        var loaded = string.Join(", ", registry.OrderedModules.Select(m => m.Name));
         LoggerMessages.LogModulesLoaded(app.Logger, loaded);
 
         if (registry.SkippedModuleNames.Count > 0)
@@ -106,7 +121,7 @@ internal static partial class Setup
             LoggerMessages.LogModulesSkipped(app.Logger, skipped);
         }
 
-        foreach (var module in modules)
+        foreach (var module in registry.OrderedModules)
         {
             module.UseModule(app);
         }
@@ -122,14 +137,17 @@ internal static partial class Setup
         [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
         public static partial void LogModulesSkipped(ILogger logger, string skippedModules);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to load assembly '{AssemblyFileName}', skipping.")]
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to load assembly '{AssemblyFileName}', skipping. This may indicate a corrupt or incompatible module binary.")]
         public static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Module '{ModuleName}' was requested in configuration but no IModule implementation with that name was found. Check for typos.")]
+        public static partial void LogUnknownModuleRequested(ILogger logger, string moduleName);
     }
 
     public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
     {
-        var modules = app.Services.GetServices<IModule>().OrderBy(m => m.StartupPriority);
-        foreach (var module in modules)
+        var registry = app.Services.GetRequiredService<ModuleRegistry>();
+        foreach (var module in registry.OrderedModules)
         {
             module.MapEndpoints(app);
         }
