@@ -33,9 +33,9 @@ internal static partial class Setup
         }
 
         var overrideModule = configuration.GetValue<string>("TestModuleOverride");
-        var activeModulesConfig = overrideModule != null 
+        IReadOnlyList<string>? activeModulesConfig = overrideModule != null 
             ? overrideModule.Split(',') 
-            : configuration.GetSection("Modules").Get<string[]>();
+            : configuration.GetSection(nameof(ModulesOptions)).Get<ModulesOptions>()?.EnabledModules;
             
         var loadAll = activeModulesConfig != null && activeModulesConfig.Contains("*");
 
