@@ -21,7 +21,7 @@ internal static partial class Setup
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration,
         IWebHostEnvironment env)
     {
-        var moduleAssemblies = Setup.GetActiveModuleAssemblies(configuration);
+        var moduleAssemblies = services.GetActiveModuleAssemblies();
         
         return services
             .Configure<JsonOptions>(x =>

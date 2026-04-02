@@ -31,14 +31,9 @@ internal static partial class Setup
             }
         }
 
-        var overrideModule = configuration.GetValue<string>("TestModuleOverride");
-        IReadOnlyList<string>? activeModulesConfig = overrideModule != null 
-            ? overrideModule.Split(',') 
-            : configuration.GetSection(nameof(ModulesOptions)).Get<ModulesOptions>()?.EnabledModules;
-            
-        var loadAll = activeModulesConfig != null && activeModulesConfig.Contains("*");
+        var (activeModulesConfig, loadAll) = GetEnabledModuleNames(configuration);
 
-        if (!loadAll && activeModulesConfig == null)
+        if (!loadAll && (activeModulesConfig == null || activeModulesConfig.Count == 0))
         {
             throw new InvalidOperationException(
                 "Modules configuration is missing or invalid. Use '*' or an array of module names.");
@@ -142,27 +137,14 @@ internal static partial class Setup
         }
     }
 
-    public static Assembly[] GetActiveModuleAssemblies(IConfiguration configuration)
+    public static Assembly[] GetActiveModuleAssemblies(this IServiceCollection services)
     {
-        var overrideModule = Environment.GetEnvironmentVariable("TestModuleOverride");
-        IReadOnlyList<string>? activeModulesConfig = null;
-
-        if (!string.IsNullOrWhiteSpace(overrideModule))
-        {
-            activeModulesConfig = overrideModule.Split(',', StringSplitOptions.RemoveEmptyEntries);
-        }
-        else
-        {
-            var options = configuration.GetSection("Modules").Get<ModulesOptions>();
-            activeModulesConfig = options?.EnabledModules;
-        }
-
-        var loadAll = activeModulesConfig != null && activeModulesConfig.Contains("*");
         var activeModuleNames = new HashSet<string> { "Common" };
 
-        if (!loadAll && activeModulesConfig != null)
+        var registry = services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as ModuleRegistry;
+        if (registry != null)
         {
-            foreach (var mod in activeModulesConfig)
+            foreach (var mod in registry.ActiveModuleNames)
             {
                 activeModuleNames.Add(mod);
             }
@@ -177,14 +159,27 @@ internal static partial class Setup
                     return false;
                 }
 
-                if (loadAll)
-                {
-                    return true;
-                }
-
                 return activeModuleNames.Contains(name) ||
                        activeModuleNames.Any(m => name.StartsWith(m + ".", StringComparison.Ordinal));
             })
             .ToArray();
+    }
+
+    private static (IReadOnlyList<string>? Names, bool LoadAll) GetEnabledModuleNames(IConfiguration configuration)
+    {
+        var overrideModule = configuration["TestModuleOverride"];
+        IReadOnlyList<string>? names;
+
+        if (!string.IsNullOrWhiteSpace(overrideModule))
+        {
+            names = overrideModule.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        }
+        else
+        {
+            names = configuration.GetSection(nameof(ModulesOptions)).Get<ModulesOptions>()?.EnabledModules;
+        }
+
+        var loadAll = names != null && names.Contains("*");
+        return (names, loadAll);
     }
 }
