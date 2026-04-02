@@ -25,7 +25,7 @@ This repository includes the following features:
 
 - **Event-Driven Architecture**: Supports event-driven communication between components.
 - **Modular Monolithic Architecture**: Organizes code into modules for better separation of concerns.
-- **Dynamic Module Registration**: Configuration-driven module loading via `appsettings.json`, enabling true microservice-like deploy isolation without recompilation.
+- **Dynamic Module Registration**: Configuration-driven module loading via `modules.json` and `ModulesOptions`, enabling explicit startup priority ordering and true microservice-like deployment isolation without recompilation.
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
