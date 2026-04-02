@@ -18,6 +18,9 @@ internal static partial class Setup
         var executingDir = Path.GetDirectoryName(typeof(Program).Assembly.Location) ?? AppDomain.CurrentDomain.BaseDirectory;
         var dllFiles = Directory.GetFiles(executingDir, "*.dll");
 
+        using var loggerFactory = LoggerFactory.Create(b => b.AddConsole());
+        var bootLogger = loggerFactory.CreateLogger(typeof(Setup).FullName!);
+
         foreach (var dll in dllFiles)
         {
             try
@@ -30,9 +33,9 @@ internal static partial class Setup
                     AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignored
+                LoggerMessages.LogAssemblyLoadFailed(bootLogger, Path.GetFileName(dll), ex);
             }
         }
 
@@ -117,6 +120,9 @@ internal static partial class Setup
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
         public static partial void LogModulesSkipped(ILogger logger, string skippedModules);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Failed to load assembly '{AssemblyFileName}', skipping.")]
+        public static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
     }
 
     public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
@@ -155,6 +161,9 @@ internal static partial class Setup
             }
         }
 
+        // Pre-compute prefixes to avoid per-assembly string allocations in the filter loop.
+        var activePrefixes = activeModuleNames.Select(m => m + ".").ToList();
+
         return AppDomain.CurrentDomain.GetAssemblies()
             .Where(a =>
             {
@@ -165,7 +174,7 @@ internal static partial class Setup
                 }
 
                 return activeModuleNames.Contains(name) ||
-                       activeModuleNames.Any(m => name.StartsWith(m + ".", StringComparison.Ordinal));
+                       activePrefixes.Exists(prefix => name.StartsWith(prefix, StringComparison.Ordinal));
             })
             .ToArray();
     }

@@ -35,7 +35,9 @@ public class DynamicModuleTests
          _ = factory.CreateClient();
 
          // Assert
-         var resolvedModules = factory.Services.GetServices<IModule>().ToList();
+         var resolvedModules = factory.Services.GetServices<IModule>()
+             .OrderBy(m => m.StartupPriority)
+             .ToList();
          
          // Both should be present
          Assert.Equal(2, resolvedModules.Count);
