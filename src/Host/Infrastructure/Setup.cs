@@ -18,11 +18,11 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    private static Assembly[] _moduleAssemblies => GetActiveModuleAssemblies();
-
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration,
         IWebHostEnvironment env)
     {
+        var moduleAssemblies = services.GetActiveModuleAssemblies();
+        
         return services
             .Configure<JsonOptions>(x =>
             {
@@ -44,8 +44,8 @@ internal static partial class Setup
                 env,
                 [])
             .AddCustomCors()
-            .AddValidatorsFromAssemblies(_moduleAssemblies)
-            .AddCommonDependencies(configuration)
+            .AddValidatorsFromAssemblies(moduleAssemblies)
+            .AddCommonDependencies(configuration, moduleAssemblies)
             .AddEnrichLogsWithUserInfoMiddlware();
     }
 
@@ -101,11 +101,12 @@ internal static partial class Setup
         });
     }
 
-    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config)
+    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config,
+        Assembly[] moduleAssemblies)
     {
         return services
             .AddCommonCaching(config)
-            .AddCommonEventBus(config, _moduleAssemblies)
+            .AddCommonEventBus(config, moduleAssemblies)
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)

@@ -11,8 +11,7 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    private static readonly List<IModule> RegisteredModules = new();
-    private static readonly List<string> SkippedModules = new();
+    private sealed record ModuleRegistry(IReadOnlyList<string> ActiveModuleNames, IReadOnlyList<string> SkippedModuleNames);
 
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
     {
@@ -47,6 +46,7 @@ internal static partial class Setup
 
         var rateLimitingPolicies = new List<IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>>();
         var modulesToLoad = new List<IModule>();
+        var modulesToSkip = new List<string>();
 
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
@@ -62,23 +62,25 @@ internal static partial class Setup
                     }
                     else
                     {
-                        SkippedModules.Add(module.Name);
+                        modulesToSkip.Add(module.Name);
                     }
                 }
             }
         }
 
-        foreach (var module in modulesToLoad.OrderBy(m => m.StartupPriority))
+        var orderedModules = modulesToLoad.OrderBy(m => m.StartupPriority).ToList();
+        foreach (var module in orderedModules)
         {
             module.AddServices(services, configuration);
             services.AddSingleton(module);
-            RegisteredModules.Add(module);
 
             if (module.RateLimitingPolicies != null)
             {
                 rateLimitingPolicies.Add(module.RateLimitingPolicies);
             }
         }
+
+        services.AddSingleton(new ModuleRegistry(orderedModules.Select(m => m.Name).ToList(), modulesToSkip));
 
         services.AddCustomRateLimiting(configuration, rateLimitingPolicies.ToArray());
         services.AddFluentValidationAutoValidation();
@@ -89,13 +91,14 @@ internal static partial class Setup
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
         var modules = app.Services.GetServices<IModule>().OrderBy(m => m.StartupPriority).ToList();
+        var registry = app.Services.GetRequiredService<ModuleRegistry>();
         
         var loaded = string.Join(", ", modules.Select(m => m.Name));
         LoggerMessages.LogModulesLoaded(app.Logger, loaded);
 
-        if (SkippedModules.Count > 0)
+        if (registry.SkippedModuleNames.Count > 0)
         {
-            var skipped = string.Join(", ", SkippedModules);
+            var skipped = string.Join(", ", registry.SkippedModuleNames);
             LoggerMessages.LogModulesSkipped(app.Logger, skipped);
         }
 
@@ -139,9 +142,10 @@ internal static partial class Setup
         }
     }
 
-    public static Assembly[] GetActiveModuleAssemblies()
+    public static Assembly[] GetActiveModuleAssemblies(this IServiceCollection services)
     {
-        var activeModuleNames = RegisteredModules.Select(m => m.Name).ToHashSet();
+        var registry = (ModuleRegistry?)services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance;
+        var activeModuleNames = registry?.ActiveModuleNames.ToHashSet() ?? new HashSet<string>();
         activeModuleNames.Add("Common");
 
         return AppDomain.CurrentDomain.GetAssemblies()
