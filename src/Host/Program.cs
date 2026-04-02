@@ -25,8 +25,8 @@ try
     // Add services to the container.
     builder
         .Services
-        .AddInfrastructure(builder.Configuration, builder.Environment)
-        .AddModules(builder.Configuration);
+        .AddModules(builder.Configuration)
+        .AddInfrastructure(builder.Configuration, builder.Environment);
 
     var isSwaggerEnabled = builder.Configuration
                                .GetSection(nameof(OpenApiOptions))

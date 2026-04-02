@@ -1,5 +1,6 @@
 using Common.Domain.StronglyTypedIds;
 using IAM.Application.Auth;
+using Common.Application.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,11 @@ namespace IAM.Infrastructure.Persistence.Seeding;
 
 internal partial class Seeder
 {
+#pragma warning disable S2325
+#pragma warning disable CA1822
     private async Task SeedRolesAsync()
+#pragma warning restore CA1822
+#pragma warning restore S2325
     {
         foreach (var role in CustomRoles.All)
         {

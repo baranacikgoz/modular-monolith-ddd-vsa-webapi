@@ -8,7 +8,6 @@ internal static class Setup
         var environmentName = builder.Environment.EnvironmentName;
         var configuration = builder.Configuration;
 
-        AddJsonFile(configuration, environmentName, "appsettings");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database");
@@ -21,6 +20,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/outbox");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/backgroundJobs");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/caching");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/modules");
 
         configuration.AddEnvironmentVariables();
 

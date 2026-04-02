@@ -78,5 +78,9 @@ trigger: always_on
     1.  The new test FAILS (Red).
     2.  The code is changed.
     3.  The test PASSES (Green).
-    4.  The `run-quality-gate` passes (No regressions).
 *   **Trace Analysis**: Use OpenTelemetry Trace IDs (if provided) to locate the exact failing Span in the `src/Common` or `Modules` logic.
+
+## 8. Dynamic Module Registration
+*   **Configuration-Driven**: Modules MUST be managed fully through `appsettings.json` via the `"Modules"` array (or `*`). Never hardcode `.Add[Module]()` inside `Setup.Modules.cs`.
+*   **IModule Implementation**: Each new module MUST provide exactly one class implementing `IModule` to hook into DI and Endpoint scanning dynamically.
+*   **Test Isolation**: Modules under test MUST be strictly enforced in test factories via the `TestModuleOverride` environment variable. Never let integration tests bleed into the global application host context.

@@ -7,6 +7,8 @@ namespace IAM.Tests;
 
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
+    protected override string[] GetActiveModules() => ["IAM", "Outbox"];
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();

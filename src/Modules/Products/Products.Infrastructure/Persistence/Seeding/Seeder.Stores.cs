@@ -9,8 +9,20 @@ internal sealed partial class Seeder
 {
     private async Task<List<StoreId>> SeedStoresAsync(CancellationToken cancellationToken)
     {
-        var getSeedUserIdsResponse =
-            await requestClient.SendAsync(new GetSeedUserIdsRequest(StoreCount), cancellationToken);
+        GetSeedUserIdsResponse getSeedUserIdsResponse;
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
+            getSeedUserIdsResponse = await requestClient.SendAsync(new GetSeedUserIdsRequest(StoreCount), linkedCts.Token);
+        }
+        catch (Exception ex)
+        {
+            LoggerMessages.LogIamModuleNotAvailable(logger, ex.Message);
+            // If the IAM module is not loaded or MassTransit times out, gracefully skip seeding stores.
+            return new List<StoreId>();
+        }
+        
         var userIds = getSeedUserIdsResponse.UserIds;
 
         var storeIds = new List<StoreId>(StoreCount);

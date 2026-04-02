@@ -27,9 +27,9 @@ public class SelfRegisterTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
         var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>>>();
 
-        if (!await roleManager.RoleExistsAsync(IAM.Application.Auth.CustomRoles.Basic))
+        if (!await roleManager.RoleExistsAsync(Common.Application.Auth.CustomRoles.Basic))
         {
-            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>(IAM.Application.Auth.CustomRoles.Basic) { NormalizedName = IAM.Application.Auth.CustomRoles.Basic.ToUpperInvariant() });
+            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>(Common.Application.Auth.CustomRoles.Basic) { NormalizedName = Common.Application.Auth.CustomRoles.Basic.ToUpperInvariant() });
         }
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);

@@ -2,6 +2,7 @@ using System.Globalization;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using IAM.Application.Auth;
+using Common.Application.Auth;
 using IAM.Application.Extensions;
 using IAM.Application.Otp.Services;
 using IAM.Domain.Identity;

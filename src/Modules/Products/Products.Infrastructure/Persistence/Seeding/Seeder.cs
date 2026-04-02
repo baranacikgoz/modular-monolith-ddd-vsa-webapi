@@ -1,11 +1,13 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Microsoft.Extensions.Logging;
 
 namespace Products.Infrastructure.Persistence.Seeding;
 
 internal sealed partial class Seeder(
     IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse> requestClient,
-    ProductsDbContext dbContext
+    ProductsDbContext dbContext,
+    ILogger<Seeder> logger
 )
 {
     /// <summary>
@@ -23,5 +25,11 @@ internal sealed partial class Seeder(
         var storeProductCountPerStore = ProductCount / StoreCount;
 
         await SeedProductAsync(storeIds, productIds, storeProductCountPerStore, cancellationToken);
+    }
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Warning, Message = "IAM module not available or request timed out. Skipping store seeding. Error: {ErrorMessage}")]
+        public static partial void LogIamModuleNotAvailable(ILogger logger, string errorMessage);
     }
 }

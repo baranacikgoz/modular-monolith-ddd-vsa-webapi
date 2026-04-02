@@ -19,6 +19,12 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithPassword("postgres")
         .Build();
 
+    protected virtual string[] GetActiveModules() => ["*"];
+
+    public IntegrationTestFactory()
+    {
+    }
+
     public string ConnectionString => _dbContainer.GetConnectionString();
 
     public virtual async Task InitializeAsync()
@@ -33,6 +39,9 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        var overrideModule = string.Join(",", GetActiveModules());
+        builder.UseSetting("TestModuleOverride", overrideModule);
+
         builder.ConfigureAppConfiguration((context, config) =>
         {
             var confDict = new Dictionary<string, string?>

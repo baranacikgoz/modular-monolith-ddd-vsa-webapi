@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IAM.Infrastructure.Persistence;
 
-internal static class Setup
+public static class Setup
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
@@ -17,9 +17,9 @@ internal static class Setup
             .AddModuleDbContext<IIAMDbContext, IAMDbContext>(nameof(IAM));
     }
 
-    public static WebApplication UsePersistence(this WebApplication app)
+    public static IApplicationBuilder UsePersistence(this IApplicationBuilder app)
     {
-        using (var scope = app.Services.CreateScope())
+        using (var scope = app.ApplicationServices.CreateScope())
         {
             var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
             busControl.Start();
