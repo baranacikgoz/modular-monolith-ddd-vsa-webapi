@@ -10,6 +10,7 @@ namespace Notifications.Infrastructure;
 public sealed class NotificationsModule : IModule
 {
     public string Name => "Notifications";
+    public int StartupPriority => 3;
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {

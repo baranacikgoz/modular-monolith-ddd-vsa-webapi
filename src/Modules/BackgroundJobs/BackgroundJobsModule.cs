@@ -14,6 +14,7 @@ namespace BackgroundJobs;
 public sealed class BackgroundJobsModule : IModule
 {
     public string Name => "BackgroundJobs";
+    public int StartupPriority => 0; // Probably the most core thing to run
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -48,7 +49,8 @@ public sealed class BackgroundJobsModule : IModule
 
     public void UseModule(IApplicationBuilder app)
     {
-        var dashboardPath = app.ApplicationServices.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.DashboardPath;
+        var dashboardPath = app.ApplicationServices.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value
+            .DashboardPath;
 
         app.UseHangfireDashboard(dashboardPath,
             new DashboardOptions { AsyncAuthorization = [new HangfireCustomAuthorizationFilter()] });

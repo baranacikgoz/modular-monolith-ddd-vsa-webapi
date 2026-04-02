@@ -46,6 +46,7 @@ internal static partial class Setup
         }
 
         var rateLimitingPolicies = new List<IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>>();
+        var modulesToLoad = new List<IModule>();
 
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
@@ -57,20 +58,25 @@ internal static partial class Setup
 
                     if (loadAll || (activeModulesConfig != null && activeModulesConfig.Contains(module.Name)))
                     {
-                        module.AddServices(services, configuration);
-                        services.AddSingleton(module);
-                        RegisteredModules.Add(module);
-
-                        if (module.RateLimitingPolicies != null)
-                        {
-                            rateLimitingPolicies.Add(module.RateLimitingPolicies);
-                        }
+                        modulesToLoad.Add(module);
                     }
                     else
                     {
                         SkippedModules.Add(module.Name);
                     }
                 }
+            }
+        }
+
+        foreach (var module in modulesToLoad.OrderBy(m => m.StartupPriority))
+        {
+            module.AddServices(services, configuration);
+            services.AddSingleton(module);
+            RegisteredModules.Add(module);
+
+            if (module.RateLimitingPolicies != null)
+            {
+                rateLimitingPolicies.Add(module.RateLimitingPolicies);
             }
         }
 
@@ -82,7 +88,7 @@ internal static partial class Setup
 
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
-        var modules = app.Services.GetServices<IModule>().ToList();
+        var modules = app.Services.GetServices<IModule>().OrderBy(m => m.StartupPriority).ToList();
         
         var loaded = string.Join(", ", modules.Select(m => m.Name));
         LoggerMessages.LogModulesLoaded(app.Logger, loaded);
@@ -112,7 +118,7 @@ internal static partial class Setup
 
     public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
     {
-        var modules = app.Services.GetServices<IModule>();
+        var modules = app.Services.GetServices<IModule>().OrderBy(m => m.StartupPriority);
         foreach (var module in modules)
         {
             module.MapEndpoints(app);

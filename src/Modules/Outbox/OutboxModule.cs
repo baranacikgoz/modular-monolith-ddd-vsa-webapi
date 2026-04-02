@@ -18,6 +18,7 @@ namespace Outbox;
 public sealed partial class OutboxModule : IModule
 {
     public string Name => "Outbox";
+    public int StartupPriority => 1;
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {

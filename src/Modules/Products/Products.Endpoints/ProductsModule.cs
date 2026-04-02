@@ -1,6 +1,8 @@
+using Common.Application.Options;
 using Common.Endpoints.Versioning;
 using Common.Infrastructure.Modules;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,7 @@ using Products.Endpoints.Products;
 using Products.Endpoints.ProductTemplates;
 using Products.Endpoints.Stores;
 using Products.Infrastructure.Persistence;
+using Products.Infrastructure.RateLimiting;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace Products.Endpoints;
@@ -15,6 +18,7 @@ namespace Products.Endpoints;
 public sealed class ProductsModule : IModule
 {
     public string Name => "Products";
+    public int StartupPriority => 4;
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -40,5 +44,5 @@ public sealed class ProductsModule : IModule
         versionedApiGroup.MapProductTemplatesEndpoints();
     }
 
-    public IEnumerable<Action<global::Microsoft.AspNetCore.RateLimiting.RateLimiterOptions, global::Common.Application.Options.CustomRateLimitingOptions>>? RateLimitingPolicies => global::Products.Infrastructure.RateLimiting.Policies.Get();
+    public IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>? RateLimitingPolicies => Policies.Get();
 }

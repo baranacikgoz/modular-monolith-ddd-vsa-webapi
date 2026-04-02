@@ -1,4 +1,4 @@
-using Common.Endpoints.Versioning;
+using Common.Application.Options;
 using Common.Infrastructure.Modules;
 using IAM.Endpoints.Captcha.VersionNeutral;
 using IAM.Endpoints.Otp.VersionNeutral;
@@ -8,8 +8,10 @@ using IAM.Infrastructure.Auth;
 using IAM.Infrastructure.Captcha;
 using IAM.Infrastructure.Identity;
 using IAM.Infrastructure.Persistence;
+using IAM.Infrastructure.RateLimiting;
 using IAM.Infrastructure.Tokens;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,7 @@ namespace IAM.Endpoints;
 public sealed class IamModule : IModule
 {
     public string Name => "IAM";
+    public int StartupPriority => 2;
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -49,5 +52,5 @@ public sealed class IamModule : IModule
         versionNeutralApiGroup.MapCaptchaEndpoints();
     }
 
-    public IEnumerable<Action<global::Microsoft.AspNetCore.RateLimiting.RateLimiterOptions, global::Common.Application.Options.CustomRateLimitingOptions>>? RateLimitingPolicies => global::IAM.Infrastructure.RateLimiting.Policies.Get();
+    public IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>? RateLimitingPolicies => Policies.Get();
 }
