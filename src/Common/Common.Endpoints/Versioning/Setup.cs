@@ -1,10 +1,13 @@
 using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Asp.Versioning.Conventions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Host.Infrastructure;
+namespace Common.Endpoints.Versioning;
 
-internal static partial class Setup
+public static class Setup
 {
     public static IServiceCollection AddVersioning(this IServiceCollection services)
     {
@@ -24,9 +27,9 @@ internal static partial class Setup
             .Services;
     }
 
-    public static ApiVersionSet GetApiVersionSet(this WebApplication app)
+    public static ApiVersionSet GetApiVersionSet(this IEndpointRouteBuilder endpoints)
     {
-        return app
+        return endpoints
             .NewApiVersionSet()
             .HasApiVersion(1)
             // .HasApiVersion(2)

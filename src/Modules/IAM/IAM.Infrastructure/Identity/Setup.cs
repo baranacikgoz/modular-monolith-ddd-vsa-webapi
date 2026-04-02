@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IAM.Infrastructure.Identity;
 
-internal static class Setup
+public static class Setup
 {
     public static IServiceCollection AddIdentityInfrastructure(this IServiceCollection services)
     {

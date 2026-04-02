@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework Condition="'$(MSBuildProjectExtension)' == '.csproj' And !$(MSBuildProjectName.Contains('SourceGenerators'))">net10.0</TargetFramework>
+    <TargetFramework Condition="'$(MSBuildProjectExtension)' == '.csproj'">net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>preview</LangVersion>
@@ -16,12 +16,7 @@
     <Using Include="System.Guid" Alias="DefaultIdType"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(MSBuildThisFileDirectory)src\Common\Common.SourceGenerators\Common.SourceGenerators.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"
-                      Condition="!$(MSBuildProjectName.StartsWith('Common')) And $(MSBuildProjectName.EndsWith('Application'))"/>
-  </ItemGroup>
+
 
   <PropertyGroup>
     <AnalysisMode>all</AnalysisMode>

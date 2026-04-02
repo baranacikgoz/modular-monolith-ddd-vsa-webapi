@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace IAM.Infrastructure.Captcha;
 
-internal static class Setup
+public static class Setup
 {
     public static IServiceCollection AddCaptchaInfrastructure(this IServiceCollection services)
     {

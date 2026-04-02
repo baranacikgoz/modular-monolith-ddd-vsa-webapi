@@ -8,7 +8,7 @@ using Products.Infrastructure.Persistence.Seeding;
 
 namespace Products.Infrastructure.Persistence;
 
-internal static class Setup
+public static class Setup
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services)
     {
@@ -17,9 +17,9 @@ internal static class Setup
             .AddModuleDbContext<IProductsDbContext, ProductsDbContext>(nameof(Products));
     }
 
-    public static WebApplication UsePersistence(this WebApplication app)
+    public static IApplicationBuilder UsePersistence(this IApplicationBuilder app)
     {
-        using (var scope = app.Services.CreateScope())
+        using (var scope = app.ApplicationServices.CreateScope())
         {
             var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
             busControl.Start();

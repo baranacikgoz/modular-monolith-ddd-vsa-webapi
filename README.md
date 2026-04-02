@@ -25,6 +25,7 @@ This repository includes the following features:
 
 - **Event-Driven Architecture**: Supports event-driven communication between components.
 - **Modular Monolithic Architecture**: Organizes code into modules for better separation of concerns.
+- **Dynamic Module Registration**: Configuration-driven module loading via `modules.json` and `ModulesOptions`, enabling explicit startup priority ordering and true microservice-like deployment isolation without recompilation.
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
@@ -109,57 +110,3 @@ Guidelines for contributing to the project, including how to report bugs, sugges
 ## License
 
 Information about the project's license.
-
-## Getting Started
-
-- Clone the repository: `git@github.com:baranacikgoz/modular-monolith-ddd-vsa-webapi.git`
-
-### VSCode
-
-#### One-time setup
-
-- Use appropriate ``tasks.json`` depending on your OS
-    - Copy ``tasks.windows.json`` or ``tasks.unix.json``, into a new file with the name ``tasks.json``.
-
-##### Unix only
-
-- Make before and after restore & build scripts executable
-    - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
-    - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
-    - ``chmod +x .vscode/revert_exclude.sh``
-
-#### Development
-
-- Run required services
-    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
-      ``Compose Up - Select Services``. Select the following services:
-        - ``mm.database``
-        - ``mm.rabbitmq``
-        - ``mm.seq`` - Optional but recommended
-    - Or run the following command in terminal:
-        ```bash
-        docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
-        ```
-- Run the application
-    - Press ``F5`` to start the application in debug mode
-
-### Visual Studio
-
-- Open the solution file ``ModularMonolith.sln`` in Visual Studio
-
-- Set ``Docker Compose`` as the startup project
-    - Right click on the ``Docker Compose`` project and select ``Set as Startup Project`` if it's not already set
-
-- Start application
-
-<!-- ## API Documentation
-
-Links to API documentation (if available), or instructions on how to generate it.
-
-## Contributing
-
-Guidelines for contributing to the project, including how to report bugs, suggest features, or submit pull requests.
-
-## License
-
-Information about the project's license. -->

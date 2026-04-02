@@ -1,7 +1,7 @@
 using System.Collections.Frozen;
 using Common.Application.Auth;
 
-namespace IAM.Application.Auth;
+namespace Common.Application.Auth;
 
 public static class CustomPermissions
 {

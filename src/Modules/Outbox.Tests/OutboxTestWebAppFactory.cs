@@ -11,6 +11,8 @@ namespace Outbox.Tests;
 
 public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
 {
+    protected override string[] GetActiveModules() => ["Outbox", "IAM"];
+
     private readonly KafkaContainer _kafkaContainer = new KafkaBuilder()
         .WithImage("confluentinc/cp-kafka:7.4.0")
         .Build();

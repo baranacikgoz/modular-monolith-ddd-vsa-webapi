@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IAM.Infrastructure.Auth;
 
-internal static class Setup
+public static class Setup
 {
-    internal static IServiceCollection AddAuthInfrastructure(this IServiceCollection services,
+    public static IServiceCollection AddAuthInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
         services
@@ -20,21 +20,9 @@ internal static class Setup
             .AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>()
             .AddJwtAuthentication(configuration)
             .AddAuthorization()
-            .AddCurrentUser()
             .AddTransient<IRoleService, RoleService>();
 
         return services;
     }
 
-    private static IServiceCollection AddCurrentUser(this IServiceCollection services)
-    {
-        return services
-            .AddScoped<ICurrentUser, CurrentUser>(sp =>
-            {
-                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                var user = httpContext?.User;
-
-                return new CurrentUser(user);
-            });
-    }
 }

@@ -1,6 +1,8 @@
 using System.Reflection;
 using Common.Application.JsonConverters;
 using Common.Application.Options;
+using Common.Endpoints.Versioning;
+using Common.Infrastructure.Auth;
 using Common.Infrastructure.Caching;
 using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Localization;
@@ -16,28 +18,11 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    private static readonly Assembly[] _moduleAssemblies =
-    [
-        typeof(IAssemblyReference).Assembly,
-
-        typeof(IAM.Domain.IAssemblyReference).Assembly,
-        typeof(IAM.Application.IAssemblyReference).Assembly,
-        typeof(IAM.Infrastructure.IAssemblyReference).Assembly,
-        typeof(IAM.Endpoints.IAssemblyReference).Assembly,
-
-        typeof(Products.Domain.IAssemblyReference).Assembly,
-        typeof(Products.Application.IAssemblyReference).Assembly,
-        typeof(Products.Infrastructure.IAssemblyReference).Assembly,
-        typeof(Products.Endpoints.IAssemblyReference).Assembly,
-
-        typeof(Notifications.Domain.IAssemblyReference).Assembly,
-        typeof(Notifications.Application.IAssemblyReference).Assembly,
-        typeof(Notifications.Infrastructure.IAssemblyReference).Assembly
-    ];
-
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration,
         IWebHostEnvironment env)
     {
+        var moduleAssemblies = services.GetActiveModuleAssemblies();
+        
         return services
             .Configure<JsonOptions>(x =>
             {
@@ -59,21 +44,31 @@ internal static partial class Setup
                 env,
                 [])
             .AddCustomCors()
-            .AddValidatorsFromAssemblies(_moduleAssemblies)
-            .AddCommonDependencies(configuration)
+            .AddValidatorsFromAssemblies(moduleAssemblies)
+            .AddCommonDependencies(configuration, moduleAssemblies)
             .AddEnrichLogsWithUserInfoMiddlware();
     }
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
     {
-        return app
+        app
             .UseRequestResponseLoggingMiddleware()
             .UseCommonResxLocalization()
             .UseRateLimiter()
             .UseCors()
-            .UseGlobalExceptionHandlingMiddleware()
-            .UseAuth(x => x.UseMiddleware<EnrichLogsWithUserInfoMiddleware>())
-            .UseObservability();
+            .UseGlobalExceptionHandlingMiddleware();
+
+        var hasAuth = app.ApplicationServices.GetService<Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider>() != null;
+        if (hasAuth)
+        {
+            app.UseAuthentication()
+               .UseMiddleware<EnrichLogsWithUserInfoMiddleware>()
+               .UseAuthorization();
+        }
+
+        app.UseObservability();
+        
+        return app;
     }
 
     private static IServiceCollection AddCustomCors(this IServiceCollection services)
@@ -106,15 +101,17 @@ internal static partial class Setup
         });
     }
 
-    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config)
+    private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config,
+        Assembly[] moduleAssemblies)
     {
         return services
             .AddCommonCaching(config)
-            .AddCommonEventBus(config, _moduleAssemblies)
+            .AddCommonEventBus(config, moduleAssemblies)
             .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
-            .AddCommonPersistence();
+            .AddCommonPersistence()
+            .AddCommonAuth();
     }
 
     private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
