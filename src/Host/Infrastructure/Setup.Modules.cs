@@ -15,7 +15,7 @@ internal static partial class Setup
 
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
     {
-        var executingDir = AppDomain.CurrentDomain.BaseDirectory;
+        var executingDir = Path.GetDirectoryName(typeof(Program).Assembly.Location) ?? AppDomain.CurrentDomain.BaseDirectory;
         var dllFiles = Directory.GetFiles(executingDir, "*.dll");
 
         foreach (var dll in dllFiles)
@@ -23,7 +23,12 @@ internal static partial class Setup
             try
             {
                 var assemblyName = AssemblyName.GetAssemblyName(dll);
-                AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
+                if (assemblyName.Name != null && 
+                    !assemblyName.Name.StartsWith("System.", StringComparison.Ordinal) && 
+                    !assemblyName.Name.StartsWith("Microsoft.", StringComparison.Ordinal))
+                {
+                    AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
+                }
             }
             catch
             {
