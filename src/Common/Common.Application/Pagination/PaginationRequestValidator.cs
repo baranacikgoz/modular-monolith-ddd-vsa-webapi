@@ -1,7 +1,7 @@
-using Common.Application.Localization;
+using System.Globalization;
+using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Localization;
 
 namespace Common.Application.Pagination;
 
@@ -12,16 +12,18 @@ public class PaginationRequestValidator<T> : CustomValidator<T>
     private const int PageSizeInclusiveMin = 1;
     private const int PageSizeInclusiveMax = 1000;
 
-    public PaginationRequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public PaginationRequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(PageNumberGreaterThanOrEqualTo)
-            .WithMessage(localizer["PaginationRequest.PageNumber.GreaterThanOrEqualTo {0}",
-                PageNumberGreaterThanOrEqualTo]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.PaginationRequest_PageNumber_GreaterThanOrEqualTo,
+                PageNumberGreaterThanOrEqualTo));
 
         RuleFor(x => x.PageSize)
             .InclusiveBetween(PageSizeInclusiveMin, PageSizeInclusiveMax)
-            .WithMessage(localizer["PaginationRequest.PageSize.InclusiveBetween {0} {1}", PageSizeInclusiveMin,
-                PageSizeInclusiveMax]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.PaginationRequest_PageSize_InclusiveBetween, PageSizeInclusiveMin,
+                PageSizeInclusiveMax));
     }
 }

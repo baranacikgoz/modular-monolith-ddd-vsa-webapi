@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ResXGenerator.Registration;
 
 namespace Common.Infrastructure.Localization;
 
@@ -11,7 +12,9 @@ public static class Setup
 {
     public static IServiceCollection AddCommonResxLocalization(this IServiceCollection services)
     {
-        return services.AddLocalization(options => options.ResourcesPath = "Resources");
+        return services
+            .AddLocalization()
+            .UsingResXGenerator();
     }
 
     public static IApplicationBuilder UseCommonResxLocalization(this IApplicationBuilder app)

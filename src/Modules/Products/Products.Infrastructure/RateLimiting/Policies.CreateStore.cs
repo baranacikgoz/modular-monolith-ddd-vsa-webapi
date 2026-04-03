@@ -3,11 +3,11 @@ using System.Threading.RateLimiting;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Options;
+using Common.Application.Localization.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace Products.Infrastructure.RateLimiting;
@@ -22,7 +22,7 @@ public static partial class Policies
 
     private sealed class CreateStoreRateLimitingPolicy(
         IProblemDetailsService problemDetailsService,
-        IStringLocalizer<CreateStoreRateLimitingPolicy> localizer,
+        IResxLocalizer localizer,
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider
     ) : IRateLimiterPolicy<string>
     {
@@ -67,9 +67,10 @@ public static partial class Policies
                 });
         }
 
-        private LocalizedString LocalizedMessage(TimeSpan retryAfter)
+        private string LocalizedMessage(TimeSpan retryAfter)
         {
-            return localizer["En az {0} sonra yeni bir mağaza oluşturabilirsiniz.", retryAfter];
+            return string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                localizer.Stores_v1_Create_WaitTime, retryAfter);
         }
     }
 }

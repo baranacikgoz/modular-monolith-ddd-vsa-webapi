@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Runtime.Loader;
-using Microsoft.Extensions.Logging;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
 using Host.Middlewares;
@@ -11,11 +10,10 @@ namespace Host.Infrastructure;
 
 internal static partial class Setup
 {
-    private sealed record ModuleRegistry(IReadOnlyList<IModule> OrderedModules, IReadOnlyList<string> ActiveModuleNames, IReadOnlyList<string> SkippedModuleNames);
-
     public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
     {
-        var executingDir = Path.GetDirectoryName(typeof(Program).Assembly.Location) ?? AppDomain.CurrentDomain.BaseDirectory;
+        var executingDir = Path.GetDirectoryName(typeof(Program).Assembly.Location) ??
+                           AppDomain.CurrentDomain.BaseDirectory;
         var dllFiles = Directory.GetFiles(executingDir, "*.dll");
 
         using var loggerFactory = LoggerFactory.Create(b => b.AddConsole());
@@ -26,8 +24,8 @@ internal static partial class Setup
             try
             {
                 var assemblyName = AssemblyName.GetAssemblyName(dll);
-                if (assemblyName.Name != null && 
-                    !assemblyName.Name.StartsWith("System.", StringComparison.Ordinal) && 
+                if (assemblyName.Name != null &&
+                    !assemblyName.Name.StartsWith("System.", StringComparison.Ordinal) &&
                     !assemblyName.Name.StartsWith("Microsoft.", StringComparison.Ordinal))
                 {
                     AssemblyLoadContext.Default.LoadFromAssemblyName(assemblyName);
@@ -100,7 +98,8 @@ internal static partial class Setup
             }
         }
 
-        services.AddSingleton(new ModuleRegistry(orderedModules, orderedModules.Select(m => m.Name).ToList(), modulesToSkip));
+        services.AddSingleton(new ModuleRegistry(orderedModules, orderedModules.Select(m => m.Name).ToList(),
+            modulesToSkip));
 
         services.AddCustomRateLimiting(configuration, rateLimitingPolicies.ToArray());
         services.AddFluentValidationAutoValidation();
@@ -111,7 +110,7 @@ internal static partial class Setup
     public static IApplicationBuilder UseModules(this WebApplication app)
     {
         var registry = app.Services.GetRequiredService<ModuleRegistry>();
-        
+
         var loaded = string.Join(", ", registry.OrderedModules.Select(m => m.Name));
         LoggerMessages.LogModulesLoaded(app.Logger, loaded);
 
@@ -127,21 +126,6 @@ internal static partial class Setup
         }
 
         return app;
-    }
-
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Loaded modules: [{LoadedModules}]")]
-        public static partial void LogModulesLoaded(ILogger logger, string loadedModules);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
-        public static partial void LogModulesSkipped(ILogger logger, string skippedModules);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to load assembly '{AssemblyFileName}', skipping. This may indicate a corrupt or incompatible module binary.")]
-        public static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
-
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Module '{ModuleName}' was requested in configuration but no IModule implementation with that name was found. Check for typos.")]
-        public static partial void LogUnknownModuleRequested(ILogger logger, string moduleName);
     }
 
     public static IApplicationBuilder MapModuleEndpoints(this WebApplication app)
@@ -171,7 +155,9 @@ internal static partial class Setup
     {
         var activeModuleNames = new HashSet<string> { "Common" };
 
-        var registry = services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as ModuleRegistry;
+        var registry =
+            services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as
+                ModuleRegistry;
         if (registry != null)
         {
             foreach (var mod in registry.ActiveModuleNames)
@@ -214,5 +200,29 @@ internal static partial class Setup
 
         var loadAll = names != null && names.Contains("*");
         return (names, loadAll);
+    }
+
+    private sealed record ModuleRegistry(
+        IReadOnlyList<IModule> OrderedModules,
+        IReadOnlyList<string> ActiveModuleNames,
+        IReadOnlyList<string> SkippedModuleNames);
+
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(Level = LogLevel.Information, Message = "Loaded modules: [{LoadedModules}]")]
+        public static partial void LogModulesLoaded(ILogger logger, string loadedModules);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
+        public static partial void LogModulesSkipped(ILogger logger, string skippedModules);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Failed to load assembly '{AssemblyFileName}', skipping. This may indicate a corrupt or incompatible module binary.")]
+        public static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message =
+                "Module '{ModuleName}' was requested in configuration but no IModule implementation with that name was found. Check for typos.")]
+        public static partial void LogUnknownModuleRequested(ILogger logger, string moduleName);
     }
 }

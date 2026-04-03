@@ -22,8 +22,9 @@ skill:
          - Method `Add{{module_name}}Module(IServiceCollection)`: Register DbContext.
          - Method `Map{{module_name}}Endpoints(IEndpointRouteBuilder)`: Map group.
 
-    4. **Output Warning**:
-       - "ACTION REQUIRED: Go to `src/Host/Infrastructure/Setup.Modules.cs`. Add `.Add{{module_name}}Module()` and `.Map{{module_name}}Endpoints()` manually (No reflection magic allowed)."
+    4. **Module Registration**:
+       - Create `{{module_name}}Module.cs` implementing `IModule` interface to hook into the dynamic startup registration.
+       - "ACTION REQUIRED: Go to `src/Host/appsettings.json` and add `\"{{module_name}}\"` to the `\"Modules\"` array to enable the module dynamically."
 
     5. **Create Test Project**:
        - Run: `dotnet new xunit -n {{module_name}}.Tests -o src/Modules/{{module_name}}/Tests`

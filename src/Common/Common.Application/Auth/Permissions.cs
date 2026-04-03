@@ -1,5 +1,4 @@
 using System.Collections.Frozen;
-using Common.Application.Auth;
 
 namespace Common.Application.Auth;
 

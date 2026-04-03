@@ -1,5 +1,5 @@
 using System.Net;
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +11,8 @@ namespace Host.Middlewares;
 internal sealed partial class GlobalExceptionHandlingMiddleware(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
-    IStringLocalizer<ResxLocalizer> localizer
+    IResxLocalizer localizer,
+    IStringLocalizer<ResxLocalizer> stringLocalizer
 ) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -26,7 +27,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.Conflict,
-                localizer[nameof(DbUpdateConcurrencyException)]);
+                localizer.DbUpdateConcurrencyException);
         }
         catch (UniqueConstraintException ex)
         {
@@ -41,8 +42,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 ex,
                 (int)HttpStatusCode.BadRequest,
                 columnName is not null
-                    ? $"{localizer[columnName]} {localizer[nameof(UniqueConstraintException)]}"
-                    : localizer[nameof(UniqueConstraintException)]);
+                    ? $"{stringLocalizer[columnName]} {localizer.UniqueConstraintException}"
+                    : localizer.UniqueConstraintException);
         }
         catch (CannotInsertNullException ex)
         {
@@ -57,8 +58,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 ex,
                 (int)HttpStatusCode.BadRequest,
                 columnName is not null
-                    ? $"{localizer[columnName]} {localizer[nameof(CannotInsertNullException)]}"
-                    : localizer[nameof(CannotInsertNullException)]);
+                    ? $"{stringLocalizer[columnName]} {localizer.CannotInsertNullException}"
+                    : localizer.CannotInsertNullException);
         }
         catch (MaxLengthExceededException ex)
         {
@@ -73,8 +74,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 ex,
                 (int)HttpStatusCode.BadRequest,
                 columnName is not null
-                    ? $"{localizer[columnName]} {localizer[nameof(MaxLengthExceededException)]}"
-                    : localizer[nameof(MaxLengthExceededException)]);
+                    ? $"{stringLocalizer[columnName]} {localizer.MaxLengthExceededException}"
+                    : localizer.MaxLengthExceededException);
         }
         catch (NumericOverflowException ex)
         {
@@ -89,8 +90,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 ex,
                 (int)HttpStatusCode.BadRequest,
                 columnName is not null
-                    ? $"{localizer[columnName]} {localizer[nameof(NumericOverflowException)]}"
-                    : localizer[nameof(NumericOverflowException)]);
+                    ? $"{stringLocalizer[columnName]} {localizer.NumericOverflowException}"
+                    : localizer.NumericOverflowException);
         }
         catch (ReferenceConstraintException ex)
         {
@@ -105,8 +106,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 ex,
                 (int)HttpStatusCode.BadRequest,
                 columnName is not null
-                    ? $"{localizer[columnName]} {localizer[nameof(ReferenceConstraintException)]}"
-                    : localizer[nameof(ReferenceConstraintException)]);
+                    ? $"{stringLocalizer[columnName]} {localizer.ReferenceConstraintException}"
+                    : localizer.ReferenceConstraintException);
         }
         catch (DbUpdateException
                ex) // Should not happen because we use EntityFramework.Exceptions and ".UseExceptionProcessor()"in the DbContext setup, but just in case
@@ -115,7 +116,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.InternalServerError,
-                localizer[nameof(HttpStatusCode.InternalServerError)]);
+                localizer.InternalServerError);
         }
         catch (BadHttpRequestException ex)
         {
@@ -123,7 +124,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
-                localizer[nameof(BadHttpRequestException)]);
+                localizer.BadHttpRequestException);
         }
         catch (OperationCanceledException ex)
         {
@@ -131,7 +132,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 StatusCodes.Status499ClientClosedRequest, // Client Closed Request
-                localizer["ClientClosedRequest"]);
+                localizer.ClientClosedRequest);
         }
 #pragma warning disable CA1031 // Do not catch general exception types
         catch (Exception ex)
@@ -140,7 +141,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.InternalServerError,
-                localizer[nameof(HttpStatusCode.InternalServerError)]);
+                localizer.InternalServerError);
         }
 #pragma warning restore CA1031 // Do not catch general exception types
     }

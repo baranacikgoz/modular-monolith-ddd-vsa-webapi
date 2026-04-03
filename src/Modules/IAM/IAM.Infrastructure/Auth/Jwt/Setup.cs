@@ -2,7 +2,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Common.Application.Extensions;
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace IAM.Infrastructure.Auth.Jwt;
@@ -55,13 +54,12 @@ internal static class Setup
                         }
 
                         var localizer = context.HttpContext.RequestServices
-                            .GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+                            .GetRequiredService<IResxLocalizer>();
                         var problemDetailsService =
                             context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
                         var problemDetails = new ProblemDetails
                         {
-                            Status = (int)HttpStatusCode.Unauthorized,
-                            Title = localizer[nameof(HttpStatusCode.Unauthorized)]
+                            Status = (int)HttpStatusCode.Unauthorized, Title = localizer.Unauthorized
                         };
 
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
@@ -93,14 +91,13 @@ internal static class Setup
                         }
 
                         var localizer = context.HttpContext.RequestServices
-                            .GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+                            .GetRequiredService<IResxLocalizer>();
                         var problemDetailsService =
                             context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
 
                         var problemDetails = new ProblemDetails
                         {
-                            Status = (int)HttpStatusCode.Unauthorized,
-                            Title = localizer[nameof(HttpStatusCode.Unauthorized)]
+                            Status = (int)HttpStatusCode.Unauthorized, Title = localizer.Unauthorized
                         };
 
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
@@ -114,14 +111,13 @@ internal static class Setup
                     OnForbidden = async context =>
                     {
                         var localizer = context.HttpContext.RequestServices
-                            .GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+                            .GetRequiredService<IResxLocalizer>();
                         var problemDetailsService =
                             context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
 
                         var problemDetails = new ProblemDetails
                         {
-                            Status = (int)HttpStatusCode.Forbidden,
-                            Title = localizer[nameof(HttpStatusCode.Forbidden)]
+                            Status = (int)HttpStatusCode.Forbidden, Title = localizer.Forbidden
                         };
 
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Forbidden));
