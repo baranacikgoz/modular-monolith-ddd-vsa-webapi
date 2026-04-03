@@ -1,7 +1,6 @@
+using Common.Application.Auth;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
-using IAM.Application.Auth;
-using Common.Application.Auth;
 using IAM.Application.Persistence;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

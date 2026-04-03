@@ -10,9 +10,8 @@ using Common.Infrastructure.Persistence;
 using Common.InterModuleRequests;
 using FluentValidation;
 using Host.Middlewares;
-using IAM.Infrastructure;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Json;
-using IAssemblyReference = Common.Infrastructure.IAssemblyReference;
 
 namespace Host.Infrastructure;
 
@@ -22,7 +21,7 @@ internal static partial class Setup
         IWebHostEnvironment env)
     {
         var moduleAssemblies = services.GetActiveModuleAssemblies();
-        
+
         return services
             .Configure<JsonOptions>(x =>
             {
@@ -58,16 +57,16 @@ internal static partial class Setup
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware();
 
-        var hasAuth = app.ApplicationServices.GetService<Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider>() != null;
+        var hasAuth = app.ApplicationServices.GetService<IAuthenticationSchemeProvider>() != null;
         if (hasAuth)
         {
             app.UseAuthentication()
-               .UseMiddleware<EnrichLogsWithUserInfoMiddleware>()
-               .UseAuthorization();
+                .UseMiddleware<EnrichLogsWithUserInfoMiddleware>()
+                .UseAuthorization();
         }
 
         app.UseObservability();
-        
+
         return app;
     }
 

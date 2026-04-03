@@ -1,10 +1,7 @@
-using Common.Application.Auth;
 using IAM.Application.Auth.Services;
 using IAM.Infrastructure.Auth.Jwt;
 using IAM.Infrastructure.Auth.Services;
-using IAM.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,5 +21,4 @@ public static class Setup
 
         return services;
     }
-
 }

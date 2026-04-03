@@ -1,12 +1,11 @@
 using System.Net;
 using System.Threading.RateLimiting;
 using Common.Application.Extensions;
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.Options;
 using Common.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Localization;
 
 namespace Host.Middlewares;
 
@@ -69,19 +68,20 @@ internal static class RateLimitingMiddleware
     {
         return (context, _) =>
         {
-            var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+            var localizer = context.HttpContext.RequestServices.GetRequiredService<IResxLocalizer>();
 
             var problemDetailsService =
                 context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
             var problemDetails = new ProblemDetails
             {
                 Status = (int)HttpStatusCode.TooManyRequests,
-                Title = localizer[nameof(HttpStatusCode.TooManyRequests)]
+                Title = localizer.TooManyRequests
             };
 
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
             {
-                problemDetails.Detail = localizer[nameof(MetadataName.RetryAfter), retryAfter];
+                problemDetails.Detail = string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                    localizer.RetryAfter, retryAfter);
             }
 
             problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));

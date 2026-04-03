@@ -14,7 +14,8 @@ internal sealed partial class Seeder
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token);
-            getSeedUserIdsResponse = await requestClient.SendAsync(new GetSeedUserIdsRequest(StoreCount), linkedCts.Token);
+            getSeedUserIdsResponse =
+                await requestClient.SendAsync(new GetSeedUserIdsRequest(StoreCount), linkedCts.Token);
         }
         catch (Exception ex)
         {
@@ -22,7 +23,7 @@ internal sealed partial class Seeder
             // If the IAM module is not loaded or MassTransit times out, gracefully skip seeding stores.
             return new List<StoreId>();
         }
-        
+
         var userIds = getSeedUserIdsResponse.UserIds;
 
         var storeIds = new List<StoreId>(StoreCount);

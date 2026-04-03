@@ -54,6 +54,18 @@ skill:
     2. **Request/Response**:
        - Create `Request.cs`: `public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);`
        - Create `Body.cs`: `public sealed record Body(string Prop, ...);`
+       - Create `RequestValidator.cs`: 
+         ```csharp
+         public sealed class RequestValidator : CustomValidator<Request>
+         {
+             public RequestValidator(IResxLocalizer localizer)
+             {
+                 RuleFor(x => x.Body.Prop)
+                     .NotEmpty()
+                     .WithMessage(localizer.Your_Key_Here);
+             }
+         }
+         ```
 
     3. **Domain Method (If WRITE)**:
        - Ensure `{{aggregate}}` has method `{{feature}}` that calls `RaiseEvent`.

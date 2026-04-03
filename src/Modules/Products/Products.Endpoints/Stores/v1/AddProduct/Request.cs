@@ -1,11 +1,11 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.ModelBinders;
 using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 using Constants = Products.Domain.Products.Constants;
@@ -34,47 +34,50 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(localizer["Stores.v1.AddProduct.StoreId.NotEmpty"]);
+            .WithMessage(localizer.Stores_v1_AddProduct_StoreId_NotEmpty);
 
         RuleFor(x => x.Body)
             .NotEmpty()
-            .WithMessage(localizer["Stores.v1.AddProduct.ProductBody.NotEmpty"])
+            .WithMessage(localizer.Stores_v1_AddProduct_ProductBody_NotEmpty)
             .SetValidator(new RequestBodyValidator(localizer));
     }
 }
 
 public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
 {
-    public RequestBodyValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestBodyValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.ProductTemplateId)
             .NotEmpty()
-            .WithMessage(localizer["Stores.AddProduct.ProductTemplateId.NotEmpty"]);
+            .WithMessage(localizer.Stores_AddProduct_ProductTemplateId_NotEmpty);
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage(localizer["Stores.AddProduct.Name.NotEmpty"])
+            .WithMessage(localizer.Stores_AddProduct_Name_NotEmpty)
             .MaximumLength(Constants.NameMaxLength)
-            .WithMessage(localizer["Stores.AddProduct.Name.MaxLength {0}", Constants.NameMaxLength]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Name_MaxLength,
+                Constants.NameMaxLength));
 
         RuleFor(x => x.Description)
             .NotEmpty()
-            .WithMessage(localizer["Stores.AddProduct.Description.NotEmpty"])
+            .WithMessage(localizer.Stores_AddProduct_Description_NotEmpty)
             .MaximumLength(Constants.DescriptionMaxLength)
-            .WithMessage(localizer["Stores.AddProduct.Description.MaxLength {0}", Constants.DescriptionMaxLength]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Description_MaxLength,
+                Constants.DescriptionMaxLength));
 
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(Constants.QuantityGreaterThanOrEqualTo)
-            .WithMessage(localizer["Stores.AddProduct.Quantity.GreaterThanOrEqualTo {0}",
-                Constants.QuantityGreaterThanOrEqualTo]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.Stores_AddProduct_Quantity_GreaterThanOrEqualTo,
+                Constants.QuantityGreaterThanOrEqualTo));
 
         RuleFor(x => x.Price)
             .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
-            .WithMessage(localizer["Stores.AddProduct.Price.GreaterThanOrEqualTo {0}",
-                Constants.PriceGreaterThanOrEqualTo]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Price_GreaterThanOrEqualTo,
+                Constants.PriceGreaterThanOrEqualTo));
     }
 }

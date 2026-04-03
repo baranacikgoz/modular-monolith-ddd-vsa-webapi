@@ -1,6 +1,5 @@
-using Common.Domain.StronglyTypedIds;
-using IAM.Application.Auth;
 using Common.Application.Auth;
+using Common.Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

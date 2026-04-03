@@ -1,6 +1,5 @@
-using IAM.Application.Auth;
-using IAM.Domain.Identity;
 using Common.Application.Auth;
+using IAM.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -134,7 +133,8 @@ internal partial class Seeder
     [LoggerMessage(
         Level = LogLevel.Information,
         Message = "Seeding the admin {FirstName} {LastName} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string firstName, string lastName);
+    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string firstName,
+        string lastName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
@@ -144,5 +144,6 @@ internal partial class Seeder
     [LoggerMessage(
         Level = LogLevel.Information,
         Message = "Seeding the basic {FirstName} {LastName} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string firstName, string lastName);
+    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string firstName,
+        string lastName);
 }

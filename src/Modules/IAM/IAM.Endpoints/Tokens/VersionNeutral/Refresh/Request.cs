@@ -1,7 +1,6 @@
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Localization;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 
@@ -12,10 +11,10 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.RefreshToken)
             .NotEmpty()
-            .WithMessage(localizer["Tokens.Refresh.RefreshToken.NotEmpty"]);
+            .WithMessage(localizer.Tokens_Refresh_RefreshToken_NotEmpty);
     }
 }

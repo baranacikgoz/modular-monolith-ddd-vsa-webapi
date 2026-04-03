@@ -1,132 +1,146 @@
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 
 namespace IAM.Infrastructure.Identity;
 
 internal class LocalizedIdentityErrorDescriber(
-    IStringLocalizer<ResxLocalizer> localizer
+    IResxLocalizer localizer
 ) : IdentityErrorDescriber
 {
-    public override IdentityError ConcurrencyFailure()
+    public override IdentityError ConcurrencyFailure() => new()
     {
-        return Create(nameof(ConcurrencyFailure));
-    }
+        Code = nameof(ConcurrencyFailure),
+        Description = localizer.ConcurrencyFailure
+    };
 
-    public override IdentityError DefaultError()
+    public override IdentityError DefaultError() => new()
     {
-        return Create(nameof(DefaultError));
-    }
+        Code = nameof(DefaultError),
+        Description = localizer.DefaultError
+    };
 
-    public override IdentityError InvalidEmail(string? email)
+    public override IdentityError InvalidEmail(string? email) => new()
     {
-        return Create(nameof(InvalidEmail), email ?? string.Empty);
-    }
+        Code = nameof(InvalidEmail),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.InvalidEmail,
+            email ?? string.Empty)
+    };
 
-    // We use PhoneNumber as UserName
-    public override IdentityError InvalidUserName(string? userName)
+    public override IdentityError InvalidUserName(string? userName) => new()
     {
-        return Create(nameof(InvalidUserName), userName ?? string.Empty);
-    }
+        Code = nameof(InvalidUserName),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.InvalidUserName,
+            userName ?? string.Empty)
+    };
 
-    public override IdentityError DuplicateEmail(string email)
+    public override IdentityError DuplicateEmail(string email) => new()
     {
-        return Create(nameof(DuplicateEmail), email);
-    }
+        Code = nameof(DuplicateEmail),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.DuplicateEmail, email)
+    };
 
-    // We use PhoneNumber as UserName
-    public override IdentityError DuplicateUserName(string userName)
+    public override IdentityError DuplicateUserName(string userName) => new()
     {
-        return Create(nameof(DuplicateUserName), userName);
-    }
+        Code = nameof(DuplicateUserName),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.DuplicateUserName,
+            userName)
+    };
 
-    public override IdentityError UserNotInRole(string role)
+    public override IdentityError UserNotInRole(string role) => new()
     {
-        return Create(nameof(UserNotInRole), role);
-    }
+        Code = nameof(UserNotInRole),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.UserNotInRole, role)
+    };
 
-    public override IdentityError DuplicateRoleName(string role)
+    public override IdentityError DuplicateRoleName(string role) => new()
     {
-        return Create(nameof(DuplicateRoleName), role);
-    }
+        Code = nameof(DuplicateRoleName),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.DuplicateRoleName, role)
+    };
 
-    public override IdentityError InvalidRoleName(string? role)
+    public override IdentityError InvalidRoleName(string? role) => new()
     {
-        return Create(nameof(InvalidRoleName), role ?? string.Empty);
-    }
+        Code = nameof(InvalidRoleName),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.InvalidRoleName,
+            role ?? string.Empty)
+    };
 
-    public override IdentityError InvalidToken()
+    public override IdentityError InvalidToken() => new()
     {
-        return Create(nameof(InvalidToken));
-    }
+        Code = nameof(InvalidToken),
+        Description = localizer.InvalidToken
+    };
 
-    public override IdentityError LoginAlreadyAssociated()
+    public override IdentityError LoginAlreadyAssociated() => new()
     {
-        return Create(nameof(LoginAlreadyAssociated));
-    }
+        Code = nameof(LoginAlreadyAssociated),
+        Description = localizer.LoginAlreadyAssociated
+    };
 
-    public override IdentityError PasswordMismatch()
+    public override IdentityError PasswordMismatch() => new()
     {
-        return Create(nameof(PasswordMismatch));
-    }
+        Code = nameof(PasswordMismatch),
+        Description = localizer.PasswordMismatch
+    };
 
-    public override IdentityError PasswordRequiresDigit()
+    public override IdentityError PasswordRequiresDigit() => new()
     {
-        return Create(nameof(PasswordRequiresDigit));
-    }
+        Code = nameof(PasswordRequiresDigit),
+        Description = localizer.PasswordRequiresDigit
+    };
 
-    public override IdentityError PasswordRequiresLower()
+    public override IdentityError PasswordRequiresLower() => new()
     {
-        return Create(nameof(PasswordRequiresLower));
-    }
+        Code = nameof(PasswordRequiresLower),
+        Description = localizer.PasswordRequiresLower
+    };
 
-    public override IdentityError PasswordRequiresNonAlphanumeric()
+    public override IdentityError PasswordRequiresNonAlphanumeric() => new()
     {
-        return Create(nameof(PasswordRequiresNonAlphanumeric));
-    }
+        Code = nameof(PasswordRequiresNonAlphanumeric),
+        Description = localizer.PasswordRequiresNonAlphanumeric
+    };
 
-    public override IdentityError PasswordRequiresUniqueChars(int uniqueChars)
+    public override IdentityError PasswordRequiresUniqueChars(int uniqueChars) => new()
     {
-        return Create(nameof(PasswordRequiresUniqueChars), uniqueChars);
-    }
+        Code = nameof(PasswordRequiresUniqueChars),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            localizer.PasswordRequiresUniqueChars, uniqueChars)
+    };
 
-    public override IdentityError PasswordRequiresUpper()
+    public override IdentityError PasswordRequiresUpper() => new()
     {
-        return Create(nameof(PasswordRequiresUpper));
-    }
+        Code = nameof(PasswordRequiresUpper),
+        Description = localizer.PasswordRequiresUpper
+    };
 
-    public override IdentityError PasswordTooShort(int length)
+    public override IdentityError PasswordTooShort(int length) => new()
     {
-        return Create(nameof(PasswordTooShort), length);
-    }
+        Code = nameof(PasswordTooShort),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.PasswordTooShort, length)
+    };
 
-    public override IdentityError UserAlreadyHasPassword()
+    public override IdentityError UserAlreadyHasPassword() => new()
     {
-        return Create(nameof(UserAlreadyHasPassword));
-    }
+        Code = nameof(UserAlreadyHasPassword),
+        Description = localizer.UserAlreadyHasPassword
+    };
 
-    public override IdentityError UserAlreadyInRole(string role)
+    public override IdentityError UserAlreadyInRole(string role) => new()
     {
-        return Create(nameof(UserAlreadyInRole), role);
-    }
+        Code = nameof(UserAlreadyInRole),
+        Description = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer.UserAlreadyInRole, role)
+    };
 
-    public override IdentityError RecoveryCodeRedemptionFailed()
+    public override IdentityError RecoveryCodeRedemptionFailed() => new()
     {
-        return Create(nameof(RecoveryCodeRedemptionFailed));
-    }
+        Code = nameof(RecoveryCodeRedemptionFailed),
+        Description = localizer.RecoveryCodeRedemptionFailed
+    };
 
-    public override IdentityError UserLockoutNotEnabled()
+    public override IdentityError UserLockoutNotEnabled() => new()
     {
-        return Create(nameof(UserLockoutNotEnabled));
-    }
-
-    private IdentityError Create(string key, object? parameter = null)
-    {
-        if (parameter is null)
-        {
-            return new IdentityError { Code = key, Description = localizer[key] };
-        }
-
-        return new IdentityError { Code = key, Description = localizer[key, parameter] };
-    }
+        Code = nameof(UserLockoutNotEnabled),
+        Description = localizer.UserLockoutNotEnabled
+    };
 }

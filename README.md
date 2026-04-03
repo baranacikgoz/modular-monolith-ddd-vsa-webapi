@@ -40,7 +40,7 @@ This repository includes the following features:
 - **CDC - Kafka & Debezium**: Processes outbox messages with Kafka & Debezium.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
-- **Localization & Multi-Language Support**: Supports multiple languages and localization.
+- **Strongly-Typed Localization & Multi-Language Support**: Leverages `Aigamo.ResXGenerator` to automatically generate strongly-typed `IResxLocalizer` properties for error-free resource resolution, ensuring compile-time safety and eliminating missing key errors at runtime.
 - **Pagination and Flexible Search**: Implements pagination and flexible search capabilities.
 - **MassTransit's Request Client**: Enables inter-module communication and data transfer.
 - **Option Pattern**: Utilizes the option pattern for configuration management.
