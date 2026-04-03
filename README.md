@@ -56,10 +56,18 @@ To use or contribute to this project, you will need:
 
 - .NET 10 SDK
 - Docker
+- GNU Make (`make`)
 
 ## Getting Started
 
 - Clone the repository: `git@github.com:baranacikgoz/modular-monolith-ddd-vsa-webapi.git`
+
+### Running services
+
+- Start required infrastructure:
+    ```bash
+    docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
+    ```
 
 ### VSCode
 
@@ -70,34 +78,70 @@ To use or contribute to this project, you will need:
 
 ##### Unix only
 
-- Make before and after restore & build scripts executable
-    - ``chmod +x .vscode/exclude_docker_compose_dcproj.sh``
-    - ``chmod +x .vscode/dotnet_build_and_cleanup.sh``
-    - ``chmod +x .vscode/revert_exclude.sh``
+- Make VS Code helper scripts executable:
+    ```bash
+    chmod +x .vscode/exclude_docker_compose_dcproj.sh
+    chmod +x .vscode/dotnet_build_and_cleanup.sh
+    chmod +x .vscode/revert_exclude.sh
+    ```
 
 #### Development
 
-- Run required services
-    - If you have VSCode Docker extension installed, right click on ``docker-compose.yml`` and select
-      ``Compose Up - Select Services``. Select the following services:
-        - ``mm.database``
-        - ``mm.rabbitmq``
-        - ``mm.seq`` - Optional but recommended
-    - Or run the following command in terminal:
-        ```bash
-        docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
-        ```
-- Run the application
-    - Press ``F5`` to start the application in debug mode
+- Press ``F5`` to start the application in debug mode
 
 ### Visual Studio
 
 - Open the solution file ``ModularMonolith.sln`` in Visual Studio
-
 - Set ``Docker Compose`` as the startup project
-    - Right click on the ``Docker Compose`` project and select ``Set as Startup Project`` if it's not already set
-
 - Start application
+
+---
+
+## Developer Commands
+
+All developer commands are centralized in the **Makefile**. Run `make <target>` from the repository root.
+
+### Build & Test
+
+| Command | Description |
+|---|---|
+| `make build` | Build all projects (auto-excludes `docker-compose.dcproj`) |
+| `make test` | Run all integration & unit tests |
+| `make sonar` | Run SonarQube analysis (requires `.env` with SonarQube vars) |
+
+### Database Migrations
+
+> **⚠️ We do NOT auto-migrate at startup.** All schema changes go through DBA review.
+> See [`docs/migration-workflow.md`](docs/migration-workflow.md) for the full workflow.
+
+#### Add a new migration
+
+| Command | Description |
+|---|---|
+| `make ef-add-IAM name=<Name>` | Add migration to the IAM module |
+| `make ef-add-Products name=<Name>` | Add migration to the Products module |
+| `make ef-add-Outbox name=<Name>` | Add migration to the Outbox module |
+
+#### Generate idempotent SQL scripts (for DBA review)
+
+| Command | Description |
+|---|---|
+| `make ef-script-IAM` | Generate SQL script for IAM → `migrations/IAM/` |
+| `make ef-script-Products` | Generate SQL script for Products → `migrations/Products/` |
+| `make ef-script-Outbox` | Generate SQL script for Outbox → `migrations/Outbox/` |
+| `make ef-script-all` | Generate scripts for all modules |
+
+### Migration Workflow Summary
+
+```
+1. make ef-add-Products name=AddPriceColumn   # Create the migration
+2. make ef-script-Products                      # Generate idempotent SQL
+3. git add . && git commit                      # Commit both .cs + .sql artifacts
+4. DBA reviews & executes the .sql script       # Applied to target DB
+5. Deploy                                        # App verifies — fails fast if pending
+```
+
+---
 
 ## API Documentation
 

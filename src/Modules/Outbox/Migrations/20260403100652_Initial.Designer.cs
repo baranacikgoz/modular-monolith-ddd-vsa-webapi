@@ -9,10 +9,10 @@ using Outbox.Persistence;
 
 #nullable disable
 
-namespace Outbox.Persistence.Migrations
+namespace Outbox.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20250412233430_Initial")]
+    [Migration("20260403100652_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -21,12 +21,12 @@ namespace Outbox.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Outbox")
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Common.Infrastructure.Persistence.Outbox.OutboxMessage", b =>
+            modelBuilder.Entity("Common.Application.Persistence.Outbox.OutboxMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

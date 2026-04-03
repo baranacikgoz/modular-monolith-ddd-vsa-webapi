@@ -1,10 +1,11 @@
+using Common.Application.Persistence;
+using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.DbContext;
 using IAM.Application.Persistence;
 using IAM.Infrastructure.Persistence.Seeding;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IAM.Infrastructure.Persistence;
 
@@ -14,24 +15,18 @@ public static class Setup
     {
         return services
             .AddTransient<Seeder>()
+            .AddTransient<IDatabaseSeeder, IamDatabaseSeeder>()
             .AddModuleDbContext<IIAMDbContext, IAMDbContext>(nameof(IAM));
     }
 
     public static IApplicationBuilder UsePersistence(this IApplicationBuilder app)
     {
-        using (var scope = app.ApplicationServices.CreateScope())
-        {
-            var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
-            busControl.Start();
+        var logger = app.ApplicationServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger(typeof(Setup).FullName!);
 
-            var context = scope.ServiceProvider.GetRequiredService<IAMDbContext>();
-            context.Database.Migrate();
-
-            var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
-            seeder.SeedDbAsync().GetAwaiter().GetResult();
-
-            busControl.Stop();
-        }
+        MigrationGuard.EnsureNoMigrationsPending<IAMDbContext>(
+            app.ApplicationServices, logger, nameof(IAM));
 
         return app;
     }
