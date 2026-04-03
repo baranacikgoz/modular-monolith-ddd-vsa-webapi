@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Products.Infrastructure.Persistence.Migrations
+namespace Products.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -44,11 +44,11 @@ namespace Products.Infrastructure.Persistence.Migrations
                     Brand = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Model = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     Color = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
                     LastModifiedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
+                    LastModifiedBy = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -126,11 +126,10 @@ namespace Products.Infrastructure.Persistence.Migrations
                 column: "ProductTemplateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_StoreId_ProductTemplateId",
+                name: "IX_Products_StoreId",
                 schema: "Products",
                 table: "Products",
-                columns: new[] { "StoreId", "ProductTemplateId" },
-                unique: true);
+                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductTemplates_IsActive",

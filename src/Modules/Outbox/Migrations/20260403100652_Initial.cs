@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Outbox.Persistence.Migrations
+namespace Outbox.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

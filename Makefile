@@ -72,7 +72,7 @@ ef-add-Outbox:
 
 ef-script-IAM:
 	@mkdir -p migrations/IAM
-	dotnet ef migrations script \
+	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/IAM/IAM.Infrastructure \
 		--startup-project src/Host \
 		--context IAMDbContext \
@@ -82,7 +82,7 @@ ef-script-IAM:
 
 ef-script-Products:
 	@mkdir -p migrations/Products
-	dotnet ef migrations script \
+	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/Products/Products.Infrastructure \
 		--startup-project src/Host \
 		--context ProductsDbContext \
@@ -92,7 +92,7 @@ ef-script-Products:
 
 ef-script-Outbox:
 	@mkdir -p migrations/Outbox
-	dotnet ef migrations script \
+	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/Outbox \
 		--startup-project src/Host \
 		--context OutboxDbContext \
