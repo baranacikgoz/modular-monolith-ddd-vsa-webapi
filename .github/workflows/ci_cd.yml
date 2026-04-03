@@ -23,7 +23,7 @@ jobs:
         run: dotnet build src/Host/Host.csproj --configuration Release
 
       - name: Test
-        run: bash ./run-tests.sh
+        run: make test
 
   deploy:
     needs: build

@@ -11,5 +11,5 @@ This workflow is used to safely update NuGet package versions across the entire 
 4. **Update CPM (Safe Execution)**: Modify the specific `<PackageVersion Include="..." Version="..." />` tags inside the `Directory.Packages.props` file to the new stable versions. (Do not arbitrarily update major versions without explicit User approval unless requested).
 // turbo-all
 5. **Restore & Compile**: Run `dotnet restore ModularMonolith.sln` and `dotnet build src/Host/Host.csproj --no-restore` to verify the new packages do not cause compilation errors or breaking API changes.
-6. **Verify Quality Gate**: Run the unified test suite `bash ./run-tests.sh` to ensure the upgraded packages do not break complex Integration Tests, Kafka consumers, or database architectures.
+6. **Verify Quality Gate**: Run the unified test suite `make test` to ensure the upgraded packages do not break complex Integration Tests, Kafka consumers, or database architectures.
 7. **Handoff**: Use `notify_user` to return execution control back to the Developer, providing a successful upgrade summary.
