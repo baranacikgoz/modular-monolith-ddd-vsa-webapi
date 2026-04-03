@@ -1,9 +1,8 @@
-using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.ModelBinders;
 using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Products.Domain.ProductTemplates;
 
 namespace Products.Endpoints.ProductTemplates.v1.Activate;
@@ -17,10 +16,10 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(localizer["ProductTemplates.Activate.Id.NotEmpty"]);
+            .WithMessage(localizer.ProductTemplates_Activate_Id_NotEmpty);
     }
 }

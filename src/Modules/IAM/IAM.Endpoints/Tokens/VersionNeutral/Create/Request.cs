@@ -1,4 +1,5 @@
 using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
 using IAM.Endpoints.Common.Validations;
@@ -14,17 +15,17 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage(localizer["Users.Tokens.Create.PhoneNumber.NotEmpty"]);
+            .WithMessage(localizer.Users_Tokens_Create_PhoneNumber_NotEmpty);
         RuleFor(x => x.PhoneNumber)
             .PhoneNumberValidation(localizer)
             .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
 
         RuleFor(x => x.Otp)
             .NotEmpty()
-            .WithMessage(localizer["Users.Tokens.Create.Otp.NotEmpty"]);
+            .WithMessage(localizer.Users_Tokens_Create_Otp_NotEmpty);
     }
 }

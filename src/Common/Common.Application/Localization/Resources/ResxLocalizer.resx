@@ -245,4 +245,328 @@
   <data name="PhoneVerificationToken" xml:space="preserve">
     <value>Telefon doğrulama tokeni</value>
   </data>
+  <data name="PaginationRequest_PageNumber_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Sayfa numarası ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="PaginationRequest_PageSize_InclusiveBetween" xml:space="preserve">
+    <value>Sayfa boyutu ({0}) ile ({1}) arasında olmalıdır.</value>
+  </data>
+  <data name="IAM_PhoneNumber_Length" xml:space="preserve">
+    <value>Telefon numarası, alan kodu dahil ({0}) karakter olmalıdır.</value>
+  </data>
+  <data name="IAM_PhoneNumber_DigitsOnly" xml:space="preserve">
+    <value>Telefon numarası sadece rakamlardan oluşmalıdır.</value>
+  </data>
+  <data name="IAM_PhoneNumber_OnlyTurkey" xml:space="preserve">
+    <value>Şuanda sadece Türkiye numaraları desteklenmektedir. Numaranız 90 ile başlamalıdır.</value>
+  </data>
+  <data name="IAM_PhoneVerificationToken_NotEmpty" xml:space="preserve">
+    <value>Telefon doğrulama tokeni boş olamaz.</value>
+  </data>
+  <data name="Register_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Telefon numarası boş olamaz.</value>
+  </data>
+  <data name="Register_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Register_Name_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>İsim sadece Türkçe karakterlerden oluşmalıdır.</value>
+  </data>
+  <data name="Register_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Register_LastName_NotEmpty" xml:space="preserve">
+    <value>Soyisim boş olamaz.</value>
+  </data>
+  <data name="Register_LastName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Soyisim sadece Türkçe karakterlerden oluşmalıdır.</value>
+  </data>
+  <data name="Register_LastName_MaxLength" xml:space="preserve">
+    <value>Soyisim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_NotEmpty" xml:space="preserve">
+    <value>T.C. Kimlik numarası boş olamaz.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_Length" xml:space="preserve">
+    <value>T.C. Kimlik numarası ({0}) karakter olmalıdır.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_ContainsOnlyDigits" xml:space="preserve">
+    <value>T.C. Kimlik numarası sadece rakamlardan oluşmalıdır.</value>
+  </data>
+  <data name="Register_BirthDate_NotEmpty" xml:space="preserve">
+    <value>Doğum tarihi boş olamaz.</value>
+  </data>
+  <data name="Register_BirthDate_Format" xml:space="preserve">
+    <value>Doğum tarihi formatı ({0}) olmalıdır.</value>
+  </data>
+  <data name="Users_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Kullanıcı Id boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_Activate_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün şablonu Id boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_Create_Brand_MaxLength" xml:space="preserve">
+    <value>Marka en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="ProductTemplates_Create_Brand_NotEmpty" xml:space="preserve">
+    <value>Marka boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_Create_Color_MaxLength" xml:space="preserve">
+    <value>Renk en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="ProductTemplates_Create_Color_NotEmpty" xml:space="preserve">
+    <value>Renk boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_Create_Model_MaxLength" xml:space="preserve">
+    <value>Model en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="ProductTemplates_Create_Model_NotEmpty" xml:space="preserve">
+    <value>Model boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_DeActivate_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün şablonu Id boş olamaz.</value>
+  </data>
+  <data name="ProductTemplates_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün şablonu Id boş olamaz.</value>
+  </data>
+  <data name="Products_Search_Description_MaximumLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_Search_MaxPrice_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Maksimum fiyat ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_Search_MaxQuantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Maksimum miktar ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_Search_MinPrice_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Minimum fiyat ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_Search_MinQuantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Minimum miktar ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_Search_Name_MaximumLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_Search_OwnerId_NotEmpty" xml:space="preserve">
+    <value>Sahip Id boş olamaz.</value>
+  </data>
+  <data name="Products_Search_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Products_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>En az bir alan güncellenmelidir.</value>
+  </data>
+  <data name="Products_Update_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Products_Update_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_Update_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Products_Update_Price_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Fiyat ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_Update_ProductBody_NotEmpty" xml:space="preserve">
+    <value>Ürün bilgileri boş olamaz.</value>
+  </data>
+  <data name="Products_Update_ProductId_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_Update_Quantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Miktar ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Products_v1_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_v1_My_Get_Id_Empty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Stores_AddProduct_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_AddProduct_Description_NotEmpty" xml:space="preserve">
+    <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Stores_AddProduct_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_AddProduct_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Stores_AddProduct_Price_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Fiyat ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Stores_AddProduct_ProductTemplateId_NotEmpty" xml:space="preserve">
+    <value>Ürün şablonu Id boş olamaz.</value>
+  </data>
+  <data name="Stores_AddProduct_Quantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Miktar ({0})'dan büyük veya eşit olmalıdır.</value>
+  </data>
+  <data name="Stores_GetById_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_My_RemoveProduct_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Stores_My_Update_Address_MaxLength" xml:space="preserve">
+    <value>Adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_My_Update_Address_NotEmpty" xml:space="preserve">
+    <value>Adres boş olamaz.</value>
+  </data>
+  <data name="Stores_My_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>En az bir alan güncellenmelidir.</value>
+  </data>
+  <data name="Stores_My_Update_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_My_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Stores_My_Update_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_My_Update_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Stores_RemoveProduct_ProductId_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Stores_RemoveProduct_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_Search_Address_MaximumLength" xml:space="preserve">
+    <value>Adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Search_Description_MaximumLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
+    <value>Adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Update_Address_NotEmpty" xml:space="preserve">
+    <value>Adres boş olamaz.</value>
+  </data>
+  <data name="Stores_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>En az bir alan güncellenmelidir.</value>
+  </data>
+  <data name="Stores_Update_Body_NotEmpty" xml:space="preserve">
+    <value>Mağaza bilgileri boş olamaz.</value>
+  </data>
+  <data name="Stores_Update_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Stores_Update_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_Update_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Update_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_AddProduct_ProductBody_NotEmpty" xml:space="preserve">
+    <value>Ürün bilgileri boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_AddProduct_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Create_Address_MaxLength" xml:space="preserve">
+    <value>Adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Create_Address_NotEmpty" xml:space="preserve">
+    <value>Adres boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Create_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Create_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Create_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Create_OwnerId_NotEmpty" xml:space="preserve">
+    <value>Sahip Id boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Address_MaxLength" xml:space="preserve">
+    <value>Adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Address_NotEmpty" xml:space="preserve">
+    <value>Adres boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Description_MaxLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Description_NotEmpty" xml:space="preserve">
+    <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Name_MaxLength" xml:space="preserve">
+    <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Name_NotEmpty" xml:space="preserve">
+    <value>İsim boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Create_WaitTime" xml:space="preserve">
+    <value>En az ({0}) sonra yeni bir mağaza oluşturabilirsiniz.</value>
+  </data>
+  <data name="Users_Tokens_Create_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Telefon numarası boş olamaz.</value>
+  </data>
+  <data name="Users_Tokens_Create_Otp_NotEmpty" xml:space="preserve">
+    <value>Doğrulama kodu boş olamaz.</value>
+  </data>
+  <data name="Users_Tokens_Refresh_AccessToken_NotEmpty" xml:space="preserve">
+    <value>Erişim tokeni boş olamaz.</value>
+  </data>
+  <data name="Users_Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
+    <value>Yenileme tokeni boş olamaz.</value>
+  </data>
+  <data name="Users_Otp_Send_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Telefon numarası boş olamaz.</value>
+  </data>
+  <data name="Users_OTP_Store_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Telefon numarası boş olamaz.</value>
+  </data>
+  <data name="Users_CheckRegistration_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Telefon numarası boş olamaz.</value>
+  </data>
+  <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
+    <value>Yenileme tokeni boş olamaz.</value>
+  </data>
+  <data name="DbUpdateConcurrencyException" xml:space="preserve">
+    <value>Veritabanı eşzamanlılık hatası. Lütfen tekrar deneyiniz.</value>
+  </data>
+  <data name="UniqueConstraintException" xml:space="preserve">
+    <value>Eşsiz olması gereken bir değer zaten mevcut.</value>
+  </data>
+  <data name="CannotInsertNullException" xml:space="preserve">
+    <value>Boş bırakılamayacak bir alan boş bırakıldı.</value>
+  </data>
+  <data name="MaxLengthExceededException" xml:space="preserve">
+    <value>Bir alanın maksimum uzunluğu aşıldı.</value>
+  </data>
+  <data name="NumericOverflowException" xml:space="preserve">
+    <value>Bir alanın sayısal değeri kapasitesini aştı.</value>
+  </data>
+  <data name="ReferenceConstraintException" xml:space="preserve">
+    <value>Referans gösterilen bir kayıt bulunamadı veya bu kayıt silinemez.</value>
+  </data>
+  <data name="BadHttpRequestException" xml:space="preserve">
+    <value>Hatalı HTTP isteği.</value>
+  </data>
+  <data name="ClientClosedRequest" xml:space="preserve">
+    <value>İstek kullanıcı tarafından sonlandırıldı.</value>
+  </data>
 </root>

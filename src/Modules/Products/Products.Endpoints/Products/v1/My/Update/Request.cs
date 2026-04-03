@@ -1,9 +1,9 @@
-using Common.Application.Localization;
+using System.Globalization;
+using Common.Application.Localization.Resources;
 using Common.Application.ModelBinders;
 using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Products.Domain.Products;
 
 namespace Products.Endpoints.Products.v1.My.Update;
@@ -27,52 +27,55 @@ public sealed record Request
 
 public class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(localizer["Products.Update.ProductId.NotEmpty"]);
+            .WithMessage(localizer.Products_Update_ProductId_NotEmpty);
 
         RuleFor(x => x.Body)
             .NotEmpty()
-            .WithMessage(localizer["Products.Update.ProductBody.NotEmpty"])
+            .WithMessage(localizer.Products_Update_ProductBody_NotEmpty)
             .SetValidator(new RequestBodyValidator(localizer));
     }
 }
 
 public class RequestBodyValidator : CustomValidator<Request.RequestBody>
 {
-    public RequestBodyValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestBodyValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x)
             .Must(x => !string.IsNullOrEmpty(x.Name) || !string.IsNullOrEmpty(x.Description) || x.Quantity.HasValue ||
                        x.Price.HasValue)
-            .WithMessage(localizer["Products.Update.AtLeastOnePropertyIsRequired"]);
+            .WithMessage(localizer.Products_Update_AtLeastOnePropertyIsRequired);
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage(localizer["Products.Update.Name.NotEmpty"])
+            .WithMessage(localizer.Products_Update_Name_NotEmpty)
             .MaximumLength(Constants.NameMaxLength)
-            .WithMessage(localizer["Products.Update.Name.MaxLength {0}", Constants.NameMaxLength])
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Update_Name_MaxLength,
+                Constants.NameMaxLength))
             .When(x => !string.IsNullOrEmpty(x.Name));
 
         RuleFor(x => x.Description)
             .NotEmpty()
-            .WithMessage(localizer["Products.Update.Description.NotEmpty"])
+            .WithMessage(localizer.Products_Update_Description_NotEmpty)
             .MaximumLength(Constants.DescriptionMaxLength)
-            .WithMessage(localizer["Products.Update.Description.MaxLength {0}", Constants.DescriptionMaxLength])
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Update_Description_MaxLength,
+                Constants.DescriptionMaxLength))
             .When(x => !string.IsNullOrEmpty(x.Description));
 
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(Constants.QuantityGreaterThanOrEqualTo)
-            .WithMessage(localizer["Products.Update.Quantity.GreaterThanOrEqualTo {0}",
-                Constants.QuantityGreaterThanOrEqualTo])
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.Products_Update_Quantity_GreaterThanOrEqualTo,
+                Constants.QuantityGreaterThanOrEqualTo))
             .When(x => x.Quantity is not null);
 
         RuleFor(x => x.Price)
             .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
-            .WithMessage(localizer["Products.Update.Price.GreaterThanOrEqualTo {0}",
-                Constants.PriceGreaterThanOrEqualTo])
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Update_Price_GreaterThanOrEqualTo,
+                Constants.PriceGreaterThanOrEqualTo))
             .When(x => x.Price is not null);
     }
 }

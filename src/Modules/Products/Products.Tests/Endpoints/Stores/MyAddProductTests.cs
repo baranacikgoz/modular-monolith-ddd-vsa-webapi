@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using Bogus;
+using Common.Application.JsonConverters;
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,11 +26,20 @@ public class MyAddProductTests : BaseIntegrationTest
     }
 
     /// <summary>
-    /// Serializes the request body as a plain JSON object with productTemplateId as a raw Guid,
-    /// because <see cref="StronglyTypedIdReadOnlyJsonConverter{TId}"/> does not support Write.
+    ///     Serializes the request body as a plain JSON object with productTemplateId as a raw Guid,
+    ///     because <see cref="StronglyTypedIdReadOnlyJsonConverter" /> does not support Write.
     /// </summary>
     private static string BuildJson(Guid templateId, string name, string description, int quantity, decimal price)
-        => JsonSerializer.Serialize(new { productTemplateId = templateId, name, description, quantity, price });
+    {
+        return JsonSerializer.Serialize(new
+        {
+            productTemplateId = templateId,
+            name,
+            description,
+            quantity,
+            price
+        });
+    }
 
     [Fact]
     public async Task MyAddProduct_WithValidPayload_ReturnsOkAndPersistsProduct()
@@ -39,10 +49,12 @@ public class MyAddProductTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
         var ownerId = new ApplicationUserId(TestAuthHandler.DefaultUserId);
 
-        var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+        var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(),
+            _faker.Address.FullAddress());
         db.Stores.Add(store);
 
-        var template = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(), _faker.Commerce.Color());
+        var template = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(),
+            _faker.Commerce.Color());
         db.ProductTemplates.Add(template);
         await db.SaveChangesAsync();
 
@@ -56,7 +68,8 @@ public class MyAddProductTests : BaseIntegrationTest
 
         // Act
         HttpResponseMessage response;
-        using (var content = new StringContent(BuildJson(template.Id.Value, name, description, quantity, price), Encoding.UTF8, "application/json"))
+        using (var content = new StringContent(BuildJson(template.Id.Value, name, description, quantity, price),
+                   Encoding.UTF8, "application/json"))
         {
             response = await client.PostAsync(new Uri("/v1/stores/my/products", UriKind.Relative), content);
         }
@@ -89,7 +102,8 @@ public class MyAddProductTests : BaseIntegrationTest
         // Arrange - no store, but seed a template
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
-        var template = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(), _faker.Commerce.Color());
+        var template = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(),
+            _faker.Commerce.Color());
         db.ProductTemplates.Add(template);
         await db.SaveChangesAsync();
 
@@ -98,7 +112,8 @@ public class MyAddProductTests : BaseIntegrationTest
 
         // Act
         HttpResponseMessage response;
-        using (var content = new StringContent(BuildJson(template.Id.Value, "Product", "Desc", 5, 99.99m), Encoding.UTF8, "application/json"))
+        using (var content = new StringContent(BuildJson(template.Id.Value, "Product", "Desc", 5, 99.99m),
+                   Encoding.UTF8, "application/json"))
         {
             response = await client.PostAsync(new Uri("/v1/stores/my/products", UriKind.Relative), content);
         }
@@ -115,10 +130,12 @@ public class MyAddProductTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
         var ownerId = new ApplicationUserId(TestAuthHandler.DefaultUserId);
 
-        var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+        var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(),
+            _faker.Address.FullAddress());
         db.Stores.Add(store);
 
-        var inactiveTemplate = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(), _faker.Commerce.Color());
+        var inactiveTemplate = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(),
+            _faker.Commerce.Color());
         inactiveTemplate.Deactivate();
         db.ProductTemplates.Add(inactiveTemplate);
         await db.SaveChangesAsync();
@@ -127,7 +144,8 @@ public class MyAddProductTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         HttpResponseMessage response;
-        using (var content = new StringContent(BuildJson(inactiveTemplate.Id.Value, "Product", "Desc", 1, 10m), Encoding.UTF8, "application/json"))
+        using (var content = new StringContent(BuildJson(inactiveTemplate.Id.Value, "Product", "Desc", 1, 10m),
+                   Encoding.UTF8, "application/json"))
         {
             response = await client.PostAsync(new Uri("/v1/stores/my/products", UriKind.Relative), content);
         }
@@ -143,7 +161,8 @@ public class MyAddProductTests : BaseIntegrationTest
         var client = Factory.CreateClient();
 
         HttpResponseMessage response;
-        using (var content = new StringContent(BuildJson(ProductTemplateId.New().Value, "Product", "Desc", 1, 10m), Encoding.UTF8, "application/json"))
+        using (var content = new StringContent(BuildJson(ProductTemplateId.New().Value, "Product", "Desc", 1, 10m),
+                   Encoding.UTF8, "application/json"))
         {
             response = await client.PostAsync(new Uri("/v1/stores/my/products", UriKind.Relative), content);
         }

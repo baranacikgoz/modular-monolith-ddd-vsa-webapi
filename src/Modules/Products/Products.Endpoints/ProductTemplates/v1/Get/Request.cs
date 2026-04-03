@@ -1,4 +1,5 @@
 using Common.Application.Localization;
+using Common.Application.Localization.Resources;
 using Common.Application.ModelBinders;
 using Common.Application.Validation;
 using FluentValidation;
@@ -17,10 +18,10 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.Id)
             .NotEmpty()
-            .WithMessage(localizer["ProductTemplates.Get.Id.NotEmpty"]);
+            .WithMessage(localizer.ProductTemplates_Get_Id_NotEmpty);
     }
 }

@@ -1,7 +1,7 @@
-using Common.Application.Localization;
+using System.Globalization;
+using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
-using Microsoft.Extensions.Localization;
 using Products.Domain.ProductTemplates;
 
 namespace Products.Endpoints.ProductTemplates.v1.Create;
@@ -15,24 +15,27 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IStringLocalizer<ResxLocalizer> localizer)
+    public RequestValidator(IResxLocalizer localizer)
     {
         RuleFor(x => x.Brand)
             .NotEmpty()
-            .WithMessage(localizer["ProductTemplates.Create.Brand.NotEmpty"])
+            .WithMessage(localizer.ProductTemplates_Create_Brand_NotEmpty)
             .MaximumLength(Constants.BrandMaxLength)
-            .WithMessage(localizer["ProductTemplates.Create.Brand.MaxLength {0}", Constants.BrandMaxLength]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Create_Brand_MaxLength,
+                Constants.BrandMaxLength));
 
         RuleFor(x => x.Model)
             .NotEmpty()
-            .WithMessage(localizer["ProductTemplates.Create.Model.NotEmpty"])
+            .WithMessage(localizer.ProductTemplates_Create_Model_NotEmpty)
             .MaximumLength(Constants.ModelMaxLength)
-            .WithMessage(localizer["ProductTemplates.Create.Model.MaxLength {0}", Constants.ModelMaxLength]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Create_Model_MaxLength,
+                Constants.ModelMaxLength));
 
         RuleFor(x => x.Color)
             .NotEmpty()
-            .WithMessage(localizer["ProductTemplates.Create.Color.NotEmpty"])
+            .WithMessage(localizer.ProductTemplates_Create_Color_NotEmpty)
             .MaximumLength(Constants.ColorMaxLength)
-            .WithMessage(localizer["ProductTemplates.Create.Color.MaxLength {0}", Constants.ColorMaxLength]);
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Create_Color_MaxLength,
+                Constants.ColorMaxLength));
     }
 }
