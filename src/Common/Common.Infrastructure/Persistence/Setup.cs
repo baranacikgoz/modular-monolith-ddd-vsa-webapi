@@ -10,6 +10,8 @@ public static class Setup
     {
         return services
             .AddEventSourcingInterceptors()
-            .AddAuditingInterceptors();
+            .AddAuditingInterceptors()
+            .AddSingleton<SeedingCompletionTracker>()
+            .AddHostedService<DatabaseSeederOrchestrator>();
     }
 }

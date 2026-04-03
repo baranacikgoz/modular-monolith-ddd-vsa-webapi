@@ -43,6 +43,9 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
+        var tracker = Scope.ServiceProvider.GetRequiredService<Common.Infrastructure.Persistence.SeedingCompletionTracker>();
+        await tracker.WaitForSeedingAsync();
+
         if (_respawner == null)
         {
             await using var conn = new NpgsqlConnection(Factory.ConnectionString);

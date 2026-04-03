@@ -1,8 +1,8 @@
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
+using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.Outbox;
 using EntityFramework.Exceptions.PostgreSQL;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -50,16 +50,12 @@ public sealed partial class OutboxModule : IModule
 
     public void UseModule(IApplicationBuilder app)
     {
-        using (var scope = app.ApplicationServices.CreateScope())
-        {
-            var busControl = scope.ServiceProvider.GetRequiredService<IBusControl>();
-            busControl.Start();
+        var logger = app.ApplicationServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger(typeof(OutboxModule).FullName!);
 
-            var context = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-            context.Database.Migrate();
-
-            busControl.Stop();
-        }
+        MigrationGuard.EnsureNoMigrationsPending<OutboxDbContext>(
+            app.ApplicationServices, logger, nameof(Outbox));
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
