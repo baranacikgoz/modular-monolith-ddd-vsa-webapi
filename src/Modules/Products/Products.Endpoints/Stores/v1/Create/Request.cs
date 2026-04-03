@@ -1,12 +1,10 @@
 using System.Globalization;
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
-using Common.Application.Localization;
 using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using Common.Domain.StronglyTypedIds;
 using FluentValidation;
-using Microsoft.Extensions.Localization;
 using Products.Domain.Stores;
 
 namespace Products.Endpoints.Stores.v1.Create;

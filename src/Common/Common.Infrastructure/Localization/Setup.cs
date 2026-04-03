@@ -3,8 +3,6 @@ using Common.Application.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
-using Common.Infrastructure.Localization;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ResXGenerator.Registration;
 

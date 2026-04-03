@@ -1,9 +1,7 @@
-using Common.Application.Localization;
 using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
 using IAM.Endpoints.Common.Validations;
-using Microsoft.Extensions.Localization;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Create;
 

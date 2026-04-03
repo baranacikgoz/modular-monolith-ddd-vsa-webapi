@@ -1,5 +1,4 @@
 using Common.Application.Extensions;
-using Common.Application.Localization;
 using Common.Application.Localization.Resources;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Hosting;
