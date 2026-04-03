@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+              xmlns="">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+      PublicKeyToken=b77a5c561934e089
+    </value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+      PublicKeyToken=b77a5c561934e089
+    </value>
+  </resheader>
+  <data name="NotFound" xml:space="preserve">
+    <value>({0}) not found.</value>
+  </data>
+  <data name="NotUnqiue" xml:space="preserve">
+    <value>({0}) already exists in another record.</value>
+  </data>
+  <data name="UniqueViolation" xml:space="preserve">
+    <value>A value that must be unique already exists in another record.</value>
+  </data>
+  <data name="Conflict" xml:space="preserve">
+    <value>Another user updated this record before you. Please try again.</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>An unexpected error occurred. You can ensure it is resolved by sharing the trace ID ({0}) with us.</value>
+  </data>
+  <data name="BadRequest" xml:space="preserve">
+    <value>Bad request.</value>
+  </data>
+  <data name="TooManyRequests" xml:space="preserve">
+    <value>Too many requests.</value>
+  </data>
+  <data name="RetryAfter" xml:space="preserve">
+    <value>Please try again after ({0}).</value>
+  </data>
+  <data name="Unauthorized" xml:space="preserve">
+    <value>You must log in to access this resource.</value>
+  </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>You do not have permission to access this resource.</value>
+  </data>
+  <data name="Some" xml:space="preserve">
+    <value>One or more errors occurred.</value>
+  </data>
+  <data name="InvalidOtp" xml:space="preserve">
+    <value>Code is incorrect or expired.</value>
+  </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Invalid token.</value>
+  </data>
+  <data name="InvalidRefreshToken" xml:space="preserve">
+    <value>Invalid refresh token.</value>
+  </data>
+  <data name="RefreshTokenExpired" xml:space="preserve">
+    <value>Refresh token has expired.</value>
+  </data>
+  <data name="NotHuman" xml:space="preserve">
+    <value>Verification failed. Please confirm you are not a robot.</value>
+  </data>
+  <data name="CaptchaServiceUnavailable" xml:space="preserve">
+    <value>Captcha service error. Please try again.</value>
+  </data>
+  <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
+    <value>Phone verification tokens do not match.</value>
+  </data>
+  <data name="ConcurrencyFailure" xml:space="preserve">
+    <value>Multiple requests tried to update this user at the same time. Please try again.</value>
+  </data>
+  <data name="DefaultError" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>({0}) Invalid email address.</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>({0}) Invalid phone number.</value>
+  </data>
+  <data name="DuplicateEmail" xml:space="preserve">
+    <value>({0}) email address is already in use by another user.</value>
+  </data>
+  <data name="DuplicateUserName" xml:space="preserve">
+    <value>({0}) phone number is already in use by another user.</value>
+  </data>
+  <data name="UserNotInRole" xml:space="preserve">
+    <value>User does not have the ({0}) role.</value>
+  </data>
+  <data name="DuplicateRoleName" xml:space="preserve">
+    <value>({0}) role already exists.</value>
+  </data>
+  <data name="InvalidRoleName" xml:space="preserve">
+    <value>({0}) invalid role name.</value>
+  </data>
+  <data name="LoginAlreadyAssociated" xml:space="preserve">
+    <value>This user is already associated with another account.</value>
+  </data>
+  <data name="PasswordMismatch" xml:space="preserve">
+    <value>Passwords do not match.</value>
+  </data>
+  <data name="PasswordRequiresDigit" xml:space="preserve">
+    <value>Password must contain at least one digit.</value>
+  </data>
+  <data name="PasswordRequiresLower" xml:space="preserve">
+    <value>Password must contain at least one lowercase letter.</value>
+  </data>
+  <data name="PasswordRequiresNonAlphanumeric" xml:space="preserve">
+    <value>Password must contain at least one special character.</value>
+  </data>
+  <data name="PasswordRequiresUniqueChars" xml:space="preserve">
+    <value>Password must contain at least ({0}) unique characters.</value>
+  </data>
+  <data name="PasswordRequiresUpper" xml:space="preserve">
+    <value>Password must contain at least one uppercase letter.</value>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>Password must be at least ({0}) characters long.</value>
+  </data>
+  <data name="UserAlreadyHasPassword" xml:space="preserve">
+    <value>User already has a password set.</value>
+  </data>
+  <data name="UserAlreadyInRole" xml:space="preserve">
+    <value>User already has the ({0}) role.</value>
+  </data>
+  <data name="RecoveryCodeRedemptionFailed" xml:space="preserve">
+    <value>Recovery code could not be redeemed.</value>
+  </data>
+  <data name="UserLockoutNotEnabled" xml:space="preserve">
+    <value>User lockout is not enabled.</value>
+  </data>
+  <data name="ApplicationUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="PhoneVerificationToken" xml:space="preserve">
+    <value>Phone verification token</value>
+  </data>
+  <data name="PaginationRequest_PageNumber_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Page number must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="PaginationRequest_PageSize_InclusiveBetween" xml:space="preserve">
+    <value>Page size must be between ({0}) and ({1}).</value>
+  </data>
+  <data name="IAM_PhoneNumber_Length" xml:space="preserve">
+    <value>Phone number must be ({0}) characters long including the area code.</value>
+  </data>
+  <data name="IAM_PhoneNumber_DigitsOnly" xml:space="preserve">
+    <value>Phone number must consist only of digits.</value>
+  </data>
+  <data name="IAM_PhoneNumber_OnlyTurkey" xml:space="preserve">
+    <value>Currently only Turkey numbers are supported. Your number must start with 90.</value>
+  </data>
+  <data name="IAM_PhoneVerificationToken_NotEmpty" xml:space="preserve">
+    <value>Phone verification token cannot be empty.</value>
+  </data>
+  <data name="Register_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Register_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Register_Name_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Name must contain only Turkish characters.</value>
+  </data>
+  <data name="Register_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Register_LastName_NotEmpty" xml:space="preserve">
+    <value>Last name cannot be empty.</value>
+  </data>
+  <data name="Register_LastName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Last name must contain only Turkish characters.</value>
+  </data>
+  <data name="Register_LastName_MaxLength" xml:space="preserve">
+    <value>Last name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_NotEmpty" xml:space="preserve">
+    <value>National identity number cannot be empty.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_Length" xml:space="preserve">
+    <value>National identity number must be ({0}) characters long.</value>
+  </data>
+  <data name="Register_NationalIdentityNumber_ContainsOnlyDigits" xml:space="preserve">
+    <value>National identity number must consist only of digits.</value>
+  </data>
+  <data name="Register_BirthDate_NotEmpty" xml:space="preserve">
+    <value>Birth date cannot be empty.</value>
+  </data>
+  <data name="Register_BirthDate_Format" xml:space="preserve">
+    <value>Birth date format must be ({0}).</value>
+  </data>
+  <data name="Users_Get_Id_NotEmpty" xml:space="preserve">
+    <value>User ID cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_Activate_Id_NotEmpty" xml:space="preserve">
+    <value>Product template ID cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_Create_Brand_MaxLength" xml:space="preserve">
+    <value>Brand can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Create_Brand_NotEmpty" xml:space="preserve">
+    <value>Brand cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_Create_Color_MaxLength" xml:space="preserve">
+    <value>Color can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Create_Color_NotEmpty" xml:space="preserve">
+    <value>Color cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_Create_Model_MaxLength" xml:space="preserve">
+    <value>Model can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Create_Model_NotEmpty" xml:space="preserve">
+    <value>Model cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_DeActivate_Id_NotEmpty" xml:space="preserve">
+    <value>Product template ID cannot be empty.</value>
+  </data>
+  <data name="ProductTemplates_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Product template ID cannot be empty.</value>
+  </data>
+  <data name="Products_Search_Description_MaximumLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_Search_MaxPrice_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Maximum price must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_Search_MaxQuantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Maximum quantity must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_Search_MinPrice_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Minimum price must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_Search_MinQuantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Minimum quantity must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_Search_Name_MaximumLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_Search_OwnerId_NotEmpty" xml:space="preserve">
+    <value>Owner ID cannot be empty.</value>
+  </data>
+  <data name="Products_Search_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Products_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>At least one property must be updated.</value>
+  </data>
+  <data name="Products_Update_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
+  <data name="Products_Update_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_Update_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Products_Update_Price_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Price must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_Update_ProductBody_NotEmpty" xml:space="preserve">
+    <value>Product body cannot be empty.</value>
+  </data>
+  <data name="Products_Update_ProductId_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="Products_Update_Quantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Quantity must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Products_v1_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="Products_v1_My_Get_Id_Empty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_AddProduct_Description_NotEmpty" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_AddProduct_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Price_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Price must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Stores_AddProduct_ProductTemplateId_NotEmpty" xml:space="preserve">
+    <value>Product template ID cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Quantity_GreaterThanOrEqualTo" xml:space="preserve">
+    <value>Quantity must be greater than or equal to ({0}).</value>
+  </data>
+  <data name="Stores_GetById_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_My_RemoveProduct_Id_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="Stores_My_Update_Address_MaxLength" xml:space="preserve">
+    <value>Address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_My_Update_Address_NotEmpty" xml:space="preserve">
+    <value>Address cannot be empty.</value>
+  </data>
+  <data name="Stores_My_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>At least one property must be updated.</value>
+  </data>
+  <data name="Stores_My_Update_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_My_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
+  <data name="Stores_My_Update_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_My_Update_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Stores_RemoveProduct_ProductId_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="Stores_RemoveProduct_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_Search_Address_MaximumLength" xml:space="preserve">
+    <value>Address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Search_Description_MaximumLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
+    <value>Address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Update_Address_NotEmpty" xml:space="preserve">
+    <value>Address cannot be empty.</value>
+  </data>
+  <data name="Stores_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
+    <value>At least one property must be updated.</value>
+  </data>
+  <data name="Stores_Update_Body_NotEmpty" xml:space="preserve">
+    <value>Store body cannot be empty.</value>
+  </data>
+  <data name="Stores_Update_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Update_Description_NotEmpty" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
+  <data name="Stores_Update_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_Update_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Update_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_AddProduct_ProductBody_NotEmpty" xml:space="preserve">
+    <value>Product body cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_AddProduct_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Create_Address_MaxLength" xml:space="preserve">
+    <value>Address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Create_Address_NotEmpty" xml:space="preserve">
+    <value>Address cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Create_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Create_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Create_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Create_OwnerId_NotEmpty" xml:space="preserve">
+    <value>Owner ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Address_MaxLength" xml:space="preserve">
+    <value>Address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Address_NotEmpty" xml:space="preserve">
+    <value>Address cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Description_MaxLength" xml:space="preserve">
+    <value>Description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Description_NotEmpty" xml:space="preserve">
+    <value>Description cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Name_MaxLength" xml:space="preserve">
+    <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_My_Create_Name_NotEmpty" xml:space="preserve">
+    <value>Name cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Create_WaitTime" xml:space="preserve">
+    <value>You can create a new store after ({0}).</value>
+  </data>
+  <data name="Users_Tokens_Create_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Users_Tokens_Create_Otp_NotEmpty" xml:space="preserve">
+    <value>OTP cannot be empty.</value>
+  </data>
+  <data name="Users_Tokens_Refresh_AccessToken_NotEmpty" xml:space="preserve">
+    <value>Access token cannot be empty.</value>
+  </data>
+  <data name="Users_Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
+    <value>Refresh token cannot be empty.</value>
+  </data>
+  <data name="Users_Otp_Send_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Users_OTP_Store_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Users_CheckRegistration_PhoneNumber_NotEmpty" xml:space="preserve">
+    <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
+    <value>Refresh token cannot be empty.</value>
+  </data>
+  <data name="DbUpdateConcurrencyException" xml:space="preserve">
+    <value>Database concurrency error. Please try again.</value>
+  </data>
+  <data name="UniqueConstraintException" xml:space="preserve">
+    <value>A value that must be unique already exists.</value>
+  </data>
+  <data name="CannotInsertNullException" xml:space="preserve">
+    <value>A field that cannot be empty was left empty.</value>
+  </data>
+  <data name="MaxLengthExceededException" xml:space="preserve">
+    <value>Maximum length of a field has been exceeded.</value>
+  </data>
+  <data name="NumericOverflowException" xml:space="preserve">
+    <value>Numeric value of a field has exceeded its capacity.</value>
+  </data>
+  <data name="ReferenceConstraintException" xml:space="preserve">
+    <value>Referenced record not found or cannot be deleted.</value>
+  </data>
+  <data name="BadHttpRequestException" xml:space="preserve">
+    <value>Bad HTTP request.</value>
+  </data>
+  <data name="ClientClosedRequest" xml:space="preserve">
+    <value>Request was closed by the client.</value>
+  </data>
+</root>
