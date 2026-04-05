@@ -6,10 +6,12 @@ on:
 
 jobs:
   ai-developer-task:
+    # Trigger ONLY when the specific label is applied
     if: github.event.label.name == 'claude-ai'
     name: Execute Autonomous Claude Agent
     runs-on: arc-runners
     
+    # Required for Claude to use the `gh` cli inside the container
     permissions:
       contents: write
       pull-requests: write
@@ -45,14 +47,14 @@ jobs:
           echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
           
           # One master prompt giving Claude complete control of the lifecycle
-          claude -p "You are an autonomous AI Developer tasked with resolving GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE'. 
+          claude --dangerously-skip-permissions -p "You are an autonomous AI Developer tasked with resolving GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE'. 
           
           Issue Details:
           $ISSUE_BODY
           
           Instructions:
           1. Strictly adhere to rules defined in CLAUDE.md.
-          2. Implement your changes.
+          2. Implement your changes. Do not forget to verify
           3. Once confident, create a new branch named 'claude-fix/issue-${{ github.event.issue.number }}'.
           4. Commit your changes and push the branch to origin.
           5. Use the 'gh' CLI to create a Pull Request against the main branch, mentioning 'Fixes #${{ github.event.issue.number }}' in the description.

@@ -1,0 +1,17 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(git*)",
+            "Bash(gh*)",
+            "Write(**)"
+        ]
+    },
+    "allowedTools": [
+        "ReadFileTool",
+        "WriteFileTool",
+        "BashTool",
+        "GlobTool",
+        "GrepTool",
+        "ReplaceTool"
+    ]
+}
