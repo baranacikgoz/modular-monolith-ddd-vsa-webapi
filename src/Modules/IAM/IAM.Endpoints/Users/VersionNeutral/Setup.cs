@@ -15,6 +15,7 @@ public static class Setup
 
         Endpoint.MapEndpoint(usersApiGroup);
         Get.Endpoint.MapEndpoint(usersApiGroup);
+        Search.Endpoint.MapEndpoint(usersApiGroup);
         CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
         Me.Get.Endpoint.MapEndpoint(usersApiGroup);
     }
