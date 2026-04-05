@@ -1,0 +1,70 @@
+name: Claude AI Developer
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'What should the AI Developer do?'
+        required: true
+        type: string
+
+jobs:
+  ai-developer-task:
+    name: Execute Claude Target Task
+    
+    # This must match the name of the ARC Scale Set installation.
+    # Based on your Helm chart 'name: arc-runners', the scale set name is likely 'arc-runners'.
+    # If the ARC scale set is registered with a different name, update this value.
+    runs-on: arc-runners
+    
+    # Setup permissions necessary for Claude to potentially commit code back or leave comments
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so Claude can analyze git context if necessary
+          fetch-depth: 0
+
+      - name: Validate Runner Environment
+        run: |
+          echo "=== Verifying Base Infrastructure ==="
+          
+          echo ".NET version:"
+          dotnet --version
+          
+          echo "Node.js version:"
+          node --version
+          
+          echo "Docker version (DIND check):"
+          docker --version
+          docker ps
+          
+          echo "GitHub CLI version:"
+          gh --version
+          
+          echo "Claude Code version:"
+          claude --version
+
+      - name: Execute Claude Code Workflow
+        env:
+          # Note: ANTHROPIC_API_KEY is already injected by your ARC runner pod spec
+          # via the 'claude-ai-secret' secret reference in the Helm chart.
+          
+          # Provide the GitHub token so the GitHub CLI can authenticate
+          # (Claude uses the gh CLI under the hood for PR/Issue interactions)
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Allow Claude Code to run non-interactively in CI
+          CLAUDE_INTERACTIVE: "false"
+        run: |
+          PROMPT="${{ github.event.inputs.task }}"
+          
+          echo "Executing Task: $PROMPT"
+          
+          # For headless execution, pass the input prompt directly
+          claude -p "$PROMPT"
