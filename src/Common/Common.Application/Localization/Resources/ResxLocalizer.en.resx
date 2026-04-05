@@ -294,6 +294,9 @@
   <data name="Products_Search_StoreId_NotEmpty" xml:space="preserve">
     <value>Store ID cannot be empty.</value>
   </data>
+  <data name="Products_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Search term can be at most ({0}) characters long.</value>
+  </data>
   <data name="Products_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
     <value>At least one property must be updated.</value>
   </data>
@@ -389,6 +392,12 @@
   </data>
   <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
     <value>Name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Search term can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Search term can be at most ({0}) characters long.</value>
   </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>

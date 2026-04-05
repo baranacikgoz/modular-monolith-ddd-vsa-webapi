@@ -7,7 +7,7 @@ services:
     restart: "no"
     build:
       context: .
-      dockerfile: src/Host/Dockerfile
+      dockerfile: src/Host/Host/Dockerfile
     networks:
       - local_shared_network
     ports:

@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '10.x'
 
       - name: Restore & Build
-        run: dotnet build src/Host/Host.csproj --configuration Release
+        run: dotnet build src/Host/Host/Host.csproj --configuration Release
 
       - name: Test
         run: make test
@@ -58,6 +58,6 @@ jobs:
       - name: Docker Build and Push
         uses: docker/build-push-action@v5
         with:
-          file: src/Host/Dockerfile
+          file: src/Host/Host/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/webapi:${{ env.VERSION }}

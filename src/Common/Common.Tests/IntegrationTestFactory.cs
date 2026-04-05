@@ -20,12 +20,6 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithPassword("postgres")
         .Build();
 
-    protected virtual string[] GetActiveModules() => ["*"];
-
-    public IntegrationTestFactory()
-    {
-    }
-
     public string ConnectionString => _dbContainer.GetConnectionString();
 
     public virtual async Task InitializeAsync()
@@ -36,6 +30,11 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
     Task IAsyncLifetime.DisposeAsync()
     {
         return _dbContainer.StopAsync();
+    }
+
+    protected virtual string[] GetActiveModules()
+    {
+        return ["*"];
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

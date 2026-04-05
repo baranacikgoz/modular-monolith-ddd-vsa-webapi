@@ -65,7 +65,7 @@ trigger: always_on
 
 ## 5. Migration Management
 *   **Contexts**: Each module has its own `DbContext`.
-*   **Command**: Always specify `--context [Module]DbContext`.
+*   **Command**: See `../skills/manage-migration.md` for the exact CLI command you must use to add/manage migrations.
 
 ## 6. Testing Standards
 *   **Assertions**: Do NOT use FluentAssertions or any other assertion library. Use built-in xUnit Assert methods (`Assert.Equal`, `Assert.NotNull`, etc.).

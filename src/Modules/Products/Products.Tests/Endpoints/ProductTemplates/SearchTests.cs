@@ -96,4 +96,75 @@ public class SearchTests : BaseIntegrationTest
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Search_WithFtsSearchTerm_ReturnsMatchingProductTemplates()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        // Matching template: brand contains FTS-matchable unique word "patagonia"
+        db.ProductTemplates.Add(MakeTemplate("Patagonia", "Fleece Jacket", "Navy Blue"));
+        // Non-matching templates
+        db.ProductTemplates.Add(MakeTemplate("Columbia", "Rain Jacket", "Green"));
+        db.ProductTemplates.Add(MakeTemplate("NorthFace", "Down Vest", "Black"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act — "patagonia" only matches the first template's brand
+        var response = await client.GetAsync(new Uri("/v1/product-templates/search?PageNumber=1&PageSize=10&SearchTerm=patagonia", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("Patagonia", result.Data.First().Brand);
+    }
+
+    [Fact]
+    public async Task Search_WithFtsSearchTermMatchingModelAndColor_ReturnsMatchingProductTemplates()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        // FTS covers Brand + Model + Color; seed a template whose color contains a unique word
+        db.ProductTemplates.Add(MakeTemplate("GenericBrand", "StandardModel", "Turquoise"));
+        db.ProductTemplates.Add(MakeTemplate("OtherBrand", "OtherModel", "Crimson"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act — "turquoise" only exists in the first template's color
+        var response = await client.GetAsync(new Uri("/v1/product-templates/search?PageNumber=1&PageSize=10&SearchTerm=turquoise", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("Turquoise", result.Data.First().Color);
+    }
+
+    [Fact]
+    public async Task Search_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+        var tooLongSearchTerm = new string('a', 257); // MaxLength is 256
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/v1/product-templates/search?PageNumber=1&PageSize=10&SearchTerm={tooLongSearchTerm}", UriKind.Relative));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

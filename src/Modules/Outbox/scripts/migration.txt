@@ -1,5 +1,0 @@
-# Windows
-dotnet ef migrations add Initial --startup-project .\src\Host\ --project .\src\Modules\Outbox\ --context OutboxDbContext -o Persistence/Migrations -v
-
-# Unix
-dotnet ef migrations add Initial --startup-project src/Host/ --project src/Modules/Outbox/ --context OutboxDbContext -o Persistence/Migrations -v

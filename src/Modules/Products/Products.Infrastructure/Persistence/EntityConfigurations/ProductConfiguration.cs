@@ -1,6 +1,8 @@
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NpgsqlTypes;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
@@ -40,5 +42,14 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
         builder
             .Property(sp => sp.Price)
             .IsRequired();
+
+        builder
+            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
+            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(Product.Name), nameof(Product.Description))
+            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+
+        builder
+            .HasIndex(FullTextSearch.SearchVectorColumnName)
+            .HasMethod(FullTextSearch.GinIndexMethod);
     }
 }

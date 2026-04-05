@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 using Products.Application.Persistence;
 
 namespace Products.Endpoints.Products.v1.Search;
@@ -30,9 +31,14 @@ internal static class Endpoint
     {
         return await dbContext
             .Products
+            .AsNoTracking()
             .TagWith(nameof(SearchStoreProductsAsync))
             .WhereIf(p => p.StoreId == request.StoreId, request.StoreId is not null)
             .WhereIf(p => p.Store.OwnerId == request.OwnerId, request.OwnerId is not null)
+            .WhereIf(
+                p => EF.Property<NpgsqlTsVector>(p, "SearchVector")
+                    .Matches(EF.Functions.WebSearchToTsQuery("english", request.SearchTerm!)),
+                !string.IsNullOrWhiteSpace(request.SearchTerm))
             .WhereIf(p => EF.Functions.ILike(p.Name, $"%{request.Name}%"), !string.IsNullOrWhiteSpace(request.Name))
             .WhereIf(p => EF.Functions.ILike(p.Description, $"%{request.Description}%"),
                 !string.IsNullOrWhiteSpace(request.Description))

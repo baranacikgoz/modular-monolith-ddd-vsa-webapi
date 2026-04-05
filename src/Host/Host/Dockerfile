@@ -29,7 +29,7 @@ COPY ["src/Common/Common.Domain/Common.Domain.csproj", "src/Common/Common.Domain
 COPY ["src/Common/Common.Endpoints/Common.Endpoints.csproj", "src/Common/Common.Endpoints/"]
 COPY ["src/Common/Common.IntegrationEvents/Common.IntegrationEvents.csproj", "src/Common/Common.IntegrationEvents/"]
 COPY ["src/Common/Common.InterModuleRequests/Common.InterModuleRequests.csproj", "src/Common/Common.InterModuleRequests/"]
-COPY ["src/Modules/BackgroundJobs/BackgroundJobs.csproj", "src/Modules/BackgroundJobs/"]
+COPY ["src/Modules/BackgroundJobs/BackgroundJobs/BackgroundJobs.csproj", "src/Modules/BackgroundJobs/"]
 COPY ["src/Modules/IAM/IAM.Infrastructure/IAM.Infrastructure.csproj", "src/Modules/IAM/IAM.Infrastructure/"]
 COPY ["src/Modules/IAM/IAM.Application/IAM.Application.csproj", "src/Modules/IAM/IAM.Application/"]
 COPY ["src/Modules/IAM/IAM.Domain/IAM.Domain.csproj", "src/Modules/IAM/IAM.Domain/"]
@@ -41,7 +41,7 @@ COPY ["src/Modules/Products/Products.Endpoints/Products.Endpoints.csproj", "src/
 COPY ["src/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj", "src/Modules/Notifications/Notifications.Infrastructure/"]
 COPY ["src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj", "src/Modules/Notifications/Notifications.Application/"]
 COPY ["src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj", "src/Modules/Notifications/Notifications.Domain/"]
-COPY ["src/Modules/Outbox/Outbox.csproj", "src/Modules/Outbox/"]
+COPY ["src/Modules/Outbox/Outbox/Outbox.csproj", "src/Modules/Outbox/"]
 RUN dotnet restore "./src/Host/Host.csproj"
 COPY . .
 WORKDIR "/src/src/Host"

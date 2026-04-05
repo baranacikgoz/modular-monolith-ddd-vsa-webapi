@@ -20,6 +20,8 @@ public sealed record Request : PaginationRequest
     [ModelBinder<StronglyTypedIdBinder<ApplicationUserId>>]
     public ApplicationUserId? OwnerId { get; set; }
 
+    [FromQuery] public string? SearchTerm { get; init; }
+
     [FromQuery] public string? Name { get; init; }
 
     [FromQuery] public string? Description { get; init; }
@@ -37,6 +39,12 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
 {
     public RequestValidator(IResxLocalizer localizer) : base(localizer)
     {
+        RuleFor(x => x.SearchTerm)
+            .MaximumLength(Constants.SearchTermMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Search_SearchTerm_MaximumLength,
+                Constants.SearchTermMaxLength))
+            .When(x => x.SearchTerm is not null);
+
         RuleFor(x => x.StoreId)
             .NotEmpty()
             .WithMessage(localizer.Products_Search_StoreId_NotEmpty)

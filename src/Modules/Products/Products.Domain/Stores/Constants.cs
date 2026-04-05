@@ -6,4 +6,5 @@ public static class Constants
     public const int DescriptionMaxLength = 1000;
     public const int AddressMaxLength = 1000;
     public const int LogoUrlMaxLength = 512;
+    public const int SearchTermMaxLength = 256;
 }

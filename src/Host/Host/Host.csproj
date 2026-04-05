@@ -44,9 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.Infrastructure\Common.Infrastructure.csproj"/>
-    <ProjectReference Include="..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj"/>
-    <ProjectReference Include="..\Modules\**\*.csproj" Exclude="..\Modules\**\*Tests.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj"/>
+    <ProjectReference Include="..\..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj"/>
+    <ProjectReference Include="..\..\Modules\**\*.csproj" Exclude="..\..\Modules\**\*Tests.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

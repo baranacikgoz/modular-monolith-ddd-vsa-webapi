@@ -1,7 +1,9 @@
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NpgsqlTypes;
 using Products.Domain.Stores;
 
 namespace Products.Infrastructure.Persistence.EntityConfigurations;
@@ -35,5 +37,14 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .Property(s => s.Address)
             .HasMaxLength(Constants.AddressMaxLength)
             .IsRequired();
+
+        builder
+            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
+            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(Store.Name), nameof(Store.Description), nameof(Store.Address))
+            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+
+        builder
+            .HasIndex(FullTextSearch.SearchVectorColumnName)
+            .HasMethod(FullTextSearch.GinIndexMethod);
     }
 }

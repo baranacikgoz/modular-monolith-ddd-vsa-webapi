@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 using Products.Application.Persistence;
 
 namespace Products.Endpoints.ProductTemplates.v1.Search;
@@ -32,6 +33,10 @@ internal static class Endpoint
             .ProductTemplates
             .AsNoTracking()
             .TagWith(nameof(SearchProductTemplatesAsync))
+            .WhereIf(
+                p => EF.Property<NpgsqlTsVector>(p, "SearchVector")
+                    .Matches(EF.Functions.WebSearchToTsQuery("english", request.SearchTerm!)),
+                !string.IsNullOrWhiteSpace(request.SearchTerm))
             .WhereIf(p => EF.Functions.ILike(p.Brand, $"%{request.Brand}%"), !string.IsNullOrWhiteSpace(request.Brand))
             .WhereIf(p => EF.Functions.ILike(p.Model, $"%{request.Model}%"), !string.IsNullOrWhiteSpace(request.Model))
             .WhereIf(p => EF.Functions.ILike(p.Color, $"%{request.Color}%"), !string.IsNullOrWhiteSpace(request.Color))
