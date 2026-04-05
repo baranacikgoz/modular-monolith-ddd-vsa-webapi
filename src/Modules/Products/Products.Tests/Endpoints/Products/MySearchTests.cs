@@ -113,4 +113,56 @@ public class MySearchTests : BaseIntegrationTest
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task MySearch_WithFtsSearchTerm_ReturnsMatchingOwnProducts()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        var ownerId = new ApplicationUserId(TestAuthHandler.DefaultUserId);
+        var store = Store.Create(ownerId, "My FTS Store", "Store for FTS test", "123 Test Street");
+        var template = ProductTemplate.Create("TestBrand", "TestModel", "TestColor");
+
+        // Matching product: has FTS-matchable word "velvet" in its name
+        var matchingProduct = Product.Create(store.Id, template.Id, "Velvet Curtains", "decorative window treatment", 10, 50m);
+        // Non-matching product: does not contain "velvet"
+        var otherProduct = Product.Create(store.Id, template.Id, "Cotton Pillow", "comfortable sleeping accessory", 5, 20m);
+        store.AddProduct(matchingProduct);
+        store.AddProduct(otherProduct);
+
+        db.Stores.Add(store);
+        db.ProductTemplates.Add(template);
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var response = await client.GetAsync(new Uri("/v1/products/my/search?PageNumber=1&PageSize=10&SearchTerm=velvet", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("Velvet Curtains", result.Data.First().Name);
+    }
+
+    [Fact]
+    public async Task MySearch_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+        var tooLongSearchTerm = new string('a', 257); // MaxLength is 256
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/v1/products/my/search?PageNumber=1&PageSize=10&SearchTerm={tooLongSearchTerm}", UriKind.Relative));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
