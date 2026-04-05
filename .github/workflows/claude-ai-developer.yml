@@ -54,10 +54,10 @@ jobs:
           
           Instructions:
           1. Strictly adhere to rules defined in CLAUDE.md.
-          2. Implement your changes. Do not forget to verify.
-          3. Once confident, create a new branch named 'claude-fix/issue-${{ github.event.issue.number }}'.
+          2. Implement your changes. Do not forget to verify see `.agent/workflows/verify-feature.md`.
+          3. Once confident, create a new branch named 'claude-fix/issue-${{ github.event.issue.number }}' unless explicitly told to use the same branch & same PR.
           4. Commit your changes and push the branch to origin.
-          5. Use the 'gh' CLI to create a Pull Request against the main branch.
+          5. Use the 'gh' CLI.
           6. The PR description MUST include:
              - 'Fixes #${{ github.event.issue.number }}'
              - A 'Decisions & Rationale' section explaining exactly WHY you chose this implementation over alternatives for this $ISSUE_TITLE.

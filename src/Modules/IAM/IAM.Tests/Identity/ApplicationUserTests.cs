@@ -1,11 +1,10 @@
-
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
 using IAM.Domain.Identity;
 using IAM.Domain.Identity.DomainEvents.v1;
 using Xunit;
 
-namespace IAM.UnitTests;
+namespace IAM.Tests.Identity;
 
 public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationUserId>
 {
@@ -37,8 +36,7 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
         Given(() => ApplicationUser.Create(Name, LastName, PhoneNumber, NationalIdentityNumber, BirthDate, ImageUrl))
             .When(user => user.UpdateImageUrl(newImageUrl))
             .Then(user => Assert.Equal(newImageUrl, user.ImageUrl))
-            .Then<V1UserImageUrlUpdatedDomainEvent>(
-                @event => Assert.Equal(newImageUrl, @event.ImageUrl));
+            .Then<V1UserImageUrlUpdatedDomainEvent>(@event => Assert.Equal(newImageUrl, @event.ImageUrl));
     }
 
     [Fact]
@@ -51,7 +49,6 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
             .When(user => user.UpdateRefreshToken(refreshTokenHash, expiresAt))
             .Then(user => Assert.Equivalent(refreshTokenHash, user.RefreshTokenHash))
             .Then(user => Assert.Equal(expiresAt, user.RefreshTokenExpiresAt))
-            .Then<V1RefreshTokenUpdatedDomainEvent>(
-                _ => { });
+            .Then<V1RefreshTokenUpdatedDomainEvent>(_ => { });
     }
 }

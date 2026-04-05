@@ -67,9 +67,12 @@ finally
     await Log.CloseAndFlushAsync();
 }
 
-public partial class Program
+namespace Host
 {
-    protected Program()
+    public class Program
     {
+        protected Program()
+        {
+        }
     }
 }
