@@ -10,7 +10,6 @@ using IAM.Application.Tokens.DTOs;
 using IAM.Application.Tokens.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Create;
@@ -28,11 +27,11 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> CreateTokens(
-        [FromBody] Request request,
-        [FromServices] IIAMDbContext dbContext,
-        [FromServices] ITokenService tokenService,
-        [FromServices] IOtpService otpService,
-        [FromServices] TimeProvider timeProvider,
+        Request request,
+        IIAMDbContext dbContext,
+        ITokenService tokenService,
+        IOtpService otpService,
+        TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         return await otpService

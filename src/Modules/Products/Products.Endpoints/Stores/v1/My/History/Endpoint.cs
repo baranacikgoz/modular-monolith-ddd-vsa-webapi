@@ -6,7 +6,6 @@ using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
@@ -28,8 +27,8 @@ internal static class Endpoint
 
     private static async Task<Result<PaginationResponse<EventDto>>> GetMyStoreHistoryAsync(
         [AsParameters] Request request,
-        [FromServices] ICurrentUser currentUser,
-        [FromServices] IProductsDbContext dbContext,
+        ICurrentUser currentUser,
+        IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext
