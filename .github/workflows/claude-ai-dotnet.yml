@@ -67,7 +67,7 @@ jobs:
           echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
           
           # One master prompt giving Claude complete control of the lifecycle
-          claude --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
+          stdbuf -oL -eL claude --verbose --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
           
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
           
