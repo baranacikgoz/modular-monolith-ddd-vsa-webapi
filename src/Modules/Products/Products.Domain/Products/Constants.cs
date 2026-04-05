@@ -6,4 +6,5 @@ public static class Constants
     public const int DescriptionMaxLength = 512;
     public const int QuantityGreaterThanOrEqualTo = 1;
     public const decimal PriceGreaterThanOrEqualTo = 1;
+    public const int SearchTermMaxLength = 256;
 }

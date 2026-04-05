@@ -9,6 +9,8 @@ namespace Products.Endpoints.Products.v1.My.Search;
 
 public sealed record Request : PaginationRequest
 {
+    [FromQuery] public string? SearchTerm { get; init; }
+
     [FromQuery] public string? Name { get; init; }
 
     [FromQuery] public string? Description { get; init; }
@@ -26,6 +28,12 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
 {
     public RequestValidator(IResxLocalizer localizer) : base(localizer)
     {
+        RuleFor(x => x.SearchTerm)
+            .MaximumLength(Constants.SearchTermMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Search_SearchTerm_MaximumLength,
+                Constants.SearchTermMaxLength))
+            .When(x => x.SearchTerm is not null);
+
         RuleFor(x => x.Name)
             .MaximumLength(Constants.NameMaxLength)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Search_Name_MaximumLength,

@@ -362,6 +362,9 @@
   <data name="Products_Search_StoreId_NotEmpty" xml:space="preserve">
     <value>Mağaza Id boş olamaz.</value>
   </data>
+  <data name="Products_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="Products_Update_AtLeastOnePropertyIsRequired" xml:space="preserve">
     <value>En az bir alan güncellenmelidir.</value>
   </data>
@@ -457,6 +460,12 @@
   </data>
   <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
     <value>İsim en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="ProductTemplates_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>

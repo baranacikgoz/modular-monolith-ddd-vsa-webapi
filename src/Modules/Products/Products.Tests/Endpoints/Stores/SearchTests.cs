@@ -95,4 +95,75 @@ public class SearchTests : BaseIntegrationTest
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Search_WithFtsSearchTerm_ReturnsMatchingStores()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        // Matching store: name contains FTS-matchable unique word "artisan"
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "Artisan Bakery", "freshly baked goods daily", "10 Maple Avenue"));
+        // Non-matching stores
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "Tech Supplies", "electronic components and gadgets", "20 Silicon Road"));
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "Garden Center", "plants and gardening tools", "30 Green Lane"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act — "artisan" only matches the first store
+        var response = await client.GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm=artisan", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("Artisan Bakery", result.Data.First().Name);
+    }
+
+    [Fact]
+    public async Task Search_WithFtsSearchTermMatchingAddress_ReturnsMatchingStores()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        // FTS covers Name + Description + Address; seed a store whose address has a unique word
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "General Store", "everyday products", "45 Cobblestone Marketplace"));
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "City Shop", "urban goods", "99 Downtown Boulevard"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act — "cobblestone" only exists in the first store's address
+        var response = await client.GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm=cobblestone", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("General Store", result.Data.First().Name);
+    }
+
+    [Fact]
+    public async Task Search_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+        var tooLongSearchTerm = new string('a', 257); // MaxLength is 256
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm={tooLongSearchTerm}", UriKind.Relative));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
