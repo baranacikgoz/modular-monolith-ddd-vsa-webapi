@@ -10,22 +10,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="xunit"/>
     <PackageReference Include="xunit.runner.visualstudio">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.Tests\Common.Tests.csproj" />
-    <ProjectReference Include="..\Host\Host.csproj" />
+    <ProjectReference Include="..\..\Common\Common.Tests\Common.Tests.csproj"/>
+    <ProjectReference Include="..\Host\Host.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <Using Include="Xunit"/>
   </ItemGroup>
 
 </Project>

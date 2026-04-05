@@ -3,10 +3,10 @@ using NpgsqlTypes;
 
 #nullable disable
 
-namespace Products.Infrastructure.Persistence.Migrations
+namespace Products.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFullTextSearch : Migration
+    public partial class AddFullSearch : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

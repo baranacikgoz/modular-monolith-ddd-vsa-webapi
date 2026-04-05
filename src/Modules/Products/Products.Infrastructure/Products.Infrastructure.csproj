@@ -18,8 +18,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Persistence\Migrations\"/>
-  </ItemGroup>
-
 </Project>

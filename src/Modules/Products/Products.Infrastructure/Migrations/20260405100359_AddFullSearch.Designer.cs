@@ -10,11 +10,11 @@ using Products.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Products.Infrastructure.Persistence.Migrations
+namespace Products.Infrastructure.Migrations
 {
     [DbContext(typeof(ProductsDbContext))]
-    [Migration("20260405041259_AddFullTextSearch")]
-    partial class AddFullTextSearch
+    [Migration("20260405100359_AddFullSearch")]
+    partial class AddFullSearch
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
