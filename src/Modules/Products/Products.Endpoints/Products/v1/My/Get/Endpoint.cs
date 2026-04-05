@@ -4,7 +4,6 @@ using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
 using Products.Domain.Products;
@@ -25,8 +24,8 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> GetMyProductAsync(
         [AsParameters] Request request,
-        [FromServices] ICurrentUser currentUser,
-        [FromServices] IProductsDbContext dbContext,
+        ICurrentUser currentUser,
+        IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext

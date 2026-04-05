@@ -6,7 +6,6 @@ using IAM.Application.Otp.Services;
 using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
@@ -26,10 +25,10 @@ internal static class Endpoint
     }
 
     private static async Task<Result> SendOtp(
-        [FromBody] Request request,
-        [FromServices] IOtpService otpService,
-        [FromServices] IOptions<OtpOptions> otpOptionsProvider,
-        [FromServices] ICacheService cache,
+        Request request,
+        IOtpService otpService,
+        IOptions<OtpOptions> otpOptionsProvider,
+        ICacheService cache,
         CancellationToken cancellationToken)
     {
         return await Result<string>

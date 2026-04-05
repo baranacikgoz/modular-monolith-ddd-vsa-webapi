@@ -7,7 +7,6 @@ using IAM.Domain.Identity;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace IAM.Endpoints.Users.VersionNeutral.Get;
@@ -26,7 +25,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> GetAsync(
         [AsParameters] Request request,
-        [FromServices] IIAMDbContext dbContext,
+        IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext

@@ -3,7 +3,6 @@ using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get;
@@ -20,7 +19,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static Result<Response> GetClientKey([FromServices] ICaptchaService captchaService)
+    private static Result<Response> GetClientKey(ICaptchaService captchaService)
     {
         return Result<string>
             .Success(captchaService.GetClientKey())

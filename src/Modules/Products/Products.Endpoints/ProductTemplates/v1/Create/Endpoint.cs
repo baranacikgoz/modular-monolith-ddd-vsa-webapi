@@ -3,7 +3,6 @@ using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
 using Products.Domain.ProductTemplates;
@@ -23,8 +22,8 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> CreateProductTemplateAsync(
-        [FromBody] Request request,
-        [FromServices] IProductsDbContext dbContext,
+        Request request,
+        IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await Result<ProductTemplate>

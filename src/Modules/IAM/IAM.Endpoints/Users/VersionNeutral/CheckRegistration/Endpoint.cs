@@ -4,7 +4,6 @@ using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace IAM.Endpoints.Users.VersionNeutral.CheckRegistration;
@@ -23,7 +22,7 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> IsRegisteredAsync(
         [AsParameters] Request request,
-        [FromServices] IIAMDbContext dbContext,
+        IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext
