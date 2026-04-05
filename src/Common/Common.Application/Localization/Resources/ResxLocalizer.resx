@@ -302,6 +302,15 @@
   <data name="Users_Get_Id_NotEmpty" xml:space="preserve">
     <value>Kullanıcı Id boş olamaz.</value>
   </data>
+  <data name="Users_Search_SearchTerm_MaximumLength" xml:space="preserve">
+    <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Users_Search_Name_MaximumLength" xml:space="preserve">
+    <value>İsim filtresi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Users_Search_LastName_MaximumLength" xml:space="preserve">
+    <value>Soyisim filtresi en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="ProductTemplates_Activate_Id_NotEmpty" xml:space="preserve">
     <value>Ürün şablonu Id boş olamaz.</value>
   </data>

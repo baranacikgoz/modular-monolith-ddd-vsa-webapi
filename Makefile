@@ -52,19 +52,19 @@ sonar:
 ef-add-IAM:
 	dotnet ef migrations add $(name) \
 		--project src/Modules/IAM/IAM.Infrastructure \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context IAMDbContext
 
 ef-add-Products:
 	dotnet ef migrations add $(name) \
 		--project src/Modules/Products/Products.Infrastructure \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context ProductsDbContext
 
 ef-add-Outbox:
 	dotnet ef migrations add $(name) \
 		--project src/Modules/Outbox \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context OutboxDbContext
 
 # Usage: make ef-script-IAM
@@ -74,7 +74,7 @@ ef-script-IAM:
 	@mkdir -p migrations/IAM
 	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/IAM/IAM.Infrastructure \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context IAMDbContext \
 		--idempotent \
 		--output migrations/IAM/$$(date +%Y%m%d%H%M%S)_IAM.sql
@@ -84,7 +84,7 @@ ef-script-Products:
 	@mkdir -p migrations/Products
 	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/Products/Products.Infrastructure \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context ProductsDbContext \
 		--idempotent \
 		--output migrations/Products/$$(date +%Y%m%d%H%M%S)_Products.sql
@@ -94,7 +94,7 @@ ef-script-Outbox:
 	@mkdir -p migrations/Outbox
 	dotnet ef migrations script $(from) $(to) \
 		--project src/Modules/Outbox \
-		--startup-project src/Host \
+		--startup-project src/Host/Host \
 		--context OutboxDbContext \
 		--idempotent \
 		--output migrations/Outbox/$$(date +%Y%m%d%H%M%S)_Outbox.sql

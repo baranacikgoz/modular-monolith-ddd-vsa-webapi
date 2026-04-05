@@ -141,6 +141,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IAM", "IAM", "{91F817EF-C90A-4235-8EAC-21DB6FCB688B}"
 	ProjectSection(SolutionItems) = preProject
 		migrations\IAM\20260403130605_IAM.sql = migrations\IAM\20260403130605_IAM.sql
+		migrations\IAM\20260405213226_IAM.sql = migrations\IAM\20260405213226_IAM.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Products", "Products", "{F2B57A19-3FBC-4641-B255-6BFD29A1CBB9}"

@@ -1,0 +1,88 @@
+name: 🤖 Claude AI .NET Developer
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  setup:
+    name: 🔍 Parse Label & Select Model
+    if: startsWith(github.event.label.name, 'claude-ai-dotnet-')
+    runs-on: ubuntu-latest
+    outputs:
+      tier: ${{ steps.parse.outputs.tier }}
+      model: ${{ steps.parse.outputs.model }}
+    steps:
+      - name: 🛠️ Parse Label
+        id: parse
+        run: |
+          LABEL="${{ github.event.label.name }}"
+          # Format: claude-ai-dotnet-TIER
+          IFS='-' read -r PREFIX LANG TIER <<< "$LABEL"
+          
+          case "$TIER" in
+            light) MODEL="claude-3-5-haiku-20241022" ;;
+            mid)   MODEL="claude-3-5-sonnet-20241022" ;;
+            high)  MODEL="claude-3-7-sonnet-20250219" ;;
+            ultra) MODEL="claude-3-opus-20240229" ;;
+            *)     MODEL="claude-3-5-sonnet-20241022" ;;
+          esac
+          
+          echo "tier=$TIER" >> $GITHUB_OUTPUT
+          echo "model=$MODEL" >> $GITHUB_OUTPUT
+
+  dotnet-developer:
+    name: 🚀 .NET Agent (${{ needs.setup.outputs.tier }})
+    needs: setup
+    runs-on: arc-runners-dotnet
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 💬 Contextualize Task
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q .body)
+          ISSUE_TITLE=$(gh issue view ${{ github.event.issue.number }} --json title -q .title)
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "ISSUE_TITLE<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_TITLE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: 🧠 Unleash .NET Agent
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLAUDE_INTERACTIVE: "false"
+        run: |
+          echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
+          
+          # One master prompt giving Claude complete control of the lifecycle
+          claude --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
+          
+          GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
+          
+          Context:
+          $ISSUE_BODY
+          
+          Instructions:
+          1. Strictly adhere to rules defined in CLAUDE.md.
+          2. Output your 'Plan of Action' to the console.
+          3. Implement changes.
+          4. Verify changes, see `.agent/workflows/verify-feature.md`.
+          5. Create a branch 'claude-ai-dotnet/dotnet-issue-${{ github.event.issue.number }}'.
+          6. Push and create a Pull Request with 'Fixes #${{ github.event.issue.number }}'.
+          7. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices."
+          
+          If you repeatedly fail to solve the problem, you should stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not "loop" on the same failed approach which will result API Credit waste.
+          

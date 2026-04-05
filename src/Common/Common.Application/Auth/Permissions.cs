@@ -35,6 +35,7 @@ public static class CustomPermissions
 
         new("Create Users", CustomActions.Create, CustomResources.ApplicationUsers),
         new("Read Users", CustomActions.Read, CustomResources.ApplicationUsers),
+        new("Search Users", CustomActions.Search, CustomResources.ApplicationUsers),
         new("Update Users", CustomActions.Update, CustomResources.ApplicationUsers),
         new("Delete Users", CustomActions.Delete, CustomResources.ApplicationUsers),
 

@@ -4,6 +4,7 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NpgsqlTypes;
 
 namespace IAM.Infrastructure.Persistence.EntityConfigurations;
 
@@ -75,6 +76,15 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .Property(u => u.LastModifiedBy)
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
             .IsRequired(false);
+
+        builder
+            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
+            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ApplicationUser.Name), nameof(ApplicationUser.LastName))
+            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+
+        builder
+            .HasIndex(FullTextSearch.SearchVectorColumnName)
+            .HasMethod(FullTextSearch.GinIndexMethod);
     }
 }
 
