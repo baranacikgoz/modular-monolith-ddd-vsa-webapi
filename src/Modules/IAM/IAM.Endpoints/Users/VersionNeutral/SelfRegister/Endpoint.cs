@@ -8,7 +8,6 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Constants = IAM.Domain.Constants;
 
@@ -27,9 +26,9 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> RegisterAsync(
-        [FromBody] Request request,
-        [FromServices] UserManager<ApplicationUser> userManager,
-        [FromServices] IOtpService otpService,
+        Request request,
+        UserManager<ApplicationUser> userManager,
+        IOtpService otpService,
         CancellationToken cancellationToken)
     {
         return await otpService

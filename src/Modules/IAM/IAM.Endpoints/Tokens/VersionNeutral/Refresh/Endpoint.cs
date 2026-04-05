@@ -9,7 +9,6 @@ using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,10 +27,10 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> RefreshToken(
-        [FromBody] Request request,
-        [FromServices] IIAMDbContext dbContext,
-        [FromServices] TimeProvider timeProvider,
-        [FromServices] ITokenService tokenService,
+        Request request,
+        IIAMDbContext dbContext,
+        TimeProvider timeProvider,
+        ITokenService tokenService,
         CancellationToken cancellationToken)
     {
         var providedRefreshToken = Convert.FromBase64String(request.RefreshToken);

@@ -4,7 +4,6 @@ using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
@@ -26,7 +25,7 @@ internal static class Endpoint
 
     private static async Task<Result> RemoveProductAsync(
         [AsParameters] Request request,
-        [FromServices] IProductsDbContext dbContext,
+        IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext
