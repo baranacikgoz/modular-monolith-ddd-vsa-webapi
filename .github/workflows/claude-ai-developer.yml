@@ -1,23 +1,15 @@
-name: Claude AI Developer
+name: 🤖 Claude AI Developer
 
 on:
-  workflow_dispatch:
-    inputs:
-      task:
-        description: 'What should the AI Developer do?'
-        required: true
-        type: string
+  issues:
+    types: [labeled]
 
 jobs:
   ai-developer-task:
-    name: Execute Claude Target Task
-    
-    # This must match the name of the ARC Scale Set installation.
-    # Based on your Helm chart 'name: arc-runners', the scale set name is likely 'arc-runners'.
-    # If the ARC scale set is registered with a different name, update this value.
+    if: github.event.label.name == 'claude-ai'
+    name: Execute Autonomous Claude Agent
     runs-on: arc-runners
     
-    # Setup permissions necessary for Claude to potentially commit code back or leave comments
     permissions:
       contents: write
       pull-requests: write
@@ -27,44 +19,42 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # Fetch full history so Claude can analyze git context if necessary
           fetch-depth: 0
 
-      - name: Validate Runner Environment
-        run: |
-          echo "=== Verifying Base Infrastructure ==="
-          
-          echo ".NET version:"
-          dotnet --version
-          
-          echo "Node.js version:"
-          node --version
-          
-          echo "Docker version (DIND check):"
-          docker --version
-          docker ps
-          
-          echo "GitHub CLI version:"
-          gh --version
-          
-          echo "Claude Code version:"
-          claude --version
-
-      - name: Execute Claude Code Workflow
+      - name: 💬 Contextualize Task
+        id: context
         env:
-          # Note: ANTHROPIC_API_KEY is already injected by your ARC runner pod spec
-          # via the 'claude-ai-secret' secret reference in the Helm chart.
-          
-          # Provide the GitHub token so the GitHub CLI can authenticate
-          # (Claude uses the gh CLI under the hood for PR/Issue interactions)
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q .body)
+          ISSUE_TITLE=$(gh issue view ${{ github.event.issue.number }} --json title -q .title)
           
-          # Allow Claude Code to run non-interactively in CI
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+          echo "ISSUE_TITLE<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_TITLE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: 🧠 Unleash Claude Agent
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CLAUDE_INTERACTIVE: "false"
         run: |
-          PROMPT="${{ github.event.inputs.task }}"
+          echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
           
-          echo "Executing Task: $PROMPT"
+          # One master prompt giving Claude complete control of the lifecycle
+          claude -p "You are an autonomous AI Developer tasked with resolving GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE'. 
           
-          # For headless execution, pass the input prompt directly
-          claude -p "$PROMPT"
+          Issue Details:
+          $ISSUE_BODY
+          
+          Instructions:
+          1. Strictly adhere to rules defined in CLAUDE.md.
+          2. Implement your changes.
+          3. Once confident, create a new branch named 'claude-fix/issue-${{ github.event.issue.number }}'.
+          4. Commit your changes and push the branch to origin.
+          5. Use the 'gh' CLI to create a Pull Request against the main branch, mentioning 'Fixes #${{ github.event.issue.number }}' in the description.
+          
+          You have full autonomy to use bash, git, and standard tooling to complete this. Do not stop until the Pull Request is confirmed created."
