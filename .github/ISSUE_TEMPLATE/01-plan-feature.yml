@@ -2,14 +2,19 @@ name: 🗺️ Plan Feature
 description: Plan a new architectural feature without writing code
 title: "Plan Feature: [Feature Name]"
 body:
-  - type: markdown
+  - type: textarea
+    id: ai_instructions
     attributes:
+      label: 🤖 AI Agent: Command & Instructions
+      description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
         > **⚠️ IMPORTANT:** This issue is for **PLANNING ONLY**. Do NOT write code.
 
         Execute the following workflow:
         `/plan-feature` (contained in `.agent/workflows/plan-feature.md`)
+    validations:
+      required: true
   - type: markdown
     attributes:
       value: |

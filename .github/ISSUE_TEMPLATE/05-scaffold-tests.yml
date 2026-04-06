@@ -1,6 +1,6 @@
-name: 🏗️ Plan Refactor
-description: Plan a codebase refactoring without writing code
-title: "Plan Refactor: [Refactor Target]"
+name: 🧪 Scaffold Tests (Red Phase)
+description: Create failing slice tests prior to implementation
+title: "Scaffold Tests: [Feature Name]"
 body:
   - type: textarea
     id: ai_instructions
@@ -9,10 +9,10 @@ body:
       description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
-        > **⚠️ IMPORTANT:** This issue is for **PLANNING ONLY**. Do NOT write code.
+        > **⚠️ IMPORTANT:** Only write the failing tests. Do not implement the actual logic yet.
 
         Execute the following workflow:
-        `/plan-refactor` (contained in `.agent/workflows/plan-refactor.md`)
+        `/scaffold-tests` (contained in `.agent/workflows/scaffold-tests.md`)
     validations:
       required: true
   - type: markdown
@@ -20,10 +20,10 @@ body:
       value: |
         *Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!*
   - type: textarea
-    id: details
+    id: requirements
     attributes:
-      label: Refactoring Details
-      description: Explain the current codebase issues and what needs to be refactored.
-      placeholder: Describe the technical debt, bottlenecks, or architectural violations...
+      label: Test Scenarios
+      description: Describe the scenarios and assertions needed for the test suite.
+      placeholder: Write integration tests for creating a product with valid and invalid pricing...
     validations:
       required: true
