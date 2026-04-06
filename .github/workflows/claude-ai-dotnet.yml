@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
 
-          read -r -d '' CLAUDE_PROMPT <<EOF
+          read -r -d '' CLAUDE_PROMPT <<EOF || true
           You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
           
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
