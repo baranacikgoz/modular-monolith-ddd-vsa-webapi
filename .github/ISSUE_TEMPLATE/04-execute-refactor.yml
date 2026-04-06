@@ -1,14 +1,15 @@
-name: 🛠️ Execute Refactor
+name: Execute Refactor
 description: Execute a planned refactoring
 title: "Execute Refactor: [Refactor Target]"
 body:
   - type: textarea
     id: ai_instructions
     attributes:
-      label: 🤖 AI Agent: Command & Instructions
+      label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
+        > **⚠️ IMPORTANT:** Implement this refactor by directly modifying the code and validating it.
 
         Execute the following workflows:
         1. `/execute-refactor` (contained in `.agent/workflows/execute-refactor.md`)
@@ -17,8 +18,7 @@ body:
       required: true
   - type: markdown
     attributes:
-      value: |
-        *Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!*
+      value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
     id: details
     attributes:

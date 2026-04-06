@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💡 Feature Request (Public)
+    url: https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi/issues/new?template=01-plan-feature.yml
+    about: Suggest an idea for this project.
