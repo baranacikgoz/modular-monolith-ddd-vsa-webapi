@@ -46,6 +46,8 @@ try
 
     app.MapModuleEndpoints();
 
+    app.MapCustomHealthChecks();
+
     if (isSwaggerEnabled)
     {
         app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
