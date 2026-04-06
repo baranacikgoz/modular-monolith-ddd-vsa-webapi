@@ -7,10 +7,9 @@
 SLNF_BUILD = ModularMonolith.Build.slnf
 SLNF_TESTS = ModularMonolith.Tests.slnf
 
-.PHONY: build test sonar \
+.PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
         ef-add-IAM ef-add-Products ef-add-Outbox \
         ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all
-
 # ── Build & Test ──────────────────────────────────────────────────────────────
 
 build:
@@ -22,22 +21,37 @@ build:
 	rm -f $(SLNF_BUILD); \
 	exit $$EXIT_CODE
 
-test:
+test-common:
+	@echo "▶️ Testing Common..."
+	dotnet test src/Common/Common.Tests/Common.Tests.csproj
+
+test-host:
+	@echo "▶️ Testing Host..."
+	dotnet test src/Host/Host.Tests/Host.Tests.csproj
+
+test-iam:
+	@echo "▶️ Testing IAM..."
+	dotnet test src/Modules/IAM/IAM.Tests/IAM.Tests.csproj
+
+test-products:
+	@echo "▶️ Testing Products..."
+	dotnet test src/Modules/Products/Products.Tests/Products.Tests.csproj
+
+test-outbox:
+	@echo "▶️ Testing Outbox..."
+	dotnet test src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
+
+test-notifications:
+	@echo "▶️ Testing Notifications..."
+	dotnet test src/Modules/Notifications/Notifications.Tests/Notifications.Tests.csproj
+
+test-backgroundjobs:
+	@echo "▶️ Testing BackgroundJobs..."
+	dotnet test src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj
+
+test: test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs
 	@echo "=========================================================="
-	@echo "🚀 Running Unified Integration & Unit Test Suite"
-	@echo "=========================================================="
-	@PROJECTS=$$(find src -name "*.Tests.csproj" | awk '{print "\"" $$0 "\""}' | paste -sd "," -); \
-	echo '{"solution":{"path":"ModularMonolith.sln","projects":['"$$PROJECTS"']}}' > $(SLNF_TESTS); \
-	echo ""; \
-	echo "▶️ Testing Solution Filter: ModularMonolith.Tests.slnf"; \
-	dotnet test $(SLNF_TESTS) --verbosity quiet; \
-	EXIT_CODE=$$?; \
-	rm -f $(SLNF_TESTS); \
-	if [ $$EXIT_CODE -eq 0 ]; then \
-		echo "=========================================================="; \
-		echo "✅ All tests completed successfully!"; \
-	fi; \
-	exit $$EXIT_CODE
+	@echo "✅ All tests completed successfully!"
 
 sonar:
 	@echo "Beginning SonarQube analysis..."
