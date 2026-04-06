@@ -2,27 +2,31 @@ name: Plan Refactor
 description: Plan a codebase refactoring without writing code
 title: "Plan Refactor: [Refactor Target]"
 body:
-  - type: textarea
-    id: ai_instructions
-    attributes:
-      label: AI Agent Instructions
-      description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
-      value: |
-        ## AI Agent Instructions
-        > **⚠️ IMPORTANT:** This issue is for **PLANNING ONLY**. Do NOT write code.
-
-        Execute the following workflow:
-        `/plan-refactor` (contained in `.agent/workflows/plan-refactor.md`)
-    validations:
-      required: true
   - type: markdown
     attributes:
       value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
-    id: details
+    id: issue_content
     attributes:
-      label: Refactoring Details
-      description: Explain the current codebase issues and what needs to be refactored.
-      placeholder: Describe the technical debt, bottlenecks, or architectural violations...
-    validations:
-      required: true
+      label: AI Agent Task & Requirements
+      description: "Describe the refactoring requirements. ⚠️ DO NOT DELETE the core AI instructions below."
+      value: |
+        ## Refactoring Details
+        [Describe the technical debt, bottlenecks, or architectural violations that need to be refactored...]
+
+        ---
+        ## AI Agent Instructions
+        You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
+
+        Execute the following workflow:
+        `/plan-refactor` (contained in `.agent/workflows/plan-refactor.md`)
+
+        **⚠️ IMPORTANT:**
+        1. If you repeatedly fail to solve a problem, stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach.
+        2. Strictly adhere to rules defined in CLAUDE.md.
+        3. Output your 'Plan of Action' to the console.
+        4. Create a branch 'claude-ai-dotnet/issue-<ISSUE_NUMBER>'.
+        5. Push and create a Pull Request with 'Fixes #<ISSUE_NUMBER>'.
+        6. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
+
+        > **⚠️ NOTE:** This issue is for **PLANNING ONLY**. Do NOT write code.

@@ -84,21 +84,9 @@ jobs:
           echo "==========================="
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
-          You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
-          
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
-          
-          Context:
+
           $ISSUE_BODY
-          
-          Instructions:
-          ** IMPORTANT **: If you repeatedly fail to solve a problem, you should stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach which will result in API Credit waste.
-          1. Strictly adhere to rules defined in CLAUDE.md.
-          2. Execute the exact .agent/workflows/* or /skills mentioned in the ISSUE_BODY if any.
-          3. Output your 'Plan of Action' to the console.
-          4. Create a branch 'claude-ai-dotnet/issue-${{ github.event.issue.number }}'.
-          5. Push and create a Pull Request with 'Fixes #${{ github.event.issue.number }}'.
-          6. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
           EOF
           
           echo "Starting Claude CLI..."
