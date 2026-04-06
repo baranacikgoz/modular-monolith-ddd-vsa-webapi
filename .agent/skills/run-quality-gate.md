@@ -12,7 +12,8 @@ skill:
        - *Note*: This project typically contains `NetArchTest` rules like "Domain cannot depend on Infrastructure".
 
     3. **Run Suite**:
-       - Command: `make test` (builds a dynamic `.slnf` to avoid `.dcproj` evaluation errors, then runs all test projects).
+       - Command: `make test` (runs all module tests sequentially to prevent Docker resource exhaustion).
+       - You can also run module-specific tests directly (e.g. `make test-iam`, `make test-products`, `make test-common`).
 
     4. **Report**:
        - If any test fails, analyze the stack trace and fix the code.

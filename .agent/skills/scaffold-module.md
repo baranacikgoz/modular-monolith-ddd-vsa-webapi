@@ -37,4 +37,4 @@ skill:
        - Setup `Respawner` to clean tables between tests.
 
     7. **Output Warning**:
-       - "ACTION REQUIRED: Register module in Host, then run `dotnet test` to confirm setup."
+       - "ACTION REQUIRED: Register module in Host, then run `make test-[module]` (e.g., `make test-iam`) to confirm setup."
