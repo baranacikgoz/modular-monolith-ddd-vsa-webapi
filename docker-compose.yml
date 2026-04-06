@@ -48,17 +48,11 @@ services:
       - OutboxOptions__KafkaConsumer__BootstrapServers=mm.kafka:9092
       - OutboxOptions__KafkaDlqProducer__BootstrapServers=mm.kafka:9092
     healthcheck:
-      # Use curl to hit the root endpoint inside the container
-      # Assumes your app returns 2xx on '/' - ADJUST URL IF NEEDED
-      # -f: Fail silently on server errors (non-2xx status)
-      # -s: Silent mode
-      # -o /dev/null: Discard output
-      # || exit 1: Fail if curl itself errors (e.g., connection refused)
-      test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/swagger || exit 1" ]
-      interval: 5s        # Check every 15 seconds
-      timeout: 5s          # Wait max 5 seconds for response
-      retries: 3           # Mark as unhealthy after 3 consecutive failures
-      start_period: 15s    # Grace period for startup (adjust as needed)
+      test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   mm.postgres:
     container_name: mm.postgres
