@@ -84,7 +84,12 @@ jobs:
           6. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
           EOF
           
-          stdbuf -oL -eL claude --verbose --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT" 2>&1 | tee claude-execution.log
+          echo "Starting Claude CLI..."
+          claude --verbose --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT" > claude-execution.log 2>&1
+          
+          echo "=== CLAUDE EXECUTION LOG ==="
+          cat claude-execution.log
+          echo "============================"
 
       - name: 💾 Archive Agent Logs
         if: always()
