@@ -20,8 +20,6 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
     // strategy with a 5-minute ceiling to tolerate the slower DinD startup.
     private readonly KafkaContainer _kafkaContainer = new KafkaBuilder()
         .WithImage("confluentinc/cp-kafka:7.4.0")
-        .WithWaitStrategy(Wait.ForUnixContainer()
-            .UntilMessageIsLogged("started (kafka.server.KafkaServer)", s => s.WithTimeout(TimeSpan.FromMinutes(5))))
         .Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
