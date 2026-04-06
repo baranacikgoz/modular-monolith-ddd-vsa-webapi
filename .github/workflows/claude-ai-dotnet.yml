@@ -75,14 +75,12 @@ jobs:
           $ISSUE_BODY
           
           Instructions:
-          1. Strictly adhere to rules defined in CLAUDE.md.
-          2. Output your 'Plan of Action' to the console.
-          3. Implement changes.
-          4. Verify changes, see \`.agent/workflows/verify-feature.md\`.
-          5. Create a branch 'claude-ai-dotnet/issue-${{ github.event.issue.number }}'.
-          6. Push and create a Pull Request with 'Fixes #${{ github.event.issue.number }}'.
-          7. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
-          8. If you repeatedly fail to solve the problem, you should stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach which will result in API Credit waste.
+          ** IMPORTANT **: If you repeatedly fail to solve a problem, you should stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach which will result in API Credit waste.
+          - Execute the exact .agent/workflows/* or /skills mentioned in the ISSUE_BODY if any.
+          - Output your 'Plan of Action' to the console.
+          - Create a branch 'claude-ai-dotnet/issue-${{ github.event.issue.number }}'.
+          - Push and create a Pull Request with 'Fixes #${{ github.event.issue.number }}'.
+          - The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
           EOF
           
           stdbuf -oL -eL claude --verbose --dangerously-skip-permissions --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT" 2>&1 | tee claude-execution.log
