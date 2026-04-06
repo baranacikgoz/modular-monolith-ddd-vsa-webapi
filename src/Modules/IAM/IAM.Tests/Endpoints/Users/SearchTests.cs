@@ -56,7 +56,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.True(result.TotalCount >= 1);
-        Assert.Contains(result.Data, u => u.Name == "Johnathan" && u.LastName == "Silverstone");
+        Assert.Contains(result.Data, u => u.Name == "JOHNATHAN" && u.LastName == "SILVERSTONE");
     }
 
     [Fact]
@@ -67,6 +67,7 @@ public class SearchTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
         var targetName = "UniqueFirstName_" + Guid.NewGuid().ToString("N")[..8];
+        var expectedName = targetName.ToUpperInvariant();
         var targetUser = CreateUser(targetName, "Jones");
         var otherUser = CreateUser("DifferentName", "Smith");
 
@@ -78,7 +79,7 @@ public class SearchTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&name={targetName}", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&name={expectedName}", UriKind.Relative));
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -86,7 +87,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetName, result.Data.First().Name);
+        Assert.Equal(expectedName, result.Data.First().Name);
     }
 
     [Fact]
@@ -97,6 +98,7 @@ public class SearchTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
         var targetLastName = "UniqueLastName_" + Guid.NewGuid().ToString("N")[..8];
+        var expectedLastName = targetLastName.ToUpperInvariant();
         var targetUser = CreateUser("Alice", targetLastName);
         var otherUser = CreateUser("Bob", "DifferentLastName");
 
@@ -108,7 +110,7 @@ public class SearchTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&lastName={targetLastName}", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&lastName={expectedLastName}", UriKind.Relative));
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -116,7 +118,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetLastName, result.Data.First().LastName);
+        Assert.Equal(expectedLastName, result.Data.First().LastName);
     }
 
     [Fact]
