@@ -19,7 +19,7 @@ skill:
        - Create a new test file: `src/Modules/{{module}}/Tests/Bugs/Issue_[Timestamp].cs`.
        - Use the `Bogus` library to recreate the exact state described in the `bug_description`.
        - Write a test that asserts the **Expected** behavior.
-       - Run `dotnet test`. **The test must FAIL.**
+       - Run `make test`. **The test must FAIL.**
        - If the test passes, the bug is not reproduced. Inform the user and ask for more context.
 
     3. **Phase 2: Diagnosis**:

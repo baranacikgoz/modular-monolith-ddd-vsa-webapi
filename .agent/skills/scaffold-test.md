@@ -29,4 +29,4 @@ skill:
        - Act: `client.GetAsync("/route/id")`.
        - Assert: Response JSON matches the seeded entity. (Reminder: Use built-in xUnit Assert. Do NOT use FluentAssertions).
 
-    5. **Run**: Execute `dotnet test` targeting this file to verify.
+    5. **Run**: Execute `make test-[module]` (e.g., `make test-iam`) targeting the module to verify.
