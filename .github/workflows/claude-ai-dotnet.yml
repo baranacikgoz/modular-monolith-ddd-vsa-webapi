@@ -62,21 +62,26 @@ jobs:
       - name: 🧠 Unleash .NET Agent
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLAUDE_INTERACTIVE: "false"
-          DISABLE_TELEMETRY: "1"
-          CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY: "1"
         run: |
-          echo "Executing autonomous task for Issue #${{ github.event.issue.number }}..."
-
-          # Ensure Vault environment is loaded into this shell session
+          echo "=== 🧪 PRE-FLIGHT DEBUG ==="
+          export HOME=/home/runner
+          export CLAUDE_CONFIG_DIR=/home/runner/.claude
+          export XDG_CONFIG_HOME=/home/runner/.config
+          export CI=true
+          export DISABLE_TELEMETRY=1
+          export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
+          
+          echo "User: $(whoami) | Home: $HOME | PWD: $(pwd)"
+          mkdir -p "$CLAUDE_CONFIG_DIR"
+          echo '{"hasCompletedOnboarding": true}' > "$CLAUDE_CONFIG_DIR/config.json"
+          ls -la "$CLAUDE_CONFIG_DIR"
+          
+          # Ensure Vault environment is loaded
           if [ -f /vault/secrets/config.env ]; then
             echo "Loading Vault secrets..."
             . /vault/secrets/config.env
           fi
-
-          # Skip first-run onboarding/TOS prompts
-          mkdir -p ~/.claude/
-          echo '{"hasCompletedOnboarding": true}' > ~/.claude/config.json
+          echo "==========================="
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
           You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
@@ -99,4 +104,4 @@ jobs:
           echo "Starting Claude CLI..."
           claude --bare --verbose --dangerously-skip-permissions --permission-mode bypassPermissions \
             --mcp-config /home/runner/.claude.json \
-            --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT"
+            --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT" < /dev/null
