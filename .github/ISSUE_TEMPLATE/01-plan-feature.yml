@@ -2,27 +2,31 @@ name: Plan Feature
 description: Plan a new architectural feature without writing code
 title: "Plan Feature: [Feature Name]"
 body:
-  - type: textarea
-    id: ai_instructions
-    attributes:
-      label: AI Agent Instructions
-      description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
-      value: |
-        ## AI Agent Instructions
-        > **⚠️ IMPORTANT:** This issue is for **PLANNING ONLY**. Do NOT write code.
-
-        Execute the following workflow:
-        `/plan-feature` (contained in `.agent/workflows/plan-feature.md`)
-    validations:
-      required: true
   - type: markdown
     attributes:
       value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
-    id: requirements
+    id: issue_content
     attributes:
-      label: Feature Requirements
-      description: Explain the behavior, domain logic, and specifications of the new feature.
-      placeholder: Describe the desired feature architecture...
-    validations:
-      required: true
+      label: AI Agent Task & Requirements
+      description: "Describe the feature requirements. ⚠️ DO NOT DELETE the core AI instructions below."
+      value: |
+        ## Feature Requirements
+        [Describe the behavior, domain logic, and specifications of the new feature...]
+
+        ---
+        ## AI Agent Instructions
+        You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
+
+        Execute the following workflow:
+        `/plan-feature` (contained in `.agent/workflows/plan-feature.md`)
+
+        **⚠️ IMPORTANT:**
+        1. If you repeatedly fail to solve a problem, stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach.
+        2. Strictly adhere to rules defined in CLAUDE.md.
+        3. Output your 'Plan of Action' to the console.
+        4. Create a branch 'claude-ai-dotnet/issue-<ISSUE_NUMBER>'.
+        5. Push and create a Pull Request with 'Fixes #<ISSUE_NUMBER>'.
+        6. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
+
+        > **⚠️ NOTE:** This issue is for **PLANNING ONLY**. Do NOT write code.
