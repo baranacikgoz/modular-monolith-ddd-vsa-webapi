@@ -18,7 +18,8 @@ internal static partial class Setup
 
         app
             .UseWhen(
-                context => !IsMetricsEndpoint(context) &&
+                context => !IsHealthCheckEndpoint(context) &&
+                           !IsMetricsEndpoint(context) &&
                            !IsBackgroundJobsDashboardEndpoint(context, backgroundJobsDashboardPath),
                 appBuilder => appBuilder.UseMiddleware<RequestResponseLoggingMiddleware>());
 
@@ -33,5 +34,10 @@ internal static partial class Setup
     private static bool IsBackgroundJobsDashboardEndpoint(HttpContext context, string backgroundJobsDashboardPath)
     {
         return context.Request.Path.StartsWithSegments(backgroundJobsDashboardPath, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsHealthCheckEndpoint(HttpContext context)
+    {
+        return context.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase);
     }
 }
