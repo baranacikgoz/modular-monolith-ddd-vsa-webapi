@@ -21,6 +21,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/backgroundJobs");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/caching");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/modules");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/healthCheck");
 
         configuration.AddEnvironmentVariables();
 
