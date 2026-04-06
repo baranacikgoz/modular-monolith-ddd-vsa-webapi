@@ -99,19 +99,4 @@ jobs:
           echo "Starting Claude CLI..."
           claude --bare --verbose --dangerously-skip-permissions --permission-mode bypassPermissions \
             --mcp-config /home/runner/.claude.json \
-            --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT" > claude-execution.log 2>&1
-          
-          echo "=== CLAUDE EXECUTION LOG ==="
-          cat claude-execution.log
-          echo "============================"
-
-      - name: 💾 Archive Agent Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: claude-dotnet-logs-${{ github.event.issue.number }}-${{ github.run_id }}
-          path: |
-            claude-execution.log
-            ~/.claude/
-          retention-days: 14
-          
+            --model "${{ needs.setup.outputs.model }}" -p "$CLAUDE_PROMPT"
