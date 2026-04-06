@@ -91,6 +91,6 @@ jobs:
           name: claude-dotnet-logs-${{ github.event.issue.number }}-${{ github.run_id }}
           path: |
             claude-execution.log
-            .claude/
+            ~/.claude/
           retention-days: 14
           
