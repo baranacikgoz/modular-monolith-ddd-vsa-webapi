@@ -1,11 +1,11 @@
-name: 🏗️ Plan Refactor
+name: Plan Refactor
 description: Plan a codebase refactoring without writing code
 title: "Plan Refactor: [Refactor Target]"
 body:
   - type: textarea
     id: ai_instructions
     attributes:
-      label: 🤖 AI Agent: Command & Instructions
+      label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
@@ -17,8 +17,7 @@ body:
       required: true
   - type: markdown
     attributes:
-      value: |
-        *Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!*
+      value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
     id: details
     attributes:

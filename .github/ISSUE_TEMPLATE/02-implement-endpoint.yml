@@ -1,11 +1,11 @@
-name: ⚡ Implement Endpoint
+name: Implement Endpoint
 description: Write code to implement an endpoint utilizing the REPR pattern
 title: "Implement Endpoint: [Endpoint Name]"
 body:
   - type: textarea
     id: ai_instructions
     attributes:
-      label: 🤖 AI Agent: Command & Instructions
+      label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
@@ -17,8 +17,7 @@ body:
       required: true
   - type: markdown
     attributes:
-      value: |
-        *Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!*
+      value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
     id: requirements
     attributes:
