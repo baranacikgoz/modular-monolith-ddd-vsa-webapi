@@ -63,7 +63,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "=== 🧪 PRE-FLIGHT DEBUG ==="
+          # Environment Setup for Headless CI
           export HOME=/home/runner
           export CLAUDE_CONFIG_DIR=/home/runner/.claude
           export XDG_CONFIG_HOME=/home/runner/.config
@@ -71,21 +71,17 @@ jobs:
           export DISABLE_TELEMETRY=1
           export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
           
-          echo "User: $(whoami) | Home: $HOME | PWD: $(pwd)"
           mkdir -p "$CLAUDE_CONFIG_DIR"
           echo '{"hasCompletedOnboarding": true}' > "$CLAUDE_CONFIG_DIR/config.json"
-          ls -la "$CLAUDE_CONFIG_DIR"
           
           # Ensure Vault environment is loaded
           if [ -f /vault/secrets/config.env ]; then
-            echo "Loading Vault secrets..."
             . /vault/secrets/config.env
           fi
-          echo "==========================="
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
-
+          
           $ISSUE_BODY
           EOF
           
