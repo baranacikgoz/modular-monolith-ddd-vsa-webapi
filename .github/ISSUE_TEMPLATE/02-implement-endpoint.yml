@@ -2,14 +2,20 @@ name: ⚡ Implement Endpoint
 description: Write code to implement an endpoint utilizing the REPR pattern
 title: "Implement Endpoint: [Endpoint Name]"
 body:
-  - type: markdown
+  - type: textarea
+    id: ai_instructions
     attributes:
+      label: 🤖 AI Agent: Command & Instructions
+      description: "⚠️ DO NOT MODIFY: These are the core instructions for the AI Agent."
       value: |
         ## AI Agent Instructions
-        
+        > **⚠️ IMPORTANT:** Implement this feature by directly writing the code and validating it.
+
         Execute the following workflows:
         1. `/implement-endpoint` (contained in `.agent/workflows/implement-endpoint.md`)
         2. `/verify-feature` (contained in `.agent/workflows/verify-feature.md`)
+    validations:
+      required: true
   - type: markdown
     attributes:
       value: |
