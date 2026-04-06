@@ -1,4 +1,5 @@
 using Common.Tests;
+using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +14,14 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
 {
     protected override string[] GetActiveModules() => ["Outbox", "IAM"];
 
+    // DinD environments (DOCKER_HOST=tcp://...) expose Docker via TCP without a Unix socket.
+    // On resource-constrained CI runners, Kafka can take longer than the default 120-second
+    // readiness timeout to log "started (kafka.server.KafkaServer)". We override the wait
+    // strategy with a 5-minute ceiling to tolerate the slower DinD startup.
     private readonly KafkaContainer _kafkaContainer = new KafkaBuilder()
         .WithImage("confluentinc/cp-kafka:7.4.0")
+        .WithWaitStrategy(Wait.ForUnixContainer()
+            .UntilMessageIsLogged("started (kafka.server.KafkaServer)", s => s.WithTimeout(TimeSpan.FromMinutes(5))))
         .Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
