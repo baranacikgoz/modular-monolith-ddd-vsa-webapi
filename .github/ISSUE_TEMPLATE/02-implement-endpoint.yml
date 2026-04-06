@@ -1,0 +1,24 @@
+name: ⚡ Implement Endpoint
+description: Write code to implement an endpoint utilizing the REPR pattern
+title: "Implement Endpoint: [Endpoint Name]"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## AI Agent Instructions
+        
+        Execute the following workflows:
+        1. `/implement-endpoint` (contained in `.agent/workflows/implement-endpoint.md`)
+        2. `/verify-feature` (contained in `.agent/workflows/verify-feature.md`)
+  - type: markdown
+    attributes:
+      value: |
+        *Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!*
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Implementation Requirements
+      description: Provide the details, previous plan, or instructions for the implementation.
+      placeholder: Based on the plan from Issue #..., please implement the following...
+    validations:
+      required: true
