@@ -56,7 +56,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.True(result.TotalCount >= 1);
-        Assert.Contains(result.Data, u => u.Name == "Johnathan" && u.LastName == "Silverstone");
+        Assert.Contains(result.Data, u => u.Name == "JOHNATHAN" && u.LastName == "SILVERSTONE");
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetName, result.Data.First().Name);
+        Assert.Equal(targetName.ToUpperInvariant(), result.Data.First().Name);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetLastName, result.Data.First().LastName);
+        Assert.Equal(targetLastName.ToUpperInvariant(), result.Data.First().LastName);
     }
 
     [Fact]
