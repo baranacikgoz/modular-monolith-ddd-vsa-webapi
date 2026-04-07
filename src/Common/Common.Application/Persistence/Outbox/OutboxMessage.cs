@@ -19,7 +19,7 @@ public class OutboxMessage
 
     public int Id { get; set; }
     public DateTimeOffset CreatedOn { get; set; }
-    public DomainEvent Event { get; }
+    public DomainEvent Event { get; private set; }
     public bool IsProcessed { get; protected set; }
     public DateTimeOffset? ProcessedOn { get; protected set; }
 

@@ -87,10 +87,10 @@ public static class DbContextExtensions
         }
 
         var totalCount = results[0].TotalCount;
-        var eventDtos = results.Select(x => new EventDto(x.Event, x.CreatedBy)).ToList();
+        var eventDtos = results.Select(x => new EventDto(x.Event, x.CreatedBy ?? DefaultIdType.Empty)).ToList();
 
         return new PaginationResponse<EventDto>(eventDtos, totalCount, request.PageNumber, request.PageSize);
     }
 
-    private sealed record PaginatedEventDto(JsonElement Event, DefaultIdType CreatedBy, int TotalCount);
+    private sealed record PaginatedEventDto(JsonElement Event, DefaultIdType? CreatedBy, int TotalCount);
 }

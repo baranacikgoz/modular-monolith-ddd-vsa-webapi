@@ -4,7 +4,9 @@
 BOOTSTRAP_SERVER="mm.kafka:9092"
 MAIN_TOPIC="outbox_topic.Outbox.OutboxMessages"
 DLQ_TOPIC="${MAIN_TOPIC}_dlq" # Convention: Append _dlq
-PARTITIONS=1
+# Use multiple partitions to allow parallel consumption for scalability.
+# Each partition can be consumed by one consumer instance in a consumer group.
+PARTITIONS=3
 REPLICATION_FACTOR=1
 # Use same retention for DLQ for now, adjust if needed
 RETENTION_MS=604800000

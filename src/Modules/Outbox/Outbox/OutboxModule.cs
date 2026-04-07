@@ -22,9 +22,12 @@ public sealed partial class OutboxModule : IModule
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
+        // Using AddDbContext (not AddDbContextPool) because BaseDbContext needs to
+        // share a connection with OutboxDbContext for atomic transactions via SetDbConnection.
+        // Pooled contexts do not support connection swapping.
         services
             .AddScoped<IOutboxDbContext, OutboxDbContext>()
-            .AddDbContextPool<OutboxDbContext>((sp, options) =>
+            .AddDbContext<OutboxDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
                 var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;

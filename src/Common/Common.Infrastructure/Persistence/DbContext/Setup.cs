@@ -1,6 +1,5 @@
 using Common.Application.Options;
 using Common.Infrastructure.Persistence.Auditing;
-using Common.Infrastructure.Persistence.EventSourcing;
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -28,8 +27,7 @@ public static partial class Setup
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
                 .UseExceptionProcessor()
                 .AddInterceptors(
-                    sp.GetRequiredService<ApplyAuditingInterceptor>(),
-                    sp.GetRequiredService<InsertEventStoreEventsInterceptor>());
+                    sp.GetRequiredService<ApplyAuditingInterceptor>());
 
             if (observabilityOptions.LogGeneratedSqlQueries)
             {

@@ -93,10 +93,11 @@ public partial class OutboxKafkaProcessor(
             ConsumeResult<Ignore, OutboxMessageDto>? consumeResult = null;
             try
             {
+                // Wrap blocking Consume() in Task.Run to avoid holding a ThreadPool thread hostage.
+                // The Confluent Kafka .NET IConsumer.Consume(CancellationToken) is a blocking call.
                 if (firstConsume)
                 {
-                    // The first consume attempt must be wrapped in a Task with immediate consume (0 millisecond timeout) due
-                    // if the first consume call is 'consumer.Consume(stoppingToken);' and  if there is no message to fetch at first, it blocks the application startup.
+                    // The first consume attempt uses 0ms timeout to avoid blocking application startup.
                     consumeResult = await Task.Run(() => consumer.Consume(0), stoppingToken);
                     firstConsume = false;
                     if (consumeResult is null)
@@ -106,7 +107,7 @@ public partial class OutboxKafkaProcessor(
                 }
                 else
                 {
-                    consumeResult = consumer.Consume(stoppingToken);
+                    consumeResult = await Task.Run(() => consumer.Consume(stoppingToken), stoppingToken);
                 }
 
                 var currentTopic = consumeResult.Topic;
@@ -306,13 +307,14 @@ public partial class OutboxKafkaProcessor(
         {
             var dlqMessage = new DlqMessage<OutboxMessageDto>
             {
-                FailedTimestampUtc = DateTimeOffset.UtcNow,
+                FailedTimestampUtc = timeProvider.GetUtcNow(),
                 OriginalTopic = originalTopic,
                 OriginalPartition = originalPartition,
                 OriginalOffset = originalOffset,
-                ConsumerGroupId = _outboxOptions.KafkaConsumer.GroupId, // Use stored options
+                ConsumerGroupId = _outboxOptions.KafkaConsumer.GroupId,
                 ExceptionType = exception.GetType().FullName,
                 ExceptionMessage = exception.Message,
+                ExceptionStackTrace = exception.StackTrace,
                 OriginalMessage = failedResult.Message.Value
             };
 
@@ -360,7 +362,7 @@ public partial class OutboxKafkaProcessor(
 
     private IConsumer<Ignore, OutboxMessageDto> BuildConsumer()
     {
-        var kafkaConsumerOptions = outboxOptionsProvider.Value.KafkaConsumer;
+        var kafkaConsumerOptions = _outboxOptions.KafkaConsumer;
         if (!Enum.TryParse(kafkaConsumerOptions.AutoOffsetReset, true,
                 out AutoOffsetReset autoOffsetReset)) // Added ignoreCase=true
         {
@@ -376,7 +378,8 @@ public partial class OutboxKafkaProcessor(
             EnableAutoCommit = false, // Explicitly disable auto-commit for manual control
             EnablePartitionEof = kafkaConsumerOptions.EnablePartitionEof,
             SessionTimeoutMs = kafkaConsumerOptions.SessionTimeoutMs,
-            HeartbeatIntervalMs = kafkaConsumerOptions.HeartbeatIntervalMs
+            HeartbeatIntervalMs = kafkaConsumerOptions.HeartbeatIntervalMs,
+            MaxPollIntervalMs = kafkaConsumerOptions.MaxPollIntervalMs
         };
 
         // Build the consumer with handlers
@@ -398,7 +401,7 @@ public partial class OutboxKafkaProcessor(
 
     private IProducer<Null, string> BuildDlqProducer()
     {
-        var kafkaProducerOptions = outboxOptionsProvider.Value.KafkaDlqProducer;
+        var kafkaProducerOptions = _outboxOptions.KafkaDlqProducer;
 
         var producerConfig = new ProducerConfig
         {
