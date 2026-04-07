@@ -2,9 +2,9 @@ using Common.Domain.Events;
 
 namespace Common.Domain.Entities;
 
-public class EventStoreEvent : AuditableEntity
+public class AuditLogEntry : AuditableEntity
 {
-    private EventStoreEvent(string aggregateType, DefaultIdType aggregateId, long version, DomainEvent @event)
+    private AuditLogEntry(string aggregateType, DefaultIdType aggregateId, long version, DomainEvent @event)
     {
         AggregateType = aggregateType;
         AggregateId = aggregateId;
@@ -14,7 +14,7 @@ public class EventStoreEvent : AuditableEntity
     }
 
 #pragma warning disable CS8618
-    public EventStoreEvent()
+    public AuditLogEntry()
     {
     } // ORMs need parameterless ctor
 #pragma warning restore CS8618
@@ -25,9 +25,9 @@ public class EventStoreEvent : AuditableEntity
     public DomainEvent Event { get; }
     public new long Version { get; }
 
-    public static EventStoreEvent Create(string aggregateType, DefaultIdType aggregateId, long version,
+    public static AuditLogEntry Create(string aggregateType, DefaultIdType aggregateId, long version,
         DomainEvent @event)
     {
-        return new EventStoreEvent(aggregateType, aggregateId, version, @event);
+        return new AuditLogEntry(aggregateType, aggregateId, version, @event);
     }
 }

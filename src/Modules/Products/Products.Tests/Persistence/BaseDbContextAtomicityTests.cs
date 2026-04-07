@@ -48,7 +48,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task SaveChangesAsync_WhenAggregateRaisesDomainEvent_CreatesEventStoreEvent()
+    public async Task SaveChangesAsync_WhenAggregateRaisesDomainEvent_CreatesAuditLogEvent()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -61,14 +61,14 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Act
         await db.SaveChangesAsync();
 
-        // Assert - EventStore event should exist for the domain event
-        var eventStoreEvents = await db.EventStoreEvents
+        // Assert - AuditLog event should exist for the domain event
+        var auditLogEntries = await db.AuditLog
             .AsNoTracking()
             .Where(e => e.AggregateId == store.Id.Value)
             .ToListAsync();
 
-        Assert.NotEmpty(eventStoreEvents);
-        Assert.All(eventStoreEvents, e =>
+        Assert.NotEmpty(auditLogEntries);
+        Assert.All(auditLogEntries, e =>
         {
             Assert.Equal(nameof(Store), e.AggregateType);
             Assert.NotNull(e.Event);
@@ -77,7 +77,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task SaveChangesAsync_WhenAggregateRaisesDomainEvent_CreatesOutboxAndEventStoreAtomically()
+    public async Task SaveChangesAsync_WhenAggregateRaisesDomainEvent_CreatesOutboxAndAuditLogAtomically()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -87,7 +87,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
 
         var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        var eventStoreCountBefore = await db.EventStoreEvents.AsNoTracking().CountAsync();
+        var auditLogCountBefore = await db.AuditLog.AsNoTracking().CountAsync();
 
         db.Stores.Add(store);
 
@@ -96,15 +96,15 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
 
         // Assert - Both outbox message AND event store event should have been created
         var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        var eventStoreCountAfter = await db.EventStoreEvents.AsNoTracking().CountAsync();
+        var auditLogCountAfter = await db.AuditLog.AsNoTracking().CountAsync();
 
         // Store.Create raises exactly 1 domain event (V1StoreCreatedDomainEvent)
         Assert.Equal(outboxCountBefore + 1, outboxCountAfter);
-        Assert.Equal(eventStoreCountBefore + 1, eventStoreCountAfter);
+        Assert.Equal(auditLogCountBefore + 1, auditLogCountAfter);
     }
 
     [Fact]
-    public async Task SaveChangesAsync_WhenNoEventsRaised_DoesNotCreateOutboxOrEventStoreRecords()
+    public async Task SaveChangesAsync_WhenNoEventsRaised_DoesNotCreateOutboxOrAuditLogRecords()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -113,21 +113,21 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
 
         // Count existing records before
         var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        var eventStoreCountBefore = await db.EventStoreEvents.AsNoTracking().CountAsync();
+        var auditLogCountBefore = await db.AuditLog.AsNoTracking().CountAsync();
 
         // Save with no changes (no events raised)
         await db.SaveChangesAsync();
 
         // Assert - no new records created
         var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        var eventStoreCountAfter = await db.EventStoreEvents.AsNoTracking().CountAsync();
+        var auditLogCountAfter = await db.AuditLog.AsNoTracking().CountAsync();
 
         Assert.Equal(outboxCountBefore, outboxCountAfter);
-        Assert.Equal(eventStoreCountBefore, eventStoreCountAfter);
+        Assert.Equal(auditLogCountBefore, auditLogCountAfter);
     }
 
     [Fact]
-    public async Task SaveChangesAsync_WhenMultipleEventsRaised_CreatesMatchingOutboxAndEventStoreRecords()
+    public async Task SaveChangesAsync_WhenMultipleEventsRaised_CreatesMatchingOutboxAndAuditLogRecords()
     {
         // Arrange - Store.Create raises 1 event, then Update raises more
         using var scope = Factory.Services.CreateScope();
@@ -147,12 +147,12 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         await db.SaveChangesAsync();
 
         // Assert - All events should be in event store
-        var eventStoreEvents = await db.EventStoreEvents
+        var auditLogEntries = await db.AuditLog
             .AsNoTracking()
             .Where(e => e.AggregateId == store.Id.Value)
             .ToListAsync();
 
         // Store.Create = 1 event, Update with name + description = 2 events = total 3
-        Assert.Equal(3, eventStoreEvents.Count);
+        Assert.Equal(3, auditLogEntries.Count);
     }
 }

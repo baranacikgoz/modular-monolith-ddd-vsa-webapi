@@ -1,3 +1,4 @@
+using Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -10,6 +11,9 @@ public interface IDbContext : IDisposable
     ChangeTracker ChangeTracker { get; }
 
     DatabaseFacade Database { get; }
+
+    DbSet<AuditLogEntry> AuditLog { get; }
+
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

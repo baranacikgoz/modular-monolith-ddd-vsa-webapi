@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Bogus;
-using Common.Application.EventHistory;
+using Common.Application.AuditLog;
 using Common.Application.Pagination;
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
@@ -16,16 +16,16 @@ using Xunit;
 namespace Products.Tests.Endpoints.Products;
 
 [Collection("IntegrationTestCollection")]
-public class EventHistoryTests : BaseIntegrationTest
+public class AuditLogTests : BaseIntegrationTest
 {
     private readonly Faker _faker = new();
 
-    public EventHistoryTests(IntegrationTestWebAppFactory factory) : base(factory)
+    public AuditLogTests(IntegrationTestWebAppFactory factory) : base(factory)
     {
     }
 
     [Fact]
-    public async Task EventHistory_WithExistingProduct_ReturnsOkWithPaginationResponse()
+    public async Task AuditLog_WithExistingProduct_ReturnsOkWithPaginationResponse()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -44,28 +44,27 @@ public class EventHistoryTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/v1/products/{product.Id}/event-history?PageNumber=1&PageSize=10", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/v1/products/{product.Id}/audit-log?PageNumber=1&PageSize=10", UriKind.Relative));
 
         // Assert
-        // The event history response should be 200 OK even if no events exist yet
         if (!response.IsSuccessStatusCode)
         {
             var err = await response.Content.ReadAsStringAsync();
             Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
         }
 
-        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<EventDto>>(JsonSerializerOptions);
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<AuditLogDto>>(JsonSerializerOptions);
         Assert.NotNull(result);
     }
 
     [Fact]
-    public async Task EventHistory_WithoutAuthentication_ReturnsUnauthorized()
+    public async Task AuditLog_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
         var client = Factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync(new Uri($"/v1/products/{ProductId.New()}/event-history?PageNumber=1&PageSize=10", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/v1/products/{ProductId.New()}/audit-log?PageNumber=1&PageSize=10", UriKind.Relative));
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
