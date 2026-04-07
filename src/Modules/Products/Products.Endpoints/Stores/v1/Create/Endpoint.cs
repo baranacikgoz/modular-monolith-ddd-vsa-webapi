@@ -1,6 +1,7 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
+using Products.Infrastructure.Telemetry;
 
 namespace Products.Endpoints.Stores.v1.Create;
 
@@ -28,6 +30,8 @@ internal static class Endpoint
         IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
+        using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
+
         return await dbContext
             .Stores
             .AsNoTracking()
@@ -38,6 +42,8 @@ internal static class Endpoint
             .BindAsync(_ => Store.Create(request.OwnerId, request.Name, request.Description, request.Address))
             .TapAsync(store => dbContext.Stores.Add(store))
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
-            .MapAsync(store => new Response { Id = store.Id });
+            .TapAsync(_ => ProductsTelemetry.StoresCreated.Add(1))
+            .MapAsync(store => new Response { Id = store.Id })
+            .TapActivityAsync(activity);
     }
 }

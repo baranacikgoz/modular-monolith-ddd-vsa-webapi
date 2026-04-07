@@ -1,6 +1,7 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
+using Products.Infrastructure.Telemetry;
 
 namespace Products.Endpoints.Stores.v1.RemoveProduct;
 
@@ -28,19 +30,23 @@ internal static class Endpoint
         IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
+        using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
+        activity?.SetTag("store.id", request.Id.Value);
+
         return await dbContext
             .Stores
             .TagWith(nameof(RemoveProductAsync), "StoreById", request.Id)
             .Where(s => s.Id == request.Id)
             .Include(s => s.Products.Where(p => p.Id == request.ProductId))
-            .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
-
+            .SingleAsResultAsync(nameof(Store), cancellationToken)
             .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == request.ProductId))
             .TapAsync(tuple =>
             {
                 var (store, product) = tuple;
                 store.RemoveProduct(product);
             })
-            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .TapAsync(_ => ProductsTelemetry.ProductsRemovedFromStore.Add(1))
+            .TapActivityAsync(activity);
     }
 }

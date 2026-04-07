@@ -40,8 +40,7 @@ internal static partial class Setup
             .AddEndpointsApiExplorer()
             .AddObservability(
                 configuration,
-                env,
-                [])
+                env)
             .AddCustomCors()
             .AddValidatorsFromAssemblies(moduleAssemblies)
             .AddCommonDependencies(configuration, moduleAssemblies)

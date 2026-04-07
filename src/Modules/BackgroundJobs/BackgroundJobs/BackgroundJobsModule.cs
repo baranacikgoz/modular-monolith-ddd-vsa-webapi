@@ -15,6 +15,8 @@ public sealed class BackgroundJobsModule : IModule
 {
     public string Name => "BackgroundJobs";
     public int StartupPriority => 0; // Probably the most core thing to run
+    public IEnumerable<string> ActivitySourceNames => [];
+    public IEnumerable<string> MeterNames => [];
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {

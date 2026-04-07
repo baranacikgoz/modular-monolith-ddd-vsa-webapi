@@ -25,6 +25,18 @@ public interface IModule
     IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>? RateLimitingPolicies => null;
 
     /// <summary>
+    ///     Gets the custom ActivitySource names this module registers for distributed tracing.
+    ///     The Host will call .AddSource() for each name.
+    /// </summary>
+    IEnumerable<string> ActivitySourceNames { get; }
+
+    /// <summary>
+    ///     Gets the custom Meter names this module registers for metrics.
+    ///     The Host will call .AddMeter() for each name.
+    /// </summary>
+    IEnumerable<string> MeterNames { get; }
+
+    /// <summary>
     ///     Registers the module's services into the dependency injection container.
     /// </summary>
     void AddServices(IServiceCollection services, IConfiguration configuration);

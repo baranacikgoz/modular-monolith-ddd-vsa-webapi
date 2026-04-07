@@ -20,6 +20,10 @@ public sealed partial class OutboxModule : IModule
     public string Name => "Outbox";
     public int StartupPriority => 1;
 
+    public IEnumerable<string> ActivitySourceNames => [Telemetry.OutboxTelemetry.ActivitySourceName];
+
+    public IEnumerable<string> MeterNames => [Telemetry.OutboxTelemetry.MeterName];
+
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         // Using AddDbContext (not AddDbContextPool) because BaseDbContext needs to

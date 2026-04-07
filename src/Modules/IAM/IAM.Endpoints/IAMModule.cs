@@ -9,6 +9,7 @@ using IAM.Infrastructure.Captcha;
 using IAM.Infrastructure.Identity;
 using IAM.Infrastructure.Persistence;
 using IAM.Infrastructure.RateLimiting;
+using IAM.Infrastructure.Telemetry;
 using IAM.Infrastructure.Tokens;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.RateLimiting;
@@ -23,6 +24,10 @@ public sealed class IamModule : IModule
 {
     public string Name => "IAM";
     public int StartupPriority => 2;
+
+    public IEnumerable<string> ActivitySourceNames => [IamTelemetry.ActivitySourceName];
+
+    public IEnumerable<string> MeterNames => [IamTelemetry.MeterName];
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
