@@ -16,8 +16,9 @@ public class KafkaConsumer
 
     // Controls how often consumer heartbeats to broker. Lower values detect failures faster.
     public required int HeartbeatIntervalMs { get; set; }
-    // Optional: Max time between Consume calls before considered failed. Needs coordination with processing time.
-    // public required int? MaxPollIntervalMs { get; set; } = 300000; // 5 minutes
+    // Max time between Consume calls before the consumer is considered failed and kicked from the group.
+    // Must be longer than the maximum expected time for ProcessMessageAsync to complete.
+    public int? MaxPollIntervalMs { get; set; }
 
     // Set to true if you want Consume to return null for partition EOF events
     // Useful for knowing when you've caught up, but adds noise if you don't need it.
@@ -56,5 +57,10 @@ public class KafkaConsumerValidator : CustomValidator<KafkaConsumer>
         RuleFor(x => x.HeartbeatIntervalMs)
             .NotEmpty()
             .WithMessage("HeartbeatIntervalMs is required");
+
+        RuleFor(x => x.MaxPollIntervalMs)
+            .GreaterThanOrEqualTo(1000)
+            .When(x => x.MaxPollIntervalMs.HasValue)
+            .WithMessage("MaxPollIntervalMs must be at least 1000ms when specified.");
     }
 }

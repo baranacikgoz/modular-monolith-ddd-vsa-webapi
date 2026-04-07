@@ -6,7 +6,8 @@ public static class Setup
 {
     public static IServiceCollection AddEventSourcingInterceptors(this IServiceCollection services)
     {
-        return services
-            .AddScoped<InsertEventStoreEventsInterceptor>();
+        // EventStore event insertion is now handled directly by BaseDbContext.SaveChangesAsync()
+        // in a unified event collection pass. No interceptor registration needed.
+        return services;
     }
 }

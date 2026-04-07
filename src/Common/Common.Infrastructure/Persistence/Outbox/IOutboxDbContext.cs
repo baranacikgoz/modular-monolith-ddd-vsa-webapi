@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 namespace Common.Infrastructure.Persistence.Outbox;
 
 /// <summary>
-///     This is a hack to be able to move OutboxDbContext to the Modules/Outbox
+///     Abstraction for the Outbox DbContext, used by BaseDbContext to write outbox messages
+///     within a shared database transaction, and by OutboxKafkaProcessor for read/update operations.
 /// </summary>
 public interface IOutboxDbContext
 {
