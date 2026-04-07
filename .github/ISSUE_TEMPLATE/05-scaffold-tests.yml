@@ -6,25 +6,33 @@ body:
     attributes:
       value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
-    id: issue_content
+    id: instructions
     attributes:
-      label: AI Agent Task & Requirements
-      description: "Describe the test scenarios. ⚠️ DO NOT DELETE the core AI instructions below."
+      label: AI Agent Instructions
+      description: "⚠️ DO NOT MODIFY these instructions."
+      value: |
+        ## AI Agent Instructions
+        Expert .NET Engineer (DDD/VSA). Execute: `/scaffold-tests`
+
+        ### Rules:
+        1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`
+        2. PR: `Fixes #<ISSUE_NUMBER>`
+        3. Output: Your ONLY communication is the PR description.
+        4. Failure: Open PR with current state & report root cause. Do NOT loop.
+        5. Standards: Follow `01-instructions.md` & `CLAUDE.md`.
+
+        ### Test Scaffolding Report (Output in PR Description):
+        - Test Scenarios Summary
+        - Verification Results (Tests Run)
+        - Decisions & Rationale (explaining architectural choices)
+
+        ⚠️ NOTE: Only write the failing tests. Do not implement the actual logic yet.
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Test Scenarios
+      description: "Describe the test scenarios."
       value: |
         ## Test Scenarios
         [Write integration tests for creating a product with valid and invalid pricing...]
 
-        ## AI Agent Instructions
-        You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
-
-        Execute the following workflow:
-        `/scaffold-tests` (contained in `.agent/workflows/scaffold-tests.md`)
-
-        **⚠️ IMPORTANT:**
-        1. If you repeatedly fail to solve a problem, stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach.
-        2. Strictly adhere to rules defined in CLAUDE.md.
-        4. Create a branch 'claude-ai-dotnet/issue-<ISSUE_NUMBER>'.
-        5. Push and create a Pull Request with 'Fixes #<ISSUE_NUMBER>'.
-        6. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
-
-        > **⚠️ NOTE:** Only write the failing tests. Do not implement the actual logic yet.

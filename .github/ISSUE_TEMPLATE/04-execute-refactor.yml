@@ -6,26 +6,33 @@ body:
     attributes:
       value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
   - type: textarea
-    id: issue_content
+    id: instructions
     attributes:
-      label: AI Agent Task & Requirements
-      description: "Describe the refactoring plan. ⚠️ DO NOT DELETE the core AI instructions below."
+      label: AI Agent Instructions
+      description: "⚠️ DO NOT MODIFY these instructions."
+      value: |
+        ## AI Agent Instructions
+        Expert .NET Engineer (DDD/VSA). Execute: `/execute-refactor`, `/verify-feature`
+
+        ### Rules:
+        1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`
+        2. PR: `Fixes #<ISSUE_NUMBER>`
+        3. Output: Your ONLY communication is the PR description.
+        4. Failure: Open PR with current state & report root cause. Do NOT loop.
+        5. Standards: Follow `01-instructions.md` & `CLAUDE.md`.
+
+        ### Refactoring Report (Output in PR Description):
+        - Refactoring Summary
+        - Verification Results (Tests Run)
+        - Decisions & Rationale (explaining architectural choices)
+
+        ⚠️ NOTE: Implement this refactor by directly modifying the code and validating it with tests.
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Refactoring Plan
+      description: "Describe the refactoring plan."
       value: |
         ## Refactoring Plan
         [Based on the plan from Issue #..., please implement the following refactoring...]
 
-        ## AI Agent Instructions
-        You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
-
-        Execute the following workflows:
-        1. `/execute-refactor` (contained in `.agent/workflows/execute-refactor.md`)
-        2. `/verify-feature` (contained in `.agent/workflows/verify-feature.md`)
-
-        **⚠️ IMPORTANT:**
-        1. If you repeatedly fail to solve a problem, stop and report the failure with the root cause, open the PR with the current state and ask for human help. Do not 'loop' on the same failed approach.
-        2. Strictly adhere to rules defined in CLAUDE.md.
-        3. Create a branch 'claude-ai-dotnet/issue-<ISSUE_NUMBER>'.
-        4. Push and create a Pull Request with 'Fixes #<ISSUE_NUMBER>'.
-        5. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
-
-        > **⚠️ NOTE:** Implement this refactor by directly modifying the code and validating it with tests.
