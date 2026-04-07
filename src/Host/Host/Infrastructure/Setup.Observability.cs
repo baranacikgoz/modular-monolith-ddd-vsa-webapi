@@ -1,13 +1,13 @@
-using System.Data;
 using System.Diagnostics;
 using Common.Application.Options;
+using Common.Infrastructure.Modules;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
 using Microsoft.Extensions.Options;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using OpenTelemetryBuilder = OpenTelemetry.OpenTelemetryBuilder;
 
 namespace Host.Infrastructure;
 
@@ -31,8 +31,7 @@ internal static partial class Setup
     public static IServiceCollection AddObservability(
         this IServiceCollection services,
         IConfiguration configuration,
-        IHostEnvironment env,
-        IEnumerable<Func<string?, IDbCommand, bool>> efCoreTracingFiltersFromModules)
+        IHostEnvironment env)
     {
         Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
@@ -46,13 +45,15 @@ internal static partial class Setup
             return services;
         }
 
+        var activeModules = GetRegisteredModules(services);
+
         if (options.EnableTracing && options.EnableMetrics)
         {
             services
                 .AddOpenTelemetry()
                 .ConfigureResource(ConfigureService(options, env))
-                .ConfigureMetrics(options)
-                .ConfigureTracing(options, efCoreTracingFiltersFromModules);
+                .ConfigureMetrics(options, activeModules)
+                .ConfigureTracing(options, activeModules);
 
             return services;
         }
@@ -62,7 +63,7 @@ internal static partial class Setup
             services
                 .AddOpenTelemetry()
                 .ConfigureResource(ConfigureService(options, env))
-                .ConfigureMetrics(options);
+                .ConfigureMetrics(options, activeModules);
 
             return services;
         }
@@ -71,13 +72,23 @@ internal static partial class Setup
         services
             .AddOpenTelemetry()
             .ConfigureResource(ConfigureService(options, env))
-            .ConfigureTracing(options, efCoreTracingFiltersFromModules);
+            .ConfigureTracing(options, activeModules);
 
         return services;
     }
 
+    private static IReadOnlyList<IModule> GetRegisteredModules(IServiceCollection services)
+    {
+        var registry =
+            services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as
+                ModuleRegistry;
+
+        return registry?.OrderedModules ?? [];
+    }
+
     private static OpenTelemetryBuilder ConfigureMetrics(this OpenTelemetryBuilder builder,
-        ObservabilityOptions options)
+        ObservabilityOptions options,
+        IReadOnlyList<IModule> activeModules)
     {
         return builder
             .WithMetrics(x =>
@@ -94,6 +105,15 @@ internal static partial class Setup
                                 [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
                         })
                     .AddMeter(InstrumentationOptions.MeterName);
+
+                // Auto-register module Meters
+                foreach (var module in activeModules)
+                {
+                    foreach (var meterName in module.MeterNames)
+                    {
+                        x.AddMeter(meterName);
+                    }
+                }
 
                 if (options.OtlpMetricsUsePrometheusDirectly)
                 {
@@ -113,28 +133,33 @@ internal static partial class Setup
     private static OpenTelemetryBuilder ConfigureTracing(
         this OpenTelemetryBuilder builder,
         ObservabilityOptions options,
-        IEnumerable<Func<string?, IDbCommand, bool>> efCoreTracingFiltersFromModules)
+        IReadOnlyList<IModule> activeModules)
     {
         return builder
-            .WithTracing(x => x
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation(cfg =>
-                {
-                    cfg.SetDbStatementForText = true;
+            .WithTracing(x =>
+            {
+                x
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation(cfg => { cfg.SetDbStatementForText = true; })
+                    //.AddNpgsql()
+                    .AddSource(DiagnosticHeaders.DefaultListenerName);
 
-                    foreach (var filter in efCoreTracingFiltersFromModules)
+                // Auto-register module ActivitySources
+                foreach (var module in activeModules)
+                {
+                    foreach (var sourceName in module.ActivitySourceNames)
                     {
-                        cfg.Filter += filter;
+                        x.AddSource(sourceName);
                     }
-                })
-                //.AddNpgsql()
-                .AddSource(DiagnosticHeaders.DefaultListenerName)
-                .AddOtlpExporter(o =>
+                }
+
+                x.AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(options.OtlpTracingEndpoint);
                     o.Protocol = options.OtlpTracingProtocol.ToOtlpExportProtocol();
-                }));
+                });
+            });
     }
 
     private static Action<ResourceBuilder> ConfigureService(ObservabilityOptions options, IHostEnvironment env)

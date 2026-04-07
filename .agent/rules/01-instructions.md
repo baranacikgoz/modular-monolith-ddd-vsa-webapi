@@ -87,3 +87,11 @@ trigger: always_on
 *   **Configuration-Driven**: Modules MUST be managed fully through `appsettings.json` via the `"Modules"` array (or `*`). Never hardcode `.Add[Module]()` inside `Setup.Modules.cs`.
 *   **IModule Implementation**: Each new module MUST provide exactly one class implementing `IModule` to hook into DI and Endpoint scanning dynamically.
 *   **Test Isolation**: Modules under test MUST be strictly enforced in test factories via the `TestModuleOverride` environment variable. Never let integration tests bleed into the global application host context.
+## 9. Observability Standards (OpenTelemetry)
+*   **Per-Module Strategy**: Each module MUST define a static `[Module]Telemetry` class in `Infrastructure/Telemetry/`.
+*   **Registration**: Register `ActivitySource` and `Meter` names in the `IModule` implementation via `ActivitySourceNames` and `MeterNames`.
+*   **Naming**: Use `ModularMonolith.[ModuleName]` (e.g., `ModularMonolith.IAM`).
+*   **Instrumentation**:
+    *   *Tracing*: Use `using var activity = [Module]Telemetry.ActivitySource.StartActivityForCaller();` at the start of the endpoint if and only if provides valuable insights.
+    *   *Enrichment*: Use `.TapActivityAsync(activity)` at the end of the functional pipeline to automatically record success/error status and tags.
+    *   *Metrics*: Use metrics inside `.TapAsync(...)` side-effect blocks to ensure they only fire when the operation succeeds (if applicable).

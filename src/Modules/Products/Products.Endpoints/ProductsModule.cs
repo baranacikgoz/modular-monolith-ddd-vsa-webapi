@@ -11,6 +11,7 @@ using Products.Endpoints.ProductTemplates;
 using Products.Endpoints.Stores;
 using Products.Infrastructure.Persistence;
 using Products.Infrastructure.RateLimiting;
+using Products.Infrastructure.Telemetry;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace Products.Endpoints;
@@ -19,6 +20,10 @@ public sealed class ProductsModule : IModule
 {
     public string Name => "Products";
     public int StartupPriority => 4;
+
+    public IEnumerable<string> ActivitySourceNames => [ProductsTelemetry.ActivitySourceName];
+
+    public IEnumerable<string> MeterNames => [ProductsTelemetry.MeterName];
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
