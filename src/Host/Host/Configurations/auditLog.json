@@ -1,0 +1,5 @@
+{
+  "AuditLogOptions": {
+    "RetentionDays": 90
+  }
+}

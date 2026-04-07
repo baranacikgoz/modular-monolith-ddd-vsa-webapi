@@ -23,7 +23,7 @@ public partial class IAMDbContext(
     IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>,
     IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
 {
-    public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
+    public DbSet<AuditLogEntry> AuditLog => Set<AuditLogEntry>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -33,7 +33,7 @@ public partial class IAMDbContext(
         builder.ApplyConfigurationsFromAssembly(typeof(IAMDbContext).Assembly);
 
         builder.Ignore<DomainEvent>();
-        builder.ApplyConfiguration(new EventStoreEventConfiguration());
+        builder.ApplyConfiguration(new AuditLogEntryConfiguration());
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -1,5 +1,6 @@
 using Common.Domain.Events;
 using Common.Infrastructure.Persistence;
+using Common.Domain.Entities;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,6 @@ public sealed class ProductsDbContext(
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductsDbContext).Assembly);
 
         modelBuilder.Ignore<DomainEvent>();
-        modelBuilder.ApplyConfiguration(new EventStoreEventConfiguration());
+        modelBuilder.ApplyConfiguration(new AuditLogEntryConfiguration());
     }
 }
