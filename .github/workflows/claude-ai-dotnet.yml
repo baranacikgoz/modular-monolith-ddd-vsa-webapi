@@ -82,10 +82,13 @@ jobs:
           fi
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
+          # CONTEXT
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
-          
+
+          # TASK DATA (Instructions & Requirements)
           $ISSUE_BODY
           EOF
+
           
           echo "Starting Claude CLI..."
           claude --bare --verbose --dangerously-skip-permissions --permission-mode bypassPermissions \
