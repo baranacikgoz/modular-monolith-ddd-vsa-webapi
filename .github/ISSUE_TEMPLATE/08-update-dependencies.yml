@@ -1,0 +1,33 @@
+name: Update Dependencies
+description: Update NuGet dependencies centrally and verify integrity
+title: "Update Dependencies"
+body:
+  - type: markdown
+    attributes:
+      value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
+  - type: textarea
+    id: instructions
+    attributes:
+      label: AI Agent Instructions
+      description: "⚠️ DO NOT MODIFY these instructions."
+      value: |
+        Expert .NET Engineer (DDD/VSA). Execute: `/update-dependencies`
+
+        ### Rules:
+        1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`
+        2. PR: `Fixes #<ISSUE_NUMBER>`
+        3. Output: Your ONLY communication is the PR description.
+        4. Failure: Open PR with current state & report root cause. Do NOT loop.
+        5. Standards: Follow `01-instructions.md` & `CLAUDE.md`.
+
+        ### Update Report (Output in PR Description):
+        - Updated Packages List
+        - Verification Results (Build & Tests)
+        - Breaking Changes Analysis
+  - type: textarea
+    id: details
+    attributes:
+      label: Update Details
+      description: "Specify if any specific packages or versions should be targeted."
+      value: |
+        [Leave empty for general update or specify target packages...]
