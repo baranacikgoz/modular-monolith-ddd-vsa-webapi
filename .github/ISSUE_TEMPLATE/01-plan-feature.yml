@@ -11,6 +11,8 @@ body:
       label: AI Agent Task & Requirements
       description: "Describe the feature requirements. ⚠️ DO NOT DELETE the core AI instructions below."
       value: |
+        THIS IS A PLANNING TASK. DO NOT WRITE CODE.
+
         ## Feature Requirements
         [Describe the behavior, domain logic, and specifications of the new feature...]
 
