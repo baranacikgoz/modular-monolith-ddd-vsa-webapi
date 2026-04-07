@@ -74,9 +74,11 @@ jobs:
           mkdir -p "$CLAUDE_CONFIG_DIR"
           echo '{"hasCompletedOnboarding": true}' > "$CLAUDE_CONFIG_DIR/config.json"
           
-          # Ensure Vault environment is loaded
+          # Ensure Vault environment is loaded and EXPORTED
           if [ -f /vault/secrets/config.env ]; then
+            set -a
             . /vault/secrets/config.env
+            set +a
           fi
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
