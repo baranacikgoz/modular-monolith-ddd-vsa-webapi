@@ -1,6 +1,7 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
+using Products.Infrastructure.Telemetry;
 
 namespace Products.Endpoints.Stores.v1.AddProduct;
 
@@ -29,6 +31,9 @@ internal static class Endpoint
         IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
+        using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
+        activity?.SetTag("store.id", request.Id.Value);
+
         return await dbContext
             .Stores
             .TagWith(nameof(AddProductAsync), "StoreById", request.Id)
@@ -54,10 +59,15 @@ internal static class Endpoint
                 store.AddProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            .TapAsync(triple =>
+            {
+                ProductsTelemetry.ProductsAddedToStore.Add(1);
+            })
             .MapAsync(triple =>
             {
                 var (_, _, product) = triple;
                 return new Response { Id = product.Id };
-            });
+            })
+            .TapActivityAsync(activity);
     }
 }
