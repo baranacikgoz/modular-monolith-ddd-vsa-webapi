@@ -16,7 +16,7 @@ body:
 
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
-
+        
         Execute the following workflow:
         `/plan-feature` (contained in `.agent/workflows/plan-feature.md`)
 
@@ -25,6 +25,6 @@ body:
         2. Strictly adhere to rules defined in CLAUDE.md.
         3. Create a branch 'claude-ai-dotnet/issue-<ISSUE_NUMBER>'.
         4. Push and create a Pull Request with 'Fixes #<ISSUE_NUMBER>'.
-        5. The PR MUST have a 'Decisions & Rationale' section explaining your architectural choices.
+        5. The PR MUST have the architectural plan as its description, including a 'Decisions & Rationale' section explaining your choices.
 
         > **⚠️ NOTE:** This issue is for **PLANNING ONLY**. Do NOT write code.

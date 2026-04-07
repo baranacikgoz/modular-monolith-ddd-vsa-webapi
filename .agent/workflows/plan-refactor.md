@@ -9,4 +9,4 @@ This workflow outlines the exact steps an agent should take when tasked with ref
 1. **Review Context**: Read the user's refactoring goal and target scope (module, class, or pattern).
 2. **Load Constitution**: Read `.agent/rules/00-context-map.md` and `.agent/rules/01-instructions.md` to load the Code Constitution into the active context.
 3. **Analyze Target**: Inspect the current implementation of the target code. Identify specific violations of the constitution (e.g., cross-module coupling, missing `.AsNoTracking()`, imperative logic that should be functional).
-4. **Generate Output**: Create a `refactor_plan.md` artifact detailing the specific files to be modified, the code smells being addressed, and the expected structural changes.
+4. **Generate Output**: Detail the specific files to be modified, the code smells being addressed, and the expected structural changes. The complete plan MUST be placed in the Pull Request description.
