@@ -12,11 +12,10 @@ body:
       description: "Describe the refactoring requirements. ⚠️ DO NOT DELETE the core AI instructions below."
       value: |
         THIS IS A PLANNING TASK. DO NOT WRITE CODE.
-        
+
         ## Refactoring Details
         [Describe the technical debt, bottlenecks, or architectural violations that need to be refactored...]
 
-        ---
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
 

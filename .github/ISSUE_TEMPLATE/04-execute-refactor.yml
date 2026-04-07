@@ -14,7 +14,6 @@ body:
         ## Refactoring Plan
         [Based on the plan from Issue #..., please implement the following refactoring...]
 
-        ---
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
 

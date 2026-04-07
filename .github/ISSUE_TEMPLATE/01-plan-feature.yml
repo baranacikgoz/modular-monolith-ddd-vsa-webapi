@@ -16,7 +16,6 @@ body:
         ## Feature Requirements
         [Describe the behavior, domain logic, and specifications of the new feature...]
 
-        ---
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
 
