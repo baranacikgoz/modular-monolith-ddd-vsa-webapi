@@ -1,14 +1,13 @@
-using System.Data;
 using System.Diagnostics;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
 using Microsoft.Extensions.Options;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using OpenTelemetryBuilder = OpenTelemetry.OpenTelemetryBuilder;
 
 namespace Host.Infrastructure;
 
@@ -32,8 +31,7 @@ internal static partial class Setup
     public static IServiceCollection AddObservability(
         this IServiceCollection services,
         IConfiguration configuration,
-        IHostEnvironment env,
-        IEnumerable<Func<string?, IDbCommand, bool>> efCoreTracingFiltersFromModules)
+        IHostEnvironment env)
     {
         Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
@@ -55,7 +53,7 @@ internal static partial class Setup
                 .AddOpenTelemetry()
                 .ConfigureResource(ConfigureService(options, env))
                 .ConfigureMetrics(options, activeModules)
-                .ConfigureTracing(options, efCoreTracingFiltersFromModules, activeModules);
+                .ConfigureTracing(options, activeModules);
 
             return services;
         }
@@ -74,7 +72,7 @@ internal static partial class Setup
         services
             .AddOpenTelemetry()
             .ConfigureResource(ConfigureService(options, env))
-            .ConfigureTracing(options, efCoreTracingFiltersFromModules, activeModules);
+            .ConfigureTracing(options, activeModules);
 
         return services;
     }
@@ -135,7 +133,6 @@ internal static partial class Setup
     private static OpenTelemetryBuilder ConfigureTracing(
         this OpenTelemetryBuilder builder,
         ObservabilityOptions options,
-        IEnumerable<Func<string?, IDbCommand, bool>> efCoreTracingFiltersFromModules,
         IReadOnlyList<IModule> activeModules)
     {
         return builder
@@ -144,15 +141,7 @@ internal static partial class Setup
                 x
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation(cfg =>
-                    {
-                        cfg.SetDbStatementForText = true;
-
-                        foreach (var filter in efCoreTracingFiltersFromModules)
-                        {
-                            cfg.Filter += filter;
-                        }
-                    })
+                    .AddEntityFrameworkCoreInstrumentation(cfg => { cfg.SetDbStatementForText = true; })
                     //.AddNpgsql()
                     .AddSource(DiagnosticHeaders.DefaultListenerName);
 

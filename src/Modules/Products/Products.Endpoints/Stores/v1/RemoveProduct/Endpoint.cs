@@ -33,13 +33,12 @@ internal static class Endpoint
         using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
         activity?.SetTag("store.id", request.Id.Value);
 
-        var result = await dbContext
+        return await dbContext
             .Stores
             .TagWith(nameof(RemoveProductAsync), "StoreById", request.Id)
             .Where(s => s.Id == request.Id)
             .Include(s => s.Products.Where(p => p.Id == request.ProductId))
-            .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
-
+            .SingleAsResultAsync(nameof(Store), cancellationToken)
             .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == request.ProductId))
             .TapAsync(tuple =>
             {
@@ -47,12 +46,7 @@ internal static class Endpoint
                 store.RemoveProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
-            .TapAsync(tuple =>
-            {
-                ProductsTelemetry.ProductsRemovedFromStore.Add(1);
-            });
-
-        Result nonGenericResult = result;
-        return nonGenericResult.TapActivity(activity);
+            .TapAsync(_ => ProductsTelemetry.ProductsRemovedFromStore.Add(1))
+            .TapActivityAsync(activity);
     }
 }

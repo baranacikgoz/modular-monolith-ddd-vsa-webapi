@@ -11,6 +11,8 @@ public sealed class NotificationsModule : IModule
 {
     public string Name => "Notifications";
     public int StartupPriority => 3;
+    public IEnumerable<string> ActivitySourceNames => [];
+    public IEnumerable<string> MeterNames => [];
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
