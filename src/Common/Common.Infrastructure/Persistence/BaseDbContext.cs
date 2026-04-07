@@ -16,7 +16,7 @@ public abstract partial class BaseDbContext(
     IServiceScopeFactory serviceScopeFactory
 ) : Microsoft.EntityFrameworkCore.DbContext(options)
 {
-    public DbSet<EventStoreEvent> EventStoreEvents => Set<EventStoreEvent>();
+    public DbSet<AuditLogEntry> AuditLog => Set<AuditLogEntry>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -30,32 +30,32 @@ public abstract partial class BaseDbContext(
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
 
         List<OutboxMessage>? outboxMessages = null;
-        List<EventStoreEvent>? eventStoreEvents = null;
+        List<AuditLogEntry>? auditLogEntries = null;
 
-        // Collect domain events for BOTH Outbox and EventStore in a single pass
+        // Collect domain events for BOTH Outbox and AuditLog in a single pass
         foreach (var entry in ChangeTracker.Entries<IAggregateRoot>()
                      .Where(e => e.Entity.Events.Count > 0))
         {
             var aggregateRoot = entry.Entity;
 
             outboxMessages ??= [];
-            eventStoreEvents ??= [];
+            auditLogEntries ??= [];
 
             foreach (var @event in aggregateRoot.Events)
             {
                 // Outbox message
                 outboxMessages.Add(OutboxMessage.Create(utcNow, @event));
 
-                // EventStore event
+                // Audit log entry
                 @event.CreatedOn = utcNow;
-                var eventStoreEvent = EventStoreEvent.Create(
+                var auditLogEntry = AuditLogEntry.Create(
                     aggregateRoot.GetType().Name,
                     aggregateRoot.Id.Value,
                     @event.Version,
                     @event);
-                eventStoreEvent.CreatedOn = utcNow;
-                eventStoreEvent.CreatedBy = userId;
-                eventStoreEvents.Add(eventStoreEvent);
+                auditLogEntry.CreatedOn = utcNow;
+                auditLogEntry.CreatedBy = userId;
+                auditLogEntries.Add(auditLogEntry);
             }
 
             aggregateRoot.ClearEvents();
@@ -70,17 +70,17 @@ public abstract partial class BaseDbContext(
 
         LoggerMessages.LogFoundDomainEvents(logger, outboxMessages.Count);
 
-        // Add EventStore events to the change tracker so they are saved in the same transaction
-        if (eventStoreEvents is { Count: > 0 })
+        // Add audit log entries to the change tracker so they are saved in the same transaction
+        if (auditLogEntries is { Count: > 0 })
         {
-            foreach (var eventStoreEvent in eventStoreEvents)
+            foreach (var auditLogEntry in auditLogEntries)
             {
-                EventStoreEvents.Add(eventStoreEvent);
+                AuditLog.Add(auditLogEntry);
             }
         }
 
         // Use a single database transaction (shared connection) to guarantee atomicity
-        // between module changes, outbox messages, and event store events.
+        // between module changes, outbox messages, and audit log entries.
         // EF Core manages the connection lifecycle; we share the underlying DbTransaction
         // with the OutboxDbContext so both participate in the same transaction.
         await using var transaction = await Database.BeginTransactionAsync(cancellationToken);
@@ -111,7 +111,7 @@ public abstract partial class BaseDbContext(
         [LoggerMessage(Level = LogLevel.Debug, Message = "No domain events found. Calling base SaveChangesAsync.")]
         public static partial void LogNoDomainEvents(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Found {EventCount} domain events. Executing atomic save with Outbox and EventStore.")]
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Found {EventCount} domain events. Executing atomic save with Outbox and AuditLog.")]
         public static partial void LogFoundDomainEvents(ILogger logger, int eventCount);
 
         [LoggerMessage(Level = LogLevel.Error, Message = "Error saving changes to the database.")]
