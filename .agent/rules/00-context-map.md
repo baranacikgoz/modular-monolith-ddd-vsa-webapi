@@ -6,7 +6,7 @@
 - **Core Principles**:
     - **Coupling**: Modules communicate *only* via `IntegrationEvents` (Async) or `Common.InterModuleRequests` (Sync).
     - **Consistency**: Transactional Outbox (Atomic Save + Publish).
-    - **Observability**: OpenTelemetry Tracing/Metrics are mandatory.
+    - **Observability**: Per-module Tracing (ActivitySource) and Metrics (Meter) are mandatory and registered via `IModule`.
 - **Coding Style**: **Functional / Railway Oriented Programming**.
     -   We use a custom `Result<T>` Monad.
     -   We prefer **Method Chaining** over imperative `if/else` blocks.
