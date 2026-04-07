@@ -14,7 +14,6 @@ body:
         ## Implementation Requirements
         [Provide the technical details or reference the plan from Issue #...]
 
-        ---
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
 

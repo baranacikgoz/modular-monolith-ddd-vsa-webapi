@@ -14,7 +14,6 @@ body:
         ## Test Scenarios
         [Write integration tests for creating a product with valid and invalid pricing...]
 
-        ---
         ## AI Agent Instructions
         You are an autonomous AI Software Engineer Specialized in .NET, Clean Architecture, DDD, and Vertical Slice Architecture (VSA). 
 
