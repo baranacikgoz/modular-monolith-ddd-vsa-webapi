@@ -11,7 +11,6 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        ## AI Agent Instructions
         Expert .NET Engineer (DDD/VSA). Execute: `/implement-endpoint`, `/verify-feature`
 
         ### Rules:
@@ -31,6 +30,5 @@ body:
       label: Implementation Requirements
       description: "Describe the implementation details."
       value: |
-        ## Implementation Requirements
         [Provide the technical details or reference the plan from Issue #...]
 

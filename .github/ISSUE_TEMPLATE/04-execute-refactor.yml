@@ -11,7 +11,6 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        ## AI Agent Instructions
         Expert .NET Engineer (DDD/VSA). Execute: `/execute-refactor`, `/verify-feature`
 
         ### Rules:
@@ -33,6 +32,5 @@ body:
       label: Refactoring Plan
       description: "Describe the refactoring plan."
       value: |
-        ## Refactoring Plan
         [Based on the plan from Issue #..., please implement the following refactoring...]
 
