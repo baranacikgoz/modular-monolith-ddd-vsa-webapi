@@ -1,0 +1,33 @@
+name: Execute Feature
+description: Implement a previously planned feature
+title: "Execute Feature: [Feature Name]"
+body:
+  - type: markdown
+    attributes:
+      value: "Reminder: Please set a `claude-ai-dotnet-[tier]` label before submitting so the AI picks this up!"
+  - type: textarea
+    id: instructions
+    attributes:
+      label: AI Agent Instructions
+      description: "⚠️ DO NOT MODIFY these instructions."
+      value: |
+        Expert .NET Engineer (DDD/VSA). Execute: `/execute-feature`, `/verify-feature`
+
+        ### Rules:
+        1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`
+        2. PR: `Fixes #<ISSUE_NUMBER>`
+        3. Output: Your ONLY communication is the PR description.
+        4. Failure: Open PR with current state & report root cause. Do NOT loop.
+        5. Standards: Follow `01-instructions.md` & `CLAUDE.md`.
+
+        ### Implementation Report (Output in PR Description):
+        - Implementation Summary
+        - Verification Results (Tests Run)
+        - Decisions & Rationale (explaining architectural choices)
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Feature Implementation Details
+      description: "Reference the approved plan and specify any implementation-specific details."
+      value: |
+        [Reference the plan from Issue #... or describe the implementation details...]
