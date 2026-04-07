@@ -11,7 +11,6 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        ## AI Agent Instructions
         Expert .NET Engineer (DDD/VSA). Execute: `/plan-feature`
 
         ### Rules:
@@ -32,6 +31,5 @@ body:
       label: Feature Requirements
       description: "Describe the behavior, domain logic, and specifications of the new feature."
       value: |
-        ## Feature Requirements
         [Describe the behavior, domain logic, and specifications of the new feature...]
 

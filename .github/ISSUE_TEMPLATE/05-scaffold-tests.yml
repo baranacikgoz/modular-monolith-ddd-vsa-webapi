@@ -11,7 +11,6 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        ## AI Agent Instructions
         Expert .NET Engineer (DDD/VSA). Execute: `/scaffold-tests`
 
         ### Rules:
@@ -33,6 +32,5 @@ body:
       label: Test Scenarios
       description: "Describe the test scenarios."
       value: |
-        ## Test Scenarios
         [Write integration tests for creating a product with valid and invalid pricing...]
 
