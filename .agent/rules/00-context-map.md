@@ -31,15 +31,18 @@ The application flow is a pipeline of operations. If any step fails, the pipelin
 ## 4. The "Magic" (Do Not Re-implement)
 The system handles these cross-cutting concerns automatically. **Do not write manual code for these:**
 
-1.  **Transactional Outbox**:
+1.  **Transactional Outbox & Auditing**:
     -   *Dev Action*: Call `Aggregate.RaiseEvent(new MyEvent())`.
-    -   *System Action*: `BaseDbContext` intercepts save -> Writes to `OutboxMessages` table -> Transaction commits.
+    -   *System Action*: `BaseDbContext` intercepts save -> Atomically writes to `OutboxMessages` (for CDC) AND `AuditLog` (for history) tables -> Transaction commits.
 2.  **CDC & Messaging**:
     -   *System Action*: **Debezium** reads Postgres WAL -> Pushes to Kafka.
     -   *System Action*: `MassTransit` consumes Kafka.
     -   *Rule*: **NEVER** write a Kafka producer in C# Application code.
 3.  **Auditing**:
     -   *System Action*: `AuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc.
+4.  **Audit Log Retention**:
+    -   *System Action*: `AuditLogRetentionService` (Background Job) periodically deletes entries older than the configured `RetentionDays` (default 30).
+    -   *Rule*: Do NOT manually delete or modify `AuditLog` entries.
 
 ## 5. Infrastructure Services
 -   **mm.postgres**: Logical WAL enabled (Source of Truth).

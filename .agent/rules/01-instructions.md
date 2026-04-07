@@ -71,7 +71,7 @@ trigger: always_on
 *   **Assertions**: Do NOT use FluentAssertions or any other assertion library. Use built-in xUnit Assert methods (`Assert.Equal`, `Assert.NotNull`, etc.).
 *   **No Flakiness**: Tests must be deterministic. Use `IClassFixture` for Docker containers.
 *   **Slice Isolation**: Integration tests MUST use the real `DbContext`. Do not mock `DbSet`.
-*   **Outbox Verification**: To test event publishing, assert that a record exists in the `OutboxMessages` table. Do NOT mock MassTransit in slice tests.
+*   **Audit Log & Outbox Verification**: To test event publishing, assert that a record exists in the `OutboxMessages` table AND the `AuditLog` table. Do NOT mock MassTransit in slice tests.
 *   **Naming**: `Method_Scenario_Expectation` (e.g., `CreateOrder_WithInvalidItems_ReturnsBadRequest`).
 
 ## 7. Bug Fixing Standards (The Scientific Method)

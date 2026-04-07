@@ -29,8 +29,7 @@ This repository includes the following features:
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
-- **Event-Sourcing Aggregates**: Supports event sourcing infrastructure for audit/event logging currently, with future
-  plans for full event sourcing.
+- **Audit Log & Retention**: Provides a transactional audit log (via domain events) with configurable automatic retention policies to manage database growth.
 - **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Seq for observability.
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
