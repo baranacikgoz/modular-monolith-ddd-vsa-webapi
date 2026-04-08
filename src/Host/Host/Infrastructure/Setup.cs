@@ -41,7 +41,7 @@ internal static partial class Setup
             .AddObservability(
                 configuration,
                 env)
-            .AddCustomCors()
+            .AddCustomCors(configuration)
             .AddValidatorsFromAssemblies(moduleAssemblies)
             .AddCommonDependencies(configuration, moduleAssemblies)
             .AddCustomHealthChecks(configuration)
@@ -70,17 +70,65 @@ internal static partial class Setup
         return app;
     }
 
-    private static IServiceCollection AddCustomCors(this IServiceCollection services)
+    private static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var corsOptions = configuration
+            .GetSection(nameof(CorsOptions))
+            .Get<CorsOptions>()
+            ?? new CorsOptions();
+
+        // Configuration binding treats empty JSON arrays as null; fall back to defaults.
+        var allowedOrigins = corsOptions.AllowedOrigins ?? [];
+        var allowedMethods = corsOptions.AllowedMethods ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+        var allowedHeaders = corsOptions.AllowedHeaders ?? ["Authorization", "Content-Type", "Accept", "X-Requested-With"];
+
         return services
             .AddCors(options =>
             {
-                // Change this in production.
                 options.AddDefaultPolicy(builder =>
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+                {
+                    if (allowedOrigins.Count == 0)
+                    {
+                        builder.SetIsOriginAllowed(_ => false);
+                    }
+                    else if (allowedOrigins is ["*"])
+                    {
+                        builder.AllowAnyOrigin();
+                    }
+                    else
+                    {
+                        builder.WithOrigins([.. allowedOrigins]);
+                    }
+
+                    if (allowedMethods is ["*"])
+                    {
+                        builder.AllowAnyMethod();
+                    }
+                    else
+                    {
+                        builder.WithMethods([.. allowedMethods]);
+                    }
+
+                    if (allowedHeaders is ["*"])
+                    {
+                        builder.AllowAnyHeader();
+                    }
+                    else
+                    {
+                        builder.WithHeaders([.. allowedHeaders]);
+                    }
+
+                    if (corsOptions.AllowCredentials)
+                    {
+                        builder.AllowCredentials();
+                    }
+                    else
+                    {
+                        builder.DisallowCredentials();
+                    }
+
+                    builder.SetPreflightMaxAge(TimeSpan.FromSeconds(corsOptions.MaxAgeInSeconds));
+                });
             });
     }
 

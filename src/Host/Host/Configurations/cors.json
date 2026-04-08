@@ -1,0 +1,9 @@
+{
+  "CorsOptions": {
+    "AllowedOrigins": [],
+    "AllowedMethods": [ "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" ],
+    "AllowedHeaders": [ "Authorization", "Content-Type", "Accept", "X-Requested-With" ],
+    "AllowCredentials": false,
+    "MaxAgeInSeconds": 600
+  }
+}

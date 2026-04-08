@@ -23,6 +23,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/auditLog");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/modules");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/healthCheck");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/cors");
 
         configuration.AddEnvironmentVariables();
 
