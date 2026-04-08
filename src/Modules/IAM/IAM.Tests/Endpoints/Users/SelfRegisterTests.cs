@@ -55,7 +55,8 @@ public class SelfRegisterTests : BaseIntegrationTest
             Name = _faker.Name.FirstName(),
             LastName = _faker.Name.LastName(),
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
-            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -121,7 +122,8 @@ public class SelfRegisterTests : BaseIntegrationTest
             Name = _faker.Name.FirstName(),
             LastName = _faker.Name.LastName(),
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
-            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -154,7 +156,8 @@ public class SelfRegisterTests : BaseIntegrationTest
             Name = _faker.Name.FirstName(),
             LastName = _faker.Name.LastName(),
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
-            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -163,5 +166,55 @@ public class SelfRegisterTests : BaseIntegrationTest
         // Assert
         Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
         Assert.False(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithEmptyCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            Otp = "123456",
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = string.Empty
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithInvalidCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            Otp = "123456",
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "invalid-token"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var rawJson = await response.Content.ReadAsStringAsync();
+        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        Assert.Equal("NotHuman", doc.RootElement.GetProperty("errorKey").GetString());
     }
 }

@@ -30,7 +30,7 @@ internal static class Endpoint
             .TransformResultTo<Response>();
     }
 
-    private static Task<Result<Response>> RegisterAsync(
+    private static async Task<Result<Response>> RegisterAsync(
         Request request,
         UserManager<ApplicationUser> userManager,
         IOtpService otpService,
@@ -38,11 +38,7 @@ internal static class Endpoint
         IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        // Captcha validation is optional: validate only when a token is supplied.
-        // This allows backward-compatible rollout across environments.
-        return (string.IsNullOrEmpty(request.CaptchaToken)
-                ? Task.FromResult(Result.Success)
-                : captchaService.ValidateAsync(request.CaptchaToken, cancellationToken))
+        return await captchaService.ValidateAsync(request.CaptchaToken, cancellationToken)
             .BindAsync(() => CreateUserPipelineAsync(request, userManager, otpService, dbContext, cancellationToken));
     }
 

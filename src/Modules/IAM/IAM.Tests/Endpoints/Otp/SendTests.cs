@@ -29,7 +29,8 @@ public class SendTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
         {
-            PhoneNumber = phoneNumber
+            PhoneNumber = phoneNumber,
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -57,7 +58,8 @@ public class SendTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
         {
-            PhoneNumber = "123" // clearly not a valid Turkish mobile number
+            PhoneNumber = "123", // clearly not a valid Turkish mobile number
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -65,5 +67,45 @@ public class SendTests : BaseIntegrationTest
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SendOtp_WithEmptyCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = string.Empty
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SendOtp_WithInvalidCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "invalid-token"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var rawJson = await response.Content.ReadAsStringAsync();
+        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        Assert.Equal("NotHuman", doc.RootElement.GetProperty("errorKey").GetString());
     }
 }

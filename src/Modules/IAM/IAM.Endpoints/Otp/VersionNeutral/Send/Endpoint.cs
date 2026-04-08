@@ -33,11 +33,7 @@ internal static class Endpoint
         ICacheService cache,
         CancellationToken cancellationToken)
     {
-        // Captcha validation is optional: validate only when a token is supplied.
-        // This protects the SMS gateway from bot abuse while remaining backward-compatible.
-        return await (string.IsNullOrEmpty(request.CaptchaToken)
-                ? Task.FromResult(Result.Success)
-                : captchaService.ValidateAsync(request.CaptchaToken, cancellationToken))
+        return await captchaService.ValidateAsync(request.CaptchaToken, cancellationToken)
             .BindAsync(() => otpService.Generate())
             .TapAsync(async otp => await cache.SetAsync(
                 CacheKeys.For.Otp(request.PhoneNumber),
