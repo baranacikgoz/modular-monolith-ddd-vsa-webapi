@@ -87,6 +87,7 @@ trigger: always_on
 *   **Configuration-Driven**: Modules MUST be managed fully through `appsettings.json` via the `"Modules"` array (or `*`). Never hardcode `.Add[Module]()` inside `Setup.Modules.cs`.
 *   **IModule Implementation**: Each new module MUST provide exactly one class implementing `IModule` to hook into DI and Endpoint scanning dynamically.
 *   **Test Isolation**: Modules under test MUST be strictly enforced in test factories via the `TestModuleOverride` environment variable. Never let integration tests bleed into the global application host context.
+
 ## 9. Observability Standards (OpenTelemetry)
 *   **Per-Module Strategy**: Each module MUST define a static `[Module]Telemetry` class in `Infrastructure/Telemetry/`.
 *   **Registration**: Register `ActivitySource` and `Meter` names in the `IModule` implementation via `ActivitySourceNames` and `MeterNames`.
@@ -99,7 +100,7 @@ trigger: always_on
 ## 10. Defensive Implementation (Zero Trust)
 *   **Trust Nothing**: Treat BOTH clients (API callers) AND 3rd-party services as inherently buggy, untrusted, and failure-prone.
 *   **Inbound Defense**: Never assume a client sends valid data. Every `Request` MUST be validated before reaching the domain or persistence.
-*   **Outbound Defense**: 
+*   **Outbound Defense**:
     *   **Failure is Normal**: Assume 3rd-party APIs will fail, timeout, or return malformed data. Use appropriate resiliency patterns.
     *   **Response Skepticism**: Strictly validate the structure and content of 3rd-party responses before consumption.
     *   **Isolation**: Ensure that failures or performance issues in 3rd-party systems do not cascade into the core application.
