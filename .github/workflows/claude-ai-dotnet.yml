@@ -33,7 +33,7 @@ jobs:
   dotnet-developer:
     name: 🚀 .NET Agent (${{ needs.setup.outputs.provider }} / ${{ needs.setup.outputs.model }})
     needs: setup
-    runs-on: [ "${{ needs.setup.outputs.runner_tag }}" ]
+    runs-on: ${{ needs.setup.outputs.runner_tag }}
     permissions:
       contents: write
       pull-requests: write
