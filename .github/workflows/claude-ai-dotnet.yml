@@ -7,33 +7,33 @@ on:
 jobs:
   setup:
     name: 🔍 Parse Label & Select Model
-    if: startsWith(github.event.label.name, 'claude-ai-dotnet-')
+    if: startsWith(github.event.label.name, 'agent: ') && github.actor == 'baranacikgoz'
     runs-on: ubuntu-latest
     outputs:
-      tier: ${{ steps.parse.outputs.tier }}
+      provider: ${{ steps.parse.outputs.provider }}
       model: ${{ steps.parse.outputs.model }}
+      runner_tag: ${{ steps.parse.outputs.runner_tag }}
     steps:
       - name: 🛠️ Parse Label
         id: parse
         run: |
+          # Expected format: "agent: openai/gpt-5.4"
           LABEL="${{ github.event.label.name }}"
-          # Format: claude-ai-dotnet-TIER
-          TIER="${LABEL##*-}"
+          DATA="${LABEL#agent: }"     # "openai/gpt-5.4"
+          PROVIDER="${DATA%%/*}"       # "openai"
+          MODEL="${DATA#*/}"           # "gpt-5.4"
           
-          case "$TIER" in
-            light) MODEL="haiku" ;;
-            mid)   MODEL="sonnet" ;;
-            high)  MODEL="opus" ;;
-            *)     MODEL="sonnet" ;;
-          esac
+          # The runner tag must exactly match the node label injected by ApplicationSet
+          RUNNER_TAG="ai-dotnet-$PROVIDER-$MODEL"
           
-          echo "tier=$TIER" >> $GITHUB_OUTPUT
+          echo "provider=$PROVIDER" >> $GITHUB_OUTPUT
           echo "model=$MODEL" >> $GITHUB_OUTPUT
+          echo "runner_tag=$RUNNER_TAG" >> $GITHUB_OUTPUT
 
   dotnet-developer:
-    name: 🚀 .NET Agent (${{ needs.setup.outputs.tier }})
+    name: 🚀 .NET Agent (${{ needs.setup.outputs.provider }} / ${{ needs.setup.outputs.model }})
     needs: setup
-    runs-on: arc-runners-dotnet
+    runs-on: [ "${{ needs.setup.outputs.runner_tag }}" ]
     permissions:
       contents: write
       pull-requests: write
