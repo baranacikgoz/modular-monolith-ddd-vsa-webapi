@@ -59,6 +59,12 @@ jobs:
           echo "$ISSUE_TITLE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: 🌐 Verify Connectivity
+        run: |
+          echo "Checking internet access..."
+          curl -I https://api.nuget.org/v3/index.json
+          curl -I https://api.anthropic.com
+
       - name: 🧠 Unleash .NET Agent
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +73,8 @@ jobs:
           export HOME=/home/runner
           export CLAUDE_CONFIG_DIR=/home/runner/.claude
           export XDG_CONFIG_HOME=/home/runner/.config
-          export CI=true
+          # We disable CI=true to prevent tools (like Claude Code) from entering restricted 'offline' modes
+          export CI=false
           export DISABLE_TELEMETRY=1
           export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
           
@@ -80,6 +87,10 @@ jobs:
             . /vault/secrets/config.env
             set +a
           fi
+
+          # Optional: Warmup NuGet for the project to ensure feed works
+          echo "Warming up NuGet cache..."
+          dotnet restore || echo "Warning: Primary restore failed, allowing Claude to troubleshoot."
 
           read -r -d '' CLAUDE_PROMPT <<EOF || true
           # CONTEXT
