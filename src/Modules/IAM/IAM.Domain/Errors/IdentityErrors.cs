@@ -8,4 +8,6 @@ public static class IdentityErrors
     {
         return new Error { Key = nameof(Some), SubErrors = errors };
     }
+
+    public static readonly Error PhoneNumberAlreadyRegistered = new() { Key = nameof(PhoneNumberAlreadyRegistered) };
 }
