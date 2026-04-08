@@ -8,6 +8,7 @@ namespace IAM.Endpoints.Otp.VersionNeutral.Send;
 public sealed record Request
 {
     public required string PhoneNumber { get; init; }
+    public required string CaptchaToken { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
@@ -21,5 +22,9 @@ public sealed class RequestValidator : CustomValidator<Request>
         RuleFor(x => x.PhoneNumber)
             .PhoneNumberValidation(localizer)
             .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
+
+        RuleFor(x => x.CaptchaToken)
+            .NotEmpty()
+            .WithMessage(localizer.IAM_CaptchaToken_NotEmpty);
     }
 }

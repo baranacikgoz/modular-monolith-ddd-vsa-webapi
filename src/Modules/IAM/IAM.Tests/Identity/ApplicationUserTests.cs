@@ -51,4 +51,18 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
             .Then(user => Assert.Equal(expiresAt, user.RefreshTokenExpiresAt))
             .Then<V1RefreshTokenUpdatedDomainEvent>(_ => { });
     }
+
+    [Fact]
+    public void RevokeRefreshTokenShouldClearTokenFieldsAndRaiseEvent()
+    {
+        var refreshTokenHash = new byte[] { 1, 2, 3 };
+        var expiresAt = DateTimeOffset.UtcNow.AddDays(7);
+
+        Given(() => ApplicationUser.Create(Name, LastName, PhoneNumber, NationalIdentityNumber, BirthDate, ImageUrl))
+            .When(user => user.UpdateRefreshToken(refreshTokenHash, expiresAt))
+            .When(user => user.RevokeRefreshToken())
+            .Then(user => Assert.Empty(user.RefreshTokenHash))
+            .Then(user => Assert.Equal(DateTimeOffset.MinValue, user.RefreshTokenExpiresAt))
+            .Then<V1RefreshTokenRevokedDomainEvent>(_ => { });
+    }
 }
