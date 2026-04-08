@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
@@ -15,6 +16,7 @@ internal partial class ReCaptchaService(
     ILogger<ReCaptchaService> logger
 ) : ICaptchaService
 {
+    private const double DefaultScoreThreshold = 0.5;
     private readonly CaptchaOptions _captchaOptions = captchaOptionsProvider.Value;
 
     public string GetClientKey()
@@ -24,10 +26,14 @@ internal partial class ReCaptchaService(
 
     public async Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
     {
-        HttpResponseMessage? httpResponseMessage;
+        HttpResponseMessage httpResponseMessage;
         using (var requestContent = GetRequestParameters(captchaToken, _captchaOptions.SecretKey))
         {
-            httpResponseMessage = await httpClient.PostAsync(new Uri(_captchaOptions.CaptchaEndpoint), requestContent,
+            // Use relative URI so the resilient HttpClient pipeline (retry, circuit breaker, timeout) is applied.
+            // BaseAddress is configured in the HttpClient registration (Captcha/Setup.cs).
+            httpResponseMessage = await httpClient.PostAsync(
+                new Uri(_captchaOptions.CaptchaEndpoint, UriKind.RelativeOrAbsolute),
+                requestContent,
                 cancellationToken);
         }
 
@@ -37,11 +43,36 @@ internal partial class ReCaptchaService(
             return CaptchaErrors.CaptchaServiceUnavailable;
         }
 
-        var reCaptchaResponse = await succeededResult.Content.ReadFromJsonAsync<ReCaptchaResponse>(cancellationToken);
+        ReCaptchaResponse? reCaptchaResponse;
+        try
+        {
+            reCaptchaResponse = await succeededResult.Content.ReadFromJsonAsync<ReCaptchaResponse>(cancellationToken);
+        }
+        catch (JsonException ex)
+        {
+            LogCaptchaDeserializationFailed(logger, ex);
+            return CaptchaErrors.CaptchaServiceUnavailable;
+        }
+        catch (NotSupportedException ex)
+        {
+            LogCaptchaDeserializationFailed(logger, ex);
+            return CaptchaErrors.CaptchaServiceUnavailable;
+        }
 
         if (reCaptchaResponse is not { Success: true })
         {
             LogCaptchaValidationFailedWithResponse(logger, reCaptchaResponse);
+            return CaptchaErrors.NotHuman;
+        }
+
+        // reCAPTCHA v3 score validation: 1.0 = very likely human, 0.0 = very likely bot
+        var scoreThreshold = _captchaOptions.ScoreThreshold > 0
+            ? _captchaOptions.ScoreThreshold
+            : DefaultScoreThreshold;
+
+        if (reCaptchaResponse.Score < scoreThreshold)
+        {
+            LogCaptchaScoreBelowThreshold(logger, reCaptchaResponse.Score, scoreThreshold);
             return CaptchaErrors.NotHuman;
         }
 
@@ -65,9 +96,21 @@ internal partial class ReCaptchaService(
         Message = "Captcha validation failed with response {Response}")]
     private static partial void LogCaptchaValidationFailedWithResponse(ILogger logger, ReCaptchaResponse? response);
 
-    private sealed class ReCaptchaResponse
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Captcha response deserialization failed")]
+    private static partial void LogCaptchaDeserializationFailed(ILogger logger, Exception ex);
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Captcha score {Score} is below threshold {Threshold}")]
+    private static partial void LogCaptchaScoreBelowThreshold(ILogger logger, double score, double threshold);
+
+    internal sealed class ReCaptchaResponse
     {
         [JsonPropertyName("success")] public bool Success { get; set; }
+
+        [JsonPropertyName("score")] public double Score { get; set; }
 
         [JsonPropertyName("challenge_ts")] public DateTime ChallengeTs { get; set; }
 

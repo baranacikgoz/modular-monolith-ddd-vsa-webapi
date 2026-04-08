@@ -12,6 +12,12 @@ public class CaptchaOptions
     public required string ClientKey { get; set; }
 
     public required string SecretKey { get; set; }
+
+    /// <summary>
+    /// reCAPTCHA v3 score threshold. Requests with a score below this value are rejected.
+    /// Valid range: 0.0 to 1.0. Defaults to 0.5 if not set or zero.
+    /// </summary>
+    public double ScoreThreshold { get; set; }
 }
 
 public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
