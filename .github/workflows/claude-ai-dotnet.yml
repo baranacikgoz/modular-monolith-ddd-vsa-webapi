@@ -7,7 +7,7 @@ on:
 jobs:
   setup:
     name: 🔍 Parse Label & Select Model
-    if: startsWith(github.event.label.name, 'agent: ') && github.actor == 'baranacikgoz'
+    if: "startsWith(github.event.label.name, 'agent: ') && github.actor == 'baranacikgoz'"
     runs-on: ubuntu-latest
     outputs:
       provider: ${{ steps.parse.outputs.provider }}
