@@ -11,7 +11,7 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        Expert .NET Engineer (DDD/VSA). Execute: `/implement-endpoint`, `/verify-feature`
+        Expert .NET Engineer (DDD/VSA). Execute: `.agent/workflows/implement-endpoint.md`, `.agent/workflows/verify-feature.md`
 
         ### Rules:
         1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`

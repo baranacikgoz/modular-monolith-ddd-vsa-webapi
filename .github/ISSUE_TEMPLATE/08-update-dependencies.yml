@@ -11,7 +11,7 @@ body:
       label: AI Agent Instructions
       description: "⚠️ DO NOT MODIFY these instructions."
       value: |
-        Expert .NET Engineer (DDD/VSA). Execute: `/update-dependencies`
+        Expert .NET Engineer (DDD/VSA). Execute: `.agent/workflows/update-dependencies.md`
 
         ### Rules:
         1. Branch: `claude-ai-dotnet/issue-<ISSUE_NUMBER>`
