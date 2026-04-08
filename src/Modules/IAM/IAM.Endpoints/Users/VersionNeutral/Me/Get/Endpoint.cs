@@ -7,6 +7,7 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Users.VersionNeutral.Me.Get;
 
@@ -29,6 +30,7 @@ internal static class Endpoint
     {
         return await dbContext
             .Users
+            .AsNoTracking()
             .TagWith(nameof(GetMeAsync), currentUser.Id)
             .Where(u => u.Id == currentUser.Id)
             .Select(u => new Response
@@ -38,9 +40,9 @@ internal static class Endpoint
                 LastName = u.LastName,
                 PhoneNumber = u.PhoneNumber!,
                 BirthDate = u.BirthDate,
-                CreatedBy = u.Id,
+                CreatedBy = u.CreatedBy,
                 CreatedOn = u.CreatedOn,
-                LastModifiedBy = u.Id,
+                LastModifiedBy = u.LastModifiedBy,
                 LastModifiedOn = u.LastModifiedOn
             })
             .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken);

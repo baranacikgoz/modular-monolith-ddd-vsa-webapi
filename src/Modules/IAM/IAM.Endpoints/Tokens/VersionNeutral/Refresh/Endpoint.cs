@@ -1,12 +1,13 @@
 using System.Security.Cryptography;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
-using IAM.Domain.Identity;
-
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;
+using IAM.Domain.Identity;
+using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -33,47 +34,61 @@ internal static class Endpoint
         ITokenService tokenService,
         CancellationToken cancellationToken)
     {
-        var providedRefreshToken = Convert.FromBase64String(request.RefreshToken);
-        var providedRefreshTokenHash = SHA256.HashData(providedRefreshToken);
+        using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
 
-        var userResult = await dbContext
-            .Users
-            .AsNoTracking()
-            .TagWith(nameof(RefreshToken))
-            .Where(x => x.RefreshTokenHash == providedRefreshTokenHash)
-            .Select(u => new
+        return await TryDecodeBase64(request.RefreshToken)
+            .BindAsync(async providedRefreshToken =>
             {
-                u.Id,
-                u.RefreshTokenExpiresAt,
-                Roles = dbContext
-                    .UserRoles
-                    .Where(ur => ur.UserId == u.Id)
-                    .Join(dbContext.Roles,
-                        ur => ur.RoleId,
-                        r => r.Id,
-                        (ur, r) => r.Name)
-                    .Where(name => name != null)
-                    .Select(name => name!)
-                    .ToList()
+                var hash = SHA256.HashData(providedRefreshToken);
+
+                return await dbContext
+                    .Users
+                    .AsNoTracking()
+                    .TagWith(nameof(RefreshToken))
+                    .Where(x => x.RefreshTokenHash == hash)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        u.RefreshTokenExpiresAt,
+                        Roles = dbContext
+                            .UserRoles
+                            .Where(ur => ur.UserId == u.Id)
+                            .Join(dbContext.Roles,
+                                ur => ur.RoleId,
+                                r => r.Id,
+                                (ur, r) => r.Name)
+                            .Where(name => name != null)
+                            .Select(name => name!)
+                            .ToList()
+                    })
+                    .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
             })
-            .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
+            .TapAsync(user => user.RefreshTokenExpiresAt < timeProvider.GetUtcNow()
+                ? Result.Failure(TokenErrors.RefreshTokenExpired)
+                : Result.Success)
+            .MapAsync(user =>
+            {
+                var utcNow = timeProvider.GetUtcNow();
+                var (accessToken, accessTokenExpiresAt) =
+                    tokenService.GenerateAccessToken(utcNow, user.Id, user.Roles);
+                return new Response { AccessToken = accessToken, AccessTokenExpiresAt = accessTokenExpiresAt };
+            })
+            .TapActivityAsync(activity);
+    }
 
-        if (userResult.IsFailure)
+    /// <summary>
+    ///     Safely decodes a Base64 string, returning a typed error instead of throwing
+    ///     <see cref="FormatException" /> on malformed input.
+    /// </summary>
+    private static Result<byte[]> TryDecodeBase64(string base64)
+    {
+        try
         {
-            return Result<Response>.Failure(userResult.Error!);
+            return Convert.FromBase64String(base64);
         }
-
-        var user = userResult.Value!;
-
-        if (user.RefreshTokenExpiresAt < timeProvider.GetUtcNow())
+        catch (FormatException)
         {
-            return TokenErrors.RefreshTokenExpired;
+            return TokenErrors.InvalidRefreshToken;
         }
-
-        var utcNow = timeProvider.GetUtcNow();
-
-        var (accessToken, accessTokenExpiresAt) = tokenService.GenerateAccessToken(utcNow, user.Id, user.Roles);
-
-        return new Response { AccessToken = accessToken, AccessTokenExpiresAt = accessTokenExpiresAt };
     }
 }

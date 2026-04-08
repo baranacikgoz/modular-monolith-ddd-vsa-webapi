@@ -20,7 +20,6 @@ public class SendTests : BaseIntegrationTest
     [Fact]
     public async Task SendOtp_WithValidPhoneNumber_ReturnsNoContentAndCachesOtp()
     {
-
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
@@ -45,9 +44,26 @@ public class SendTests : BaseIntegrationTest
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         // Verify cache Side-Effect
-        var cacheKey = Common.Application.Caching.CacheKeys.For.Otp(phoneNumber);
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
         var cachedOtp = await cache.GetAsync<string>(cacheKey, default);
 
         Assert.False(string.IsNullOrWhiteSpace(cachedOtp));
+    }
+
+    [Fact]
+    public async Task SendOtp_WithInvalidPhoneFormat_ReturnsBadRequest()
+    {
+        // Arrange — phone number with too few digits (fails Turkish phone validation)
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        {
+            PhoneNumber = "123" // clearly not a valid Turkish mobile number
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }

@@ -2,6 +2,7 @@ using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
+using IAM.Application.Captcha.Services;
 using IAM.Application.Otp.Services;
 using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
@@ -27,12 +28,17 @@ internal static class Endpoint
     private static async Task<Result> SendOtp(
         Request request,
         IOtpService otpService,
+        ICaptchaService captchaService,
         IOptions<OtpOptions> otpOptionsProvider,
         ICacheService cache,
         CancellationToken cancellationToken)
     {
-        return await Result<string>
-            .Create(() => otpService.Generate())
+        // Captcha validation is optional: validate only when a token is supplied.
+        // This protects the SMS gateway from bot abuse while remaining backward-compatible.
+        return await (string.IsNullOrEmpty(request.CaptchaToken)
+                ? Task.FromResult(Result.Success)
+                : captchaService.ValidateAsync(request.CaptchaToken, cancellationToken))
+            .BindAsync(() => otpService.Generate())
             .TapAsync(async otp => await cache.SetAsync(
                 CacheKeys.For.Otp(request.PhoneNumber),
                 otp,

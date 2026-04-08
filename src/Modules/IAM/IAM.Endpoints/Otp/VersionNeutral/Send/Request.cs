@@ -8,6 +8,12 @@ namespace IAM.Endpoints.Otp.VersionNeutral.Send;
 public sealed record Request
 {
     public required string PhoneNumber { get; init; }
+
+    /// <summary>
+    ///     Optional captcha token. When provided the server validates it against the captcha provider
+    ///     before generating and sending the OTP. Omit during environments where captcha is not configured.
+    /// </summary>
+    public string? CaptchaToken { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>

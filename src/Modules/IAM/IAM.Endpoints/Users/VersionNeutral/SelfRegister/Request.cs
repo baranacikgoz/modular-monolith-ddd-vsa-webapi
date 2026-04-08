@@ -16,6 +16,12 @@ public sealed record Request
     public required string LastName { get; init; }
     public required string NationalIdentityNumber { get; init; }
     public required string BirthDate { get; init; }
+
+    /// <summary>
+    ///     Optional captcha token. When provided the server validates it against the captcha provider
+    ///     before proceeding. Omit during environments where captcha is not configured.
+    /// </summary>
+    public string? CaptchaToken { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
