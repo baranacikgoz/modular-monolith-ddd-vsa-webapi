@@ -1,7 +1,9 @@
+using System.Net;
 using System.Net.Http.Json;
 using Bogus;
 using Common.Application.Caching;
 using Common.Tests;
+using IAM.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -17,26 +19,32 @@ public class SelfRegisterTests : BaseIntegrationTest
     {
     }
 
+    private static async Task EnsureBasicRoleExistsAsync(IServiceScope scope)
+    {
+        var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>>>();
+        if (!await roleManager.RoleExistsAsync(Common.Application.Auth.CustomRoles.Basic))
+        {
+            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>(Common.Application.Auth.CustomRoles.Basic)
+            {
+                NormalizedName = Common.Application.Auth.CustomRoles.Basic.ToUpperInvariant()
+            });
+        }
+    }
+
     [Fact]
     public async Task RegisterAsync_WithValidPayload_ReturnsOkAndCreatesUser()
     {
-
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
-        var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>>>();
-
-        if (!await roleManager.RoleExistsAsync(Common.Application.Auth.CustomRoles.Basic))
-        {
-            await roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole<Common.Domain.StronglyTypedIds.ApplicationUserId>(Common.Application.Auth.CustomRoles.Basic) { NormalizedName = Common.Application.Auth.CustomRoles.Basic.ToUpperInvariant() });
-        }
+        await EnsureBasicRoleExistsAsync(scope);
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
         var otp = "123456";
 
         // Pre-seed cache to bypass SMS OTP check
-        var cacheKey = Common.Application.Caching.CacheKeys.For.Otp(phoneNumber);
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
         await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
 
         var client = Factory.CreateClient();
@@ -47,7 +55,8 @@ public class SelfRegisterTests : BaseIntegrationTest
             Name = _faker.Name.FirstName(),
             LastName = _faker.Name.LastName(),
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
-            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
         };
 
         // Act
@@ -70,12 +79,142 @@ public class SelfRegisterTests : BaseIntegrationTest
         Assert.False(string.IsNullOrWhiteSpace(userIdString));
 
         // Verify Database Side-Effect
-        var parsedGuid = Guid.Parse(userIdString);
+        var parsedGuid = Guid.Parse(userIdString!);
         var parsedId = new Common.Domain.StronglyTypedIds.ApplicationUserId(parsedGuid);
         var createdUser = await db.Users.FirstOrDefaultAsync(u => u.Id == parsedId);
 
         Assert.NotNull(createdUser);
         Assert.Equal(request.PhoneNumber, createdUser.PhoneNumber);
         Assert.Equal(request.NationalIdentityNumber, createdUser.NationalIdentityNumber);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithDuplicatePhoneNumber_ReturnsError()
+    {
+        // Arrange — register a user first, then try to register with the same phone
+        using var scope = Factory.Services.CreateScope();
+        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        await EnsureBasicRoleExistsAsync(scope);
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        // Seed an existing user with the same phone number
+        var existingUser = ApplicationUser.Create(
+            _faker.Name.FirstName(),
+            _faker.Name.LastName(),
+            phoneNumber,
+            _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            DateOnly.FromDateTime(_faker.Date.Past(30))
+        );
+        db.Users.Add(existingUser);
+        await db.SaveChangesAsync(default);
+
+        const string otp = "123456";
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = phoneNumber,
+            Otp = otp,
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert — duplicate phone must be rejected with a domain-friendly error
+        Assert.False(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithInvalidOtp_ReturnsBadRequest()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        await EnsureBasicRoleExistsAsync(scope);
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const string correctOtp = "123456";
+
+        // Seed the CORRECT otp but send a WRONG one
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        await cache.SetAsync(cacheKey, correctOtp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = phoneNumber,
+            Otp = "999999",  // wrong OTP
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert
+        Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.False(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithEmptyCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            Otp = "123456",
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = string.Empty
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SelfRegister_WithInvalidCaptcha_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            Otp = "123456",
+            Name = _faker.Name.FirstName(),
+            LastName = _faker.Name.LastName(),
+            NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "invalid-token"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var rawJson = await response.Content.ReadAsStringAsync();
+        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        Assert.Equal("NotHuman", doc.RootElement.GetProperty("errorKey").GetString());
     }
 }

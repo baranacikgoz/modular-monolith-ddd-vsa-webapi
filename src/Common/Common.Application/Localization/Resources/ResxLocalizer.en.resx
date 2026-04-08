@@ -117,6 +117,9 @@
   <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
     <value>Phone verification tokens do not match.</value>
   </data>
+  <data name="IAM_CaptchaToken_NotEmpty" xml:space="preserve">
+    <value>Captcha token cannot be empty.</value>
+  </data>
   <data name="ConcurrencyFailure" xml:space="preserve">
     <value>Multiple requests tried to update this user at the same time. Please try again.</value>
   </data>

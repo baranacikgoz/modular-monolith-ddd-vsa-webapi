@@ -65,6 +65,15 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         RaiseEvent(@event);
     }
 
+    public void RevokeRefreshToken()
+    {
+        RefreshTokenHash = [];
+        RefreshTokenExpiresAt = DateTimeOffset.MinValue;
+
+        var @event = new V1RefreshTokenRevokedDomainEvent(Id);
+        RaiseEvent(@event);
+    }
+
     private void ApplyEvent(IEvent @event)
     {
         switch (@event)
@@ -76,6 +85,9 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
                 Apply(e);
                 break;
             case V1RefreshTokenUpdatedDomainEvent e:
+                Apply(e);
+                break;
+            case V1RefreshTokenRevokedDomainEvent e:
                 Apply(e);
                 break;
             default:
@@ -104,9 +116,14 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     {
         // Nothing to do here, see the explanation in UpdateRefreshToken method.
     }
+
+    private void Apply(V1RefreshTokenRevokedDomainEvent @event)
+    {
+        // Nothing to do here — properties are cleared directly in RevokeRefreshToken() for consistency with UpdateRefreshToken().
+    }
 #pragma warning restore CA1822, S1186, IDE0060
 
-#pragma warning disable CS8618 // Orms need parameterless constructors
-#pragma warning restore CS8618
+    // EF Core and ASP.NET Identity materialise entities via the inherited parameterless constructor
+    // from IdentityUser<ApplicationUserId>. No explicit constructor needed here.
 #pragma warning restore CA1819 // Properties should not return arrays
 }
