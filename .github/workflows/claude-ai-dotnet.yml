@@ -90,10 +90,6 @@ jobs:
             set +a
           fi
 
-          # Optional: Warmup NuGet for the project to ensure feed works
-          echo "Warming up NuGet cache..."
-          dotnet restore || echo "Warning: Primary restore failed, allowing Claude to troubleshoot."
-
           read -r -d '' CLAUDE_PROMPT <<EOF || true
           # CONTEXT
           GitHub Issue #${{ github.event.issue.number }}: '$ISSUE_TITLE' is assigned to you.
