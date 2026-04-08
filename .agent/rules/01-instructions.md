@@ -95,3 +95,11 @@ trigger: always_on
     *   *Tracing*: Use `using var activity = [Module]Telemetry.ActivitySource.StartActivityForCaller();` at the start of the endpoint if and only if provides valuable insights.
     *   *Enrichment*: Use `.TapActivityAsync(activity)` at the end of the functional pipeline to automatically record success/error status and tags.
     *   *Metrics*: Use metrics inside `.TapAsync(...)` side-effect blocks to ensure they only fire when the operation succeeds (if applicable).
+
+## 10. Defensive Implementation (Zero Trust)
+*   **Trust Nothing**: Treat BOTH clients (API callers) AND 3rd-party services as inherently buggy, untrusted, and failure-prone.
+*   **Inbound Defense**: Never assume a client sends valid data. Every `Request` MUST be validated before reaching the domain or persistence.
+*   **Outbound Defense**: 
+    *   **Failure is Normal**: Assume 3rd-party APIs will fail, timeout, or return malformed data. Use appropriate resiliency patterns.
+    *   **Response Skepticism**: Strictly validate the structure and content of 3rd-party responses before consumption.
+    *   **Isolation**: Ensure that failures or performance issues in 3rd-party systems do not cascade into the core application.

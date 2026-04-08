@@ -11,5 +11,6 @@ This workflow handles the actual implementation of the business logic following 
     - If logic is complex: Encapsulate strictly within the Domain Aggregate and emit `DomainEvents`.
     - If logic is simple: Execute directly in the endpoint.
     - **Telemetry**: Add `ActivitySource` instrumentation and business `Meters` as per Observability Standards if and only if provides valuable insights.
-4. **Performance Rules**: Ensure absolutely NO mapping libraries are used (do inline manual mapping) and apply `.AsNoTracking()` to all read queries.
-5. **Registration**: Update the module's target `Setup.cs` referencing the "Registering Endpoints Recipe" in `01-instructions.md`.
+4. **Defensive Validation**: Apply "Zero Trust" principles. Strictly validate the `Request` using predefined validators and ensure domain objects are protected from malformed external data.
+5. **Performance Rules**: Ensure absolutely NO mapping libraries are used (do inline manual mapping) and apply `.AsNoTracking()` to all read queries.
+6. **Registration**: Update the module's target `Setup.cs` referencing the "Registering Endpoints Recipe" in `01-instructions.md`.
