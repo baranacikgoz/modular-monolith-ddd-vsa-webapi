@@ -5,14 +5,10 @@ namespace Common.Application.Options;
 
 public class CorsOptions
 {
-    public IReadOnlyList<string>? AllowedOrigins { get; init; }
-
-    public IReadOnlyList<string>? AllowedMethods { get; init; }
-
-    public IReadOnlyList<string>? AllowedHeaders { get; init; }
-
+    public IReadOnlyList<string> AllowedOrigins { get; init; } = [];
+    public IReadOnlyList<string> AllowedMethods { get; init; } = [];
+    public IReadOnlyList<string> AllowedHeaders { get; init; } = [];
     public bool AllowCredentials { get; init; }
-
     public int MaxAgeInSeconds { get; init; } = 600;
 }
 
@@ -25,7 +21,7 @@ public class CorsOptionsValidator : CustomValidator<CorsOptions>
             .WithMessage("MaxAgeInSeconds must be greater than 0.");
 
         RuleFor(o => o)
-            .Must(o => !o.AllowCredentials || o.AllowedOrigins == null || !o.AllowedOrigins.Contains("*"))
+            .Must(o => !o.AllowCredentials || !o.AllowedOrigins.Contains("*"))
             .WithMessage("AllowCredentials cannot be true when AllowedOrigins contains a wildcard ('*').");
     }
 }
