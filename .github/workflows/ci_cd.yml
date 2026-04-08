@@ -2,6 +2,13 @@ name: CI/CD Workflow
 
 on:
   push:
+    paths:
+      - 'src/**'
+      - 'Makefile'
+      - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - 'ModularMonolith.sln'
+      - '.github/workflows/ci_cd.yml'
   workflow_dispatch:
     inputs:
       tag:
