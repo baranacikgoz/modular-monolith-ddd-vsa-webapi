@@ -41,11 +41,11 @@ internal static partial class Setup
             .AddObservability(
                 configuration,
                 env)
-            .AddCustomCors()
+            .AddCustomCors(configuration)
             .AddValidatorsFromAssemblies(moduleAssemblies)
             .AddCommonDependencies(configuration, moduleAssemblies)
             .AddCustomHealthChecks(configuration)
-            .AddEnrichLogsWithUserInfoMiddlware();
+            .AddEnrichLogsWithUserInfoMiddleware();
     }
 
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
@@ -70,17 +70,60 @@ internal static partial class Setup
         return app;
     }
 
-    private static IServiceCollection AddCustomCors(this IServiceCollection services)
+    private static IServiceCollection AddCustomCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var corsOptions = configuration
+                              .GetSection(nameof(CorsOptions))
+                              .Get<CorsOptions>()
+                          ?? throw new InvalidOperationException($"Missing configuration: {nameof(CorsOptions)}.");
+
         return services
             .AddCors(options =>
             {
-                // Change this in production.
                 options.AddDefaultPolicy(builder =>
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+                {
+                    if (corsOptions.AllowedOrigins.Count == 0)
+                    {
+                        builder.SetIsOriginAllowed(_ => false);
+                    }
+                    else if (corsOptions.AllowedOrigins is ["*"])
+                    {
+                        builder.AllowAnyOrigin();
+                    }
+                    else
+                    {
+                        builder.WithOrigins([.. corsOptions.AllowedOrigins]);
+                    }
+
+                    if (corsOptions.AllowedMethods is ["*"])
+                    {
+                        builder.AllowAnyMethod();
+                    }
+                    else
+                    {
+                        builder.WithMethods([.. corsOptions.AllowedMethods]);
+                    }
+
+                    if (corsOptions.AllowedHeaders is ["*"])
+                    {
+                        builder.AllowAnyHeader();
+                    }
+                    else
+                    {
+                        builder.WithHeaders([.. corsOptions.AllowedHeaders]);
+                    }
+
+                    if (corsOptions.AllowCredentials)
+                    {
+                        builder.AllowCredentials();
+                    }
+                    else
+                    {
+                        builder.DisallowCredentials();
+                    }
+
+                    builder.SetPreflightMaxAge(TimeSpan.FromSeconds(corsOptions.MaxAgeInSeconds));
+                });
             });
     }
 
@@ -113,7 +156,7 @@ internal static partial class Setup
             .AddCommonAuth();
     }
 
-    private static IServiceCollection AddEnrichLogsWithUserInfoMiddlware(this IServiceCollection services)
+    private static IServiceCollection AddEnrichLogsWithUserInfoMiddleware(this IServiceCollection services)
     {
         return services.AddScoped<EnrichLogsWithUserInfoMiddleware>();
     }
