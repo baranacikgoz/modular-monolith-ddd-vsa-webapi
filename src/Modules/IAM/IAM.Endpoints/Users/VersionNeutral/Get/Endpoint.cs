@@ -4,10 +4,10 @@ using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Users.VersionNeutral.Get;
 
@@ -30,6 +30,7 @@ internal static class Endpoint
     {
         return await dbContext
             .Users
+            .AsNoTracking()
             .TagWith(nameof(GetAsync), request.Id)
             .Where(u => u.Id == request.Id)
             .Select(u => new Response
@@ -39,12 +40,11 @@ internal static class Endpoint
                 LastName = u.LastName,
                 PhoneNumber = u.PhoneNumber!,
                 BirthDate = u.BirthDate,
-                CreatedBy = u.Id,
+                CreatedBy = u.CreatedBy,
                 CreatedOn = u.CreatedOn,
-                LastModifiedBy = u.Id,
+                LastModifiedBy = u.LastModifiedBy,
                 LastModifiedOn = u.LastModifiedOn
             })
             .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
-
     }
 }

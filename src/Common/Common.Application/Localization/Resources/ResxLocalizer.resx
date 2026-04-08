@@ -176,6 +176,9 @@
   <data name="PhoneVerificationTokensNotMatching" xml:space="preserve">
     <value>Telefon doğrulama tokeni eşleşmiyor.</value>
   </data>
+  <data name="IAM_CaptchaToken_NotEmpty" xml:space="preserve">
+    <value>Captcha tokeni boş olamaz.</value>
+  </data>
   <data name="ConcurrencyFailure" xml:space="preserve">
     <value>Aynı anda birden fazla istek bu kullanıcıyı güncellemeye çalıştı. Tekrar deneyiniz.</value>
   </data>

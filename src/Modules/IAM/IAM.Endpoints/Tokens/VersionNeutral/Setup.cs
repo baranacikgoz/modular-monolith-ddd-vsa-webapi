@@ -15,5 +15,6 @@ public static class Setup
 
         Endpoint.MapEndpoint(tokensApiGroup);
         Refresh.Endpoint.MapEndpoint(tokensApiGroup);
+        Revoke.Endpoint.MapEndpoint(tokensApiGroup);
     }
 }

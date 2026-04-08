@@ -1,33 +1,15 @@
 using Common.Application.Caching;
-using Common.Domain.ResultMonad;
-using IAM.Application.Otp.Services;
-using IAM.Domain.Errors;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-internal class DummyOtpService(ICacheService cache) : IOtpService
+/// <summary>
+///     Test / Development OTP service that always generates a fixed OTP code.
+///     Inherits the real cache-based verification logic from <see cref="OtpServiceBase" />
+///     so that behaviour stays consistent while only the generation differs.
+/// </summary>
+internal sealed class DummyOtpService(ICacheService cache) : OtpServiceBase(cache)
 {
     private const string DummyOtp = "123456";
 
-    public async Task<Result> VerifyThenRemoveOtpAsync(string phoneNumber, string otp,
-        CancellationToken cancellationToken)
-    {
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
-
-        var otpFromCache = await cache.GetAsync<string>(cacheKey, cancellationToken);
-
-        if (!string.Equals(otpFromCache, otp, StringComparison.Ordinal))
-        {
-            return OtpErrors.InvalidOtp;
-        }
-
-        await cache.RemoveAsync(cacheKey, cancellationToken);
-
-        return Result.Success;
-    }
-
-    public string Generate()
-    {
-        return DummyOtp;
-    }
+    public override string Generate() => DummyOtp;
 }

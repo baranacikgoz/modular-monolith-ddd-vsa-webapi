@@ -5,6 +5,7 @@ using IAM.Application.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Users.VersionNeutral.CheckRegistration;
 
@@ -27,6 +28,7 @@ internal static class Endpoint
     {
         return await dbContext
             .Users
+            .AsNoTracking()
             .TagWith(nameof(IsRegisteredAsync))
             .Where(u => u.PhoneNumber == request.PhoneNumber)
             .AnyAsResultAsync(cancellationToken)

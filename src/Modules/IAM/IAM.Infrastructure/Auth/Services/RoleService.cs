@@ -11,7 +11,8 @@ public class RoleService(IIAMDbContext dbContext) : IRoleService
     {
         var roleId = await dbContext
             .Roles
-            .Where(r => r.Name == CustomRoles.Basic)
+            .AsNoTracking()
+            .Where(r => r.Name == roleName)
             .Select(r => r.Id)
             .SingleOrDefaultAsync(cancellationToken);
 
