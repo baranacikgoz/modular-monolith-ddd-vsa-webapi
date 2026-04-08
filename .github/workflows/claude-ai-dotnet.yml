@@ -17,14 +17,16 @@ jobs:
       - name: 🛠️ Parse Label
         id: parse
         run: |
-          # Expected format: "agent: openai/gpt-5.4"
           LABEL="${{ github.event.label.name }}"
-          DATA="${LABEL#agent: }"     # "openai/gpt-5.4"
-          PROVIDER="${DATA%%/*}"       # "openai"
-          MODEL="${DATA#*/}"           # "gpt-5.4"
+          DATA="${LABEL#agent: }"
+          PROVIDER="${DATA%%/*}"
+          MODEL="${DATA#*/}"
           
-          # The runner tag must exactly match the node label injected by ApplicationSet
-          RUNNER_TAG="ai-dotnet-$PROVIDER-$MODEL"
+          # Standardize: Remove colons to match Kubernetes resource naming
+          CLEAN_MODEL="${MODEL//:/-}"
+          
+          # The runner tag must exactly match the Scale Set name
+          RUNNER_TAG="ai-dotnet-$PROVIDER-$CLEAN_MODEL"
           
           echo "provider=$PROVIDER" >> $GITHUB_OUTPUT
           echo "model=$MODEL" >> $GITHUB_OUTPUT
