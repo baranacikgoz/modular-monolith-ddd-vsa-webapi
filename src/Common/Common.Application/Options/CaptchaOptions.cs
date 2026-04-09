@@ -5,19 +5,19 @@ namespace Common.Application.Options;
 
 public class CaptchaOptions
 {
-    public required string BaseUrl { get; set; }
+    public required string BaseUrl { get; init; }
 
-    public required string CaptchaEndpoint { get; set; }
+    public required string CaptchaEndpoint { get; init; }
 
-    public required string ClientKey { get; set; }
+    public required string ClientKey { get; init; }
 
-    public required string SecretKey { get; set; }
+    public required string SecretKey { get; init; }
 
     /// <summary>
-    /// reCAPTCHA v3 score threshold. Requests with a score below this value are rejected.
-    /// Valid range: 0.0 to 1.0. Defaults to 0.5 if not set or zero.
+    ///     reCAPTCHA v3 score threshold. Requests with a score below this value are rejected.
+    ///     Valid range: 0.0 to 1.0. Defaults to 0.5 if not set or zero.
     /// </summary>
-    public double ScoreThreshold { get; set; }
+    public double ScoreThreshold { get; init; }
 }
 
 public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>

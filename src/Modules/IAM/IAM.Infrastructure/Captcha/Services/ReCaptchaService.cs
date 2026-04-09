@@ -39,7 +39,7 @@ internal partial class ReCaptchaService(
 
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
         {
-            LogCaptchaValidationFailedWithStatusCode(logger, (int)httpResponseMessage.StatusCode);
+            LoggerMessages.LogCaptchaValidationFailedWithStatusCode(logger, (int)httpResponseMessage.StatusCode);
             return CaptchaErrors.CaptchaServiceUnavailable;
         }
 
@@ -50,18 +50,18 @@ internal partial class ReCaptchaService(
         }
         catch (JsonException ex)
         {
-            LogCaptchaDeserializationFailed(logger, ex);
+            LoggerMessages.LogCaptchaDeserializationFailed(logger, ex);
             return CaptchaErrors.CaptchaServiceUnavailable;
         }
         catch (NotSupportedException ex)
         {
-            LogCaptchaDeserializationFailed(logger, ex);
+            LoggerMessages.LogCaptchaDeserializationFailed(logger, ex);
             return CaptchaErrors.CaptchaServiceUnavailable;
         }
 
         if (reCaptchaResponse is not { Success: true })
         {
-            LogCaptchaValidationFailedWithResponse(logger, reCaptchaResponse);
+            LoggerMessages.LogCaptchaValidationFailedWithResponse(logger, reCaptchaResponse);
             return CaptchaErrors.NotHuman;
         }
 
@@ -72,7 +72,7 @@ internal partial class ReCaptchaService(
 
         if (reCaptchaResponse.Score < scoreThreshold)
         {
-            LogCaptchaScoreBelowThreshold(logger, reCaptchaResponse.Score, scoreThreshold);
+            LoggerMessages.LogCaptchaScoreBelowThreshold(logger, reCaptchaResponse.Score, scoreThreshold);
             return CaptchaErrors.NotHuman;
         }
 
@@ -86,25 +86,28 @@ internal partial class ReCaptchaService(
         return new FormUrlEncodedContent(parameters);
     }
 
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "Captcha validation failed with status code {StatusCode}")]
-    private static partial void LogCaptchaValidationFailedWithStatusCode(ILogger logger, int statusCode);
+    private static partial class LoggerMessages
+    {
+        [LoggerMessage(
+            Level = LogLevel.Error,
+            Message = "Captcha validation failed with status code {StatusCode}")]
+        internal static partial void LogCaptchaValidationFailedWithStatusCode(ILogger logger, int statusCode);
 
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "Captcha validation failed with response {Response}")]
-    private static partial void LogCaptchaValidationFailedWithResponse(ILogger logger, ReCaptchaResponse? response);
+        [LoggerMessage(
+            Level = LogLevel.Error,
+            Message = "Captcha validation failed with response {Response}")]
+        internal static partial void LogCaptchaValidationFailedWithResponse(ILogger logger, ReCaptchaResponse? response);
 
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "Captcha response deserialization failed")]
-    private static partial void LogCaptchaDeserializationFailed(ILogger logger, Exception ex);
+        [LoggerMessage(
+            Level = LogLevel.Error,
+            Message = "Captcha response deserialization failed")]
+        internal static partial void LogCaptchaDeserializationFailed(ILogger logger, Exception ex);
 
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Captcha score {Score} is below threshold {Threshold}")]
-    private static partial void LogCaptchaScoreBelowThreshold(ILogger logger, double score, double threshold);
+        [LoggerMessage(
+            Level = LogLevel.Warning,
+            Message = "Captcha score {Score} is below threshold {Threshold}")]
+        internal static partial void LogCaptchaScoreBelowThreshold(ILogger logger, double score, double threshold);
+    }
 
     internal sealed class ReCaptchaResponse
     {
@@ -117,5 +120,7 @@ internal partial class ReCaptchaService(
         [JsonPropertyName("hostname")] public string Hostname { get; set; } = default!;
 
         [JsonPropertyName("error-codes")] public string[] ErrorCodes { get; set; } = default!;
+
+        public override string ToString() => $"Success: {Success}, Score: {Score}, Hostname: {Hostname}, Errors: {(ErrorCodes != null ? string.Join(", ", ErrorCodes) : "None")}";
     }
 }

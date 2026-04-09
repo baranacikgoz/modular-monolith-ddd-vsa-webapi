@@ -29,35 +29,38 @@ public static class Setup
         where TClient : class
         where TImplementation : class, TClient
     {
-        return services
+        var builder = services
             .AddHttpClient<TClient, TImplementation>(configureClient)
             .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
             {
                 PooledConnectionLifetime = TimeSpan.FromMinutes(15),
             })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan)
-            .AddStandardResilienceHandler(options =>
-            {
-                // Total request timeout (outer): 30s — hard ceiling including all retries
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
-                // Retry: 3 attempts, exponential backoff with jitter, median 1s delay
-                options.Retry.MaxRetryAttempts = 3;
-                options.Retry.Delay = TimeSpan.FromSeconds(1);
-                options.Retry.BackoffType = DelayBackoffType.Exponential;
-                options.Retry.UseJitter = true;
+        builder.AddStandardResilienceHandler(options =>
+        {
+            // Total request timeout (outer): 30s — hard ceiling including all retries
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
 
-                // Circuit breaker: 10% failure rate over 30s window, break for 15s
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
-                options.CircuitBreaker.FailureRatio = 0.1;
-                options.CircuitBreaker.MinimumThroughput = 10;
-                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
+            // Retry: 3 attempts, exponential backoff with jitter, median 1s delay
+            options.Retry.MaxRetryAttempts = 3;
+            options.Retry.Delay = TimeSpan.FromSeconds(1);
+            options.Retry.BackoffType = DelayBackoffType.Exponential;
+            options.Retry.UseJitter = true;
 
-                // Per-attempt timeout (inner): 10s
-                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+            // Circuit breaker: 10% failure rate over 30s window, break for 15s
+            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+            options.CircuitBreaker.FailureRatio = 0.1;
+            options.CircuitBreaker.MinimumThroughput = 10;
+            options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
 
-                // Allow caller to override any/all of the above
-                configureResilience?.Invoke(options);
-            });
+            // Per-attempt timeout (inner): 10s
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+
+            // Allow caller to override any/all of the above
+            configureResilience?.Invoke(options);
+        });
+
+        return builder;
     }
 }
