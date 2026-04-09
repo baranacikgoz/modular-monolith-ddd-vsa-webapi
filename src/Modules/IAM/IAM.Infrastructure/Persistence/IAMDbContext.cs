@@ -43,16 +43,13 @@ public partial class IAMDbContext(
         if (observabilityOptionsProvider.Value.LogGeneratedSqlQueries)
         {
             optionsBuilder.LogTo(
-                sql => LoggerMessages.LogSql(logger, sql), // Log the SQL query
+                sql => LogSql(logger, sql), // Log the SQL query
                 new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
                 LogLevel.Information // Set the log level
             );
         }
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
-        public static partial void LogSql(ILogger logger, string sql);
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
+    private static partial void LogSql(ILogger logger, string sql);
 }

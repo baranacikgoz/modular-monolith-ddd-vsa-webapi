@@ -22,7 +22,7 @@ public sealed partial class AuditLogRetentionJobRegistrar(
         var recurringJobs = serviceProvider.GetService<IRecurringBackgroundJobs>();
         if (recurringJobs is null)
         {
-            LoggerMessages.LogBackgroundJobsUnavailable(logger);
+            LogBackgroundJobsUnavailable(logger);
             return Task.CompletedTask;
         }
 
@@ -31,20 +31,17 @@ public sealed partial class AuditLogRetentionJobRegistrar(
             service => service.PurgeExpiredEntriesAsync(CancellationToken.None),
             () => DailyCron);
 
-        LoggerMessages.LogJobRegistered(logger, JobId, DailyCron);
+        LogJobRegistered(logger, JobId, DailyCron);
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Warning,
-            Message = "IRecurringBackgroundJobs is not available. Audit log retention job will not be registered. Ensure the BackgroundJobs module is loaded.")]
-        public static partial void LogBackgroundJobsUnavailable(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "IRecurringBackgroundJobs is not available. Audit log retention job will not be registered. Ensure the BackgroundJobs module is loaded.")]
+    private static partial void LogBackgroundJobsUnavailable(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Registered recurring audit log retention job '{JobId}' with cron '{Cron}'.")]
-        public static partial void LogJobRegistered(ILogger logger, string jobId, string cron);
-    }
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Registered recurring audit log retention job '{JobId}' with cron '{Cron}'.")]
+    private static partial void LogJobRegistered(ILogger logger, string jobId, string cron);
 }

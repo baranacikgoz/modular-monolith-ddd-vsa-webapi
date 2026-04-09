@@ -34,7 +34,7 @@ public static partial class Setup
                 var logger = sp.GetRequiredService<ILogger<TContextImplementation>>();
 
                 options.LogTo(
-                    sql => LoggerMessages.LogSql(logger, sql), // Log the SQL query
+                    sql => LogSql(logger, sql), // Log the SQL query
                     new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
                     LogLevel.Information // Set the log level
                 );
@@ -53,9 +53,6 @@ public static partial class Setup
         return services;
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
-        public static partial void LogSql(ILogger logger, string sql);
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
+    private static partial void LogSql(ILogger logger, string sql);
 }

@@ -26,7 +26,7 @@ internal sealed partial class DatabaseSeederOrchestrator(
 
             await appStarted.Task.WaitAsync(stoppingToken);
 
-            LoggerMessages.LogSeedingStarted(logger);
+            LogSeedingStarted(logger);
 
             using var scope = serviceScopeFactory.CreateScope();
             var seeders = scope.ServiceProvider
@@ -36,7 +36,7 @@ internal sealed partial class DatabaseSeederOrchestrator(
 
             if (seeders.Count == 0)
             {
-                LoggerMessages.LogNoSeeders(logger);
+                LogNoSeeders(logger);
                 seedingCompletionTracker.MarkComplete();
                 return;
             }
@@ -44,12 +44,12 @@ internal sealed partial class DatabaseSeederOrchestrator(
             foreach (var seeder in seeders)
             {
                 var seederName = seeder.GetType().Name;
-                LoggerMessages.LogSeederRunning(logger, seederName, seeder.Priority);
+                LogSeederRunning(logger, seederName, seeder.Priority);
                 await seeder.SeedAsync(stoppingToken);
-                LoggerMessages.LogSeederCompleted(logger, seederName);
+                LogSeederCompleted(logger, seederName);
             }
 
-            LoggerMessages.LogAllSeedersCompleted(logger, seeders.Count);
+            LogAllSeedersCompleted(logger, seeders.Count);
             seedingCompletionTracker.MarkComplete();
         }
         catch (Exception ex)
@@ -60,26 +60,23 @@ internal sealed partial class DatabaseSeederOrchestrator(
         }
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Database seeding orchestrator started.")]
-        public static partial void LogSeedingStarted(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Database seeding orchestrator started.")]
+    private static partial void LogSeedingStarted(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "No IDatabaseSeeder implementations registered. Skipping seeding.")]
-        public static partial void LogNoSeeders(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "No IDatabaseSeeder implementations registered. Skipping seeding.")]
+    private static partial void LogNoSeeders(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Running seeder '{SeederName}' (priority {Priority}).")]
-        public static partial void LogSeederRunning(ILogger logger, string seederName, int priority);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Running seeder '{SeederName}' (priority {Priority}).")]
+    private static partial void LogSeederRunning(ILogger logger, string seederName, int priority);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Seeder '{SeederName}' completed.")]
-        public static partial void LogSeederCompleted(ILogger logger, string seederName);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Seeder '{SeederName}' completed.")]
+    private static partial void LogSeederCompleted(ILogger logger, string seederName);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "All {Count} seeder(s) completed successfully.")]
-        public static partial void LogAllSeedersCompleted(ILogger logger, int count);
-    }
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "All {Count} seeder(s) completed successfully.")]
+    private static partial void LogAllSeedersCompleted(ILogger logger, int count);
 }
