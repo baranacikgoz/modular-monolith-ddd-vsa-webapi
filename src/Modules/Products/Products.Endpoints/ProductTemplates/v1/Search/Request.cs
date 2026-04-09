@@ -27,5 +27,23 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Search_SearchTerm_MaximumLength,
                 Constants.SearchTermMaxLength))
             .When(x => x.SearchTerm is not null);
+
+        RuleFor(x => x.Brand)
+            .MaximumLength(Constants.BrandMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Search_Brand_MaximumLength,
+                Constants.BrandMaxLength))
+            .When(x => x.Brand is not null);
+
+        RuleFor(x => x.Model)
+            .MaximumLength(Constants.ModelMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Search_Model_MaximumLength,
+                Constants.ModelMaxLength))
+            .When(x => x.Model is not null);
+
+        RuleFor(x => x.Color)
+            .MaximumLength(Constants.ColorMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.ProductTemplates_Search_Color_MaximumLength,
+                Constants.ColorMaxLength))
+            .When(x => x.Color is not null);
     }
 }

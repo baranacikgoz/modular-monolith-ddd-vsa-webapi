@@ -27,9 +27,6 @@ internal sealed partial class Seeder(
         await SeedProductAsync(storeIds, productIds, storeProductCountPerStore, cancellationToken);
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Warning, Message = "IAM module not available or request timed out. Skipping store seeding. Error: {ErrorMessage}")]
-        public static partial void LogIamModuleNotAvailable(ILogger logger, string errorMessage);
-    }
+    [LoggerMessage(Level = LogLevel.Warning, Message = "IAM module not available or request timed out. Skipping store seeding. Error: {ErrorMessage}")]
+    private static partial void LogIamModuleNotAvailable(ILogger logger, string errorMessage);
 }

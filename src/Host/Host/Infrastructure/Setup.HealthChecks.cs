@@ -84,15 +84,12 @@ internal static partial class Setup
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         }).ExcludeFromDescription();
 
-        LoggerMessages.LogHealthChecksRegistered(app.Logger);
+        LogHealthChecksRegistered(app.Logger);
 
         return app;
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
-        public static partial void LogHealthChecksRegistered(ILogger logger);
-    }
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
+    private static partial void LogHealthChecksRegistered(ILogger logger);
 }

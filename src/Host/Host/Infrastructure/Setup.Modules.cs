@@ -34,7 +34,7 @@ internal static partial class Setup
             catch (Exception ex)
             {
                 var fileName = Path.GetFileName(dll);
-                LoggerMessages.LogAssemblyLoadFailed(bootLogger, fileName, ex);
+                LogAssemblyLoadFailed(bootLogger, fileName, ex);
             }
         }
 
@@ -81,7 +81,7 @@ internal static partial class Setup
             {
                 if (!discoveredNames.Contains(requested))
                 {
-                    LoggerMessages.LogUnknownModuleRequested(bootLogger, requested);
+                    LogUnknownModuleRequested(bootLogger, requested);
                 }
             }
         }
@@ -112,12 +112,12 @@ internal static partial class Setup
         var registry = app.Services.GetRequiredService<ModuleRegistry>();
 
         var loaded = string.Join(", ", registry.OrderedModules.Select(m => m.Name));
-        LoggerMessages.LogModulesLoaded(app.Logger, loaded);
+        LogModulesLoaded(app.Logger, loaded);
 
         if (registry.SkippedModuleNames.Count > 0)
         {
             var skipped = string.Join(", ", registry.SkippedModuleNames);
-            LoggerMessages.LogModulesSkipped(app.Logger, skipped);
+            LogModulesSkipped(app.Logger, skipped);
         }
 
         foreach (var module in registry.OrderedModules)
@@ -207,22 +207,19 @@ internal static partial class Setup
         IReadOnlyList<string> ActiveModuleNames,
         IReadOnlyList<string> SkippedModuleNames);
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Loaded modules: [{LoadedModules}]")]
-        public static partial void LogModulesLoaded(ILogger logger, string loadedModules);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Loaded modules: [{LoadedModules}]")]
+    private static partial void LogModulesLoaded(ILogger logger, string loadedModules);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
-        public static partial void LogModulesSkipped(ILogger logger, string skippedModules);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Skipped modules: [{SkippedModules}]")]
+    private static partial void LogModulesSkipped(ILogger logger, string skippedModules);
 
-        [LoggerMessage(Level = LogLevel.Warning,
-            Message =
-                "Failed to load assembly '{AssemblyFileName}', skipping. This may indicate a corrupt or incompatible module binary.")]
-        public static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message =
+            "Failed to load assembly '{AssemblyFileName}', skipping. This may indicate a corrupt or incompatible module binary.")]
+    private static partial void LogAssemblyLoadFailed(ILogger logger, string assemblyFileName, Exception ex);
 
-        [LoggerMessage(Level = LogLevel.Warning,
-            Message =
-                "Module '{ModuleName}' was requested in configuration but no IModule implementation with that name was found. Check for typos.")]
-        public static partial void LogUnknownModuleRequested(ILogger logger, string moduleName);
-    }
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message =
+            "Module '{ModuleName}' was requested in configuration but no IModule implementation with that name was found. Check for typos.")]
+    private static partial void LogUnknownModuleRequested(ILogger logger, string moduleName);
 }

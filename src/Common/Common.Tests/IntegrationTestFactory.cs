@@ -54,7 +54,8 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "CustomRateLimitingOptions:Sms:Limit", "5000" },
                 { "CustomRateLimitingOptions:Sms:PeriodInMs", "60000" },
                 { "CustomRateLimitingOptions:Sms:QueueLimit", "1000" },
-                { "AuditLogOptions:RetentionDays", "90" }
+                { "AuditLogOptions:RetentionDays", "90" },
+                { "CaptchaOptions:BaseUrl", "" }
             };
             config.AddInMemoryCollection(confDict);
         });

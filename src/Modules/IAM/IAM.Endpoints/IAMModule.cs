@@ -35,7 +35,7 @@ public sealed class IamModule : IModule
             .AddPersistence()
             .AddIdentityInfrastructure()
             .AddAuthInfrastructure(configuration)
-            .AddCaptchaInfrastructure()
+            .AddCaptchaInfrastructure(configuration)
             .AddTokensInfrastructure();
     }
 

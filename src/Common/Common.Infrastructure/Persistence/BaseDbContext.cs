@@ -64,11 +64,11 @@ public abstract partial class BaseDbContext(
         // If no events, run normal SaveChangesAsync.
         if (outboxMessages is null || outboxMessages.Count == 0)
         {
-            LoggerMessages.LogNoDomainEvents(logger);
+            LogNoDomainEvents(logger);
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        LoggerMessages.LogFoundDomainEvents(logger, outboxMessages.Count);
+        LogFoundDomainEvents(logger, outboxMessages.Count);
 
         // Add audit log entries to the change tracker so they are saved in the same transaction
         if (auditLogEntries is { Count: > 0 })
@@ -101,20 +101,17 @@ public abstract partial class BaseDbContext(
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            LoggerMessages.LogSavingError(logger, ex);
+            LogSavingError(logger, ex);
             throw;
         }
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Debug, Message = "No domain events found. Calling base SaveChangesAsync.")]
-        public static partial void LogNoDomainEvents(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "No domain events found. Calling base SaveChangesAsync.")]
+    private static partial void LogNoDomainEvents(ILogger logger);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Found {EventCount} domain events. Executing atomic save with Outbox and AuditLog.")]
-        public static partial void LogFoundDomainEvents(ILogger logger, int eventCount);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Found {EventCount} domain events. Executing atomic save with Outbox and AuditLog.")]
+    private static partial void LogFoundDomainEvents(ILogger logger, int eventCount);
 
-        [LoggerMessage(Level = LogLevel.Error, Message = "Error saving changes to the database.")]
-        public static partial void LogSavingError(ILogger logger, Exception ex);
-    }
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error saving changes to the database.")]
+    private static partial void LogSavingError(ILogger logger, Exception ex);
 }
