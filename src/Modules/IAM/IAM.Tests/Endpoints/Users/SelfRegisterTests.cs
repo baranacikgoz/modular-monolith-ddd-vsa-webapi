@@ -53,7 +53,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             PhoneNumber = phoneNumber,
             Otp = otp,
             Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
+            LastName = "Yılmaz",
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = "dummyToken"
@@ -102,7 +102,7 @@ public class SelfRegisterTests : BaseIntegrationTest
         // Seed an existing user with the same phone number
         var existingUser = ApplicationUser.Create(
             _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            "Yılmaz",
             phoneNumber,
             _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
@@ -120,7 +120,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             PhoneNumber = phoneNumber,
             Otp = otp,
             Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
+            LastName = "Yılmaz",
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = "dummyToken"
@@ -154,7 +154,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             PhoneNumber = phoneNumber,
             Otp = "999999",  // wrong OTP
             Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
+            LastName = "Yılmaz",
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = "dummyToken"
@@ -178,7 +178,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
             Otp = "123456",
             Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
+            LastName = "Yılmaz",
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = string.Empty
@@ -201,7 +201,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
             Otp = "123456",
             Name = _faker.Name.FirstName(),
-            LastName = _faker.Name.LastName(),
+            LastName = "Yılmaz",
             NationalIdentityNumber = _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             BirthDate = _faker.Date.Past(30).ToString(IAM.Domain.Constants.TurkishDateFormat, System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = "invalid-token"
