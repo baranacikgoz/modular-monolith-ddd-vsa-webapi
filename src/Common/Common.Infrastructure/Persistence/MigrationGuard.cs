@@ -24,7 +24,7 @@ public static partial class MigrationGuard
 
         if (pending.Count == 0)
         {
-            LoggerMessages.LogMigrationsUpToDate(logger, moduleName);
+            LogMigrationsUpToDate(logger, moduleName);
             return;
         }
 
@@ -33,33 +33,30 @@ public static partial class MigrationGuard
 
         if (isTestEnvironment)
         {
-            LoggerMessages.LogAutoMigrating(logger, moduleName, pending.Count);
+            LogAutoMigrating(logger, moduleName, pending.Count);
             db.Database.Migrate();
             return;
         }
 
         var migrationList = string.Join(", ", pending);
-        LoggerMessages.LogPendingMigrations(logger, moduleName, pending.Count, migrationList);
+        LogPendingMigrations(logger, moduleName, pending.Count, migrationList);
 
         throw new InvalidOperationException(
             $"Module '{moduleName}' has {pending.Count} pending migration(s): [{migrationList}]. " +
             $"Generate the SQL script with 'make ef-script-{moduleName}' and have a DBA apply it before deploying.");
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Module '{ModuleName}': all migrations applied.")]
-        public static partial void LogMigrationsUpToDate(ILogger logger, string moduleName);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Module '{ModuleName}': all migrations applied.")]
+    private static partial void LogMigrationsUpToDate(ILogger logger, string moduleName);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Module '{ModuleName}': test environment detected — auto-applying {Count} pending migration(s).")]
-        public static partial void LogAutoMigrating(ILogger logger, string moduleName, int count);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Module '{ModuleName}': test environment detected — auto-applying {Count} pending migration(s).")]
+    private static partial void LogAutoMigrating(ILogger logger, string moduleName, int count);
 
-        [LoggerMessage(Level = LogLevel.Critical,
-            Message = "Module '{ModuleName}': {Count} pending migration(s) detected: [{Migrations}]. " +
-                      "Application cannot start until a DBA applies the missing migrations.")]
-        public static partial void LogPendingMigrations(
-            ILogger logger, string moduleName, int count, string migrations);
-    }
+    [LoggerMessage(Level = LogLevel.Critical,
+        Message = "Module '{ModuleName}': {Count} pending migration(s) detected: [{Migrations}]. " +
+                  "Application cannot start until a DBA applies the missing migrations.")]
+    private static partial void LogPendingMigrations(
+        ILogger logger, string moduleName, int count, string migrations);
 }

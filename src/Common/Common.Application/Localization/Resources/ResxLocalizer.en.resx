@@ -411,6 +411,15 @@
   <data name="ProductTemplates_Search_SearchTerm_MaximumLength" xml:space="preserve">
     <value>Search term can be at most ({0}) characters long.</value>
   </data>
+  <data name="ProductTemplates_Search_Brand_MaximumLength" xml:space="preserve">
+    <value>Brand can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Search_Model_MaximumLength" xml:space="preserve">
+    <value>Model can be at most ({0}) characters long.</value>
+  </data>
+  <data name="ProductTemplates_Search_Color_MaximumLength" xml:space="preserve">
+    <value>Color can be at most ({0}) characters long.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
   </data>

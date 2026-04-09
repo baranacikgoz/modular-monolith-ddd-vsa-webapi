@@ -21,7 +21,7 @@ public sealed partial class AuditLogRetentionService(
     {
         var cutoffDate = DateTimeOffset.UtcNow.AddDays(-_retentionDays);
 
-        LoggerMessages.LogRetentionStart(logger, _retentionDays, cutoffDate);
+        LogRetentionStart(logger, _retentionDays, cutoffDate);
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -65,25 +65,22 @@ public sealed partial class AuditLogRetentionService(
 
             if (deleted > 0)
             {
-                LoggerMessages.LogSchemaRetention(logger, schema, deleted);
+                LogSchemaRetention(logger, schema, deleted);
             }
         }
 
-        LoggerMessages.LogRetentionComplete(logger, totalDeleted);
+        LogRetentionComplete(logger, totalDeleted);
     }
 
-    private static partial class LoggerMessages
-    {
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Starting audit log retention purge. RetentionDays={RetentionDays}, CutoffDate={CutoffDate}.")]
-        public static partial void LogRetentionStart(ILogger logger, int retentionDays, DateTimeOffset cutoffDate);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Starting audit log retention purge. RetentionDays={RetentionDays}, CutoffDate={CutoffDate}.")]
+    private static partial void LogRetentionStart(ILogger logger, int retentionDays, DateTimeOffset cutoffDate);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Purged {Deleted} expired audit log entries from schema '{Schema}'.")]
-        public static partial void LogSchemaRetention(ILogger logger, string schema, int deleted);
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Purged {Deleted} expired audit log entries from schema '{Schema}'.")]
+    private static partial void LogSchemaRetention(ILogger logger, string schema, int deleted);
 
-        [LoggerMessage(Level = LogLevel.Information,
-            Message = "Audit log retention purge complete. TotalDeleted={TotalDeleted}.")]
-        public static partial void LogRetentionComplete(ILogger logger, int totalDeleted);
-    }
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Audit log retention purge complete. TotalDeleted={TotalDeleted}.")]
+    private static partial void LogRetentionComplete(ILogger logger, int totalDeleted);
 }
