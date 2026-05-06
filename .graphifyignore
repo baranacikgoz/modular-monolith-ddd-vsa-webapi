@@ -1,0 +1,92 @@
+# ── Block everything; selectively unignore below ───────────────
+*
+
+# Allow recursive directory traversal so nested !patterns can reach files.
+# NOTE: !*/ only re-includes directories, NOT files inside them.
+# Every file type must be explicitly unignored with its own ! pattern.
+!*/
+
+# ══ Re-ignore build artifacts ══════════════════════════════════
+bin/
+**/bin/
+obj/
+**/obj/
+
+# ══ Re-ignore IDE / OS noise ═══════════════════════════════════
+.git/
+.vs/
+.idea/
+.vscode/
+.run/
+
+# ══ Re-ignore CI/CD ════════════════════════════════════════════
+.github/
+
+# ══ Re-ignore operational runtime noise ════════════════════════
+.containers/
+
+# ══ Re-ignore generated SQL migration bundles (root-level) ═════
+# The EF C# migration files inside *.Infrastructure/Migrations/ are kept.
+migrations/
+
+# ══ Re-ignore logs and binary artifacts ════════════════════════
+logs/
+**/logs/
+*.log
+dotnet-build.log
+*.dll
+*.pdb
+*.nupkg
+
+# ══════════════════════════════════════════════════════════════════
+# UNIGNORE RULES — order matters; later rules override earlier ones
+# ══════════════════════════════════════════════════════════════════
+
+# C# source — aggregates, handlers, endpoints, tests, everything
+!**/*.cs
+# Re-ignore AFTER !**/*.cs so these are actually excluded:
+**/*.Designer.cs
+**/*ModelSnapshot.cs
+**/obj/**/*.cs
+**/bin/**/*.cs
+**/*.g.cs
+# EF migration files are generated schema diffs — entity configs carry the same info
+**/Migrations/*.cs
+
+# Project and solution files — declare module boundaries & deps
+!**/*.csproj
+!*.sln
+
+# Central build and package manifests
+!Directory.Build.props
+!Directory.Packages.props
+!GlobalUsings.cs
+
+# App config — module registration lives here
+!**/appsettings.json
+
+# Localization resources
+!**/*.resx
+
+# Markdown docs and AI instructions
+!CLAUDE.md
+!GEMINI.md
+!README.md
+!docs/**/*.md
+!.claude/commands/*.md
+!.agents/skills/*.md
+
+# Postman collection — encodes complete API user journeys and endpoint sequences
+!postman/*.json
+
+# Infrastructure topology — encodes real architectural decisions:
+#   docker-compose.yml    service graph and networking
+#   debezium-init/        CDC connector: which DB tables → which Kafka topics
+#   db-init/              WAL level and Postgres publication setup
+#   kafka-init/           Kafka topic names and partition config
+#   observability/        OTel collector pipeline, Prometheus scrape targets
+!docker-compose.yml
+!debezium-init/**
+!db-init/**
+!kafka-init/**
+!observability/**
