@@ -1,15 +1,21 @@
-Safely update NuGet packages using Central Package Management (CPM).
+---
+description: Safely update NuGet packages via Central Package Management — check outdated, plan, update, build, test.
+argument-hint: ""
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep
+---
 
-1. **Analyze current dependencies**: read `Directory.Packages.props` to understand the package ecosystem.
+Update NuGet dependencies.
 
-2. **Find outdated packages**:
+1. **Analyze**: read `Directory.Packages.props` to understand the current ecosystem.
+
+2. **Find outdated**:
    ```bash
    dotnet list package --outdated
    ```
 
-3. **Draft update plan**: list each package with its current version → target version. Do not upgrade major versions without explicit user approval unless requested.
+3. **Draft plan**: list each package with current → target version. Do not upgrade major versions without explicit approval.
 
-4. **Apply updates**: modify `<PackageVersion Include="..." Version="..." />` entries in `Directory.Packages.props`. Make minimal, targeted edits — do not change packages not in the update plan.
+4. **Apply**: edit `<PackageVersion Include="..." Version="..." />` entries in `Directory.Packages.props`. Targeted edits only.
 
 5. **Restore and compile**:
    ```bash
@@ -21,6 +27,6 @@ Safely update NuGet packages using Central Package Management (CPM).
    ```bash
    make test
    ```
-   Confirm upgraded packages do not break integration tests, Kafka consumers, or database interactions.
+   Confirm no integration tests, Kafka consumers, or DB interactions broke.
 
-7. **Report**: list each package updated (old → new), compilation result, and test result.
+7. **Report**: each package updated (old → new), build result, test result.

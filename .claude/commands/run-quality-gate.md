@@ -1,15 +1,21 @@
-Run the full quality gate. Fix any failures before reporting completion.
+---
+description: Run the full quality gate — architecture audit then complete test suite. Fix failures before reporting completion.
+argument-hint: "[Module]"
+allowed-tools: Read, Bash, Glob, Grep
+---
 
-1. **Architecture audit**: run `/audit-architecture` and resolve all FAILs before proceeding.
+Run quality gate: $ARGUMENTS
 
-2. **Architecture tests**: if a `Tests/Architecture.Tests` project exists, run it first. These contain NetArchTest rules (e.g. "Domain cannot depend on Infrastructure").
+1. **Architecture audit**: run `/audit-architecture`. Resolve all FAILs before proceeding.
 
-3. **Full test suite**:
+2. **Architecture tests**: if a `Tests/Architecture.Tests` project exists, run it first (NetArchTest rules).
+
+3. **Tests** — run module-specific if arg provided, full suite otherwise:
    ```bash
-   make test
+   make test-{module}   # if module specified
+   make test            # full suite (runs sequentially to prevent Docker resource exhaustion)
    ```
-   Tests run sequentially to prevent Docker resource exhaustion. If any module test target is faster to iterate on, run it directly (e.g. `make test-iam`).
 
-4. **Failure handling**: if any test fails, analyze the stack trace and fix the implementation. Do NOT change the test to make it pass — fix the code.
+4. **Failure handling**: if any test fails, analyze the stack trace and fix the implementation. Do NOT change the test to make it pass.
 
-5. **Report**: summarize pass/fail counts per module and confirm the overall exit code is 0.
+5. **Report**: pass/fail counts per module and overall exit code.

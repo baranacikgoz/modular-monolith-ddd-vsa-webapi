@@ -1,17 +1,26 @@
-Plan a new feature end-to-end. Produce a detailed plan suitable for a PR description.
+---
+description: Plan a new feature end-to-end — module boundaries, integration events, file inventory, testing and telemetry strategy.
+argument-hint: "<feature description>"
+context: fork
+allowed-tools: Read, Bash, Glob, Grep
+---
 
-1. **Understand the request**: clarify scope with the user if anything is ambiguous.
+ultrathink
 
-2. **Identify boundaries**: determine which module(s) this feature belongs to. If it spans modules, plan the `IntegrationEvents` needed for async communication and the `InterModuleRequests` for any sync calls.
+Plan this feature: $ARGUMENTS
 
-3. **File inventory**: list every file to be created or modified, with a one-line description of each change.
+1. **Identify boundaries**: determine which module(s) own this feature. If it spans modules, identify the `IntegrationEvents` required for async communication and any `InterModuleRequests` for sync calls.
 
-4. **Data structures**: define new Aggregates, Entities, Value Objects, Domain Events, DTOs, and DB schema changes (migrations).
+2. **File inventory**: list every file to be created or modified, with a one-line description of the change.
 
-5. **Testing strategy**: specify which unit tests and integration tests are required. Note what the write-side assertions verify (entity in DB + OutboxMessages record) and what the read-side assertions verify (response DTO shape).
+3. **Data structures**: define new Aggregates, Entities, Value Objects, DomainEvents, DTOs, and DB schema changes (migrations needed?).
 
-6. **Defensive strategy**: identify inbound validation rules (FluentValidation) and any 3rd-party integrations requiring resiliency (retry, circuit breaker, response validation).
+4. **Testing strategy**: specify unit tests and integration tests required.
+   - Write assertions: entity in DB + record in `OutboxMessages`.
+   - Read assertions: response DTO shape matches seeded data.
 
-7. **Telemetry plan**: list any `ActivitySource` spans and `Meter` instruments that provide meaningful observability — skip if the overhead outweighs the insight.
+5. **Defensive strategy**: identify FluentValidation rules for inbound `Request`s. Identify any 3rd-party integrations requiring resiliency (retry, circuit breaker, response validation).
 
-8. **Output**: write the complete plan as a structured markdown document. This becomes the PR description when implementation begins.
+6. **Telemetry plan**: list `ActivitySource` spans and `Meter` instruments that provide meaningful observability — skip if the overhead outweighs the insight.
+
+7. **Output**: produce a structured markdown plan suitable for a PR description. Implementation begins only after this plan is approved.

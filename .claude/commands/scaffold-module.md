@@ -1,36 +1,46 @@
-Scaffold a new top-level module. Ask for the module name (PascalCase, e.g. `Inventory`) if not provided.
+---
+description: Scaffold a new top-level module — split projects, DbContext, ModuleInstaller, IModule, test factory.
+argument-hint: "<ModuleName>"
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep
+---
 
-1. **Create directory structure**:
-   - `src/Modules/{Module}/Domain/`
-   - `src/Modules/{Module}/Application/`
-   - `src/Modules/{Module}/Infrastructure/Persistence/`
-   - `src/Modules/{Module}/Endpoints/`
+Scaffold module: $ARGUMENTS
 
-2. **Create class library project**:
+1. **Create project directories**:
+   - `src/Modules/{Module}/{Module}.Domain/`
+   - `src/Modules/{Module}/{Module}.Application/`
+   - `src/Modules/{Module}/{Module}.Endpoints/`
+   - `src/Modules/{Module}/{Module}.Infrastructure/`
+
+2. **Create class library projects** (one per layer, remove generated `Class1.cs` from each):
    ```bash
-   dotnet new classlib -n {Module} -o src/Modules/{Module}
+   dotnet new classlib -n {Module}.Domain -o src/Modules/{Module}/{Module}.Domain
+   dotnet new classlib -n {Module}.Application -o src/Modules/{Module}/{Module}.Application
+   dotnet new classlib -n {Module}.Endpoints -o src/Modules/{Module}/{Module}.Endpoints
+   dotnet new classlib -n {Module}.Infrastructure -o src/Modules/{Module}/{Module}.Infrastructure
    ```
-   Delete the generated `Class1.cs`.
 
-3. **DbContext**: create `{Module}DbContext` inheriting `BaseDbContext`, schema set to `{module_lowercase}`.
+3. **DbContext** in `{Module}.Infrastructure/`: `{Module}DbContext` inheriting `BaseDbContext`, schema set to `{module_lowercase}`.
 
-4. **ModuleInstaller** at `Infrastructure/ModuleInstaller.cs`:
+4. **`I{Module}DbContext`** interface in `{Module}.Application/Persistence/`.
+
+5. **ModuleInstaller** in `{Module}.Infrastructure/ModuleInstaller.cs`:
    - `Add{Module}Module(IServiceCollection)` — registers DbContext and services.
    - `Map{Module}Endpoints(IEndpointRouteBuilder)` — maps the endpoint group.
 
-5. **IModule implementation**: create `{Module}Module.cs` implementing `IModule` to hook into dynamic DI and endpoint scanning.
+6. **`{Module}Module.cs`** in `{Module}.Endpoints/`: implements `IModule` for dynamic DI and endpoint scanning.
 
-6. **Enable module**: add `"{Module}"` to the `"Modules"` array in `src/Host/appsettings.json`.
+7. **Enable**: add `"{Module}"` to `"Modules"` array in `src/Host/Host/appsettings.json`.
 
-7. **Test project**:
+8. **Test project**:
    ```bash
    dotnet new xunit -n {Module}.Tests -o src/Modules/{Module}/{Module}.Tests
-   dotnet add src/Modules/{Module}/{Module}.Tests reference src/Modules/{Module}
+   dotnet add src/Modules/{Module}/{Module}.Tests reference src/Modules/{Module}/{Module}.Endpoints
    ```
    Add packages: `Testcontainers.PostgreSql`, `Bogus`, `NSubstitute`, `Respawn`.
 
-8. **IntegrationTestWebAppFactory**: create in the Tests folder. Spin up a Postgres container, replace the DbContext in DI, configure `Respawner` to reset tables between tests. Enforce the module via `TestModuleOverride` env var.
+9. **Test factory**: create `{Module}TestFactory : IntegrationTestFactory`, override `GetActiveModules() => ["{Module}"]`. Configure `Respawner`.
 
-9. **Add test target to Makefile**: add `test-{module}` target mirroring existing targets.
+10. **Makefile target**: add `test-{module}` mirroring existing targets.
 
-10. Confirm with `make build` and `make test-{module}`.
+11. Confirm: `make build` then `make test-{module}`.

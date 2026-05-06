@@ -1,10 +1,14 @@
-Scaffold a new vertical slice. Ask for: module name, aggregate name, feature name, and type (READ or WRITE) if not provided.
+---
+description: Scaffold a full vertical slice — Endpoint, Request, Response, Validator, and Domain method.
+argument-hint: "<Module> <Aggregate> <Feature> READ|WRITE"
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep
+---
 
-**WRITE slice**
+Scaffold: $ARGUMENTS
 
-Create `src/Modules/{module}/Endpoints/{Aggregate}/v1/{Feature}/`:
+Create `src/Modules/{Module}/{Module}.Endpoints/{Aggregate}/v1/{Feature}/`.
 
-`Endpoint.cs`:
+**WRITE slice — `Endpoint.cs`:**
 ```csharp
 internal static class Endpoint
 {
@@ -31,20 +35,20 @@ internal static class Endpoint
 }
 ```
 
-**READ slice** — handler returns `Task<Result<Response>>`, uses `.AsNoTracking()`, projects inline to `Response`.
+**READ slice** — handler returns `Task<Result<Response>>`, uses `.AsNoTracking()`, projects inline to `Response` via `.Select(...)`.
 
-`Request.cs`:
+**`Request.cs`:**
 ```csharp
 public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);
 public sealed record Body(string Prop /* add fields */);
 ```
 
-`Response.cs`:
+**`Response.cs`:**
 ```csharp
 public sealed record Response { public required string Prop { get; init; } }
 ```
 
-`RequestValidator.cs`:
+**`RequestValidator.cs`:**
 ```csharp
 public sealed class RequestValidator : CustomValidator<Request>
 {

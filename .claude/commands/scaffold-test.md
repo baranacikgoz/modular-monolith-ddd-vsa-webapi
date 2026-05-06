@@ -1,15 +1,21 @@
-Generate a vertical slice integration test. Ask for module name, feature name, and type (READ or WRITE) if not provided.
+---
+description: Generate a vertical slice integration test for a READ or WRITE feature.
+argument-hint: "<Module> <Feature> READ|WRITE"
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep
+---
 
-1. **Load the factory**: read `src/Common/Common.Tests/IntegrationTestFactory.cs` (or the module-specific child factory) to understand the fixture pattern.
+Scaffold test: $ARGUMENTS
+
+1. **Load the factory**: read the module-specific test factory (or `src/Common/Common.Tests/IntegrationTestFactory.cs`) to understand the fixture pattern.
 
 2. **Create test file** at `src/Modules/{Module}/{Module}.Tests/Endpoints/{Feature}Tests.cs`:
    ```csharp
-   public class {Feature}Tests : IClassFixture<IntegrationTestFactory>
+   public class {Feature}Tests : IClassFixture<{Module}TestFactory>
    {
        private readonly HttpClient _client;
-       private readonly IntegrationTestFactory _factory;
+       private readonly {Module}TestFactory _factory;
 
-       public {Feature}Tests(IntegrationTestFactory factory)
+       public {Feature}Tests({Module}TestFactory factory)
        {
            _factory = factory;
            _client = factory.CreateClient();
@@ -30,4 +36,4 @@ Generate a vertical slice integration test. Ask for module name, feature name, a
    - Act: `await _client.GetAsync($"/route/{id}")`.
    - Assert: deserialized response matches seeded entity. Use `Assert.Equal`, never FluentAssertions.
 
-5. **Run**: `make test-{module}` and confirm the tests pass.
+5. **Run**: `make test-{module}` and confirm green.

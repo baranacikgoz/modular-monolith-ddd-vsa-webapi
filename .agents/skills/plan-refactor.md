@@ -1,22 +1,24 @@
 ---
-description: Plan a codebase refactoring — identify violations, list file changes, assess risk.
+description: Plan a codebase refactoring — identify violations, list exact file changes, assess risk before touching any code.
+argument-hint: "<target scope and goal>"
+allowed-tools: Read, Bash, Glob, Grep
 ---
 
-Plan a codebase refactoring. Produce a structured plan before touching any code.
+ultrathink
 
-1. **Understand the goal**: clarify target scope (module, class, or pattern) and what architectural violation or quality issue is being addressed.
+Plan refactor: $ARGUMENTS
 
-2. **Analyze current state**: inspect the target code. Identify specific violations such as:
+1. **Analyze current state**: inspect the target code. Identify specific violations:
    - Cross-module coupling in `.csproj` references
    - Missing `.AsNoTracking()` on read queries
    - Imperative `if/else` blocks that should be functional pipelines
-   - AutoMapper or other mapping library usage
+   - AutoMapper or mapping library usage
    - Magic string localization keys instead of `IResxLocalizer`
    - Controllers instead of Minimal API endpoints
-   - Direct Kafka/bus publishing instead of `RaiseEvent`
+   - Direct bus publishing instead of `RaiseEvent`
 
-3. **File inventory**: list every file to be modified, what the current code looks like, and what it will look like after.
+2. **File inventory**: list every file to be modified, what the current code looks like (brief excerpt), and what it will look like after.
 
-4. **Risk assessment**: flag any changes that could break the Outbox flow, CDC pipeline, or cross-module communication.
+3. **Risk assessment**: flag any changes that could break the Outbox flow, CDC pipeline, or cross-module communication.
 
-5. **Output**: write the complete plan as a structured markdown document. Implementation begins only after this plan is approved.
+4. **Output**: produce a structured markdown plan. Implementation begins only after this plan is approved.

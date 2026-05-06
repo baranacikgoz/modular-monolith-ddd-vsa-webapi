@@ -1,18 +1,19 @@
 ---
-description: Add a new IntegrationEvent for async cross-module communication and scaffold the DomainEventHandler + consumer.
+description: Declare an IntegrationEvent in Common, scaffold the DomainEventHandler in the source module, and scaffold the consumer in the target module.
+argument-hint: "<SourceModule> <EventName> [TargetModule]"
+allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
-Add a new IntegrationEvent for async cross-module communication. Ask for source module name, event name, and payload fields if not provided.
+Add integration event: $ARGUMENTS
 
 **Step 1 — Declare the event** in `src/Common/Common.IntegrationEvents/{SourceModule}.cs`:
 ```csharp
 public sealed record {EventName}IntegrationEvent(
-    // payload fields — use strongly-typed IDs where applicable
+    // payload — use strongly-typed IDs where applicable
 ) : IntegrationEvent;
 ```
-If the file doesn't exist yet, create it with the appropriate `using` statements.
 
-**Step 2 — Create the DomainEventHandler** in `src/Modules/{SourceModule}/{SourceModule}.Application/{Aggregate}/DomainEventHandlers/v1/V1{DomainEvent}DomainEventHandler.cs`:
+**Step 2 — DomainEventHandler** in `src/Modules/{SourceModule}/{SourceModule}.Application/{Aggregate}/DomainEventHandlers/v1/V1{DomainEvent}DomainEventHandler.cs`:
 ```csharp
 public class V1{DomainEvent}DomainEventHandler(IEventBus eventBus)
     : EventHandlerBase<V1{DomainEvent}DomainEvent>
@@ -29,7 +30,7 @@ public class V1{DomainEvent}DomainEventHandler(IEventBus eventBus)
 }
 ```
 
-**Step 3 — Scaffold the consumer** (if a target module is known) in `src/Modules/{TargetModule}/{TargetModule}.Application/{Consumer}.cs`:
+**Step 3 — Consumer** (if target module provided) in `src/Modules/{TargetModule}/{TargetModule}.Application/`:
 ```csharp
 public class {EventName}IntegrationEventConsumer(/* deps */)
     : IConsumer<{EventName}IntegrationEvent>
@@ -42,6 +43,6 @@ public class {EventName}IntegrationEventConsumer(/* deps */)
 }
 ```
 
-**Step 4 — Register the consumer** in the target module's `ModuleInstaller.cs` via MassTransit configuration.
+**Step 4 — Register** the consumer in the target module's `ModuleInstaller.cs` via MassTransit.
 
-**Step 5** — run `make build` to confirm zero warnings.
+**Step 5** — `make build` — zero warnings.
