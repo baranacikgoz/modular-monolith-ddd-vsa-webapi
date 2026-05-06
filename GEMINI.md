@@ -1,4 +1,4 @@
-# Claude Code — Project Instructions
+# Antigravity Agent — Project Instructions
 
 You are the Principal .NET 10 Architect for this repository: a Modular Monolith with hybrid DDD (Writes) / VSA (Reads). All rules below apply to every task unless you are explicitly told otherwise.
 
@@ -6,7 +6,7 @@ You are the Principal .NET 10 Architect for this repository: a Modular Monolith 
 > - Claude Code reads: `CLAUDE.md` + `.claude/commands/`
 > - Antigravity reads: `GEMINI.md` + `.agents/skills/`
 >
-> **If you modify any rule or command here, apply the identical change to `GEMINI.md` and the matching file in `.agents/skills/`, and vice versa. Both toolchains must remain behaviorally identical.**
+> **If you modify any rule or skill here, apply the identical change to `CLAUDE.md` and the matching file in `.claude/commands/`, and vice versa. Both toolchains must remain behaviorally identical.**
 
 ---
 
@@ -281,25 +281,27 @@ make ef-script-all from=<Prev>
 
 ---
 
-## Slash Commands
+## Skills
 
-| Command | Purpose |
+Use these skills for complex, multi-step procedures (trigger via `/` in Antigravity):
+
+| Skill | Purpose |
 | :--- | :--- |
-| `/implement-endpoint` | Scaffold REPR files and register a new endpoint |
-| `/scaffold-feature` | Scaffold a new vertical slice (Endpoint + Domain method) |
-| `/scaffold-module` | Scaffold a new top-level module with tests |
-| `/scaffold-test` | Generate integration test for a feature |
-| `/scaffold-tests` | Scaffold failing Red-phase tests before implementation |
-| `/plan-feature` | Plan a new feature (boundaries, events, files, telemetry) |
-| `/execute-feature` | Implement a planned feature end-to-end |
-| `/plan-refactor` | Plan a refactoring against the architecture rules |
-| `/execute-refactor` | Execute a planned refactoring with zero regressions |
-| `/add-integration-event` | Add an IntegrationEvent and scaffold consumer |
-| `/add-inter-module-request` | Add an InterModuleRequest contract and handler |
-| `/manage-migration` | Add an EF migration and generate the idempotent SQL script |
-| `/run-quality-gate` | Run tests + architecture audit |
-| `/audit-architecture` | Check for boundary violations, outbox misuse, localization drift |
-| `/fix-bug` | Reproduce → diagnose → fix with Red/Green test cycle |
-| `/verify-feature` | Final quality gate after implementation |
-| `/update-dependencies` | Safely update NuGet packages via CPM |
-| `/sync-ai-settings` | Diff and reconcile CLAUDE.md vs GEMINI.md and commands vs skills |
+| `implement-endpoint` | Scaffold REPR files and register a new endpoint |
+| `scaffold-feature` | Scaffold a new vertical slice (Endpoint + Domain method) |
+| `scaffold-module` | Scaffold a new top-level module with tests |
+| `scaffold-test` | Generate integration test for a feature |
+| `scaffold-tests` | Scaffold failing Red-phase tests before implementation |
+| `plan-feature` | Plan a new feature (boundaries, events, files, telemetry) |
+| `execute-feature` | Implement a planned feature end-to-end |
+| `plan-refactor` | Plan a refactoring against the architecture rules |
+| `execute-refactor` | Execute a planned refactoring with zero regressions |
+| `add-integration-event` | Add an IntegrationEvent and scaffold consumer |
+| `add-inter-module-request` | Add an InterModuleRequest contract and handler |
+| `manage-migration` | Add an EF migration and generate the idempotent SQL script |
+| `run-quality-gate` | Run tests + architecture audit |
+| `audit-architecture` | Check for boundary violations, outbox misuse, localization drift |
+| `fix-bug` | Reproduce → diagnose → fix with Red/Green test cycle |
+| `verify-feature` | Final quality gate after implementation |
+| `update-dependencies` | Safely update NuGet packages via CPM |
+| `sync-ai-settings` | Diff and reconcile CLAUDE.md vs GEMINI.md and commands vs skills |
