@@ -1,17 +1,38 @@
 {
-    "permissions": {
-        "allow": [
-            "Bash(git*)",
-            "Bash(gh*)",
-            "Write(**)"
-        ]
-    },
-    "allowedTools": [
-        "ReadFileTool",
-        "WriteFileTool",
-        "BashTool",
-        "GlobTool",
-        "GrepTool",
-        "ReplaceTool"
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(make *)",
+      "Bash(dotnet *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Write(**)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-csproj-refs.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/sync-reminder.sh"
+          }
+        ]
+      }
+    ]
+  }
 }

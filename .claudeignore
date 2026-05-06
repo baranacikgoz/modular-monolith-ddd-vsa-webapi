@@ -1,0 +1,8 @@
+bin/
+obj/
+logs/
+.vs/
+*.dll
+*.pdb
+*.user
+migrations/*.sql

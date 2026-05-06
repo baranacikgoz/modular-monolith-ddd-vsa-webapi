@@ -21,7 +21,7 @@ public static class Setup
             return services.AddSingleton<ICaptchaService, DummyCaptchaService>();
         }
 
-        services.AddResilientHttpClient<ICaptchaService, ReCaptchaService>(
+        services.AddResilientHttpClient<ICaptchaService, DummyCaptchaService>(
             httpClient =>
             {
                 httpClient.BaseAddress = new Uri(captchaOptions.BaseUrl);
