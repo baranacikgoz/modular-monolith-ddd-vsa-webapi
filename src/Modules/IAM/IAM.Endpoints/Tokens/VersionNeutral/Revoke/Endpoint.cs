@@ -49,7 +49,7 @@ internal static class Endpoint
             .TapAsync(user => user.RevokeRefreshToken())
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
             .TapWhenAsync(
-                async _ => await cacheService.SetAsync(
+                async _ => await cacheService.SetAsync<bool?>(
                     $"blacklisted_jti:{jti}",
                     true,
                     absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes),

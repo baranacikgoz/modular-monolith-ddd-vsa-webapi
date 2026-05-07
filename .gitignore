@@ -494,3 +494,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Claude Code agent worktrees (temporary, local-only)
+.claude/worktrees/
+
+# Graphify cache (regenerated automatically)
+graphify-out/cache/
