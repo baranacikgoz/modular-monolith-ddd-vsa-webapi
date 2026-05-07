@@ -26,8 +26,6 @@ Mandatory search order:
 
 Never reach for grep, find, or Bash search as a first instinct. The graph knows connections across module boundaries; grep does not.
 
-After modifying code, run `graphify update .` to keep the graph current (AST-only for `.cs` changes, no API cost).
-
 ---
 
 ## Architecture
