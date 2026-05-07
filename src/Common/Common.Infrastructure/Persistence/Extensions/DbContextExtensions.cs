@@ -38,6 +38,9 @@ public static class DbContextExtensions
 
         var items = entries
             .Select(e => new AuditLogDto(
+                e.CreatedOn,
+                e.EventType,
+                e.Version,
                 JsonSerializer.SerializeToElement(e.Event, e.Event.GetType(), _serializerOptions),
                 e.CreatedBy ?? default))
             .ToList();
