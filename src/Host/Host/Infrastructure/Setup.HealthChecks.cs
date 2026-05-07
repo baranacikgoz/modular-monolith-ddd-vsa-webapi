@@ -1,4 +1,5 @@
 using Common.Application.Options;
+using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -41,6 +42,37 @@ internal static partial class Setup
             name: "postgresql",
             tags: [ReadyTag],
             timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
+
+        // Readiness: Redis connectivity.
+        var cachingOptions = configuration
+            .GetSection(nameof(CachingOptions))
+            .Get<CachingOptions>()
+            ?? new CachingOptions();
+
+        if (cachingOptions is { UseRedis: true, Redis: not null })
+        {
+            builder.AddRedis(
+                _ => $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}",
+                name: "redis",
+                tags: [ReadyTag],
+                timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
+        }
+
+        // Readiness: Kafka connectivity.
+        var eventBusOptions = configuration
+            .GetSection(nameof(EventBusOptions))
+            .Get<EventBusOptions>()
+            ?? new EventBusOptions();
+
+        if (eventBusOptions is { UseInMemoryEventBus: false, MessageBroker.MessageBrokerType: MessageBrokerType.Kafka, MessageBroker: not null })
+        {
+            var bootstrapServers = eventBusOptions.MessageBroker.Uri;
+            builder.AddKafka(
+                kafkaConfig => { kafkaConfig.BootstrapServers = bootstrapServers; },
+                name: "kafka",
+                tags: [ReadyTag],
+                timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
+        }
 
         // Startup: PostgreSQL reachable during boot — ensures migrations have been applied.
         builder.AddNpgSql(

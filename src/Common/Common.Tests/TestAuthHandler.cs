@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Common.Application.Auth;
@@ -14,6 +15,7 @@ public class TestAuthHandler(
 {
     public const string AuthenticationScheme = "TestScheme";
     public static readonly Guid DefaultUserId = Guid.NewGuid();
+    public static readonly string DefaultJti = Guid.NewGuid().ToString();
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -30,9 +32,16 @@ public class TestAuthHandler(
             nameIdentifier = overrideId.ToString();
         }
 
+        var jti = DefaultJti;
+        if (Request.Headers.TryGetValue("X-Test-Jti", out var overrideJti))
+        {
+            jti = overrideJti.ToString();
+        }
+
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, nameIdentifier),
+            new(JwtRegisteredClaimNames.Jti, jti),
             new(ClaimTypes.Name, "TestUser"),
             // Add any essential custom permissions required by all endpoints implicitly.
             // Tests can override this by injecting different headers or using specific identities if needed.

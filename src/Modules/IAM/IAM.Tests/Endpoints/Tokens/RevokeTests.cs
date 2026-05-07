@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using Bogus;
+using Common.Application.Caching;
 using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
@@ -87,5 +88,59 @@ public class RevokeTests : BaseIntegrationTest
 
         // Assert — unauthenticated callers must be rejected
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RevokeToken_ThenUseAccessToken_ReturnsUnauthorized()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
+        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FirstName(),
+            _faker.Name.LastName(),
+            phoneNumber,
+            _faker.Random.Long(10000000000L, 99999999999L)
+                .ToString(System.Globalization.CultureInfo.InvariantCulture),
+            DateOnly.FromDateTime(_faker.Date.Past(30))
+        );
+
+        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(timeProvider.GetUtcNow());
+        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync(default);
+
+        // Use a unique jti for this test to avoid cross-test cache collisions
+        var jti = Guid.NewGuid().ToString();
+
+        var revokeClient = Factory.CreateClient();
+        revokeClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
+        revokeClient.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
+        revokeClient.DefaultRequestHeaders.Add("X-Test-Jti", jti);
+
+        // Act — revoke the token
+        var revokeResponse = await revokeClient.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
+
+        // Assert revoke succeeded
+        if (!revokeResponse.IsSuccessStatusCode)
+        {
+            var err = await revokeResponse.Content.ReadAsStringAsync();
+            Assert.Fail($"Revoke failed. Status: {revokeResponse.StatusCode}. Error: {err}");
+        }
+        Assert.Equal(HttpStatusCode.NoContent, revokeResponse.StatusCode);
+
+        // Assert — the jti is now stored in the blacklist cache
+        // This proves the OnTokenValidated hook will reject any real JWT carrying this jti.
+        var isBlacklisted = await cache.GetAsync<bool?>($"blacklisted_jti:{jti}", default);
+        Assert.True(isBlacklisted == true, "Expected the revoked jti to be present in the blacklist cache.");
     }
 }

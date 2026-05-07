@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
@@ -45,6 +47,25 @@ internal static class Setup
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = async context =>
+                    {
+                        var jti = context.Principal?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+                        if (jti is null)
+                        {
+                            context.Fail("Missing jti claim.");
+                            return;
+                        }
+
+                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<ICacheService>();
+                        var isBlacklisted = await cacheService.GetAsync<bool?>(
+                            $"blacklisted_jti:{jti}",
+                            context.HttpContext.RequestAborted);
+
+                        if (isBlacklisted == true)
+                        {
+                            context.Fail("Token has been revoked.");
+                        }
+                    },
                     OnChallenge = async context =>
                     {
                         context.HandleResponse();

@@ -34,7 +34,9 @@ public class JwtOptionsValidator : CustomValidator<JwtOptions>
 
         RuleFor(o => o.AccessTokenExpirationInMinutes)
             .GreaterThan(0)
-            .WithMessage("AccessTokenExpirationInMinutes must be greater than 0.");
+            .WithMessage("AccessTokenExpirationInMinutes must be greater than 0.")
+            .LessThanOrEqualTo(15)
+            .WithMessage("AccessTokenExpirationInMinutes must not exceed 15 minutes.");
 
         RuleFor(o => o.RefreshTokenExpirationInDays)
             .GreaterThan(0)

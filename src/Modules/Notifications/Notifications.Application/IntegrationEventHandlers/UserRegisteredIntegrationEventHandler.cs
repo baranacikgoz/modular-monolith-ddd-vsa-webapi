@@ -1,4 +1,5 @@
 using Common.Application.BackgroundJobs;
+using Common.Application.Caching;
 using Common.Application.EventBus;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
@@ -9,8 +10,9 @@ namespace Notifications.Application.IntegrationEventHandlers;
 
 public partial class UserRegisteredIntegrationEventHandler(
     IBackgroundJobs backgroundJobs,
-    ILogger<UserRegisteredIntegrationEventHandler> logger
-) : EventHandlerBase<UserRegisteredIntegrationEvent>
+    ILogger<UserRegisteredIntegrationEventHandler> logger,
+    ICacheService cache
+) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache)
 {
     protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context,
         UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)
