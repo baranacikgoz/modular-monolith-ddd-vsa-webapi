@@ -15,8 +15,9 @@ You are the Principal .NET 10 Architect for this repository: a Modular Monolith 
 **HARD RULE: Always run graphify before grep, find, glob, or any other search tool. No exceptions.**
 
 Mandatory search order:
-1. Run graphify CLI directly via Bash (no skill needed for queries):
+1. Run graphify CLI directly via Bash — do NOT load the Skill for queries:
    - `graphify query "<question>"` — semantic search, broad context
+   - `graphify search "<term>"` — keyword search
    - `graphify path "<A>" "<B>"` — shortest path between two concepts
    - `graphify explain "<concept>"` — plain-language node explanation
 2. `graphify-out/GRAPH_REPORT.md` — community map and god nodes
