@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
 
-namespace Products.Endpoints.Stores.v1.My.History;
+namespace Products.Endpoints.Stores.v1.My.AuditLog;
 
 internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder v1StoresApiGroup)
     {
         v1StoresApiGroup
-            .MapGet("my/history", GetMyStoreAuditLogAsync)
+            .MapGet("my/audit-log", GetMyStoreAuditLogAsync)
             .WithDescription("Get my store's audit log.")
             .MustHavePermission(CustomActions.ReadMy, CustomResources.Stores)
             .Produces<PaginationResponse<AuditLogDto>>()

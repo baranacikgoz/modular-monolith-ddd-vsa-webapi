@@ -8,30 +8,30 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
-using Products.Domain.Products;
+using Products.Domain.Stores;
 
-namespace Products.Endpoints.Products.v1.EventHistory;
+namespace Products.Endpoints.Stores.v1.AuditLog;
 
 internal static class Endpoint
 {
-    internal static void MapEndpoint(RouteGroupBuilder productsApiGroup)
+    internal static void MapEndpoint(RouteGroupBuilder storeProductsApiGroup)
     {
-        productsApiGroup
-            .MapGet("{id}/audit-log", GetProductAuditLogAsync)
-            .WithDescription("Get product audit log.")
-            .MustHavePermission(CustomActions.Read, CustomResources.Products)
+        storeProductsApiGroup
+            .MapGet("{id}/audit-log", GetStoreAuditLogAsync)
+            .WithDescription("Get store's audit log.")
+            .MustHavePermission(CustomActions.Read, CustomResources.Stores)
             .Produces<PaginationResponse<AuditLogDto>>()
             .TransformResultTo<PaginationResponse<AuditLogDto>>();
     }
 
-    private static async Task<Result<PaginationResponse<AuditLogDto>>> GetProductAuditLogAsync(
+    private static async Task<Result<PaginationResponse<AuditLogDto>>> GetStoreAuditLogAsync(
         [AsParameters] Request request,
         IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return await dbContext
             .AuditLog
-            .GetAuditLogAsync<Product, ProductId>(
+            .GetAuditLogAsync<Store, StoreId>(
                 request.Id,
                 request,
                 cancellationToken);

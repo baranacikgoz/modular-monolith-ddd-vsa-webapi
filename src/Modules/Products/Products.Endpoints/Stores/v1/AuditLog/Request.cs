@@ -1,10 +1,16 @@
 using Common.Application.Localization.Resources;
+using Common.Application.ModelBinders;
 using Common.Application.Pagination;
+using Microsoft.AspNetCore.Mvc;
+using Products.Domain.Stores;
 
-namespace Products.Endpoints.Stores.v1.My.History;
+namespace Products.Endpoints.Stores.v1.AuditLog;
 
 public sealed record Request : PaginationRequest
 {
+    [FromRoute]
+    [ModelBinder<StronglyTypedIdBinder<StoreId>>]
+    public StoreId Id { get; set; }
 }
 
 public sealed class RequestValidator : PaginationRequestValidator<Request>

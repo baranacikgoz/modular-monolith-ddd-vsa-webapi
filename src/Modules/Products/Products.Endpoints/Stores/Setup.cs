@@ -18,14 +18,14 @@ public static class Setup
         v1.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoresApiGroup);
-        v1.EventHistory.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.AuditLog.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
 
         v1.My.Create.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
-        v1.My.History.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.My.AuditLog.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.AddProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.My.RemoveProduct.Endpoint.MapEndpoint(v1StoresApiGroup);
 
