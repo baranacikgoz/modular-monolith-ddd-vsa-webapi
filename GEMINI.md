@@ -10,6 +10,24 @@ You are the Principal .NET 10 Architect for this repository: a Modular Monolith 
 
 ---
 
+## Codebase Discovery — GRAPHIFY FIRST
+
+**HARD RULE: Always run graphify before grep, find, glob, or any other search tool. No exceptions.**
+
+Mandatory search order:
+1. Run graphify CLI directly via Bash (no skill needed for queries):
+   - `graphify query "<question>"` — semantic search, broad context
+   - `graphify path "<A>" "<B>"` — shortest path between two concepts
+   - `graphify explain "<concept>"` — plain-language node explanation
+2. `graphify-out/GRAPH_REPORT.md` — community map and god nodes
+3. Direct file tools — only as a fallback when graphify yields nothing useful
+
+Never reach for grep, find, or Bash search as a first instinct. The graph knows connections across module boundaries; grep does not.
+
+After modifying code, run `graphify update .` to keep the graph current (AST-only for `.cs` changes, no API cost).
+
+---
+
 ## Architecture
 
 ### Boundaries & Communication
