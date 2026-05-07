@@ -1,4 +1,3 @@
-using Common.Application.Options;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
@@ -8,17 +7,13 @@ using IAM.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace IAM.Infrastructure.Persistence;
 
 #pragma warning disable S101 // Types should be named in PascalCase
-public partial class IAMDbContext(
+public class IAMDbContext(
 #pragma warning restore S101 // Types should be named in PascalCase
-    DbContextOptions<IAMDbContext> options,
-    IOptions<ObservabilityOptions> observabilityOptionsProvider,
-    ILogger<IAMDbContext> logger
+    DbContextOptions<IAMDbContext> options
 ) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId,
     IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>,
     IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
@@ -35,21 +30,4 @@ public partial class IAMDbContext(
         builder.Ignore<DomainEvent>();
         builder.ApplyConfiguration(new AuditLogEntryConfiguration());
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        if (observabilityOptionsProvider.Value.LogGeneratedSqlQueries)
-        {
-            optionsBuilder.LogTo(
-                sql => LogSql(logger, sql), // Log the SQL query
-                new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
-                LogLevel.Information // Set the log level
-            );
-        }
-    }
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
-    private static partial void LogSql(ILogger logger, string sql);
 }

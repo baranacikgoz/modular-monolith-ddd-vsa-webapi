@@ -15,7 +15,7 @@ using Outbox.Persistence;
 
 namespace Outbox;
 
-public sealed partial class OutboxModule : IModule
+public sealed class OutboxModule : IModule
 {
     public string Name => "Outbox";
     public int StartupPriority => 1;
@@ -34,23 +34,12 @@ public sealed partial class OutboxModule : IModule
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-                var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
 
                 options
                     .UseNpgsql(
                         connectionString,
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
                     .UseExceptionProcessor();
-
-                if (observabilityOptions.LogGeneratedSqlQueries)
-                {
-                    var logger = sp.GetRequiredService<ILogger<OutboxDbContext>>();
-                    options.LogTo(
-                        sql => LogSql(logger, sql), // Log the SQL query
-                        new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
-                        LogLevel.Information // Set the log level
-                    );
-                }
             })
             .AddHostedService<OutboxKafkaProcessor>();
     }
@@ -68,7 +57,4 @@ public sealed partial class OutboxModule : IModule
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
     }
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
-    private static partial void LogSql(ILogger logger, string sql);
 }

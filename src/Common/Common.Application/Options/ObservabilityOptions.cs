@@ -11,7 +11,6 @@ public class ObservabilityOptions
     public Dictionary<string, string> MinimumLevelOverrides { get; } = [];
     public bool WriteToConsole { get; set; }
     public bool WriteToFile { get; set; }
-    public bool LogGeneratedSqlQueries { get; set; }
     public int ResponseTimeThresholdInMs { get; set; }
 
     // Remote log sink: "Seq" | "Elasticsearch" — omit to use console/file only

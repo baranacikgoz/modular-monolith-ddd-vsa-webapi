@@ -8,11 +8,11 @@
       "Hangfire": "Warning",
       "Microsoft.Hosting.Lifetime": "Information",
       "Microsoft.EntityFrameworkCore": "Warning",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Information",
       "MassTransit": "Warning"
     },
     "WriteToConsole": true,
     "WriteToFile": true,
-    "LogGeneratedSqlQueries": true,
     "ResponseTimeThresholdInMs": 1000,
     "OtlpLoggingEndpoint": "http://localhost:5341/ingest/otlp/v1/logs",
     "OtlpLoggingProtocol": "HttpProtobuf",

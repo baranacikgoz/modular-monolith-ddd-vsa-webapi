@@ -4,12 +4,11 @@ using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Common.Infrastructure.Persistence.DbContext;
 
-public static partial class Setup
+public static class Setup
 {
     public static IServiceCollection AddModuleDbContext<TContextInterface, TContextImplementation>(
         this IServiceCollection services,
@@ -19,7 +18,6 @@ public static partial class Setup
         services.AddDbContext<TContextImplementation>((sp, options) =>
         {
             var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-            var observabilityOptions = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
 
             options
                 .UseNpgsql(
@@ -28,17 +26,6 @@ public static partial class Setup
                 .UseExceptionProcessor()
                 .AddInterceptors(
                     sp.GetRequiredService<ApplyAuditingInterceptor>());
-
-            if (observabilityOptions.LogGeneratedSqlQueries)
-            {
-                var logger = sp.GetRequiredService<ILogger<TContextImplementation>>();
-
-                options.LogTo(
-                    sql => LogSql(logger, sql), // Log the SQL query
-                    new[] { DbLoggerCategory.Database.Command.Name }, // Only log database commands
-                    LogLevel.Information // Set the log level
-                );
-            }
         });
 
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TContextImplementation));
@@ -52,7 +39,4 @@ public static partial class Setup
 
         return services;
     }
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "{Sql}")]
-    private static partial void LogSql(ILogger logger, string sql);
 }
