@@ -25,7 +25,7 @@
     <PackageReference Include="Serilog.Sinks.Console"/>
     <PackageReference Include="Serilog.Sinks.File"/>
     <PackageReference Include="Serilog.Sinks.Seq"/>
-    <PackageReference Include="Serilog.Sinks.OpenTelemetry"/>
+    <PackageReference Include="Elastic.Serilog.Sinks"/>
     <PackageReference Include="Serilog.Formatting.Compact"/>
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints"/>
     <PackageReference Include="Swashbuckle.AspNetCore"/>
@@ -33,11 +33,9 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http"/>
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore"/>
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime"/>
-    <PackageReference Include="OpenTelemetry.Exporter.Zipkin"/>
     <PackageReference Include="OpenTelemetry.Instrumentation.Process"/>
     <PackageReference Include="Npgsql.OpenTelemetry"/>
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore"/>
-    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore"/>
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol"/>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql"/>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client"/>

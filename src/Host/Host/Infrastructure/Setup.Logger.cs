@@ -1,5 +1,6 @@
 using System.Globalization;
 using Common.Application.Options;
+using Elastic.Serilog.Sinks;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Configuration;
@@ -28,37 +29,18 @@ internal static partial class Setup
         ObservabilityOptions options, IHostEnvironment env)
     {
         serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
-
         serilog.OverrideMinimumLevelsOf(options.MinimumLevelOverrides);
-
         serilog.ConfigureEnrichers(options, env);
-
         serilog.ConfigureWriteTos(options);
-
         return serilog;
     }
 
     private static LoggerMinimumLevelConfiguration ParseFrom(this LoggerMinimumLevelConfiguration minLevel,
         string level)
     {
-        if (level.IsDebug())
-        {
-            minLevel.Debug();
-            return minLevel;
-        }
-
-        if (level.IsInformation())
-        {
-            minLevel.Information();
-            return minLevel;
-        }
-
-        if (level.IsWarning())
-        {
-            minLevel.Warning();
-            return minLevel;
-        }
-
+        if (level.IsDebug()) { minLevel.Debug(); return minLevel; }
+        if (level.IsInformation()) { minLevel.Information(); return minLevel; }
+        if (level.IsWarning()) { minLevel.Warning(); return minLevel; }
         throw new InvalidOperationException($"Minimum log level {level} is unknown.");
     }
 
@@ -68,24 +50,9 @@ internal static partial class Setup
     {
         foreach (var (key, value) in minimumLevelOverrides)
         {
-            if (value.IsDebug())
-            {
-                serilog.MinimumLevel.Override(key, LogEventLevel.Debug);
-                continue;
-            }
-
-            if (value.IsInformation())
-            {
-                serilog.MinimumLevel.Override(key, LogEventLevel.Information);
-                continue;
-            }
-
-            if (value.IsWarning())
-            {
-                serilog.MinimumLevel.Override(key, LogEventLevel.Warning);
-                continue;
-            }
-
+            if (value.IsDebug()) { serilog.MinimumLevel.Override(key, LogEventLevel.Debug); continue; }
+            if (value.IsInformation()) { serilog.MinimumLevel.Override(key, LogEventLevel.Information); continue; }
+            if (value.IsWarning()) { serilog.MinimumLevel.Override(key, LogEventLevel.Warning); continue; }
             throw new InvalidOperationException($"Minimum log level ({value}) is unknown.");
         }
     }
@@ -94,73 +61,55 @@ internal static partial class Setup
         IHostEnvironment env)
     {
         serilog
-            .Enrich
-            .WithProperty("Application", options.AppName)
-            .Enrich
-            .WithProperty("Environment", env.EnvironmentName)
-            .Enrich
-            .WithProperty("AppVersion", options.AppVersion)
-            .Enrich
-            .FromLogContext()
-            .Enrich
-            .WithExceptionDetails()
-            .Enrich
-            .WithMachineName()
-            .Enrich
-            .WithProcessId()
-            .Enrich
-            .WithThreadId()
-            .Enrich
-            .WithSpan();
+            .Enrich.WithProperty("Application", options.AppName)
+            .Enrich.WithProperty("Environment", env.EnvironmentName)
+            .Enrich.WithProperty("AppVersion", options.AppVersion)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.WithSpan();
     }
 
     private static void ConfigureWriteTos(this LoggerConfiguration serilog, ObservabilityOptions options)
     {
         if (options.WriteToConsole)
         {
-            serilog
-                .WriteTo
-                .Async(wt => wt.Console(
-                    outputTemplate:
-                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-                    theme: SystemConsoleTheme.Literate,
-                    formatProvider: CultureInfo.InvariantCulture));
+            serilog.WriteTo.Async(wt => wt.Console(
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                theme: SystemConsoleTheme.Literate,
+                formatProvider: CultureInfo.InvariantCulture));
         }
 
         if (options.WriteToFile)
         {
-            serilog
-                .WriteTo
-                .Async(wt => wt.File(new CompactJsonFormatter(),
-                    $"logs/{options.AppName}-.logs",
-                    rollingInterval: RollingInterval.Day,
-                    rollOnFileSizeLimit: true,
-                    fileSizeLimitBytes: 10 * 1024 * 1024,
-                    retainedFileCountLimit: 10,
-                    restrictedToMinimumLevel: LogEventLevel.Information));
+            serilog.WriteTo.Async(wt => wt.File(
+                new CompactJsonFormatter(),
+                $"logs/{options.AppName}-.logs",
+                rollingInterval: RollingInterval.Day,
+                rollOnFileSizeLimit: true,
+                fileSizeLimitBytes: 10 * 1024 * 1024,
+                retainedFileCountLimit: 10,
+                restrictedToMinimumLevel: LogEventLevel.Information));
         }
 
-        serilog
-            .WriteTo
-            .Async(wt => wt.OpenTelemetry(
-                options.OtlpLoggingEndpoint,
-                options.OtlpLoggingProtocol.ToOtlpProtocol(),
-                resourceAttributes: new Dictionary<string, object> { { "service.name", options.AppName } }
-            ));
+        if (options.LogSink == "Seq")
+        {
+            serilog.WriteTo.Seq(options.SeqServerUrl!, formatProvider: CultureInfo.InvariantCulture);
+        }
+        else if (options.LogSink == "Elasticsearch")
+        {
+            serilog.WriteTo.Elasticsearch([new Uri(options.ElasticsearchUrl!)]);
+        }
     }
 
     private static bool IsDebug(this string level)
-    {
-        return string.Equals("Debug", level, StringComparison.OrdinalIgnoreCase);
-    }
+        => string.Equals("Debug", level, StringComparison.OrdinalIgnoreCase);
 
     private static bool IsInformation(this string level)
-    {
-        return string.Equals("Information", level, StringComparison.OrdinalIgnoreCase);
-    }
+        => string.Equals("Information", level, StringComparison.OrdinalIgnoreCase);
 
     private static bool IsWarning(this string level)
-    {
-        return string.Equals("Warning", level, StringComparison.OrdinalIgnoreCase);
-    }
+        => string.Equals("Warning", level, StringComparison.OrdinalIgnoreCase);
 }

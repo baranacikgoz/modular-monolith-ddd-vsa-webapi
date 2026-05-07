@@ -6,38 +6,24 @@ namespace Common.Application.Options;
 public class ObservabilityOptions
 {
     public required string AppName { get; set; }
-
     public required string AppVersion { get; set; }
-
     public required string MinimumLevel { get; set; }
-
     public Dictionary<string, string> MinimumLevelOverrides { get; } = [];
-
     public bool WriteToConsole { get; set; }
-
     public bool WriteToFile { get; set; }
-
     public bool LogGeneratedSqlQueries { get; set; }
-
     public int ResponseTimeThresholdInMs { get; set; }
 
-    public required string OtlpLoggingEndpoint { get; set; }
+    // Remote log sink: "Seq" | "Elasticsearch" — omit to use console/file only
+    public string? LogSink { get; set; }
+    public string? SeqServerUrl { get; set; }
+    public string? ElasticsearchUrl { get; set; }
 
-    public required string OtlpLoggingProtocol { get; set; }
-
+    // OTEL traces + metrics → single collector endpoint
     public bool EnableMetrics { get; set; }
-
-    public bool OtlpMetricsUsePrometheusDirectly { get; set; }
-
-    public string? OtlpMetricsEndpoint { get; set; }
-
-    public string? OtlpMetricsProtocol { get; set; }
-
     public bool EnableTracing { get; set; }
-
-    public required string OtlpTracingEndpoint { get; set; }
-
-    public required string OtlpTracingProtocol { get; set; }
+    public string? OtlpEndpoint { get; set; }
+    public string? OtlpProtocol { get; set; }
 }
 
 public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOptions>
@@ -66,35 +52,30 @@ public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOption
             .GreaterThan(0)
             .WithMessage("ResponseTimeThresholdInMs must be greater than 0.");
 
-        RuleFor(o => o.OtlpLoggingEndpoint)
-            .NotEmpty()
-            .WithMessage("OtlpLoggingEndpoint must not be empty.");
+        RuleFor(o => o.LogSink)
+            .Matches("^(Seq|Elasticsearch)$")
+            .WithMessage("LogSink must be 'Seq' or 'Elasticsearch'.")
+            .When(o => !string.IsNullOrEmpty(o.LogSink));
 
-        RuleFor(o => o.OtlpLoggingProtocol)
+        RuleFor(o => o.SeqServerUrl)
             .NotEmpty()
-            .WithMessage("OtlpLoggingProtocol must not be empty.")
-            .Matches("HttpProtobuf|Grpc");
+            .WithMessage("SeqServerUrl must not be empty when LogSink is 'Seq'.")
+            .When(o => o.LogSink == "Seq");
 
-        RuleFor(o => o.OtlpMetricsEndpoint)
+        RuleFor(o => o.ElasticsearchUrl)
             .NotEmpty()
-            .WithMessage("OtlpMetricsEndpoint must not be empty.")
-            .When(o => o.EnableMetrics && !o.OtlpMetricsUsePrometheusDirectly);
+            .WithMessage("ElasticsearchUrl must not be empty when LogSink is 'Elasticsearch'.")
+            .When(o => o.LogSink == "Elasticsearch");
 
-        RuleFor(o => o.OtlpMetricsProtocol)
+        RuleFor(o => o.OtlpEndpoint)
             .NotEmpty()
-            .WithMessage("OtlpMetricsProtocol must not be empty.")
+            .WithMessage("OtlpEndpoint must not be empty when tracing or metrics are enabled.")
+            .When(o => o.EnableTracing || o.EnableMetrics);
+
+        RuleFor(o => o.OtlpProtocol)
+            .NotEmpty()
             .Matches("HttpProtobuf|Grpc")
-            .When(o => o.EnableMetrics && !o.OtlpMetricsUsePrometheusDirectly);
-
-        RuleFor(o => o.OtlpTracingEndpoint)
-            .NotEmpty()
-            .WithMessage("OtlpTracingEndpoint must not be empty.")
-            .When(o => o.EnableTracing);
-
-        RuleFor(o => o.OtlpTracingProtocol)
-            .NotEmpty()
-            .WithMessage("OtlpTracingProtocol must not be empty.")
-            .Matches("HttpProtobuf|Grpc")
-            .When(o => o.EnableTracing);
+            .WithMessage("OtlpProtocol must be 'HttpProtobuf' or 'Grpc'.")
+            .When(o => o.EnableTracing || o.EnableMetrics);
     }
 }

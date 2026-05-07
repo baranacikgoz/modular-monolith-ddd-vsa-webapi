@@ -2,31 +2,32 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 512
 
 exporters:
   otlp/jaeger:
-    endpoint: "http://mm.jaeger:4317"
+    endpoint: "mm.jaeger:4317"
     tls:
       insecure: true
 
   prometheus:
     endpoint: "0.0.0.0:9464"
-
-  # logging:
-  #   loglevel: debug
-
-  otlphttp:
-    endpoint: "http://mm.seq:5341/ingest/otlp"
+    namespace: modular_monolith
 
 service:
   pipelines:
     traces:
-      receivers: [ otlp ]
-      exporters: [ otlp/jaeger ]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/jaeger]
     metrics:
-      receivers: [ otlp ]
-      exporters: [ prometheus ]
-    logs:
-      receivers: [ otlp ]
-      exporters: [ otlphttp ]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]

@@ -65,8 +65,6 @@ internal static partial class Setup
                 .UseAuthorization();
         }
 
-        app.UseObservability();
-
         return app;
     }
 
