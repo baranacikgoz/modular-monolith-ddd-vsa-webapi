@@ -497,6 +497,3 @@ $RECYCLE.BIN/
 
 # Claude Code agent worktrees (temporary, local-only)
 .claude/worktrees/
-
-# Graphify cache (regenerated automatically)
-graphify-out/cache/
