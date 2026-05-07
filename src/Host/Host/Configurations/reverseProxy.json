@@ -1,0 +1,7 @@
+{
+  "ReverseProxyOptions": {
+    "IsEnabled": true,
+    "TrustedNetworks": [],
+    "ForwardLimit": 1
+  }
+}

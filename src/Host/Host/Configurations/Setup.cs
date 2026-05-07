@@ -24,6 +24,8 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/modules");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/healthCheck");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/cors");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/reverseProxy");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/securityHeaders");
 
         configuration.AddEnvironmentVariables();
 

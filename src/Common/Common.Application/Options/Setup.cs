@@ -32,8 +32,12 @@ public static class Setup
             // Validate settings using FluentValidation
             var validatorType = typeof(IValidator<>).MakeGenericType(type);
 
+            var validatorDescriptor = services.FirstOrDefault(
+                sd => sd.ServiceType == validatorType && sd.ImplementationType != null);
+
             if (!executedValidators.Contains(type) &&
-                services.BuildServiceProvider().GetService(validatorType) is IValidator validator)
+                validatorDescriptor?.ImplementationType is { } validatorImplType &&
+                Activator.CreateInstance(validatorImplType) is IValidator validator)
             {
                 var optionInstance = section.Get(type) ??
                                      throw new InvalidOperationException(

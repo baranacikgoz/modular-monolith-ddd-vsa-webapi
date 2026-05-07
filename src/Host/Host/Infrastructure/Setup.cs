@@ -34,6 +34,7 @@ internal static partial class Setup
             })
             .AddVersioning()
             .AddHttpContextAccessor()
+            .AddCustomForwardedHeaders(configuration)
             .AddRequestResponseLoggingMiddleware()
             .AddGlobalExceptionHandlingMiddleware()
             .AddCustomizedProblemDetails(env)
@@ -51,6 +52,8 @@ internal static partial class Setup
     public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
     {
         app
+            .UseForwardedHeaders()
+            .UseMiddleware<SecurityHeadersMiddleware>()
             .UseRequestResponseLoggingMiddleware()
             .UseCommonResxLocalization()
             .UseRateLimiter()

@@ -1,16 +1,16 @@
 namespace Host.Tests;
 
-public class SanityTests
+[Collection("Host")]
+public class SanityTests(HostTestFactory factory)
 {
-    [Fact]
-    public async Task Boot_WithAllModules_ShouldResolveDependencies()
-    {
-        // Arrange
-        await using var factory = new HostTestFactory();
-        await factory.InitializeAsync();
+    // Eagerly start the server during fixture setup — same pattern as HealthCheckTests.
+    // A lazy CreateClient() call inside the test body races with DynamicModuleTests
+    // factory disposal, which corrupts global Serilog/OTel state before StartServer() runs.
+    private readonly HttpClient _client = factory.CreateClient();
 
-        // Act & Assert — creating a client triggers the full server boot and DI graph resolution.
-        var exception = Record.Exception(() => _ = factory.CreateClient());
-        Assert.Null(exception);
+    [Fact]
+    public void Boot_WithAllModules_ShouldResolveDependencies()
+    {
+        Assert.NotNull(_client);
     }
 }

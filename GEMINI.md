@@ -238,6 +238,7 @@ Caller injects `IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsR
 - Every `Request` must be validated (FluentValidation via `CustomValidator<T>`) before domain or persistence.
 - Assume 3rd-party APIs will fail, timeout, or return malformed data. Use resiliency patterns (retry, circuit breaker).
 - 3rd-party failures must not cascade into core application.
+- **Never call `services.BuildServiceProvider()` inside DI registration code.** It creates a full `ServiceProvider` including OTel `TracerProvider`/`MeterProvider` singletons; GC-finalizing those temporary providers corrupts the global `ActivitySource` state and breaks subsequent factory startups in tests. Scan `IServiceCollection` directly and use `Activator.CreateInstance(implType)` instead.
 
 ### 8. Testing Standards
 
@@ -246,10 +247,11 @@ Caller injects `IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsR
 - **Assertions**: built-in xUnit `Assert.*` only — no FluentAssertions.
 - Naming: `Method_Scenario_Expectation`.
 - For writes: assert entity in DB + record in `OutboxMessages`. Do NOT mock MassTransit in slice tests.
-- Use `IClassFixture` for Docker containers — deterministic, never flaky.
+- **Factory isolation rule**: use `IClassFixture<TFactory>` when only one test class needs the factory. When multiple test classes share the same factory type, use `ICollectionFixture<TFactory>` + `[Collection("Name")]` — two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared global state (Serilog static logger, OTel `ActivitySource`).
+- **With `IClassFixture`: call `factory.CreateClient()` eagerly** in a field initializer or constructor, never lazily inside a test method body. Lazy calls race with other factories' `DisposeAsync()`, which corrupts global static state before `StartServer()` runs. With `ICollectionFixture` the server is already running before any test executes, so calling `CreateClient()` lazily inside each test body is correct and preferred (gives each test a clean client with no cross-test header/cookie state).
 - Modules under test isolated via `TestModuleOverride` env var (set in `IntegrationTestFactory.GetActiveModules()`).
 
-**`IntegrationTestFactory` pattern**: inherit from it, override `GetActiveModules()` to restrict to your module:
+**`IntegrationTestFactory` pattern** — single class (use `IClassFixture`):
 ```csharp
 public class MyModuleTestFactory : IntegrationTestFactory
 {
@@ -258,12 +260,26 @@ public class MyModuleTestFactory : IntegrationTestFactory
 
 public class MyFeatureTests : IClassFixture<MyModuleTestFactory>
 {
+    private readonly HttpClient _client;  // eager — field initializer
     public MyFeatureTests(MyModuleTestFactory factory)
     {
         _client = factory.CreateClient();
-        _factory = factory;
     }
 }
+```
+
+**Shared factory across multiple classes** (use `ICollectionFixture`):
+```csharp
+// CollectionDefinition.cs
+[CollectionDefinition("MyModule")]
+public class MyModuleCollection : ICollectionFixture<MyModuleTestFactory>;
+
+// Both test classes share one factory, run sequentially
+[Collection("MyModule")]
+public class FeatureATests(MyModuleTestFactory factory) { ... }
+
+[Collection("MyModule")]
+public class FeatureBTests(MyModuleTestFactory factory) { ... }
 ```
 
 ### 9. Bug Fixing — Scientific Method
