@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Istanbul",
+  "schedule": ["every weekend"],
+  "packageRules": [
+    {
+      "groupName": "Microsoft packages",
+      "matchPackagePrefixes": ["Microsoft."],
+      "automerge": false
+    },
+    {
+      "groupName": "OpenTelemetry packages",
+      "matchPackagePrefixes": ["OpenTelemetry."],
+      "automerge": false
+    },
+    {
+      "groupName": "MassTransit packages",
+      "matchPackagePrefixes": ["MassTransit."],
+      "automerge": false
+    },
+    {
+      "groupName": "Test packages",
+      "matchPackagePrefixes": [
+        "xunit",
+        "NSubstitute",
+        "Bogus",
+        "Testcontainers",
+        "Respawn"
+      ],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    }
+  ]
+}
