@@ -16,8 +16,9 @@ You are the Principal .NET 10 Architect for this repository: a Modular Monolith 
 
 Mandatory search order:
 1. Run graphify CLI directly via Bash — do NOT load the Skill for queries:
-   - `graphify query "<question>"` — semantic search, broad context
-   - `graphify search "<term>"` — keyword search
+   - `graphify query "<question>"` — semantic search, broad context (BFS)
+   - `graphify query "<question>" --dfs` — trace a specific path (DFS)
+   - `graphify query "<question>" --budget 1500` — cap output at N tokens
    - `graphify path "<A>" "<B>"` — shortest path between two concepts
    - `graphify explain "<concept>"` — plain-language node explanation
 2. `graphify-out/GRAPH_REPORT.md` — community map and god nodes
