@@ -1,6 +1,6 @@
 # Modular Monolith, DDD, Vertical Slice Architecture WebAPI Boilerplate
 
-This repository provides a .NET 9 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (
+This repository provides a .NET 10 WebAPI boilerplate implementing a Modular Monolith approach, Domain-Driven Design (
 DDD), and Vertical Slices architecture, along with Clean Architecture principles per feature. It is designed to
 facilitate the development of scalable and maintainable applications.
 
@@ -38,6 +38,12 @@ This repository includes the following features:
 - **Transactional Outbox Pattern**: Ensures reliable message delivery.
 - **CDC - Kafka & Debezium**: Processes outbox messages with Kafka & Debezium.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
+- **JWT Access-Token Revocation**: Redis-backed blacklist invalidates tokens on logout/revoke with a 15-minute ceiling enforced on expiry; Jti validated on every authenticated request.
+- **Consumer Idempotency**: `EventHandlerBase` checks a `processed_msg:{messageId}` key in Redis before invoking the handler and writes it with a 24h TTL, ensuring at-least-once delivery without duplicate side effects.
+- **Security Headers Middleware**: Configurable `SecurityHeadersMiddleware` injects `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, and related headers on every response.
+- **Reverse Proxy / Forwarded Headers Support**: Configurable `ForwardedHeaders` middleware trusts known proxy networks and correctly propagates client IP and scheme behind load balancers.
+- **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and Kafka checks so orchestrators only route traffic once all backing services are reachable.
+- **Architecture Boundary Tests**: NetArchTest rules assert no cross-module Domain references and that all `IntegrationEvent` types are declared exclusively in `Common.IntegrationEvents`.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
 - **Strongly-Typed Localization & Multi-Language Support**: Leverages `Aigamo.ResXGenerator` to automatically generate strongly-typed `IResxLocalizer` properties for error-free resource resolution, ensuring compile-time safety and eliminating missing key errors at runtime.
 - **Pagination and Flexible Search**: Implements pagination and flexible search capabilities.
