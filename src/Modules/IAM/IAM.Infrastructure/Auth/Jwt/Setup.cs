@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Auth.Jwt;
 
@@ -56,10 +56,10 @@ internal static class Setup
                             return;
                         }
 
-                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<ICacheService>();
-                        var isBlacklisted = await cacheService.GetAsync<bool?>(
+                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<IFusionCache>();
+                        var isBlacklisted = await cacheService.GetOrDefaultAsync<bool?>(
                             $"blacklisted_jti:{jti}",
-                            context.HttpContext.RequestAborted);
+                            token: context.HttpContext.RequestAborted);
 
                         if (isBlacklisted == true)
                         {

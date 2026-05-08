@@ -7,6 +7,17 @@ public class CachingOptions
 {
     public bool UseRedis { get; set; }
     public Redis? Redis { get; set; }
+    public required CachingEntryDefaults EntryDefaults { get; set; }
+    public required TimeSpan IdempotencyKeyDuration { get; set; }
+}
+
+public class CachingEntryDefaults
+{
+    public required TimeSpan Duration { get; set; }
+    public required TimeSpan FailSafeMaxDuration { get; set; }
+    public required TimeSpan FailSafeThrottleDuration { get; set; }
+    public required TimeSpan FactorySoftTimeout { get; set; }
+    public required TimeSpan FactoryHardTimeout { get; set; }
 }
 
 public class Redis
@@ -29,6 +40,19 @@ public class CachingOptionsValidator : CustomValidator<CachingOptions>
             .SetValidator(new RedisValidator())
             .When(x => x.UseRedis);
 #pragma warning restore CS8620
+
+        RuleFor(x => x.EntryDefaults).NotNull();
+
+        When(x => x.EntryDefaults is not null, () =>
+        {
+            RuleFor(x => x.EntryDefaults.Duration).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.EntryDefaults.FailSafeMaxDuration).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.EntryDefaults.FailSafeThrottleDuration).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.EntryDefaults.FactorySoftTimeout).GreaterThan(TimeSpan.Zero);
+            RuleFor(x => x.EntryDefaults.FactoryHardTimeout).GreaterThan(TimeSpan.Zero);
+        });
+
+        RuleFor(x => x.IdempotencyKeyDuration).GreaterThan(TimeSpan.Zero);
     }
 }
 

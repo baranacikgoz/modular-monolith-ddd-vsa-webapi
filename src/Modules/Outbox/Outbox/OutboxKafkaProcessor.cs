@@ -21,14 +21,13 @@ public partial class OutboxKafkaProcessor(
 ) : BackgroundService
 {
     private readonly JsonSerializerOptions _dlqSerializerOptions = new() { WriteIndented = false };
-    private readonly OutboxOptions _outboxOptions = outboxOptionsProvider.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        LogStarting(logger, _outboxOptions.KafkaConsumer.TopicName);
-        LogDlqConfigured(logger, _outboxOptions.KafkaDlqProducer.TopicName);
+        LogStarting(logger, outboxOptionsProvider.Value.KafkaConsumer.TopicName);
+        LogDlqConfigured(logger, outboxOptionsProvider.Value.KafkaDlqProducer.TopicName);
 
-        var setupRetryDelay = TimeSpan.FromSeconds(_outboxOptions.SetupRetryDelaySeconds);
+        var setupRetryDelay = TimeSpan.FromSeconds(outboxOptionsProvider.Value.SetupRetryDelaySeconds);
         while (!stoppingToken.IsCancellationRequested)
         {
             IConsumer<Ignore, OutboxMessageDto>? consumer = null;
@@ -38,7 +37,7 @@ public partial class OutboxKafkaProcessor(
                 using (consumer = BuildConsumer())
                 using (dlqProducer = BuildDlqProducer())
                 {
-                    consumer.Subscribe(_outboxOptions.KafkaConsumer.TopicName);
+                    consumer.Subscribe(outboxOptionsProvider.Value.KafkaConsumer.TopicName);
                     LogConsumerSubscribed(logger);
 
                     await ConsumeLoop(consumer, dlqProducer, stoppingToken);
@@ -78,9 +77,9 @@ public partial class OutboxKafkaProcessor(
         IProducer<Null, string> dlqProducer,
         CancellationToken stoppingToken)
     {
-        var dlqTopicName = _outboxOptions.KafkaDlqProducer.TopicName;
-        var consumeErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ConsumeErrorDelaySeconds);
-        var processingErrorDelay = TimeSpan.FromSeconds(_outboxOptions.ProcessingErrorDelaySeconds);
+        var dlqTopicName = outboxOptionsProvider.Value.KafkaDlqProducer.TopicName;
+        var consumeErrorDelay = TimeSpan.FromSeconds(outboxOptionsProvider.Value.ConsumeErrorDelaySeconds);
+        var processingErrorDelay = TimeSpan.FromSeconds(outboxOptionsProvider.Value.ProcessingErrorDelaySeconds);
 
         // CONSIDER: Ensure the MaxPollIntervalMs (Kafka consumer config, default 5 min)
         // is longer than the maximum expected time for ProcessMessageAsync to complete,
@@ -114,7 +113,7 @@ public partial class OutboxKafkaProcessor(
                 var currentPartition = consumeResult.Partition.Value;
                 var currentOffset = consumeResult.Offset.Value;
 
-                if (_outboxOptions.KafkaConsumer.EnablePartitionEof && consumeResult.IsPartitionEOF)
+                if (outboxOptionsProvider.Value.KafkaConsumer.EnablePartitionEof && consumeResult.IsPartitionEOF)
                 {
                     LogPartitionEof(logger, currentPartition, currentOffset, currentTopic);
                     continue;
@@ -311,7 +310,7 @@ public partial class OutboxKafkaProcessor(
                 OriginalTopic = originalTopic,
                 OriginalPartition = originalPartition,
                 OriginalOffset = originalOffset,
-                ConsumerGroupId = _outboxOptions.KafkaConsumer.GroupId,
+                ConsumerGroupId = outboxOptionsProvider.Value.KafkaConsumer.GroupId,
                 ExceptionType = exception.GetType().FullName,
                 ExceptionMessage = exception.Message,
                 ExceptionStackTrace = exception.StackTrace,
@@ -362,7 +361,7 @@ public partial class OutboxKafkaProcessor(
 
     private IConsumer<Ignore, OutboxMessageDto> BuildConsumer()
     {
-        var kafkaConsumerOptions = _outboxOptions.KafkaConsumer;
+        var kafkaConsumerOptions = outboxOptionsProvider.Value.KafkaConsumer;
         if (!Enum.TryParse(kafkaConsumerOptions.AutoOffsetReset, true,
                 out AutoOffsetReset autoOffsetReset)) // Added ignoreCase=true
         {
@@ -401,7 +400,7 @@ public partial class OutboxKafkaProcessor(
 
     private IProducer<Null, string> BuildDlqProducer()
     {
-        var kafkaProducerOptions = _outboxOptions.KafkaDlqProducer;
+        var kafkaProducerOptions = outboxOptionsProvider.Value.KafkaDlqProducer;
 
         var producerConfig = new ProducerConfig
         {

@@ -1,4 +1,4 @@
-using Common.Application.Caching;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Identity.Services;
 
@@ -7,7 +7,7 @@ namespace IAM.Infrastructure.Identity.Services;
 ///     Inherits the real cache-based verification logic from <see cref="OtpServiceBase" />
 ///     so that behaviour stays consistent while only the generation differs.
 /// </summary>
-internal sealed class DummyOtpService(ICacheService cache) : OtpServiceBase(cache)
+internal sealed class DummyOtpService(IFusionCache cache) : OtpServiceBase(cache)
 {
     private const string DummyOtp = "123456";
 

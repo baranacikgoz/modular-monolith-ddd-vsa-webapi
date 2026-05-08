@@ -26,13 +26,11 @@ public static partial class Policies
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider
     ) : IRateLimiterPolicy<string>
     {
-        private readonly CustomRateLimitingOptions _rateLimitingOptions = rateLimitingOptionsProvider.Value;
-
         public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => (context, cancellationToken) =>
         {
             var localizedMessage = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
                 ? LocalizedMessage(retryAfter)
-                : LocalizedMessage(TimeSpan.FromMilliseconds(_rateLimitingOptions.CreateStore!.PeriodInMs!));
+                : LocalizedMessage(TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore!.PeriodInMs!));
 
             var problemDetails = new ProblemDetails
             {
@@ -61,9 +59,9 @@ public static partial class Policies
             return RateLimitPartition.GetFixedWindowLimiter(userId, opt =>
                 new FixedWindowRateLimiterOptions
                 {
-                    Window = TimeSpan.FromMilliseconds(_rateLimitingOptions.CreateStore!.PeriodInMs!),
-                    PermitLimit = _rateLimitingOptions.CreateStore!.Limit!,
-                    QueueLimit = _rateLimitingOptions.CreateStore!.QueueLimit!
+                    Window = TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore!.PeriodInMs!),
+                    PermitLimit = rateLimitingOptionsProvider.Value.CreateStore!.Limit!,
+                    QueueLimit = rateLimitingOptionsProvider.Value.CreateStore!.QueueLimit!
                 });
         }
 

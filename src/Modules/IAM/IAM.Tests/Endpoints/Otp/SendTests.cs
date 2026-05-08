@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Bogus;
 using Common.Application.Caching;
+using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -22,7 +23,7 @@ public class SendTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
@@ -46,7 +47,7 @@ public class SendTests : BaseIntegrationTest
 
         // Verify cache Side-Effect
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        var cachedOtp = await cache.GetAsync<string>(cacheKey, default);
+        var cachedOtp = await cache.GetOrDefaultAsync<string>(cacheKey);
 
         Assert.False(string.IsNullOrWhiteSpace(cachedOtp));
     }

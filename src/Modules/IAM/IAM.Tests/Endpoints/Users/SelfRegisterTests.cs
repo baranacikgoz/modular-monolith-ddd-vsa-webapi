@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Bogus;
 using Common.Application.Caching;
+using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
 using IAM.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ public class SelfRegisterTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
         await EnsureBasicRoleExistsAsync(scope);
 
@@ -45,7 +46,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
@@ -93,7 +94,7 @@ public class SelfRegisterTests : BaseIntegrationTest
     {
         // Arrange — register a user first, then try to register with the same phone
         using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
         await EnsureBasicRoleExistsAsync(scope);
 
@@ -112,7 +113,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         const string otp = "123456";
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
@@ -138,7 +139,7 @@ public class SelfRegisterTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
         await EnsureBasicRoleExistsAsync(scope);
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -146,7 +147,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Seed the CORRECT otp but send a WRONG one
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, correctOtp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, correctOtp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request

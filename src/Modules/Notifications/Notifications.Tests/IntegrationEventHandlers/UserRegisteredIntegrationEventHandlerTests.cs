@@ -1,21 +1,23 @@
 using System.Linq.Expressions;
 using Common.Application.BackgroundJobs;
-using Common.Application.Caching;
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Notifications.Application;
 using Notifications.Application.IntegrationEventHandlers;
 using NSubstitute;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Notifications.Tests.IntegrationEventHandlers;
 
-public class UserRegisteredIntegrationEventHandlerTests
+public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
 {
     private readonly IBackgroundJobs _backgroundJobs;
-    private readonly ICacheService _cache;
+    private readonly FusionCache _cache;
     private readonly UserRegisteredIntegrationEventHandler _handler;
     private readonly ILogger<UserRegisteredIntegrationEventHandler> _logger;
 
@@ -23,8 +25,25 @@ public class UserRegisteredIntegrationEventHandlerTests
     {
         _backgroundJobs = Substitute.For<IBackgroundJobs>();
         _logger = Substitute.For<ILogger<UserRegisteredIntegrationEventHandler>>();
-        _cache = Substitute.For<ICacheService>();
-        _handler = new UserRegisteredIntegrationEventHandler(_backgroundJobs, _logger, _cache);
+        _cache = new FusionCache(new FusionCacheOptions());
+        _handler = new UserRegisteredIntegrationEventHandler(_backgroundJobs, _logger, _cache, Options.Create(new CachingOptions
+        {
+            EntryDefaults = new CachingEntryDefaults
+            {
+                Duration = TimeSpan.FromMinutes(5),
+                FailSafeMaxDuration = TimeSpan.FromHours(2),
+                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+                FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500),
+            },
+            IdempotencyKeyDuration = TimeSpan.FromDays(1),
+        }));
+    }
+
+    public void Dispose()
+    {
+        _cache.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -53,8 +72,6 @@ public class UserRegisteredIntegrationEventHandlerTests
 
         Assert.NotNull(capturedExpression);
 
-        // Compile and invoke the captured expression against a mock ISmsService
-        // to verify that SendWelcomeSmsAsync (or SendWelcomeAsync) is called with correct parameters.
         var smsServiceMock = Substitute.For<ISmsService>();
         var func = capturedExpression.Compile();
         await func(smsServiceMock);
@@ -80,28 +97,13 @@ public class UserRegisteredIntegrationEventHandlerTests
         secondContext.MessageId.Returns(messageId);
         secondContext.CancellationToken.Returns(CancellationToken.None);
 
-        var cacheKey = $"processed_msg:{messageId}";
-
-        // First call: cache returns null (not yet processed)
-        _cache.GetAsync<bool?>(cacheKey, CancellationToken.None).Returns((bool?)null);
-
-        // Act — first delivery
+        // Act — first delivery: real in-memory FusionCache has no entry, factory runs
         await _handler.Consume(firstContext);
 
-        // Simulate cache now holding true after SetAsync was called on the first delivery
-        _cache.GetAsync<bool?>(cacheKey, CancellationToken.None).Returns((bool?)true);
-
-        // Act — second delivery (re-delivery of same message)
+        // Act — second delivery: same messageId, cache hit, factory is skipped
         await _handler.Consume(secondContext);
 
         // Assert — background job enqueued exactly once despite two Consume calls
         _backgroundJobs.Received(1).Enqueue(Arg.Any<Expression<Func<ISmsService, Task>>>());
-
-        // SetAsync was called once (on first delivery only)
-        await _cache.Received(1).SetAsync(
-            cacheKey,
-            true,
-            absoluteExpirationRelativeToNow: TimeSpan.FromDays(1),
-            cancellationToken: CancellationToken.None);
     }
 }

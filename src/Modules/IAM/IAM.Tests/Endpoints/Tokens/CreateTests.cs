@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Bogus;
 using Common.Application.Caching;
+using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
 using IAM.Domain.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ public class CreateTests : BaseIntegrationTest
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
         var otp = "123456";
@@ -42,7 +43,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = Common.Application.Caching.CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
@@ -79,7 +80,7 @@ public class CreateTests : BaseIntegrationTest
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
         const string correctOtp = "123456";
@@ -98,7 +99,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache with the CORRECT otp
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, correctOtp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, correctOtp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
@@ -120,7 +121,7 @@ public class CreateTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         // A phone number that has no user in the DB
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -128,7 +129,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Seed cache so OTP verification passes
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(5));
+        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request

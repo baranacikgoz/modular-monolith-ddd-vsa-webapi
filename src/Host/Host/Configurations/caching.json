@@ -6,6 +6,14 @@
       "Port": 6379,
       "Password": "admin",
       "AppName": "modular-monolith"
-    }
+    },
+    "EntryDefaults": {
+      "Duration": "00:05:00",
+      "FailSafeMaxDuration": "02:00:00",
+      "FailSafeThrottleDuration": "00:00:30",
+      "FactorySoftTimeout": "00:00:00.1",
+      "FactoryHardTimeout": "00:00:01.5"
+    },
+    "IdempotencyKeyDuration": "1.00:00:00"
   }
 }

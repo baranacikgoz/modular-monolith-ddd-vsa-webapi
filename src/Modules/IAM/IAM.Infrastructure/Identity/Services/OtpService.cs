@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
-using Common.Application.Caching;
 using Common.Application.Options;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, ICacheService cache)
+internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, IFusionCache cache)
     : OtpServiceBase(cache)
 {
     public override string Generate()

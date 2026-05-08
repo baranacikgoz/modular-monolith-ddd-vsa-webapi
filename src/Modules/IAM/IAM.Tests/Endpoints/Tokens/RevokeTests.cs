@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using Bogus;
-using Common.Application.Caching;
+using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
@@ -98,7 +98,7 @@ public class RevokeTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
-        var cache = scope.ServiceProvider.GetRequiredService<ICacheService>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -140,7 +140,7 @@ public class RevokeTests : BaseIntegrationTest
 
         // Assert — the jti is now stored in the blacklist cache
         // This proves the OnTokenValidated hook will reject any real JWT carrying this jti.
-        var isBlacklisted = await cache.GetAsync<bool?>($"blacklisted_jti:{jti}", default);
+        var isBlacklisted = await cache.GetOrDefaultAsync<bool?>($"blacklisted_jti:{jti}");
         Assert.True(isBlacklisted == true, "Expected the revoked jti to be present in the blacklist cache.");
     }
 }

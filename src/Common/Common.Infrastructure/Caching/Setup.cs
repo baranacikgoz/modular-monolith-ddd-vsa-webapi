@@ -1,7 +1,7 @@
-using Common.Application.Caching;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Common.Infrastructure.Caching;
 
@@ -9,11 +9,27 @@ public static class Setup
 {
     public static IServiceCollection AddCommonCaching(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<CachingOptions>(configuration.GetSection(nameof(CachingOptions)));
+
         var cachingOptions = configuration
                                  .GetSection(nameof(CachingOptions))
                                  .Get<CachingOptions>()
                              ?? throw new InvalidOperationException(
                                  $"Configuration for {nameof(CachingOptions)} is null.");
+
+        var defaults = cachingOptions.EntryDefaults;
+        var builder = services
+            .AddFusionCache()
+            .WithDefaultEntryOptions(new FusionCacheEntryOptions
+            {
+                Duration = defaults.Duration,
+                IsFailSafeEnabled = true,
+                FailSafeMaxDuration = defaults.FailSafeMaxDuration,
+                FailSafeThrottleDuration = defaults.FailSafeThrottleDuration,
+                FactorySoftTimeout = defaults.FactorySoftTimeout,
+                FactoryHardTimeout = defaults.FactoryHardTimeout,
+            })
+            .WithSystemTextJsonSerializer();
 
         if (cachingOptions.UseRedis)
         {
@@ -22,18 +38,18 @@ public static class Setup
                 throw new InvalidOperationException($"Configuration for {nameof(CachingOptions.Redis)} is null.");
             }
 
-            services.AddStackExchangeRedisCache(options =>
+            var connectionString =
+                $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}";
+
+            services.AddStackExchangeRedisCache(o =>
             {
-                options.Configuration =
-                    $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}";
+                o.Configuration = connectionString;
+                o.InstanceName = cachingOptions.Redis.AppName;
             });
+
+            // AddStackExchangeRedisCache registers IDistributedCache; FusionCache auto-discovers it as L2.
+            builder.WithStackExchangeRedisBackplane(o => o.Configuration = connectionString);
         }
-
-        // Microsoft made an interesting decision; this HybridCache automatically uses Redis when it has been registered like above.
-        // So, do not change the order, StackExchangeRedisCache must be registered before HybridCache.
-        services.AddHybridCache();
-
-        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }

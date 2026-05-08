@@ -17,22 +17,21 @@ internal partial class ReCaptchaService(
 ) : ICaptchaService
 {
     private const double DefaultScoreThreshold = 0.5;
-    private readonly CaptchaOptions _captchaOptions = captchaOptionsProvider.Value;
 
     public string GetClientKey()
     {
-        return _captchaOptions.ClientKey;
+        return captchaOptionsProvider.Value.ClientKey;
     }
 
     public async Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
     {
         HttpResponseMessage httpResponseMessage;
-        using (var requestContent = GetRequestParameters(captchaToken, _captchaOptions.SecretKey))
+        using (var requestContent = GetRequestParameters(captchaToken, captchaOptionsProvider.Value.SecretKey))
         {
             // Use relative URI so the resilient HttpClient pipeline (retry, circuit breaker, timeout) is applied.
             // BaseAddress is configured in the HttpClient registration (Captcha/Setup.cs).
             httpResponseMessage = await httpClient.PostAsync(
-                new Uri(_captchaOptions.CaptchaEndpoint, UriKind.RelativeOrAbsolute),
+                new Uri(captchaOptionsProvider.Value.CaptchaEndpoint, UriKind.RelativeOrAbsolute),
                 requestContent,
                 cancellationToken);
         }
@@ -66,8 +65,8 @@ internal partial class ReCaptchaService(
         }
 
         // reCAPTCHA v3 score validation: 1.0 = very likely human, 0.0 = very likely bot
-        var scoreThreshold = _captchaOptions.ScoreThreshold > 0
-            ? _captchaOptions.ScoreThreshold
+        var scoreThreshold = captchaOptionsProvider.Value.ScoreThreshold > 0
+            ? captchaOptionsProvider.Value.ScoreThreshold
             : DefaultScoreThreshold;
 
         if (reCaptchaResponse.Score < scoreThreshold)

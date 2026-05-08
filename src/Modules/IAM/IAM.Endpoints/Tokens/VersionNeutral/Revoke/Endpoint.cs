@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common.Application.Auth;
-using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Revoke;
 
@@ -32,7 +32,7 @@ internal static class Endpoint
     private static async Task<Result> RevokeToken(
         ICurrentUser currentUser,
         IIAMDbContext dbContext,
-        ICacheService cacheService,
+        IFusionCache cacheService,
         IOptions<JwtOptions> jwtOptionsProvider,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -52,8 +52,8 @@ internal static class Endpoint
                 async _ => await cacheService.SetAsync<bool?>(
                     $"blacklisted_jti:{jti}",
                     true,
-                    absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes),
-                    cancellationToken: cancellationToken),
+                    options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes) },
+                    token: cancellationToken),
                 when: () => !string.IsNullOrEmpty(jti))
             .TapActivityAsync(activity);
     }

@@ -15,8 +15,6 @@ internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenSer
     public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now,
         ApplicationUserId userId, ICollection<string> roles)
     {
-        var jwtOptions = jwtOptionsProvider.Value;
-
         var claims = new List<Claim>(2 + roles.Count)
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
@@ -25,13 +23,13 @@ internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenSer
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var accessTokenExpiresAt = now.AddMinutes(jwtOptions.AccessTokenExpirationInMinutes);
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+        var accessTokenExpiresAt = now.AddMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes);
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptionsProvider.Value.Secret));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         var rawAccessToken = new JwtSecurityToken(
-            audience: jwtOptions.Audience,
-            issuer: jwtOptions.Issuer,
+            audience: jwtOptionsProvider.Value.Audience,
+            issuer: jwtOptionsProvider.Value.Issuer,
             claims: claims,
             expires: accessTokenExpiresAt.UtcDateTime,
             signingCredentials: signingCredentials);
@@ -43,9 +41,7 @@ internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenSer
 
     public (byte[] refreshTokenBytes, DateTimeOffset expiresAt) GenerateRefreshToken(DateTimeOffset now)
     {
-        var jwtOptions = jwtOptionsProvider.Value;
-
-        var refreshTokenExpiresAt = now.AddDays(jwtOptions.RefreshTokenExpirationInDays);
+        var refreshTokenExpiresAt = now.AddDays(jwtOptionsProvider.Value.RefreshTokenExpirationInDays);
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
         {

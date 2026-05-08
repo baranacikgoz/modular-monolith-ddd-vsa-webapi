@@ -1,26 +1,24 @@
-using Common.Application.Caching;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Captcha.Services;
 
 public class CachedCaptchaService(
     ICaptchaService decoree,
-    ICacheService cacheService,
+    IFusionCache cache,
     IOptions<OtpOptions> otpOptionsProvider
 ) : ICaptchaService
 {
-    private readonly int _cacheCaptchaForMinutes = otpOptionsProvider.Value.ExpirationInMinutes;
-
-    public Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
+    public async Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
     {
-        return cacheService.GetOrCreateAsync(
+        return await cache.GetOrSetAsync<Result>(
             CacheKey(captchaToken),
-            async ct => await decoree.ValidateAsync(captchaToken, ct),
-            absoluteExpirationRelativeToNow: TimeSpan.FromMinutes(_cacheCaptchaForMinutes),
-            cancellationToken: cancellationToken);
+            async (_, ct) => await decoree.ValidateAsync(captchaToken, ct),
+            options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes) },
+            token: cancellationToken);
     }
 
     public string GetClientKey()

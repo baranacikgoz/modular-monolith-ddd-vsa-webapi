@@ -1,4 +1,3 @@
-using Common.Application.Caching;
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
 using IAM.Application.Captcha.Services;
@@ -6,6 +5,7 @@ using IAM.Infrastructure.Captcha.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Captcha;
 
@@ -35,7 +35,7 @@ public static class Setup
             .Services
             .Decorate<ICaptchaService>((decoree, sp) => new CachedCaptchaService(
                 decoree,
-                sp.GetRequiredService<ICacheService>(),
+                sp.GetRequiredService<IFusionCache>(),
                 sp.GetRequiredService<IOptions<OtpOptions>>()));
 
         return services;

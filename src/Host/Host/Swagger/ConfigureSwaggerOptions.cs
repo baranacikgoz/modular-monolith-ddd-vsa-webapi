@@ -12,8 +12,6 @@ internal sealed class ConfigureSwaggerOptions(
     IOptions<OpenApiOptions> openApiOptionsProvider
 ) : IConfigureOptions<SwaggerGenOptions>
 {
-    private readonly OpenApiOptions _openApiOptions = openApiOptionsProvider.Value;
-
     public void Configure(SwaggerGenOptions options)
     {
         foreach (var description in provider.ApiVersionDescriptions)
@@ -44,18 +42,18 @@ internal sealed class ConfigureSwaggerOptions(
     {
         var info = new OpenApiInfo
         {
-            Title = _openApiOptions.Title,
+            Title = openApiOptionsProvider.Value.Title,
             Version = description.ApiVersion.ToString(),
-            Description = _openApiOptions.Description,
+            Description = openApiOptionsProvider.Value.Description,
             Contact = new OpenApiContact
             {
-                Name = _openApiOptions.ContactName, Email = _openApiOptions.ContactEmail
+                Name = openApiOptionsProvider.Value.ContactName, Email = openApiOptionsProvider.Value.ContactEmail
             },
-            License = new OpenApiLicense { Name = _openApiOptions.LicenseName }
+            License = new OpenApiLicense { Name = openApiOptionsProvider.Value.LicenseName }
         };
 
-        if (!string.IsNullOrEmpty(_openApiOptions.LicenseUrl) &&
-            Uri.TryCreate(_openApiOptions.LicenseUrl, UriKind.Absolute, out var uri))
+        if (!string.IsNullOrEmpty(openApiOptionsProvider.Value.LicenseUrl) &&
+            Uri.TryCreate(openApiOptionsProvider.Value.LicenseUrl, UriKind.Absolute, out var uri))
         {
             info.License.Url = uri;
         }

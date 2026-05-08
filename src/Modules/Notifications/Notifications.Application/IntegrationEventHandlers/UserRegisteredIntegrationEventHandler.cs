@@ -1,18 +1,21 @@
 using Common.Application.BackgroundJobs;
-using Common.Application.Caching;
 using Common.Application.EventBus;
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Notifications.Application.IntegrationEventHandlers;
 
 public partial class UserRegisteredIntegrationEventHandler(
     IBackgroundJobs backgroundJobs,
     ILogger<UserRegisteredIntegrationEventHandler> logger,
-    ICacheService cache
-) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache)
+    IFusionCache cache,
+    IOptions<CachingOptions> cachingOptions
+) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions)
 {
     protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context,
         UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)

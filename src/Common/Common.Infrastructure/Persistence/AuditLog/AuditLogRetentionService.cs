@@ -10,20 +10,14 @@ public sealed partial class AuditLogRetentionService(
     IOptions<AuditLogOptions> auditLogOptions,
     ILogger<AuditLogRetentionService> logger)
 {
-    private readonly string _connectionString = databaseOptions.Value.ConnectionString;
-    private readonly int _retentionDays = auditLogOptions.Value.RetentionDays;
-
-    /// <summary>
-    /// Purges audit log entries older than the configured retention period
-    /// across all module schemas.
-    /// </summary>
     public async Task PurgeExpiredEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var cutoffDate = DateTimeOffset.UtcNow.AddDays(-_retentionDays);
+        var retentionDays = auditLogOptions.Value.RetentionDays;
+        var cutoffDate = DateTimeOffset.UtcNow.AddDays(-retentionDays);
 
-        LogRetentionStart(logger, _retentionDays, cutoffDate);
+        LogRetentionStart(logger, retentionDays, cutoffDate);
 
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = new NpgsqlConnection(databaseOptions.Value.ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
         // Discover all AuditLog tables across schemas

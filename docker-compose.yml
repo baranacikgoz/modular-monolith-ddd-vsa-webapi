@@ -110,20 +110,20 @@ services:
        ( echo 'CREATE PUBLICATION might have failed (possibly already exists, which is OK)' && exit 0 ) &&
        echo 'Database publication init script completed successfully.'"
 
-  # mm.redis:
-  #   image: redis/redis-stack:latest
-  #   container_name: mm.redis
-  #   restart: "no"
-  #   volumes:
-  #     - ./.containers/mm.redis:/data
-  #   networks:
-  #     - local_shared_network
-  #   ports:
-  #     - 6379:6379
-  #     - 8001:8001
-  #   environment:
-  #     - REDIS_PASSWORD=admin
-  #   command: redis-server --requirepass admin
+  mm.redis:
+    image: redis/redis-stack:latest
+    container_name: mm.redis
+    restart: "no"
+    volumes:
+      - ./.containers/mm.redis:/data
+    networks:
+      - local_shared_network
+    ports:
+      - 6379:6379
+      - 8001:8001
+    environment:
+      - REDIS_PASSWORD=admin
+    command: redis-server --requirepass admin
 
   mm.jaeger:
     container_name: mm.jaeger

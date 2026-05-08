@@ -46,8 +46,7 @@ internal static partial class Setup
         // Readiness: Redis connectivity.
         var cachingOptions = configuration
             .GetSection(nameof(CachingOptions))
-            .Get<CachingOptions>()
-            ?? new CachingOptions();
+            .Get<CachingOptions>();
 
         if (cachingOptions is { UseRedis: true, Redis: not null })
         {

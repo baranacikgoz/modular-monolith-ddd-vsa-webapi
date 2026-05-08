@@ -10,8 +10,6 @@ internal partial class RequestResponseLoggingMiddleware(
     IOptions<ObservabilityOptions> loggingOptionsProvider
 ) : IMiddleware
 {
-    private readonly int _responseTimeThresholdMs = loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
-
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -20,7 +18,7 @@ internal partial class RequestResponseLoggingMiddleware(
         {
             stopwatch.Stop();
             var elapsedMs = stopwatch.Elapsed.TotalMilliseconds;
-            var isSlow = elapsedMs > _responseTimeThresholdMs;
+            var isSlow = elapsedMs > loggingOptionsProvider.Value.ResponseTimeThresholdInMs;
 
             using (LogContext.PushProperty("IsSlow", isSlow))
             {
