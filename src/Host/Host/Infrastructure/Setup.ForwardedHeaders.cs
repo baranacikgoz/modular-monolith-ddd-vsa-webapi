@@ -1,5 +1,6 @@
 using Common.Application.Options;
 using Microsoft.AspNetCore.HttpOverrides;
+using IPNetwork = System.Net.IPNetwork;
 
 namespace Host.Infrastructure;
 
@@ -15,7 +16,9 @@ internal static partial class Setup
                            ?? new ReverseProxyOptions();
 
         if (!proxyOptions.IsEnabled)
+        {
             return services;
+        }
 
         services.Configure<ForwardedHeadersOptions>(o =>
         {
@@ -28,7 +31,9 @@ internal static partial class Setup
                 o.KnownProxies.Clear();
 
                 foreach (var cidr in proxyOptions.TrustedNetworks)
-                    o.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(cidr));
+                {
+                    o.KnownIPNetworks.Add(IPNetwork.Parse(cidr));
+                }
             }
         });
 

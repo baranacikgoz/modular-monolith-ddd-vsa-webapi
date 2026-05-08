@@ -9,7 +9,7 @@ public class CorsOptions
     public IReadOnlyList<string> AllowedMethods { get; init; } = [];
     public IReadOnlyList<string> AllowedHeaders { get; init; } = [];
     public bool AllowCredentials { get; init; }
-    public int MaxAgeInSeconds { get; init; } = 600;
+    public required int MaxAgeInSeconds { get; init; }
 }
 
 public class CorsOptionsValidator : CustomValidator<CorsOptions>

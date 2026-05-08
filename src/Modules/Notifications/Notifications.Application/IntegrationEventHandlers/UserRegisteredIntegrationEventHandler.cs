@@ -15,7 +15,7 @@ public partial class UserRegisteredIntegrationEventHandler(
     ILogger<UserRegisteredIntegrationEventHandler> logger,
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions
-) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions)
+) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions, logger)
 {
     protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context,
         UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)

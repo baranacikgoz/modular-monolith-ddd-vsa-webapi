@@ -25,7 +25,9 @@ internal static partial class Setup
                       ?? throw new InvalidOperationException("ObservabilityOptions is null.");
 
         if (!options.EnableMetrics && !options.EnableTracing)
+        {
             return services;
+        }
 
         var activeModules = GetRegisteredModules(services);
 
@@ -92,8 +94,12 @@ internal static partial class Setup
                 });
 
             foreach (var module in activeModules)
+            {
                 foreach (var meterName in module.MeterNames)
+                {
                     x.AddMeter(meterName);
+                }
+            }
         });
     }
 
@@ -116,8 +122,12 @@ internal static partial class Setup
                 });
 
             foreach (var module in activeModules)
+            {
                 foreach (var sourceName in module.ActivitySourceNames)
+                {
                     x.AddSource(sourceName);
+                }
+            }
         });
     }
 
