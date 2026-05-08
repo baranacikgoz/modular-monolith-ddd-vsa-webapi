@@ -9,22 +9,26 @@ public abstract class EventHandlerBase<TEvent>(ICacheService cache) : IEventHand
     public async Task Consume(ConsumeContext<TEvent> context)
     {
         var messageId = context.MessageId?.ToString();
-        if (messageId is not null)
-        {
-            var key = $"processed_msg:{messageId}";
-            var alreadyProcessed = await cache.GetAsync<bool?>(key, context.CancellationToken);
-            if (alreadyProcessed == true) return;
-
-            await HandleAsync(context, context.Message, context.CancellationToken);
-
-            await cache.SetAsync(key, true,
-                absoluteExpirationRelativeToNow: TimeSpan.FromDays(1),
-                cancellationToken: context.CancellationToken);
-        }
-        else
+        if (messageId is null)
         {
             await HandleAsync(context, context.Message, context.CancellationToken);
+            return;
         }
+
+        var key = $"processed_msg:{messageId}";
+
+        // GetOrCreateAsync is atomic within this process (HybridCache stampede protection):
+        // only one concurrent consumer executes the factory for a given key.
+        // If HandleAsync throws the entry is not persisted, so the message remains retry-eligible.
+        await cache.GetOrCreateAsync(
+            key,
+            async ct =>
+            {
+                await HandleAsync(context, context.Message, ct);
+                return true;
+            },
+            absoluteExpirationRelativeToNow: TimeSpan.FromDays(1),
+            cancellationToken: context.CancellationToken);
     }
 
     protected abstract Task HandleAsync(ConsumeContext<TEvent> context, TEvent @event,
