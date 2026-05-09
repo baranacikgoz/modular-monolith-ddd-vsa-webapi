@@ -8,7 +8,7 @@ namespace Common.Infrastructure.Persistence.ValueConverters;
 
 public class DomainEventConverter : ValueConverter<DomainEvent, string>
 {
-    private static readonly JsonSerializerOptions _writeOptions = new()
+    internal static readonly JsonSerializerOptions WriteOptions = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -33,7 +33,7 @@ public class DomainEventConverter : ValueConverter<DomainEvent, string>
     };
 
     public DomainEventConverter() : base(
-        eventItem => JsonSerializer.Serialize(eventItem, _writeOptions),
+        eventItem => JsonSerializer.Serialize(eventItem, WriteOptions),
         json => JsonSerializer.Deserialize<DomainEvent>(json, _readOptions)!
     )
     {

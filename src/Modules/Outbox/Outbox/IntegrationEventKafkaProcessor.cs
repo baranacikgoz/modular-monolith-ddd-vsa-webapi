@@ -2,6 +2,7 @@ using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Options;
 using Common.Infrastructure.Persistence.Extensions;
+using Common.Infrastructure.Persistence.Outbox;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -236,7 +237,7 @@ public partial class IntegrationEventKafkaProcessor(
 
         LogStartProcessing(logger, dto.Id, topic, partition, offset);
 
-        var dbContext = serviceProvider.GetRequiredService<OutboxDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<IOutboxDbContext>();
 
         var outboxMessage = await dbContext
             .IntegrationEventOutboxMessages

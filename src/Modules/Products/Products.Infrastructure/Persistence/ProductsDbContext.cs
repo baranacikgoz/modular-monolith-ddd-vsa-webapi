@@ -1,9 +1,10 @@
+using Common.Application.Auth;
 using Common.Domain.Events;
 using Common.Infrastructure.Persistence;
 using Common.Domain.Entities;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
@@ -13,8 +14,10 @@ namespace Products.Infrastructure.Persistence;
 
 public sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
-    IServiceScopeFactory serviceScopeFactory
-) : BaseDbContext(options, serviceScopeFactory), IProductsDbContext
+    TimeProvider timeProvider,
+    ICurrentUser currentUser,
+    ILogger<BaseDbContext> logger
+) : BaseDbContext(options, timeProvider, currentUser, logger), IProductsDbContext
 {
     public DbSet<Store> Stores => Set<Store>();
     public DbSet<ProductTemplate> ProductTemplates => Set<ProductTemplate>();

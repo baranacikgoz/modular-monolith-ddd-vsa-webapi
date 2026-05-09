@@ -26,9 +26,8 @@ public sealed class OutboxModule : ICoreModule
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        // Using AddDbContext (not AddDbContextPool) because BaseDbContext needs to
-        // share a connection with OutboxDbContext for atomic transactions via SetDbConnection.
-        // Pooled contexts do not support connection swapping.
+        // AddDbContext (not AddDbContextPool): pooled contexts do not support connection swapping,
+        // and OutboxDbContext is used only by the processors — not by BaseDbContext anymore.
         services
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
