@@ -3,6 +3,7 @@ using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Persistence.Outbox;
 using Common.Domain.Events;
+using Common.Infrastructure.Persistence.ValueConverters;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,36 @@ public class SpyEventBus : IEventBus
 
         _publishedEvents.Add(@event);
         return Task.CompletedTask;
+    }
+}
+
+public class DomainEventSerializationTests
+{
+    [Fact]
+    public void DomainEventConverter_RoundTrip_PreservesEventId()
+    {
+        var converter = new DomainEventConverter();
+        var original = new TestDomainEvent("round-trip");
+
+        var json = (string)converter.ConvertToProvider(original)!;
+        var restored = (TestDomainEvent)converter.ConvertFromProvider(json)!;
+
+        Assert.Equal(original.Id, restored.Id);
+    }
+
+    [Fact]
+    public void DomainEventConverter_RoundTrip_PreservesEventData()
+    {
+        var converter = new DomainEventConverter();
+        var original = new TestDomainEvent("hello-serialization");
+
+        var json = (string)converter.ConvertToProvider(original)!;
+        var restored = (TestDomainEvent)converter.ConvertFromProvider(json)!;
+
+        Assert.Equal(original.Data, restored.Data);
+        Assert.Equal(original.CreatedOn, restored.CreatedOn);
+        Assert.Equal(original.Version, restored.Version);
+        Assert.IsType<TestDomainEvent>(restored);
     }
 }
 
