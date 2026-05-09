@@ -21,7 +21,10 @@ internal static partial class Setup
         var options = configuration
                           .GetSection(nameof(HealthCheckOptions))
                           .Get<HealthCheckOptions>()
-                      ?? new HealthCheckOptions { LivenessTimeoutInSeconds = 3, ReadinessTimeoutInSeconds = 5, StartupTimeoutInSeconds = 10 };
+                      ?? new HealthCheckOptions
+                      {
+                          LivenessTimeoutInSeconds = 3, ReadinessTimeoutInSeconds = 5, StartupTimeoutInSeconds = 10
+                      };
 
         if (!options.EnableHealthChecks)
         {
@@ -51,8 +54,9 @@ internal static partial class Setup
         if (cachingOptions is { UseRedis: true, Redis: not null })
         {
             builder.AddRedis(
-                _ => $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}",
-                name: "redis",
+                _ =>
+                    $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}",
+                "redis",
                 tags: [ReadyTag],
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
@@ -70,9 +74,9 @@ internal static partial class Setup
         {
             builder.AddCheck<ConditionalKafkaHealthCheck>(
                 "kafka",
-                failureStatus: HealthStatus.Unhealthy,
-                tags: [ReadyTag],
-                timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
+                HealthStatus.Unhealthy,
+                [ReadyTag],
+                TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
         // Startup: PostgreSQL reachable during boot — ensures migrations have been applied.
@@ -97,30 +101,37 @@ internal static partial class Setup
         }
 
         // Liveness probe: Is the process alive?
-        app.MapHealthChecks("/health/live", new AspNetHealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains(LiveTag),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        }).ExcludeFromDescription();
+        app.MapHealthChecks("/health/live",
+            new AspNetHealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains(LiveTag),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }).ExcludeFromDescription();
 
         // Readiness probe: Can it serve traffic? (checks all dependencies)
-        app.MapHealthChecks("/health/ready", new AspNetHealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains(ReadyTag),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        }).ExcludeFromDescription();
+        app.MapHealthChecks("/health/ready",
+            new AspNetHealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains(ReadyTag),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }).ExcludeFromDescription();
 
         // Startup probe: Has it finished booting?
-        app.MapHealthChecks("/health/startup", new AspNetHealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains(StartupTag),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        }).ExcludeFromDescription();
+        app.MapHealthChecks("/health/startup",
+            new AspNetHealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains(StartupTag),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }).ExcludeFromDescription();
 
         LogHealthChecksRegistered(app.Logger);
 
         return app;
     }
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
+    private static partial void LogHealthChecksRegistered(ILogger logger);
 
     // Evaluates SkipKafkaHealthCheck at check-time (not at registration time) so that
     // WebApplicationFactory test overrides applied after service registration are respected.
@@ -133,15 +144,15 @@ internal static partial class Setup
             CancellationToken cancellationToken = default)
         {
             if (healthCheckOptions.Value.SkipKafkaHealthCheck)
+            {
                 return Task.FromResult(HealthCheckResult.Healthy("Kafka check skipped."));
+            }
 
             try
             {
                 using var adminClient = new AdminClientBuilder(
-                    new AdminClientConfig
-                    {
-                        BootstrapServers = outboxOptions.Value.KafkaConsumer.BootstrapServers
-                    }).Build();
+                        new AdminClientConfig { BootstrapServers = outboxOptions.Value.KafkaConsumer.BootstrapServers })
+                    .Build();
 
                 adminClient.GetMetadata(TimeSpan.FromSeconds(3));
                 return Task.FromResult(HealthCheckResult.Healthy());
@@ -154,8 +165,4 @@ internal static partial class Setup
             }
         }
     }
-
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
-    private static partial void LogHealthChecksRegistered(ILogger logger);
 }

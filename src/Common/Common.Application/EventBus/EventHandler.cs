@@ -48,7 +48,9 @@ public abstract partial class EventHandlerBase<TEvent>(
             token: cancellationToken);
 
         if (factoryRan)
+        {
             Activity.Current?.SetTag("event.outcome", "processed");
+        }
         else
         {
             Activity.Current?.SetTag("event.outcome", "duplicate");

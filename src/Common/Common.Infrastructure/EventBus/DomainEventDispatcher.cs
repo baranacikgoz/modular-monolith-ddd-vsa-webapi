@@ -13,7 +13,9 @@ public class DomainEventDispatcher(IServiceProvider serviceProvider) : IDomainEv
         foreach (var handler in handlers)
         {
             if (handler is IDomainEventHandlerWrapper wrapper)
+            {
                 await wrapper.HandleAsync(@event, cancellationToken);
+            }
         }
     }
 }

@@ -13,7 +13,9 @@ public class IntegrationEventDispatcher(IServiceProvider serviceProvider) : IInt
         foreach (var handler in handlers)
         {
             if (handler is IIntegrationEventHandlerWrapper wrapper)
+            {
                 await wrapper.HandleAsync(@event, cancellationToken);
+            }
         }
     }
 }
