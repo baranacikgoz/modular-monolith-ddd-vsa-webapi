@@ -5,10 +5,11 @@ namespace Common.Application.Options;
 
 public class HealthCheckOptions
 {
-    public bool EnableHealthChecks { get; set; } = true;
-    public int LivenessTimeoutInSeconds { get; set; } = 3;
-    public int ReadinessTimeoutInSeconds { get; set; } = 5;
-    public int StartupTimeoutInSeconds { get; set; } = 10;
+    public bool EnableHealthChecks { get; set; }
+    public bool SkipKafkaHealthCheck { get; set; }
+    public required int LivenessTimeoutInSeconds { get; set; }
+    public required int ReadinessTimeoutInSeconds { get; set; }
+    public required int StartupTimeoutInSeconds { get; set; }
 }
 
 public class HealthCheckOptionsValidator : CustomValidator<HealthCheckOptions>

@@ -11,9 +11,9 @@ public class JwtOptions
 
     public required string Audience { get; set; }
 
-    public int AccessTokenExpirationInMinutes { get; set; }
+    public required int AccessTokenExpirationInMinutes { get; set; }
 
-    public int RefreshTokenExpirationInDays { get; set; }
+    public required int RefreshTokenExpirationInDays { get; set; }
 }
 
 public class JwtOptionsValidator : CustomValidator<JwtOptions>

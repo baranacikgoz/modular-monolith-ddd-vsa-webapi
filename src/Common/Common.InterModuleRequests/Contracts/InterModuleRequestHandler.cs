@@ -1,29 +1,10 @@
-using MassTransit;
-
+#pragma warning disable S1694 // Abstract class has a single abstract member: intentional — provides a named base type for DI scanning and implementors
 namespace Common.InterModuleRequests.Contracts;
 
-/// <summary>
-///     This is a mechanism to force returning response directly using <see cref="HandleAsync" /> method providing a
-///     mediator-like experience,
-///     rather than expecting developers explicitly call context.RespondAsync(response).
-///     Since
-///     <see cref="Consume">
-///         method returns merely a Task,
-///         Some may forget to call context.RespondAsync(response) and this will cause the request to be stuck in the
-///         queue.
-/// </summary>
-/// <typeparam name="TRequest"></typeparam>
-/// <typeparam name="TResponse"></typeparam>
-public abstract class InterModuleRequestHandler<TRequest, TResponse> : IConsumer<TRequest>
+public abstract class InterModuleRequestHandler<TRequest, TResponse> : IInterModuleRequestHandler<TRequest, TResponse>
     where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class
 {
-    public async Task Consume(ConsumeContext<TRequest> context)
-    {
-        var response = await HandleAsync(context, context.Message, context.CancellationToken);
-        await context.RespondAsync(response);
-    }
-
-    protected abstract Task<TResponse> HandleAsync(ConsumeContext<TRequest> context, TRequest request,
-        CancellationToken cancellationToken);
+    public abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
+#pragma warning restore S1694

@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
-using MassTransit.Logging;
-using MassTransit.Monitoring;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -86,7 +84,6 @@ internal static partial class Setup
                     {
                         Boundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10]
                     })
-                .AddMeter(InstrumentationOptions.MeterName)
                 .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(options.OtlpEndpoint!);
@@ -114,7 +111,6 @@ internal static partial class Setup
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddEntityFrameworkCoreInstrumentation(cfg => { cfg.SetDbStatementForText = true; })
-                .AddSource(DiagnosticHeaders.DefaultListenerName)
                 .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(options.OtlpEndpoint!);

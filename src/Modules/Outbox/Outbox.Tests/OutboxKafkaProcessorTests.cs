@@ -16,20 +16,20 @@ namespace Outbox.Tests;
 
 public record TestDomainEvent(string Data) : DomainEvent;
 
-public class SpyEventBus : IEventBus
+public class SpyDomainEventDispatcher : IDomainEventDispatcher
 {
-    private readonly ConcurrentBag<IEvent> _publishedEvents = new();
-    public IReadOnlyCollection<IEvent> PublishedEvents => _publishedEvents;
+    private readonly ConcurrentBag<DomainEvent> _dispatchedEvents = new();
+    public IReadOnlyCollection<DomainEvent> DispatchedEvents => _dispatchedEvents;
     public bool ShouldThrow { get; set; }
 
-    public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public Task DispatchAsync(DomainEvent @event, CancellationToken cancellationToken)
     {
         if (ShouldThrow)
         {
             throw new InvalidOperationException("Simulated processing failure for DLQ.");
         }
 
-        _publishedEvents.Add(@event);
+        _dispatchedEvents.Add(@event);
         return Task.CompletedTask;
     }
 }
@@ -95,7 +95,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         var dto = new OutboxMessageDto
         {
             Id = messageId,
-            Event = JsonSerializer.Serialize((DomainEvent)eventData), // Payload string
+            Event = JsonSerializer.Serialize((DomainEvent)eventData),
             CreatedOn = DateTimeOffset.UtcNow,
             IsProcessed = false
         };
@@ -145,9 +145,9 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
     public async Task Should_Produce_DLQ_On_Failure()
     {
         // 0. Set the Spy to throw an exception
-        var spyBus = _factory.Services.GetRequiredService<IEventBus>() as SpyEventBus;
-        Assert.NotNull(spyBus);
-        spyBus.ShouldThrow = true;
+        var spy = _factory.Services.GetRequiredService<IDomainEventDispatcher>() as SpyDomainEventDispatcher;
+        Assert.NotNull(spy);
+        spy.ShouldThrow = true;
 
         // 1. Arrange: Seed a message in the PostgreSQL Outbox table
         var eventData = new TestDomainEvent("DlqTest");
@@ -166,7 +166,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         var dto = new OutboxMessageDto
         {
             Id = messageId,
-            Event = JsonSerializer.Serialize((DomainEvent)eventData), // Payload string
+            Event = JsonSerializer.Serialize((DomainEvent)eventData),
             CreatedOn = DateTimeOffset.UtcNow,
             IsProcessed = false
         };
@@ -216,7 +216,6 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
                 }
                 catch (ConsumeException)
                 {
-                    // Ignore transient consume errors from Kafka on CI
                     continue;
                 }
 
@@ -225,8 +224,6 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
                     continue;
                 }
 
-                // If we get here, a message was produced to the DLQ topic!
-                // We could optionally deserialize it and verify the original offset/topic, but receiving any message here means success for this targeted test payload.
                 if (consumeResult.Message?.Value != null &&
                     consumeResult.Message.Value.Contains("Simulated processing failure for DLQ.",
                         StringComparison.Ordinal))
@@ -238,13 +235,11 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
         }
         catch (Exception ex)
         {
-            // Specifically catching unhandled stuff to at least delay failures if any Kafka error happens.
             Console.WriteLine($"Test crashed with: {ex.Message}");
         }
         finally
         {
-            // Reset the spy for other tests
-            spyBus.ShouldThrow = false;
+            spy.ShouldThrow = false;
         }
 
         Assert.True(dlqReceived, "The background processor should have routed the poison message to the DLQ topic.");

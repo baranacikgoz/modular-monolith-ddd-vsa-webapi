@@ -5,8 +5,8 @@ namespace Common.Application.Options;
 
 public class OtpOptions
 {
-    public int Length { get; set; }
-    public int ExpirationInMinutes { get; set; }
+    public required int Length { get; set; }
+    public required int ExpirationInMinutes { get; set; }
 }
 
 public class OtpOptionsValidator : CustomValidator<OtpOptions>

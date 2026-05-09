@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace BackgroundJobs;
 
-public sealed class BackgroundJobsModule : IModule
+public sealed class BackgroundJobsModule : ICoreModule
 {
     public string Name => "BackgroundJobs";
     public int StartupPriority => 0; // Probably the most core thing to run

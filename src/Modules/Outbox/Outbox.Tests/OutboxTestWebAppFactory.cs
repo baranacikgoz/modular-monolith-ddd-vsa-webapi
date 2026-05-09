@@ -1,10 +1,9 @@
+using Common.Application.EventBus;
 using Common.Tests;
-using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Common.Application.EventBus;
 using Testcontainers.Kafka;
 using Xunit;
 
@@ -39,6 +38,15 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
                 { "OutboxOptions:KafkaConsumer:HeartbeatIntervalMs", "3000" },
                 { "OutboxOptions:KafkaDlqProducer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
                 { "OutboxOptions:KafkaDlqProducer:TopicName", "test-dlq-topic" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:TopicName", "test-integration-event-topic" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:GroupId", "test-integration-event-group" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:AutoOffsetReset", "Earliest" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:EnablePartitionEof", "true" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:SessionTimeoutMs", "10000" },
+                { "OutboxOptions:IntegrationEventKafkaConsumer:HeartbeatIntervalMs", "3000" },
+                { "OutboxOptions:IntegrationEventKafkaDlqProducer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
+                { "OutboxOptions:IntegrationEventKafkaDlqProducer:TopicName", "test-integration-event-dlq-topic" },
                 { "OutboxOptions:SetupRetryDelaySeconds", "1" },
                 { "OutboxOptions:ConsumeErrorDelaySeconds", "1" },
                 { "OutboxOptions:ProcessingErrorDelaySeconds", "0" }
@@ -48,8 +56,8 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
 
         builder.ConfigureTestServices(services =>
         {
-            // Inject SpyEventBus to intercept or manipulate event publishing for DLQ testing
-            services.AddSingleton<IEventBus, SpyEventBus>();
+            // Override IDomainEventDispatcher with a spy to intercept dispatches for DLQ testing.
+            services.AddSingleton<IDomainEventDispatcher, SpyDomainEventDispatcher>();
         });
     }
 
@@ -64,8 +72,6 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
     async Task IAsyncLifetime.DisposeAsync()
     {
         await _kafkaContainer.StopAsync();
-        // Because IntegrationTestFactory explicitly implements IAsyncLifetime.DisposeAsync privately,
-        // we invoke it via reflection or cast but the easiest is just let the normal DisposeAsync pipeline clean up Postgres.
     }
 
     public override async ValueTask DisposeAsync()

@@ -44,7 +44,7 @@ internal static partial class Setup
                 env)
             .AddCustomCors(configuration)
             .AddValidatorsFromAssemblies(moduleAssemblies)
-            .AddCommonDependencies(configuration, env, moduleAssemblies)
+            .AddCommonDependencies(configuration, moduleAssemblies)
             .AddCustomHealthChecks(configuration)
             .AddEnrichLogsWithUserInfoMiddleware();
     }
@@ -145,12 +145,12 @@ internal static partial class Setup
     }
 
     private static IServiceCollection AddCommonDependencies(this IServiceCollection services, IConfiguration config,
-        IWebHostEnvironment env, Assembly[] moduleAssemblies)
+        Assembly[] moduleAssemblies)
     {
         return services
             .AddCommonCaching(config)
-            .AddCommonEventBus(config, env, moduleAssemblies)
-            .AddCommonInterModuleRequests()
+            .AddCommonEventHandling(moduleAssemblies)
+            .AddCommonInterModuleRequests(moduleAssemblies)
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
             .AddCommonPersistence()

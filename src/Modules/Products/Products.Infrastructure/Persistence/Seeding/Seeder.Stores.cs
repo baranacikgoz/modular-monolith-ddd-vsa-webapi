@@ -20,7 +20,7 @@ internal sealed partial class Seeder
         catch (Exception ex)
         {
             LogIamModuleNotAvailable(logger, ex.Message);
-            // If the IAM module is not loaded or MassTransit times out, gracefully skip seeding stores.
+            // If the IAM module is not loaded or the request handler is unavailable, gracefully skip seeding stores.
             return new List<StoreId>();
         }
 

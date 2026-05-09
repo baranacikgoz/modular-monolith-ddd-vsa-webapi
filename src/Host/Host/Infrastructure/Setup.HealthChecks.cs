@@ -21,7 +21,7 @@ internal static partial class Setup
         var options = configuration
                           .GetSection(nameof(HealthCheckOptions))
                           .Get<HealthCheckOptions>()
-                      ?? new HealthCheckOptions();
+                      ?? new HealthCheckOptions { LivenessTimeoutInSeconds = 3, ReadinessTimeoutInSeconds = 5, StartupTimeoutInSeconds = 10 };
 
         if (!options.EnableHealthChecks)
         {
@@ -57,18 +57,20 @@ internal static partial class Setup
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
-        // Readiness: Kafka connectivity.
-        var eventBusOptions = configuration
-            .GetSection(nameof(EventBusOptions))
-            .Get<EventBusOptions>()
-            ?? new EventBusOptions();
+        // Readiness: Kafka connectivity — always required since all events flow via CDC → Kafka.
+        // SkipKafkaHealthCheck is evaluated at check-time via IOptions<> so that WebApplicationFactory
+        // test overrides (applied after service registration) are respected.
+        var kafkaBootstrapServers = configuration
+            .GetSection(nameof(OutboxOptions))
+            .Get<OutboxOptions>()
+            ?.KafkaConsumer
+            ?.BootstrapServers;
 
-        if (eventBusOptions is { UseInMemoryEventBus: false, MessageBroker.MessageBrokerType: MessageBrokerType.Kafka, MessageBroker: not null })
+        if (!string.IsNullOrEmpty(kafkaBootstrapServers))
         {
-            var bootstrapServers = eventBusOptions.MessageBroker.Uri;
-            builder.AddKafka(
-                kafkaConfig => { kafkaConfig.BootstrapServers = bootstrapServers; },
-                name: "kafka",
+            builder.AddCheck<ConditionalKafkaHealthCheck>(
+                "kafka",
+                failureStatus: HealthStatus.Unhealthy,
                 tags: [ReadyTag],
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
@@ -118,6 +120,39 @@ internal static partial class Setup
         LogHealthChecksRegistered(app.Logger);
 
         return app;
+    }
+
+    // Evaluates SkipKafkaHealthCheck at check-time (not at registration time) so that
+    // WebApplicationFactory test overrides applied after service registration are respected.
+    private sealed class ConditionalKafkaHealthCheck(
+        IOptions<HealthCheckOptions> healthCheckOptions,
+        IOptions<OutboxOptions> outboxOptions) : IHealthCheck
+    {
+        public Task<HealthCheckResult> CheckHealthAsync(
+            HealthCheckContext context,
+            CancellationToken cancellationToken = default)
+        {
+            if (healthCheckOptions.Value.SkipKafkaHealthCheck)
+                return Task.FromResult(HealthCheckResult.Healthy("Kafka check skipped."));
+
+            try
+            {
+                using var adminClient = new AdminClientBuilder(
+                    new AdminClientConfig
+                    {
+                        BootstrapServers = outboxOptions.Value.KafkaConsumer.BootstrapServers
+                    }).Build();
+
+                adminClient.GetMetadata(TimeSpan.FromSeconds(3));
+                return Task.FromResult(HealthCheckResult.Healthy());
+            }
+#pragma warning disable CA1031
+            catch (Exception ex)
+#pragma warning restore CA1031
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy("Kafka unreachable.", ex));
+            }
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information,

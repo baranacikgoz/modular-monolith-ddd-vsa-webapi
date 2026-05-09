@@ -1,9 +1,7 @@
-using Common.Application.BackgroundJobs;
 using Common.Application.EventBus;
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
@@ -11,24 +9,21 @@ using ZiggyCreatures.Caching.Fusion;
 namespace Notifications.Application.IntegrationEventHandlers;
 
 public partial class UserRegisteredIntegrationEventHandler(
-    IBackgroundJobs backgroundJobs,
     ILogger<UserRegisteredIntegrationEventHandler> logger,
     IFusionCache cache,
-    IOptions<CachingOptions> cachingOptions
-) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions, logger)
+    IOptions<CachingOptions> cachingOptions,
+    ISmsService smsService
+) : IntegrationEventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions, logger)
 {
-    protected override Task HandleAsync(ConsumeContext<UserRegisteredIntegrationEvent> context,
-        UserRegisteredIntegrationEvent @event, CancellationToken cancellationToken)
+    protected override async Task ProcessAsync(UserRegisteredIntegrationEvent @event,
+        CancellationToken cancellationToken)
     {
-        LogEnqueuingSendingWelcomeSms(logger, @event.UserId);
-
-        backgroundJobs.Enqueue<ISmsService>(smsService => smsService.SendWelcomeAsync(@event.Name, @event.PhoneNumber));
-
-        return Task.CompletedTask;
+        LogSendingWelcomeSms(logger, @event.UserId);
+        await smsService.SendWelcomeAsync(@event.Name, @event.PhoneNumber);
     }
 
     [LoggerMessage(
         Level = LogLevel.Debug,
-        Message = "Enqueuing sending welcome sms job to the new user {UserId}.")]
-    private static partial void LogEnqueuingSendingWelcomeSms(ILogger logger, ApplicationUserId userId);
+        Message = "Sending welcome sms job to the new user {UserId}.")]
+    private static partial void LogSendingWelcomeSms(ILogger logger, ApplicationUserId userId);
 }

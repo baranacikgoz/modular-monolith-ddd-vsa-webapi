@@ -29,7 +29,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
       - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
-      - EventBusOptions__UseInMemoryEventBus=true
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__LogGeneratedSqlQueries=true
       - ObservabilityOptions__LogSink=Seq
@@ -46,6 +45,8 @@ services:
       - CachingOptions__Redis__AppName=modular-monolith-
       - OutboxOptions__KafkaConsumer__BootstrapServers=mm.kafka:9092
       - OutboxOptions__KafkaDlqProducer__BootstrapServers=mm.kafka:9092
+      - OutboxOptions__IntegrationEventKafkaConsumer__BootstrapServers=mm.kafka:9092
+      - OutboxOptions__IntegrationEventKafkaDlqProducer__BootstrapServers=mm.kafka:9092
     healthcheck:
       test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1" ]
       interval: 10s

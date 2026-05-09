@@ -7,7 +7,7 @@ namespace Common.Infrastructure.Persistence;
 
 /// <summary>
 ///     Runs all registered <see cref="IDatabaseSeeder"/> implementations in <see cref="IDatabaseSeeder.Priority"/> order
-///     after the application has fully started (guaranteeing MassTransit bus and all hosted services are up).
+///     after the application has fully started (guaranteeing all hosted services are up).
 /// </summary>
 internal sealed partial class DatabaseSeederOrchestrator(
     IServiceScopeFactory serviceScopeFactory,
@@ -20,7 +20,7 @@ internal sealed partial class DatabaseSeederOrchestrator(
     {
         try
         {
-            // Wait until all hosted services (including MassTransit) have started.
+            // Wait until all hosted services have started.
             var appStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             hostLifetime.ApplicationStarted.Register(() => appStarted.TrySetResult());
 

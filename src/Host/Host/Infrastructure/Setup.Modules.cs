@@ -58,7 +58,7 @@ internal static partial class Setup
                 {
                     var module = (IModule)Activator.CreateInstance(moduleType)!;
 
-                    if (loadAll || (activeModulesConfig != null && activeModulesConfig.Contains(module.Name)))
+                    if (module is ICoreModule || loadAll || (activeModulesConfig != null && activeModulesConfig.Contains(module.Name)))
                     {
                         modulesToLoad.Add(module);
                     }

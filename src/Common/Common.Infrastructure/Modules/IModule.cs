@@ -7,6 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Infrastructure.Modules;
 
+/// <summary>
+///     Marker interface for modules that are always loaded regardless of configuration or test overrides.
+///     Implement this instead of <see cref="IModule"/> for infrastructure modules (e.g. Outbox, BackgroundJobs)
+///     that other modules depend on.
+/// </summary>
+public interface ICoreModule : IModule;
+
 public interface IModule
 {
     /// <summary>

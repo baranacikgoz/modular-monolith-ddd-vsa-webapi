@@ -15,7 +15,7 @@ using Outbox.Persistence;
 
 namespace Outbox;
 
-public sealed class OutboxModule : IModule
+public sealed class OutboxModule : ICoreModule
 {
     public string Name => "Outbox";
     public int StartupPriority => 1;
@@ -41,7 +41,8 @@ public sealed class OutboxModule : IModule
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
                     .UseExceptionProcessor();
             })
-            .AddHostedService<OutboxKafkaProcessor>();
+            .AddHostedService<OutboxKafkaProcessor>()
+            .AddHostedService<IntegrationEventKafkaProcessor>();
     }
 
     public void UseModule(IApplicationBuilder app)

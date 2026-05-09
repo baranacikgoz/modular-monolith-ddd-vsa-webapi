@@ -13,6 +13,19 @@
       "BootstrapServers": "localhost:9092",
       "TopicName": "outbox_topic.Outbox.OutboxMessages_dlq"
     },
+    "IntegrationEventKafkaConsumer": {
+      "BootstrapServers": "localhost:9092",
+      "GroupId": "integration-event-consumer-group",
+      "TopicName": "outbox_topic.Outbox.IntegrationEventOutboxMessages",
+      "AutoOffsetReset": "Earliest",
+      "SessionTimeoutMs": 30000,
+      "HeartbeatIntervalMs": 7000,
+      "EnablePartitionEof": false
+    },
+    "IntegrationEventKafkaDlqProducer": {
+      "BootstrapServers": "localhost:9092",
+      "TopicName": "outbox_topic.Outbox.IntegrationEventOutboxMessages_dlq"
+    },
     "SetupRetryDelaySeconds": 10,
     "ConsumeErrorDelaySeconds": 5,
     "ProcessingErrorDelaySeconds": 1

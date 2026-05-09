@@ -10,8 +10,8 @@ public class OutboxDbContext(
     : DbContext(options), IOutboxDbContext
 {
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<IntegrationEventOutboxMessage> IntegrationEventOutboxMessages => Set<IntegrationEventOutboxMessage>();
 
-    // Expose DatabaseFacade explicitly for IOutboxDbContext consumers
     DatabaseFacade IOutboxDbContext.Database => Database;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,5 +20,6 @@ public class OutboxDbContext(
         modelBuilder.HasDefaultSchema(nameof(Outbox));
 
         modelBuilder.ApplyConfiguration(new OutboxMessageConfig());
+        modelBuilder.ApplyConfiguration(new IntegrationEventOutboxMessageConfig());
     }
 }
