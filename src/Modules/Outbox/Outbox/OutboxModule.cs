@@ -30,7 +30,6 @@ public sealed class OutboxModule : ICoreModule
         // share a connection with OutboxDbContext for atomic transactions via SetDbConnection.
         // Pooled contexts do not support connection swapping.
         services
-            .AddScoped<IOutboxDbContext, OutboxDbContext>()
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
                 var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
@@ -41,6 +40,7 @@ public sealed class OutboxModule : ICoreModule
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
                     .UseExceptionProcessor();
             })
+            .AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<OutboxDbContext>())
             .AddHostedService<OutboxKafkaProcessor>()
             .AddHostedService<IntegrationEventKafkaProcessor>();
     }
