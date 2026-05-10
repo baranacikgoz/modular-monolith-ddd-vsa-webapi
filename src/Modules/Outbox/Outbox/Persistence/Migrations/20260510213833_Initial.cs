@@ -7,13 +7,16 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Outbox.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIntegrationEventOutboxMessages : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Outbox");
+
             migrationBuilder.CreateTable(
-                name: "IntegrationEventOutboxMessages",
+                name: "OutboxMessages",
                 schema: "Outbox",
                 columns: table => new
                 {
@@ -23,17 +26,18 @@ namespace Outbox.Migrations
                     Event = table.Column<string>(type: "text", nullable: false),
                     IsProcessed = table.Column<bool>(type: "boolean", nullable: false),
                     ProcessedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    EventType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IntegrationEventOutboxMessages", x => x.Id);
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_IntegrationEventOutboxMessages_CreatedOn_IsProcessed",
+                name: "IX_OutboxMessages_CreatedOn_IsProcessed",
                 schema: "Outbox",
-                table: "IntegrationEventOutboxMessages",
+                table: "OutboxMessages",
                 columns: new[] { "CreatedOn", "IsProcessed" });
         }
 
@@ -41,7 +45,7 @@ namespace Outbox.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "IntegrationEventOutboxMessages",
+                name: "OutboxMessages",
                 schema: "Outbox");
         }
     }

@@ -4,15 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.Infrastructure.EventBus;
 
-public class DomainEventDispatcher(IServiceProvider serviceProvider) : IDomainEventDispatcher
+public class EventDispatcher(IServiceProvider serviceProvider) : IEventDispatcher
 {
-    public async Task DispatchAsync(DomainEvent @event, CancellationToken cancellationToken)
+    public async Task DispatchAsync(IEvent @event, CancellationToken cancellationToken)
     {
-        var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(@event.GetType());
+        var handlerType = typeof(IEventHandler<>).MakeGenericType(@event.GetType());
         var handlers = serviceProvider.GetServices(handlerType);
         foreach (var handler in handlers)
         {
-            if (handler is IDomainEventHandlerWrapper wrapper)
+            if (handler is IEventHandlerWrapper wrapper)
             {
                 await wrapper.HandleAsync(@event, cancellationToken);
             }

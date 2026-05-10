@@ -38,6 +38,12 @@ internal static class OutboxTelemetry
     public static readonly Counter<long> MessagesFailed =
         Meter.CreateCounter<long>("outbox.messages_failed.total", description: "Total outbox messages that failed processing");
 
+    public static readonly Counter<long> MessagesDlqProduced =
+        Meter.CreateCounter<long>("outbox.messages_dlq_produced.total", description: "Total outbox messages sent to DLQ");
+
+    public static readonly Counter<long> MessagesDlqFailed =
+        Meter.CreateCounter<long>("outbox.messages_dlq_failed.total", description: "Total outbox messages that failed DLQ production");
+
     // ── Histograms ───────────────────────────────────────────────────
     public static readonly Histogram<double> ProcessingDuration =
         Meter.CreateHistogram<double>("outbox.processing.duration", "ms", "Time to process an outbox message batch");

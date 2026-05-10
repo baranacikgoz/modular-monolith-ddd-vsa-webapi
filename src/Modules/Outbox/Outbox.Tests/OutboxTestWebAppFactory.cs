@@ -38,26 +38,19 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
                 { "OutboxOptions:KafkaConsumer:HeartbeatIntervalMs", "3000" },
                 { "OutboxOptions:KafkaDlqProducer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
                 { "OutboxOptions:KafkaDlqProducer:TopicName", "test-dlq-topic" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:TopicName", "test-integration-event-topic" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:GroupId", "test-integration-event-group" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:AutoOffsetReset", "Earliest" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:EnablePartitionEof", "true" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:SessionTimeoutMs", "10000" },
-                { "OutboxOptions:IntegrationEventKafkaConsumer:HeartbeatIntervalMs", "3000" },
-                { "OutboxOptions:IntegrationEventKafkaDlqProducer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
-                { "OutboxOptions:IntegrationEventKafkaDlqProducer:TopicName", "test-integration-event-dlq-topic" },
                 { "OutboxOptions:SetupRetryDelaySeconds", "1" },
                 { "OutboxOptions:ConsumeErrorDelaySeconds", "1" },
-                { "OutboxOptions:ProcessingErrorDelaySeconds", "0" }
+                { "OutboxOptions:ProcessingErrorDelaySeconds", "0" },
+                { "OutboxOptions:ProcessingErrorMaxRetryCount", "3" },
+                { "OutboxOptions:ProcessTimeoutSeconds", "3" }
             };
             config.AddInMemoryCollection(confDict);
         });
 
         builder.ConfigureTestServices(services =>
         {
-            // Override IDomainEventDispatcher with a spy to intercept dispatches for DLQ testing.
-            services.AddSingleton<IDomainEventDispatcher, SpyDomainEventDispatcher>();
+            // Override IEventDispatcher with a spy to intercept dispatches for DLQ testing.
+            services.AddSingleton<IEventDispatcher, SpyEventDispatcher>();
         });
     }
 

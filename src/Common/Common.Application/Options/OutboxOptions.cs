@@ -7,11 +7,11 @@ public class OutboxOptions
 {
     public required KafkaConsumer KafkaConsumer { get; set; }
     public required KafkaProducer KafkaDlqProducer { get; set; }
-    public required KafkaConsumer IntegrationEventKafkaConsumer { get; set; }
-    public required KafkaProducer IntegrationEventKafkaDlqProducer { get; set; }
     public required int SetupRetryDelaySeconds { get; set; }
     public required int ConsumeErrorDelaySeconds { get; set; }
     public required int ProcessingErrorDelaySeconds { get; set; }
+    public int? ProcessTimeoutSeconds { get; set; }
+    public int? ProcessingErrorMaxRetryCount { get; set; }
 }
 
 public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
@@ -22,12 +22,6 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
             .SetValidator(new KafkaConsumerValidator());
 
         RuleFor(o => o.KafkaDlqProducer)
-            .SetValidator(new KafkaProducerValidator());
-
-        RuleFor(o => o.IntegrationEventKafkaConsumer)
-            .SetValidator(new KafkaConsumerValidator());
-
-        RuleFor(o => o.IntegrationEventKafkaDlqProducer)
             .SetValidator(new KafkaProducerValidator());
 
         RuleFor(o => o.SetupRetryDelaySeconds)

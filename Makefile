@@ -67,51 +67,60 @@ ef-add-IAM:
 	dotnet ef migrations add $(name) \
 		--project src/Modules/IAM/IAM.Infrastructure \
 		--startup-project src/Host/Host \
-		--context IAMDbContext
+		--context IAMDbContext \
+		--output-dir Persistence/Migrations \
+		--namespace IAM.Infrastructure.Migrations
 
 ef-add-Products:
 	dotnet ef migrations add $(name) \
 		--project src/Modules/Products/Products.Infrastructure \
 		--startup-project src/Host/Host \
-		--context ProductsDbContext
+		--context ProductsDbContext \
+		--output-dir Persistence/Migrations \
+		--namespace Products.Infrastructure.Migrations
 
 ef-add-Outbox:
 	dotnet ef migrations add $(name) \
-		--project src/Modules/Outbox \
+		--project src/Modules/Outbox/Outbox \
 		--startup-project src/Host/Host \
-		--context OutboxDbContext
+		--context OutboxDbContext \
+		--output-dir Persistence/Migrations \
+		--namespace Outbox.Migrations
 
 # Usage: make ef-script-IAM
 # Generates an idempotent SQL script committed under migrations/{Module}/
 
 ef-script-IAM:
 	@mkdir -p migrations/IAM
-	dotnet ef migrations script $(from) $(to) \
+	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
+	dotnet ef migrations script $(or $(from),0) $(to) \
 		--project src/Modules/IAM/IAM.Infrastructure \
 		--startup-project src/Host/Host \
 		--context IAMDbContext \
 		--idempotent \
-		--output migrations/IAM/$$(date +%Y%m%d%H%M%S)_IAM.sql
+		--output "migrations/IAM/$$output_name.sql"
 	@echo "Script written to migrations/IAM/"
 
 ef-script-Products:
 	@mkdir -p migrations/Products
-	dotnet ef migrations script $(from) $(to) \
+	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
+	dotnet ef migrations script $(or $(from),0) $(to) \
 		--project src/Modules/Products/Products.Infrastructure \
 		--startup-project src/Host/Host \
 		--context ProductsDbContext \
 		--idempotent \
-		--output migrations/Products/$$(date +%Y%m%d%H%M%S)_Products.sql
+		--output "migrations/Products/$$output_name.sql"
 	@echo "Script written to migrations/Products/"
 
 ef-script-Outbox:
 	@mkdir -p migrations/Outbox
-	dotnet ef migrations script $(from) $(to) \
-		--project src/Modules/Outbox \
+	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
+	dotnet ef migrations script $(or $(from),0) $(to) \
+		--project src/Modules/Outbox/Outbox \
 		--startup-project src/Host/Host \
 		--context OutboxDbContext \
 		--idempotent \
-		--output migrations/Outbox/$$(date +%Y%m%d%H%M%S)_Outbox.sql
+		--output "migrations/Outbox/$$output_name.sql"
 	@echo "Script written to migrations/Outbox/"
 
 ef-script-all: ef-script-IAM ef-script-Products ef-script-Outbox

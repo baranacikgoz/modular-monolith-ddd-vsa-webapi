@@ -11,9 +11,13 @@ public abstract partial class EventHandlerBase<TEvent>(
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
     ILogger logger
-) where TEvent : class, IEvent
+) : IEventHandler<TEvent>, IEventHandlerWrapper
+    where TEvent : class, IEvent
 {
     protected virtual TimeSpan? MaxEventAge => null;
+
+    Task IEventHandlerWrapper.HandleAsync(IEvent @event, CancellationToken cancellationToken)
+        => HandleAsync((TEvent)@event, cancellationToken);
 
     public async Task HandleAsync(TEvent @event, CancellationToken cancellationToken)
     {

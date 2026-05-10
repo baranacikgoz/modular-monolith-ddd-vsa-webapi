@@ -1,8 +1,8 @@
-using Common.IntegrationEvents;
+using Common.Domain.Events;
 
 namespace Common.Application.EventBus;
 
-public interface IIntegrationEventHandler<in TEvent> where TEvent : IntegrationEvent
+public interface IEventHandler<in TEvent> where TEvent : IEvent
 {
     Task HandleAsync(TEvent @event, CancellationToken cancellationToken);
 }

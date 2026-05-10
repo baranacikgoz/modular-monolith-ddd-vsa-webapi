@@ -16,7 +16,7 @@ public static class V1StoreCreatedDomainEventHandlers
         IFusionCache cache,
         IOptions<CachingOptions> cachingOptions,
         ILogger<StoreCreatedIntegrationEventPublishingHandler> logger)
-        : DomainEventHandlerBase<V1StoreCreatedDomainEvent>(cache, cachingOptions, logger)
+        : EventHandlerBase<V1StoreCreatedDomainEvent>(cache, cachingOptions, logger)
     {
         protected override Task ProcessAsync(V1StoreCreatedDomainEvent @event, CancellationToken cancellationToken)
         {
@@ -30,7 +30,7 @@ public static class V1StoreCreatedDomainEventHandlers
         IFusionCache cache,
         IOptions<CachingOptions> cachingOptions,
         ILogger<SimulateSomeBusinessHandler> logger)
-        : DomainEventHandlerBase<V1StoreCreatedDomainEvent>(cache, cachingOptions, logger)
+        : EventHandlerBase<V1StoreCreatedDomainEvent>(cache, cachingOptions, logger)
     {
         protected override Task ProcessAsync(V1StoreCreatedDomainEvent @event, CancellationToken cancellationToken)
             => Task.CompletedTask;

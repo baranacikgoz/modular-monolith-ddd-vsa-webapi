@@ -12,8 +12,8 @@ using Outbox.Persistence;
 namespace Outbox.Migrations
 {
     [DbContext(typeof(OutboxDbContext))]
-    [Migration("20260509002738_AddIntegrationEventOutboxMessages")]
-    partial class AddIntegrationEventOutboxMessages
+    [Migration("20260510213833_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,40 +25,6 @@ namespace Outbox.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Common.Application.Persistence.Outbox.IntegrationEventOutboxMessage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Event")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("ProcessedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedOn", "IsProcessed");
-
-                    b.ToTable("IntegrationEventOutboxMessages", "Outbox");
-                });
 
             modelBuilder.Entity("Common.Application.Persistence.Outbox.OutboxMessage", b =>
                 {
@@ -74,6 +40,11 @@ namespace Outbox.Migrations
                     b.Property<string>("Event")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsProcessed")
                         .HasColumnType("boolean");

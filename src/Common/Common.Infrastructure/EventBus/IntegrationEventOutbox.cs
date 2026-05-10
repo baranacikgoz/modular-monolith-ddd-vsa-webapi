@@ -9,7 +9,7 @@ public class IntegrationEventOutbox(IOutboxDbContext dbContext, TimeProvider tim
 {
     public void Write<TEvent>(TEvent @event) where TEvent : IntegrationEvent
     {
-        var message = IntegrationEventOutboxMessage.Create(timeProvider.GetUtcNow(), @event);
-        dbContext.IntegrationEventOutboxMessages.Add(message);
+        var message = OutboxMessage.Create(timeProvider.GetUtcNow(), @event);
+        dbContext.OutboxMessages.Add(message);
     }
 }

@@ -12,7 +12,7 @@
     "database.server.name": "mm.postgres",
     "topic.prefix": "outbox_topic",
     "schema.include.list": "Outbox",
-    "table.include.list": "Outbox.OutboxMessages,Outbox.IntegrationEventOutboxMessages",
+    "table.include.list": "Outbox.OutboxMessages",
     "slot.name": "debezium_slot",
     "publication.name": "dbz_outbox_publication",
     "publication.autocreate.mode": "disabled",

@@ -13,7 +13,7 @@ public class V1UserRegisteredDomainEventHandler(
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
     ILogger<V1UserRegisteredDomainEventHandler> logger)
-    : DomainEventHandlerBase<V1UserRegisteredDomainEvent>(cache, cachingOptions, logger)
+    : EventHandlerBase<V1UserRegisteredDomainEvent>(cache, cachingOptions, logger)
 {
     protected override Task ProcessAsync(V1UserRegisteredDomainEvent @event, CancellationToken cancellationToken)
     {

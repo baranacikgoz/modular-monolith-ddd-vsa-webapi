@@ -40,8 +40,7 @@ public sealed class OutboxModule : ICoreModule
                     .UseExceptionProcessor();
             })
             .AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<OutboxDbContext>())
-            .AddHostedService<OutboxKafkaProcessor>()
-            .AddHostedService<IntegrationEventKafkaProcessor>();
+            .AddHostedService<OutboxKafkaProcessor>();
     }
 
     public void UseModule(IApplicationBuilder app)

@@ -18,7 +18,7 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
             .IsRequired();
 
         builder.Property(x => x.Event)
-            .HasConversion<DomainEventConverter>()
+            .HasConversion<EventConverter>()
             .IsRequired();
 
         builder
@@ -28,5 +28,10 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
         builder
             .Property(x => x.ProcessedOn)
             .IsRequired(false);
+
+        builder
+            .Property(x => x.EventType)
+            .HasMaxLength(50)
+            .IsRequired();
     }
 }

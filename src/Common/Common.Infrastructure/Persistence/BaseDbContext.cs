@@ -78,17 +78,19 @@ public abstract partial class BaseDbContext(
 
             var createdOns = new DateTimeOffset[outboxMessages.Count];
             var events = new string[outboxMessages.Count];
+            var eventTypes = new string[outboxMessages.Count];
             for (var i = 0; i < outboxMessages.Count; i++)
             {
                 createdOns[i] = outboxMessages[i].CreatedOn;
-                events[i] = JsonSerializer.Serialize(outboxMessages[i].Event, DomainEventConverter.WriteOptions);
+                events[i] = JsonSerializer.Serialize(outboxMessages[i].Event, EventConverter.WriteOptions);
+                eventTypes[i] = OutboxMessage.EventTypeDomain;
             }
 
             const string InsertOutboxMessagesSql =
                 """
-                INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed")
-                SELECT c, e, false
-                FROM UNNEST({0}::timestamptz[], {1}::text[]) AS t(c, e)
+                INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed", "EventType")
+                SELECT c, e, false, et
+                FROM UNNEST({0}::timestamptz[], {1}::text[], {2}::text[]) AS t(c, e, et)
                 """;
 #pragma warning disable S3265 // NpgsqlDbType intentionally uses bitwise-OR for array types despite missing [Flags]
             await Database.ExecuteSqlRawAsync(
@@ -99,7 +101,8 @@ public abstract partial class BaseDbContext(
                     {
                         NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.TimestampTz, Value = createdOns
                     },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events }
+                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events },
+                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = eventTypes }
                 },
                 cancellationToken);
 #pragma warning restore S3265

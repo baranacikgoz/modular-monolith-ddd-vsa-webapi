@@ -37,7 +37,6 @@ services:
       - ObservabilityOptions__EnableTracing=true
       - ObservabilityOptions__OtlpEndpoint=http://mm.otel-collector:4317
       - ObservabilityOptions__OtlpProtocol=Grpc
-      - JwtOptions__AccessTokenExpirationInMinutes=1440
       - CachingOptions__UseRedis=false
       - CachingOptions__Redis__Host=mm.redis
       - CachingOptions__Redis__Port=6379
@@ -199,7 +198,7 @@ services:
       - "9464:9464" # Prometheus scrape endpoint
     volumes:
       - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
-    command: ["--config=/etc/otel-collector-config.yml"]
+    command: [ "--config=/etc/otel-collector-config.yml" ]
     depends_on:
       - mm.jaeger
 

@@ -11,18 +11,14 @@ public static class Setup
         params Assembly[] assemblies)
     {
         services
-            .AddScoped<IDomainEventDispatcher, DomainEventDispatcher>()
-            .AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>()
+            .AddScoped<IEventDispatcher, EventDispatcher>()
             .AddScoped<IIntegrationEventOutbox, IntegrationEventOutbox>();
 
         foreach (var assembly in assemblies)
         {
             services.Scan(scan => scan
                 .FromAssemblies(assembly)
-                .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)))
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-                .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)))
+                .AddClasses(classes => classes.AssignableTo(typeof(IEventHandler<>)))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
         }
