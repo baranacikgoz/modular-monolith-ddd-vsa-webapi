@@ -16,7 +16,7 @@
     "ResponseTimeThresholdInMs": 1000,
     "EnableMetrics": true,
     "EnableTracing": true,
-    "OtlpEndpoint": "http://localhost:4317",
-    "OtlpProtocol": "HttpProtobuf"
+    "OtlpEndpoint": "http://localhost:18889",
+    "OtlpProtocol": "Grpc"
   }
 }

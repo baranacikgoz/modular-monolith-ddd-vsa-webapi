@@ -8,6 +8,7 @@ using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Formatting.Compact;
+using Serilog.Sinks.OpenTelemetry;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Host.Infrastructure;
@@ -31,7 +32,7 @@ internal static partial class Setup
         serilog.MinimumLevel.ParseFrom(options.MinimumLevel);
         serilog.OverrideMinimumLevelsOf(options.MinimumLevelOverrides);
         serilog.ConfigureEnrichers(options, env);
-        serilog.ConfigureWriteTos(options);
+        serilog.ConfigureWriteTos(options, env);
         return serilog;
     }
 
@@ -72,7 +73,8 @@ internal static partial class Setup
             .Enrich.WithSpan();
     }
 
-    private static void ConfigureWriteTos(this LoggerConfiguration serilog, ObservabilityOptions options)
+    private static void ConfigureWriteTos(this LoggerConfiguration serilog, ObservabilityOptions options,
+        IHostEnvironment env)
     {
         if (options.WriteToConsole)
         {
@@ -101,6 +103,25 @@ internal static partial class Setup
         else if (options.LogSink == "Elasticsearch")
         {
             serilog.WriteTo.Elasticsearch([new Uri(options.ElasticsearchUrl!)]);
+        }
+        else if (options.LogSink == "Otlp")
+        {
+            serilog.WriteTo.OpenTelemetry(cfg =>
+            {
+                cfg.Endpoint = options.OtlpEndpoint!;
+                cfg.Protocol = options.OtlpProtocol!.Equals("Grpc", StringComparison.OrdinalIgnoreCase)
+                    ? OtlpProtocol.Grpc
+                    : OtlpProtocol.HttpProtobuf;
+                cfg.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"] = options.AppName,
+                    ["service.version"] = options.AppVersion,
+                    ["service.instance.id"] = Environment.MachineName,
+                    ["service.environment"] = env.EnvironmentName,
+                    ["telemetry.sdk.language"] = "dotnet",
+                    ["telemetry.sdk.name"] = "serilog",
+                };
+            });
         }
     }
 

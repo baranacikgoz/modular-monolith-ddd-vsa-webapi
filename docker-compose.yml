@@ -20,7 +20,7 @@ services:
         condition: service_healthy
       mm.debezium:
         condition: service_healthy
-      mm.otel-collector:
+      mm.aspire-dashboard:
         condition: service_started
       # Wait for init tasks to complete successfully
       init-kafka-topics:
@@ -31,11 +31,11 @@ services:
       - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
       - ObservabilityOptions__AppVersion=1.0.0
       - ObservabilityOptions__LogGeneratedSqlQueries=true
-      - ObservabilityOptions__LogSink=Seq
+      - ObservabilityOptions__LogSink=Otlp
       - ObservabilityOptions__SeqServerUrl=http://mm.seq:5341
       - ObservabilityOptions__EnableMetrics=true
       - ObservabilityOptions__EnableTracing=true
-      - ObservabilityOptions__OtlpEndpoint=http://mm.otel-collector:4317
+      - ObservabilityOptions__OtlpEndpoint=http://mm.aspire-dashboard:18889
       - ObservabilityOptions__OtlpProtocol=Grpc
       - CachingOptions__UseRedis=false
       - CachingOptions__Redis__Host=mm.redis
@@ -125,95 +125,18 @@ services:
       - REDIS_PASSWORD=admin
     command: redis-server --requirepass admin
 
-  mm.jaeger:
-    container_name: mm.jaeger
-    image: jaegertracing/all-in-one:latest
+  mm.aspire-dashboard:
+    container_name: mm.aspire-dashboard
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
     restart: "no"
     networks:
       - local_shared_network
     ports:
-      - "16686:16686" # Web UI
-    volumes:
-      - ./.containers/mm.jaeger/data:/badger/data
-      - ./.containers/mm.jaeger/wal:/badger/wal
-
-  mm.prometheus:
-    container_name: mm.prometheus
-    image: prom/prometheus
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./.containers/mm.prometheus:/prometheus
-      - ./observability/prometheus:/etc/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      # - --web.config.file=/etc/prometheus/web.yml
-      - --storage.tsdb.path=/prometheus
-      - --web.console.libraries=/usr/share/prometheus/console_libraries
-      - --web.console.templates=/usr/share/prometheus/consoles
-
-  mm.postgres-exporter:
-    container_name: mm.postgres-exporter
-    image: prometheuscommunity/postgres-exporter
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "9187:9187"  # Expose PostgreSQL exporter metrics
+      - "18888:18888" # Dashboard UI
+      - "18889:18889" # OTLP gRPC
+      - "18890:18890" # OTLP HTTP
     environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:postgres@mm.postgres:5432/postgres?sslmode=disable
-
-  mm.grafana:
-    container_name: mm.grafana
-    image: grafana/grafana
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - ./.containers/mm.grafana:/var/lib/grafana
-      - ./observability/grafana/provisioning:/etc/grafana/provisioning
-      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
-      # - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
-    depends_on:
-      - mm.prometheus
-
-  mm.otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    container_name: mm.otel-collector
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "4317:4317" # OTLP gRPC receiver
-      - "4318:4318" # OTLP HTTP receiver
-      - "9464:9464" # Prometheus scrape endpoint
-    volumes:
-      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
-    command: [ "--config=/etc/otel-collector-config.yml" ]
-    depends_on:
-      - mm.jaeger
-
-  mm.seq:
-    image: datalust/seq:latest
-    container_name: mm.seq
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "5341:80"
-    volumes:
-      - ./.containers/mm.seq:/data
-    environment:
-      - ACCEPT_EULA=Y
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
   mm.kafka:
     container_name: mm.kafka

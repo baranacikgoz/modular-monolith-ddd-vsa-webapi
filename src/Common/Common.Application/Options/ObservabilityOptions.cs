@@ -52,8 +52,8 @@ public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOption
             .WithMessage("ResponseTimeThresholdInMs must be greater than 0.");
 
         RuleFor(o => o.LogSink)
-            .Matches("^(Seq|Elasticsearch)$")
-            .WithMessage("LogSink must be 'Seq' or 'Elasticsearch'.")
+            .Matches("^(Seq|Elasticsearch|Otlp)$")
+            .WithMessage("LogSink must be 'Seq', 'Elasticsearch', or 'Otlp'.")
             .When(o => !string.IsNullOrEmpty(o.LogSink));
 
         RuleFor(o => o.SeqServerUrl)

@@ -65,8 +65,10 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
 
     protected sealed override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        LogStarting(logger, GetConsumerConfig(outboxOptionsProvider.Value).TopicName);
-        LogDlqConfigured(logger, GetDlqConfig(outboxOptionsProvider.Value).TopicName);
+        #pragma warning disable CA1873 // Startup path — called once per processor lifetime
+            LogStarting(logger, GetConsumerConfig(outboxOptionsProvider.Value).TopicName);
+            LogDlqConfigured(logger, GetDlqConfig(outboxOptionsProvider.Value).TopicName);
+#pragma warning restore CA1873
 
         VerifyDlqTopicExists();
 

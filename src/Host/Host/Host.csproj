@@ -27,6 +27,7 @@
     <PackageReference Include="Serilog.Sinks.Seq"/>
     <PackageReference Include="Elastic.Serilog.Sinks"/>
     <PackageReference Include="Serilog.Formatting.Compact"/>
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry"/>
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints"/>
     <PackageReference Include="Swashbuckle.AspNetCore"/>
     <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
