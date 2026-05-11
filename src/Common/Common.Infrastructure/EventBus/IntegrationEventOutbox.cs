@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Common.Application.EventBus;
 using Common.Application.Persistence.Outbox;
 using Common.Infrastructure.Persistence.Outbox;
@@ -10,6 +11,8 @@ public class IntegrationEventOutbox(IOutboxDbContext dbContext, TimeProvider tim
     public void Write<TEvent>(TEvent @event) where TEvent : IntegrationEvent
     {
         var message = OutboxMessage.Create(timeProvider.GetUtcNow(), @event);
+        message.TraceId = Activity.Current?.TraceId.ToHexString();
+        message.ParentSpanId = Activity.Current?.SpanId.ToHexString();
         dbContext.OutboxMessages.Add(message);
     }
 }

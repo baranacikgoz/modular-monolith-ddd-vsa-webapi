@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Diagnostics;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
@@ -108,9 +109,26 @@ internal static partial class Setup
         return builder.WithTracing(x =>
         {
             x
-                .AddAspNetCoreInstrumentation()
+                .AddAspNetCoreInstrumentation(cfg =>
+                {
+                    cfg.Filter = httpContext =>
+                        !httpContext.Request.Path.StartsWithSegments("/health", StringComparison.OrdinalIgnoreCase);
+                })
                 .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation(cfg => { cfg.SetDbStatementForText = true; })
+                .AddEntityFrameworkCoreInstrumentation(cfg =>
+                {
+                    cfg.SetDbStatementForText = true;
+                    cfg.EnrichWithIDbCommand = (activity, command) =>
+                    {
+                        var sql = command.CommandText?.TrimStart();
+                        var firstWord = sql?.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+                        if (firstWord is { Length: > 0 })
+                        {
+                            activity.DisplayName = $"{firstWord} {activity.DisplayName}";
+                            activity.SetTag("db.command_type", firstWord);
+                        }
+                    };
+                })
                 .AddOtlpExporter(o =>
                 {
                     o.Endpoint = new Uri(options.OtlpEndpoint!);
@@ -124,6 +142,8 @@ internal static partial class Setup
                     x.AddSource(sourceName);
                 }
             }
+
+            x.AddSource("ModularMonolith.EventBus");
         });
     }
 

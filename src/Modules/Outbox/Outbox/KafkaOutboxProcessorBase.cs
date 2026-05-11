@@ -1,12 +1,10 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json;
-using Common.Application.EventBus;
 using Common.Application.Options;
-using Common.Domain.Events;
 using Common.Application.Persistence.Outbox;
+using Common.Domain.Events;
 using Common.Infrastructure.Extensions;
-using Common.Infrastructure.Persistence.Extensions;
 using Common.Infrastructure.Persistence.Outbox;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
@@ -112,13 +110,18 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
             {
                 if (consumer is not null)
                 {
-                    try { consumer.Close(); }
+                    try
+                    {
+                        consumer.Close();
+                    }
                     catch (Exception closeEx)
                     {
                         LogConsumerCloseError(logger, closeEx, closeEx.Message);
                     }
+
                     consumer.Dispose();
                 }
+
                 dlqProducer?.Dispose();
             }
         }
@@ -249,6 +252,7 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
                                 LogNonFatalDlqCommitError(logger, kex, consumeResult.Offset.Value,
                                     consumeResult.Topic, consumeResult.Partition.Value);
                             }
+
                             _retryCount.TryRemove(messageId.Value, out _);
                             continue;
                         }
@@ -312,20 +316,34 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
         ConsumeResult<Ignore, TDto> consumeResult,
         CancellationToken cancellationToken)
     {
-        using var activity = OutboxTelemetry.ActivitySource.StartActivityForCaller();
-        var sw = Stopwatch.StartNew();
-
         var dto = consumeResult.Message.Value;
+
+        if (dto == null)
+        {
+            LogNullMessage(logger, consumeResult.Offset.Value, consumeResult.Topic, consumeResult.Partition.Value);
+            return;
+        }
+
+        var parentActivityContext = dto is { TraceId: not null, ParentSpanId: not null } &&
+            ActivityContext.TryParse(
+                $"00-{dto.TraceId}-{dto.ParentSpanId}-01",
+                "w3c",
+                out var parsed)
+            ? parsed
+            : default;
+
+        using var activity = parentActivityContext != default
+            ? OutboxTelemetry.ActivitySource.StartActivity(
+                "KafkaOutboxProcessor.ProcessMessage",
+                ActivityKind.Consumer,
+                parentActivityContext)
+            : OutboxTelemetry.ActivitySource.StartActivityForCaller();
+
+        var sw = Stopwatch.StartNew();
 
         var topic = consumeResult.Topic;
         var partition = consumeResult.Partition.Value;
         var offset = consumeResult.Offset.Value;
-
-        if (dto == null)
-        {
-            LogNullMessage(logger, offset, topic, partition);
-            return;
-        }
 
         if (dto.IsProcessed)
         {
@@ -496,8 +514,7 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
 
         var producerConfig = new ProducerConfig
         {
-            BootstrapServers = kafkaProducerOptions.BootstrapServers,
-            Acks = Acks.All
+            BootstrapServers = kafkaProducerOptions.BootstrapServers, Acks = Acks.All
         };
 
         return new ProducerBuilder<Null, string>(producerConfig).Build();
@@ -722,20 +739,24 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
     private static partial void LogStopAsyncFinished(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Max retries ({MaxRetries}) exceeded for message ID {MessageId} at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.")]
+        Message =
+            "Max retries ({MaxRetries}) exceeded for message ID {MessageId} at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.")]
     private static partial void LogMaxRetriesExceeded(ILogger logger, int messageId, long offset, string topic,
         int partition, int maxRetries);
 
     [LoggerMessage(Level = LogLevel.Critical,
-        Message = "Max consecutive DLQ failures ({ConsecutiveFailures}) reached at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Breaking consume loop.")]
-    private static partial void LogMaxConsecutiveDlqFailures(ILogger logger, int consecutiveFailures, long offset, string topic, int partition);
+        Message =
+            "Max consecutive DLQ failures ({ConsecutiveFailures}) reached at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Breaking consume loop.")]
+    private static partial void LogMaxConsecutiveDlqFailures(ILogger logger, int consecutiveFailures, long offset,
+        string topic, int partition);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Error during graceful consumer.Close(): {ErrorMessage}")]
     private static partial void LogConsumerCloseError(ILogger logger, Exception ex, string errorMessage);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "DLQ topic '{DlqTopic}' not verified (error: {ErrorCode}). Production failures will be routed to DLQ failure path.")]
+        Message =
+            "DLQ topic '{DlqTopic}' not verified (error: {ErrorCode}). Production failures will be routed to DLQ failure path.")]
     private static partial void LogDlqTopicNotFound(ILogger logger, string dlqTopic, string errorCode);
 
     [LoggerMessage(Level = LogLevel.Information,

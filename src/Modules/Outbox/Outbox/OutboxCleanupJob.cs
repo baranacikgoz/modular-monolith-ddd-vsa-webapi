@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Outbox.Telemetry;
 
 namespace Outbox;
 
@@ -14,6 +15,8 @@ public sealed partial class OutboxCleanupJob(
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        using var activity = OutboxTelemetry.ActivitySource.StartActivity(nameof(ExecuteAsync));
+
         var cleanupOptions = outboxOptions.Value.Cleanup;
 
         if (!cleanupOptions.Enabled)

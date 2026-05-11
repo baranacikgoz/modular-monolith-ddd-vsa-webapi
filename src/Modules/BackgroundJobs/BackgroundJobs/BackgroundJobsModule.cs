@@ -1,3 +1,4 @@
+using BackgroundJobs.Telemetry;
 using Common.Application.BackgroundJobs;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;
@@ -15,8 +16,8 @@ public sealed class BackgroundJobsModule : ICoreModule
 {
     public string Name => "BackgroundJobs";
     public int StartupPriority => 0; // Probably the most core thing to run
-    public IEnumerable<string> ActivitySourceNames => [];
-    public IEnumerable<string> MeterNames => [];
+    public IEnumerable<string> ActivitySourceNames => [BackgroundJobsTelemetry.ActivitySourceName];
+    public IEnumerable<string> MeterNames => [BackgroundJobsTelemetry.MeterName];
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {

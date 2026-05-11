@@ -35,6 +35,11 @@ public class OutboxMessage : IOutboxMessage
 
     [Timestamp] public uint Version { get; set; }
 
+    /// <summary>W3C TraceId captured from Activity.Current at write time.</summary>
+    public string? TraceId { get; set; }
+    /// <summary>W3C ParentSpanId captured from Activity.Current at write time.</summary>
+    public string? ParentSpanId { get; set; }
+
     public const string EventTypeDomain = "DomainEvent";
     public const string EventTypeIntegration = "IntegrationEvent";
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Common.Application.Auth;
 using Common.Application.Persistence.Outbox;
@@ -36,6 +37,8 @@ public static partial class OutboxSaveHelper
 
         var utcNow = timeProvider.GetUtcNow();
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
+        var traceId = Activity.Current?.TraceId.ToHexString();
+        var parentSpanId = Activity.Current?.SpanId.ToHexString();
 
         var outboxMessages = new List<OutboxMessage>(aggregatesWithEvents.Count);
         var auditLogEntries = new List<AuditLogEntry>(aggregatesWithEvents.Count);
@@ -45,7 +48,10 @@ public static partial class OutboxSaveHelper
             var aggregateRoot = entry.Entity;
             foreach (var @event in aggregateRoot.Events)
             {
-                outboxMessages.Add(OutboxMessage.Create(utcNow, @event));
+                var message = OutboxMessage.Create(utcNow, @event);
+                message.TraceId = traceId;
+                message.ParentSpanId = parentSpanId;
+                outboxMessages.Add(message);
 
                 @event.CreatedOn = utcNow;
                 var auditLogEntry = AuditLogEntry.Create(
@@ -76,18 +82,22 @@ public static partial class OutboxSaveHelper
             var createdOns = new DateTimeOffset[outboxMessages.Count];
             var events = new string[outboxMessages.Count];
             var eventTypes = new string[outboxMessages.Count];
+            var traceIds = new string?[outboxMessages.Count];
+            var parentSpanIds = new string?[outboxMessages.Count];
             for (var i = 0; i < outboxMessages.Count; i++)
             {
                 createdOns[i] = outboxMessages[i].CreatedOn;
                 events[i] = JsonSerializer.Serialize(outboxMessages[i].Event, EventConverter.WriteOptions);
                 eventTypes[i] = outboxMessages[i].EventType;
+                traceIds[i] = outboxMessages[i].TraceId;
+                parentSpanIds[i] = outboxMessages[i].ParentSpanId;
             }
 
             const string InsertOutboxMessagesSql =
                 """
-                INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed", "EventType")
-                SELECT c, e, false, et
-                FROM UNNEST({0}::timestamptz[], {1}::text[], {2}::text[]) AS t(c, e, et)
+                INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed", "EventType", "TraceId", "ParentSpanId")
+                SELECT c, e, false, et, ti, psi
+                FROM UNNEST({0}::timestamptz[], {1}::text[], {2}::text[], {3}::text[], {4}::text[]) AS t(c, e, et, ti, psi)
                 """;
 #pragma warning disable S3265 // NpgsqlDbType intentionally uses bitwise-OR for array types despite missing [Flags]
             await context.Database.ExecuteSqlRawAsync(
@@ -98,7 +108,9 @@ public static partial class OutboxSaveHelper
                         NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.TimestampTz, Value = createdOns
                     },
                     new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = eventTypes }
+                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = eventTypes },
+                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = traceIds },
+                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = parentSpanIds }
                 ],
                 cancellationToken);
 #pragma warning restore S3265

@@ -155,6 +155,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Outbox", "Outbox", "{AE459098-BD20-4CC1-9AB6-261D835FACED}"
 	ProjectSection(SolutionItems) = preProject
 		migrations\Outbox\Initial.sql = migrations\Outbox\Initial.sql
+		migrations\Outbox\AddTraceContext.sql = migrations\Outbox\AddTraceContext.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundJobs", "src\Modules\BackgroundJobs\BackgroundJobs\BackgroundJobs.csproj", "{F59BE51C-A34D-49BF-BCE1-2D98D59ACADA}"

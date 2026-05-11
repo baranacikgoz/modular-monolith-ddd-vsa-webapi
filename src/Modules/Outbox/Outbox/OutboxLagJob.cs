@@ -15,6 +15,8 @@ public sealed partial class OutboxLagJob(
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        using var activity = OutboxTelemetry.ActivitySource.StartActivity(nameof(ExecuteAsync));
+
         var lagThreshold = TimeSpan.FromMinutes(outboxOptions.Value.LagThresholdMinutes);
         var cutoff = DateTimeOffset.UtcNow.Add(-lagThreshold);
 

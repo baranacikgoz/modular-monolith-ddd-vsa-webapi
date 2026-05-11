@@ -8,4 +8,6 @@ public class OutboxMessageDto : IOutboxMessageDto
     public DateTimeOffset? ProcessedOn { get; set; }
     public required string Event { get; set; }
     public required string EventType { get; set; }
+    public string? TraceId { get; set; }
+    public string? ParentSpanId { get; set; }
 }

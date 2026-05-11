@@ -33,5 +33,15 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
             .Property(x => x.EventType)
             .HasMaxLength(50)
             .IsRequired();
+
+        builder
+            .Property(x => x.TraceId)
+            .HasMaxLength(32)
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.ParentSpanId)
+            .HasMaxLength(16)
+            .IsRequired(false);
     }
 }

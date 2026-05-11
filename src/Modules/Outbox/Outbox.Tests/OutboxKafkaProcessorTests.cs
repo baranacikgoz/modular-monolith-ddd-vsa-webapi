@@ -4,13 +4,10 @@ using System.Text.Json;
 using Common.Application.EventBus;
 using Common.Application.Persistence.Outbox;
 using Common.Domain.Events;
-using Common.IntegrationEvents;
 using Common.Infrastructure.Persistence.ValueConverters;
+using Common.IntegrationEvents;
 using Confluent.Kafka;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Outbox.Persistence;
 using Xunit;
@@ -217,7 +214,8 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
             await Task.Delay(500);
         }
 
-        Assert.True(isProcessed, "The background processor should have marked the integration event as processed in the DB.");
+        Assert.True(isProcessed,
+            "The background processor should have marked the integration event as processed in the DB.");
     }
 
     [Fact]
@@ -242,6 +240,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
             {
                 Interlocked.Exchange(ref messagesFailedCount, measurement);
             }
+
             if (instrument.Name == "outbox.messages_dlq_produced.total")
             {
                 Interlocked.Exchange(ref dlqProducedCount, measurement);
@@ -446,6 +445,7 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
                 isProcessed = true;
                 break;
             }
+
             await Task.Delay(500);
         }
 
@@ -454,7 +454,8 @@ public class OutboxKafkaProcessorTests : IClassFixture<OutboxTestWebAppFactory>
 
         // 4. Assert telemetry was recorded
         Assert.True(isProcessed, "The background processor should have marked the message as processed in the DB.");
-        Assert.True(processedCount > 0, "The outbox.messages_processed.total counter should be > 0 after successful processing.");
+        Assert.True(processedCount > 0,
+            "The outbox.messages_processed.total counter should be > 0 after successful processing.");
         Assert.True(lastDuration > 0, "The outbox.processing.duration histogram should record a duration in ms.");
     }
 
