@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>
     <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
     <PackageReference Include="Scrutor"/>
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore"/>
     <PackageReference Include="ZiggyCreatures.FusionCache"/>
     <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis"/>
     <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson"/>
@@ -19,6 +20,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Common.Application\Common.Application.csproj"/>
     <ProjectReference Include="..\Common.IntegrationEvents\Common.IntegrationEvents.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Common.Tests" />
   </ItemGroup>
 
   <ItemGroup>

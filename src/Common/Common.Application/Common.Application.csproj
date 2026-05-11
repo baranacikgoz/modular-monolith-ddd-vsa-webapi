@@ -8,6 +8,7 @@
     <PackageReference Include="ZiggyCreatures.FusionCache"/>
     <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
+    <PackageReference Include="Microsoft.FeatureManagement"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,6 +22,10 @@
     <NoWarn>$(NoWarn);AigamoResXGenerator004</NoWarn>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Common.Tests" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Domain\Common.Domain.csproj"/>

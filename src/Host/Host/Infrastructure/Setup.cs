@@ -5,6 +5,7 @@ using Common.Endpoints.Versioning;
 using Common.Infrastructure.Auth;
 using Common.Infrastructure.Caching;
 using Common.Infrastructure.EventBus;
+using Common.Infrastructure.FeatureManagement;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Persistence;
 using Common.InterModuleRequests;
@@ -154,6 +155,7 @@ internal static partial class Setup
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
             .AddCommonPersistence()
+            .AddCommonFeatureManagement(config)
             .AddCommonAuth();
     }
 

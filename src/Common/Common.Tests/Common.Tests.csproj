@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+    <PackageReference Include="NSubstitute"/>
     <PackageReference Include="Testcontainers.PostgreSql"/>
     <PackageReference Include="Respawn"/>
     <PackageReference Include="xunit"/>

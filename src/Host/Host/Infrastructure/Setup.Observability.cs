@@ -98,6 +98,8 @@ internal static partial class Setup
                     x.AddMeter(meterName);
                 }
             }
+
+            x.AddMeter("ModularMonolith.FeatureManagement");
         });
     }
 
@@ -144,6 +146,7 @@ internal static partial class Setup
             }
 
             x.AddSource("ModularMonolith.EventBus");
+            x.AddSource("ModularMonolith.FeatureManagement");
         });
     }
 

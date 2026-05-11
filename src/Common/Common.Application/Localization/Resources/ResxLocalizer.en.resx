@@ -519,4 +519,10 @@
   <data name="ClientClosedRequest" xml:space="preserve">
     <value>Request was closed by the client.</value>
   </data>
+  <data name="FeatureNotAvailable" xml:space="preserve">
+    <value>The feature '({0})' is not available.</value>
+  </data>
+  <data name="FeatureNotAvailableTitle" xml:space="preserve">
+    <value>Feature not available</value>
+  </data>
 </root>

@@ -1,0 +1,29 @@
+{
+  "FeatureManagement": {
+    "Products.NewCheckout": false,
+    "Products.V2Pricing": {
+      "enabledFor": [
+        {
+          "name": "Microsoft.Targeting",
+          "parameters": {
+            "Audience": {
+              "Groups": [
+                { "Name": "Beta", "RolloutPercentage": 25 }
+              ],
+              "DefaultRolloutPercentage": 0
+            }
+          }
+        }
+      ]
+    },
+    "Notifications.V2Provider": true,
+    "Checkout.Variant": {
+      "variant": {
+        "variants": [
+          { "name": "VariantA", "configuration": { "layout": "single-page", "paymentMethod": "card-only" } },
+          { "name": "VariantB", "configuration": { "layout": "multi-step", "paymentMethod": "all" } }
+        ]
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 ---
 description: Declare an IntegrationEvent in Common, scaffold the DomainEventHandler in the source module, and scaffold the consumer in the target module.
+model: sonnet
 argument-hint: "<SourceModule> <EventName> [TargetModule]"
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
