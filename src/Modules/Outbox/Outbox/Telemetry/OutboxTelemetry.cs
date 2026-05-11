@@ -28,6 +28,19 @@ internal static class OutboxTelemetry
     // ── Metrics ──────────────────────────────────────────────────────
     public static readonly Meter Meter = new(MeterName);
 
+    // ── Lag gauge (updated by Hangfire recurring job) ────────────────
+    private static long _lagCount;
+
+    public static void SetLagCount(long count) => Interlocked.Exchange(ref _lagCount, count);
+
+    public static readonly ObservableGauge<long> OutboxLagCount =
+        Meter.CreateObservableGauge<long>(
+            "outbox.lag.count",
+            ObserveLagCount,
+            description: "Number of unprocessed outbox messages beyond lag threshold");
+
+    private static Measurement<long> ObserveLagCount() => new(Interlocked.Read(ref _lagCount));
+
     // ── Counters ─────────────────────────────────────────────────────
     public static readonly Counter<long> MessagesProcessed =
         Meter.CreateCounter<long>("outbox.messages_processed.total", description: "Total outbox messages processed");

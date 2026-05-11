@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -14,23 +15,29 @@ public sealed class PolymorphicEventConverter<T> : JsonConverter<T>
         var typeString = jsonDocument.RootElement.GetProperty(EventTypeFullNameFieldName).GetString()
                          ?? throw new InvalidOperationException(
                              "Event type information is missing or incorrect in JSON.");
-        var type = Type.GetType(typeString)
+        var type = ResolveType(typeString)
                    ?? throw new InvalidOperationException($"Type {typeString} not found.");
 
-        // EventData is in "EventData" property.
         var eventData = jsonDocument.RootElement.GetProperty(EventDataFieldName).GetRawText();
         return (T)JsonSerializer.Deserialize(eventData, type, options)!;
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        writer.WriteStartObject(); // Start the enclosing object.
-        writer.WriteString(EventTypeFullNameFieldName,
-            value!.GetType().AssemblyQualifiedName); // Write the type information.
+        writer.WriteStartObject();
+        writer.WriteString(EventTypeFullNameFieldName, value!.GetType().FullName);
 
         writer.WritePropertyName(EventDataFieldName);
         JsonSerializer.Serialize(writer, value, value.GetType(), options);
 
-        writer.WriteEndObject(); // End the enclosing object.
+        writer.WriteEndObject();
+    }
+
+    private static Type? ResolveType(string typeName)
+    {
+        return Type.GetType(typeName)
+               ?? AppDomain.CurrentDomain.GetAssemblies()
+                   .Select(a => a.GetType(typeName))
+                   .FirstOrDefault(t => t != null);
     }
 }

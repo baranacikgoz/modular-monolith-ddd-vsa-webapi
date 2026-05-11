@@ -154,7 +154,8 @@ internal static partial class Setup
                         new AdminClientConfig { BootstrapServers = outboxOptions.Value.KafkaConsumer.BootstrapServers })
                     .Build();
 
-                adminClient.GetMetadata(TimeSpan.FromSeconds(3));
+                var timeout = TimeSpan.FromSeconds(healthCheckOptions.Value.ReadinessTimeoutInSeconds);
+                adminClient.GetMetadata(timeout);
                 return Task.FromResult(HealthCheckResult.Healthy());
             }
 #pragma warning disable CA1031

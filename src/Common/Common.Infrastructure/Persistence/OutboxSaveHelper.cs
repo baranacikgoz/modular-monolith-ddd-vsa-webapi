@@ -80,7 +80,7 @@ public static partial class OutboxSaveHelper
             {
                 createdOns[i] = outboxMessages[i].CreatedOn;
                 events[i] = JsonSerializer.Serialize(outboxMessages[i].Event, EventConverter.WriteOptions);
-                eventTypes[i] = OutboxMessage.EventTypeDomain;
+                eventTypes[i] = outboxMessages[i].EventType;
             }
 
             const string InsertOutboxMessagesSql =

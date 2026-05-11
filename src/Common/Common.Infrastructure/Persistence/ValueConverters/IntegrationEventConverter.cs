@@ -10,7 +10,7 @@ public class IntegrationEventConverter : ValueConverter<IntegrationEvent, string
 {
     private static readonly JsonSerializerOptions _writeOptions = new()
     {
-        WriteIndented = true,
+        WriteIndented = false,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {
@@ -22,7 +22,7 @@ public class IntegrationEventConverter : ValueConverter<IntegrationEvent, string
 
     private static readonly JsonSerializerOptions _readOptions = new()
     {
-        WriteIndented = true,
+        WriteIndented = false,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters =
         {

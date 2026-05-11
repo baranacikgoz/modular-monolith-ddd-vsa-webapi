@@ -7,6 +7,7 @@
       "AutoOffsetReset": "Earliest",
       "SessionTimeoutMs": 30000,
       "HeartbeatIntervalMs": 7000,
+      "MaxPollIntervalMs": 300000,
       "EnablePartitionEof": false
     },
     "KafkaDlqProducer": {
@@ -15,6 +16,7 @@
     },
     "SetupRetryDelaySeconds": 10,
     "ConsumeErrorDelaySeconds": 5,
-    "ProcessingErrorDelaySeconds": 1
+    "ProcessingErrorDelaySeconds": 1,
+    "ProcessTimeoutSeconds": 30
   }
 }

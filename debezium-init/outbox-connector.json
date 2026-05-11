@@ -17,7 +17,7 @@
     "publication.name": "dbz_outbox_publication",
     "publication.autocreate.mode": "filtered",
     "publication.publish.only": "true",
-    "snapshot.mode": "when_needed",
+    "snapshot.mode": "initial",
     "transforms": "unwrap",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.unwrap.drop.tombstones": "true",

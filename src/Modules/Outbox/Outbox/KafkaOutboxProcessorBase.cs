@@ -28,6 +28,7 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
 {
     private readonly JsonSerializerOptions _dlqSerializerOptions = new() { WriteIndented = false };
     private readonly ConcurrentDictionary<int, int> _retryCount = new();
+    private int _consecutiveDlqFailures;
 
     protected abstract IDeserializer<TDto> CreateDeserializer();
     protected abstract KafkaConsumer GetConsumerConfig(OutboxOptions options);
@@ -35,14 +36,46 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
     protected abstract Task<IOutboxMessage?> LoadEntityAsync(IOutboxDbContext db, int id, CancellationToken ct);
     protected abstract Task DispatchEventAsync(IEvent @event, IServiceProvider sp, CancellationToken ct);
 
+    private void VerifyDlqTopicExists()
+    {
+        var dlqConfig = GetDlqConfig(outboxOptionsProvider.Value);
+        try
+        {
+            using var adminClient = new AdminClientBuilder(
+                    new AdminClientConfig { BootstrapServers = dlqConfig.BootstrapServers })
+                .Build();
+
+            var metadata = adminClient.GetMetadata(dlqConfig.TopicName, TimeSpan.FromSeconds(5));
+            var topic = metadata.Topics.FirstOrDefault(t => t.Topic == dlqConfig.TopicName);
+
+            if (topic == null || topic.Error.Code != ErrorCode.NoError)
+            {
+                var errCode = topic?.Error.Code.ToString() ?? "UNKNOWN";
+                LogDlqTopicNotFound(logger, dlqConfig.TopicName, errCode);
+                return;
+            }
+
+            LogDlqTopicVerified(logger, dlqConfig.TopicName);
+        }
+        catch (Exception ex)
+        {
+            // Kafka broker unreachable or topic not found — log warning and continue.
+            // DLQ production will fail with a clear error at runtime if topic missing.
+            LogDlqTopicVerificationSkipped(logger, dlqConfig.TopicName, ex.Message);
+        }
+    }
+
     protected sealed override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         LogStarting(logger, GetConsumerConfig(outboxOptionsProvider.Value).TopicName);
         LogDlqConfigured(logger, GetDlqConfig(outboxOptionsProvider.Value).TopicName);
 
+        VerifyDlqTopicExists();
+
         var setupRetryDelay = TimeSpan.FromSeconds(outboxOptionsProvider.Value.SetupRetryDelaySeconds);
         while (!stoppingToken.IsCancellationRequested)
         {
+            _consecutiveDlqFailures = 0;
             IConsumer<Ignore, TDto>? consumer = null;
             IProducer<Null, string>? dlqProducer = null;
             try
@@ -77,7 +110,15 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
             }
             finally
             {
-                consumer?.Dispose();
+                if (consumer is not null)
+                {
+                    try { consumer.Close(); }
+                    catch (Exception closeEx)
+                    {
+                        LogConsumerCloseError(logger, closeEx, closeEx.Message);
+                    }
+                    consumer.Dispose();
+                }
                 dlqProducer?.Dispose();
             }
         }
@@ -116,27 +157,19 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
                 using (var scope = serviceScopeFactory.CreateScope())
                 {
                     var processTimeout = outboxOptionsProvider.Value.ProcessTimeoutSeconds;
-                    if (processTimeout.HasValue)
-                    {
-                        using var timeoutCts = new CancellationTokenSource(
-                            TimeSpan.FromSeconds(processTimeout.Value));
-                        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
-                            stoppingToken, timeoutCts.Token);
-                        try
-                        {
-                            await ProcessMessageAsync(
-                                scope.ServiceProvider, consumeResult, linkedCts.Token);
-                        }
-                        catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
-                        {
-                            throw new TimeoutException(
-                                $"ProcessMessageAsync timed out after {processTimeout.Value} seconds.");
-                        }
-                    }
-                    else
+                    using var timeoutCts = new CancellationTokenSource(
+                        TimeSpan.FromSeconds(processTimeout));
+                    using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                        stoppingToken, timeoutCts.Token);
+                    try
                     {
                         await ProcessMessageAsync(
-                            scope.ServiceProvider, consumeResult, stoppingToken);
+                            scope.ServiceProvider, consumeResult, linkedCts.Token);
+                    }
+                    catch (OperationCanceledException) when (!stoppingToken.IsCancellationRequested)
+                    {
+                        throw new TimeoutException(
+                            $"ProcessMessageAsync timed out after {processTimeout} seconds.");
                     }
                 }
 
@@ -154,6 +187,8 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
                 {
                     LogNonFatalCommitError(logger, ex, currentOffset, currentTopic, currentPartition);
                 }
+
+                _consecutiveDlqFailures = 0;
             }
             catch (ConsumeException ex)
             {
@@ -223,6 +258,7 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
 
                     if (dlqSuccess)
                     {
+                        _consecutiveDlqFailures = 0;
                         OutboxTelemetry.MessagesDlqProduced.Add(1);
                         LogDlqSuccess(logger, consumeResult.Offset.Value, consumeResult.Topic,
                             consumeResult.Partition.Value, dlqTopicName);
@@ -247,6 +283,18 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
                         OutboxTelemetry.MessagesDlqFailed.Add(1);
                         LogDlqFailure(logger, consumeResult.Offset.Value, consumeResult.Topic,
                             consumeResult.Partition.Value);
+
+                        _consecutiveDlqFailures++;
+
+                        var maxDlqFailures = outboxOptionsProvider.Value.MaxConsecutiveDlqFailures;
+                        if (_consecutiveDlqFailures >= maxDlqFailures)
+                        {
+                            LogMaxConsecutiveDlqFailures(logger, _consecutiveDlqFailures,
+                                consumeResult.Offset.Value, consumeResult.Topic,
+                                consumeResult.Partition.Value);
+                            throw new InvalidOperationException(
+                                $"Max consecutive DLQ failures ({maxDlqFailures}) exceeded.");
+                        }
                     }
                 }
                 else
@@ -587,9 +635,9 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
         Message = "Processing error occurred but ConsumeResult was null. Cannot DLQ or commit.")]
     private static partial void LogProcessingErrorNullConsumeResult(ILogger logger, Exception ex);
 
-    [LoggerMessage(Level = LogLevel.Warning,
+    [LoggerMessage(Level = LogLevel.Critical,
         Message =
-            "Received null message value at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping processing.")]
+            "Received null message value at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Data loss risk — value was null in Kafka but offset will be committed.")]
     private static partial void LogNullMessage(ILogger logger, long offset, string topic, int partition);
 
     [LoggerMessage(Level = LogLevel.Warning,
@@ -677,4 +725,24 @@ public abstract partial class KafkaOutboxProcessorBase<TDto>(
         Message = "Max retries ({MaxRetries}) exceeded for message ID {MessageId} at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Committing offset and skipping.")]
     private static partial void LogMaxRetriesExceeded(ILogger logger, int messageId, long offset, string topic,
         int partition, int maxRetries);
+
+    [LoggerMessage(Level = LogLevel.Critical,
+        Message = "Max consecutive DLQ failures ({ConsecutiveFailures}) reached at Offset {Offset} (Topic: {Topic}, Partition: {Partition}). Breaking consume loop.")]
+    private static partial void LogMaxConsecutiveDlqFailures(ILogger logger, int consecutiveFailures, long offset, string topic, int partition);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Error during graceful consumer.Close(): {ErrorMessage}")]
+    private static partial void LogConsumerCloseError(ILogger logger, Exception ex, string errorMessage);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "DLQ topic '{DlqTopic}' not verified (error: {ErrorCode}). Production failures will be routed to DLQ failure path.")]
+    private static partial void LogDlqTopicNotFound(ILogger logger, string dlqTopic, string errorCode);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "DLQ topic '{DlqTopic}' verified successfully.")]
+    private static partial void LogDlqTopicVerified(ILogger logger, string dlqTopic);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "DLQ topic verification skipped for '{DlqTopic}' (broker unreachable): {ErrorMessage}")]
+    private static partial void LogDlqTopicVerificationSkipped(ILogger logger, string dlqTopic, string errorMessage);
 }

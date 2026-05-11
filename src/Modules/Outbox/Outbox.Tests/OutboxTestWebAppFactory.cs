@@ -36,6 +36,7 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
                 { "OutboxOptions:KafkaConsumer:EnablePartitionEof", "true" },
                 { "OutboxOptions:KafkaConsumer:SessionTimeoutMs", "10000" },
                 { "OutboxOptions:KafkaConsumer:HeartbeatIntervalMs", "3000" },
+                { "OutboxOptions:KafkaConsumer:MaxPollIntervalMs", "300000" },
                 { "OutboxOptions:KafkaDlqProducer:BootstrapServers", _kafkaContainer.GetBootstrapAddress() },
                 { "OutboxOptions:KafkaDlqProducer:TopicName", "test-dlq-topic" },
                 { "OutboxOptions:SetupRetryDelaySeconds", "1" },

@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka"/>
+    <PackageReference Include="Hangfire"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>none</PrivateAssets>
