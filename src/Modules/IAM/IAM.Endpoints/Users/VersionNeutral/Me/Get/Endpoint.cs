@@ -36,8 +36,7 @@ internal static class Endpoint
             .Select(u => new Response
             {
                 Id = u.Id,
-                Name = u.Name,
-                LastName = u.LastName,
+                FullName = u.FullName,
                 PhoneNumber = u.PhoneNumber!,
                 BirthDate = u.BirthDate,
                 CreatedBy = u.CreatedBy,

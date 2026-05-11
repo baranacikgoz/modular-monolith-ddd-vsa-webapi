@@ -4,6 +4,6 @@ namespace Common.IntegrationEvents;
 
 public sealed record UserRegisteredIntegrationEvent(
     ApplicationUserId UserId,
-    string Name,
+    string FullName,
     string PhoneNumber
 ) : IntegrationEvent;

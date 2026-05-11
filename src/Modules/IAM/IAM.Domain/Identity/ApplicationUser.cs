@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Common.Domain.Aggregates;
 using Common.Domain.Events;
-using Common.Domain.Extensions;
 using Common.Domain.StronglyTypedIds;
 using IAM.Domain.Identity.DomainEvents.v1;
 using Microsoft.AspNetCore.Identity;
@@ -12,9 +11,7 @@ namespace IAM.Domain.Identity;
 #pragma warning disable CA1819 // Properties should not return arrays
 public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, IAggregateRoot
 {
-    public string Name { get; private set; } = string.Empty;
-    public string LastName { get; private set; } = string.Empty;
-    public string NationalIdentityNumber { get; private set; } = string.Empty;
+    public string FullName { get; private set; } = string.Empty;
     public DateOnly BirthDate { get; private set; }
     public Uri? ImageUrl { get; private set; }
     public byte[] RefreshTokenHash { get; private set; } = [];
@@ -25,20 +22,16 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     [NotMapped] IStronglyTypedId IAggregateRoot.Id => Id;
 
     public static ApplicationUser Create(
-        string name,
-        string lastName,
+        string fullName,
         string phoneNumber,
-        string nationalIdentityNumber,
         DateOnly birthDate,
         Uri? imageUrl = null)
     {
         var id = ApplicationUserId.New();
         var @event = new V1UserRegisteredDomainEvent(
             id,
-            name.TrimmedUpperInvariantTransliterateTurkishChars(),
-            lastName.TrimmedUpperInvariantTransliterateTurkishChars(),
+            fullName.Trim(),
             phoneNumber,
-            nationalIdentityNumber,
             birthDate,
             imageUrl);
 
@@ -98,11 +91,9 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     private void Apply(V1UserRegisteredDomainEvent @event)
     {
         Id = @event.UserId;
-        Name = @event.Name;
-        LastName = @event.LastName;
+        FullName = @event.FullName;
         PhoneNumber = @event.PhoneNumber;
         UserName = @event.PhoneNumber; // We use PhoneNumber as UserName
-        NationalIdentityNumber = @event.NationalIdentityNumber;
         BirthDate = @event.BirthDate;
     }
 

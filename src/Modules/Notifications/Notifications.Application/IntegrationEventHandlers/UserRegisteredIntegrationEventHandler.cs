@@ -19,7 +19,7 @@ public partial class UserRegisteredIntegrationEventHandler(
         CancellationToken cancellationToken)
     {
         LogSendingWelcomeSms(logger, @event.UserId);
-        await smsService.SendWelcomeAsync(@event.Name, @event.PhoneNumber);
+        await smsService.SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
     }
 
     [LoggerMessage(

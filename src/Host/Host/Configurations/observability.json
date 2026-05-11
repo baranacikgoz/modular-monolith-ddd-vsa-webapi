@@ -9,7 +9,7 @@
       "Microsoft.Hosting.Lifetime": "Information",
       "Microsoft.EntityFrameworkCore": "Warning",
       "Microsoft.EntityFrameworkCore.Database.Command": "Information",
-      "ZiggyCreatures.FusionCache": "Warning"
+      "ZiggyCreatures.Caching.Fusion": "Warning"
     },
     "WriteToConsole": true,
     "WriteToFile": true,

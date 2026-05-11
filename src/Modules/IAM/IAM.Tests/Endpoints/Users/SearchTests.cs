@@ -22,12 +22,10 @@ public class SearchTests : BaseIntegrationTest
     {
     }
 
-    private ApplicationUser CreateUser(string name, string lastName)
+    private ApplicationUser CreateUser(string fullName)
         => ApplicationUser.Create(
-            name,
-            lastName,
+            fullName,
             "555" + _faker.Random.Number(1000000, 9999999).ToString(CultureInfo.InvariantCulture),
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30)));
 
     [Fact]
@@ -37,8 +35,8 @@ public class SearchTests : BaseIntegrationTest
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
-        var targetUser = CreateUser("Johnathan", "Silverstone");
-        var otherUser = CreateUser("Maria", "Rodriguez");
+        var targetUser = CreateUser("Johnathan Silverstone");
+        var otherUser = CreateUser("Maria Rodriguez");
 
         db.Users.Add(targetUser);
         db.Users.Add(otherUser);
@@ -56,7 +54,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.True(result.TotalCount >= 1);
-        Assert.Contains(result.Data, u => u.Name == "JOHNATHAN" && u.LastName == "SILVERSTONE");
+        Assert.Contains(result.Data, u => u.FullName == "Johnathan Silverstone");
     }
 
     [Fact]
@@ -67,8 +65,8 @@ public class SearchTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
         var targetName = "UniqueFirstName_" + Guid.NewGuid().ToString("N")[..8];
-        var targetUser = CreateUser(targetName, "Jones");
-        var otherUser = CreateUser("DifferentName", "Smith");
+        var targetUser = CreateUser(targetName + " Jones");
+        var otherUser = CreateUser("DifferentName Smith");
 
         db.Users.Add(targetUser);
         db.Users.Add(otherUser);
@@ -78,7 +76,7 @@ public class SearchTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&name={targetName}", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&fullName={targetName}", UriKind.Relative));
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -86,19 +84,19 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetName.ToUpperInvariant(), result.Data.First().Name);
+        Assert.Contains(targetName, result.Data.First().FullName, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task Search_WithLastNameFilter_ReturnsFilteredUsers()
+    public async Task Search_WithFullNameFilter_ReturnsFilteredUsers()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
-        var targetLastName = "UniqueLastName_" + Guid.NewGuid().ToString("N")[..8];
-        var targetUser = CreateUser("Alice", targetLastName);
-        var otherUser = CreateUser("Bob", "DifferentLastName");
+        var targetFullName = "UniqueName_" + Guid.NewGuid().ToString("N")[..8] + " Jones";
+        var targetUser = CreateUser(targetFullName);
+        var otherUser = CreateUser("Bob DifferentName");
 
         db.Users.Add(targetUser);
         db.Users.Add(otherUser);
@@ -108,7 +106,7 @@ public class SearchTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&lastName={targetLastName}", UriKind.Relative));
+        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&fullName={targetFullName}", UriKind.Relative));
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -116,7 +114,7 @@ public class SearchTests : BaseIntegrationTest
 
         Assert.NotNull(result);
         Assert.Equal(1, result.TotalCount);
-        Assert.Equal(targetLastName.ToUpperInvariant(), result.Data.First().LastName);
+        Assert.Contains(targetFullName, result.Data.First().FullName, StringComparison.Ordinal);
     }
 
     [Fact]

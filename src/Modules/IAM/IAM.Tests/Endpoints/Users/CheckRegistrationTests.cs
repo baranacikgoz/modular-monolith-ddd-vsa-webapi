@@ -27,10 +27,8 @@ public class CheckRegistrationTests : BaseIntegrationTest
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 

@@ -35,11 +35,8 @@ public class RevokeTests : BaseIntegrationTest
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L)
-                .ToString(System.Globalization.CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
@@ -104,11 +101,8 @@ public class RevokeTests : BaseIntegrationTest
             .ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L)
-                .ToString(System.Globalization.CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 

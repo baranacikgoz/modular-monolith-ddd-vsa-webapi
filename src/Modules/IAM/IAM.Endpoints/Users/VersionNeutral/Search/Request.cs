@@ -11,9 +11,7 @@ public sealed record Request : PaginationRequest
 {
     [FromQuery] public string? SearchTerm { get; init; }
 
-    [FromQuery] public string? Name { get; init; }
-
-    [FromQuery] public string? LastName { get; init; }
+    [FromQuery] public string? FullName { get; init; }
 }
 
 public sealed class RequestValidator : PaginationRequestValidator<Request>
@@ -26,16 +24,10 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
                 Constants.SearchTermMaxLength))
             .When(x => x.SearchTerm is not null);
 
-        RuleFor(x => x.Name)
-            .MaximumLength(Constants.NameMaxLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Users_Search_Name_MaximumLength,
-                Constants.NameMaxLength))
-            .When(x => x.Name is not null);
-
-        RuleFor(x => x.LastName)
-            .MaximumLength(Constants.LastNameMaxLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Users_Search_LastName_MaximumLength,
-                Constants.LastNameMaxLength))
-            .When(x => x.LastName is not null);
+        RuleFor(x => x.FullName)
+            .MaximumLength(Constants.FullNameMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Users_Search_FullName_MaximumLength,
+                Constants.FullNameMaxLength))
+            .When(x => x.FullName is not null);
     }
 }

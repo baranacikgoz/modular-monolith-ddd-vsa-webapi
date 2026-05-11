@@ -37,15 +37,13 @@ internal static class Endpoint
                 u => EF.Property<NpgsqlTsVector>(u, "SearchVector")
                     .Matches(EF.Functions.WebSearchToTsQuery("english", request.SearchTerm!)),
                 !string.IsNullOrWhiteSpace(request.SearchTerm))
-            .WhereIf(u => EF.Functions.ILike(u.Name, $"%{request.Name}%"), !string.IsNullOrWhiteSpace(request.Name))
-            .WhereIf(u => EF.Functions.ILike(u.LastName, $"%{request.LastName}%"), !string.IsNullOrWhiteSpace(request.LastName))
+            .WhereIf(u => EF.Functions.ILike(u.FullName, $"%{request.FullName}%"), !string.IsNullOrWhiteSpace(request.FullName))
             .PaginateAsync(
                 request: request,
                 selector: u => new Response
                 {
                     Id = u.Id,
-                    Name = u.Name,
-                    LastName = u.LastName,
+                    FullName = u.FullName,
                     PhoneNumber = u.PhoneNumber!,
                     BirthDate = u.BirthDate,
                     CreatedBy = u.CreatedBy,

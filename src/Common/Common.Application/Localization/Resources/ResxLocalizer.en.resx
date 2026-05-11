@@ -210,32 +210,14 @@
   <data name="Register_PhoneNumber_NotEmpty" xml:space="preserve">
     <value>Phone number cannot be empty.</value>
   </data>
-  <data name="Register_Name_NotEmpty" xml:space="preserve">
-    <value>Name cannot be empty.</value>
+  <data name="Register_FullName_NotEmpty" xml:space="preserve">
+    <value>Full name cannot be empty.</value>
   </data>
-  <data name="Register_Name_ContainsOnlyTurkishCharacters" xml:space="preserve">
-    <value>Name must contain only Turkish characters.</value>
+  <data name="Register_FullName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Full name must contain only Turkish characters.</value>
   </data>
-  <data name="Register_Name_MaxLength" xml:space="preserve">
-    <value>Name can be at most ({0}) characters long.</value>
-  </data>
-  <data name="Register_LastName_NotEmpty" xml:space="preserve">
-    <value>Last name cannot be empty.</value>
-  </data>
-  <data name="Register_LastName_ContainsOnlyTurkishCharacters" xml:space="preserve">
-    <value>Last name must contain only Turkish characters.</value>
-  </data>
-  <data name="Register_LastName_MaxLength" xml:space="preserve">
-    <value>Last name can be at most ({0}) characters long.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_NotEmpty" xml:space="preserve">
-    <value>National identity number cannot be empty.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_Length" xml:space="preserve">
-    <value>National identity number must be ({0}) characters long.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_ContainsOnlyDigits" xml:space="preserve">
-    <value>National identity number must consist only of digits.</value>
+  <data name="Register_FullName_MaxLength" xml:space="preserve">
+    <value>Full name can be at most ({0}) characters long.</value>
   </data>
   <data name="Register_BirthDate_NotEmpty" xml:space="preserve">
     <value>Birth date cannot be empty.</value>
@@ -249,11 +231,8 @@
   <data name="Users_Search_SearchTerm_MaximumLength" xml:space="preserve">
     <value>Search term can be at most ({0}) characters long.</value>
   </data>
-  <data name="Users_Search_Name_MaximumLength" xml:space="preserve">
-    <value>Name filter can be at most ({0}) characters long.</value>
-  </data>
-  <data name="Users_Search_LastName_MaximumLength" xml:space="preserve">
-    <value>Last name filter can be at most ({0}) characters long.</value>
+  <data name="Users_Search_FullName_MaximumLength" xml:space="preserve">
+    <value>Full name filter can be at most ({0}) characters long.</value>
   </data>
   <data name="ProductTemplates_Activate_Id_NotEmpty" xml:space="preserve">
     <value>Product template ID cannot be empty.</value>

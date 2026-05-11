@@ -16,11 +16,9 @@ internal partial class Seeder
     private async Task SeedAdminUserAsync()
     {
         const string phoneNumber = "901111111111";
-        const string name = "Baran";
-        const string surname = "Açıkgöz";
-        const string nationalIdentityNumber = "11111111111";
+        const string fullName = "Baran Açıkgöz";
 
-        var admin = await SeedUser(phoneNumber, name, surname, nationalIdentityNumber, new DateOnly(2001, 6, 20),
+        var admin = await SeedUser(phoneNumber, fullName, new DateOnly(2001, 6, 20),
             LogSeedingAdminUser);
         await SeedAdminToAllRolesAsync(admin);
     }
@@ -28,71 +26,57 @@ internal partial class Seeder
     private async Task SeedBasicUsersAsync()
     {
         const string phoneNumber = "901111111112";
-        const string name = "John";
-        const string surname = "Doe";
-        const string nationalIdentityNumber = "11111111112";
+        const string fullName = "John Doe";
 
-        var basicUser = await SeedUser(phoneNumber, name, surname, nationalIdentityNumber, new DateOnly(2001, 6, 20),
+        var basicUser = await SeedUser(phoneNumber, fullName, new DateOnly(2001, 6, 20),
             LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
 
         const string phoneNumber2 = "901111111113";
-        const string name2 = "Michael";
-        const string surname2 = "Scott";
-        const string nationalIdentityNumber2 = "11111111113";
+        const string fullName2 = "Michael Scott";
 
-        basicUser = await SeedUser(phoneNumber2, name2, surname2, nationalIdentityNumber2, new DateOnly(2001, 6, 20),
+        basicUser = await SeedUser(phoneNumber2, fullName2, new DateOnly(2001, 6, 20),
             LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
 
         const string phoneNumber3 = "901111111114";
-        const string name3 = "Pam";
-        const string surname3 = "Beesly";
-        const string nationalIdentityNumber3 = "11111111114";
+        const string fullName3 = "Pam Beesly";
 
-        basicUser = await SeedUser(phoneNumber3, name3, surname3, nationalIdentityNumber3, new DateOnly(2001, 6, 20),
+        basicUser = await SeedUser(phoneNumber3, fullName3, new DateOnly(2001, 6, 20),
             LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
 
         const string phoneNumber4 = "901111111115";
-        const string name4 = "Dwight";
-        const string surname4 = "Schrute";
-        const string nationalIdentityNumber4 = "11111111115";
+        const string fullName4 = "Dwight Schrute";
 
-        basicUser = await SeedUser(phoneNumber4, name4, surname4, nationalIdentityNumber4, new DateOnly(2001, 6, 20),
+        basicUser = await SeedUser(phoneNumber4, fullName4, new DateOnly(2001, 6, 20),
             LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
 
         const string phoneNumber5 = "901111111116";
-        const string name5 = "Jim";
-        const string surname5 = "Halpert";
-        const string nationalIdentityNumber5 = "11111111116";
+        const string fullName5 = "Jim Halpert";
 
-        basicUser = await SeedUser(phoneNumber5, name5, surname5, nationalIdentityNumber5, new DateOnly(2001, 6, 20),
+        basicUser = await SeedUser(phoneNumber5, fullName5, new DateOnly(2001, 6, 20),
             LogSeedingBasicUser);
         await SeedBasicUserToBasicRoleAsync(basicUser);
     }
 
     private async Task<ApplicationUser> SeedUser(
         string phoneNumber,
-        string name,
-        string surname,
-        string nationalIdentityNumber,
+        string fullName,
         DateOnly birthDate,
-        Action<ILogger, string, string> logSeedingUser)
+        Action<ILogger, string> logSeedingUser)
     {
         if (await userManager.Users.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber) is ApplicationUser user)
         {
             return user;
         }
 
-        logSeedingUser(logger, name, surname);
+        logSeedingUser(logger, fullName);
 
         user = ApplicationUser.Create(
-            name,
-            surname,
+            fullName,
             phoneNumber,
-            nationalIdentityNumber,
             birthDate);
 
         await userManager.CreateAsync(user);
@@ -107,7 +91,7 @@ internal partial class Seeder
         {
             if (!await userManager.IsInRoleAsync(admin, roleName!))
             {
-                LogSeedingRoleToAdmin(logger, roleName!, admin.Name, admin.LastName);
+                LogSeedingRoleToAdmin(logger, roleName!, admin.FullName);
                 await userManager.AddToRoleAsync(admin, roleName!);
             }
         }
@@ -120,30 +104,28 @@ internal partial class Seeder
 
         if (!await userManager.IsInRoleAsync(basicUser, basicRole.Name!))
         {
-            LogSeedingRoleToBasic(logger, basicRole.Name!, basicUser.Name, basicUser.LastName);
+            LogSeedingRoleToBasic(logger, basicRole.Name!, basicUser.FullName);
             await userManager.AddToRoleAsync(basicUser, basicRole.Name!);
         }
     }
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the admin {FirstName} {LastName} user.")]
-    private static partial void LogSeedingAdminUser(ILogger logger, string firstName, string lastName);
+        Message = "Seeding the admin {FullName} user.")]
+    private static partial void LogSeedingAdminUser(ILogger logger, string fullName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the admin {FirstName} {LastName} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string firstName,
-        string lastName);
+        Message = "Seeding the admin {FullName} user to {RoleName} role.")]
+    private static partial void LogSeedingRoleToAdmin(ILogger logger, string roleName, string fullName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the basic {FirstName} {LastName} user.")]
-    private static partial void LogSeedingBasicUser(ILogger logger, string firstName, string lastName);
+        Message = "Seeding the basic {FullName} user.")]
+    private static partial void LogSeedingBasicUser(ILogger logger, string fullName);
 
     [LoggerMessage(
         Level = LogLevel.Information,
-        Message = "Seeding the basic {FirstName} {LastName} user to {RoleName} role.")]
-    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string firstName,
-        string lastName);
+        Message = "Seeding the basic {FullName} user to {RoleName} role.")]
+    private static partial void LogSeedingRoleToBasic(ILogger logger, string roleName, string fullName);
 }

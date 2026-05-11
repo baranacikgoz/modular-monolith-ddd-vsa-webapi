@@ -29,11 +29,8 @@ public class GetTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
 
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             "555" + _faker.Random.Number(1000000, 9999999), // Valid looking TR phone
-            _faker.Random.Long(10000000000L, 99999999999L)
-                .ToString(CultureInfo.InvariantCulture), // valid looking TC NO
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
@@ -65,8 +62,7 @@ public class GetTests : BaseIntegrationTest
         var root = doc.RootElement;
 
         Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());
-        Assert.Equal(user.Name, root.GetProperty("name").GetString());
-        Assert.Equal(user.LastName, root.GetProperty("lastName").GetString());
+        Assert.Equal(user.FullName, root.GetProperty("fullName").GetString());
         Assert.Equal(user.PhoneNumber, root.GetProperty("phoneNumber").GetString());
     }
 }

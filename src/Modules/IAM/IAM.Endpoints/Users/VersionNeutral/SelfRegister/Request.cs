@@ -12,9 +12,7 @@ public sealed record Request
 {
     public required string PhoneNumber { get; init; }
     public required string Otp { get; init; }
-    public required string Name { get; init; }
-    public required string LastName { get; init; }
-    public required string NationalIdentityNumber { get; init; }
+    public required string FullName { get; init; }
     public required string BirthDate { get; init; }
     public required string CaptchaToken { get; init; }
 }
@@ -31,41 +29,17 @@ public sealed class RequestValidator : CustomValidator<Request>
             .PhoneNumberValidation(localizer)
             .When(x => !string.IsNullOrWhiteSpace(x.PhoneNumber));
 
-        RuleFor(x => x.Name)
+        RuleFor(x => x.FullName)
             .NotEmpty()
-            .WithMessage(localizer.Register_Name_NotEmpty);
+            .WithMessage(localizer.Register_FullName_NotEmpty);
 
-        RuleFor(x => x.Name)
+        RuleFor(x => x.FullName)
             .Must(str => str.ContainsOnlyTurkishCharacters(true))
-            .WithMessage(localizer.Register_Name_ContainsOnlyTurkishCharacters)
-            .MaximumLength(Constants.NameMaxLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Register_Name_MaxLength,
-                Constants.NameMaxLength))
-            .When(x => !string.IsNullOrWhiteSpace(x.Name));
-
-        RuleFor(x => x.LastName)
-            .NotEmpty()
-            .WithMessage(localizer.Register_LastName_NotEmpty);
-
-        RuleFor(x => x.LastName)
-            .Must(str => str.ContainsOnlyTurkishCharacters(false))
-            .WithMessage(localizer.Register_LastName_ContainsOnlyTurkishCharacters)
-            .MaximumLength(Constants.LastNameMaxLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Register_LastName_MaxLength,
-                Constants.LastNameMaxLength))
-            .When(x => !string.IsNullOrWhiteSpace(x.LastName));
-
-        RuleFor(x => x.NationalIdentityNumber)
-            .NotEmpty()
-            .WithMessage(localizer.Register_NationalIdentityNumber_NotEmpty);
-
-        RuleFor(x => x.NationalIdentityNumber)
-            .Length(Constants.NationalIdentityNumberLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Register_NationalIdentityNumber_Length,
-                Constants.NationalIdentityNumberLength))
-            .Must(str => str.All(char.IsDigit))
-            .WithMessage(localizer.Register_NationalIdentityNumber_ContainsOnlyDigits)
-            .When(x => !string.IsNullOrWhiteSpace(x.NationalIdentityNumber));
+            .WithMessage(localizer.Register_FullName_ContainsOnlyTurkishCharacters)
+            .MaximumLength(Constants.FullNameMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Register_FullName_MaxLength,
+                Constants.FullNameMaxLength))
+            .When(x => !string.IsNullOrWhiteSpace(x.FullName));
 
         RuleFor(x => x.BirthDate)
             .NotEmpty()

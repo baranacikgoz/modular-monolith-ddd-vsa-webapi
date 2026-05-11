@@ -17,7 +17,7 @@ public class V1UserRegisteredDomainEventHandler(
 {
     protected override Task ProcessAsync(V1UserRegisteredDomainEvent @event, CancellationToken cancellationToken)
     {
-        outbox.Write(new UserRegisteredIntegrationEvent(@event.UserId, @event.Name, @event.PhoneNumber));
+        outbox.Write(new UserRegisteredIntegrationEvent(@event.UserId, @event.FullName, @event.PhoneNumber));
         return Task.CompletedTask;
     }
 }

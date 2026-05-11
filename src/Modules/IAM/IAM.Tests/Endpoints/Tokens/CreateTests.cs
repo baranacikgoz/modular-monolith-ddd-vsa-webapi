@@ -31,10 +31,8 @@ public class CreateTests : BaseIntegrationTest
         var otp = "123456";
 
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
@@ -87,10 +85,8 @@ public class CreateTests : BaseIntegrationTest
         const string wrongOtp = "000000";
 
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(System.Globalization.CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 

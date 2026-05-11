@@ -63,10 +63,8 @@ internal static class Endpoint
                 return alreadyExists
                     ? Result<ApplicationUser>.Failure(IdentityErrors.PhoneNumberAlreadyRegistered)
                     : Result<ApplicationUser>.Success(ApplicationUser.Create(
-                        request.Name,
-                        request.LastName,
+                        request.FullName,
                         request.PhoneNumber,
-                        request.NationalIdentityNumber,
                         DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
                             CultureInfo.InvariantCulture)));
             })

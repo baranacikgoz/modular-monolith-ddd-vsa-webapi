@@ -28,10 +28,8 @@ public class MeGetTests : BaseIntegrationTest
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         var user = ApplicationUser.Create(
-            _faker.Name.FirstName(),
-            _faker.Name.LastName(),
+            _faker.Name.FullName(),
             phoneNumber,
-            _faker.Random.Long(10000000000L, 99999999999L).ToString(CultureInfo.InvariantCulture),
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
@@ -60,8 +58,7 @@ public class MeGetTests : BaseIntegrationTest
         var root = doc.RootElement;
 
         Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());
-        Assert.Equal(user.Name, root.GetProperty("name").GetString());
-        Assert.Equal(user.LastName, root.GetProperty("lastName").GetString());
+        Assert.Equal(user.FullName, root.GetProperty("fullName").GetString());
         Assert.Equal(user.PhoneNumber, root.GetProperty("phoneNumber").GetString());
     }
 }

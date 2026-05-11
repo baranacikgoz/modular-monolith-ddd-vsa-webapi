@@ -5,10 +5,8 @@ namespace IAM.Domain.Identity.DomainEvents.v1;
 
 public sealed record V1UserRegisteredDomainEvent(
     ApplicationUserId UserId,
-    string Name,
-    string LastName,
+    string FullName,
     string PhoneNumber,
-    string NationalIdentityNumber,
     DateOnly BirthDate,
     Uri? ImageUrl = null
 ) : DomainEvent;

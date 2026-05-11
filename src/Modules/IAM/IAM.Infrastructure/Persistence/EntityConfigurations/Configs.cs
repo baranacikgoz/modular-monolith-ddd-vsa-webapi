@@ -19,23 +19,9 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>();
 
         builder
-            .Property(u => u.Name)
-            .HasMaxLength(Constants.NameMaxLength)
+            .Property(u => u.FullName)
+            .HasMaxLength(Constants.FullNameMaxLength)
             .IsRequired();
-
-        builder
-            .Property(u => u.LastName)
-            .HasMaxLength(Constants.LastNameMaxLength)
-            .IsRequired();
-
-        builder
-            .Property(u => u.NationalIdentityNumber)
-            .HasMaxLength(Constants.NationalIdentityNumberLength)
-            .IsRequired();
-
-        builder
-            .HasIndex(u => u.NationalIdentityNumber)
-            .IsUnique();
 
         builder
             .Property(u => u.BirthDate)
@@ -79,7 +65,7 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
 
         builder
             .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
-            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ApplicationUser.Name), nameof(ApplicationUser.LastName))
+            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ApplicationUser.FullName))
             .HasColumnName(FullTextSearch.SearchVectorColumnName);
 
         builder

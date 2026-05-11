@@ -269,32 +269,14 @@
   <data name="Register_PhoneNumber_NotEmpty" xml:space="preserve">
     <value>Telefon numarası boş olamaz.</value>
   </data>
-  <data name="Register_Name_NotEmpty" xml:space="preserve">
-    <value>İsim boş olamaz.</value>
+  <data name="Register_FullName_NotEmpty" xml:space="preserve">
+    <value>Ad soyad boş olamaz.</value>
   </data>
-  <data name="Register_Name_ContainsOnlyTurkishCharacters" xml:space="preserve">
-    <value>İsim sadece Türkçe karakterlerden oluşmalıdır.</value>
+  <data name="Register_FullName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Ad soyad sadece Türkçe karakterlerden oluşmalıdır.</value>
   </data>
-  <data name="Register_Name_MaxLength" xml:space="preserve">
-    <value>İsim en fazla ({0}) karakter olabilir.</value>
-  </data>
-  <data name="Register_LastName_NotEmpty" xml:space="preserve">
-    <value>Soyisim boş olamaz.</value>
-  </data>
-  <data name="Register_LastName_ContainsOnlyTurkishCharacters" xml:space="preserve">
-    <value>Soyisim sadece Türkçe karakterlerden oluşmalıdır.</value>
-  </data>
-  <data name="Register_LastName_MaxLength" xml:space="preserve">
-    <value>Soyisim en fazla ({0}) karakter olabilir.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_NotEmpty" xml:space="preserve">
-    <value>T.C. Kimlik numarası boş olamaz.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_Length" xml:space="preserve">
-    <value>T.C. Kimlik numarası ({0}) karakter olmalıdır.</value>
-  </data>
-  <data name="Register_NationalIdentityNumber_ContainsOnlyDigits" xml:space="preserve">
-    <value>T.C. Kimlik numarası sadece rakamlardan oluşmalıdır.</value>
+  <data name="Register_FullName_MaxLength" xml:space="preserve">
+    <value>Ad soyad en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="Register_BirthDate_NotEmpty" xml:space="preserve">
     <value>Doğum tarihi boş olamaz.</value>
@@ -308,11 +290,8 @@
   <data name="Users_Search_SearchTerm_MaximumLength" xml:space="preserve">
     <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
   </data>
-  <data name="Users_Search_Name_MaximumLength" xml:space="preserve">
-    <value>İsim filtresi en fazla ({0}) karakter olabilir.</value>
-  </data>
-  <data name="Users_Search_LastName_MaximumLength" xml:space="preserve">
-    <value>Soyisim filtresi en fazla ({0}) karakter olabilir.</value>
+  <data name="Users_Search_FullName_MaximumLength" xml:space="preserve">
+    <value>Ad soyad filtresi en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="ProductTemplates_Activate_Id_NotEmpty" xml:space="preserve">
     <value>Ürün şablonu Id boş olamaz.</value>

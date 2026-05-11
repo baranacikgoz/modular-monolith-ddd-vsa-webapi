@@ -51,7 +51,7 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
 
         await _handler.HandleAsync(@event, CancellationToken.None);
 
-        await _smsService.Received(1).SendWelcomeAsync(@event.Name, @event.PhoneNumber);
+        await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
     }
 
     [Fact]
@@ -63,6 +63,6 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
         await _handler.HandleAsync(@event, CancellationToken.None);
         await _handler.HandleAsync(@event, CancellationToken.None);
 
-        await _smsService.Received(1).SendWelcomeAsync(@event.Name, @event.PhoneNumber);
+        await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
     }
 }
