@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Bogus;
 using Common.Application.Caching;
+using Common.Infrastructure.Persistence.Outbox;
 using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
 using IAM.Domain.Identity;
@@ -87,6 +88,16 @@ public class SelfRegisterTests : BaseIntegrationTest
         Assert.NotNull(createdUser);
         Assert.Equal(request.PhoneNumber, createdUser.PhoneNumber);
         Assert.Equal(request.NationalIdentityNumber, createdUser.NationalIdentityNumber);
+
+        // Verify Outbox Message was inserted
+        using var outboxScope = Factory.Services.CreateScope();
+        var outboxDb = outboxScope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
+        var outboxMessages = await outboxDb.OutboxMessages
+            .TagWith(nameof(SelfRegisterTests))
+            .Where(m => !m.IsProcessed)
+            .ToListAsync();
+        Assert.NotEmpty(outboxMessages);
+        Assert.Contains(outboxMessages, m => m.Event != null && m.Event.GetType().Name == "V1UserRegisteredDomainEvent");
     }
 
     [Fact]

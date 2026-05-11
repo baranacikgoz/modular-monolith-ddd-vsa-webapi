@@ -55,7 +55,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
                 new RespawnerOptions
                 {
                     DbAdapter = DbAdapter.Postgres,
-                    SchemasToInclude = new[] { "public", "IAM", "Products", "BackgroundJobs", "Notifications" },
+                    SchemasToInclude = new[] { "public", "IAM", "Outbox", "Products", "BackgroundJobs", "Notifications" },
                     TablesToIgnore = new[]
                     {
                         new Table("__EFMigrationsHistory"), new Table("AspNetRoles", "IAM"),

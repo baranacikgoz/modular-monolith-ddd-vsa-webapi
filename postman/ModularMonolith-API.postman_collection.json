@@ -1,0 +1,3234 @@
+{
+  "info": {
+    "name": "Modular Monolith DDD VSA API",
+    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite \u2014 30 endpoints across 6 modules. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key` \u2014 get captcha key (auto-saves)\n2. `OTP > Send OTP` \u2014 send SMS with captcha\n3. `Auth > Create Tokens` \u2014 verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\n### Postman Features Used:\n- **Collection variables** \u2014 auto-saved between requests\n- **Pre-request scripts** \u2014 auto-inject Bearer token\n- **Test scripts** \u2014 status, response time, schema checks\n- **Example responses** \u2014 structured success/error samples\n- **Bearer auth** \u2014 configured at collection level with `{{accessToken}}`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "20929383"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "modular-monolith-base-url",
+      "value": "http://localhost:5001"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "captchaToken",
+      "value": ""
+    },
+    {
+      "key": "phoneNumber",
+      "value": "+905551234567"
+    },
+    {
+      "key": "otpCode",
+      "value": "123456"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "storeId",
+      "value": ""
+    },
+    {
+      "key": "productTemplateId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "userName",
+      "value": "John"
+    },
+    {
+      "key": "userLastName",
+      "value": "Doe"
+    },
+    {
+      "key": "nationalIdentityNumber",
+      "value": "12345678901"
+    },
+    {
+      "key": "birthDate",
+      "value": "1990-01-15"
+    },
+    {
+      "key": "productBrand",
+      "value": "Nike"
+    },
+    {
+      "key": "productModel",
+      "value": "Air Max 90"
+    },
+    {
+      "key": "productColor",
+      "value": "Black"
+    },
+    {
+      "key": "storeName",
+      "value": "My Store"
+    },
+    {
+      "key": "storeDescription",
+      "value": "Best store ever"
+    },
+    {
+      "key": "storeAddress",
+      "value": "123 Main St"
+    },
+    {
+      "key": "productName",
+      "value": "Store Product"
+    },
+    {
+      "key": "productDescription",
+      "value": "Store description"
+    },
+    {
+      "key": "productPrice",
+      "value": "99.99"
+    },
+    {
+      "key": "productQuantity",
+      "value": "10"
+    },
+    {
+      "key": "updateProductName",
+      "value": "Updated Product"
+    },
+    {
+      "key": "updateProductDescription",
+      "value": "Updated description"
+    },
+    {
+      "key": "updateProductPrice",
+      "value": "29.99"
+    },
+    {
+      "key": "updateProductQuantity",
+      "value": "100"
+    },
+    {
+      "key": "myProductName",
+      "value": "My Product"
+    },
+    {
+      "key": "myProductDescription",
+      "value": "My desc"
+    },
+    {
+      "key": "myProductPrice",
+      "value": "19.99"
+    },
+    {
+      "key": "myProductQuantity",
+      "value": "50"
+    }
+  ],
+  "item": [
+    {
+      "name": "Captcha",
+      "description": "Captcha endpoints. Obtain client key before sending OTP.",
+      "item": [
+        {
+          "name": "Get Client Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"captchaToken\", body.clientKey);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"captchaToken\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/captcha/client-key",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "captcha",
+                "client-key"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Get captcha client key. Public endpoint \u2014 no auth required.\n\nAuto-saves `clientKey` to `{{captchaToken}}`."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OTP",
+      "description": "Send OTP SMS. Requires captcha token from Captcha step.",
+      "item": [
+        {
+          "name": "Send OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/otp",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "otp"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"captchaToken\": \"{{captchaToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Send OTP code via SMS to phone number.\n\n**Body:**\n- `phoneNumber` \u2014 target phone\n- `captchaToken` \u2014 from Captcha step\n\nPublic endpoint."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication \u2014 OTP-based login, token refresh, logout.",
+      "item": [
+        {
+          "name": "Create Tokens (Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+                  "pm.collectionVariables.set(\"refreshToken\", body.refreshToken);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"accessToken\")).to.not.be.empty;",
+                  "    pm.expect(pm.collectionVariables.get(\"refreshToken\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Verify OTP code and receive JWT tokens.\n\n**Body:**\n- `phoneNumber` \u2014 registered phone\n- `otp` \u2014 OTP code from SMS\n\nAuto-saves `accessToken` and `refreshToken` to collection variables."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"accessToken\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/refresh",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "refresh"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Refresh expiring access token.\n\nAuto-saves new `accessToken`."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Revoke Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/revoke",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "revoke"
+              ]
+            },
+            "description": "Revoke current refresh token. Use to log out. Requires auth."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User management \u2014 registration, search, profile.",
+      "item": [
+        {
+          "name": "Register Self",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"userId\", body.id);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"userId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/register/self",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                "register",
+                "self"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\",\n    \"name\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"nationalIdentityNumber\": \"{{nationalIdentityNumber}}\",\n    \"birthDate\": \"{{birthDate}}\",\n    \"captchaToken\": \"{{captchaToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Register a new user.\n\n**Body:**\n- `phoneNumber` \u2014 phone that received OTP\n- `otp` \u2014 OTP from SMS\n- `name`, `lastName` \u2014 user identity\n- `nationalIdentityNumber` \u2014 11-digit TR ID\n- `birthDate` \u2014 YYYY-MM-DD\n- `captchaToken` \u2014 from Captcha step\n\nAuto-saves new user ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Get user by ID. Requires auth."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/search",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "SearchTerm",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Name",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "LastName",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Search users with optional filters.\n\n**Query params:** `SearchTerm`, `Name`, `LastName`, `PageNumber`, `PageSize`."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/check-registration",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                "check-registration"
+              ],
+              "query": [
+                {
+                  "key": "PhoneNumber",
+                  "value": "{{phoneNumber}}",
+                  "description": "required"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Check if phone number is registered. Public endpoint."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Save user ID from response",
+                  "const body = pm.response.json();",
+                  "if (body && body.id) {",
+                  "    pm.collectionVariables.set(\"userId\", body.id);",
+                  "    pm.collectionVariables.set(\"phoneNumber\", body.phoneNumber);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/me",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "Get current authenticated user profile."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Product CRUD \u2014 admin and owner-scoped operations with search and audit log.",
+      "item": [
+        {
+          "name": "Get Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Save product ID from response",
+                  "const body = pm.response.json();",
+                  "if (body && body.id) {",
+                  "    pm.collectionVariables.set(\"productId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productId is set",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store or Get Product first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Get single product by ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productId is set",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store or Get Product first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{updateProductName}}\",\n    \"description\": \"{{updateProductDescription}}\",\n    \"price\": \"{{updateProductPrice}}\",\n    \"quantity\": \"{{updateProductQuantity}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update product (admin). 204 No Content on success."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/search",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "StoreId",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "OwnerId",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "SearchTerm",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Name",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Description",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MinQuantity",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MaxQuantity",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MinPrice",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MaxPrice",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Search with filters: StoreId, OwnerId, SearchTerm, Name, Description, MinQuantity, MaxQuantity, MinPrice, MaxPrice."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Product Audit Log",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productId is set",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store or Get Product first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/:id/audit-log",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                ":id",
+                "audit-log"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Get paginated audit log entries for a product."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Save product ID from response",
+                  "const body = pm.response.json();",
+                  "if (body && body.id) {",
+                  "    pm.collectionVariables.set(\"productId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productId is set",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store or Get Product first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/my/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Get own product (owner-scoped)."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update My Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productId is set",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store or Get Product first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/my/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{myProductName}}\",\n    \"description\": \"{{myProductDescription}}\",\n    \"price\": \"{{myProductPrice}}\",\n    \"quantity\": \"{{myProductQuantity}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update own product (owner-scoped). 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search My Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/my/search",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "SearchTerm",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Name",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Description",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MinPrice",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MaxPrice",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MinQuantity",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "MaxQuantity",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Search own products with filters."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Product Templates",
+      "description": "Templates define reusable product specs (brand/model/color).",
+      "item": [
+        {
+          "name": "Create Product Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"productTemplateId\", body.id);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"productTemplateId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/product-templates",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"brand\": \"{{productBrand}}\",\n    \"model\": \"{{productModel}}\",\n    \"color\": \"{{productColor}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create reusable product template. Auto-saves ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Product Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productTemplateId is set",
+                  "const ptid = pm.collectionVariables.get(\"productTemplateId\");",
+                  "if (!ptid) {",
+                  "    console.warn(\"productTemplateId not set. Run Create Product Template first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/product-templates/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productTemplateId}}"
+                }
+              ]
+            },
+            "description": "Get template by ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Product Templates",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/product-templates/search",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "SearchTerm",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Brand",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Model",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Color",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Search by brand/model/color with pagination."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Activate Product Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productTemplateId is set",
+                  "const ptid = pm.collectionVariables.get(\"productTemplateId\");",
+                  "if (!ptid) {",
+                  "    console.warn(\"productTemplateId not set. Run Create Product Template first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/product-templates/:id/activate",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                ":id",
+                "activate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productTemplateId}}"
+                }
+              ]
+            },
+            "description": "Activate a template. 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Deactivate Product Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure productTemplateId is set",
+                  "const ptid = pm.collectionVariables.get(\"productTemplateId\");",
+                  "if (!ptid) {",
+                  "    console.warn(\"productTemplateId not set. Run Create Product Template first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/product-templates/:id/deactivate",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "product-templates",
+                ":id",
+                "deactivate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productTemplateId}}"
+                }
+              ]
+            },
+            "description": "Deactivate a template. 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Stores",
+      "description": "Store management \u2014 CRUD, inventory, audit log. Admin and owner-scoped.",
+      "item": [
+        {
+          "name": "Create Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"storeId\", body.id);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"storeId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create store (admin). Auto-saves ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure storeId is set",
+                  "const sid = pm.collectionVariables.get(\"storeId\");",
+                  "if (!sid) {",
+                  "    console.warn(\"storeId not set. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update store (admin). 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure storeId is set",
+                  "const sid = pm.collectionVariables.get(\"storeId\");",
+                  "if (!sid) {",
+                  "    console.warn(\"storeId not set. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                }
+              ]
+            },
+            "description": "Get store by ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Stores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/search",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "SearchTerm",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Name",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Description",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Address",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Search stores with name/description/address filters."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Store Audit Log",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure storeId is set",
+                  "const sid = pm.collectionVariables.get(\"storeId\");",
+                  "if (!sid) {",
+                  "    console.warn(\"storeId not set. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/audit-log",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "audit-log"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                }
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Get store audit log."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Product to Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure storeId is set",
+                  "const sid = pm.collectionVariables.get(\"storeId\");",
+                  "if (!sid) {",
+                  "    console.warn(\"storeId not set. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/products",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "products"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productTemplateId\": \"{{productTemplateId}}\",\n    \"name\": \"{{productName}}\",\n    \"description\": \"{{productDescription}}\",\n    \"quantity\": \"{{productQuantity}}\",\n    \"price\": \"{{productPrice}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Add product to store (admin)."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Remove Product from Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure storeId and productId are set",
+                  "const sid = pm.collectionVariables.get(\"storeId\");",
+                  "const pid = pm.collectionVariables.get(\"productId\");",
+                  "if (!sid) {",
+                  "    console.warn(\"storeId not set.\");",
+                  "    postman.setNextRequest(null);",
+                  "}",
+                  "if (!pid) {",
+                  "    console.warn(\"productId not set.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/products/:productId",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "products",
+                ":productId"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                },
+                {
+                  "key": "productId",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Remove product from store (admin). 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "// Extract response fields to collection variables",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"storeId\", body.id);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"storeId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create own store (owner-scoped). Auto-saves ID."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update own store. 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my"
+              ]
+            },
+            "description": "Get own store."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Store Audit Log",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my/audit-log",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my",
+                "audit-log"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Get own store audit log."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Product to My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my/products",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productTemplateId\": \"{{productTemplateId}}\",\n    \"name\": \"{{myProductName}}\",\n    \"description\": \"{{myProductDescription}}\",\n    \"quantity\": \"{{myProductQuantity}}\",\n    \"price\": \"{{myProductPrice}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Add product to own store."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Remove Product from My Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/my/products/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "my",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Remove product from own store. 204 No Content."
+          },
+          "response": [
+            {
+              "name": "Error Response",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\n  \"title\": \"Bad Request\",\n  \"status\": 400,\n  \"detail\": \"Validation failed. See errors for details.\",\n  \"errors\": {\n    \"phoneNumber\": [\n      \"Phone number is required.\"\n    ]\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/problem+json"
+                }
+              ],
+              "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
