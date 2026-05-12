@@ -9,6 +9,8 @@ public class CustomRateLimitingOptions
 
     public required FixedWindow Sms { get; set; }
 
+    public required FixedWindow Register { get; set; }
+
     public required FixedWindow CreateStore { get; set; }
 }
 
@@ -30,6 +32,9 @@ public class CustomRateLimitingOptionsValidator : CustomValidator<CustomRateLimi
             .SetValidator(new FixedWindowValidator());
 
         RuleFor(o => o.Sms)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.Register)
             .SetValidator(new FixedWindowValidator());
 
         RuleFor(o => o.CreateStore)

@@ -11,6 +11,7 @@ public static class Policies
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
         yield return SmsPolicy;
+        yield return RegisterPolicy;
     }
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
@@ -38,5 +39,18 @@ public static class Policies
 
             return ValueTask.CompletedTask;
         };
+    }
+
+    private static void RegisterPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    {
+        rateLimiter
+            .AddFixedWindowLimiter(Constants.Register, opt =>
+            {
+                var registerRateLimiting = options.Register ?? throw new InvalidOperationException("Register rate limiting is null.");
+
+                opt.PermitLimit = registerRateLimiting.Limit;
+                opt.Window = TimeSpan.FromMilliseconds(registerRateLimiting.PeriodInMs);
+                opt.QueueLimit = registerRateLimiting.QueueLimit;
+            });
     }
 }

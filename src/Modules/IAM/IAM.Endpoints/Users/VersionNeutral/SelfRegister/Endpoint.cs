@@ -27,6 +27,7 @@ internal static class Endpoint
             .WithDescription("Register a new user.")
             .Produces<Response>()
             .AllowAnonymous()
+            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.Register)
             .TransformResultTo<Response>();
     }
 

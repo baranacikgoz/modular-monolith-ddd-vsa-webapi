@@ -10,6 +10,11 @@
       "PeriodInMs": 15000,
       "QueueLimit": 0
     },
+    "Register": {
+      "Limit": 5,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0
+    },
     "CreateStore": {
       "Limit": 1,
       "PeriodInMs": 604800000,
