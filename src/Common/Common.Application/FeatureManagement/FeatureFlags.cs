@@ -2,6 +2,13 @@ namespace Common.Application.FeatureManagement;
 
 public static class FeatureFlags
 {
+#pragma warning disable S101
+    public static class IAM
+    {
+        public const string Captcha = "IAM.Captcha";
+    }
+#pragma warning restore S101
+
     public static class Products
     {
         public const string NewCheckout = "Products.NewCheckout";

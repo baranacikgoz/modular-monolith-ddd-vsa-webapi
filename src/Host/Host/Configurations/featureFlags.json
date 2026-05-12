@@ -1,5 +1,6 @@
 {
   "FeatureManagement": {
+    "IAM.Captcha": false,
     "Products.NewCheckout": false,
     "Products.V2Pricing": {
       "enabledFor": [

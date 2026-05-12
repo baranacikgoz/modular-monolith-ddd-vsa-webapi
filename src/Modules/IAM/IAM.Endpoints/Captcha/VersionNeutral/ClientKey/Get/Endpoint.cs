@@ -1,4 +1,5 @@
 using Common.Application.Extensions;
+using Common.Application.FeatureManagement;
 using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ internal static class Endpoint
             .WithDescription("Get the client key for captcha.")
             .Produces<Response>()
             .AllowAnonymous()
+            .RequireFeature(FeatureFlags.IAM.Captcha)
             .TransformResultTo<Response>();
     }
 

@@ -14,7 +14,7 @@ public sealed record Request
     public required string Otp { get; init; }
     public required string FullName { get; init; }
     public required string BirthDate { get; init; }
-    public required string CaptchaToken { get; init; }
+    public string? CaptchaToken { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
@@ -52,8 +52,5 @@ public sealed class RequestValidator : CustomValidator<Request>
                 Domain.Constants.TurkishDateFormat))
             .When(x => !string.IsNullOrWhiteSpace(x.BirthDate));
 
-        RuleFor(x => x.CaptchaToken)
-            .NotEmpty()
-            .WithMessage(localizer.IAM_CaptchaToken_NotEmpty);
     }
 }

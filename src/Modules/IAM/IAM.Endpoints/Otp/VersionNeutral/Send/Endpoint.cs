@@ -1,5 +1,6 @@
 using Common.Application.Caching;
 using Common.Application.Extensions;
+using Common.Application.FeatureManagement;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Endpoints.Otp.VersionNeutral.Send;
@@ -30,11 +32,16 @@ internal static class Endpoint
         Request request,
         IOtpService otpService,
         ICaptchaService captchaService,
+        IFeatureManager featureManager,
         IOptions<OtpOptions> otpOptionsProvider,
         IFusionCache cache,
         CancellationToken cancellationToken)
     {
-        return await captchaService.ValidateAsync(request.CaptchaToken, cancellationToken)
+        var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
+            ? captchaService.ValidateAsync(request.CaptchaToken ?? string.Empty, cancellationToken)
+            : Task.FromResult(Result.Success);
+
+        return await captchaTask
             .BindAsync(() => otpService.Generate())
             .TapAsync(async otp => await cache.SetAsync(
                 CacheKeys.For.Otp(request.PhoneNumber),

@@ -1,6 +1,7 @@
 using System.Globalization;
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Common.Application.FeatureManagement;
 using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using IAM.Application.Extensions;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 using Constants = IAM.Domain.Constants;
 
 namespace IAM.Endpoints.Users.VersionNeutral.SelfRegister;
@@ -36,10 +38,15 @@ internal static class Endpoint
         UserManager<ApplicationUser> userManager,
         IOtpService otpService,
         ICaptchaService captchaService,
+        IFeatureManager featureManager,
         IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        return await captchaService.ValidateAsync(request.CaptchaToken, cancellationToken)
+        var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
+            ? captchaService.ValidateAsync(request.CaptchaToken ?? string.Empty, cancellationToken)
+            : Task.FromResult(Result.Success);
+
+        return await captchaTask
             .BindAsync(() => CreateUserPipelineAsync(request, userManager, otpService, dbContext, cancellationToken));
     }
 

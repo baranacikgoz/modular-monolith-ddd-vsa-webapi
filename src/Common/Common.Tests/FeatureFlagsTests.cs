@@ -30,5 +30,11 @@ public static class FeatureFlagsTests
     {
         Assert.Equal("Checkout.Variant", FeatureFlags.Checkout.Variant);
     }
+
+    [Fact]
+    public static void IAM_Captcha_Value()
+    {
+        Assert.Equal("IAM.Captcha", FeatureFlags.IAM.Captcha);
+    }
 }
 #pragma warning restore CA1707
