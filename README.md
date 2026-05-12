@@ -30,18 +30,19 @@ This repository includes the following features:
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
 - **Audit Log & Retention**: Provides a transactional audit log (via domain events) with configurable automatic retention policies to manage database growth.
-- **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Seq for observability.
+- **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Aspire Dashboard for observability.
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
 - **Hangfire**: Supports background job processing.
-- **MassTransit & RabbitMQ**: Facilitates message-based communication.
-- **Transactional Outbox Pattern**: Ensures reliable message delivery.
-- **CDC - Kafka & Debezium**: Processes outbox messages with Kafka & Debezium.
+- **Transactional Outbox Pattern**: Ensures reliable message delivery via a custom outbox processor with lag tracking, cleanup, and distributed trace propagation.
+- **CDC - Kafka & Debezium**: Debezium reads Postgres WAL → Kafka; consumers process integration events without application-side producers.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
 - **JWT Access-Token Revocation**: Redis-backed blacklist invalidates tokens on logout/revoke with a 15-minute ceiling enforced on expiry; Jti validated on every authenticated request.
 - **Consumer Idempotency**: `EventHandlerBase` checks a `processed_msg:{messageId}` key in Redis before invoking the handler and writes it with a 24h TTL, ensuring at-least-once delivery without duplicate side effects.
 - **Security Headers Middleware**: Configurable `SecurityHeadersMiddleware` injects `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, and related headers on every response.
 - **Reverse Proxy / Forwarded Headers Support**: Configurable `ForwardedHeaders` middleware trusts known proxy networks and correctly propagates client IP and scheme behind load balancers.
+- **Feature Management**: `Microsoft.FeatureManagement` with targeting context support and automated endpoint filtering — feature flags configurable per-environment via `appsettings.json`.
+- **Rate Limiting**: Per-endpoint rate limiting (e.g., registration, OTP flows) to protect against abuse.
 - **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and Kafka checks so orchestrators only route traffic once all backing services are reachable.
 - **Architecture Boundary Tests**: NetArchTest rules assert no cross-module Domain references and that all `IntegrationEvent` types are declared exclusively in `Common.IntegrationEvents`.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
@@ -71,7 +72,7 @@ To use or contribute to this project, you will need:
 
 - Start required infrastructure:
     ```bash
-    docker compose -f "docker-compose.yml" up -d --build mm.database mm.rabbitmq mm.seq
+    docker compose -f "docker-compose.yml" up -d --build mm.postgres mm.redis mm.aspire-dashboard mm.kafka mm.debezium
     ```
 
 ### VSCode
@@ -117,7 +118,6 @@ All developer commands are centralized in the **Makefile**. Run `make <target>` 
 ### Database Migrations
 
 > **⚠️ We do NOT auto-migrate at startup.** All schema changes go through DBA review.
-> See [`docs/migration-workflow.md`](docs/migration-workflow.md) for the full workflow.
 
 #### Add a new migration
 
