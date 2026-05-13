@@ -11,6 +11,7 @@ namespace Outbox;
 public sealed partial class OutboxCleanupJob(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptions,
+    TimeProvider timeProvider,
     ILogger<OutboxCleanupJob> logger)
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -24,7 +25,7 @@ public sealed partial class OutboxCleanupJob(
             return;
         }
 
-        var cutoff = DateTimeOffset.UtcNow.AddDays(-cleanupOptions.RetentionDays);
+        var cutoff = timeProvider.GetUtcNow().AddDays(-cleanupOptions.RetentionDays);
         var batchSize = cleanupOptions.BatchSize;
         var totalDeleted = 0;
 

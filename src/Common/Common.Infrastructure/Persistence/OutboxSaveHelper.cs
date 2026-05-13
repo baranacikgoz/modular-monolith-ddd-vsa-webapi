@@ -1,13 +1,12 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Common.Application.Auth;
-using Common.Application.Persistence.Outbox;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
+using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence.ValueConverters;
-using Common.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -43,14 +42,14 @@ public static partial class OutboxSaveHelper
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
 
         var auditLogEntries = new List<AuditLogEntry>(aggregatesWithEvents.Count);
-        var domainEvents = new List<Common.Domain.Events.DomainEvent>();
+        var domainEvents = new List<DomainEvent>();
 
         foreach (var entry in aggregatesWithEvents)
         {
             var aggregateRoot = entry.Entity;
             foreach (var @event in aggregateRoot.Events)
             {
-                if (@event is not Common.Domain.Events.DomainEvent domainEvent)
+                if (@event is not DomainEvent domainEvent)
                 {
                     continue;
                 }
@@ -127,7 +126,10 @@ public static partial class OutboxSaveHelper
                         },
                         new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events },
                         new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = traceIds },
-                        new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = parentSpanIds }
+                        new NpgsqlParameter
+                        {
+                            NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = parentSpanIds
+                        }
                     ],
                     cancellationToken);
 #pragma warning restore S3265

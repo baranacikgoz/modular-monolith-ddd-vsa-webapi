@@ -1,4 +1,3 @@
-using System.Data.Common;
 using System.Diagnostics;
 using Common.Application.Options;
 using Common.Infrastructure.Modules;

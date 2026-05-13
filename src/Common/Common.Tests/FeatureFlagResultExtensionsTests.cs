@@ -1,4 +1,3 @@
-using Common.Application.Auth;
 using Common.Application.FeatureManagement;
 using Common.Domain.ResultMonad;
 using Microsoft.FeatureManagement;

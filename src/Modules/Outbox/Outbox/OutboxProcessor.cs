@@ -1,13 +1,12 @@
 using System.Diagnostics;
-using System.Text.Json;
 using Common.Application.Options;
 using MassTransit;
-using Outbox.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Outbox.Persistence;
 using Outbox.Telemetry;
 
 namespace Outbox;
@@ -25,7 +24,8 @@ public sealed partial class OutboxProcessor(
         while (!stoppingToken.IsCancellationRequested)
         {
             await ProcessBatchAsync(stoppingToken);
-            await Task.Delay(options.Value.PollIntervalMs, stoppingToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            await Task.Delay(options.Value.PollIntervalMs, stoppingToken)
+                .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
     }
 
@@ -36,6 +36,7 @@ public sealed partial class OutboxProcessor(
         var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
         var opts = options.Value;
+        var sw = Stopwatch.StartNew();
 
         await using var tx = await db.Database.BeginTransactionAsync(ct);
         try
@@ -127,6 +128,7 @@ public sealed partial class OutboxProcessor(
 
             await db.SaveChangesAsync(ct);
             await tx.CommitAsync(ct);
+            OutboxTelemetry.ProcessingDuration.Record(sw.Elapsed.TotalMilliseconds);
         }
 #pragma warning disable CA1031
         catch (Exception ex) when (!ct.IsCancellationRequested)
@@ -153,7 +155,8 @@ public sealed partial class OutboxProcessor(
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Outbox message {MessageId} publish failed (retry {RetryCount}/{MaxRetryCount}).")]
-    private static partial void LogRetryScheduled(ILogger logger, int messageId, int retryCount, int maxRetryCount, Exception ex);
+    private static partial void LogRetryScheduled(ILogger logger, int messageId, int retryCount, int maxRetryCount,
+        Exception ex);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "OutboxProcessor batch failed; will retry on next poll.")]
     private static partial void LogBatchError(ILogger logger, Exception ex);

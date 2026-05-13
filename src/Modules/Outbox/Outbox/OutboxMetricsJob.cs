@@ -11,6 +11,7 @@ namespace Outbox;
 public sealed partial class OutboxMetricsJob(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptions,
+    TimeProvider timeProvider,
     ILogger<OutboxMetricsJob> logger)
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -18,7 +19,7 @@ public sealed partial class OutboxMetricsJob(
         using var activity = OutboxTelemetry.ActivitySource.StartActivity(nameof(ExecuteAsync));
 
         var lagThreshold = TimeSpan.FromMinutes(outboxOptions.Value.LagThresholdMinutes);
-        var cutoff = DateTimeOffset.UtcNow.Add(-lagThreshold);
+        var cutoff = timeProvider.GetUtcNow().Add(-lagThreshold);
 
         using var scope = scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
