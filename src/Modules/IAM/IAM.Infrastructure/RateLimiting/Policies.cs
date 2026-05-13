@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace IAM.Infrastructure.RateLimiting;
 
-public static class Policies
+public static partial class Policies
 {
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
+        yield return GlobalOnRejected;
         yield return SmsPolicy;
         yield return RegisterPolicy;
         yield return TokenCreatePolicy;
@@ -17,19 +18,8 @@ public static class Policies
         yield return TokenRefreshPolicy;
     }
 
-    private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    private static void GlobalOnRejected(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
-        rateLimiter
-            .AddFixedWindowLimiter(Constants.Sms, opt =>
-            {
-                var smsRateLimiting = options.Sms ?? throw new InvalidOperationException("Sms rate limiting is null.");
-
-                opt.PermitLimit = smsRateLimiting.Limit;
-                opt.Window = TimeSpan.FromMilliseconds(smsRateLimiting.PeriodInMs);
-                opt.QueueLimit = smsRateLimiting.QueueLimit;
-            });
-
-        // Expose Retry-After so mobile clients know exactly when to retry.
         rateLimiter.OnRejected = static (context, _) =>
         {
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
@@ -44,17 +34,14 @@ public static class Policies
         };
     }
 
-    private static void RegisterPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
-        rateLimiter
-            .AddFixedWindowLimiter(Constants.Register, opt =>
-            {
-                var registerRateLimiting = options.Register ?? throw new InvalidOperationException("Register rate limiting is null.");
+        rateLimiter.AddPolicy<string, SmsRateLimitingPolicy>(Constants.Sms);
+    }
 
-                opt.PermitLimit = registerRateLimiting.Limit;
-                opt.Window = TimeSpan.FromMilliseconds(registerRateLimiting.PeriodInMs);
-                opt.QueueLimit = registerRateLimiting.QueueLimit;
-            });
+    private static void RegisterPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
+    {
+        rateLimiter.AddPolicy<string, RegisterRateLimitingPolicy>(Constants.Register);
     }
 
     private static void TokenCreatePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)

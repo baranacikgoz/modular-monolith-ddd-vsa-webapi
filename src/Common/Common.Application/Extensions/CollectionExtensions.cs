@@ -35,11 +35,6 @@ public static class CollectionExtensions
     public static Result<T> FirstAsResult<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
     {
         var value = collection.FirstOrDefault(predicate);
-        if (value is null)
-        {
-            return Error.NotFound(nameof(T));
-        }
-
-        return value;
+        return value is null ? Error.NotFound(nameof(T)) : (Result<T>)value;
     }
 }

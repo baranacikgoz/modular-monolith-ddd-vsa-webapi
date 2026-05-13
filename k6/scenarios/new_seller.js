@@ -1,5 +1,5 @@
 import { check, sleep } from 'k6';
-import { post } from '../lib/http.js';
+import { post, get } from '../lib/http.js';
 import { sendOtp, turkishName } from '../lib/auth.js';
 
 // Simulates the full new-user onboarding journey: arrive → register → create store → list first product → leave.
@@ -14,6 +14,15 @@ export default function(data) { runNewSeller(data || {}); }
 
 export function runNewSeller(data) {
   const p = phone();
+
+  // Re-fetch templates if setup() found none (e.g. no seeded templates before run start)
+  let templateIds = (data.templateIds && data.templateIds.length > 0) ? data.templateIds : [];
+  if (templateIds.length === 0 && data.adminToken) {
+    const res = get('/v1/product-templates/search', { PageNumber: 1, PageSize: 50 }, data.adminToken);
+    if (res.status === 200) {
+      templateIds = (res.json('data') || []).map(t => t.id);
+    }
+  }
 
   // Step 1 — Register
   sendOtp(p);
@@ -49,9 +58,9 @@ export function runNewSeller(data) {
     return;
   }
 
-  // Step 4 — List first product (requires an active template from setup())
-  if (data.templateIds && data.templateIds.length > 0) {
-    const templateId = data.templateIds[__ITER % data.templateIds.length];
+  // Step 4 — List first product (requires an active template from setup() or re-fetched above)
+  if (templateIds.length > 0) {
+    const templateId = templateIds[__ITER % templateIds.length];
     const productRes = post('/v1/stores/my/products', {
       productTemplateId: templateId,
       name: 'My First Product',

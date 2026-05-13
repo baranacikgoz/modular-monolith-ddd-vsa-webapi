@@ -20,6 +20,7 @@ public static class CustomPermissions
             CustomResources.ProductTemplates), // For individual users to see all products
         new("Search Products", CustomActions.Search, CustomResources.ProductTemplates),
 
+        new("Read Product", CustomActions.Read, CustomResources.Products),
         new("Create My Product", CustomActions.CreateMy, CustomResources.Products),
         new("Read My Product", CustomActions.ReadMy, CustomResources.Products),
         new("Update My Product", CustomActions.UpdateMy, CustomResources.Products),

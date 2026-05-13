@@ -39,6 +39,9 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .IsRequired();
 
         builder
+            .HasIndex(u => u.PhoneNumber);
+
+        builder
             .HasIndex(u => u.RefreshTokenHash);
 
         builder

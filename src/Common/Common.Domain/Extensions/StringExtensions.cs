@@ -25,12 +25,9 @@ public static class StringExtensions
             return false;
         }
 
-        if (allowWhiteSpace)
-        {
-            return !s.AsSpan().ContainsAnyExcept(_turkishAlphabetWithEmptySpace);
-        }
-
-        return !s.AsSpan().ContainsAnyExcept(_turkishAlphabet);
+        return allowWhiteSpace
+            ? !s.AsSpan().ContainsAnyExcept(_turkishAlphabetWithEmptySpace)
+            : !s.AsSpan().ContainsAnyExcept(_turkishAlphabet);
     }
 
     public static string TrimmedUpperInvariantTransliterateTurkishChars(this string value)
