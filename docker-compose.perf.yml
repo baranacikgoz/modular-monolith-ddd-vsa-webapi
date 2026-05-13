@@ -1,0 +1,29 @@
+name: mm-perf
+
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.perf.yml up --abort-on-container-exit k6
+#
+# The full stack (host, postgres, rabbitmq, aspire-dashboard) comes from docker-compose.yml.
+# This file only adds the k6 load generator.
+#
+# While the test runs, open the Aspire dashboard at http://localhost:18888 to watch
+# OTel traces, spans, and metrics in real time — no extra wiring needed.
+
+services:
+  k6:
+    image: grafana/k6:latest
+    container_name: mm.k6
+    networks:
+      - local_shared_network
+    volumes:
+      - ./k6:/scripts
+    command: run /scripts/main.js
+    depends_on:
+      host:
+        condition: service_healthy
+    environment:
+      - BASE_URL=http://mm.host:5001
+
+networks:
+  local_shared_network:
+    external: true

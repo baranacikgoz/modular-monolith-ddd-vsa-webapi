@@ -9,7 +9,8 @@ SLNF_TESTS = ModularMonolith.Tests.slnf
 
 .PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
         ef-add-IAM ef-add-Products ef-add-Outbox \
-        ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all
+        ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all \
+        perf perf-smoke perf-down
 # ── Build & Test ──────────────────────────────────────────────────────────────
 
 build:
@@ -125,3 +126,22 @@ ef-script-Outbox:
 
 ef-script-all: ef-script-IAM ef-script-Products ef-script-Outbox
 	@echo "All migration scripts generated."
+
+# ── Performance / Load Testing ───────────────────────────────────────────────
+# Requires: docker network create local_shared_network  (once, if not already present)
+
+perf:
+	@echo "Starting full stack + k6 load test (50 VUs, ~7 min)..."
+	docker compose -f docker-compose.yml -f docker-compose.perf.yml up --build --abort-on-container-exit k6
+
+perf-smoke:
+	@echo "Running smoke test (1 VU, 30 s) against buyer scenario..."
+	docker compose -f docker-compose.yml up -d
+	docker run --rm -i \
+		--network local_shared_network \
+		-v $$(pwd)/k6:/scripts \
+		-e BASE_URL=http://mm.host:5001 \
+		grafana/k6:latest run --vus 1 --duration 30s /scripts/scenarios/buyer.js
+
+perf-down:
+	docker compose -f docker-compose.yml -f docker-compose.perf.yml down
