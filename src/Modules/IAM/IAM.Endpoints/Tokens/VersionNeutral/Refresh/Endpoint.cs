@@ -11,7 +11,6 @@ using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 
@@ -23,6 +22,7 @@ internal static class Endpoint
             .MapPost("refresh", RefreshToken)
             .WithDescription("Refresh token.")
             .AllowAnonymous()
+            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.TokenRefresh)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }
@@ -43,13 +43,11 @@ internal static class Endpoint
 
                 return await dbContext
                     .Users
-                    .AsNoTracking()
                     .TagWith(nameof(RefreshToken))
                     .Where(x => x.RefreshTokenHash == hash)
                     .Select(u => new
                     {
-                        u.Id,
-                        u.RefreshTokenExpiresAt,
+                        User = u,
                         Roles = dbContext
                             .UserRoles
                             .Where(ur => ur.UserId == u.Id)
@@ -63,15 +61,26 @@ internal static class Endpoint
                     })
                     .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
             })
-            .TapAsync(user => user.RefreshTokenExpiresAt < timeProvider.GetUtcNow()
+            .TapAsync(userObj => userObj.User.RefreshTokenExpiresAt < timeProvider.GetUtcNow()
                 ? Result.Failure(TokenErrors.RefreshTokenExpired)
                 : Result.Success)
-            .MapAsync(user =>
+            .BindAsync(async userObj =>
             {
                 var utcNow = timeProvider.GetUtcNow();
                 var (accessToken, accessTokenExpiresAt) =
-                    tokenService.GenerateAccessToken(utcNow, user.Id, user.Roles);
-                return new Response { AccessToken = accessToken, AccessTokenExpiresAt = accessTokenExpiresAt };
+                    tokenService.GenerateAccessToken(utcNow, userObj.User.Id, userObj.Roles);
+                var (newRefreshTokenBytes, newRefreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+
+                userObj.User.UpdateRefreshToken(SHA256.HashData(newRefreshTokenBytes), newRefreshTokenExpiresAt);
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                return Result<Response>.Success(new Response
+                {
+                    AccessToken = accessToken,
+                    AccessTokenExpiresAt = accessTokenExpiresAt,
+                    RefreshToken = Convert.ToBase64String(newRefreshTokenBytes),
+                    RefreshTokenExpiresAt = newRefreshTokenExpiresAt
+                });
             })
             .TapActivityAsync(activity);
     }

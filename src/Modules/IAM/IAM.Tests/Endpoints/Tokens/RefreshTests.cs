@@ -70,6 +70,58 @@ public class RefreshTests : BaseIntegrationTest
 
         Assert.True(root.TryGetProperty("accessTokenExpiresAt", out var expiresAt));
         Assert.True(expiresAt.GetDateTimeOffset() > utcNow);
+
+        Assert.True(root.TryGetProperty("refreshToken", out var newRefreshToken));
+        Assert.False(string.IsNullOrWhiteSpace(newRefreshToken.GetString()));
+
+        Assert.True(root.TryGetProperty("refreshTokenExpiresAt", out var refreshExpiresAt));
+        Assert.True(refreshExpiresAt.GetDateTimeOffset() > utcNow);
+    }
+
+    [Fact]
+    public async Task RefreshToken_ReusingOldToken_ReturnsError()
+    {
+        // Arrange — after a successful refresh, the old refresh token must be invalidated.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(),
+            phoneNumber,
+            DateOnly.FromDateTime(_faker.Date.Past(30))
+        );
+
+        var utcNow = timeProvider.GetUtcNow();
+        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+
+        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync(default);
+
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request
+        {
+            RefreshToken = Convert.ToBase64String(refreshTokenBytes)
+        };
+
+        // First use — must succeed
+        var firstResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
+        if (!firstResponse.IsSuccessStatusCode)
+        {
+            var err = await firstResponse.Content.ReadAsStringAsync();
+            Assert.Fail($"First refresh failed unexpectedly. Status: {firstResponse.StatusCode}. Error: {err}");
+        }
+
+        // Act — reuse the SAME old refresh token
+        var secondResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
+
+        // Assert — old token is now invalid
+        Assert.False(secondResponse.IsSuccessStatusCode);
     }
 
     [Fact]

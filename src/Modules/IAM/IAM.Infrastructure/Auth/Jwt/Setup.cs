@@ -35,7 +35,7 @@ internal static class Setup
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtOptions.Secret)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
                     ValidateIssuer = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidateLifetime = true,

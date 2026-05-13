@@ -12,6 +12,12 @@ public class CustomRateLimitingOptions
     public required FixedWindow Register { get; set; }
 
     public required FixedWindow CreateStore { get; set; }
+
+    public required FixedWindow TokenCreate { get; set; }
+
+    public required FixedWindow CheckRegistration { get; set; }
+
+    public required FixedWindow TokenRefresh { get; set; }
 }
 
 public class FixedWindow
@@ -38,6 +44,15 @@ public class CustomRateLimitingOptionsValidator : CustomValidator<CustomRateLimi
             .SetValidator(new FixedWindowValidator());
 
         RuleFor(o => o.CreateStore)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.TokenCreate)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.CheckRegistration)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.TokenRefresh)
             .SetValidator(new FixedWindowValidator());
 #pragma warning restore CS8620
     }

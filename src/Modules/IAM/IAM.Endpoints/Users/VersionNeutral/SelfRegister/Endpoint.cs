@@ -6,15 +6,12 @@ using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using IAM.Application.Extensions;
 using IAM.Application.Otp.Services;
-using IAM.Application.Persistence;
-using IAM.Domain.Errors;
 using IAM.Domain.Identity;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
 using Constants = IAM.Domain.Constants;
 
@@ -39,7 +36,6 @@ internal static class Endpoint
         IOtpService otpService,
         ICaptchaService captchaService,
         IFeatureManager featureManager,
-        IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
         var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
@@ -47,37 +43,24 @@ internal static class Endpoint
             : Task.FromResult(Result.Success);
 
         return await captchaTask
-            .BindAsync(() => CreateUserPipelineAsync(request, userManager, otpService, dbContext, cancellationToken));
+            .BindAsync(() => CreateUserPipelineAsync(request, userManager, otpService, cancellationToken));
     }
 
     private static Task<Result<Response>> CreateUserPipelineAsync(
         Request request,
         UserManager<ApplicationUser> userManager,
         IOtpService otpService,
-        IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
         return otpService
             .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, cancellationToken)
             .BindAsync(async () =>
             {
-                // Explicit phone uniqueness check before handing off to Identity — avoids
-                // the cryptic DuplicateUserName error and returns a domain-friendly error instead.
-                var alreadyExists = await dbContext
-                    .Users
-                    .AsNoTracking()
-                    .AnyAsync(u => u.PhoneNumber == request.PhoneNumber, cancellationToken);
-
-                return alreadyExists
-                    ? Result<ApplicationUser>.Failure(IdentityErrors.PhoneNumberAlreadyRegistered)
-                    : Result<ApplicationUser>.Success(ApplicationUser.Create(
-                        request.FullName,
-                        request.PhoneNumber,
-                        DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
-                            CultureInfo.InvariantCulture)));
-            })
-            .BindAsync(async user =>
-            {
+                var user = ApplicationUser.Create(
+                    request.FullName,
+                    request.PhoneNumber,
+                    DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
+                        CultureInfo.InvariantCulture));
                 var identityResult = await userManager.CreateAsync(user);
                 return identityResult.ToResult(user);
             })

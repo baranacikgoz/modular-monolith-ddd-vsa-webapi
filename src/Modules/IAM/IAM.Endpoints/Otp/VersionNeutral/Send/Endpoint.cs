@@ -1,4 +1,3 @@
-using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.FeatureManagement;
 using Common.Application.Options;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Endpoints.Otp.VersionNeutral.Send;
 
@@ -34,7 +32,6 @@ internal static class Endpoint
         ICaptchaService captchaService,
         IFeatureManager featureManager,
         IOptions<OtpOptions> otpOptionsProvider,
-        IFusionCache cache,
         CancellationToken cancellationToken)
     {
         var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
@@ -43,11 +40,11 @@ internal static class Endpoint
 
         return await captchaTask
             .BindAsync(() => otpService.Generate())
-            .TapAsync(async otp => await cache.SetAsync(
-                CacheKeys.For.Otp(request.PhoneNumber),
+            .TapAsync(async otp => await otpService.StoreOtpAsync(
+                request.PhoneNumber,
                 otp,
-                options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes) },
-                token: cancellationToken))
+                TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes),
+                cancellationToken))
             .TapAsync(async _ =>
             {
                 // Sending sms logic comes here...

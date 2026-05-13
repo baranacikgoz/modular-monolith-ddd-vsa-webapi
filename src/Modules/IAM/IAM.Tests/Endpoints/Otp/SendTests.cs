@@ -47,9 +47,10 @@ public class SendTests : BaseIntegrationTest
 
         // Verify cache Side-Effect
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        var cachedOtp = await cache.GetOrDefaultAsync<string>(cacheKey);
+        var cachedEntry = await cache.GetOrDefaultAsync<IAM.Infrastructure.Identity.Services.OtpCacheEntry>(cacheKey);
 
-        Assert.False(string.IsNullOrWhiteSpace(cachedOtp));
+        Assert.NotNull(cachedEntry);
+        Assert.False(string.IsNullOrWhiteSpace(cachedEntry.Otp));
     }
 
     [Fact]

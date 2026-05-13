@@ -19,6 +19,21 @@
       "Limit": 1,
       "PeriodInMs": 604800000,
       "QueueLimit": 0
+    },
+    "TokenCreate": {
+      "Limit": 10,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0
+    },
+    "CheckRegistration": {
+      "Limit": 10,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0
+    },
+    "TokenRefresh": {
+      "Limit": 20,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0
     }
   }
 }

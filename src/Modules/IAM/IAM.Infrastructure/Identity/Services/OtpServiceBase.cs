@@ -6,12 +6,17 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Identity.Services;
 
-/// <summary>
-///     Base class for OTP services. Contains the shared cache-based verification logic
-///     so that concrete implementations only need to override <see cref="Generate" />.
-/// </summary>
 internal abstract class OtpServiceBase(IFusionCache cache) : IOtpService
 {
+    private const int MaxFailedAttempts = 3;
+
+    public async Task StoreOtpAsync(string phoneNumber, string otp, TimeSpan duration, CancellationToken cancellationToken)
+    {
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        var entry = new OtpCacheEntry(otp, 0);
+        await cache.SetAsync(cacheKey, entry, options: new FusionCacheEntryOptions { Duration = duration }, token: cancellationToken);
+    }
+
     public async Task<Result> VerifyThenRemoveOtpAsync(
         string phoneNumber,
         string otp,
@@ -19,10 +24,28 @@ internal abstract class OtpServiceBase(IFusionCache cache) : IOtpService
     {
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
 
-        var otpFromCache = await cache.GetOrDefaultAsync<string>(cacheKey, token: cancellationToken);
+        var entry = await cache.GetOrDefaultAsync<OtpCacheEntry>(cacheKey, token: cancellationToken);
 
-        if (!string.Equals(otpFromCache, otp, StringComparison.Ordinal))
+        if (entry is null)
         {
+            return OtpErrors.InvalidOtp;
+        }
+
+        if (!string.Equals(entry.Otp, otp, StringComparison.Ordinal))
+        {
+            var updatedFailedAttempts = entry.FailedAttempts + 1;
+
+            if (updatedFailedAttempts >= MaxFailedAttempts)
+            {
+                await cache.RemoveAsync(cacheKey, token: cancellationToken);
+                return OtpErrors.TooManyFailedAttempts;
+            }
+
+            await cache.SetAsync(
+                cacheKey,
+                entry with { FailedAttempts = updatedFailedAttempts },
+                token: cancellationToken);
+
             return OtpErrors.InvalidOtp;
         }
 

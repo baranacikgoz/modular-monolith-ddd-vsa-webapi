@@ -22,6 +22,7 @@ internal static class Endpoint
             .MapPost("", CreateTokens)
             .WithDescription("Create tokens.")
             .AllowAnonymous()
+            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.TokenCreate)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

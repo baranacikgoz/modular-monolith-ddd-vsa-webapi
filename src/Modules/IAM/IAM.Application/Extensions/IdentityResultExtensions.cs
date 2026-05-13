@@ -22,6 +22,11 @@ public static class IdentityResultExtensions
 
     private static Error ToCustomIdentityError(this IdentityResult identityResult)
     {
+        if (identityResult.Errors.Any(e => e.Code == nameof(IdentityErrorDescriber.DuplicateUserName)))
+        {
+            return IdentityErrors.PhoneNumberAlreadyRegistered;
+        }
+
         var errors = identityResult.Errors.Select(e => e.Description).ToList();
         return new Error { Key = nameof(IdentityErrors.Some), SubErrors = errors };
     }

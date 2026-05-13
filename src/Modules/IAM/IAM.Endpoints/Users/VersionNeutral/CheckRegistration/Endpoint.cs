@@ -17,6 +17,7 @@ internal static class Endpoint
             .MapGet("check-registration", IsRegisteredAsync)
             .WithDescription("Check if a user is registered by given phone number.")
             .AllowAnonymous()
+            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.CheckRegistration)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

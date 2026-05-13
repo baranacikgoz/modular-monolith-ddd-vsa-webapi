@@ -41,7 +41,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = Common.Application.Caching.CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
@@ -95,7 +95,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache with the CORRECT otp
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, correctOtp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(correctOtp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
@@ -113,6 +113,56 @@ public class CreateTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task CreateTokens_AfterThreeWrongOtpAttempts_RejectsCorrectOtp()
+    {
+        // Arrange — OTP must be invalidated after 3 failed attempts, even if the correct code is used later.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const string correctOtp = "123456";
+        const string wrongOtp = "000000";
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(),
+            phoneNumber,
+            DateOnly.FromDateTime(_faker.Date.Past(30))
+        );
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync(default);
+
+        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(correctOtp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+
+        var client = Factory.CreateClient();
+
+        // Act — 3 wrong attempts
+        for (var i = 0; i < 3; i++)
+        {
+            var badRequest = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
+            {
+                PhoneNumber = phoneNumber,
+                Otp = wrongOtp
+            };
+            var badResponse = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), badRequest);
+            Assert.False(badResponse.IsSuccessStatusCode);
+        }
+
+        // Act — correct OTP after lockout
+        var goodRequest = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
+        {
+            PhoneNumber = phoneNumber,
+            Otp = correctOtp
+        };
+        var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), goodRequest);
+
+        // Assert — OTP must be dead after 3 failed attempts
+        Assert.False(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
     public async Task CreateTokens_WithNonExistentUser_ReturnsNotFound()
     {
         // Arrange
@@ -125,7 +175,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Seed cache so OTP verification passes
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request

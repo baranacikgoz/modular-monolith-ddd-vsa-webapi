@@ -47,7 +47,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
@@ -101,26 +101,27 @@ public class SelfRegisterTests : BaseIntegrationTest
     [Fact]
     public async Task SelfRegister_WithDuplicatePhoneNumber_ReturnsError()
     {
-        // Arrange — register a user first, then try to register with the same phone
+        // Arrange — register a user first via userManager so NormalizedUserName is set,
+        // then try to register with the same phone via the endpoint.
         using var scope = Factory.Services.CreateScope();
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<ApplicationUser>>();
         await EnsureBasicRoleExistsAsync(scope);
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        // Seed an existing user with the same phone number
+        // Seed an existing user via Identity so NormalizedUserName is properly set
+        // — the duplicate check relies on the Identity unique index on NormalizedUserName.
         var existingUser = ApplicationUser.Create(
             _faker.Name.FullName(),
             phoneNumber,
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
-        db.Users.Add(existingUser);
-        await db.SaveChangesAsync(default);
+        await userManager.CreateAsync(existingUser);
 
         const string otp = "123456";
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, otp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
@@ -152,7 +153,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Seed the CORRECT otp but send a WRONG one
         var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, correctOtp, options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(correctOtp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
         var request = new IAM.Endpoints.Users.VersionNeutral.SelfRegister.Request
