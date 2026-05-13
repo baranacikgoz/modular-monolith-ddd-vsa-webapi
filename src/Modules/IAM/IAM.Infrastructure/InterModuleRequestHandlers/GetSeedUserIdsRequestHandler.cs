@@ -26,6 +26,7 @@ public class GetSeedUserIdsRequestHandler(IIAMDbContext dbContext)
 
         var userIds = await dbContext.UserRoles
             .Where(ur => ur.RoleId == roleId)
+            .OrderBy(ur => ur.UserId)
             .Select(ur => ur.UserId)
             .Take(requestedUserCount)
             .ToListAsync(cancellationToken);
