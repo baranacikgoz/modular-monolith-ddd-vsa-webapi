@@ -35,14 +35,15 @@ This repository includes the following features:
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
 - **Hangfire**: Supports background job processing.
 - **Transactional Outbox Pattern**: Ensures reliable message delivery via a custom outbox processor with lag tracking, cleanup, and distributed trace propagation.
-- **CDC - Kafka & Debezium**: Debezium reads Postgres WAL → Kafka; consumers process integration events without application-side producers.
+- **RabbitMQ & MassTransit**: Integration events delivered over RabbitMQ via MassTransit; no application-side producers — publish via outbox only.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
 - **JWT Access-Token Revocation**: Redis-backed blacklist invalidates tokens on logout/revoke with a 15-minute ceiling enforced on expiry; Jti validated on every authenticated request.
 - **Consumer Idempotency**: `EventHandlerBase` checks a `processed_msg:{messageId}` key in Redis before invoking the handler and writes it with a 24h TTL, ensuring at-least-once delivery without duplicate side effects.
 - **Security Headers Middleware**: Configurable `SecurityHeadersMiddleware` injects `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, and related headers on every response.
 - **Reverse Proxy / Forwarded Headers Support**: Configurable `ForwardedHeaders` middleware trusts known proxy networks and correctly propagates client IP and scheme behind load balancers.
 - **Feature Management**: `Microsoft.FeatureManagement` with targeting context support and automated endpoint filtering — feature flags configurable per-environment via `appsettings.json`.
-- **Rate Limiting**: Per-endpoint rate limiting (e.g., registration, OTP flows) to protect against abuse.
+- **Rate Limiting**: Modular per-policy rate limiting (registration, OTP/SMS, token, store creation) with override support via env vars for load testing.
+- **k6 Load Testing**: Multi-scenario k6 suite (`docker compose -f docker-compose.yml -f docker-compose.perf.yml up k6`) with Aspire Dashboard OTel traces live during runs.
 - **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and Kafka checks so orchestrators only route traffic once all backing services are reachable.
 - **Architecture Boundary Tests**: NetArchTest rules assert no cross-module Domain references and that all `IntegrationEvent` types are declared exclusively in `Common.IntegrationEvents`.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
@@ -72,7 +73,7 @@ To use or contribute to this project, you will need:
 
 - Start required infrastructure:
     ```bash
-    docker compose -f "docker-compose.yml" up -d --build mm.postgres mm.redis mm.aspire-dashboard mm.kafka mm.debezium
+    docker compose -f "docker-compose.yml" up -d --build mm.postgres mm.redis mm.aspire-dashboard mm.rabbitmq
     ```
 
 ### VSCode
