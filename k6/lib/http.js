@@ -21,10 +21,14 @@ export function post(path, body, token) {
 }
 
 export function get(path, params, token) {
+  let url = `${BASE_URL}${path}`;
+  if (params && Object.keys(params).length > 0) {
+    const qs = Object.entries(params).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+    url += `?${qs}`;
+  }
   const opts = { tags: { name: path } };
   if (token) opts.headers = bearerHeaders(token);
-  if (params && Object.keys(params).length > 0) opts.params = params;
-  return http.get(`${BASE_URL}${path}`, opts);
+  return http.get(url, opts);
 }
 
 export function put(path, body, token) {

@@ -15,16 +15,19 @@ let token = null;
 function ensureAuth() {
   if (token) return;
   const p = phone();
-  register(p, `Buyer VU${__VU}`); // no-op if already registered
+  register(p, __VU); // no-op if already registered
   token = login(p);
 }
+
+// Default export allows standalone: k6 run --vus 1 --duration 30s scenarios/buyer.js
+export default function(data) { runBuyer(data || {}); }
 
 export function runBuyer(data) {
   ensureAuth();
   if (!token) return;
 
   // Search stores (main discovery surface)
-  const storesRes = get('/v1/stores/search', { pageNumber: 1, pageSize: 10 }, token);
+  const storesRes = get('/v1/stores/search', { PageNumber: 1, PageSize: 10 }, token);
   check(storesRes, { 'buyer — search stores: 200': r => r.status === 200 });
 
   const stores = storesRes.status === 200 ? (storesRes.json('data') || []) : [];
@@ -39,19 +42,14 @@ export function runBuyer(data) {
   check(storeRes, { 'buyer — get store: 200': r => r.status === 200 });
 
   // Browse products in that store
-  const productsRes = get('/v1/products/search', { storeId, pageNumber: 1, pageSize: 10 }, token);
+  const productsRes = get('/v1/products/search', { storeId, PageNumber: 1, PageSize: 10 }, token);
   check(productsRes, { 'buyer — search products: 200': r => r.status === 200 });
 
-  const products = productsRes.status === 200 ? (productsRes.json('data') || []) : [];
-  if (products.length > 0) {
-    const product = products[__ITER % products.length];
-    const productRes = get(`/v1/products/${product.id}`, {}, token);
-    check(productRes, { 'buyer — get product: 200': r => r.status === 200 });
-  }
+  // Basic role has Search but not Read on Products — no individual product GET for buyers.
 
   // Browse the product catalog every 3rd iteration
   if (__ITER % 3 === 0) {
-    const templatesRes = get('/v1/product-templates/search', { pageNumber: 1, pageSize: 10 }, token);
+    const templatesRes = get('/v1/product-templates/search', { PageNumber: 1, PageSize: 10 }, token);
     check(templatesRes, { 'buyer — search templates: 200': r => r.status === 200 });
   }
 

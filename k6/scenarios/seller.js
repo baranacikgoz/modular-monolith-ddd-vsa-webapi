@@ -16,7 +16,7 @@ let storeId = null;
 function ensureAuth() {
   if (token) return;
   const p = phone();
-  register(p, `Seller VU${__VU}`);
+  register(p, __VU + 100);
   token = login(p);
 }
 
@@ -50,6 +50,8 @@ function ensureStore(templateIds) {
   if (getRes.status === 200) storeId = getRes.json('id');
 }
 
+export default function(data) { runSeller(data || {}); }
+
 export function runSeller(data) {
   ensureAuth();
   if (!token) return;
@@ -61,7 +63,7 @@ export function runSeller(data) {
   check(storeRes, { 'seller — get my store: 200': r => r.status === 200 });
 
   // Own product list
-  const productsRes = get('/v1/products/my/search', { pageNumber: 1, pageSize: 10 }, token);
+  const productsRes = get('/v1/products/my/search', { PageNumber: 1, PageSize: 10 }, token);
   check(productsRes, { 'seller — search my products: 200': r => r.status === 200 });
 
   const products = productsRes.status === 200 ? (productsRes.json('data') || []) : [];
@@ -99,13 +101,13 @@ export function runSeller(data) {
 
   // Browse catalog to find new templates to list — every 4th iteration
   if (__ITER % 4 === 0) {
-    const templatesRes = get('/v1/product-templates/search', { pageNumber: 1, pageSize: 10 }, token);
+    const templatesRes = get('/v1/product-templates/search', { PageNumber: 1, PageSize: 10 }, token);
     check(templatesRes, { 'seller — browse templates: 200': r => r.status === 200 });
   }
 
   // Check store audit log every 5th iteration
   if (__ITER % 5 === 0) {
-    const auditRes = get('/v1/stores/my/audit-log', { pageNumber: 1, pageSize: 10 }, token);
+    const auditRes = get('/v1/stores/my/audit-log', { PageNumber: 1, PageSize: 10 }, token);
     check(auditRes, { 'seller — audit log: 200': r => r.status === 200 });
   }
 

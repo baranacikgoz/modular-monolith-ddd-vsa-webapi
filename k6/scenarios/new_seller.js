@@ -1,6 +1,6 @@
 import { check, sleep } from 'k6';
 import { post } from '../lib/http.js';
-import { sendOtp } from '../lib/auth.js';
+import { sendOtp, turkishName } from '../lib/auth.js';
 
 // Simulates the full new-user onboarding journey: arrive → register → create store → list first product → leave.
 // Each VU+iteration is a completely fresh user, testing the write-heavy registration path under load.
@@ -10,6 +10,8 @@ function phone() {
   return `9053${String(__VU).padStart(4, '0')}${String(__ITER).padStart(4, '0')}`;
 }
 
+export default function(data) { runNewSeller(data || {}); }
+
 export function runNewSeller(data) {
   const p = phone();
 
@@ -18,7 +20,7 @@ export function runNewSeller(data) {
   const regRes = post('/users/register/self', {
     phoneNumber: p,
     otp: '123456',
-    fullName: `New Seller ${p}`,
+    fullName: turkishName(__VU + __ITER),
     birthDate: '20-06-2001',
     captchaToken: 'dummy',
   });

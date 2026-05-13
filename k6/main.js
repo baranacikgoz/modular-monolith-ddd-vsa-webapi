@@ -103,7 +103,7 @@ export function setup() {
   while (templateIds.length === 0 && retries < 6) {
     if (retries > 0) sleep(5);
     const res = http.get(
-      `${BASE_URL}/v1/product-templates/search?pageNumber=1&pageSize=50`,
+      `${BASE_URL}/v1/product-templates/search?PageNumber=1&PageSize=50`,
       { headers: authHeaders },
     );
     if (res.status === 200) {
@@ -119,7 +119,7 @@ export function setup() {
   // Fetch seeded store IDs
   const storeIds = [];
   const storesRes = http.get(
-    `${BASE_URL}/v1/stores/search?pageNumber=1&pageSize=50`,
+    `${BASE_URL}/v1/stores/search?PageNumber=1&PageSize=50`,
     { headers: authHeaders },
   );
   if (storesRes.status === 200) {

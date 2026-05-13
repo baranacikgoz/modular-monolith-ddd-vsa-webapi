@@ -10,7 +10,8 @@ SLNF_TESTS = ModularMonolith.Tests.slnf
 .PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
         ef-add-IAM ef-add-Products ef-add-Outbox \
         ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all \
-        perf perf-smoke perf-down
+        perf perf-smoke perf-down \
+        perf-rider perf-rider-smoke perf-rider-down
 # ── Build & Test ──────────────────────────────────────────────────────────────
 
 build:
@@ -145,3 +146,24 @@ perf-smoke:
 
 perf-down:
 	docker compose -f docker-compose.yml -f docker-compose.perf.yml down
+
+# ── Rider workflow (infra already running via Rider's Docker integration) ──────
+# Rider owns postgres/rabbitmq/redis/aspire-dashboard — do NOT touch them.
+# These targets build only mm.host and run k6 against the existing infra.
+# Before running: stop any natively-running app in Rider (free port 5001).
+
+perf-rider:
+	@echo "Starting mm.host + k6 (Rider infra already running)..."
+	docker compose -f docker-compose.app.yml -f docker-compose.perf.yml up --build --abort-on-container-exit k6
+
+perf-rider-smoke:
+	@echo "Smoke test (1 VU, 30 s) — starting mm.host then running buyer scenario..."
+	docker compose -f docker-compose.app.yml up --build -d
+	docker run --rm -i \
+		--network local_shared_network \
+		-v $$(pwd)/k6:/scripts \
+		-e BASE_URL=http://mm.host:5001 \
+		grafana/k6:latest run --vus 1 --duration 30s /scripts/scenarios/buyer.js
+
+perf-rider-down:
+	docker compose -f docker-compose.app.yml -f docker-compose.perf.yml down

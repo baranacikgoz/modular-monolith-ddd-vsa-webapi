@@ -1,0 +1,56 @@
+name: mm-app-only
+
+# Used when infra (postgres, rabbitmq, redis, aspire-dashboard) is already running
+# via Rider's docker-compose integration. This file starts only mm.host so that
+# k6 can reach it inside local_shared_network without touching Rider-owned containers.
+#
+# Usage:
+#   make perf-rider        — build + run mm.host + k6 against existing infra
+#   make perf-rider-down   — tear down only mm.host and k6
+
+services:
+  host:
+    container_name: mm.host
+    image: ${DOCKER_REGISTRY-}host
+    restart: "no"
+    build:
+      context: .
+      dockerfile: src/Host/Host/Dockerfile
+    networks:
+      - local_shared_network
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+      - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ObservabilityOptions__AppVersion=1.0.0
+      - ObservabilityOptions__LogGeneratedSqlQueries=true
+      - ObservabilityOptions__LogSink=Otlp
+      - ObservabilityOptions__SeqServerUrl=http://mm.seq:5341
+      - ObservabilityOptions__EnableMetrics=true
+      - ObservabilityOptions__EnableTracing=true
+      - ObservabilityOptions__OtlpEndpoint=http://mm.aspire-dashboard:18889
+      - ObservabilityOptions__OtlpProtocol=Grpc
+      - CachingOptions__UseRedis=false
+      - CachingOptions__Redis__Host=mm.redis
+      - CachingOptions__Redis__Port=6379
+      - CachingOptions__Redis__Password=admin
+      - CachingOptions__Redis__AppName=modular-monolith-
+      - OutboxOptions__PollIntervalMs=500
+      - OutboxOptions__BatchSize=50
+      - OutboxOptions__MaxRetryCount=5
+      - RabbitMqOptions__Host=mm.rabbitmq
+      - RabbitMqOptions__Port=5672
+      - RabbitMqOptions__Username=guest
+      - RabbitMqOptions__Password=guest
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+networks:
+  local_shared_network:
+    external: true

@@ -10,6 +10,27 @@ name: mm-perf
 # OTel traces, spans, and metrics in real time — no extra wiring needed.
 
 services:
+
+  # Override mm.host rate limits so k6 traffic is not throttled.
+  # Global limiter is per-IP (all k6 VUs share one container IP).
+  # Named policies (Sms, Register, CreateStore) are global counters — 1/15s or 1/week kills the test.
+  host:
+    environment:
+      - CustomRateLimitingOptions__Global__Limit=100000
+      - CustomRateLimitingOptions__Global__PeriodInMs=1000
+      - CustomRateLimitingOptions__Sms__Limit=100000
+      - CustomRateLimitingOptions__Sms__PeriodInMs=1000
+      - CustomRateLimitingOptions__Register__Limit=100000
+      - CustomRateLimitingOptions__Register__PeriodInMs=1000
+      - CustomRateLimitingOptions__CreateStore__Limit=100000
+      - CustomRateLimitingOptions__CreateStore__PeriodInMs=1000
+      - CustomRateLimitingOptions__TokenCreate__Limit=100000
+      - CustomRateLimitingOptions__TokenCreate__PeriodInMs=1000
+      - CustomRateLimitingOptions__CheckRegistration__Limit=100000
+      - CustomRateLimitingOptions__CheckRegistration__PeriodInMs=1000
+      - CustomRateLimitingOptions__TokenRefresh__Limit=100000
+      - CustomRateLimitingOptions__TokenRefresh__PeriodInMs=1000
+
   k6:
     image: grafana/k6:latest
     container_name: mm.k6
