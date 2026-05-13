@@ -11,8 +11,9 @@ public static class Setup
         params Assembly[] assemblies)
     {
         services
-            .AddScoped<IEventDispatcher, EventDispatcher>()
-            .AddScoped<IIntegrationEventOutbox, IntegrationEventOutbox>();
+            .AddScoped<EventDispatcher>()
+            .AddScoped<IntegrationEventOutbox>()
+            .AddScoped<IIntegrationEventOutbox>(sp => sp.GetRequiredService<IntegrationEventOutbox>());
 
         foreach (var assembly in assemblies)
         {

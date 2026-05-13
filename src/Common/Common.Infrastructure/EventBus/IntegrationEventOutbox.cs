@@ -1,18 +1,19 @@
-using System.Diagnostics;
 using Common.Application.EventBus;
-using Common.Application.Persistence.Outbox;
-using Common.Infrastructure.Persistence.Outbox;
 using Common.IntegrationEvents;
 
 namespace Common.Infrastructure.EventBus;
 
-public class IntegrationEventOutbox(IOutboxDbContext dbContext, TimeProvider timeProvider) : IIntegrationEventOutbox
+public sealed class IntegrationEventOutbox : IIntegrationEventOutbox
 {
-    public void Write<TEvent>(TEvent @event) where TEvent : IntegrationEvent
+    private readonly List<IntegrationEvent> _events = [];
+
+    public void Collect<TEvent>(TEvent @event) where TEvent : IntegrationEvent
+        => _events.Add(@event);
+
+    internal IReadOnlyList<IntegrationEvent> Drain()
     {
-        var message = OutboxMessage.Create(timeProvider.GetUtcNow(), @event);
-        message.TraceId = Activity.Current?.TraceId.ToHexString();
-        message.ParentSpanId = Activity.Current?.SpanId.ToHexString();
-        dbContext.OutboxMessages.Add(message);
+        var snapshot = _events.ToList();
+        _events.Clear();
+        return snapshot;
     }
 }

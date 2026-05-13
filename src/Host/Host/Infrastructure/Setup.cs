@@ -46,6 +46,7 @@ internal static partial class Setup
             .AddCustomCors(configuration)
             .AddValidatorsFromAssemblies(moduleAssemblies)
             .AddCommonDependencies(configuration, moduleAssemblies)
+            .AddCustomMassTransit(configuration, moduleAssemblies)
             .AddCustomHealthChecks(configuration)
             .AddEnrichLogsWithUserInfoMiddleware();
     }

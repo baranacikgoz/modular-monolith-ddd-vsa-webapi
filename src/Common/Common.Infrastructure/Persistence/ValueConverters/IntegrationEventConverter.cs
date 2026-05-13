@@ -8,7 +8,7 @@ namespace Common.Infrastructure.Persistence.ValueConverters;
 
 public class IntegrationEventConverter : ValueConverter<IntegrationEvent, string>
 {
-    private static readonly JsonSerializerOptions _writeOptions = new()
+    public static readonly JsonSerializerOptions WriteOptions = new()
     {
         WriteIndented = false,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -33,7 +33,7 @@ public class IntegrationEventConverter : ValueConverter<IntegrationEvent, string
     };
 
     public IntegrationEventConverter() : base(
-        eventItem => JsonSerializer.Serialize(eventItem, _writeOptions),
+        eventItem => JsonSerializer.Serialize(eventItem, WriteOptions),
         json => JsonSerializer.Deserialize<IntegrationEvent>(json, _readOptions)!
     )
     {

@@ -8,8 +8,9 @@
       "Hangfire": "Warning",
       "Microsoft.Hosting.Lifetime": "Information",
       "Microsoft.EntityFrameworkCore": "Warning",
-      "Microsoft.EntityFrameworkCore.Database.Command": "Information",
-      "ZiggyCreatures.Caching.Fusion": "Warning"
+      "Microsoft.EntityFrameworkCore.Database.Command": "Warning",
+      "ZiggyCreatures.Caching.Fusion": "Warning",
+      "MassTransit": "Information"
     },
     "WriteToConsole": true,
     "WriteToFile": true,

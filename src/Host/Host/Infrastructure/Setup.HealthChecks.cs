@@ -1,5 +1,4 @@
 using Common.Application.Options;
-using Confluent.Kafka;
 using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -61,19 +60,15 @@ internal static partial class Setup
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
-        // Readiness: Kafka connectivity — always required since all events flow via CDC → Kafka.
-        // SkipKafkaHealthCheck is evaluated at check-time via IOptions<> so that WebApplicationFactory
-        // test overrides (applied after service registration) are respected.
-        var kafkaBootstrapServers = configuration
-            .GetSection(nameof(OutboxOptions))
-            .Get<OutboxOptions>()
-            ?.KafkaConsumer
-            ?.BootstrapServers;
+        // Readiness: RabbitMQ connectivity.
+        var rabbitMqOptions = configuration
+            .GetSection(nameof(RabbitMqOptions))
+            .Get<RabbitMqOptions>();
 
-        if (!string.IsNullOrEmpty(kafkaBootstrapServers))
+        if (rabbitMqOptions is not null)
         {
-            builder.AddCheck<ConditionalKafkaHealthCheck>(
-                "kafka",
+            builder.AddCheck<ConditionalRabbitMqHealthCheck>(
+                "rabbitmq",
                 HealthStatus.Unhealthy,
                 [ReadyTag],
                 TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
@@ -100,7 +95,6 @@ internal static partial class Setup
             return app;
         }
 
-        // Liveness probe: Is the process alive?
         app.MapHealthChecks("/health/live",
             new AspNetHealthCheckOptions
             {
@@ -108,7 +102,6 @@ internal static partial class Setup
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             }).ExcludeFromDescription();
 
-        // Readiness probe: Can it serve traffic? (checks all dependencies)
         app.MapHealthChecks("/health/ready",
             new AspNetHealthCheckOptions
             {
@@ -116,7 +109,6 @@ internal static partial class Setup
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             }).ExcludeFromDescription();
 
-        // Startup probe: Has it finished booting?
         app.MapHealthChecks("/health/startup",
             new AspNetHealthCheckOptions
             {
@@ -133,36 +125,37 @@ internal static partial class Setup
         Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
     private static partial void LogHealthChecksRegistered(ILogger logger);
 
-    // Evaluates SkipKafkaHealthCheck at check-time (not at registration time) so that
-    // WebApplicationFactory test overrides applied after service registration are respected.
-    private sealed class ConditionalKafkaHealthCheck(
+    private sealed class ConditionalRabbitMqHealthCheck(
         IOptions<HealthCheckOptions> healthCheckOptions,
-        IOptions<OutboxOptions> outboxOptions) : IHealthCheck
+        IOptions<RabbitMqOptions> rabbitMqOptions) : IHealthCheck
     {
-        public Task<HealthCheckResult> CheckHealthAsync(
+        public async Task<HealthCheckResult> CheckHealthAsync(
             HealthCheckContext context,
             CancellationToken cancellationToken = default)
         {
-            if (healthCheckOptions.Value.SkipKafkaHealthCheck)
+            if (healthCheckOptions.Value.SkipRabbitMqHealthCheck)
             {
-                return Task.FromResult(HealthCheckResult.Healthy("Kafka check skipped."));
+                return HealthCheckResult.Healthy("RabbitMQ check skipped.");
             }
 
             try
             {
-                using var adminClient = new AdminClientBuilder(
-                        new AdminClientConfig { BootstrapServers = outboxOptions.Value.KafkaConsumer.BootstrapServers })
-                    .Build();
-
-                var timeout = TimeSpan.FromSeconds(healthCheckOptions.Value.ReadinessTimeoutInSeconds);
-                adminClient.GetMetadata(timeout);
-                return Task.FromResult(HealthCheckResult.Healthy());
+                var opts = rabbitMqOptions.Value;
+                var factory = new RabbitMQ.Client.ConnectionFactory
+                {
+                    HostName = opts.Host,
+                    VirtualHost = opts.VirtualHost,
+                    UserName = opts.Username,
+                    Password = opts.Password
+                };
+                await using var connection = await factory.CreateConnectionAsync(cancellationToken);
+                return HealthCheckResult.Healthy();
             }
 #pragma warning disable CA1031
             catch (Exception ex)
 #pragma warning restore CA1031
             {
-                return Task.FromResult(HealthCheckResult.Unhealthy("Kafka unreachable.", ex));
+                return HealthCheckResult.Unhealthy("RabbitMQ unreachable.", ex);
             }
         }
     }

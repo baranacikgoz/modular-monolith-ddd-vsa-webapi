@@ -95,7 +95,7 @@ public class SelfRegisterTests : BaseIntegrationTest
             .Where(m => !m.IsProcessed)
             .ToListAsync();
         Assert.NotEmpty(outboxMessages);
-        Assert.Contains(outboxMessages, m => m.Event != null && m.Event.GetType().Name == "V1UserRegisteredDomainEvent");
+        Assert.Contains(outboxMessages, m => m.Event is Common.IntegrationEvents.UserRegisteredIntegrationEvent);
     }
 
     [Fact]

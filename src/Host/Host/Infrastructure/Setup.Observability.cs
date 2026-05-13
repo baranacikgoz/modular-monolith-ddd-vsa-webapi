@@ -147,6 +147,7 @@ internal static partial class Setup
 
             x.AddSource("ModularMonolith.EventBus");
             x.AddSource("ModularMonolith.FeatureManagement");
+            x.AddSource("MassTransit");
         });
     }
 

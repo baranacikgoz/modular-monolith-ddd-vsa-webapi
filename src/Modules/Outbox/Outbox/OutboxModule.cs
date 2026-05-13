@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Outbox.Persistence;
@@ -27,8 +28,6 @@ public sealed partial class OutboxModule : ICoreModule
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        // AddDbContext (not AddDbContextPool): pooled contexts do not support connection swapping,
-        // and OutboxDbContext is used only by the processors — not by BaseDbContext anymore.
         services
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
@@ -41,57 +40,89 @@ public sealed partial class OutboxModule : ICoreModule
                     .UseExceptionProcessor();
             })
             .AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<OutboxDbContext>())
-            .AddHostedService<OutboxKafkaProcessor>();
+            .AddHostedService<OutboxProcessor>();
     }
 
     public void UseModule(IApplicationBuilder app)
     {
-        var logger = app.ApplicationServices
-            .GetRequiredService<ILoggerFactory>()
+        var services = app.ApplicationServices;
+        var logger = services.GetRequiredService<ILoggerFactory>()
             .CreateLogger(typeof(OutboxModule).FullName!);
 
-        MigrationGuard.EnsureNoMigrationsPending<OutboxDbContext>(
-            app.ApplicationServices, logger, nameof(Outbox));
+        MigrationGuard.EnsureNoMigrationsPending<OutboxDbContext>(services, logger, nameof(Outbox));
 
-        var outboxOptions = app.ApplicationServices
-            .GetRequiredService<IOptions<OutboxOptions>>()
-            .Value;
+        var outboxOptions = services.GetRequiredService<IOptions<OutboxOptions>>().Value;
 
-        var cleanupOptions = outboxOptions.Cleanup;
-
-        if (cleanupOptions.Enabled)
+        // Defer registration until after all hosted services start. RecurringJobScheduler runs
+        // immediately after Hangfire's hosted service starts and briefly holds the per-job lock.
+        // We retry with exponential backoff so we always land in the gap between scheduler runs.
+        services.GetRequiredService<IHostApplicationLifetime>().ApplicationStarted.Register(() =>
         {
-            var recurringJobManager = app.ApplicationServices.GetService<IRecurringJobManagerV2>();
-            if (recurringJobManager is not null)
-            {
-                recurringJobManager.AddOrUpdate(
-                    "outbox-cleanup",
-                    (OutboxCleanupJob job) => job.ExecuteAsync(CancellationToken.None),
-                    () => cleanupOptions.CronSchedule);
-
-                LogCleanupJobRegistered(logger, cleanupOptions.CronSchedule, cleanupOptions.RetentionDays);
-            }
-            else
+            var recurringJobManager = services.GetService<IRecurringJobManagerV2>();
+            if (recurringJobManager is null)
             {
                 LogCleanupJobSkipped(logger);
+                return;
             }
-        }
 
-        var recurringJobs = app.ApplicationServices.GetService<IRecurringJobManagerV2>();
-        if (recurringJobs is not null)
-        {
-            recurringJobs.AddOrUpdate(
-                "outbox-lag",
-                (OutboxLagJob job) => job.ExecuteAsync(CancellationToken.None),
-                () => outboxOptions.LagCronSchedule);
+            var cleanupOptions = outboxOptions.Cleanup;
+            if (cleanupOptions.Enabled)
+            {
+                RegisterWithRetry(logger, "outbox-cleanup", () =>
+                {
+                    recurringJobManager.AddOrUpdate(
+                        "outbox-cleanup",
+                        (OutboxCleanupJob job) => job.ExecuteAsync(CancellationToken.None),
+                        () => cleanupOptions.CronSchedule);
 
-            LogLagJobRegistered(logger, outboxOptions.LagCronSchedule);
-        }
+                    LogCleanupJobRegistered(logger, cleanupOptions.CronSchedule, cleanupOptions.RetentionDays);
+                });
+            }
+
+            recurringJobManager.RemoveIfExists("outbox-lag");
+
+            RegisterWithRetry(logger, "outbox-metrics", () =>
+            {
+                recurringJobManager.AddOrUpdate(
+                    "outbox-metrics",
+                    (OutboxMetricsJob job) => job.ExecuteAsync(CancellationToken.None),
+                    () => outboxOptions.MetricsCronSchedule);
+
+                LogMetricsJobRegistered(logger, outboxOptions.MetricsCronSchedule);
+            });
+        });
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
     }
+
+    private static void RegisterWithRetry(ILogger logger, string jobId, Action register)
+    {
+        const int maxAttempts = 10;
+        var delayMs = 200;
+
+        for (var attempt = 1; attempt < maxAttempts; attempt++)
+        {
+            try
+            {
+                register();
+                return;
+            }
+            catch (Exception ex) when (IsLockContention(ex))
+            {
+                LogRecurringJobLockRetry(logger, jobId, attempt, maxAttempts, ex);
+                Thread.Sleep(delayMs);
+                delayMs = Math.Min(delayMs * 2, 5_000);
+            }
+        }
+
+        register(); // final attempt — propagates on failure
+    }
+
+    private static bool IsLockContention(Exception ex) =>
+        ex.GetType().Name.Contains("DistributedLock", StringComparison.OrdinalIgnoreCase)
+        || ex.Message.Contains("distributed lock", StringComparison.OrdinalIgnoreCase);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Outbox cleanup recurring job registered with schedule '{CronSchedule}', retention {RetentionDays} days.")]
@@ -102,6 +133,10 @@ public sealed partial class OutboxModule : ICoreModule
     private static partial void LogCleanupJobSkipped(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Outbox lag monitoring recurring job registered with schedule '{CronSchedule}'.")]
-    private static partial void LogLagJobRegistered(ILogger logger, string cronSchedule);
+        Message = "Outbox metrics monitoring recurring job registered with schedule '{CronSchedule}'.")]
+    private static partial void LogMetricsJobRegistered(ILogger logger, string cronSchedule);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Recurring job '{JobId}' lock contention on attempt {Attempt}/{MaxAttempts}; retrying.")]
+    private static partial void LogRecurringJobLockRetry(ILogger logger, string jobId, int attempt, int maxAttempts, Exception ex);
 }

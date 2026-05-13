@@ -5,140 +5,83 @@ using Xunit;
 
 namespace Common.Tests;
 
-#pragma warning disable CA1515, CA1707
-
 public sealed class OutboxOptionsValidatorTests
 {
-    private static readonly KafkaConsumer ValidConsumer = new()
+    private static OutboxOptions ValidOptions() => new()
     {
-        BootstrapServers = "localhost:9092",
-        GroupId = "test-group",
-        TopicName = "test-topic",
-        AutoOffsetReset = "Earliest",
-        SessionTimeoutMs = 30000,
-        HeartbeatIntervalMs = 7000,
-        EnablePartitionEof = false,
-        MaxPollIntervalMs = 300000
-    };
-
-    private static readonly KafkaProducer ValidProducer = new()
-    {
-        BootstrapServers = "localhost:9092",
-        TopicName = "test-dlq-topic"
+        PollIntervalMs = 500,
+        BatchSize = 50,
+        MaxRetryCount = 3
     };
 
     [Fact]
     public void ValidOptions_PassesValidation()
     {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30
-        };
-
         var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
+        var result = validator.Validate(ValidOptions());
 
         Assert.True(result.IsValid);
     }
 
     [Fact]
-    public void ProcessTimeoutSeconds_LessThanOne_Fails()
+    public void PollIntervalMs_BelowMinimum_Fails()
     {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 0
-        };
-
+        var options = new OutboxOptions { PollIntervalMs = 50, BatchSize = 50, MaxRetryCount = 3 };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == "ProcessTimeoutSeconds");
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.PollIntervalMs));
     }
 
     [Fact]
-    public void ProcessTimeoutSeconds_ExceedsMaxPollIntervalMs_Fails()
+    public void BatchSize_Zero_Fails()
     {
-        var consumer = new KafkaConsumer
-        {
-            BootstrapServers = "localhost:9092",
-            GroupId = "test-group",
-            TopicName = "test-topic",
-            AutoOffsetReset = "Earliest",
-            SessionTimeoutMs = 30000,
-            HeartbeatIntervalMs = 7000,
-            EnablePartitionEof = false,
-            MaxPollIntervalMs = 5000
-        };
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = consumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 10
-        };
-
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 0, MaxRetryCount = 3 };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
         Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.BatchSize));
     }
 
     [Fact]
-    public void ProcessTimeoutSeconds_WithinMaxPollIntervalMs_Passes()
+    public void MaxRetryCount_Zero_Fails()
     {
-        var consumer = new KafkaConsumer
-        {
-            BootstrapServers = "localhost:9092",
-            GroupId = "test-group",
-            TopicName = "test-topic",
-            AutoOffsetReset = "Earliest",
-            SessionTimeoutMs = 30000,
-            HeartbeatIntervalMs = 7000,
-            EnablePartitionEof = false,
-            MaxPollIntervalMs = 30000
-        };
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = consumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 15
-        };
-
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 0 };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
-        Assert.True(result.IsValid);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MaxRetryCount));
+    }
+
+    [Fact]
+    public void LagThresholdMinutes_Zero_Fails()
+    {
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, LagThresholdMinutes = 0 };
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.LagThresholdMinutes));
+    }
+
+    [Fact]
+    public void MetricsCronSchedule_Empty_Fails()
+    {
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, MetricsCronSchedule = "" };
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MetricsCronSchedule));
     }
 
     [Fact]
     public void CleanupOptions_Default_IsValid()
     {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30
-        };
-
+        var options = ValidOptions();
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -156,86 +99,5 @@ public sealed class OutboxOptionsValidatorTests
         var result = validator.Validate(options);
 
         Assert.False(result.IsValid);
-    }
-
-    [Fact]
-    public void MaxConsecutiveDlqFailures_Zero_Fails()
-    {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30,
-            MaxConsecutiveDlqFailures = 0
-        };
-
-        var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
-
-        Assert.False(result.IsValid);
-    }
-
-    [Fact]
-    public void MaxConsecutiveDlqFailures_Default_Passes()
-    {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30
-        };
-
-        var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
-
-        Assert.True(result.IsValid);
-        Assert.Equal(5, options.MaxConsecutiveDlqFailures);
-    }
-
-    [Fact]
-    public void LagThresholdMinutes_Zero_Fails()
-    {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30,
-            LagThresholdMinutes = 0
-        };
-
-        var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == "LagThresholdMinutes");
-    }
-
-    [Fact]
-    public void LagThresholdMinutes_Default_Passes()
-    {
-        var options = new OutboxOptions
-        {
-            KafkaConsumer = ValidConsumer,
-            KafkaDlqProducer = ValidProducer,
-            SetupRetryDelaySeconds = 10,
-            ConsumeErrorDelaySeconds = 5,
-            ProcessingErrorDelaySeconds = 1,
-            ProcessTimeoutSeconds = 30
-        };
-
-        var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
-
-        Assert.True(result.IsValid);
-        Assert.Equal(5, options.LagThresholdMinutes);
     }
 }

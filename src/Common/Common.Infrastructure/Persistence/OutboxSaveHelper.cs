@@ -5,7 +5,9 @@ using Common.Application.Persistence.Outbox;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence.ValueConverters;
+using Common.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -20,6 +22,8 @@ public static partial class OutboxSaveHelper
         TimeProvider timeProvider,
         ICurrentUser currentUser,
         ILogger logger,
+        EventDispatcher eventDispatcher,
+        IntegrationEventOutbox integrationEventOutbox,
         Func<CancellationToken, Task<int>> baseSaveAsync,
         CancellationToken cancellationToken)
     {
@@ -37,23 +41,21 @@ public static partial class OutboxSaveHelper
 
         var utcNow = timeProvider.GetUtcNow();
         ApplicationUserId? userId = currentUser.Id.IsEmpty ? null : currentUser.Id;
-        var traceId = Activity.Current?.TraceId.ToHexString();
-        var parentSpanId = Activity.Current?.SpanId.ToHexString();
 
-        var outboxMessages = new List<OutboxMessage>(aggregatesWithEvents.Count);
         var auditLogEntries = new List<AuditLogEntry>(aggregatesWithEvents.Count);
+        var domainEvents = new List<Common.Domain.Events.DomainEvent>();
 
         foreach (var entry in aggregatesWithEvents)
         {
             var aggregateRoot = entry.Entity;
             foreach (var @event in aggregateRoot.Events)
             {
-                var message = OutboxMessage.Create(utcNow, @event);
-                message.TraceId = traceId;
-                message.ParentSpanId = parentSpanId;
-                outboxMessages.Add(message);
+                if (@event is not Common.Domain.Events.DomainEvent domainEvent)
+                {
+                    continue;
+                }
 
-                @event.CreatedOn = utcNow;
+                domainEvent.CreatedOn = utcNow;
                 var auditLogEntry = AuditLogEntry.Create(
                     aggregateRoot.GetType().Name,
                     aggregateRoot.Id.Value,
@@ -62,6 +64,7 @@ public static partial class OutboxSaveHelper
                 auditLogEntry.CreatedOn = utcNow;
                 auditLogEntry.CreatedBy = userId;
                 auditLogEntries.Add(auditLogEntry);
+                domainEvents.Add(domainEvent);
             }
 
             aggregateRoot.ClearEvents();
@@ -72,48 +75,63 @@ public static partial class OutboxSaveHelper
             context.Set<AuditLogEntry>().Add(entry);
         }
 
-        LogFoundDomainEvents(logger, outboxMessages.Count);
+        LogFoundDomainEvents(logger, domainEvents.Count);
+
+        // Capture trace context BEFORE dispatch (Activity.Current reflects the request span here)
+        var traceId = Activity.Current?.TraceId.ToHexString();
+        var parentSpanId = Activity.Current?.SpanId.ToHexString();
+
+        // Dispatch domain events in-process BEFORE opening the transaction.
+        // Handlers collect integration events into integrationEventOutbox (in-memory).
+        // If dispatch throws, nothing is saved — exception propagates before transaction opens.
+        foreach (var domainEvent in domainEvents)
+        {
+            await eventDispatcher.DispatchAsync(domainEvent, cancellationToken);
+        }
+
+        var integrationEvents = integrationEventOutbox.Drain();
 
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
             var result = await baseSaveAsync(cancellationToken);
 
-            var createdOns = new DateTimeOffset[outboxMessages.Count];
-            var events = new string[outboxMessages.Count];
-            var eventTypes = new string[outboxMessages.Count];
-            var traceIds = new string?[outboxMessages.Count];
-            var parentSpanIds = new string?[outboxMessages.Count];
-            for (var i = 0; i < outboxMessages.Count; i++)
+            if (integrationEvents.Count > 0)
             {
-                createdOns[i] = outboxMessages[i].CreatedOn;
-                events[i] = JsonSerializer.Serialize(outboxMessages[i].Event, EventConverter.WriteOptions);
-                eventTypes[i] = outboxMessages[i].EventType;
-                traceIds[i] = outboxMessages[i].TraceId;
-                parentSpanIds[i] = outboxMessages[i].ParentSpanId;
-            }
+                var createdOns = new DateTimeOffset[integrationEvents.Count];
+                var events = new string[integrationEvents.Count];
+                var traceIds = new string?[integrationEvents.Count];
+                var parentSpanIds = new string?[integrationEvents.Count];
 
-            const string InsertOutboxMessagesSql =
-                """
-                INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed", "EventType", "TraceId", "ParentSpanId")
-                SELECT c, e, false, et, ti, psi
-                FROM UNNEST({0}::timestamptz[], {1}::text[], {2}::text[], {3}::text[], {4}::text[]) AS t(c, e, et, ti, psi)
-                """;
+                for (var i = 0; i < integrationEvents.Count; i++)
+                {
+                    createdOns[i] = utcNow;
+                    events[i] = JsonSerializer.Serialize(integrationEvents[i], IntegrationEventConverter.WriteOptions);
+                    traceIds[i] = traceId;
+                    parentSpanIds[i] = parentSpanId;
+                }
+
+                const string InsertOutboxMessagesSql =
+                    """
+                    INSERT INTO "Outbox"."OutboxMessages" ("CreatedOn", "Event", "IsProcessed", "TraceId", "ParentSpanId")
+                    SELECT c, e, false, ti, psi
+                    FROM UNNEST({0}::timestamptz[], {1}::text[], {2}::text[], {3}::text[]) AS t(c, e, ti, psi)
+                    """;
 #pragma warning disable S3265 // NpgsqlDbType intentionally uses bitwise-OR for array types despite missing [Flags]
-            await context.Database.ExecuteSqlRawAsync(
-                InsertOutboxMessagesSql,
-                [
-                    new NpgsqlParameter
-                    {
-                        NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.TimestampTz, Value = createdOns
-                    },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = eventTypes },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = traceIds },
-                    new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = parentSpanIds }
-                ],
-                cancellationToken);
+                await context.Database.ExecuteSqlRawAsync(
+                    InsertOutboxMessagesSql,
+                    [
+                        new NpgsqlParameter
+                        {
+                            NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.TimestampTz, Value = createdOns
+                        },
+                        new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = events },
+                        new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = traceIds },
+                        new NpgsqlParameter { NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text, Value = parentSpanIds }
+                    ],
+                    cancellationToken);
 #pragma warning restore S3265
+            }
 
             await transaction.CommitAsync(cancellationToken);
             return result;

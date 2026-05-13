@@ -14,11 +14,23 @@ public sealed class PolymorphicEventConverter<T> : JsonConverter<T>
         var typeString = jsonDocument.RootElement.GetProperty(EventTypeFullNameFieldName).GetString()
                          ?? throw new InvalidOperationException(
                              "Event type information is missing or incorrect in JSON.");
-        var type = ResolveType(typeString)
-                   ?? throw new InvalidOperationException($"Type {typeString} not found.");
+
+        var type = ResolveType(typeString);
+        if (type is null)
+        {
+            return default!;
+        }
 
         var eventData = jsonDocument.RootElement.GetProperty(EventDataFieldName).GetRawText();
-        return (T)JsonSerializer.Deserialize(eventData, type, options)!;
+        var obj = JsonSerializer.Deserialize(eventData, type, options);
+
+        // Rows written before the refactoring may contain non-T events; return null so callers can handle gracefully.
+        if (obj is not T result)
+        {
+            return default!;
+        }
+
+        return result;
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)

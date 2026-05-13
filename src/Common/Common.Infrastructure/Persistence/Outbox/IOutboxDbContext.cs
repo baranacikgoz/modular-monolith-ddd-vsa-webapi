@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Common.Infrastructure.Persistence.Outbox;
 
 /// <summary>
-///     Abstraction for the Outbox DbContext, used by OutboxKafkaProcessor for read/update operations.
+///     Abstraction for the Outbox DbContext, used by OutboxProcessor for read/update operations.
 /// </summary>
 public interface IOutboxDbContext
 {

@@ -1,26 +1,26 @@
 using System.Diagnostics;
 using Common.Application.Options;
-using Common.Domain.Events;
+using Common.IntegrationEvents;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Common.Application.EventBus;
 
-public abstract partial class EventHandlerBase<TEvent>(
+public abstract partial class IntegrationEventHandlerBase<TEvent>(
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
     ILogger logger
-) : IEventHandler<TEvent>, IEventHandlerWrapper
-    where TEvent : class, IEvent
+) : IConsumer<TEvent>
+    where TEvent : IntegrationEvent
 {
     protected virtual TimeSpan? MaxEventAge => null;
 
-    Task IEventHandlerWrapper.HandleAsync(IEvent @event, CancellationToken cancellationToken)
-        => HandleAsync((TEvent)@event, cancellationToken);
-
-    public async Task HandleAsync(TEvent @event, CancellationToken cancellationToken)
+    public async Task Consume(ConsumeContext<TEvent> context)
     {
+        var @event = context.Message;
+        var cancellationToken = context.CancellationToken;
         var eventType = typeof(TEvent).Name;
         var eventId = @event.Id;
 
@@ -64,21 +64,17 @@ public abstract partial class EventHandlerBase<TEvent>(
 
     protected abstract Task ProcessAsync(TEvent @event, CancellationToken cancellationToken);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Processing {EventType} (Id={EventId}).")]
-    private static partial void LogProcessingStarted(ILogger logger, string eventType, DefaultIdType eventId);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Processing {EventType} (Id={MessageId}).")]
+    private static partial void LogProcessingStarted(ILogger logger, string eventType, DefaultIdType messageId);
 
-    [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Processed {EventType} (Id={EventId}).")]
-    private static partial void LogProcessingCompleted(ILogger logger, string eventType, DefaultIdType eventId);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Processed {EventType} (Id={MessageId}).")]
+    private static partial void LogProcessingCompleted(ILogger logger, string eventType, DefaultIdType messageId);
 
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Skipped duplicate {EventType} (Id={EventId}): already processed.")]
-    private static partial void LogDuplicateSkipped(ILogger logger, string eventType, DefaultIdType eventId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Skipped duplicate {EventType} (Id={MessageId}): already processed.")]
+    private static partial void LogDuplicateSkipped(ILogger logger, string eventType, DefaultIdType messageId);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message =
-            "Discarding stale {EventType} (Id={EventId}): age {Age} exceeds MaxEventAge {MaxAge}. Offset will be committed; message will not be retried.")]
+        Message = "Discarding stale {EventType} (Id={MessageId}): age {Age} exceeds MaxEventAge {MaxAge}. Message will not be retried.")]
     private static partial void LogStaleEvent(
-        ILogger logger, string eventType, DefaultIdType eventId, TimeSpan age, TimeSpan maxAge);
+        ILogger logger, string eventType, DefaultIdType messageId, TimeSpan age, TimeSpan maxAge);
 }

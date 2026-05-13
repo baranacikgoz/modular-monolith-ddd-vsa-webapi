@@ -2,6 +2,7 @@ using Common.Application.Auth;
 using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using IAM.Application.Persistence;
@@ -19,7 +20,9 @@ public class IAMDbContext(
     DbContextOptions<IAMDbContext> options,
     TimeProvider timeProvider,
     ICurrentUser currentUser,
-    ILogger<IAMDbContext> logger
+    ILogger<IAMDbContext> logger,
+    EventDispatcher eventDispatcher,
+    IntegrationEventOutbox integrationEventOutbox
 ) : IdentityDbContext<ApplicationUser, IdentityRole<ApplicationUserId>, ApplicationUserId,
     IdentityUserClaim<ApplicationUserId>, IdentityUserRole<ApplicationUserId>, IdentityUserLogin<ApplicationUserId>,
     IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
@@ -30,6 +33,7 @@ public class IAMDbContext(
     {
         return await OutboxSaveHelper.SaveWithOutboxAsync(
             this, timeProvider, currentUser, logger,
+            eventDispatcher, integrationEventOutbox,
             ct => base.SaveChangesAsync(ct),
             cancellationToken);
     }

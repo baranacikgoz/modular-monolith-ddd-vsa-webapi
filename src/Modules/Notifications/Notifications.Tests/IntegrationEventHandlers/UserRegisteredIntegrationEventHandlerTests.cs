@@ -1,6 +1,7 @@
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.IntegrationEvents;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notifications.Application;
@@ -43,25 +44,33 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private static ConsumeContext<UserRegisteredIntegrationEvent> MakeContext(UserRegisteredIntegrationEvent @event)
+    {
+        var context = Substitute.For<ConsumeContext<UserRegisteredIntegrationEvent>>();
+        context.Message.Returns(@event);
+        context.CancellationToken.Returns(CancellationToken.None);
+        return context;
+    }
+
     [Fact]
-    public async Task HandleAsync_WhenUserRegistered_SendsWelcomeSms()
+    public async Task Consume_WhenUserRegistered_SendsWelcomeSms()
     {
         var userId = ApplicationUserId.New();
         var @event = new UserRegisteredIntegrationEvent(userId, "John Doe", "1234567890");
 
-        await _handler.HandleAsync(@event, CancellationToken.None);
+        await _handler.Consume(MakeContext(@event));
 
         await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
     }
 
     [Fact]
-    public async Task HandleAsync_SameEventIdTwice_ProcessesOnlyOnce()
+    public async Task Consume_SameEventIdTwice_ProcessesOnlyOnce()
     {
         var userId = ApplicationUserId.New();
         var @event = new UserRegisteredIntegrationEvent(userId, "Jane Doe", "0987654321");
 
-        await _handler.HandleAsync(@event, CancellationToken.None);
-        await _handler.HandleAsync(@event, CancellationToken.None);
+        await _handler.Consume(MakeContext(@event));
+        await _handler.Consume(MakeContext(@event));
 
         await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
     }

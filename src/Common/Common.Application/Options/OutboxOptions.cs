@@ -5,17 +5,12 @@ namespace Common.Application.Options;
 
 public class OutboxOptions
 {
-    public required KafkaConsumer KafkaConsumer { get; set; }
-    public required KafkaProducer KafkaDlqProducer { get; set; }
-    public required int SetupRetryDelaySeconds { get; set; }
-    public required int ConsumeErrorDelaySeconds { get; set; }
-    public required int ProcessingErrorDelaySeconds { get; set; }
-    public required int ProcessTimeoutSeconds { get; set; }
-    public int? ProcessingErrorMaxRetryCount { get; set; }
-    public int MaxConsecutiveDlqFailures { get; set; } = 5;
+    public required int PollIntervalMs { get; set; }
+    public required int BatchSize { get; set; }
+    public required int MaxRetryCount { get; set; }
 
     public int LagThresholdMinutes { get; set; } = 5;
-    public string LagCronSchedule { get; set; } = "*/5 * * * *";
+    public string MetricsCronSchedule { get; set; } = "*/5 * * * *";
 
     public OutboxCleanupSettings Cleanup { get; set; } = new();
 }
@@ -50,42 +45,24 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
 {
     public OutboxOptionsValidator()
     {
-        RuleFor(o => o.KafkaConsumer)
-            .SetValidator(new KafkaConsumerValidator());
+        RuleFor(o => o.PollIntervalMs)
+            .GreaterThanOrEqualTo(100)
+            .WithMessage("PollIntervalMs must be at least 100.");
 
-        RuleFor(o => o.KafkaDlqProducer)
-            .SetValidator(new KafkaProducerValidator());
+        RuleFor(o => o.BatchSize)
+            .InclusiveBetween(1, 1000)
+            .WithMessage("BatchSize must be between 1 and 1000.");
 
-        RuleFor(o => o.SetupRetryDelaySeconds)
+        RuleFor(o => o.MaxRetryCount)
             .GreaterThanOrEqualTo(1)
-            .WithMessage("SetupRetryDelaySeconds must be at least 1.");
-
-        RuleFor(o => o.ConsumeErrorDelaySeconds)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("ConsumeErrorDelaySeconds must be at least 1.");
-
-        RuleFor(o => o.ProcessingErrorDelaySeconds)
-            .GreaterThanOrEqualTo(0) // Allow 0 for immediate retry, though >=1 is often better
-            .WithMessage("ProcessingErrorDelaySeconds cannot be negative.");
-
-        RuleFor(o => o.ProcessTimeoutSeconds)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("ProcessTimeoutSeconds must be at least 1 to prevent hanging handlers.");
-
-        RuleFor(o => o.MaxConsecutiveDlqFailures)
-            .GreaterThanOrEqualTo(1)
-            .WithMessage("MaxConsecutiveDlqFailures must be at least 1.");
+            .WithMessage("MaxRetryCount must be at least 1.");
 
         RuleFor(o => o.LagThresholdMinutes)
             .GreaterThanOrEqualTo(1)
             .WithMessage("LagThresholdMinutes must be at least 1.");
 
-        RuleFor(o => o.LagCronSchedule)
+        RuleFor(o => o.MetricsCronSchedule)
             .NotEmpty()
-            .WithMessage("LagCronSchedule is required.");
-
-        RuleFor(o => o)
-            .Must(o => o.ProcessTimeoutSeconds * 1000L < o.KafkaConsumer.MaxPollIntervalMs)
-            .WithMessage("ProcessTimeoutSeconds must be less than MaxPollIntervalMs / 1000.");
+            .WithMessage("MetricsCronSchedule is required.");
     }
 }

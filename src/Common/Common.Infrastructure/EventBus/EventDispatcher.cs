@@ -8,7 +8,7 @@ namespace Common.Infrastructure.EventBus;
 
 public partial class EventDispatcher(
     IServiceProvider serviceProvider,
-    ILogger<EventDispatcher> logger) : IEventDispatcher
+    ILogger<EventDispatcher> logger)
 {
     internal static readonly ActivitySource ActivitySource = new("ModularMonolith.EventBus");
 

@@ -9,6 +9,5 @@ public interface IOutboxMessage
     IEvent? Event { get; }
     bool IsProcessed { get; }
     DateTimeOffset? ProcessedOn { get; }
-    uint Version { get; }
     void MarkAsProcessed(DateTimeOffset processedOn);
 }

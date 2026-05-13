@@ -13,7 +13,7 @@ public partial class UserRegisteredIntegrationEventHandler(
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
     ISmsService smsService
-) : EventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions, logger)
+) : IntegrationEventHandlerBase<UserRegisteredIntegrationEvent>(cache, cachingOptions, logger)
 {
     protected override async Task ProcessAsync(UserRegisteredIntegrationEvent @event,
         CancellationToken cancellationToken)

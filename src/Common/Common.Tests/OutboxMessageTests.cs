@@ -1,5 +1,4 @@
 using Common.Application.Persistence.Outbox;
-using Common.Domain.Events;
 using Common.IntegrationEvents;
 using Xunit;
 
@@ -7,26 +6,58 @@ namespace Common.Tests;
 
 #pragma warning disable CA1515, CA1707
 
-public sealed record TestableDomainEventForOutbox(string Data) : DomainEvent;
-public sealed record TestableIntegrationEventForOutbox(string Data) : IntegrationEvent;
+public sealed record TestableIntegrationEvent(string Data) : IntegrationEvent;
 
 public sealed class OutboxMessageTests
 {
     [Fact]
-    public void Create_DomainEvent_SetsEventTypeDomain()
+    public void Create_IntegrationEvent_CreatesMessage()
     {
-        var @event = new TestableDomainEventForOutbox("test");
-        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, @event);
+        var @event = new TestableIntegrationEvent("test");
+        var now = DateTimeOffset.UtcNow;
 
-        Assert.Equal(OutboxMessage.EventTypeDomain, message.EventType);
+        var message = OutboxMessage.Create(now, @event);
+
+        Assert.Equal(@event, message.Event);
+        Assert.Equal(now, message.CreatedOn);
+        Assert.False(message.IsProcessed);
+        Assert.Equal(0, message.RetryCount);
+        Assert.Null(message.FailedOn);
     }
 
     [Fact]
-    public void Create_IntegrationEvent_SetsEventTypeIntegration()
+    public void IncrementRetryCount_IncrementsCounter()
     {
-        var @event = new TestableIntegrationEventForOutbox("test");
-        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, @event);
+        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, new TestableIntegrationEvent("x"));
 
-        Assert.Equal(OutboxMessage.EventTypeIntegration, message.EventType);
+        message.IncrementRetryCount();
+        message.IncrementRetryCount();
+        message.IncrementRetryCount();
+
+        Assert.Equal(3, message.RetryCount);
+    }
+
+    [Fact]
+    public void MarkAsFailed_SetsFailedOn()
+    {
+        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, new TestableIntegrationEvent("x"));
+        var failedAt = DateTimeOffset.UtcNow;
+
+        message.MarkAsFailed(failedAt);
+
+        Assert.Equal(failedAt, message.FailedOn);
+        Assert.False(message.IsProcessed);
+    }
+
+    [Fact]
+    public void MarkAsProcessed_SetsIsProcessedAndProcessedOn()
+    {
+        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, new TestableIntegrationEvent("x"));
+        var processedAt = DateTimeOffset.UtcNow;
+
+        message.MarkAsProcessed(processedAt);
+
+        Assert.True(message.IsProcessed);
+        Assert.Equal(processedAt, message.ProcessedOn);
     }
 }

@@ -65,7 +65,13 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "CustomRateLimitingOptions:TokenRefresh:QueueLimit", "1000" },
                 { "AuditLogOptions:RetentionDays", "90" },
                 { "CaptchaOptions:BaseUrl", "" },
-                { "HealthCheckOptions:SkipKafkaHealthCheck", "true" }
+                { "HealthCheckOptions:SkipRabbitMqHealthCheck", "true" },
+                { "OutboxOptions:PollIntervalMs", "500" },
+                { "OutboxOptions:BatchSize", "50" },
+                { "OutboxOptions:MaxRetryCount", "3" },
+                { "RabbitMqOptions:Host", "localhost" },
+                { "RabbitMqOptions:Username", "guest" },
+                { "RabbitMqOptions:Password", "guest" }
             };
             config.AddInMemoryCollection(confDict);
         });

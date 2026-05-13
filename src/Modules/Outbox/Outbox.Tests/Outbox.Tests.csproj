@@ -18,7 +18,7 @@
     </PackageReference>
     <PackageReference Include="NSubstitute"/>
     <PackageReference Include="Bogus"/>
-    <PackageReference Include="Testcontainers.Kafka"/>
+    <PackageReference Include="Testcontainers.RabbitMq"/>
     <PackageReference Include="Testcontainers.PostgreSql"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
   </ItemGroup>

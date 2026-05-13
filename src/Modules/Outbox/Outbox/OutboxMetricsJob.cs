@@ -8,10 +8,10 @@ using Outbox.Telemetry;
 
 namespace Outbox;
 
-public sealed partial class OutboxLagJob(
+public sealed partial class OutboxMetricsJob(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> outboxOptions,
-    ILogger<OutboxLagJob> logger)
+    ILogger<OutboxMetricsJob> logger)
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
@@ -24,13 +24,19 @@ public sealed partial class OutboxLagJob(
         var db = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
 
         var count = await db.OutboxMessages
-            .CountAsync(m => !m.IsProcessed && m.CreatedOn < cutoff, cancellationToken);
+            .CountAsync(m => !m.IsProcessed && m.FailedOn == null && m.CreatedOn < cutoff, cancellationToken);
 
         OutboxTelemetry.SetLagCount(count);
-        LogLagCount(logger, count, outboxOptions.Value.LagThresholdMinutes);
+
+        var stuckCount = await db.OutboxMessages
+            .CountAsync(m => !m.IsProcessed && m.FailedOn != null, cancellationToken);
+
+        OutboxTelemetry.SetStuckCount(stuckCount);
+
+        LogMetrics(logger, count, outboxOptions.Value.LagThresholdMinutes, stuckCount);
     }
 
     [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Outbox lag count: {Count} messages older than {LagThresholdMinutes} minutes.")]
-    private static partial void LogLagCount(ILogger logger, long count, int lagThresholdMinutes);
+        Message = "Outbox metrics: lag={LagCount} (>{LagThresholdMinutes}min), stuck={StuckCount}.")]
+    private static partial void LogMetrics(ILogger logger, long lagCount, int lagThresholdMinutes, long stuckCount);
 }

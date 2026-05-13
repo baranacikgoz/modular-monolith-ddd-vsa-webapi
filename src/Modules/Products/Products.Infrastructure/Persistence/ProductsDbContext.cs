@@ -1,5 +1,6 @@
 using Common.Application.Auth;
 using Common.Domain.Events;
+using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
@@ -15,8 +16,10 @@ public sealed class ProductsDbContext(
     DbContextOptions<ProductsDbContext> options,
     TimeProvider timeProvider,
     ICurrentUser currentUser,
-    ILogger<BaseDbContext> logger
-) : BaseDbContext(options, timeProvider, currentUser, logger), IProductsDbContext
+    ILogger<BaseDbContext> logger,
+    EventDispatcher eventDispatcher,
+    IntegrationEventOutbox integrationEventOutbox
+) : BaseDbContext(options, timeProvider, currentUser, logger, eventDispatcher, integrationEventOutbox), IProductsDbContext
 {
     public DbSet<Store> Stores => Set<Store>();
     public DbSet<ProductTemplate> ProductTemplates => Set<ProductTemplate>();

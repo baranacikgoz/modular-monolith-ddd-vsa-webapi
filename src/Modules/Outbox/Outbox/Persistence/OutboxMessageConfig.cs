@@ -11,14 +11,14 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => new { x.CreatedOn, x.IsProcessed });
+        builder.HasIndex(x => new { x.IsProcessed, x.FailedOn, x.CreatedOn });
 
         builder
             .Property(x => x.CreatedOn)
             .IsRequired();
 
         builder.Property(x => x.Event)
-            .HasConversion<EventConverter>()
+            .HasConversion<IntegrationEventConverter>()
             .IsRequired();
 
         builder
@@ -30,9 +30,13 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
             .IsRequired(false);
 
         builder
-            .Property(x => x.EventType)
-            .HasMaxLength(50)
-            .IsRequired();
+            .Property(x => x.RetryCount)
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder
+            .Property(x => x.FailedOn)
+            .IsRequired(false);
 
         builder
             .Property(x => x.TraceId)

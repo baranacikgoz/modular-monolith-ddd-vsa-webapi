@@ -1,10 +1,9 @@
 {
-  "EventBusOptions": {
-    "UseInMemoryEventBus": true,
-    "MessageBroker": {
-      "Uri": "rabbitmq://localhost:5672",
-      "Username": "guest",
-      "Password": "guest"
-    }
+  "RabbitMqOptions": {
+    "Host": "localhost",
+    "Port": 5672,
+    "VirtualHost": "/",
+    "Username": "guest",
+    "Password": "guest"
   }
 }

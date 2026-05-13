@@ -34,7 +34,8 @@ public sealed partial class OutboxCleanupJob(
             var db = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
 
             var deleted = await db.OutboxMessages
-                .Where(m => m.IsProcessed && m.ProcessedOn < cutoff)
+                .Where(m => (m.IsProcessed && m.ProcessedOn < cutoff)
+                         || (m.FailedOn != null && m.FailedOn < cutoff))
                 .Take(batchSize)
                 .ExecuteDeleteAsync(cancellationToken);
 

@@ -40,7 +40,8 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol"/>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql"/>
     <PackageReference Include="AspNetCore.HealthChecks.Redis"/>
-    <PackageReference Include="AspNetCore.HealthChecks.Kafka"/>
+    <PackageReference Include="MassTransit.RabbitMQ"/>
+    <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ"/>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client"/>
     <PackageReference Include="Asp.Versioning.Http"/>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"/>
