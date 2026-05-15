@@ -1,0 +1,169 @@
+# PoC: Decoupled module deployment — same image, two instances, different EnabledModules.
+#
+# Instance A (mm.iam-instance, port 5001)
+#   Loads: IAM + Outbox + BackgroundJobs (core modules always auto-load)
+#   Registers: GetSeedUserIdsRequestHandler as MassTransit consumer on RabbitMQ
+#
+# Instance B (mm.products-instance, port 5002)
+#   Loads: Products + Outbox + BackgroundJobs (core modules always auto-load)
+#   Has NO IAM consumers — calls IAM cross-process via MassTransit request/response
+#
+# Prove it:
+#   1. docker compose -f docker-compose.split.yml up --build
+#   2. curl "http://localhost:5002/v1/probe/cross-module?count=3"
+#   3. Observe: Products instance sends GetSeedUserIdsRequest via RabbitMQ,
+#      IAM instance handles it and responds — no HTTP between them.
+
+name: mm-split-poc
+
+services:
+
+  mm.iam-instance:
+    container_name: mm.iam-instance
+    image: ${DOCKER_REGISTRY-}host
+    restart: "no"
+    build:
+      context: .
+      dockerfile: src/Host/Host/Dockerfile
+    networks:
+      - local_shared_network
+    ports:
+      - "5001:5001"
+    depends_on:
+      mm.postgres:
+        condition: service_healthy
+      mm.rabbitmq:
+        condition: service_healthy
+      mm.aspire-dashboard:
+        condition: service_started
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+      - ModulesOptions__EnabledModules__0=IAM
+      - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ObservabilityOptions__AppVersion=1.0.0
+      - ObservabilityOptions__LogGeneratedSqlQueries=true
+      - ObservabilityOptions__LogSink=Otlp
+      - ObservabilityOptions__SeqServerUrl=http://mm.seq:5341
+      - ObservabilityOptions__EnableMetrics=true
+      - ObservabilityOptions__EnableTracing=true
+      - ObservabilityOptions__OtlpEndpoint=http://mm.aspire-dashboard:18889
+      - ObservabilityOptions__OtlpProtocol=Grpc
+      - CachingOptions__UseRedis=false
+      - OutboxOptions__PollIntervalMs=500
+      - OutboxOptions__BatchSize=50
+      - OutboxOptions__MaxRetryCount=5
+      - RabbitMqOptions__Host=mm.rabbitmq
+      - RabbitMqOptions__Port=5672
+      - RabbitMqOptions__Username=guest
+      - RabbitMqOptions__Password=guest
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  mm.products-instance:
+    container_name: mm.products-instance
+    image: ${DOCKER_REGISTRY-}host
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - "5002:5002"
+    depends_on:
+      mm.postgres:
+        condition: service_healthy
+      mm.rabbitmq:
+        condition: service_healthy
+      mm.iam-instance:
+        condition: service_healthy
+      mm.aspire-dashboard:
+        condition: service_started
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5002
+      - ModulesOptions__EnabledModules__0=Products
+      - DatabaseOptions__ConnectionString=Server=mm.postgres;Port=5432;Database=modular-monolith-db;User Id=postgres;Password=postgres;Include Error Detail=true
+      - ObservabilityOptions__AppVersion=1.0.0
+      - ObservabilityOptions__LogGeneratedSqlQueries=true
+      - ObservabilityOptions__LogSink=Otlp
+      - ObservabilityOptions__SeqServerUrl=http://mm.seq:5341
+      - ObservabilityOptions__EnableMetrics=true
+      - ObservabilityOptions__EnableTracing=true
+      - ObservabilityOptions__OtlpEndpoint=http://mm.aspire-dashboard:18889
+      - ObservabilityOptions__OtlpProtocol=Grpc
+      - CachingOptions__UseRedis=false
+      - OutboxOptions__PollIntervalMs=500
+      - OutboxOptions__BatchSize=50
+      - OutboxOptions__MaxRetryCount=5
+      - RabbitMqOptions__Host=mm.rabbitmq
+      - RabbitMqOptions__Port=5672
+      - RabbitMqOptions__Username=guest
+      - RabbitMqOptions__Password=guest
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5002/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  mm.postgres:
+    container_name: mm.postgres
+    image: postgres:latest
+    restart: "no"
+    volumes:
+      - ./.containers/mm.postgres:/var/lib/postgresql/data
+    networks:
+      - local_shared_network
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mm.rabbitmq:
+    container_name: mm.rabbitmq
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    volumes:
+      - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
+    networks:
+      - local_shared_network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mm.aspire-dashboard:
+    container_name: mm.aspire-dashboard
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    restart: "no"
+    networks:
+      - local_shared_network
+    ports:
+      - "18888:18888"
+      - "18889:18889"
+      - "18890:18890"
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+
+networks:
+  local_shared_network:
+    external: true

@@ -10,6 +10,7 @@ facilitate the development of scalable and maintainable applications.
 - [Features](#features)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
+  - [Split Deployment](#split-deployment-microservice-mode)
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -25,7 +26,7 @@ This repository includes the following features:
 
 - **Event-Driven Architecture**: Supports event-driven communication between components.
 - **Modular Monolithic Architecture**: Organizes code into modules for better separation of concerns.
-- **Dynamic Module Registration**: Configuration-driven module loading via `modules.json` and `ModulesOptions`, enabling explicit startup priority ordering and true microservice-like deployment isolation without recompilation.
+- **Dynamic Module Registration**: Configuration-driven module loading via `ModulesOptions`, enabling explicit startup priority ordering and true split-deployment isolation — run any subset of modules per process without recompilation (see [Split Deployment](#split-deployment-microservice-mode)).
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
@@ -49,7 +50,7 @@ This repository includes the following features:
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
 - **Strongly-Typed Localization & Multi-Language Support**: Leverages `Aigamo.ResXGenerator` to automatically generate strongly-typed `IResxLocalizer` properties for error-free resource resolution, ensuring compile-time safety and eliminating missing key errors at runtime.
 - **Pagination and Flexible Search**: Implements pagination and flexible search capabilities.
-- **MassTransit's Request Client**: Enables inter-module communication and data transfer.
+- **MassTransit's Request Client**: Synchronous inter-module requests via `IInterModuleRequestClient<TRequest, TResponse>` — transparent whether the handler is in-process or running in a separate instance on another host. No HTTP, no shared memory; pure RabbitMQ request/response.
 - **Option Pattern**: Utilizes the option pattern for configuration management.
 - **Fluent Validation**: Provides fluent validation for input data.
 - **Functional Programming & Railway-Oriented Syntax**: Encourages functional programming practices and method chaining.
@@ -75,6 +76,23 @@ To use or contribute to this project, you will need:
     ```bash
     docker compose -f "docker-compose.yml" up -d --build mm.postgres mm.redis mm.aspire-dashboard mm.rabbitmq
     ```
+
+### Split Deployment (Microservice Mode)
+
+Each module can run as its own process. The same image is used for all instances — only the `ModulesOptions__EnabledModules` environment variable differs. Inter-module communication still works transparently via MassTransit over RabbitMQ; no HTTP, no shared in-process memory.
+
+```bash
+# Start two instances: IAM on :5001, Products on :5002
+docker compose -f docker-compose.split.yml up --build
+
+# Prove the cross-process round-trip:
+# Products instance has zero IAM code loaded — the request travels via RabbitMQ
+curl "http://localhost:5002/v1/probe/cross-module?count=3"
+```
+
+Open `http://localhost:18888` (Aspire Dashboard) to inspect the distributed trace spanning both processes under a single `TraceId`.
+
+See [`docs/split-deployment-poc.md`](docs/split-deployment-poc.md) for the full call-path walkthrough and concurrent-safety analysis.
 
 ### VSCode
 

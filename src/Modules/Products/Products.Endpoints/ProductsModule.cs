@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Products.Endpoints.Probe;
 using Products.Endpoints.Products;
 using Products.Endpoints.ProductTemplates;
 using Products.Endpoints.Stores;
@@ -47,6 +48,13 @@ public sealed class ProductsModule : IModule
         versionedApiGroup.MapStoresEndpoints();
         versionedApiGroup.MapProductsEndpoints();
         versionedApiGroup.MapProductTemplatesEndpoints();
+
+        // Probe group: unauthenticated by design — it is a split-deployment PoC trigger, not a real feature.
+        // Separate group so it does not inherit RequireAuthorization() from the group above.
+        var probeGroup = endpoints
+            .MapGroup("/v{version:apiVersion}")
+            .WithApiVersionSet(apiVersionSet);
+        probeGroup.MapProbeEndpoints();
     }
 
     public IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>? RateLimitingPolicies => Policies.Get();
