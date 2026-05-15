@@ -82,6 +82,9 @@ To use or contribute to this project, you will need:
 Each module can run as its own process. The same image is used for all instances — only the `ModulesOptions__EnabledModules` environment variable differs. Inter-module communication still works transparently via MassTransit over RabbitMQ; no HTTP, no shared in-process memory.
 
 ```bash
+# Infra must be running first (skip if already up)
+docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
+
 # Start two instances: IAM on :5001, Products on :5002
 docker compose -f docker-compose.split.yml up --build
 

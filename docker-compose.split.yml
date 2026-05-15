@@ -1,5 +1,12 @@
 # PoC: Decoupled module deployment — same image, two instances, different EnabledModules.
 #
+# Prerequisites: infra must already be running from the base docker-compose.yml:
+#   docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
+#
+# This file only defines the two app instances. It joins the existing
+# local_shared_network, so instances reach mm.postgres/mm.rabbitmq/mm.aspire-dashboard
+# by hostname without re-declaring or conflicting with those containers.
+#
 # Instance A (mm.iam-instance, port 5001)
 #   Loads: IAM + Outbox + BackgroundJobs (core modules always auto-load)
 #   Registers: GetSeedUserIdsRequestHandler as MassTransit consumer on RabbitMQ
@@ -9,9 +16,10 @@
 #   Has NO IAM consumers — calls IAM cross-process via MassTransit request/response
 #
 # Prove it:
-#   1. docker compose -f docker-compose.split.yml up --build
-#   2. curl "http://localhost:5002/v1/probe/cross-module?count=3"
-#   3. Observe: Products instance sends GetSeedUserIdsRequest via RabbitMQ,
+#   1. docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
+#   2. docker compose -f docker-compose.split.yml up --build
+#   3. curl "http://localhost:5002/v1/probe/cross-module?count=3"
+#   4. Observe: Products instance sends GetSeedUserIdsRequest via RabbitMQ,
 #      IAM instance handles it and responds — no HTTP between them.
 
 name: mm-split-poc
@@ -29,13 +37,6 @@ services:
       - local_shared_network
     ports:
       - "5001:5001"
-    depends_on:
-      mm.postgres:
-        condition: service_healthy
-      mm.rabbitmq:
-        condition: service_healthy
-      mm.aspire-dashboard:
-        condition: service_started
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
@@ -73,14 +74,8 @@ services:
     ports:
       - "5002:5002"
     depends_on:
-      mm.postgres:
-        condition: service_healthy
-      mm.rabbitmq:
-        condition: service_healthy
       mm.iam-instance:
         condition: service_healthy
-      mm.aspire-dashboard:
-        condition: service_started
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5002
@@ -108,61 +103,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-
-  mm.postgres:
-    container_name: mm.postgres
-    image: postgres:latest
-    restart: "no"
-    volumes:
-      - ./.containers/mm.postgres:/var/lib/postgresql/data
-    networks:
-      - local_shared_network
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  mm.rabbitmq:
-    container_name: mm.rabbitmq
-    image: rabbitmq:3.13-management-alpine
-    restart: unless-stopped
-    volumes:
-      - ./.containers/mm.rabbitmq:/var/lib/rabbitmq
-    networks:
-      - local_shared_network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  mm.aspire-dashboard:
-    container_name: mm.aspire-dashboard
-    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
-    restart: "no"
-    networks:
-      - local_shared_network
-    ports:
-      - "18888:18888"
-      - "18889:18889"
-      - "18890:18890"
-    environment:
-      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
 networks:
   local_shared_network:

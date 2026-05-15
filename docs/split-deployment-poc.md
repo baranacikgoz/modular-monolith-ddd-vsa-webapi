@@ -33,27 +33,25 @@ No HTTP call. No shared in-process memory. Pure message-passing.
 
 ## How to run
 
-```bash
-# One-time: create the shared Docker network if it does not exist
-docker network create local_shared_network
+`docker-compose.split.yml` defines only the two app instances. It joins the existing
+`local_shared_network`, so infra must be running first from the base compose file.
 
-# Build and start both instances (infra services included in the compose file)
+```bash
+# Step 1 — start infra (skip if already running)
+docker network create local_shared_network
+docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
+
+# Step 2 — build and start both module instances
 docker compose -f docker-compose.split.yml up --build
 
-# Trigger the cross-process round-trip
+# Step 3 — trigger the cross-process round-trip
 curl "http://localhost:5002/v1/probe/cross-module?count=3"
 
-# Expected response (IAM user IDs returned to Products instance):
+# Expected response (IAM user IDs returned by the IAM instance to the Products instance):
 # { "userIds": ["...", "...", "..."] }
 ```
 
 Open `http://localhost:18888` (Aspire Dashboard) to see the distributed trace spanning both processes under a single `TraceId`.
-
-If infra (Postgres, RabbitMQ) is already running from the main `docker-compose.yml`, start only the app instances:
-
-```bash
-docker compose -f docker-compose.split.yml up --build --no-deps mm.iam-instance mm.products-instance
-```
 
 ## Concurrent safety
 
