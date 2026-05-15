@@ -152,7 +152,7 @@ internal static partial class Setup
         return services
             .AddCommonCaching(config)
             .AddCommonEventHandling(moduleAssemblies)
-            .AddCommonInterModuleRequests(moduleAssemblies)
+            .AddCommonInterModuleRequests()
             .AddCommonResxLocalization()
             .AddCommonOptions(config)
             .AddCommonPersistence()

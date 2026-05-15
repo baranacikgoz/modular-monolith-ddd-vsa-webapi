@@ -1,10 +1,17 @@
-#pragma warning disable S1694 // Abstract class has a single abstract member: intentional — provides a named base type for DI scanning and implementors
+using MassTransit;
+
 namespace Common.InterModuleRequests.Contracts;
 
-public abstract class InterModuleRequestHandler<TRequest, TResponse> : IInterModuleRequestHandler<TRequest, TResponse>
+public abstract class InterModuleRequestHandler<TRequest, TResponse>
+    : IInterModuleRequestHandler<TRequest, TResponse>, IConsumer<TRequest>
     where TRequest : class, IInterModuleRequest<TResponse>
     where TResponse : class
 {
+    public async Task Consume(ConsumeContext<TRequest> context)
+    {
+        var response = await HandleAsync(context.Message, context.CancellationToken);
+        await context.RespondAsync(response);
+    }
+
     public abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken);
 }
-#pragma warning restore S1694
