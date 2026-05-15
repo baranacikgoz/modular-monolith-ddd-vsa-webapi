@@ -1,5 +1,5 @@
 using Common.Tests;
-
+using IAM.Application.Captcha.Services;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -10,7 +10,10 @@ namespace IAM.Tests;
 
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
-    protected override string[] GetActiveModules() => ["IAM", "Outbox"];
+    protected override string[] GetActiveModules()
+    {
+        return ["IAM", "Outbox"];
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -24,9 +27,6 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
             });
         });
 
-        builder.ConfigureTestServices(services =>
-        {
-            services.AddSingleton<IAM.Application.Captcha.Services.ICaptchaService, DummyCaptchaService>();
-        });
+        builder.ConfigureTestServices(services => { services.AddSingleton<ICaptchaService, DummyCaptchaService>(); });
     }
 }

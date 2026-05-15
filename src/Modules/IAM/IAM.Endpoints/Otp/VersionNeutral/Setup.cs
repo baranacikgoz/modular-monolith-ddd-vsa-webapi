@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Endpoint = IAM.Endpoints.Otp.VersionNeutral.Send.Endpoint;
 
 namespace IAM.Endpoints.Otp.VersionNeutral;
 
@@ -13,6 +12,7 @@ public static class Setup
             .MapGroup("/otp")
             .WithTags("OTP");
 
-        Endpoint.MapEndpoint(otpApiGroup);
+        SendForLogin.Endpoint.MapEndpoint(otpApiGroup);
+        SendForRegistration.Endpoint.MapEndpoint(otpApiGroup);
     }
 }

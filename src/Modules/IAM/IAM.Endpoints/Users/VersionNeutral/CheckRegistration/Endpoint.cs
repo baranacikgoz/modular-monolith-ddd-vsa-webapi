@@ -2,6 +2,7 @@ using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
+using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -17,7 +18,7 @@ internal static class Endpoint
             .MapGet("check-registration", IsRegisteredAsync)
             .WithDescription("Check if a user is registered by given phone number.")
             .AllowAnonymous()
-            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.CheckRegistration)
+            .RequireRateLimiting(Constants.CheckRegistration)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

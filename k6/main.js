@@ -79,7 +79,7 @@ export function setup() {
   sleep(10);
 
   // Admin login
-  http.post(`${BASE_URL}/otp`,
+  http.post(`${BASE_URL}/otp/login`,
     JSON.stringify({ phoneNumber: ADMIN_PHONE, captchaToken: 'dummy' }),
     { headers: JSON_HEADERS });
 

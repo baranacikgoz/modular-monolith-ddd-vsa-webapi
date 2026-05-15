@@ -7,10 +7,10 @@ public static class CacheKeys
 {
     public static class For
     {
-        public static string Otp(string phoneNumber)
+        public static string Otp(string phoneNumber, string purpose)
         {
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(phoneNumber)));
-            return $"otp:{hash}";
+            return $"otp:{purpose}:{hash}";
         }
     }
 }

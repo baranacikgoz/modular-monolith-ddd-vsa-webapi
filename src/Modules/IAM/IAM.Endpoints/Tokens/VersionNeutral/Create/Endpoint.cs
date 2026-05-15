@@ -7,10 +7,12 @@ using IAM.Application.Otp.Services;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
+using IAM.Endpoints.Otp;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Constants = IAM.Infrastructure.RateLimiting.Constants;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Create;
 
@@ -22,7 +24,7 @@ internal static class Endpoint
             .MapPost("", CreateTokens)
             .WithDescription("Create tokens.")
             .AllowAnonymous()
-            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.TokenCreate)
+            .RequireRateLimiting(Constants.TokenCreate)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }
@@ -38,7 +40,7 @@ internal static class Endpoint
         using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
 
         return await otpService
-            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, cancellationToken)
+            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, OtpPurposes.Login, cancellationToken)
             .BindAsync(() => dbContext
                 .Users
                 .TagWith(nameof(CreateTokens), request.PhoneNumber)
@@ -57,7 +59,7 @@ internal static class Endpoint
                         .Select(name => name!)
                         .ToList()
                 })
-                .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken))
+                .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken))
             .BindAsync(async userObj =>
             {
                 var utcNow = timeProvider.GetUtcNow();

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Common.Infrastructure.Persistence;
 using Common.Tests.SystemTextJson;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        var tracker = Scope.ServiceProvider.GetRequiredService<Common.Infrastructure.Persistence.SeedingCompletionTracker>();
+        var tracker = Scope.ServiceProvider.GetRequiredService<SeedingCompletionTracker>();
         await tracker.WaitForSeedingAsync();
 
         if (_respawner == null)
@@ -55,7 +56,8 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
                 new RespawnerOptions
                 {
                     DbAdapter = DbAdapter.Postgres,
-                    SchemasToInclude = new[] { "public", "IAM", "Outbox", "Products", "BackgroundJobs", "Notifications" },
+                    SchemasToInclude =
+                        new[] { "public", "IAM", "Outbox", "Products", "BackgroundJobs", "Notifications" },
                     TablesToIgnore = new[]
                     {
                         new Table("__EFMigrationsHistory"), new Table("AspNetRoles", "IAM"),

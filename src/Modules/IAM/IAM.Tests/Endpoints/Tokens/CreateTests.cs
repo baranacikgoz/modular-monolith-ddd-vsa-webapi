@@ -1,12 +1,17 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Bogus;
 using Common.Application.Caching;
-using ZiggyCreatures.Caching.Fusion;
 using Common.Tests;
+using IAM.Application.Persistence;
 using IAM.Domain.Identity;
+using IAM.Endpoints.Tokens.VersionNeutral.Create;
+using IAM.Infrastructure.Identity.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests.Endpoints.Tokens;
 
@@ -24,10 +29,10 @@ public class CreateTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         var otp = "123456";
 
         var user = ApplicationUser.Create(
@@ -37,18 +42,15 @@ public class CreateTests : BaseIntegrationTest
         );
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         // Pre-seed cache to bypass SMS OTP check
-        var cacheKey = Common.Application.Caching.CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = otp
-        };
+        var request = new Request { PhoneNumber = phoneNumber, Otp = otp };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), request);
@@ -59,10 +61,11 @@ public class CreateTests : BaseIntegrationTest
             var err = await response.Content.ReadAsStringAsync();
             Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
         }
+
         response.EnsureSuccessStatusCode();
 
         var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        using var doc = JsonDocument.Parse(rawJson);
         var root = doc.RootElement;
 
         Assert.True(root.TryGetProperty("accessToken", out var accessToken));
@@ -77,10 +80,10 @@ public class CreateTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         const string correctOtp = "123456";
         const string wrongOtp = "000000";
 
@@ -91,17 +94,17 @@ public class CreateTests : BaseIntegrationTest
         );
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         // Pre-seed cache with the CORRECT otp
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(correctOtp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
+        var request = new Request
         {
-            PhoneNumber = phoneNumber,
-            Otp = wrongOtp  // deliberately wrong
+            PhoneNumber = phoneNumber, Otp = wrongOtp // deliberately wrong
         };
 
         // Act
@@ -117,10 +120,10 @@ public class CreateTests : BaseIntegrationTest
     {
         // Arrange — OTP must be invalidated after 3 failed attempts, even if the correct code is used later.
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         const string correctOtp = "123456";
         const string wrongOtp = "000000";
 
@@ -131,31 +134,24 @@ public class CreateTests : BaseIntegrationTest
         );
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(correctOtp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
 
         // Act — 3 wrong attempts
         for (var i = 0; i < 3; i++)
         {
-            var badRequest = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
-            {
-                PhoneNumber = phoneNumber,
-                Otp = wrongOtp
-            };
+            var badRequest = new Request { PhoneNumber = phoneNumber, Otp = wrongOtp };
             var badResponse = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), badRequest);
             Assert.False(badResponse.IsSuccessStatusCode);
         }
 
         // Act — correct OTP after lockout
-        var goodRequest = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = correctOtp
-        };
+        var goodRequest = new Request { PhoneNumber = phoneNumber, Otp = correctOtp };
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), goodRequest);
 
         // Assert — OTP must be dead after 3 failed attempts
@@ -170,19 +166,16 @@ public class CreateTests : BaseIntegrationTest
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         // A phone number that has no user in the DB
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
         const string otp = "123456";
 
         // Seed cache so OTP verification passes
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
-        await cache.SetAsync(cacheKey, new IAM.Infrastructure.Identity.Services.OtpCacheEntry(otp, 0), options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Create.Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = otp
-        };
+        var request = new Request { PhoneNumber = phoneNumber, Otp = otp };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), request);

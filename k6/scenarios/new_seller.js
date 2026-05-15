@@ -1,6 +1,6 @@
 import { check, sleep } from 'k6';
 import { post, get } from '../lib/http.js';
-import { sendOtp, turkishName } from '../lib/auth.js';
+import { sendOtpForRegistration, turkishName } from '../lib/auth.js';
 
 // Simulates the full new-user onboarding journey: arrive → register → create store → list first product → leave.
 // Each VU+iteration is a completely fresh user, testing the write-heavy registration path under load.
@@ -24,8 +24,8 @@ export function runNewSeller(data) {
     }
   }
 
-  // Step 1 — Register
-  sendOtp(p);
+  // Step 1 — Register (auto-login: response includes tokens directly)
+  sendOtpForRegistration(p);
   const regRes = post('/users/register/self', {
     phoneNumber: p,
     otp: '123456',
@@ -37,15 +37,7 @@ export function runNewSeller(data) {
     sleep(2);
     return;
   }
-
-  // Step 2 — Login (OTP must be re-sent; register consumed the previous one)
-  sendOtp(p);
-  const loginRes = post('/tokens', { phoneNumber: p, otp: '123456' });
-  if (!check(loginRes, { 'new_seller — login: 200': r => r.status === 200 })) {
-    sleep(2);
-    return;
-  }
-  const token = loginRes.json('accessToken');
+  const token = regRes.json('accessToken');
 
   // Step 3 — Create store
   const storeRes = post('/v1/stores/my', {

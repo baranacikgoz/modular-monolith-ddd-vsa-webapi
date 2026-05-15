@@ -11,6 +11,7 @@ using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Constants = IAM.Infrastructure.RateLimiting.Constants;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 
@@ -22,7 +23,7 @@ internal static class Endpoint
             .MapPost("refresh", RefreshToken)
             .WithDescription("Refresh token.")
             .AllowAnonymous()
-            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.TokenRefresh)
+            .RequireRateLimiting(Constants.TokenRefresh)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }
@@ -59,7 +60,7 @@ internal static class Endpoint
                             .Select(name => name!)
                             .ToList()
                     })
-                    .SingleAsResultAsync(resourceName: nameof(ApplicationUser), cancellationToken);
+                    .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken);
             })
             .TapAsync(userObj => userObj.User.RefreshTokenExpiresAt < timeProvider.GetUtcNow()
                 ? Result.Failure(TokenErrors.RefreshTokenExpired)

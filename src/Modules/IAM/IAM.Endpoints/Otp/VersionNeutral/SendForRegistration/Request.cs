@@ -3,7 +3,7 @@ using Common.Application.Validation;
 using FluentValidation;
 using IAM.Endpoints.Common.Validations;
 
-namespace IAM.Endpoints.Otp.VersionNeutral.SendForLogin;
+namespace IAM.Endpoints.Otp.VersionNeutral.SendForRegistration;
 
 public sealed record Request
 {

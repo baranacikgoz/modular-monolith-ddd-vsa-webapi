@@ -17,23 +17,30 @@ export function turkishName(seed) {
   return TURKISH_NAMES[seed % TURKISH_NAMES.length];
 }
 
-export function sendOtp(phone) {
-  const res = post('/otp', { phoneNumber: phone, captchaToken: 'dummy' });
-  check(res, { 'otp: 204': r => r.status === 204 });
+export function sendOtpForLogin(phone) {
+  const res = post('/otp/login', { phoneNumber: phone, captchaToken: 'dummy' });
+  check(res, { 'otp/login: 204': r => r.status === 204 });
+  return res.status === 204;
+}
+
+export function sendOtpForRegistration(phone) {
+  const res = post('/otp/registration', { phoneNumber: phone, captchaToken: 'dummy' });
+  check(res, { 'otp/registration: 204': r => r.status === 204 });
   return res.status === 204;
 }
 
 // Returns accessToken string, or null on failure.
 export function login(phone) {
-  sendOtp(phone);
+  sendOtpForLogin(phone);
   const res = post('/tokens', { phoneNumber: phone, otp: '123456' });
   check(res, { 'login: 200': r => r.status === 200 });
   return res.status === 200 ? res.json('accessToken') : null;
 }
 
-// Registers user. 200 = new user, 409 = already exists — both valid for load tests.
+// Registers user and auto-logs in. Returns accessToken, or null on failure.
+// 409 = already exists — valid for load tests (idempotent seed).
 export function register(phone, seed) {
-  sendOtp(phone);
+  sendOtpForRegistration(phone);
   const res = post('/users/register/self', {
     phoneNumber: phone,
     otp: '123456',

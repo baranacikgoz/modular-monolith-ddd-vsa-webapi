@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
-namespace IAM.Endpoints.Otp.VersionNeutral.SendForLogin;
+namespace IAM.Endpoints.Otp.VersionNeutral.SendForRegistration;
 
 internal static class Endpoint
 {
@@ -19,8 +19,8 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder otpApiGroup)
     {
         otpApiGroup
-            .MapPost("login", SendOtp)
-            .WithDescription("Send otp sms for login.")
+            .MapPost("registration", SendOtp)
+            .WithDescription("Send otp sms for registration.")
             .RequireRateLimiting(Constants.Sms)
             .AllowAnonymous()
             .Produces(StatusCodes.Status204NoContent)
@@ -44,7 +44,7 @@ internal static class Endpoint
             .TapAsync(async otp => await otpService.StoreOtpAsync(
                 request.PhoneNumber,
                 otp,
-                OtpPurposes.Login,
+                OtpPurposes.Registration,
                 TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes),
                 cancellationToken))
             .TapAsync(async _ =>

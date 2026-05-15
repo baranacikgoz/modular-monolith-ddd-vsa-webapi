@@ -10,9 +10,9 @@ internal abstract class OtpServiceBase(IFusionCache cache) : IOtpService
 {
     private const int MaxFailedAttempts = 3;
 
-    public async Task StoreOtpAsync(string phoneNumber, string otp, TimeSpan duration, CancellationToken cancellationToken)
+    public async Task StoreOtpAsync(string phoneNumber, string otp, string purpose, TimeSpan duration, CancellationToken cancellationToken)
     {
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, purpose);
         var entry = new OtpCacheEntry(otp, 0);
         await cache.SetAsync(cacheKey, entry, options: new FusionCacheEntryOptions { Duration = duration }, token: cancellationToken);
     }
@@ -20,9 +20,10 @@ internal abstract class OtpServiceBase(IFusionCache cache) : IOtpService
     public async Task<Result> VerifyThenRemoveOtpAsync(
         string phoneNumber,
         string otp,
+        string purpose,
         CancellationToken cancellationToken)
     {
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, purpose);
 
         var entry = await cache.GetOrDefaultAsync<OtpCacheEntry>(cacheKey, token: cancellationToken);
 

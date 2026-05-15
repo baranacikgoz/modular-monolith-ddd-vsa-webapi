@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security.Cryptography;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.FeatureManagement;
@@ -6,7 +7,10 @@ using Common.Domain.ResultMonad;
 using IAM.Application.Captcha.Services;
 using IAM.Application.Extensions;
 using IAM.Application.Otp.Services;
+using IAM.Application.Persistence;
+using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
+using IAM.Endpoints.Otp;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +30,7 @@ internal static class Endpoint
             .WithDescription("Register a new user.")
             .Produces<Response>()
             .AllowAnonymous()
-            .RequireRateLimiting(IAM.Infrastructure.RateLimiting.Constants.Register)
+            .RequireRateLimiting(Infrastructure.RateLimiting.Constants.Register)
             .TransformResultTo<Response>();
     }
 
@@ -35,6 +39,9 @@ internal static class Endpoint
         UserManager<ApplicationUser> userManager,
         IOtpService otpService,
         ICaptchaService captchaService,
+        IIAMDbContext db,
+        ITokenService tokenService,
+        TimeProvider timeProvider,
         IFeatureManager featureManager,
         CancellationToken cancellationToken)
     {
@@ -43,24 +50,27 @@ internal static class Endpoint
             : Task.FromResult(Result.Success);
 
         return await captchaTask
-            .BindAsync(() => CreateUserPipelineAsync(request, userManager, otpService, cancellationToken));
+            .BindAsync(() => RegisterAndLoginAsync(request, userManager, otpService, db, tokenService, timeProvider,
+                cancellationToken));
     }
 
-    private static Task<Result<Response>> CreateUserPipelineAsync(
+    private static Task<Result<Response>> RegisterAndLoginAsync(
         Request request,
         UserManager<ApplicationUser> userManager,
         IOtpService otpService,
+        IIAMDbContext db,
+        ITokenService tokenService,
+        TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         return otpService
-            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, cancellationToken)
+            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, OtpPurposes.Registration, cancellationToken)
             .BindAsync(async () =>
             {
                 var user = ApplicationUser.Create(
                     request.FullName,
                     request.PhoneNumber,
-                    DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
-                        CultureInfo.InvariantCulture));
+                    DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat, CultureInfo.InvariantCulture));
                 var identityResult = await userManager.CreateAsync(user);
                 return identityResult.ToResult(user);
             })
@@ -69,7 +79,23 @@ internal static class Endpoint
                 var identityResult = await userManager.AddToRoleAsync(user, CustomRoles.Basic);
                 return identityResult.ToResult(user);
             })
+            .BindAsync(async user =>
+            {
+                var utcNow = timeProvider.GetUtcNow();
+                var (accessToken, accessTokenExpiresAt) =
+                    tokenService.GenerateAccessToken(utcNow, user.Id, [CustomRoles.Basic]);
+                var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+                user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+                await db.SaveChangesAsync(cancellationToken);
+                return Result<Response>.Success(new Response
+                {
+                    AccessToken = accessToken,
+                    AccessTokenExpiresAt = accessTokenExpiresAt,
+                    RefreshToken = Convert.ToBase64String(refreshTokenBytes),
+                    RefreshTokenExpiresAt = refreshTokenExpiresAt
+                });
+            })
             .TapAsync(_ => IamTelemetry.UsersRegistered.Add(1))
-            .MapAsync(user => new Response { Id = user.Id });
+            .TapAsync(_ => IamTelemetry.TokensIssued.Add(1));
     }
 }

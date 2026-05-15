@@ -10,16 +10,17 @@ using Xunit;
 namespace IAM.Tests.Endpoints.Otp;
 
 [Collection("IntegrationTestCollection")]
-public class SendTests : BaseIntegrationTest
+public class SendForLoginTests : BaseIntegrationTest
 {
     private readonly Faker _faker = new();
+    private const string OtpPurpose = "login";
 
-    public SendTests(IntegrationTestWebAppFactory factory) : base(factory)
+    public SendForLoginTests(IntegrationTestWebAppFactory factory) : base(factory)
     {
     }
 
     [Fact]
-    public async Task SendOtp_WithValidPhoneNumber_ReturnsNoContentAndCachesOtp()
+    public async Task SendOtpForLogin_WithValidPhoneNumber_ReturnsNoContentAndCachesOtp()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -28,14 +29,14 @@ public class SendTests : BaseIntegrationTest
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForLogin.Request
         {
             PhoneNumber = phoneNumber,
             CaptchaToken = "dummyToken"
         };
 
         // Act
-        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+        var response = await client.PostAsJsonAsync(new Uri("/otp/login", UriKind.Relative), request);
 
         // Assert
         if (!response.IsSuccessStatusCode)
@@ -46,7 +47,7 @@ public class SendTests : BaseIntegrationTest
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         // Verify cache Side-Effect
-        var cacheKey = CacheKeys.For.Otp(phoneNumber);
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, OtpPurpose);
         var cachedEntry = await cache.GetOrDefaultAsync<IAM.Infrastructure.Identity.Services.OtpCacheEntry>(cacheKey);
 
         Assert.NotNull(cachedEntry);
@@ -54,56 +55,127 @@ public class SendTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task SendOtp_WithInvalidPhoneFormat_ReturnsBadRequest()
+    public async Task SendOtpForLogin_WithInvalidPhoneFormat_ReturnsBadRequest()
     {
-        // Arrange — phone number with too few digits (fails Turkish phone validation)
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForLogin.Request
         {
-            PhoneNumber = "123", // clearly not a valid Turkish mobile number
+            PhoneNumber = "123",
             CaptchaToken = "dummyToken"
         };
 
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+        var response = await client.PostAsJsonAsync(new Uri("/otp/login", UriKind.Relative), request);
 
-        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task SendOtp_WithEmptyCaptcha_ReturnsBadRequest()
+    public async Task SendOtpForLogin_WithEmptyCaptcha_ReturnsBadRequest()
     {
-        // Arrange
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForLogin.Request
         {
             PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = string.Empty
         };
 
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+        var response = await client.PostAsJsonAsync(new Uri("/otp/login", UriKind.Relative), request);
 
-        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]
-    public async Task SendOtp_WithInvalidCaptcha_ReturnsBadRequest()
+    public async Task SendOtpForLogin_WithInvalidCaptcha_ReturnsBadRequest()
     {
-        // Arrange
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Otp.VersionNeutral.Send.Request
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForLogin.Request
         {
             PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
             CaptchaToken = "invalid-token"
         };
 
+        var response = await client.PostAsJsonAsync(new Uri("/otp/login", UriKind.Relative), request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var rawJson = await response.Content.ReadAsStringAsync();
+        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        Assert.Equal("NotHuman", doc.RootElement.GetProperty("errorKey").GetString());
+    }
+}
+
+[Collection("IntegrationTestCollection")]
+public class SendForRegistrationTests : BaseIntegrationTest
+{
+    private readonly Faker _faker = new();
+    private const string OtpPurpose = "registration";
+
+    public SendForRegistrationTests(IntegrationTestWebAppFactory factory) : base(factory)
+    {
+    }
+
+    [Fact]
+    public async Task SendOtpForRegistration_WithValidPhoneNumber_ReturnsNoContentAndCachesOtp()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForRegistration.Request
+        {
+            PhoneNumber = phoneNumber,
+            CaptchaToken = "dummyToken"
+        };
+
         // Act
-        var response = await client.PostAsJsonAsync(new Uri("/otp", UriKind.Relative), request);
+        var response = await client.PostAsJsonAsync(new Uri("/otp/registration", UriKind.Relative), request);
 
         // Assert
+        if (!response.IsSuccessStatusCode)
+        {
+            var err = await response.Content.ReadAsStringAsync();
+            Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
+        }
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        // Verify cache Side-Effect
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, OtpPurpose);
+        var cachedEntry = await cache.GetOrDefaultAsync<IAM.Infrastructure.Identity.Services.OtpCacheEntry>(cacheKey);
+
+        Assert.NotNull(cachedEntry);
+        Assert.False(string.IsNullOrWhiteSpace(cachedEntry.Otp));
+    }
+
+    [Fact]
+    public async Task SendOtpForRegistration_WithInvalidPhoneFormat_ReturnsBadRequest()
+    {
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForRegistration.Request
+        {
+            PhoneNumber = "123",
+            CaptchaToken = "dummyToken"
+        };
+
+        var response = await client.PostAsJsonAsync(new Uri("/otp/registration", UriKind.Relative), request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SendOtpForRegistration_WithInvalidCaptcha_ReturnsBadRequest()
+    {
+        var client = Factory.CreateClient();
+        var request = new IAM.Endpoints.Otp.VersionNeutral.SendForRegistration.Request
+        {
+            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture),
+            CaptchaToken = "invalid-token"
+        };
+
+        var response = await client.PostAsJsonAsync(new Uri("/otp/registration", UriKind.Relative), request);
+
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
         var rawJson = await response.Content.ReadAsStringAsync();

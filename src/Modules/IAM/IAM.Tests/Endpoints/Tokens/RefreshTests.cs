@@ -1,10 +1,14 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
+using System.Text.Json;
 using Bogus;
 using Common.Tests;
+using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
+using IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,11 +28,11 @@ public class RefreshTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
             _faker.Name.FullName(),
@@ -42,13 +46,10 @@ public class RefreshTests : BaseIntegrationTest
         user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request
-        {
-            RefreshToken = Convert.ToBase64String(refreshTokenBytes)
-        };
+        var request = new Request { RefreshToken = Convert.ToBase64String(refreshTokenBytes) };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
@@ -59,10 +60,11 @@ public class RefreshTests : BaseIntegrationTest
             var err = await response.Content.ReadAsStringAsync();
             Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
         }
+
         response.EnsureSuccessStatusCode();
 
         var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        using var doc = JsonDocument.Parse(rawJson);
         var root = doc.RootElement;
 
         Assert.True(root.TryGetProperty("accessToken", out var accessToken));
@@ -83,11 +85,11 @@ public class RefreshTests : BaseIntegrationTest
     {
         // Arrange — after a successful refresh, the old refresh token must be invalidated.
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
             _faker.Name.FullName(),
@@ -101,13 +103,10 @@ public class RefreshTests : BaseIntegrationTest
         user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request
-        {
-            RefreshToken = Convert.ToBase64String(refreshTokenBytes)
-        };
+        var request = new Request { RefreshToken = Convert.ToBase64String(refreshTokenBytes) };
 
         // First use — must succeed
         var firstResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
@@ -129,11 +128,11 @@ public class RefreshTests : BaseIntegrationTest
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IAM.Application.Persistence.IIAMDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
             _faker.Name.FullName(),
@@ -147,13 +146,10 @@ public class RefreshTests : BaseIntegrationTest
         user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), expiredAt);
 
         db.Users.Add(user);
-        await db.SaveChangesAsync(default);
+        await db.SaveChangesAsync();
 
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request
-        {
-            RefreshToken = Convert.ToBase64String(refreshTokenBytes)
-        };
+        var request = new Request { RefreshToken = Convert.ToBase64String(refreshTokenBytes) };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
@@ -168,10 +164,7 @@ public class RefreshTests : BaseIntegrationTest
         // Arrange — this specifically tests that the endpoint does NOT throw a 500
         // due to the FormatException that Convert.FromBase64String throws on bad input.
         var client = Factory.CreateClient();
-        var request = new IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request
-        {
-            RefreshToken = "this-is-not!!-valid-base64-%%"
-        };
+        var request = new Request { RefreshToken = "this-is-not!!-valid-base64-%%" };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
