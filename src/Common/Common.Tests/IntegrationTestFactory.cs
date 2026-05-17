@@ -66,6 +66,7 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "AuditLogOptions:RetentionDays", "90" },
                 { "CaptchaOptions:BaseUrl", "" },
                 { "HealthCheckOptions:SkipRabbitMqHealthCheck", "true" },
+                { "OutboxOptions:IsProcessor", "true" },
                 { "OutboxOptions:PollIntervalMs", "500" },
                 { "OutboxOptions:BatchSize", "50" },
                 { "OutboxOptions:MaxRetryCount", "3" },

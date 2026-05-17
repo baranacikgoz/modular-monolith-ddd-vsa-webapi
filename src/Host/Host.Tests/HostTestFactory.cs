@@ -14,4 +14,29 @@ public class HostTestFactory : IntegrationTestFactory
 
     protected override string[] GetActiveModules()
         => _moduleOverride ?? ["*"];
+
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+        await WaitUntilReadyAsync(TimeSpan.FromSeconds(60));
+    }
+
+    private async Task WaitUntilReadyAsync(TimeSpan timeout)
+    {
+        var client = CreateClient();
+        using var cts = new CancellationTokenSource(timeout);
+        while (!cts.IsCancellationRequested)
+        {
+            try
+            {
+                var response = await client.GetAsync(new Uri("/health/ready", UriKind.Relative), cts.Token);
+                if (response.IsSuccessStatusCode)
+                    return;
+            }
+            catch (Exception ex) when (!cts.IsCancellationRequested) { _ = ex; }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(500), cts.Token)
+                .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        }
+    }
 }

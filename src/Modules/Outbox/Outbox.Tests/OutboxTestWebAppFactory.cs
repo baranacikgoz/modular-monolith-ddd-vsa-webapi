@@ -22,6 +22,7 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
         {
             var confDict = new Dictionary<string, string?>
             {
+                { "OutboxOptions:IsProcessor", "true" },
                 { "OutboxOptions:PollIntervalMs", "100" },
                 { "OutboxOptions:BatchSize", "10" },
                 { "OutboxOptions:MaxRetryCount", "3" },
