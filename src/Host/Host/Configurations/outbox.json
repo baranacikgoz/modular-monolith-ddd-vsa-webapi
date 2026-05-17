@@ -1,5 +1,6 @@
 {
   "OutboxOptions": {
+    "IsProcessor": true,
     "PollIntervalMs": 250,
     "BatchSize": 100,
     "MaxRetryCount": 5,

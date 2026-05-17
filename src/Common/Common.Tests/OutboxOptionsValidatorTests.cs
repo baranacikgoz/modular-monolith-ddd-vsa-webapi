@@ -11,7 +11,8 @@ public sealed class OutboxOptionsValidatorTests
     {
         PollIntervalMs = 500,
         BatchSize = 50,
-        MaxRetryCount = 3
+        MaxRetryCount = 3,
+        IsProcessor = true
     };
 
     [Fact]
@@ -26,7 +27,7 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void PollIntervalMs_BelowMinimum_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 50, BatchSize = 50, MaxRetryCount = 3 };
+        var options = new OutboxOptions { PollIntervalMs = 50, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -37,7 +38,7 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void BatchSize_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 0, MaxRetryCount = 3 };
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 0, MaxRetryCount = 3, IsProcessor = true };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -48,7 +49,7 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void MaxRetryCount_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 0 };
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 0, IsProcessor = true };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -59,7 +60,7 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void LagThresholdMinutes_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, LagThresholdMinutes = 0 };
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true, LagThresholdMinutes = 0 };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -70,7 +71,7 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void MetricsCronSchedule_Empty_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, MetricsCronSchedule = "" };
+        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true, MetricsCronSchedule = "" };
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 

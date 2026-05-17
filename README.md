@@ -8,6 +8,7 @@ facilitate the development of scalable and maintainable applications.
 
 - [Introduction](#introduction)
 - [Features](#features)
+- [Architecture Decisions](docs/ARCHITECTURE.md)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
   - [Split Deployment](#split-deployment-microservice-mode)
@@ -45,7 +46,7 @@ This repository includes the following features:
 - **Feature Management**: `Microsoft.FeatureManagement` with targeting context support and automated endpoint filtering — feature flags configurable per-environment via `appsettings.json`.
 - **Rate Limiting**: Modular per-policy rate limiting (registration, OTP/SMS, token, store creation) with override support via env vars for load testing.
 - **k6 Load Testing**: Multi-scenario k6 suite (`docker compose -f docker-compose.yml -f docker-compose.perf.yml up k6`) with Aspire Dashboard OTel traces live during runs.
-- **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and Kafka checks so orchestrators only route traffic once all backing services are reachable.
+- **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and RabbitMQ checks so orchestrators only route traffic once all backing services are reachable.
 - **Architecture Boundary Tests**: NetArchTest rules assert no cross-module Domain references and that all `IntegrationEvent` types are declared exclusively in `Common.IntegrationEvents`.
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
 - **Strongly-Typed Localization & Multi-Language Support**: Leverages `Aigamo.ResXGenerator` to automatically generate strongly-typed `IResxLocalizer` properties for error-free resource resolution, ensuring compile-time safety and eliminating missing key errors at runtime.

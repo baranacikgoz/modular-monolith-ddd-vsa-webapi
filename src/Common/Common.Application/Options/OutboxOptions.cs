@@ -8,6 +8,7 @@ public class OutboxOptions
     public required int PollIntervalMs { get; set; }
     public required int BatchSize { get; set; }
     public required int MaxRetryCount { get; set; }
+    public required bool IsProcessor { get; set; }
 
     public int LagThresholdMinutes { get; set; } = 5;
     public string MetricsCronSchedule { get; set; } = "*/5 * * * *";

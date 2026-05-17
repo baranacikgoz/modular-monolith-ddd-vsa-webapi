@@ -39,8 +39,17 @@ public sealed partial class OutboxModule : ICoreModule
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
                     .UseExceptionProcessor();
             })
-            .AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<OutboxDbContext>())
-            .AddHostedService<OutboxProcessor>();
+            .AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<OutboxDbContext>());
+
+        var isProcessor = configuration
+            .GetSection(nameof(OutboxOptions))
+            .Get<OutboxOptions>()?
+            .IsProcessor ?? throw new InvalidOperationException("OutboxOptions is not configured.");
+
+        if (isProcessor)
+        {
+            services.AddHostedService<OutboxProcessor>();
+        }
     }
 
     public void UseModule(IApplicationBuilder app)
