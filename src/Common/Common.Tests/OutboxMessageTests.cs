@@ -28,13 +28,51 @@ public sealed class OutboxMessageTests
     [Fact]
     public void IncrementRetryCount_IncrementsCounter()
     {
-        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, new TestableIntegrationEvent("x"));
+        var now = DateTimeOffset.UtcNow;
+        var message = OutboxMessage.Create(now, new TestableIntegrationEvent("x"));
 
-        message.IncrementRetryCount();
-        message.IncrementRetryCount();
-        message.IncrementRetryCount();
+        message.IncrementRetryCount(now, TimeSpan.FromSeconds(5));
+        message.IncrementRetryCount(now, TimeSpan.FromSeconds(10));
+        message.IncrementRetryCount(now, TimeSpan.FromSeconds(20));
 
         Assert.Equal(3, message.RetryCount);
+    }
+
+    [Fact]
+    public void IncrementRetryCount_SetsNextRetryAt()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var backoff = TimeSpan.FromSeconds(30);
+        var message = OutboxMessage.Create(now, new TestableIntegrationEvent("x"));
+
+        message.IncrementRetryCount(now, backoff);
+
+        Assert.NotNull(message.NextRetryAt);
+        Assert.Equal(now + backoff, message.NextRetryAt);
+    }
+
+    [Fact]
+    public void IncrementRetryCount_UpdatesNextRetryAtOnEachCall()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var message = OutboxMessage.Create(now, new TestableIntegrationEvent("x"));
+
+        message.IncrementRetryCount(now, TimeSpan.FromSeconds(10));
+        var firstNextRetryAt = message.NextRetryAt;
+
+        var later = now.AddSeconds(15);
+        message.IncrementRetryCount(later, TimeSpan.FromSeconds(20));
+
+        Assert.NotEqual(firstNextRetryAt, message.NextRetryAt);
+        Assert.Equal(later + TimeSpan.FromSeconds(20), message.NextRetryAt);
+    }
+
+    [Fact]
+    public void Create_NewMessage_HasNullNextRetryAt()
+    {
+        var message = OutboxMessage.Create(DateTimeOffset.UtcNow, new TestableIntegrationEvent("x"));
+
+        Assert.Null(message.NextRetryAt);
     }
 
     [Fact]

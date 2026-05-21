@@ -26,6 +26,8 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
                 { "OutboxOptions:PollIntervalMs", "100" },
                 { "OutboxOptions:BatchSize", "10" },
                 { "OutboxOptions:MaxRetryCount", "3" },
+                { "OutboxOptions:BaseBackoffSeconds", "2" },
+                { "OutboxOptions:MaxBackoffSeconds", "30" },
                 { "RabbitMqOptions:Host", _rabbitMqContainer.Hostname },
                 { "RabbitMqOptions:Port", _rabbitMqContainer.GetMappedPublicPort(5672).ToString(System.Globalization.CultureInfo.InvariantCulture) },
                 { "RabbitMqOptions:Username", "guest" },

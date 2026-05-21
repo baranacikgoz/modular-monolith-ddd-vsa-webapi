@@ -4,6 +4,8 @@
     "PollIntervalMs": 250,
     "BatchSize": 100,
     "MaxRetryCount": 5,
+    "BaseBackoffSeconds": 5,
+    "MaxBackoffSeconds": 600,
     "LagThresholdMinutes": 5,
     "MetricsCronSchedule": "*/5 * * * *",
     "Cleanup": {

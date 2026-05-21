@@ -12,7 +12,11 @@ public sealed class OutboxOptionsValidatorTests
         PollIntervalMs = 500,
         BatchSize = 50,
         MaxRetryCount = 3,
-        IsProcessor = true
+        IsProcessor = true,
+        BaseBackoffSeconds = 5,
+        MaxBackoffSeconds = 600,
+        LagThresholdMinutes = 5,
+        MetricsCronSchedule = "*/5 * * * *"
     };
 
     [Fact]
@@ -27,7 +31,8 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void PollIntervalMs_BelowMinimum_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 50, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true };
+        var options = ValidOptions();
+        options.PollIntervalMs = 50;
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -38,7 +43,8 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void BatchSize_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 0, MaxRetryCount = 3, IsProcessor = true };
+        var options = ValidOptions();
+        options.BatchSize = 0;
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -49,7 +55,8 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void MaxRetryCount_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 0, IsProcessor = true };
+        var options = ValidOptions();
+        options.MaxRetryCount = 0;
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -60,7 +67,8 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void LagThresholdMinutes_Zero_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true, LagThresholdMinutes = 0 };
+        var options = ValidOptions();
+        options.LagThresholdMinutes = 0;
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
@@ -71,12 +79,50 @@ public sealed class OutboxOptionsValidatorTests
     [Fact]
     public void MetricsCronSchedule_Empty_Fails()
     {
-        var options = new OutboxOptions { PollIntervalMs = 500, BatchSize = 50, MaxRetryCount = 3, IsProcessor = true, MetricsCronSchedule = "" };
+        var options = ValidOptions();
+        options.MetricsCronSchedule = "";
         var validator = new OutboxOptionsValidator();
         var result = validator.Validate(options);
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MetricsCronSchedule));
+    }
+
+    [Fact]
+    public void BaseBackoffSeconds_Zero_Fails()
+    {
+        var options = ValidOptions();
+        options.BaseBackoffSeconds = 0;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.BaseBackoffSeconds));
+    }
+
+    [Fact]
+    public void MaxBackoffSeconds_Zero_Fails()
+    {
+        var options = ValidOptions();
+        options.MaxBackoffSeconds = 0;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MaxBackoffSeconds));
+    }
+
+    [Fact]
+    public void MaxBackoffSeconds_LessThanBaseBackoffSeconds_Fails()
+    {
+        var options = ValidOptions();
+        options.BaseBackoffSeconds = 10;
+        options.MaxBackoffSeconds = 5;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MaxBackoffSeconds));
     }
 
     [Fact]

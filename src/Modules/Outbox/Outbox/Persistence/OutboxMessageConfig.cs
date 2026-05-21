@@ -11,7 +11,7 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => new { x.IsProcessed, x.FailedOn, x.CreatedOn });
+        builder.HasIndex(x => new { x.IsProcessed, x.FailedOn, x.NextRetryAt, x.CreatedOn });
 
         builder
             .Property(x => x.CreatedOn)
@@ -36,6 +36,10 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
 
         builder
             .Property(x => x.FailedOn)
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.NextRetryAt)
             .IsRequired(false);
 
         builder

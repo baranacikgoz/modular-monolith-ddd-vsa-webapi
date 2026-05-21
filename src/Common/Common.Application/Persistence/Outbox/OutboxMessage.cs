@@ -23,6 +23,7 @@ public class OutboxMessage : IOutboxMessage
     public bool IsProcessed { get; protected set; }
     public DateTimeOffset? ProcessedOn { get; protected set; }
     public int RetryCount { get; private set; }
+    public DateTimeOffset? NextRetryAt { get; private set; }
     public DateTimeOffset? FailedOn { get; private set; }
 
     IEvent? IOutboxMessage.Event => Event;
@@ -40,7 +41,11 @@ public class OutboxMessage : IOutboxMessage
         ProcessedOn = processedOn;
     }
 
-    public void IncrementRetryCount() => RetryCount++;
+    public void IncrementRetryCount(DateTimeOffset now, TimeSpan backoff)
+    {
+        RetryCount++;
+        NextRetryAt = now + backoff;
+    }
 
     public void MarkAsFailed(DateTimeOffset failedOn) => FailedOn = failedOn;
 }

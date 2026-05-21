@@ -10,8 +10,11 @@ public class OutboxOptions
     public required int MaxRetryCount { get; set; }
     public required bool IsProcessor { get; set; }
 
-    public int LagThresholdMinutes { get; set; } = 5;
-    public string MetricsCronSchedule { get; set; } = "*/5 * * * *";
+    public required int BaseBackoffSeconds { get; set; }
+    public required int MaxBackoffSeconds { get; set; }
+
+    public required int LagThresholdMinutes { get; set; }
+    public required string MetricsCronSchedule { get; set; }
 
     public OutboxCleanupSettings Cleanup { get; set; } = new();
 }
@@ -57,6 +60,16 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
         RuleFor(o => o.MaxRetryCount)
             .GreaterThanOrEqualTo(1)
             .WithMessage("MaxRetryCount must be at least 1.");
+
+        RuleFor(o => o.BaseBackoffSeconds)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("BaseBackoffSeconds must be at least 1.");
+
+        RuleFor(o => o.MaxBackoffSeconds)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("MaxBackoffSeconds must be at least 1.")
+            .GreaterThanOrEqualTo(o => o.BaseBackoffSeconds)
+            .WithMessage("MaxBackoffSeconds must be >= BaseBackoffSeconds.");
 
         RuleFor(o => o.LagThresholdMinutes)
             .GreaterThanOrEqualTo(1)

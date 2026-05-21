@@ -48,12 +48,11 @@ public sealed partial class OutboxProcessor(
                     SELECT * FROM "Outbox"."OutboxMessages"
                     WHERE "IsProcessed" = false
                       AND "FailedOn" IS NULL
-                      AND "RetryCount" < {0}
+                      AND ("NextRetryAt" IS NULL OR "NextRetryAt" <= (NOW() AT TIME ZONE 'UTC'))
                     ORDER BY "CreatedOn"
-                    LIMIT {1}
+                    LIMIT {0}
                     FOR UPDATE SKIP LOCKED
                     """,
-                    opts.MaxRetryCount,
                     opts.BatchSize)
                 .ToListAsync(ct);
 #pragma warning restore S2077
@@ -89,7 +88,7 @@ public sealed partial class OutboxProcessor(
                     if (integrationEvent is null)
                     {
                         LogNullEvent(logger, message.Id);
-                        message.IncrementRetryCount();
+                        message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
                         if (message.RetryCount >= opts.MaxRetryCount)
                         {
                             message.MarkAsFailed(timeProvider.GetUtcNow());
@@ -112,7 +111,7 @@ public sealed partial class OutboxProcessor(
                     activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                     activity?.SetTag("exception.message", ex.Message);
                     activity?.SetTag("exception.type", ex.GetType().Name);
-                    message.IncrementRetryCount();
+                    message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
                     if (message.RetryCount >= opts.MaxRetryCount)
                     {
                         message.MarkAsFailed(timeProvider.GetUtcNow());
@@ -137,6 +136,15 @@ public sealed partial class OutboxProcessor(
             await tx.RollbackAsync(CancellationToken.None);
             LogBatchError(logger, ex);
         }
+    }
+
+    private static TimeSpan ComputeBackoff(int currentRetryCount, OutboxOptions opts)
+    {
+        var cap = Math.Min(opts.MaxBackoffSeconds, Math.Pow(2, currentRetryCount) * opts.BaseBackoffSeconds);
+#pragma warning disable CA5394 // Jitter is not a security-sensitive operation; predictability is irrelevant here.
+        var seconds = Random.Shared.NextDouble() * cap;
+#pragma warning restore CA5394
+        return TimeSpan.FromSeconds(seconds);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "OutboxProcessor starting.")]
