@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Notifications.Infrastructure.Hubs;
 using Notifications.Infrastructure.Sms;
 using Notifications.Infrastructure.Telemetry;
 
@@ -18,14 +19,15 @@ public sealed class NotificationsModule : IModule
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddNotificationServices();
+        services.AddNotificationsSignalR(configuration);
     }
 
     public void UseModule(IApplicationBuilder app)
     {
-        // Will be filled when module reaches maturity
     }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapHub<NotificationsHub>("/hubs/notifications").RequireAuthorization();
     }
 }

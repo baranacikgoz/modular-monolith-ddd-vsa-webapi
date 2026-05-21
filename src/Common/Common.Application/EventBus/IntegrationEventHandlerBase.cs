@@ -35,7 +35,7 @@ public abstract partial class IntegrationEventHandlerBase<TEvent>(
             }
         }
 
-        var key = $"processed_event:{eventId}";
+        var key = $"processed_event:{GetType().Name}:{eventId}";
         var factoryRan = false;
 
         await cache.GetOrSetAsync<bool>(

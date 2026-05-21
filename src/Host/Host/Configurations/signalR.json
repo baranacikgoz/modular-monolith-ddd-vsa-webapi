@@ -1,0 +1,6 @@
+{
+  "SignalROptions": {
+    "UseRedisBackplane": false,
+    "RedisConnectionString": ""
+  }
+}

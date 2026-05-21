@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SignalR POC — Notifications</title>
+  <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: monospace; background: #0d0d0d; color: #e0e0e0; padding: 24px; }
+    h1 { color: #7dd3fc; margin-bottom: 16px; font-size: 1.2rem; }
+    .card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    label { font-size: 0.8rem; color: #888; display: block; margin-bottom: 4px; }
+    input { width: 100%; background: #111; border: 1px solid #444; color: #e0e0e0; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.9rem; }
+    button { margin-top: 12px; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 0.9rem; font-weight: bold; }
+    #btnRegister { background: #2563eb; color: #fff; }
+    #btnRegister:hover { background: #1d4ed8; }
+    #btnRegister:disabled { background: #374151; color: #6b7280; cursor: default; }
+    #btnLogin { background: #059669; color: #fff; margin-left: 8px; }
+    #btnLogin:hover { background: #047857; }
+    #btnLogin:disabled { background: #374151; color: #6b7280; cursor: default; }
+    #btnDisconnect { background: #dc2626; color: #fff; margin-left: 8px; }
+    #btnDisconnect:hover { background: #b91c1c; }
+    #btnDisconnect:disabled { background: #374151; color: #6b7280; cursor: default; }
+    .status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+    .status.disconnected { background: #1f1f1f; color: #6b7280; }
+    .status.connecting   { background: #1c1917; color: #f59e0b; }
+    .status.connected    { background: #052e16; color: #4ade80; }
+    .status.error        { background: #1c0000; color: #f87171; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    #log { list-style: none; max-height: 400px; overflow-y: auto; }
+    #log li { padding: 6px 10px; border-bottom: 1px solid #222; font-size: 0.8rem; display: flex; gap: 12px; }
+    #log li:last-child { border-bottom: none; }
+    .ts  { color: #555; white-space: nowrap; }
+    .type { color: #7dd3fc; }
+    .rid  { color: #a78bfa; }
+    .sys  { color: #6b7280; font-style: italic; }
+    .err  { color: #f87171; }
+    .row  { display: flex; align-items: center; }
+  </style>
+</head>
+<body>
+  <h1>SignalR POC — Notifications Hub</h1>
+
+  <div class="card">
+    <label>Phone number (auto-generated, editable)</label>
+    <input id="phone" type="text" />
+    <div class="row">
+      <button id="btnRegister">Register &amp; Connect</button>
+      <button id="btnLogin">Login &amp; Connect</button>
+      <button id="btnDisconnect" disabled>Disconnect</button>
+    </div>
+  </div>
+
+  <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <label>Connection status</label>
+      <div id="status" class="status disconnected"><span class="dot"></span>Disconnected</div>
+    </div>
+    <div style="text-align:right;">
+      <label>User ID</label>
+      <div id="userId" style="color:#a78bfa;font-size:0.85rem;">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label style="margin-bottom:8px;">Notification log</label>
+    <ul id="log">
+      <li><span class="sys">Waiting for notifications…</span></li>
+    </ul>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:5001';
+    let connection = null;
+
+    const TURKISH_NAMES = ['Ahmet Yılmaz','Mehmet Kaya','Ayşe Demir','Fatma Çelik','Ali Şahin','Elif Arslan','Hüseyin Koç'];
+
+    document.getElementById('phone').value = '9053' + String(Date.now()).slice(-8);
+
+    function ts() { return new Date().toLocaleTimeString('en-GB', { hour12: false }); }
+
+    function log(html, cls) {
+      const ul = document.getElementById('log');
+      const placeholder = ul.querySelector('.sys');
+      if (placeholder) placeholder.parentElement.remove();
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="ts">${ts()}</span><span class="${cls ?? ''}">${html}</span>`;
+      ul.prepend(li);
+    }
+
+    function setStatus(state, text) {
+      const el = document.getElementById('status');
+      el.className = `status ${state}`;
+      el.innerHTML = `<span class="dot"></span>${text}`;
+    }
+
+    function setButtons(connected) {
+      document.getElementById('btnRegister').disabled = connected;
+      document.getElementById('btnLogin').disabled = connected;
+      document.getElementById('btnDisconnect').disabled = !connected;
+    }
+
+    async function apiFetch(path, body, token) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const r = await fetch(BASE + path, { method: 'POST', headers, body: JSON.stringify(body) });
+      let json = null;
+      try { json = await r.json(); } catch {}
+      return { status: r.status, json };
+    }
+
+    async function connectHub(token) {
+      if (connection) { await connection.stop(); connection = null; }
+
+      setStatus('connecting', 'Connecting…');
+
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl(`${BASE}/hubs/notifications?access_token=${token}`, {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets,
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+      connection.on('ReceiveNotification', (payload) => {
+        const rid = payload.resourceId ? ` <span class="rid">[${payload.resourceId}]</span>` : '';
+        log(`<span class="type">${payload.type}</span>${rid}`);
+      });
+
+      connection.onreconnecting(() => setStatus('connecting', 'Reconnecting…'));
+      connection.onreconnected(() => setStatus('connected', 'Connected'));
+      connection.onclose((err) => {
+        setStatus('disconnected', 'Disconnected');
+        setButtons(false);
+        if (err) log(`Closed: ${err.message}`, 'err');
+      });
+
+      try {
+        await connection.start();
+        setStatus('connected', 'Connected');
+        log('Hub connected', 'sys');
+        setButtons(true);
+      } catch (e) {
+        setStatus('error', 'Error');
+        log(`Connect failed: ${e.message}`, 'err');
+        setButtons(false);
+      }
+    }
+
+    document.getElementById('btnRegister').addEventListener('click', async () => {
+      const p = document.getElementById('phone').value.trim();
+      if (!p) { log('Enter a phone number.', 'err'); return; }
+      setButtons(true);
+
+      log('Sending registration OTP…', 'sys');
+      const otp = await apiFetch('/otp/registration', { phoneNumber: p, captchaToken: 'dummy' });
+      if (otp.status !== 204) {
+        log(`OTP failed: ${otp.status}`, 'err');
+        setButtons(false);
+        return;
+      }
+
+      log('Registering…', 'sys');
+      const seed = Math.floor(Math.random() * TURKISH_NAMES.length);
+      const reg = await apiFetch('/users/register/self', {
+        phoneNumber: p, otp: '123456',
+        fullName: TURKISH_NAMES[seed], birthDate: '20-06-2001', captchaToken: 'dummy',
+      });
+      if (reg.status !== 200) {
+        log(`Register failed: ${reg.status}`, 'err');
+        setButtons(false);
+        return;
+      }
+
+      document.getElementById('userId').textContent = reg.json?.userId ?? '(see hub)';
+      log(`Registered — user.registered notification incoming…`, 'sys');
+      await connectHub(reg.json?.accessToken);
+    });
+
+    document.getElementById('btnLogin').addEventListener('click', async () => {
+      const p = document.getElementById('phone').value.trim();
+      if (!p) { log('Enter a phone number.', 'err'); return; }
+      setButtons(true);
+
+      log('Sending login OTP…', 'sys');
+      const otp = await apiFetch('/otp/login', { phoneNumber: p, captchaToken: 'dummy' });
+      if (otp.status !== 204) {
+        log(`OTP failed: ${otp.status}`, 'err');
+        setButtons(false);
+        return;
+      }
+
+      log('Logging in…', 'sys');
+      const res = await apiFetch('/tokens', { phoneNumber: p, otp: '123456' });
+      if (res.status !== 200) {
+        log(`Login failed: ${res.status}`, 'err');
+        setButtons(false);
+        return;
+      }
+
+      document.getElementById('userId').textContent = res.json?.userId ?? '(see hub)';
+      log('Logged in.', 'sys');
+      await connectHub(res.json?.accessToken);
+    });
+
+    document.getElementById('btnDisconnect').addEventListener('click', async () => {
+      if (connection) { await connection.stop(); connection = null; }
+      document.getElementById('userId').textContent = '—';
+    });
+  </script>
+</body>
+</html>

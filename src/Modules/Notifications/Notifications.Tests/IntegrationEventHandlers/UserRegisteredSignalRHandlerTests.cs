@@ -4,7 +4,7 @@ using Common.IntegrationEvents;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Notifications.Application;
+using Notifications.Application.Hubs;
 using Notifications.Application.IntegrationEventHandlers;
 using NSubstitute;
 using Xunit;
@@ -12,16 +12,16 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Notifications.Tests.IntegrationEventHandlers;
 
-public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
+public sealed class UserRegisteredSignalRHandlerTests : IDisposable
 {
-    private readonly ISmsService _smsService;
+    private readonly INotificationDispatcher _dispatcher;
     private readonly FusionCache _cache;
-    private readonly UserRegisteredIntegrationEventHandler _handler;
+    private readonly UserRegisteredSignalRHandler _handler;
 
-    public UserRegisteredIntegrationEventHandlerTests()
+    public UserRegisteredSignalRHandlerTests()
     {
-        _smsService = Substitute.For<ISmsService>();
-        var logger = Substitute.For<ILogger<UserRegisteredIntegrationEventHandler>>();
+        _dispatcher = Substitute.For<INotificationDispatcher>();
+        var logger = Substitute.For<ILogger<UserRegisteredSignalRHandler>>();
         _cache = new FusionCache(new FusionCacheOptions());
         var cachingOptions = Options.Create(new CachingOptions
         {
@@ -35,7 +35,7 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
             },
             IdempotencyKeyDuration = TimeSpan.FromDays(1),
         });
-        _handler = new UserRegisteredIntegrationEventHandler(logger, _cache, cachingOptions, _smsService);
+        _handler = new UserRegisteredSignalRHandler(logger, _cache, cachingOptions, _dispatcher);
     }
 
     public void Dispose()
@@ -53,18 +53,21 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
     }
 
     [Fact]
-    public async Task Consume_WhenUserRegistered_SendsWelcomeSms()
+    public async Task Consume_WhenUserRegistered_DispatchesRealTimeNotification()
     {
         var userId = ApplicationUserId.New();
         var @event = new UserRegisteredIntegrationEvent(userId, "John Doe", "1234567890");
 
         await _handler.Consume(MakeContext(@event));
 
-        await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
+        await _dispatcher.Received(1).SendToUserAsync(
+            userId,
+            Arg.Is<NotificationPayload>(p => p.Type == "user.registered"),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Consume_SameEventIdTwice_ProcessesOnlyOnce()
+    public async Task Consume_SameEventIdTwice_DispatchesOnlyOnce()
     {
         var userId = ApplicationUserId.New();
         var @event = new UserRegisteredIntegrationEvent(userId, "Jane Doe", "0987654321");
@@ -72,6 +75,9 @@ public sealed class UserRegisteredIntegrationEventHandlerTests : IDisposable
         await _handler.Consume(MakeContext(@event));
         await _handler.Consume(MakeContext(@event));
 
-        await _smsService.Received(1).SendWelcomeAsync(@event.FullName, @event.PhoneNumber);
+        await _dispatcher.Received(1).SendToUserAsync(
+            userId,
+            Arg.Any<NotificationPayload>(),
+            Arg.Any<CancellationToken>());
     }
 }

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Notifications.Application\Notifications.Application.csproj" />
+    <ProjectReference Include="..\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\Common\Common.Tests\Common.Tests.csproj" />
   </ItemGroup>
 

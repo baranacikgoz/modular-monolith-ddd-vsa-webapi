@@ -12,4 +12,12 @@ internal static class NotificationsTelemetry
 
     public static readonly ActivitySource ActivitySource = new(ActivitySourceName);
     public static readonly Meter Meter = new(MeterName);
+
+    public static readonly UpDownCounter<long> ActiveConnections =
+        Meter.CreateUpDownCounter<long>("notifications.signalr.connections.active", "connections",
+            "Current number of active SignalR hub connections.");
+
+    public static readonly Counter<long> NotificationsSent =
+        Meter.CreateCounter<long>("notifications.signalr.sent", "notifications",
+            "Total real-time notifications dispatched via SignalR.");
 }

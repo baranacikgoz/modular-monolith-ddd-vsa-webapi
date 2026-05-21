@@ -11,7 +11,8 @@ SLNF_TESTS = ModularMonolith.Tests.slnf
         ef-add-IAM ef-add-Products ef-add-Outbox \
         ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all \
         perf perf-smoke perf-down \
-        perf-rider perf-rider-smoke perf-rider-down
+        perf-rider perf-rider-smoke perf-rider-down \
+        signalr-poc
 # ── Build & Test ──────────────────────────────────────────────────────────────
 
 build:
@@ -152,8 +153,13 @@ perf-down:
 # These targets build only mm.host and run k6 against the existing infra.
 # Before running: stop any natively-running app in Rider (free port 5001).
 
+signalr-poc:
+	@echo "Serving signalr-poc/ on http://localhost:8888 — open http://localhost:8888/signalr-poc.html"
+	python3 -m http.server 8888 --directory signalr-poc
+
 perf-rider:
 	@echo "Starting mm.host + k6 (Rider infra already running)..."
+	@docker rm -f mm.host 2>/dev/null || true
 	docker compose -f docker-compose.app.yml -f docker-compose.perf.yml up --build --abort-on-container-exit k6
 
 perf-rider-smoke:

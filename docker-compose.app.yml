@@ -44,6 +44,7 @@ services:
       - RabbitMqOptions__Port=5672
       - RabbitMqOptions__Username=guest
       - RabbitMqOptions__Password=guest
+      - CorsOptions__AllowedOrigins__0=http://localhost:8888
     healthcheck:
       test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1" ]
       interval: 10s

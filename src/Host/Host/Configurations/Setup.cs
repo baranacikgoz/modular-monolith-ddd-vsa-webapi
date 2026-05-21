@@ -27,6 +27,7 @@ internal static class Setup
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/reverseProxy");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/securityHeaders");
         AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/featureFlags");
+        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/signalR");
 
         configuration.AddEnvironmentVariables();
 
