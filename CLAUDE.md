@@ -74,12 +74,12 @@ src/Modules/{Module}/
 
 | Concern | How it works | Your rule |
 | :--- | :--- | :--- |
-| Outbox | `Aggregate.RaiseEvent(new MyEvent())`. `BaseDbContext` atomically writes to `OutboxMessages` + `AuditLog`. | Never publish to Kafka/MassTransit directly from C# app code. |
-| CDC | Debezium reads Postgres WAL → Kafka. MassTransit consumes Kafka. | **Never** write a Kafka producer in application code. |
+| Outbox | `Aggregate.RaiseEvent(new MyEvent())`. `BaseDbContext` atomically writes to `OutboxMessages` + `AuditLog`. `OutboxProcessor` polls and publishes via MassTransit over RabbitMQ. | Never call `IPublishEndpoint` directly from application code. |
+| Consumer Idempotency | `IntegrationEventHandlerBase` checks `processed_event:{event.Id}` in FusionCache before invoking `ProcessAsync`; writes the key with `IdempotencyKeyDuration` TTL on first execution. | Inherit `IntegrationEventHandlerBase<T>` for all `IConsumer<T>` implementations — never implement `IConsumer<T>` directly. |
 | Auditing | `AuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. | Do not set audit fields manually. |
 | Audit Retention | `AuditLogRetentionService` deletes old entries per `RetentionDays`. | Do not manually delete `AuditLog` entries. |
 
-Infrastructure stack: `mm.postgres` (logical WAL), `mm.kafka` (KRaft), `mm.debezium` (Postgres → Kafka).
+Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.aspire-dashboard`.
 
 ---
 
