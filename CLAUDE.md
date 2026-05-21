@@ -48,7 +48,7 @@ Never reach for grep, find, or Bash search as a first instinct. The graph knows 
 
 ### Module Project Structure
 
-Each module is split into separate projects:
+Full DDD modules (IAM, Products) are split into separate projects:
 
 ```
 src/Modules/{Module}/
@@ -58,6 +58,14 @@ src/Modules/{Module}/
   {Module}.Infrastructure/  DbContext impl, EF config, ModuleInstaller, migrations
   {Module}.Tests/           Integration + unit tests
 ```
+
+Infrastructure/worker modules use a simplified structure:
+
+| Module | Structure | Reason |
+| :--- | :--- | :--- |
+| Notifications | Application + Domain + Infrastructure + Tests (no Endpoints) | Consumer-only — no HTTP surface |
+| Outbox | Single `Outbox/` project + `Outbox.Tests/` | Internal worker, no domain model |
+| BackgroundJobs | Single `BackgroundJobs/` project + `BackgroundJobs.Tests/` | Internal worker, no domain model |
 
 ### Directory Layout
 
@@ -76,7 +84,7 @@ src/Modules/{Module}/
 | :--- | :--- | :--- |
 | Outbox | `Aggregate.RaiseEvent(new MyEvent())`. `BaseDbContext` atomically writes to `OutboxMessages` + `AuditLog`. `OutboxProcessor` polls and publishes via MassTransit over RabbitMQ. | Never call `IPublishEndpoint` directly from application code. |
 | Consumer Idempotency | `IntegrationEventHandlerBase` checks `processed_event:{event.Id}` in FusionCache before invoking `ProcessAsync`; writes the key with `IdempotencyKeyDuration` TTL on first execution. | Inherit `IntegrationEventHandlerBase<T>` for all `IConsumer<T>` implementations — never implement `IConsumer<T>` directly. |
-| Auditing | `AuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. | Do not set audit fields manually. |
+| Auditing | `ApplyAuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. | Do not set audit fields manually. |
 | Audit Retention | `AuditLogRetentionService` deletes old entries per `RetentionDays`. | Do not manually delete `AuditLog` entries. |
 
 Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.aspire-dashboard`.
@@ -307,10 +315,10 @@ make ef-add-IAM name=<Name>
 make ef-add-Products name=<Name>
 make ef-add-Outbox name=<Name>
 
-make ef-script-IAM from=<Prev>
-make ef-script-Products from=<Prev>
-make ef-script-Outbox from=<Prev>
-make ef-script-all from=<Prev>
+make ef-script-IAM from=<Prev> to=<TargetMigration>
+make ef-script-Products from=<Prev> to=<TargetMigration>
+make ef-script-Outbox from=<Prev> to=<TargetMigration>
+make ef-script-all from=<Prev> to=<TargetMigration>
 ```
 
 ---
