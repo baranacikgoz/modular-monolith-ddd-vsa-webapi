@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifications.Infrastructure.Hubs;
+using Notifications.Infrastructure.Otp;
 using Notifications.Infrastructure.Sms;
 using Notifications.Infrastructure.Telemetry;
 
@@ -20,6 +21,7 @@ public sealed class NotificationsModule : IModule
     {
         services.AddNotificationServices();
         services.AddNotificationsSignalR(configuration);
+        services.AddOtpServices();
     }
 
     public void UseModule(IApplicationBuilder app)

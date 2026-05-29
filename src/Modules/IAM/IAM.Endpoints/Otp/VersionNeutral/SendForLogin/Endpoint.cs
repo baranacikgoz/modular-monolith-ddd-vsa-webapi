@@ -1,14 +1,14 @@
+using System.Globalization;
 using Common.Application.Extensions;
 using Common.Application.FeatureManagement;
-using Common.Application.Options;
 using Common.Domain.ResultMonad;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
 using IAM.Application.Captcha.Services;
-using IAM.Application.Otp.Services;
 using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
 namespace IAM.Endpoints.Otp.VersionNeutral.SendForLogin;
@@ -29,10 +29,9 @@ internal static class Endpoint
 
     private static async Task<Result> SendOtp(
         Request request,
-        IOtpService otpService,
+        IInterModuleRequestClient<SendPhoneOtpRequest, SendPhoneOtpResponse> otpClient,
         ICaptchaService captchaService,
         IFeatureManager featureManager,
-        IOptions<OtpOptions> otpOptionsProvider,
         CancellationToken cancellationToken)
     {
         var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
@@ -40,19 +39,13 @@ internal static class Endpoint
             : Task.FromResult(Result.Success);
 
         return await captchaTask
-            .BindAsync(() => otpService.Generate())
-            .TapAsync(async otp => await otpService.StoreOtpAsync(
-                request.PhoneNumber,
-                otp,
-                OtpPurposes.Login,
-                TimeSpan.FromMinutes(otpOptionsProvider.Value.ExpirationInMinutes),
-                cancellationToken))
-            .TapAsync(async _ =>
+            .BindAsync(async () =>
             {
-                // Sending sms logic comes here...
-
-                // Simulate some delay for sending sms
-                await Task.Delay(100, cancellationToken);
+                await otpClient.SendAsync(
+                    new SendPhoneOtpRequest(request.PhoneNumber, OtpPurposes.Login,
+                        Language: CultureInfo.CurrentUICulture.TwoLetterISOLanguageName),
+                    cancellationToken);
+                return Result.Success;
             });
     }
 }

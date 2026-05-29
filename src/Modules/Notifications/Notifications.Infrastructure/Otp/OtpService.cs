@@ -3,7 +3,7 @@ using Common.Application.Options;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace IAM.Infrastructure.Identity.Services;
+namespace Notifications.Infrastructure.Otp;
 
 internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, IFusionCache cache)
     : OtpServiceBase(cache)
@@ -20,9 +20,6 @@ internal sealed class OtpService(IOptions<OtpOptions> otpOptionsProvider, IFusio
         var otp = new char[length];
         for (var i = 0; i < length; i++)
         {
-            // Use RandomNumberGenerator.GetInt32 to avoid modulo bias
-            // (buffer[i] % 10 would give digits 0-5 a ~10.16% chance vs ~9.77% for 6-9
-            // because 256 is not divisible by 10).
             otp[i] = (char)('0' + RandomNumberGenerator.GetInt32(0, 10));
         }
 

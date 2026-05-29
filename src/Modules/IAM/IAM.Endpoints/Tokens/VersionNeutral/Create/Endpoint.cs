@@ -3,7 +3,8 @@ using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
-using IAM.Application.Otp.Services;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
@@ -33,14 +34,18 @@ internal static class Endpoint
         Request request,
         IIAMDbContext dbContext,
         ITokenService tokenService,
-        IOtpService otpService,
+        IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse> otpClient,
         TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
 
-        return await otpService
-            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, OtpPurposes.Login, cancellationToken)
+        var verifyOtpResponse = await otpClient.SendAsync(
+            new VerifyPhoneOtpRequest(request.PhoneNumber, request.Otp, OtpPurposes.Login),
+            cancellationToken);
+
+        return await verifyOtpResponse
+            .ToResult()
             .BindAsync(() => dbContext
                 .Users
                 .TagWith(nameof(CreateTokens), request.PhoneNumber)

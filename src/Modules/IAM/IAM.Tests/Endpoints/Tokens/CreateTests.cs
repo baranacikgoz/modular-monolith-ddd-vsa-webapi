@@ -8,7 +8,6 @@ using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using IAM.Endpoints.Tokens.VersionNeutral.Create;
-using IAM.Infrastructure.Identity.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -46,7 +45,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
@@ -98,7 +97,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Pre-seed cache with the CORRECT otp
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
@@ -137,7 +136,7 @@ public class CreateTests : BaseIntegrationTest
         await db.SaveChangesAsync();
 
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
@@ -171,7 +170,7 @@ public class CreateTests : BaseIntegrationTest
 
         // Seed cache so OTP verification passes
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();

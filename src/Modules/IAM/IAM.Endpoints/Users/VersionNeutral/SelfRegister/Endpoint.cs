@@ -4,9 +4,10 @@ using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.FeatureManagement;
 using Common.Domain.ResultMonad;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
 using IAM.Application.Captcha.Services;
 using IAM.Application.Extensions;
-using IAM.Application.Otp.Services;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
@@ -37,7 +38,7 @@ internal static class Endpoint
     private static async Task<Result<Response>> RegisterAsync(
         Request request,
         UserManager<ApplicationUser> userManager,
-        IOtpService otpService,
+        IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse> otpClient,
         ICaptchaService captchaService,
         IIAMDbContext db,
         ITokenService tokenService,
@@ -50,21 +51,25 @@ internal static class Endpoint
             : Task.FromResult(Result.Success);
 
         return await captchaTask
-            .BindAsync(() => RegisterAndLoginAsync(request, userManager, otpService, db, tokenService, timeProvider,
+            .BindAsync(() => RegisterAndLoginAsync(request, userManager, otpClient, db, tokenService, timeProvider,
                 cancellationToken));
     }
 
-    private static Task<Result<Response>> RegisterAndLoginAsync(
+    private static async Task<Result<Response>> RegisterAndLoginAsync(
         Request request,
         UserManager<ApplicationUser> userManager,
-        IOtpService otpService,
+        IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse> otpClient,
         IIAMDbContext db,
         ITokenService tokenService,
         TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
-        return otpService
-            .VerifyThenRemoveOtpAsync(request.PhoneNumber, request.Otp, OtpPurposes.Registration, cancellationToken)
+        var verifyOtpResponse = await otpClient.SendAsync(
+            new VerifyPhoneOtpRequest(request.PhoneNumber, request.Otp, OtpPurposes.Registration),
+            cancellationToken);
+
+        return await verifyOtpResponse
+            .ToResult()
             .BindAsync(async () =>
             {
                 var user = ApplicationUser.Create(

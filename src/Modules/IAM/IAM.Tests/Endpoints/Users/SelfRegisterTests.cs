@@ -12,7 +12,6 @@ using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using IAM.Endpoints.Users.VersionNeutral.SelfRegister;
-using IAM.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,7 +56,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Pre-seed cache to bypass SMS OTP check
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
@@ -133,7 +132,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         const string otp = "123456";
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
@@ -166,7 +165,7 @@ public class SelfRegisterTests : BaseIntegrationTest
 
         // Seed the CORRECT otp but send a WRONG one
         var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0),
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();

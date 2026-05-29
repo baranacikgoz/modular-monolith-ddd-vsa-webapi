@@ -1,6 +1,10 @@
 {
   "OtpOptions": {
     "Length": 6,
-    "ExpirationInMinutes": 5
+    "ExpirationInMinutes": 5,
+    "SmsTemplates": {
+      "en": "Your verification code is: {0}. Do not share it with anyone.",
+      "tr": "Doğrulama kodunuz: {0}. Kimseyle paylaşmayın."
+    }
   }
 }
