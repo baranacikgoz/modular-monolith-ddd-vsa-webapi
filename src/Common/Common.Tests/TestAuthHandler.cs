@@ -53,6 +53,15 @@ public class TestAuthHandler(
             new("Permission", CustomActions.UpdateMy + CustomResources.ApplicationUsers),
         };
 
+        // Optional role claims — comma-separated header, e.g. "Basic,SystemAdmin".
+        if (Request.Headers.TryGetValue("X-Test-Roles", out var roles))
+        {
+            claims.AddRange(roles
+                .ToString()
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(role => new Claim(JwtClaimNames.Roles, role)));
+        }
+
         var identity = new ClaimsIdentity(claims, AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, AuthenticationScheme);

@@ -69,4 +69,19 @@ public static class CustomPermissions
             .Concat(_systemAdmin)
             .Select(r => r.Name)
             .ToFrozenSet();
+
+    private static readonly FrozenDictionary<string, IReadOnlySet<string>> _byRole =
+        new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
+        {
+            [CustomRoles.SystemAdmin] = SystemAdmin,
+            [CustomRoles.Basic] = Basic
+
+            // Populate as more roles are added
+        }.ToFrozenDictionary(StringComparer.Ordinal);
+
+    public static IReadOnlySet<string> ForRole(string role)
+        => _byRole.TryGetValue(role, out var permissions) ? permissions : FrozenSet<string>.Empty;
+
+    public static IReadOnlySet<string> ForRoles(IEnumerable<string> roles)
+        => roles.SelectMany(ForRole).ToFrozenSet(StringComparer.Ordinal);
 }

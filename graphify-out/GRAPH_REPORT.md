@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a84d808e`
+- Built from commit: `7965ebd5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -366,7 +366,7 @@ Nodes (10): AuditableEntityConfiguration, ApplicationRoleConfig, ApplicationUser
 
 ### Community 14 - "IAM Module Registration"
 Cohesion: 0.1
-Nodes (11): RequestValidator, RequestValidator, CustomValidator, RequestValidator, BackgroundJobsOptions, BackgroundJobsOptionsValidator, RequestValidator, RequestValidator (+3 more)
+Nodes (11): RequestValidator, RequestValidator, CustomValidator, RequestValidator, DatabaseOptions, DatabaseOptionsValidator, RequestValidator, RequestValidator (+3 more)
 
 ### Community 15 - "Captcha Service"
 Cohesion: 0.17
@@ -386,11 +386,11 @@ Nodes (3): BackgroundJobsModule, ICoreModule, OutboxModule
 
 ### Community 20 - "FluentValidation Request Validators"
 Cohesion: 0.12
-Nodes (5): BaseIntegrationTest, ClientKeyGetTests, GetTests, CreateTests, CheckRegistrationTests
+Nodes (5): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, CreateTests, GetTests
 
 ### Community 21 - "REPR Endpoint Handlers"
 Cohesion: 0.12
-Nodes (5): Faker, AuditLogTests, CreateTests, GetTests, MeGetTests
+Nodes (5): Faker, ActivateTests, CheckRegistrationTests, GetTests, MeGetTests
 
 ### Community 22 - "BackgroundJobs Module"
 Cohesion: 0.13
@@ -441,12 +441,12 @@ Cohesion: 0.2
 Nodes (4): InterModuleRequestHandler, GetSeedUserIdsRequestHandler, SendPhoneOtpRequestHandler, VerifyPhoneOtpRequestHandler
 
 ### Community 47 - "Community 47"
-Cohesion: 0.22
-Nodes (5): Constants, int, PaginationRequestValidator, Constants, Constants
-
-### Community 48 - "Community 48"
 Cohesion: 0.25
 Nodes (4): MassTransitInterModuleRequestClient, InProcessSendOtpClient, InProcessVerifyOtpClient, IInterModuleRequestClient
+
+### Community 48 - "Community 48"
+Cohesion: 0.22
+Nodes (5): Constants, int, PaginationRequestValidator, Constants, Constants
 
 ### Community 51 - "Community 51"
 Cohesion: 0.28
@@ -464,7 +464,7 @@ Nodes (3): HealthCheckTests, SanityTests, HttpClient
 Cohesion: 0.29
 Nodes (3): IHealthCheck, ConditionalRabbitMqHealthCheck, Setup
 
-### Community 60 - "Community 60"
+### Community 59 - "Community 59"
 Cohesion: 0.29
 Nodes (3): IntegrationTestFactory, PostgreSqlContainer, WebApplicationFactory
 
@@ -472,11 +472,11 @@ Nodes (3): IntegrationTestFactory, PostgreSqlContainer, WebApplicationFactory
 Cohesion: 0.25
 Nodes (4): PermissionPolicyProvider, PermissionRequirement, IAuthorizationPolicyProvider, IAuthorizationRequirement
 
-### Community 64 - "Community 64"
+### Community 63 - "Community 63"
 Cohesion: 0.25
 Nodes (4): AggregateTests, object, Result, TAggregate
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 0.25
 Nodes (4): CaptchaErrors, Error, IdentityErrors, OtpErrors
 
@@ -490,11 +490,11 @@ Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
 ### Community 75 - "Community 75"
 Cohesion: 0.29
-Nodes (4): BaseIntegrationTest, IntegrationTestCollection, IAsyncLifetime, Respawner
+Nodes (4): HostCollection, IntegrationTestCollection, ICollectionFixture, IntegrationTestCollection
 
 ### Community 77 - "Community 77"
 Cohesion: 0.29
-Nodes (4): HostCollection, IntegrationTestCollection, ICollectionFixture, IntegrationTestCollection
+Nodes (4): BaseIntegrationTest, IntegrationTestCollection, IAsyncLifetime, Respawner
 
 ### Community 81 - "Community 81"
 Cohesion: 0.33
@@ -514,11 +514,11 @@ Nodes (5): CachingEntryDefaults, CachingOptions, CachingOptionsValidator, Redis,
 
 ### Community 91 - "Community 91"
 Cohesion: 0.33
-Nodes (4): CustomRoles, CustomPermissions, HashSet, IReadOnlySet
+Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
 
 ### Community 92 - "Community 92"
 Cohesion: 0.33
-Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
+Nodes (4): CustomRoles, CustomPermissions, HashSet, IReadOnlySet
 
 ### Community 98 - "Community 98"
 Cohesion: 0.33
@@ -528,9 +528,9 @@ Nodes (3): IClassFixture, OutboxBackoffTests, OutboxTestWebAppFactory
 Cohesion: 0.33
 Nodes (3): IdentityDbContext, IIAMDbContext, IAMDbContext
 
-### Community 110 - "Community 110"
+### Community 111 - "Community 111"
 Cohesion: 0.4
-Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
+Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator
 
 ### Community 112 - "Community 112"
 Cohesion: 0.4
@@ -538,17 +538,17 @@ Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
 ### Community 113 - "Community 113"
 Cohesion: 0.4
-Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator
+Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
 
-### Community 114 - "Community 114"
+### Community 115 - "Community 115"
 Cohesion: 0.4
 Nodes (3): DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper
 
-### Community 123 - "Community 123"
+### Community 124 - "Community 124"
 Cohesion: 0.4
 Nodes (3): BaseDbContext, IProductsDbContext, ProductsDbContext
 
-### Community 127 - "Community 127"
+### Community 128 - "Community 128"
 Cohesion: 0.4
 Nodes (3): IDbContext, IIAMDbContext, IProductsDbContext
 
@@ -564,11 +564,11 @@ Nodes (3): RecurringBackgroundJobsService, IRecurringBackgroundJobs, RecurringJo
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `string` connect `IAM Core Services` to `Community 33`, `Product Data Seeding`, `Community 102`, `K6 Load Testing`, `Community 72`, `IAM Domain Types & Application User`, `EF Entity Configurations`, `Community 48`, `Outbox Processor Worker`, `Community 148`, `Community 116`, `Community 52`, `Community 57`, `Community 91`, `Community 92`, `Community 63`, `Rate Limiting Policies`, `Community 31`?**
+- **Why does `string` connect `IAM Core Services` to `Community 65`, `Community 33`, `Product Data Seeding`, `Community 102`, `K6 Load Testing`, `Community 72`, `IAM Domain Types & Application User`, `Community 47`, `EF Entity Configurations`, `Outbox Processor Worker`, `Community 116`, `Community 149`, `Community 52`, `Community 57`, `Community 91`, `Community 92`, `Rate Limiting Policies`, `Community 31`?**
   _High betweenness centrality (0.138) - this node is a cross-community bridge._
-- **Why does `int` connect `Community 47` to `DDD Aggregate Root Core`, `Community 101`, `Community 48`, `Community 122`, `Community 31`?**
+- **Why does `int` connect `Community 48` to `DDD Aggregate Root Core`, `Community 101`, `Community 47`, `Community 123`, `Community 31`?**
   _High betweenness centrality (0.065) - this node is a cross-community bridge._
-- **Why does `ProductTests` connect `Community 31` to `IAM Core Services`, `Community 47`?**
+- **Why does `ProductTests` connect `Community 31` to `Community 48`, `IAM Core Services`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **What connects `Host`, `Program`, `CustomRateLimitingOptions` to the rest of the system?**
   _109 weakly-connected nodes found - possible documentation gaps or missing edges._

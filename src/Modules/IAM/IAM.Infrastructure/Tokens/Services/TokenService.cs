@@ -2,6 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using Common.Application.Auth;
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using IAM.Application.Tokens.Services;
@@ -15,13 +17,14 @@ internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenSer
     public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now,
         ApplicationUserId userId, ICollection<string> roles)
     {
-        var claims = new List<Claim>(2 + roles.Count)
+        var claims = new List<Claim>(3)
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            // Emit a single JSON-array claim so the wire shape is always ["..."] — even for one role.
+            new(JwtClaimNames.Roles, JsonSerializer.Serialize(roles), JsonClaimValueTypes.JsonArray)
+        };
 
         var accessTokenExpiresAt = now.AddMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes);
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptionsProvider.Value.Secret));

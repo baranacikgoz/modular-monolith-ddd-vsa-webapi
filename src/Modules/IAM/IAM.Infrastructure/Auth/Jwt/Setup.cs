@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
@@ -32,6 +33,8 @@ internal static class Setup
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
+                // Keep wire claim names verbatim ("role") instead of remapping to the long Microsoft URIs.
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -41,7 +44,7 @@ internal static class Setup
                     ValidateLifetime = true,
                     ValidAudience = jwtOptions.Audience,
                     ValidateAudience = true,
-                    RoleClaimType = ClaimTypes.Role,
+                    RoleClaimType = JwtClaimNames.Roles,
                     ClockSkew = TimeSpan.Zero
                 };
 

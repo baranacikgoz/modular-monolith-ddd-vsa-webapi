@@ -17,7 +17,7 @@ internal sealed class CurrentUser : ICurrentUser
             ? DefaultIdType.Empty
             : DefaultIdType.Parse(IdAsString));
         Roles = isAuthenticated
-            ? user?.FindAll(ClaimTypes.Role).Select(x => x.Value).ToList() ?? []
+            ? user?.FindAll(JwtClaimNames.Roles).Select(x => x.Value).ToList() ?? []
             : [];
     }
 
@@ -28,30 +28,5 @@ internal sealed class CurrentUser : ICurrentUser
     public ICollection<string> Roles { get; }
 
     public bool HasPermission(string permission)
-    {
-        foreach (var role in Roles)
-        {
-            switch (role)
-            {
-                case CustomRoles.SystemAdmin:
-                    if (CustomPermissions.SystemAdmin.Contains(permission))
-                    {
-                        return true;
-                    }
-
-                    break;
-                case CustomRoles.Basic:
-                    if (CustomPermissions.Basic.Contains(permission))
-                    {
-                        return true;
-                    }
-
-                    break;
-
-                // Populate as more roles are added
-            }
-        }
-
-        return false;
-    }
+        => Roles.Any(role => CustomPermissions.ForRole(role).Contains(permission));
 }

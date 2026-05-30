@@ -28,6 +28,9 @@ internal static class Endpoint
         IIAMDbContext dbContext,
         CancellationToken cancellationToken)
     {
+        var roles = currentUser.Roles.ToList();
+        var permissions = CustomPermissions.ForRoles(roles).ToList();
+
         return await dbContext
             .Users
             .AsNoTracking()
@@ -42,7 +45,9 @@ internal static class Endpoint
                 CreatedBy = u.CreatedBy,
                 CreatedOn = u.CreatedOn,
                 LastModifiedBy = u.LastModifiedBy,
-                LastModifiedOn = u.LastModifiedOn
+                LastModifiedOn = u.LastModifiedOn,
+                Roles = roles,
+                Permissions = permissions
             })
             .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken);
     }
