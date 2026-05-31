@@ -39,6 +39,11 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .IsRequired();
 
         builder
+            .Navigation(s => s.Products)
+            .HasField("_products")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
             .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
             .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(Store.Name), nameof(Store.Description), nameof(Store.Address))
             .HasColumnName(FullTextSearch.SearchVectorColumnName);

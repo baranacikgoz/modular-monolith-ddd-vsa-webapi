@@ -35,6 +35,11 @@ internal sealed class ProductTemplateConfiguration : AuditableEntityConfiguratio
             .IsRequired();
 
         builder
+            .Navigation(pt => pt.Products)
+            .HasField("_products")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
             .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
             .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ProductTemplate.Brand), nameof(ProductTemplate.Model), nameof(ProductTemplate.Color))
             .HasColumnName(FullTextSearch.SearchVectorColumnName);
