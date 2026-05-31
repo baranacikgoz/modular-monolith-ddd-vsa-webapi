@@ -140,7 +140,16 @@ public static partial class OutboxSaveHelper
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync(cancellationToken);
+            // Use CancellationToken.None — cancelled request must still rollback.
+            // Wrap so a broken/already-aborted transaction doesn't mask the original error.
+            try
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+            }
+            catch (Exception rollbackEx)
+            {
+                LogRollbackError(logger, rollbackEx);
+            }
             LogSavingError(logger, ex);
             throw;
         }
@@ -152,6 +161,9 @@ public static partial class OutboxSaveHelper
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Found {EventCount} domain events. Executing atomic save with Outbox and AuditLog.")]
     private static partial void LogFoundDomainEvents(ILogger logger, int eventCount);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Error rolling back transaction after save failure.")]
+    private static partial void LogRollbackError(ILogger logger, Exception ex);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Error saving changes to the database.")]
     private static partial void LogSavingError(ILogger logger, Exception ex);

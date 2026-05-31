@@ -93,7 +93,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         Id = @event.UserId;
         FullName = @event.FullName;
         PhoneNumber = @event.PhoneNumber;
-        UserName = @event.PhoneNumber; // We use PhoneNumber as UserName
+        UserName = @event.PhoneNumber.TrimStart('+'); // UserName must be digits-only per AllowedUserNameCharacters
         BirthDate = @event.BirthDate;
     }
 

@@ -51,6 +51,44 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
     }
 }
 
+internal sealed class ResultToCreatedResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env)
+    : IEndpointFilter
+{
+    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    {
+        var resultObj = await next(context);
+
+        if (resultObj is not Result<T> result)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ResultToCreatedResponseTransformer<T>)} can only be used with Result<{nameof(T)}> type.");
+        }
+
+        return result.Match(
+            value => Results.Created((Uri?)null, value),
+            error =>
+            {
+                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+
+                var problemDetails = new ProblemDetails
+                {
+                    Status = (int)error.StatusCode,
+                    Title = localizer.LocalizeFromError(error),
+                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
+                };
+
+                problemDetails.AddErrorKey(error.Key);
+                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
+
+                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+
+                return Results.Problem(problemDetails);
+            }
+        );
+    }
+}
+
 internal sealed class ResultToResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env)
     : IEndpointFilter
 {

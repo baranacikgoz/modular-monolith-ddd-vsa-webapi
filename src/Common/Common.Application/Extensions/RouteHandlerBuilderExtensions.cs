@@ -15,4 +15,9 @@ public static class RouteHandlerBuilderExtensions
     {
         return builder.AddEndpointFilter<ResultToResponseTransformer<T>>();
     }
+
+    public static RouteHandlerBuilder TransformResultToCreatedResponse<T>(this RouteHandlerBuilder builder)
+    {
+        return builder.AddEndpointFilter<ResultToCreatedResponseTransformer<T>>();
+    }
 }

@@ -3,16 +3,13 @@ using Common.Application.Localization.Resources;
 using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Npgsql;
 
 namespace Host.Middlewares;
 
 internal sealed partial class GlobalExceptionHandlingMiddleware(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
-    IResxLocalizer localizer,
-    IStringLocalizer<ResxLocalizer> stringLocalizer
+    IResxLocalizer localizer
 ) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -31,83 +28,43 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         }
         catch (UniqueConstraintException ex)
         {
-            string? columnName = null;
-            if (ex.ConstraintProperties is { Count: > 0 })
-            {
-                columnName = ex.ConstraintProperties[0];
-            }
-
             await HandleExceptionAsync(
                 context,
                 ex,
-                (int)HttpStatusCode.BadRequest,
-                columnName is not null
-                    ? $"{stringLocalizer[columnName]} {localizer.UniqueConstraintException}"
-                    : localizer.UniqueConstraintException);
+                (int)HttpStatusCode.Conflict,
+                localizer.UniqueConstraintException);
         }
         catch (CannotInsertNullException ex)
         {
-            string? columnName = null;
-            if (ex.InnerException is PostgresException e && !string.IsNullOrEmpty(e.ColumnName))
-            {
-                columnName = e.ColumnName;
-            }
-
             await HandleExceptionAsync(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
-                columnName is not null
-                    ? $"{stringLocalizer[columnName]} {localizer.CannotInsertNullException}"
-                    : localizer.CannotInsertNullException);
+                localizer.CannotInsertNullException);
         }
         catch (MaxLengthExceededException ex)
         {
-            string? columnName = null;
-            if (ex.InnerException is PostgresException e && !string.IsNullOrEmpty(e.ColumnName))
-            {
-                columnName = e.ColumnName;
-            }
-
             await HandleExceptionAsync(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
-                columnName is not null
-                    ? $"{stringLocalizer[columnName]} {localizer.MaxLengthExceededException}"
-                    : localizer.MaxLengthExceededException);
+                localizer.MaxLengthExceededException);
         }
         catch (NumericOverflowException ex)
         {
-            string? columnName = null;
-            if (ex.InnerException is PostgresException e && !string.IsNullOrEmpty(e.ColumnName))
-            {
-                columnName = e.ColumnName;
-            }
-
             await HandleExceptionAsync(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
-                columnName is not null
-                    ? $"{stringLocalizer[columnName]} {localizer.NumericOverflowException}"
-                    : localizer.NumericOverflowException);
+                localizer.NumericOverflowException);
         }
         catch (ReferenceConstraintException ex)
         {
-            string? columnName = null;
-            if (ex.InnerException is PostgresException e && !string.IsNullOrEmpty(e.ColumnName))
-            {
-                columnName = e.ColumnName;
-            }
-
             await HandleExceptionAsync(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
-                columnName is not null
-                    ? $"{stringLocalizer[columnName]} {localizer.ReferenceConstraintException}"
-                    : localizer.ReferenceConstraintException);
+                localizer.ReferenceConstraintException);
         }
         catch (DbUpdateException
                ex) // Should not happen because we use EntityFramework.Exceptions and ".UseExceptionProcessor()"in the DbContext setup, but just in case

@@ -283,6 +283,10 @@
     "mtime": 1779899541.6691988,
     "hash": "100d791036e9d67ce6d2109c775ee17d"
   },
+  "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Auth/JwtClaimNames.cs": {
+    "mtime": 1780158054.6728811,
+    "hash": "790cc5fabc3cd5eed32b72666c80c3c5"
+  },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Auth/CustomPermissons.cs": {
     "mtime": 1779899541.668993,
     "hash": "4b6616855a775bedf863bda87a28116b"
@@ -300,8 +304,8 @@
     "hash": "f768208db251f4b1a798afd836cec925"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Auth/Permissions.cs": {
-    "mtime": 1779899541.6691487,
-    "hash": "228f4057093e2cc05b250416d9d53add"
+    "mtime": 1780157405.9855354,
+    "hash": "fad9700573931aaa4e2978d2f30ab7e3"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs": {
     "mtime": 1779899541.669735,
@@ -452,8 +456,8 @@
     "hash": "f1e3afa9c95d036305efb564cb0b6717"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Auth/Services/CurrentUser.cs": {
-    "mtime": 1779899541.674168,
-    "hash": "07d46902f9311fc6a1f24a2a7ef1d110"
+    "mtime": 1780158074.368511,
+    "hash": "854b0190097f1d3ea616b69b71617e81"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Extensions/HttpContextExtensions.cs": {
     "mtime": 1779899541.6746533,
@@ -596,8 +600,8 @@
     "hash": "7bcbdf2b6c500a9c4db6b46bf3c8d6f1"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Tests/TestAuthHandler.cs": {
-    "mtime": 1779899541.6788712,
-    "hash": "c7874162d2eb0390b0d17ecad15e4457"
+    "mtime": 1780158078.2072787,
+    "hash": "eb013d5f0715d5a5576f22726e7f8ea2"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Tests/AllowAllAuthorizationHandler.cs": {
     "mtime": 1779899541.677791,
@@ -1324,8 +1328,8 @@
     "hash": "a6189fda2d22da8b6ce82b9490d2e5a1"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Infrastructure/Auth/Jwt/Setup.cs": {
-    "mtime": 1779899541.6881638,
-    "hash": "1471cd9b9259e58cbcc48ee4fc4ebf07"
+    "mtime": 1780158070.4599907,
+    "hash": "fbc3280165285fc563cf6c9f114eedd8"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Infrastructure/Auth/Services/RoleService.cs": {
     "mtime": 1779899541.688363,
@@ -1500,12 +1504,12 @@
     "hash": "2b5ed1654f3551f3a08624a12a885664"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Response.cs": {
-    "mtime": 1779899541.6873255,
-    "hash": "f0e21b27d95cd0daedff7df936d54157"
+    "mtime": 1780157417.4325194,
+    "hash": "23f726dba098d7451767f24690dbe6df"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Endpoint.cs": {
-    "mtime": 1779899541.68726,
-    "hash": "10b5b9a3db7574df1fbff8c8b2fc0239"
+    "mtime": 1780157426.0918877,
+    "hash": "24f0f5d25c2859cd5ef886aa4e15c1ab"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/CheckRegistration/Request.cs": {
     "mtime": 1779899541.6868286,
@@ -1640,8 +1644,8 @@
     "hash": "f6b95370dd14d1fce2eed2e09fa7459a"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Tests/Endpoints/Users/MeGetTests.cs": {
-    "mtime": 1779899541.6923091,
-    "hash": "d30350d172330574f9b9d46a31127197"
+    "mtime": 1780157463.2553053,
+    "hash": "1144bfb81d4c7e24186ccbcf80dd859d"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/IAM/IAM.Tests/Endpoints/Users/SelfRegisterTests.cs": {
     "mtime": 1780024348.3090324,
