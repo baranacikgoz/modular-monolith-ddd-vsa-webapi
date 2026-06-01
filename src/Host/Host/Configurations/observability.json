@@ -5,6 +5,7 @@
     "MinimumLevel": "Debug",
     "MinimumLevelOverrides": {
       "Microsoft": "Warning",
+      "Microsoft.AspNetCore.HttpLogging": "Information",
       "Hangfire": "Warning",
       "Microsoft.Hosting.Lifetime": "Information",
       "Microsoft.EntityFrameworkCore": "Warning",

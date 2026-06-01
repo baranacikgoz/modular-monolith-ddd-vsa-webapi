@@ -36,7 +36,7 @@ internal static partial class Setup
             .AddVersioning()
             .AddHttpContextAccessor()
             .AddCustomForwardedHeaders(configuration)
-            .AddRequestResponseLoggingMiddleware()
+            .AddHttpRequestLogging()
             .AddGlobalExceptionHandlingMiddleware()
             .AddCustomizedProblemDetails(env)
             .AddEndpointsApiExplorer()
@@ -56,7 +56,7 @@ internal static partial class Setup
         app
             .UseForwardedHeaders()
             .UseMiddleware<SecurityHeadersMiddleware>()
-            .UseRequestResponseLoggingMiddleware()
+            .UseHttpRequestLogging()
             .UseCommonResxLocalization()
             .UseRateLimiter()
             .UseCors()

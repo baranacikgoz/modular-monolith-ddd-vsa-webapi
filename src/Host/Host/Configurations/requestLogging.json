@@ -1,0 +1,68 @@
+{
+  "RequestLoggingOptions": {
+    "LogRequestBody": true,
+    "LogResponseBody": true,
+    "RequestBodyLogLimitBytes": 4096,
+    "ResponseBodyLogLimitBytes": 4096,
+    "LogQueryString": true,
+    "ExcludedPathPrefixes": [
+      "/health",
+      "/metrics",
+      "/swagger"
+    ],
+    "SensitiveRequestBodyPaths": [
+      {
+        "Path": "/tokens",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/otp/login",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/otp/registration",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/users/register/self",
+        "Methods": [
+          "POST"
+        ]
+      }
+    ],
+    "SensitiveResponseBodyPaths": [
+      {
+        "Path": "/tokens",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/users/register/self",
+        "Methods": [
+          "POST"
+        ]
+      }
+    ],
+    "SensitiveQueryParamPaths": [
+      {
+        "Path": "/users/check-registration",
+        "Methods": [
+          "GET"
+        ]
+      },
+      {
+        "Path": "/users/search",
+        "Methods": [
+          "GET"
+        ]
+      }
+    ]
+  }
+}

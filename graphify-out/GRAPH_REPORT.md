@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1910 nodes · 2042 edges · 318 communities (117 shown, 201 thin omitted)
+- 1910 nodes · 2042 edges · 317 communities (117 shown, 200 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 43 edges (avg confidence: 0.82)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7f689dbd`
+- Built from commit: `ea65ad38`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -255,7 +255,7 @@
 - [[_COMMUNITY_Community 238|Community 238]]
 - [[_COMMUNITY_Community 239|Community 239]]
 - [[_COMMUNITY_Community 240|Community 240]]
-- [[_COMMUNITY_Community 241|Community 241]]
+- [[_COMMUNITY_Community 242|Community 242]]
 - [[_COMMUNITY_Community 243|Community 243]]
 - [[_COMMUNITY_Community 244|Community 244]]
 - [[_COMMUNITY_Community 245|Community 245]]
@@ -274,10 +274,9 @@
 - [[_COMMUNITY_Community 258|Community 258]]
 - [[_COMMUNITY_Community 259|Community 259]]
 - [[_COMMUNITY_Community 260|Community 260]]
-- [[_COMMUNITY_Community 261|Community 261]]
+- [[_COMMUNITY_Community 314|Community 314]]
 - [[_COMMUNITY_Community 315|Community 315]]
 - [[_COMMUNITY_Community 316|Community 316]]
-- [[_COMMUNITY_Community 317|Community 317]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `string` - 39 edges
@@ -308,7 +307,7 @@
 - **Performance testing stack: mm.host + k6 + Aspire Dashboard OTel** — dockercomposeperf_mmk6, dockercompose_mmhost, dockercompose_mmaspiredashboard [EXTRACTED 1.00]
 - **Cross-module communication: IntegrationEvents (async) and IInterModuleRequestClient (sync) over RabbitMQ via MassTransit** — architecture_integrationevents, architecture_intermodulerequestclient, architecture_masstrансittermodulerequestclient, dockercompose_mmrabbitmq [EXTRACTED 1.00]
 
-## Communities (318 total, 201 thin omitted)
+## Communities (317 total, 200 thin omitted)
 
 ### Community 0 - "Feature Management & Observability Tests"
 Cohesion: 0.05
@@ -351,24 +350,24 @@ Cohesion: 0.09
 Nodes (9): FusionCache, SignalRNotificationDispatcher, INotificationDispatcher, UserRegisteredSignalRHandlerTests, UserRegisteredSmsHandlerTests, ISmsService, DummySmsService, UserRegisteredSignalRHandler (+1 more)
 
 ### Community 11 - "SignalR Notifications Hub"
+Cohesion: 0.09
+Nodes (13): RequestValidator, RequestValidator, CustomValidator, RequestValidator, JwtOptions, JwtOptionsValidator, ResxLocalizationOptions, ResxLocalizationOptionsValidator (+5 more)
+
+### Community 12 - "Identity Error Localization"
 Cohesion: 0.11
 Nodes (14): CustomActions, CustomResources, CustomClaims, JwtClaimNames, Checkout, FeatureFlags, IAM, Notifications (+6 more)
 
-### Community 12 - "Identity Error Localization"
+### Community 13 - "Auth Policies & Feature Flags"
 Cohesion: 0.09
 Nodes (6): IamModule, IModule, ICoreModule, IModule, NotificationsModule, ProductsModule
 
-### Community 13 - "Auth Policies & Feature Flags"
+### Community 14 - "IAM Module Registration"
 Cohesion: 0.12
 Nodes (6): double, ICaptchaService, CachedCaptchaService, DummyCaptchaService, ReCaptchaResponse, ReCaptchaService
 
-### Community 14 - "IAM Module Registration"
+### Community 15 - "Captcha Service"
 Cohesion: 0.12
 Nodes (10): AuditableEntityConfiguration, ApplicationRoleConfig, ApplicationUserConfig, IdentityRoleClaimConfig, IdentityUserClaimConfig, IdentityUserLoginConfig, IdentityUserRoleConfig, IdentityUserTokenConfig (+2 more)
-
-### Community 15 - "Captcha Service"
-Cohesion: 0.1
-Nodes (11): RequestValidator, RequestValidator, CustomValidator, RequestValidator, ModulesOptions, ModulesOptionsValidator, RequestValidator, RequestValidator (+3 more)
 
 ### Community 16 - "EF Entity Configurations"
 Cohesion: 0.17
@@ -380,11 +379,11 @@ Nodes (4): IMiddleware, EnrichLogsWithUserInfoMiddleware, GlobalExceptionHandlin
 
 ### Community 19 - "HTTP Middleware Pipeline"
 Cohesion: 0.12
-Nodes (5): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, CreateTests, DeactivateTests
+Nodes (5): Faker, CreateTests, MyGetTests, GetTests, MeGetTests
 
 ### Community 20 - "FluentValidation Request Validators"
 Cohesion: 0.12
-Nodes (5): Faker, ActivateTests, CheckRegistrationTests, GetTests, MeGetTests
+Nodes (5): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, GetTests, CheckRegistrationTests
 
 ### Community 21 - "REPR Endpoint Handlers"
 Cohesion: 0.16
@@ -486,7 +485,7 @@ Nodes (3): BackgroundJobsServiceTests, BackgroundJobsService, IBackgroundJobClie
 Cohesion: 0.48
 Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
-### Community 71 - "Community 71"
+### Community 70 - "Community 70"
 Cohesion: 0.29
 Nodes (4): Histogram, long, ObservableGauge, OutboxTelemetry
 
@@ -496,11 +495,11 @@ Nodes (3): IAggregateRoot, AuditableEntity, IAuditableEntity
 
 ### Community 79 - "Community 79"
 Cohesion: 0.29
-Nodes (4): HostCollection, IntegrationTestCollection, ICollectionFixture, IntegrationTestCollection
+Nodes (4): BaseIntegrationTest, IntegrationTestCollection, IAsyncLifetime, Respawner
 
 ### Community 80 - "Community 80"
 Cohesion: 0.29
-Nodes (4): BaseIntegrationTest, IntegrationTestCollection, IAsyncLifetime, Respawner
+Nodes (4): HostCollection, IntegrationTestCollection, ICollectionFixture, IntegrationTestCollection
 
 ### Community 82 - "Community 82"
 Cohesion: 0.29
@@ -510,17 +509,17 @@ Nodes (3): IDatabaseSeeder, IamDatabaseSeeder, ProductsDatabaseSeeder
 Cohesion: 0.29
 Nodes (3): IntegrationTestWebAppFactory, IntegrationTestFactory, IntegrationTestWebAppFactory
 
-### Community 90 - "Community 90"
+### Community 89 - "Community 89"
 Cohesion: 0.33
 Nodes (5): CachingEntryDefaults, CachingOptions, CachingOptionsValidator, Redis, RedisValidator
 
 ### Community 91 - "Community 91"
-Cohesion: 0.33
-Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
-
-### Community 92 - "Community 92"
 Cohesion: 0.4
 Nodes (3): ResultToCreatedResponseTransformer, ResultToResponseTransformer, IEndpointFilter
+
+### Community 92 - "Community 92"
+Cohesion: 0.33
+Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
 
 ### Community 97 - "Community 97"
 Cohesion: 0.33
@@ -532,7 +531,7 @@ Nodes (3): IdentityDbContext, IIAMDbContext, IAMDbContext
 
 ### Community 110 - "Community 110"
 Cohesion: 0.4
-Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
+Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
 
 ### Community 111 - "Community 111"
 Cohesion: 0.4
@@ -540,7 +539,7 @@ Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedW
 
 ### Community 112 - "Community 112"
 Cohesion: 0.4
-Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
+Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
 ### Community 113 - "Community 113"
 Cohesion: 0.4
@@ -561,16 +560,16 @@ Nodes (3): RecurringBackgroundJobsService, IRecurringBackgroundJobs, RecurringJo
 ## Knowledge Gaps
 - **110 isolated node(s):** `Host`, `Program`, `CustomRateLimitingOptions`, `FixedWindow`, `OutboxOptions` (+105 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **201 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **200 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `string` connect `SignalR Notifications Hub` to `Feature Management & Observability Tests`, `K6 Load Testing`, `Product Aggregate Domain`, `Host Integration Test Factory`, `Community 147`, `BackgroundJobs Module`, `Cross-Module Message Handlers`, `Community 32`, `Community 33`, `Community 44`, `Community 45`, `Community 51`, `Community 58`, `Community 70`, `Community 71`, `Community 198`, `Community 91`, `Community 102`, `Community 114`?**
+- **Why does `string` connect `Identity Error Localization` to `Feature Management & Observability Tests`, `K6 Load Testing`, `Product Aggregate Domain`, `Host Integration Test Factory`, `Community 147`, `BackgroundJobs Module`, `Cross-Module Message Handlers`, `Community 32`, `Community 33`, `Community 44`, `Community 45`, `Community 51`, `Community 58`, `Community 197`, `Community 70`, `Community 71`, `Community 92`, `Community 101`, `Community 114`?**
   _High betweenness centrality (0.137) - this node is a cross-community bridge._
-- **Why does `int` connect `Community 50` to `Community 32`, `Domain Errors & Aggregate Tests`, `Community 101`, `Community 51`, `Community 127`?**
+- **Why does `int` connect `Community 50` to `Community 32`, `Domain Errors & Aggregate Tests`, `Community 102`, `Community 51`, `Community 127`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `ProductTests` connect `Community 32` to `Community 50`, `SignalR Notifications Hub`?**
+- **Why does `ProductTests` connect `Community 32` to `Community 50`, `Identity Error Localization`?**
   _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **What connects `Host`, `Program`, `CustomRateLimitingOptions` to the rest of the system?**
   _110 weakly-connected nodes found - possible documentation gaps or missing edges._
