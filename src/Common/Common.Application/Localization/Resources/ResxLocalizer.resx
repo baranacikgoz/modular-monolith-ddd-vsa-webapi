@@ -155,6 +155,9 @@
   <data name="Some" xml:space="preserve">
     <value>Bir veya daha fazla hata oluştu.</value>
   </data>
+  <data name="ValidationErrors" xml:space="preserve">
+    <value>Bir veya daha fazla doğrulama hatası oluştu.</value>
+  </data>
   <data name="InvalidOtp" xml:space="preserve">
     <value>Kod hatalı veya süresi dolmuş.</value>
   </data>

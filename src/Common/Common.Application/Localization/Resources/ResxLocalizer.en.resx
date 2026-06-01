@@ -96,6 +96,9 @@
   <data name="Some" xml:space="preserve">
     <value>One or more errors occurred.</value>
   </data>
+  <data name="ValidationErrors" xml:space="preserve">
+    <value>One or more validation errors occurred.</value>
+  </data>
   <data name="InvalidOtp" xml:space="preserve">
     <value>Code is incorrect or expired.</value>
   </data>

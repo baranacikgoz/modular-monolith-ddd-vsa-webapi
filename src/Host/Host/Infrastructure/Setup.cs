@@ -9,10 +9,12 @@ using Common.Infrastructure.FeatureManagement;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Persistence;
 using Common.InterModuleRequests;
+using Common.Application.Localization.Resources;
 using FluentValidation;
 using Host.Middlewares;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Host.Infrastructure;
 
@@ -142,6 +144,12 @@ internal static partial class Setup
 
                 context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 context.ProblemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+
+                if (context.ProblemDetails is HttpValidationProblemDetails)
+                {
+                    var localizer = context.HttpContext.RequestServices.GetRequiredService<IResxLocalizer>();
+                    context.ProblemDetails.Title = localizer.ValidationErrors;
+                }
             };
         });
     }
