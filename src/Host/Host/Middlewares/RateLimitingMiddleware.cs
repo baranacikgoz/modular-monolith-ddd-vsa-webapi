@@ -21,7 +21,6 @@ internal static class RateLimitingMiddleware
             {
                 var customRateLimitingOptions = GetCustomRateLimitingOptions(configuration);
 
-                // all individual policies should have their own OnRejected, I guess this is fallback only ??? don't know at the moment.
                 opt.OnRejected = WriteTooManyRequestsToResponse();
 
                 opt.GlobalLimiter = GlobalRateLimiter(customRateLimitingOptions);

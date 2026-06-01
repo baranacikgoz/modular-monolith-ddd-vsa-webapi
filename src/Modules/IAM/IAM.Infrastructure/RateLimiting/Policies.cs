@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Net;
 using System.Threading.RateLimiting;
 using Common.Application.Options;
 using Microsoft.AspNetCore.RateLimiting;
@@ -10,28 +8,11 @@ public static partial class Policies
 {
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
-        yield return GlobalOnRejected;
         yield return SmsPolicy;
         yield return RegisterPolicy;
         yield return TokenCreatePolicy;
         yield return CheckRegistrationPolicy;
         yield return TokenRefreshPolicy;
-    }
-
-    private static void GlobalOnRejected(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
-    {
-        rateLimiter.OnRejected = static (context, _) =>
-        {
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-
-            if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-            {
-                context.HttpContext.Response.Headers.RetryAfter =
-                    ((int)retryAfter.TotalSeconds).ToString(CultureInfo.InvariantCulture);
-            }
-
-            return ValueTask.CompletedTask;
-        };
     }
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
