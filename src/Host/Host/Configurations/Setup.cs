@@ -5,39 +5,46 @@ internal static class Setup
     public static WebApplicationBuilder AddConfigurations(this WebApplicationBuilder builder)
     {
         const string configurationsDirectory = "Configurations";
-        var environmentName = builder.Environment.EnvironmentName;
         var configuration = builder.Configuration;
 
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/localization");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/jwt");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/database");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/otp");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/captcha");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/observability");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/requestLogging");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/rateLimiting");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/openApi");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/eventBus");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/outbox");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/backgroundJobs");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/caching");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/auditLog");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/modules");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/healthCheck");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/cors");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/reverseProxy");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/securityHeaders");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/featureFlags");
-        AddJsonFile(configuration, environmentName, $"{configurationsDirectory}/signalR");
+        AddJsonFile(configuration, $"{configurationsDirectory}/localization");
+        AddJsonFile(configuration, $"{configurationsDirectory}/jwt");
+        AddJsonFile(configuration, $"{configurationsDirectory}/database");
+        AddJsonFile(configuration, $"{configurationsDirectory}/otp");
+        AddJsonFile(configuration, $"{configurationsDirectory}/captcha");
+        AddJsonFile(configuration, $"{configurationsDirectory}/observability");
+        AddJsonFile(configuration, $"{configurationsDirectory}/requestLogging");
+        AddJsonFile(configuration, $"{configurationsDirectory}/rateLimiting");
+        AddJsonFile(configuration, $"{configurationsDirectory}/openApi");
+        AddJsonFile(configuration, $"{configurationsDirectory}/eventBus");
+        AddJsonFile(configuration, $"{configurationsDirectory}/outbox");
+        AddJsonFile(configuration, $"{configurationsDirectory}/backgroundJobs");
+        AddJsonFile(configuration, $"{configurationsDirectory}/caching");
+        AddJsonFile(configuration, $"{configurationsDirectory}/auditLog");
+        AddJsonFile(configuration, $"{configurationsDirectory}/modules");
+        AddJsonFile(configuration, $"{configurationsDirectory}/healthCheck");
+        AddJsonFile(configuration, $"{configurationsDirectory}/cors");
+        AddJsonFile(configuration, $"{configurationsDirectory}/reverseProxy");
+        AddJsonFile(configuration, $"{configurationsDirectory}/securityHeaders");
+        AddJsonFile(configuration, $"{configurationsDirectory}/featureFlags");
+        AddJsonFile(configuration, $"{configurationsDirectory}/signalR");
 
         configuration.AddEnvironmentVariables();
 
         return builder;
     }
 
-    private static void AddJsonFile(ConfigurationManager configuration, string environment, string filePath)
+    private static void AddJsonFile(ConfigurationManager configuration, string filePath)
     {
         configuration.AddJsonFile($"{filePath}.json", false, true);
-        configuration.AddJsonFile($"{filePath}.{environment}.json", true, true);
+
+        // Intentionally disabled: this repo has no HashiCorp Vault-like integration, so these
+        // settings must be materialized at deploy time using the same file names (no {environment}
+        // suffix). Using per-environment overrides makes that deploy-time materialization complex
+        // and confusing — one instance injected per deploy is fine.
+#pragma warning disable S125 // Sections of code should not be commented out — kept deliberately to document the disabled override
+        // var environment = builder.Environment.EnvironmentName;
+        // configuration.AddJsonFile($"{filePath}.{environment}.json", true, true);
+#pragma warning restore S125
     }
 }

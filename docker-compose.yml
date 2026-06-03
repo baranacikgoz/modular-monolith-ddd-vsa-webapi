@@ -12,6 +12,13 @@ services:
       - local_shared_network
     ports:
       - "5001:5001"
+    volumes:
+      # Config files are excluded from the published image (CopyToPublishDirectory=Never).
+      # Local dev materializes them by mounting the committed placeholders read-only into the
+      # path the app reads (ContentRoot=/app -> /app/Configurations). In real environments a
+      # sidecar / secret volume mounts the same path with materialized values. Secret-bearing
+      # values (DB, RabbitMQ, caching) are overridden below via env vars, which win over JSON.
+      - ./src/Host/Host/Configurations:/app/Configurations:ro
     depends_on:
       mm.postgres:
         condition: service_healthy

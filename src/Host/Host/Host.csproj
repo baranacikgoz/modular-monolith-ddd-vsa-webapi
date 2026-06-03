@@ -12,6 +12,24 @@
     <InternalsVisibleTo Include="Host.Tests"/>
   </ItemGroup>
 
+  <!--
+    Configuration files are DEPLOY-TIME materialized, never baked into the image.
+    This repo has no HashiCorp Vault-like integration, so each environment's real
+    settings (secrets, connection strings, keys) are injected at deploy time as a
+    sidecar / volume mount using these exact same file names under /app/Configurations.
+    CopyToPublishDirectory=Never means a deploy that forgets to mount the config volume
+    fails fast at startup (AddJsonFile optional:false) instead of silently booting with
+    the committed placeholder values. Local development mounts the committed placeholders
+    via docker-compose; see Configurations/README.md.
+    CopyToOutputDirectory stays so `dotnet build`/`dotnet run` and tests keep the files.
+  -->
+  <ItemGroup>
+    <Content Update="Configurations\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
