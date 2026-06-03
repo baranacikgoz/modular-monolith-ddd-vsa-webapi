@@ -67,7 +67,13 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "CaptchaOptions:BaseUrl", "" },
                 { "HealthCheckOptions:SkipRabbitMqHealthCheck", "true" },
                 { "MassTransitOptions:UseInMemoryTransport", "true" },
-                { "OutboxOptions:IsProcessor", "true" },
+                // Processor OFF for slice tests: the OutboxProcessor BackgroundService opens
+                // "FOR UPDATE" transactions on OutboxMessages every poll. On CPU-starved CI runners
+                // that transaction stays open long enough to block Respawn's between-test DELETE,
+                // which then fails with "Npgsql ... Timeout during reading attempt". Slice tests only
+                // assert the message was written (IsProcessed == false), so the processor must not run.
+                // Outbox.Tests opts back in via its own OutboxTestWebAppFactory (IsProcessor = true).
+                { "OutboxOptions:IsProcessor", "false" },
                 { "OutboxOptions:PollIntervalMs", "500" },
                 { "OutboxOptions:BatchSize", "50" },
                 { "OutboxOptions:MaxRetryCount", "3" },
