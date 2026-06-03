@@ -258,6 +258,7 @@ Caller injects `IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsR
 - **Factory isolation rule**: use `IClassFixture<TFactory>` when only one test class needs the factory. When multiple test classes share the same factory type, use `ICollectionFixture<TFactory>` + `[Collection("Name")]` — two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared global state (Serilog static logger, OTel `ActivitySource`).
 - **With `IClassFixture`: call `factory.CreateClient()` eagerly** in a field initializer or constructor, never lazily inside a test method body. Lazy calls race with other factories' `DisposeAsync()`, which corrupts global static state before `StartServer()` runs. With `ICollectionFixture` the server is already running before any test executes, so calling `CreateClient()` lazily inside each test body is correct and preferred (gives each test a clean client with no cross-test header/cookie state).
 - Modules under test isolated via `TestModuleOverride` env var (set in `IntegrationTestFactory.GetActiveModules()`).
+- **Test config reaches runtime `IOptions`, NOT registration-time reads.** Values set via `AddInMemoryCollection` in `IntegrationTestFactory.ConfigureWebHost` are merged *after* module installers run, so they only affect runtime `IOptions<T>` resolution — they do **not** reach `configuration.Get<T>()` / `GetValue<T>()` calls executed during DI registration (transport selection, conditional `AddHostedService`, etc.). Anything consumed at registration time must travel via `builder.UseSetting(...)` (registration-visible, like `TestModuleOverride`), an environment variable, or JSON — or be re-gated to read `IOptions<T>` at runtime. A test override that "has no effect" is almost always this.
 
 **`IntegrationTestFactory` pattern** — single class (use `IClassFixture`):
 ```csharp
@@ -295,6 +296,7 @@ public class FeatureBTests(MyModuleTestFactory factory) { ... }
 - **No guesswork.** Never fix based on description alone.
 - Write a failing test first (Red). Fix the code. Test must pass (Green).
 - Use OTel Trace IDs to locate the exact failing span when available.
+- **CI-only failures: observe the failing environment before fixing — do not reason from the stack trace and push a guess.** If a test passes locally but fails only in CI, first instrument the failing path to emit the CI environment's real state, then fix from that evidence. For a DB lock/timeout (e.g. Respawn `Timeout during reading attempt`), dump `pg_stat_activity` and `pg_blocking_pids(...)` plus the *effective* option values from inside the catch, throw it in the exception message (xUnit swallows `Console`), and read it from the CI log. Local-green/CI-red means the local box is masking the cause (a running broker, more CPU, or config that only diverges under CI), so local repro will mislead — one instrumented CI run beats three reasoned guesses.
 
 ---
 

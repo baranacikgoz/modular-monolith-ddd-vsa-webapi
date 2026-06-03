@@ -18,6 +18,10 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
     {
         base.ConfigureWebHost(builder);
 
+        // Outbox.Tests exercises real publishing against its own RabbitMQ container, so override the
+        // base factory's in-memory transport back to RabbitMQ. UseSetting wins (registration-visible).
+        builder.UseSetting("MassTransitOptions:UseInMemoryTransport", "false");
+
         builder.ConfigureAppConfiguration((_, config) =>
         {
             var confDict = new Dictionary<string, string?>

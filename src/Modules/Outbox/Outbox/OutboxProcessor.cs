@@ -19,6 +19,16 @@ public sealed partial class OutboxProcessor(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Gate at runtime (not registration) so IsProcessor honours the fully-merged configuration,
+        // including overrides supplied by tests. Integration test factories set IsProcessor = false to
+        // keep this BackgroundService from opening "FOR UPDATE" transactions on OutboxMessages that
+        // would otherwise deadlock Respawn's between-test reset. Outbox.Tests opts back in.
+        if (!options.Value.IsProcessor)
+        {
+            LogProcessorDisabled(logger);
+            return;
+        }
+
         LogStarting(logger);
 
         while (!stoppingToken.IsCancellationRequested)
@@ -149,6 +159,10 @@ public sealed partial class OutboxProcessor(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "OutboxProcessor starting.")]
     private static partial void LogStarting(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "OutboxProcessor disabled (IsProcessor = false); not polling on this instance.")]
+    private static partial void LogProcessorDisabled(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} has null event — skipping.")]
     private static partial void LogNullEvent(ILogger logger, int messageId);
