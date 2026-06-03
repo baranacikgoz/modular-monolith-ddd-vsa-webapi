@@ -75,17 +75,18 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         }
         catch (Exception ex)
         {
-            // TEMP CI DIAGNOSTIC: Respawn's DELETE times out only on CI. Dump every other backend's
-            // state/wait-event/query plus blocking-lock pairs so we can see exactly what holds the lock.
-            Console.WriteLine($"[RESPAWN-DIAG] ResetAsync failed: {ex.GetType().Name}: {ex.Message}");
-            await DumpDbActivityAsync();
-            throw;
+            // TEMP CI DIAGNOSTIC: Respawn's DELETE times out only on CI. xUnit swallows Console output,
+            // so embed the pg activity / blocking-lock dump in the thrown exception message instead.
+            var dump = await DumpDbActivityAsync();
+            throw new InvalidOperationException(
+                $"[RESPAWN-DIAG] ResetAsync failed: {ex.GetType().Name}: {ex.Message}\n{dump}", ex);
         }
     }
 
-#pragma warning disable CA1303 // Diagnostic console output; localization not applicable to TEMP CI diagnostics.
-    private async Task DumpDbActivityAsync()
+#pragma warning disable CA1305 // Invariant formatting irrelevant for TEMP CI diagnostic output.
+    private async Task<string> DumpDbActivityAsync()
     {
+        var sb = new System.Text.StringBuilder();
         try
         {
             await using var diag = new NpgsqlConnection(Factory.ConnectionString);
@@ -103,10 +104,10 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
             {
                 cmd.CommandTimeout = 10;
                 await using var r = await cmd.ExecuteReaderAsync();
-                Console.WriteLine("[RESPAWN-DIAG] pg_stat_activity:");
+                sb.AppendLine("[RESPAWN-DIAG] pg_stat_activity:");
                 while (await r.ReadAsync())
                 {
-                    Console.WriteLine(
+                    sb.AppendLine(
                         $"  pid={r["pid"]} state={r["state"]} wait={r["wait_event_type"]}/{r["wait_event"]} dur_s={r["dur_s"]} q={r["q"]}");
                 }
             }
@@ -125,10 +126,10 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
             {
                 cmd.CommandTimeout = 10;
                 await using var r = await cmd.ExecuteReaderAsync();
-                Console.WriteLine("[RESPAWN-DIAG] blocking pairs:");
+                sb.AppendLine("[RESPAWN-DIAG] blocking pairs:");
                 while (await r.ReadAsync())
                 {
-                    Console.WriteLine(
+                    sb.AppendLine(
                         $"  blocked_pid={r["blocked_pid"]} q={r["blocked_q"]} <-- blocking_pid={r["blocking_pid"]} state={r["blocking_state"]} q={r["blocking_q"]}");
                 }
             }
@@ -137,10 +138,12 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         catch (Exception diagEx)
 #pragma warning restore CA1031
         {
-            Console.WriteLine($"[RESPAWN-DIAG] diagnostic dump failed: {diagEx.Message}");
+            sb.AppendLine($"[RESPAWN-DIAG] diagnostic dump failed: {diagEx.Message}");
         }
+
+        return sb.ToString();
     }
-#pragma warning restore CA1303
+#pragma warning restore CA1305
 
     public virtual Task DisposeAsync()
     {
