@@ -14,6 +14,12 @@ internal static partial class Setup
     {
         services.Configure<RabbitMqOptions>(configuration.GetSection(nameof(RabbitMqOptions)));
 
+        // Integration tests run with no RabbitMQ broker. Against a real broker the bus blocks while the
+        // OutboxProcessor publishes inside an open transaction holding "FOR UPDATE" locks on OutboxMessages,
+        // so Respawn's between-test DELETE deadlocks and times out. The in-memory transport delivers in-process,
+        // keeping publish/consume real (no mocking) while removing the broker dependency entirely.
+        var useInMemoryTransport = configuration.GetValue<bool>("MassTransitOptions:UseInMemoryTransport");
+
         services.AddMassTransit(x =>
         {
             x.AddConsumers(moduleAssemblies);
@@ -27,6 +33,12 @@ internal static partial class Setup
                 options.Tags.Clear();
                 options.Tags.Add("masstransit");
             });
+
+            if (useInMemoryTransport)
+            {
+                x.UsingInMemory((ctx, cfg) => cfg.ConfigureEndpoints(ctx));
+                return;
+            }
 
             x.UsingRabbitMq((ctx, cfg) =>
             {
