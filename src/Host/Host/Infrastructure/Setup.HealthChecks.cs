@@ -144,6 +144,7 @@ internal static partial class Setup
                 var factory = new RabbitMQ.Client.ConnectionFactory
                 {
                     HostName = opts.Host,
+                    Port = opts.Port,
                     VirtualHost = opts.VirtualHost,
                     UserName = opts.Username,
                     Password = opts.Password
