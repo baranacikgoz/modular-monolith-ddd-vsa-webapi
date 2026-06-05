@@ -71,7 +71,6 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "CustomRateLimitingOptions:TokenRefresh:QueueLimit", "1000" },
                 { "AuditLogOptions:RetentionDays", "90" },
                 { "CaptchaOptions:BaseUrl", "" },
-                { "HealthCheckOptions:SkipRabbitMqHealthCheck", "true" },
                 // Processor OFF for slice tests: the OutboxProcessor BackgroundService opens
                 // "FOR UPDATE" transactions on OutboxMessages every poll. On CPU-starved CI runners
                 // that transaction stays open long enough to block Respawn's between-test DELETE,

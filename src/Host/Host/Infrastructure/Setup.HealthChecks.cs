@@ -60,19 +60,9 @@ internal static partial class Setup
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
-        // Readiness: RabbitMQ connectivity.
-        var rabbitMqOptions = configuration
-            .GetSection(nameof(RabbitMqOptions))
-            .Get<RabbitMqOptions>();
-
-        if (rabbitMqOptions is not null)
-        {
-            builder.AddCheck<ConditionalRabbitMqHealthCheck>(
-                "rabbitmq",
-                HealthStatus.Unhealthy,
-                [ReadyTag],
-                TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
-        }
+        // Readiness: RabbitMQ connectivity is owned by MassTransit's "masstransit-bus" health check
+        // (tagged "ready" in AddCustomMassTransit). It probes the already-open bus connection instead
+        // of dialing a brand-new AMQP connection on every probe, so there is no custom check here.
 
         // Startup: PostgreSQL reachable during boot — ensures migrations have been applied.
         builder.AddNpgSql(
@@ -124,40 +114,4 @@ internal static partial class Setup
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
     private static partial void LogHealthChecksRegistered(ILogger logger);
-
-    private sealed class ConditionalRabbitMqHealthCheck(
-        IOptions<HealthCheckOptions> healthCheckOptions,
-        IOptions<RabbitMqOptions> rabbitMqOptions) : IHealthCheck
-    {
-        public async Task<HealthCheckResult> CheckHealthAsync(
-            HealthCheckContext context,
-            CancellationToken cancellationToken = default)
-        {
-            if (healthCheckOptions.Value.SkipRabbitMqHealthCheck)
-            {
-                return HealthCheckResult.Healthy("RabbitMQ check skipped.");
-            }
-
-            try
-            {
-                var opts = rabbitMqOptions.Value;
-                var factory = new RabbitMQ.Client.ConnectionFactory
-                {
-                    HostName = opts.Host,
-                    Port = opts.Port,
-                    VirtualHost = opts.VirtualHost,
-                    UserName = opts.Username,
-                    Password = opts.Password
-                };
-                await using var connection = await factory.CreateConnectionAsync(cancellationToken);
-                return HealthCheckResult.Healthy();
-            }
-#pragma warning disable CA1031
-            catch (Exception ex)
-#pragma warning restore CA1031
-            {
-                return HealthCheckResult.Unhealthy("RabbitMQ unreachable.", ex);
-            }
-        }
-    }
 }

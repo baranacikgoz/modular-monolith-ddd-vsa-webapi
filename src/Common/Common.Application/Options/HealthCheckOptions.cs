@@ -6,7 +6,6 @@ namespace Common.Application.Options;
 public class HealthCheckOptions
 {
     public bool EnableHealthChecks { get; set; }
-    public bool SkipRabbitMqHealthCheck { get; set; }
     public required int LivenessTimeoutInSeconds { get; set; }
     public required int ReadinessTimeoutInSeconds { get; set; }
     public required int StartupTimeoutInSeconds { get; set; }

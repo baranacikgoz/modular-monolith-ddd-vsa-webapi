@@ -85,6 +85,16 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         }
         catch (OperationCanceledException ex)
         {
+            // Request aborted by the client mid-request. The connection is already gone, so there is nothing to write back
+            // and this is not a server fault. Logging at Error pollutes logs with phantom failures
+            // (TaskCanceledException derives from OperationCanceledException), so log at Information
+            // and return without touching the dead response.
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                LogRequestAborted(logger);
+                return;
+            }
+
             await HandleExceptionAsync(
                 context,
                 ex,
@@ -131,4 +141,9 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         Level = LogLevel.Error,
         Message = "Response has already started, can't write response.")]
     private static partial void LogCantWriteResponse(ILogger logger);
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Request aborted by client before completion.")]
+    private static partial void LogRequestAborted(ILogger logger);
 }

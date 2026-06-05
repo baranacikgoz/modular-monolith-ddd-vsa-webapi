@@ -24,13 +24,14 @@ internal static partial class Setup
         {
             x.AddConsumers(moduleAssemblies);
 
-            // MassTransit auto-registers a "masstransit-bus" health check tagged "ready" by default.
-            // Drop the "ready" tag so it cannot gate the readiness probe: broker readiness is owned by
-            // ConditionalRabbitMqHealthCheck (skippable via HealthCheckOptions.SkipRabbitMqHealthCheck),
-            // which keeps test/CI environments — where no broker runs — from failing /health/ready.
+            // MassTransit auto-registers a "masstransit-bus" health check that probes the *already-open*
+            // bus connection — no fresh TCP/AMQP handshake per call. Keep it on the "ready" tag so it,
+            // and not a per-probe connection dial, owns broker readiness. Under the in-memory transport
+            // (tests/CI, no broker) this check reports Healthy, so /health/ready passes without any skip flag.
             x.ConfigureHealthCheckOptions(options =>
             {
                 options.Tags.Clear();
+                options.Tags.Add("ready");
                 options.Tags.Add("masstransit");
             });
 
