@@ -1,7 +1,6 @@
 {
   "HealthCheckOptions": {
     "EnableHealthChecks": true,
-    "LivenessTimeoutInSeconds": 3,
     "ReadinessTimeoutInSeconds": 5,
     "StartupTimeoutInSeconds": 10
   }

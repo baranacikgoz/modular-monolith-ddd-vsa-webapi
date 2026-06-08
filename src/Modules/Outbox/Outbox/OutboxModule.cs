@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using Outbox.Persistence;
 
 namespace Outbox;
@@ -31,11 +32,9 @@ public sealed partial class OutboxModule : ICoreModule
         services
             .AddDbContext<OutboxDbContext>((sp, options) =>
             {
-                var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-
                 options
                     .UseNpgsql(
-                        connectionString,
+                        sp.GetRequiredService<NpgsqlDataSource>(),
                         o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, nameof(Outbox)))
                     .UseExceptionProcessor();
             })

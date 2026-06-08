@@ -5,6 +5,7 @@ using Common.Infrastructure.Modules;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
+using Npgsql;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,15 @@ public sealed class BackgroundJobsModule : ICoreModule
             .AddSingleton<IRecurringBackgroundJobs, RecurringBackgroundJobsService>()
             .AddHangfire((sp, cfg) =>
             {
-                var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
+                // Hangfire keeps its OWN Postgres pool, separate from the API's shared NpgsqlDataSource.
+                // Cap it independently (and bound WorkerCount below) so background jobs can't starve the
+                // API pool or, together with it, exhaust Postgres max_connections across instances.
+                var connectionString = new NpgsqlConnectionStringBuilder(
+                    sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString)
+                {
+                    MaxPoolSize = sp.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value.MaxPoolSize,
+                    ApplicationName = "modular-monolith-hangfire"
+                }.ConnectionString;
 
                 cfg.UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
@@ -43,9 +52,11 @@ public sealed class BackgroundJobsModule : ICoreModule
         {
             services.AddHangfireServer((sp, cfg) =>
             {
-                var pollingFrequencyInSeconds = sp.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value
-                    .PollingFrequencyInSeconds;
-                cfg.SchedulePollingInterval = TimeSpan.FromSeconds(pollingFrequencyInSeconds);
+                var backgroundJobsOptions = sp.GetRequiredService<IOptions<BackgroundJobsOptions>>().Value;
+                cfg.SchedulePollingInterval = TimeSpan.FromSeconds(backgroundJobsOptions.PollingFrequencyInSeconds);
+
+                // Validator enforces WorkerCount <= MaxPoolSize so jobs never block waiting on a connection.
+                cfg.WorkerCount = backgroundJobsOptions.WorkerCount;
             });
         }
     }

@@ -2,6 +2,8 @@ using Common.Application.Options;
 using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Npgsql;
+using StackExchange.Redis;
 using AspNetHealthCheckOptions = Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions;
 using HealthCheckOptions = Common.Application.Options.HealthCheckOptions;
 
@@ -20,10 +22,7 @@ internal static partial class Setup
         var options = configuration
                           .GetSection(nameof(HealthCheckOptions))
                           .Get<HealthCheckOptions>()
-                      ?? new HealthCheckOptions
-                      {
-                          LivenessTimeoutInSeconds = 3, ReadinessTimeoutInSeconds = 5, StartupTimeoutInSeconds = 10
-                      };
+                      ?? throw new InvalidOperationException($"Missing configuration: {nameof(HealthCheckOptions)}.");
 
         if (!options.EnableHealthChecks)
         {
@@ -38,14 +37,16 @@ internal static partial class Setup
             () => HealthCheckResult.Healthy(),
             [LiveTag]);
 
-        // Readiness: PostgreSQL connectivity.
+        // Readiness: PostgreSQL connectivity. Probes the shared NpgsqlDataSource pool (the same one every
+        // DbContext uses) rather than dialing a fresh data source per probe.
         builder.AddNpgSql(
-            sp => sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString,
+            sp => sp.GetRequiredService<NpgsqlDataSource>(),
             name: "postgresql",
             tags: [ReadyTag],
             timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
 
-        // Readiness: Redis connectivity.
+        // Readiness: Redis connectivity. Probes the shared IConnectionMultiplexer (registered in
+        // AddCommonCaching) instead of spinning up a dedicated multiplexer just for the health check.
         var cachingOptions = configuration
             .GetSection(nameof(CachingOptions))
             .Get<CachingOptions>();
@@ -53,8 +54,7 @@ internal static partial class Setup
         if (cachingOptions is { UseRedis: true, Redis: not null })
         {
             builder.AddRedis(
-                _ =>
-                    $"{cachingOptions.Redis.Host}:{cachingOptions.Redis.Port},password={cachingOptions.Redis.Password}",
+                sp => sp.GetRequiredService<IConnectionMultiplexer>(),
                 "redis",
                 tags: [ReadyTag],
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
@@ -66,7 +66,7 @@ internal static partial class Setup
 
         // Startup: PostgreSQL reachable during boot — ensures migrations have been applied.
         builder.AddNpgSql(
-            sp => sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString,
+            sp => sp.GetRequiredService<NpgsqlDataSource>(),
             name: "postgresql-startup",
             tags: [StartupTag],
             timeout: TimeSpan.FromSeconds(options.StartupTimeoutInSeconds));

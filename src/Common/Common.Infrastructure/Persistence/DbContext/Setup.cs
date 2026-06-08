@@ -1,10 +1,9 @@
-using Common.Application.Options;
 using Common.Infrastructure.Persistence.Auditing;
 using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Npgsql;
 
 namespace Common.Infrastructure.Persistence.DbContext;
 
@@ -17,11 +16,9 @@ public static class Setup
     {
         services.AddDbContext<TContextImplementation>((sp, options) =>
         {
-            var connectionString = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.ConnectionString;
-
             options
                 .UseNpgsql(
-                    connectionString,
+                    sp.GetRequiredService<NpgsqlDataSource>(),
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
                 .UseExceptionProcessor()
                 .AddInterceptors(
