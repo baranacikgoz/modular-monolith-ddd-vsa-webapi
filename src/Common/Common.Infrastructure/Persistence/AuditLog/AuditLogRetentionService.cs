@@ -6,7 +6,7 @@ using Npgsql;
 namespace Common.Infrastructure.Persistence.AuditLog;
 
 public sealed partial class AuditLogRetentionService(
-    IOptions<DatabaseOptions> databaseOptions,
+    NpgsqlDataSource dataSource,
     IOptions<AuditLogOptions> auditLogOptions,
     ILogger<AuditLogRetentionService> logger)
 {
@@ -17,8 +17,9 @@ public sealed partial class AuditLogRetentionService(
 
         LogRetentionStart(logger, retentionDays, cutoffDate);
 
-        await using var connection = new NpgsqlConnection(databaseOptions.Value.ConnectionString);
-        await connection.OpenAsync(cancellationToken);
+        // Borrow a connection from the shared NpgsqlDataSource pool instead of opening a brand-new
+        // unpooled connection per purge run.
+        await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
 
         // Discover all AuditLog tables across schemas
         const string discoverSchemasQuery = """

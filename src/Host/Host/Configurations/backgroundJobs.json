@@ -2,6 +2,8 @@
   "BackgroundJobsOptions": {
     "IsServer": true,
     "PollingFrequencyInSeconds": 2,
-    "DashboardPath": "/hangfire"
+    "DashboardPath": "/hangfire",
+    "MaxPoolSize": 10,
+    "WorkerCount": 8
   }
 }
