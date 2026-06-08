@@ -96,8 +96,8 @@
     "hash": "368c38d2972bfce32707325a9245ec4b"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs": {
-    "mtime": 1780262476.606284,
-    "hash": "49b98208126d85f241ed8836569089a2"
+    "mtime": 1780666391.533656,
+    "hash": "01c1774588f6f7706ad815d385754e36"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Host/Host/Middlewares/EnrichLogsWithUserInfoMiddleware.cs": {
     "mtime": 1779899541.680948,
@@ -148,12 +148,12 @@
     "hash": "07dba8469335ff8857a4d83f7ebfbf90"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Host/Host/Infrastructure/Setup.MassTransit.cs": {
-    "mtime": 1780498938.9450967,
-    "hash": "2315e185db3a4de3cf41ae0144f829af"
+    "mtime": 1780665098.6440637,
+    "hash": "b5ae5d472c85a6e5b37407ff5f05e1c3"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Host/Host/Infrastructure/Setup.HealthChecks.cs": {
-    "mtime": 1780664728.5411217,
-    "hash": "8857015a0d8109b0b2d033a0f1fb114b"
+    "mtime": 1780949346.9819963,
+    "hash": "5a9a7cd7dc6c39f3f132cfece92bf184"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Options/CustomRateLimitingOptions.cs": {
     "mtime": 1779899541.6712983,
@@ -164,8 +164,8 @@
     "hash": "baffeda1fcbe9d2db204768079d9d971"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Options/BackgroundJobsOptions.cs": {
-    "mtime": 1779899541.6710548,
-    "hash": "ea4d2b30c0fd7671b7d7eee0b4aacd73"
+    "mtime": 1780950983.7964559,
+    "hash": "9e1625c250d9efb6b980b9ba29d55ae2"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Options/OtpOptions.cs": {
     "mtime": 1779991478.3882523,
@@ -176,8 +176,8 @@
     "hash": "a83d2ef1b8652ea315e2809d18a820c9"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Options/HealthCheckOptions.cs": {
-    "mtime": 1779899541.6714287,
-    "hash": "277ab5ab3a053501b9a5f57da1173233"
+    "mtime": 1780949242.4424758,
+    "hash": "f185fb5722df742d050ece312d6c5821"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Application/Options/CorsOptions.cs": {
     "mtime": 1779899541.6712427,
@@ -508,8 +508,8 @@
     "hash": "e181b9b6b51d91af9c70498518f91c74"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/Setup.cs": {
-    "mtime": 1779899541.6764622,
-    "hash": "ee22e9e28701d2dc4f88a98a8a9c522c"
+    "mtime": 1780949270.4072852,
+    "hash": "a08a13665479e7ff868ef8d0902bf55d"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/MigrationGuard.cs": {
     "mtime": 1779899541.6761558,
@@ -520,8 +520,8 @@
     "hash": "bbb084d651737855d33fdbfbcbf06724"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/DbContext/Setup.cs": {
-    "mtime": 1779899541.6756558,
-    "hash": "bb81cbf402dda7ea3ab8320160ac9e86"
+    "mtime": 1780949288.833555,
+    "hash": "e684e6e76a52c2a874f645ce0963aeca"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/Extensions/DbContextExtensions.cs": {
     "mtime": 1779899541.6759093,
@@ -572,8 +572,8 @@
     "hash": "dd5e626d98964ae213c533007351082c"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/AuditLog/AuditLogRetentionService.cs": {
-    "mtime": 1779899541.6752348,
-    "hash": "e4a080d6ddd732f85465ed5407a7947c"
+    "mtime": 1780949316.1167266,
+    "hash": "84ea6d6da3a46d0af49876f2635c61d9"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Persistence/EntityConfigurations/AuditLogEntryConfiguration.cs": {
     "mtime": 1779899541.6757417,
@@ -584,8 +584,8 @@
     "hash": "c3513647df3a56a2a71a4f3554e6c1d7"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Caching/Setup.cs": {
-    "mtime": 1779899541.6743186,
-    "hash": "ce57b178cbe5b54470b85548eaca04f4"
+    "mtime": 1780949420.1571426,
+    "hash": "41662a52ccc3e0fe5f2e850e80fb3117"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Infrastructure/Modules/IModule.cs": {
     "mtime": 1779899541.67507,
@@ -632,8 +632,8 @@
     "hash": "687979ededdaacffc8ca0af7f796d5f6"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Tests/IntegrationTestFactory.cs": {
-    "mtime": 1780498938.944973,
-    "hash": "d790947e7c8294b69fc16cd8636a4230"
+    "mtime": 1780665137.9313543,
+    "hash": "a95f8ee7cbe626b3560fe0543c4c152e"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Common/Common.Tests/HttpContextTargetingContextAccessorTests.cs": {
     "mtime": 1779899541.6782348,
@@ -740,8 +740,8 @@
     "hash": "41894789afad9677916b401f13cdb260"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/Outbox/Outbox/OutboxModule.cs": {
-    "mtime": 1779899541.6937304,
-    "hash": "0be2ea5b2632be767887bc88ffa3bce8"
+    "mtime": 1780949305.9675965,
+    "hash": "29665b998baf400e7cfdb8b6bdd32a65"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/Outbox/Outbox/OutboxMetricsJob.cs": {
     "mtime": 1779899541.6936448,
@@ -1836,8 +1836,8 @@
     "hash": "01115e22f446e5c551e1c4ab29b11a28"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/BackgroundJobs/BackgroundJobs/BackgroundJobsModule.cs": {
-    "mtime": 1779899541.6820755,
-    "hash": "7b48b1e53f7a6021470c30d98e45a293"
+    "mtime": 1780951016.6017787,
+    "hash": "58dbcdfbb29a6be48e948e7db8cea13b"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/BackgroundJobs/BackgroundJobs/Telemetry/BackgroundJobsTelemetry.cs": {
     "mtime": 1779899541.6823742,
