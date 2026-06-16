@@ -9,8 +9,8 @@ internal static partial class Setup
         return services.AddSingleton<GlobalExceptionHandlingMiddleware>();
     }
 
-    private static IApplicationBuilder UseGlobalExceptionHandlingMiddleware(this IApplicationBuilder app)
+    private static void UseGlobalExceptionHandlingMiddleware(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+        app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
     }
 }

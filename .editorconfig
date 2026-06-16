@@ -357,6 +357,9 @@ dotnet_diagnostic.S6667.severity = none
 
 dotnet_diagnostic.S6964.severity = none
 
+# S6672: derived DbContexts intentionally pass ILogger<BaseDbContext> to the base ctor (shared log category).
+dotnet_diagnostic.S6672.severity = none
+
 # IDE0005:
 dotnet_diagnostic.IDE0005.severity = none
 

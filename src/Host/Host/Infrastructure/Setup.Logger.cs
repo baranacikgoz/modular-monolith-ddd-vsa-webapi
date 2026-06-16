@@ -36,12 +36,12 @@ internal static partial class Setup
         return serilog;
     }
 
-    private static LoggerMinimumLevelConfiguration ParseFrom(this LoggerMinimumLevelConfiguration minLevel,
+    private static void ParseFrom(this LoggerMinimumLevelConfiguration minLevel,
         string level)
     {
-        if (level.IsDebug()) { minLevel.Debug(); return minLevel; }
-        if (level.IsInformation()) { minLevel.Information(); return minLevel; }
-        if (level.IsWarning()) { minLevel.Warning(); return minLevel; }
+        if (level.IsDebug()) { minLevel.Debug(); return; }
+        if (level.IsInformation()) { minLevel.Information(); return; }
+        if (level.IsWarning()) { minLevel.Warning(); return; }
         throw new InvalidOperationException($"Minimum log level {level} is unknown.");
     }
 

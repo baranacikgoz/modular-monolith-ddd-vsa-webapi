@@ -10,8 +10,7 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
 {
     protected override string[] GetActiveModules() => ["Outbox", "IAM"];
 
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder()
-        .WithImage("rabbitmq:3.13-management-alpine")
+    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder("rabbitmq:3.13-management-alpine")
         .Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

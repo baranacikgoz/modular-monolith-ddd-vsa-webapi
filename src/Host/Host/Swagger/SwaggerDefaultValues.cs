@@ -11,7 +11,7 @@ internal sealed class SwaggerDefaultValues : IOperationFilter
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var apiDescription = context.ApiDescription;
-        operation.Deprecated |= apiDescription.IsDeprecated();
+        operation.Deprecated |= apiDescription.IsDeprecated;
 
         if (operation.Responses != null)
         {
