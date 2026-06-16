@@ -1,11 +1,15 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Aigamo.ResXGenerator" Version="4.3.0" />
+    <!-- Transitive pin: MessagePack <2.5.192 has GHSA-hv8m-jj95-wg3x (high). Pulled via SignalR.StackExchangeRedis. -->
+    <PackageVersion Include="MessagePack" Version="2.5.302" />
+    <PackageVersion Include="MessagePack.Annotations" Version="2.5.302" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageVersion Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="10.0.0" />
