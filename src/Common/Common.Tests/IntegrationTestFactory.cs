@@ -21,14 +21,9 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
 
     public string ConnectionString => _dbContainer.GetConnectionString();
 
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         await _dbContainer.StartAsync();
-    }
-
-    Task IAsyncLifetime.DisposeAsync()
-    {
-        return _dbContainer.StopAsync();
     }
 
     protected virtual string[] GetActiveModules()
