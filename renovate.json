@@ -7,31 +7,37 @@
   "packageRules": [
     {
       "groupName": "Microsoft packages",
-      "matchPackagePrefixes": ["Microsoft."],
-      "automerge": false
+      "automerge": false,
+      "matchPackageNames": [
+        "Microsoft.{/,}**"
+      ]
     },
     {
       "groupName": "OpenTelemetry packages",
-      "matchPackagePrefixes": ["OpenTelemetry."],
-      "automerge": false
+      "automerge": false,
+      "matchPackageNames": [
+        "OpenTelemetry.{/,}**"
+      ]
     },
     {
       "groupName": "MassTransit packages",
-      "matchPackageNames": ["MassTransit", "/^MassTransit\\./"],
-      "allowedVersions": "<9.0.0",
       "automerge": false,
-      "description": "Pin to free v8 (Apache 2.0). v9+ requires a commercial license."
+      "allowedVersions": "<9.0.0",
+      "description": "Pin to free v8 (Apache 2.0). v9+ requires a commercial license.",
+      "matchPackageNames": [
+        "MassTransit{/,}**"
+      ]
     },
     {
       "groupName": "Test packages",
-      "matchPackagePrefixes": [
-        "xunit",
-        "NSubstitute",
-        "Bogus",
-        "Testcontainers",
-        "Respawn"
-      ],
-      "automerge": false
+      "automerge": false,
+      "matchPackageNames": [
+        "xunit{/,}**",
+        "NSubstitute{/,}**",
+        "Bogus{/,}**",
+        "Testcontainers{/,}**",
+        "Respawn{/,}**"
+      ]
     },
     {
       "groupName": "GitHub Actions",
