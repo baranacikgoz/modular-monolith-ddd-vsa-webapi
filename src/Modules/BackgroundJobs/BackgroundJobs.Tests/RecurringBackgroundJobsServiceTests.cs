@@ -60,12 +60,12 @@ public class RecurringBackgroundJobsServiceTests
             Arg.Is<RecurringJobOptions>(opts => opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
     }
 
-    public static void DummyMethod()
+    internal static void DummyMethod()
     {
         // Dummy method for expression tree
     }
 
-    public static Task DummyTaskMethod()
+    internal static Task DummyTaskMethod()
     {
         // Dummy method for expression tree
         return Task.CompletedTask;

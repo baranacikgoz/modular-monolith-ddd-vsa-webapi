@@ -71,7 +71,7 @@ public class BackgroundJobsServiceTests
         _hangfireClient.ReceivedWithAnyArgs().ChangeState(default, default, default);
     }
 
-    public static void DummyMethod()
+    internal static void DummyMethod()
     {
         // Dummy method for expression tree
     }
