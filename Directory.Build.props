@@ -24,6 +24,13 @@
 
 
 
+  <!-- xUnit1051 (xunit v3): prefer TestContext.Current.CancellationToken on CancellationToken-accepting
+       calls. Suppressed for now so the v3 upgrade stays a focused dependency bump; the token-threading
+       sweep across the test suite is tracked as a separate follow-up. Rule only fires in test projects. -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup>
     <AnalysisMode>all</AnalysisMode>
     <AnalysisScope>all</AnalysisScope>

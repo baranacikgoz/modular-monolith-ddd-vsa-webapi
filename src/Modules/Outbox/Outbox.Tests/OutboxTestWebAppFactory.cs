@@ -40,7 +40,7 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
         });
     }
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
         await _rabbitMqContainer.StartAsync();
         await base.InitializeAsync();

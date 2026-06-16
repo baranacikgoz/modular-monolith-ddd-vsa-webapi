@@ -42,7 +42,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         }
     }
 
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         var tracker = Scope.ServiceProvider.GetRequiredService<SeedingCompletionTracker>();
         await tracker.WaitForSeedingAsync();
@@ -72,10 +72,11 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
         await _respawner.ResetAsync(connection);
     }
 
-    public virtual Task DisposeAsync()
+    public virtual ValueTask DisposeAsync()
     {
         Scope.Dispose();
-        return Task.CompletedTask;
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
     }
 }
 

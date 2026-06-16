@@ -17,7 +17,7 @@ public class HostTestFactory : IntegrationTestFactory
         return _moduleOverride ?? ["*"];
     }
 
-    public override async Task InitializeAsync()
+    public override async ValueTask InitializeAsync()
     {
         await base.InitializeAsync();
         await WaitUntilReadyAsync(TimeSpan.FromSeconds(60));
