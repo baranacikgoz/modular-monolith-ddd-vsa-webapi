@@ -102,12 +102,12 @@ internal static partial class Setup
         });
     }
 
-    private static OpenTelemetryBuilder ConfigureTracing(
+    private static void ConfigureTracing(
         this OpenTelemetryBuilder builder,
         ObservabilityOptions options,
         IReadOnlyList<IModule> activeModules)
     {
-        return builder.WithTracing(x =>
+        builder.WithTracing(x =>
         {
             x
                 .AddAspNetCoreInstrumentation(cfg =>
@@ -118,7 +118,6 @@ internal static partial class Setup
                 .AddHttpClientInstrumentation()
                 .AddEntityFrameworkCoreInstrumentation(cfg =>
                 {
-                    cfg.SetDbStatementForText = true;
                     cfg.EnrichWithIDbCommand = (activity, command) =>
                     {
                         var sql = command.CommandText?.TrimStart();

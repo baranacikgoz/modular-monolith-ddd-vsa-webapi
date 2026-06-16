@@ -6,38 +6,38 @@
   <ItemGroup>
     <PackageVersion Include="Aigamo.ResXGenerator" Version="4.3.0" />
     <!-- Transitive pin: MessagePack <2.5.192 has GHSA-hv8m-jj95-wg3x (high). Pulled via SignalR.StackExchangeRedis. -->
-    <PackageVersion Include="MessagePack" Version="2.5.302" />
-    <PackageVersion Include="MessagePack.Annotations" Version="2.5.302" />
+    <PackageVersion Include="MessagePack" Version="3.1.7" />
+    <PackageVersion Include="MessagePack.Annotations" Version="3.1.7" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageVersion Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="10.0.1" />
-    <PackageVersion Include="Hangfire" Version="1.8.22" />
-    <PackageVersion Include="Hangfire.PostgreSql" Version="1.20.13" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.7" />
+    <PackageVersion Include="Hangfire" Version="1.8.23" />
+    <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.9" />
     <PackageVersion Include="Microsoft.FeatureManagement" Version="4.5.0" />
     <PackageVersion Include="Microsoft.FeatureManagement.AspNetCore" Version="4.5.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.9" />
     <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.6.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" Version="2.6.0" />
     <PackageVersion Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" Version="2.6.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
-    <PackageVersion Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="1.5.0" />
+    <PackageVersion Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="2.0.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.7" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.0.0" />
-    <PackageVersion Include="Testcontainers.Kafka" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.9" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.12.0" />
+    <PackageVersion Include="Testcontainers.Kafka" Version="4.12.0" />
     <PackageVersion Include="Respawn" Version="7.0.0" />
     <PackageVersion Include="xunit.abstractions" Version="2.0.3" />
-    <PackageVersion Include="xunit.analyzers" Version="1.26.0">
+    <PackageVersion Include="xunit.analyzers" Version="1.27.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
@@ -50,34 +50,34 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
-    <PackageVersion Include="coverlet.collector" Version="6.0.4">
+    <PackageVersion Include="coverlet.collector" Version="10.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>none</PrivateAssets>
     </PackageVersion>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.17.0.131074">
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.9" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>none</PrivateAssets>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="10.0.7" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Identity.Core" Version="10.0.9" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageVersion Include="Serilog" Version="4.3.0" />
+    <PackageVersion Include="Serilog" Version="4.3.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageVersion Include="Serilog.Enrichers.Process" Version="3.0.0" />
@@ -88,28 +88,28 @@
     <PackageVersion Include="Serilog.Sinks.Async" Version="2.1.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
-    <PackageVersion Include="Elastic.Serilog.Sinks" Version="8.12.0" />
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="9.1.0" />
+    <PackageVersion Include="Elastic.Serilog.Sinks" Version="9.0.0" />
     <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
-    <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="3.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.1.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+    <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.2.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="0.5.0-beta.4" />
-    <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.0.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.9" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
-    <PackageVersion Include="Asp.Versioning.Http" Version="8.1.1" />
-    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="1.15.1-beta.1" />
+    <PackageVersion Include="Npgsql.OpenTelemetry" Version="10.0.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.15.1-beta.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0" />
+    <PackageVersion Include="Asp.Versioning.Http" Version="10.0.0" />
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
-    <PackageVersion Include="MassTransit" Version="8.4.1" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.4.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.7" />
-    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.4.0" />
+    <PackageVersion Include="MassTransit" Version="9.1.2" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.1.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.9" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.12.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
   </ItemGroup>

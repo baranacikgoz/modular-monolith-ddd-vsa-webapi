@@ -13,8 +13,7 @@ namespace Common.Tests;
 
 public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithImage("postgres:15-alpine")
+    private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:15-alpine")
         .WithDatabase("test_db")
         .WithUsername("postgres")
         .WithPassword("postgres")
