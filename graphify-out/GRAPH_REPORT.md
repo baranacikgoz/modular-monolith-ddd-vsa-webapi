@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1883 nodes · 2023 edges · 301 communities (111 shown, 190 thin omitted)
+- 1883 nodes · 2023 edges · 302 communities (111 shown, 191 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `45ecebb6`
+- Built from commit: `3ff095c6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -243,7 +243,7 @@
 - [[_COMMUNITY_Community 226|Community 226]]
 - [[_COMMUNITY_Community 227|Community 227]]
 - [[_COMMUNITY_Community 228|Community 228]]
-- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 229|Community 229]]
 - [[_COMMUNITY_Community 231|Community 231]]
 - [[_COMMUNITY_Community 232|Community 232]]
 - [[_COMMUNITY_Community 233|Community 233]]
@@ -262,6 +262,7 @@
 - [[_COMMUNITY_Community 246|Community 246]]
 - [[_COMMUNITY_Community 247|Community 247]]
 - [[_COMMUNITY_Community 248|Community 248]]
+- [[_COMMUNITY_Community 249|Community 249]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `string` - 37 edges
@@ -287,7 +288,7 @@
 - `ensureAuth()` --calls--> `register()`  [INFERRED]
   k6/scenarios/seller.js → k6/lib/auth.js
 
-## Communities (301 total, 190 thin omitted)
+## Communities (302 total, 191 thin omitted)
 
 ### Community 0 - "Feature Management & Observability Tests"
 Cohesion: 0.05
@@ -361,9 +362,9 @@ Nodes (10): AuditableEntityConfiguration, ApplicationRoleConfig, ApplicationUser
 Cohesion: 0.16
 Nodes (3): BackgroundService, OutboxProcessor, DatabaseSeederOrchestrator
 
-### Community 19 - "HTTP Middleware Pipeline"
-Cohesion: 0.1
-Nodes (12): RequestValidator, RequestValidator, CustomValidator, RequestValidator, HealthCheckOptions, HealthCheckOptionsValidator, SecurityHeadersOptions, SecurityHeadersOptionsValidator (+4 more)
+### Community 20 - "FluentValidation Request Validators"
+Cohesion: 0.11
+Nodes (10): RequestValidator, RequestValidator, CustomValidator, RequestValidator, AuditLogOptions, AuditLogOptionsValidator, RequestValidator, RequestValidator (+2 more)
 
 ### Community 21 - "REPR Endpoint Handlers"
 Cohesion: 0.16
@@ -399,11 +400,11 @@ Nodes (4): DbContext, IOutboxDbContext, OutboxDbContext, Setup
 
 ### Community 32 - "Community 32"
 Cohesion: 0.17
-Nodes (4): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, CheckRegistrationTests
+Nodes (4): Faker, CreateTests, CheckRegistrationTests, GetTests
 
 ### Community 33 - "Community 33"
 Cohesion: 0.17
-Nodes (4): Faker, CreateTests, GetTests, MeGetTests
+Nodes (4): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, MeGetTests
 
 ### Community 35 - "Community 35"
 Cohesion: 0.18
@@ -449,13 +450,13 @@ Nodes (3): BackgroundJobsServiceTests, BackgroundJobsService, IBackgroundJobClie
 Cohesion: 0.29
 Nodes (3): RequestLoggingPathPostConfigure, Setup, IPostConfigureOptions
 
-### Community 65 - "Community 65"
+### Community 64 - "Community 64"
 Cohesion: 0.29
-Nodes (3): DummyOtpService, OtpService, OtpServiceBase
+Nodes (4): Histogram, long, ObservableGauge, OutboxTelemetry
 
 ### Community 66 - "Community 66"
 Cohesion: 0.29
-Nodes (4): Histogram, long, ObservableGauge, OutboxTelemetry
+Nodes (3): DummyOtpService, OtpService, OtpServiceBase
 
 ### Community 73 - "Community 73"
 Cohesion: 0.33
@@ -470,12 +471,12 @@ Cohesion: 0.29
 Nodes (3): IDatabaseSeeder, IamDatabaseSeeder, ProductsDatabaseSeeder
 
 ### Community 81 - "Community 81"
-Cohesion: 0.4
-Nodes (3): ResultToCreatedResponseTransformer, ResultToResponseTransformer, IEndpointFilter
-
-### Community 82 - "Community 82"
 Cohesion: 0.33
 Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
+
+### Community 82 - "Community 82"
+Cohesion: 0.4
+Nodes (3): ResultToCreatedResponseTransformer, ResultToResponseTransformer, IEndpointFilter
 
 ### Community 87 - "Community 87"
 Cohesion: 0.33
@@ -495,15 +496,15 @@ Nodes (3): DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper
 
 ### Community 109 - "Community 109"
 Cohesion: 0.4
-Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
+Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator
 
 ### Community 111 - "Community 111"
 Cohesion: 0.4
-Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator
+Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
 
 ### Community 112 - "Community 112"
 Cohesion: 0.4
-Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
+Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
 ### Community 113 - "Community 113"
 Cohesion: 0.4
@@ -520,12 +521,12 @@ Nodes (3): RecurringBackgroundJobsService, IRecurringBackgroundJobs, RecurringJo
 ## Knowledge Gaps
 - **94 isolated node(s):** `Host`, `Program`, `bool`, `CustomRateLimitingOptions`, `FixedWindow` (+89 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **190 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **191 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `string` connect `Auth Policies & Feature Flags` to `Community 64`, `Architecture Docs & Project Config`, `Community 66`, `Community 65`, `Domain Errors & Aggregate Tests`, `Community 101`, `Community 100`, `Product Aggregate Domain`, `IAM Core Services`, `IAM Domain Types & Application User`, `Community 43`, `Community 137`, `Identity Error Localization`, `Community 82`, `Community 51`, `Product Audit Log Tests`?**
+- **Why does `string` connect `Auth Policies & Feature Flags` to `Community 64`, `Architecture Docs & Project Config`, `Community 65`, `Community 66`, `Community 100`, `Domain Errors & Aggregate Tests`, `Community 101`, `Product Aggregate Domain`, `IAM Core Services`, `IAM Domain Types & Application User`, `Community 43`, `Community 137`, `Identity Error Localization`, `Community 81`, `Community 51`, `Product Audit Log Tests`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
 - **Why does `int` connect `Domain Errors & Aggregate Tests` to `Architecture Docs & Project Config`, `IAM Domain Types & Application User`, `K6 Load Testing`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._

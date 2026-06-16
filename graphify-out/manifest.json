@@ -1816,12 +1816,12 @@
     "hash": "7f58d3872c78fb4e185df09b3d900d5f"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobsServiceTests.cs": {
-    "mtime": 1779899541.681892,
-    "hash": "e3d3f75183ca15acf47f1785ee6335e7"
+    "mtime": 1781640802.8987992,
+    "hash": "a5cab71e17febf00340f11adf13da318"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/BackgroundJobs/BackgroundJobs.Tests/RecurringBackgroundJobsServiceTests.cs": {
-    "mtime": 1779899541.6819491,
-    "hash": "e9e93d5ff825ff14970321b424e634ad"
+    "mtime": 1781640795.4775069,
+    "hash": "fc19eac05f3de3ae452cb655c041d101"
   },
   "/Users/baranacikgoz/Development/modular-monolith-ddd-vsa-webapi/src/Modules/BackgroundJobs/BackgroundJobs/HangfireCustomAuthorizationFilter.cs": {
     "mtime": 1779899541.6822045,
