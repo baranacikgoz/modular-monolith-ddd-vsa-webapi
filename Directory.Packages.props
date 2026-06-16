@@ -96,8 +96,9 @@
     <PackageVersion Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
-    <PackageVersion Include="MassTransit" Version="9.1.2" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.1.2" />
+    <!-- Pinned to last free v8 (Apache 2.0). v9+ requires a commercial license (MT_LICENSE). Do not bump to 9.x. -->
+    <PackageVersion Include="MassTransit" Version="8.5.10" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.10" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.9" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.12.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />

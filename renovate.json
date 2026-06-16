@@ -17,8 +17,10 @@
     },
     {
       "groupName": "MassTransit packages",
-      "matchPackagePrefixes": ["MassTransit."],
-      "automerge": false
+      "matchPackageNames": ["MassTransit", "/^MassTransit\\./"],
+      "allowedVersions": "<9.0.0",
+      "automerge": false,
+      "description": "Pin to free v8 (Apache 2.0). v9+ requires a commercial license."
     },
     {
       "groupName": "Test packages",
