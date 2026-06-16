@@ -27,7 +27,7 @@ public class RecurringBackgroundJobsServiceTests
     {
         // Arrange
         var jobId = "recurring-123";
-        Expression<Action> expr = () => DummyMethod();
+        Expression<Action> expr = () => JobTargets.DummyMethod();
         Func<string> cronExpr = () => "0 0 * * *";
 
         // Act
@@ -46,7 +46,7 @@ public class RecurringBackgroundJobsServiceTests
     {
         // Arrange
         var jobId = "recurring-task-123";
-        Expression<Func<Task>> expr = () => DummyTaskMethod();
+        Expression<Func<Task>> expr = () => JobTargets.DummyTaskMethod();
         Func<string> cronExpr = () => "*/5 * * * *";
 
         // Act
@@ -58,16 +58,5 @@ public class RecurringBackgroundJobsServiceTests
             Arg.Any<Job>(),
             Arg.Is<string>(x => x == "*/5 * * * *"),
             Arg.Is<RecurringJobOptions>(opts => opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
-    }
-
-    public static void DummyMethod()
-    {
-        // Dummy method for expression tree
-    }
-
-    public static Task DummyTaskMethod()
-    {
-        // Dummy method for expression tree
-        return Task.CompletedTask;
     }
 }

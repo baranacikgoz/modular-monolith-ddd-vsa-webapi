@@ -24,7 +24,7 @@ public class BackgroundJobsServiceTests
     public void Enqueue_WithAction_ShouldDelegateToHangfireClient()
     {
         // Arrange
-        Expression<Action> expr = () => DummyMethod();
+        Expression<Action> expr = () => JobTargets.DummyMethod();
         _hangfireClient.Create(Arg.Any<Job>(), Arg.Any<EnqueuedState>()).Returns("job-123");
 
         // Act
@@ -46,7 +46,7 @@ public class BackgroundJobsServiceTests
     public void Schedule_WithActionAndDelay_ShouldDelegateToHangfireClient()
     {
         // Arrange
-        Expression<Action> expr = () => DummyMethod();
+        Expression<Action> expr = () => JobTargets.DummyMethod();
         var delay = TimeSpan.FromMinutes(5);
 
         // Act
@@ -69,10 +69,5 @@ public class BackgroundJobsServiceTests
 
         // Assert
         _hangfireClient.ReceivedWithAnyArgs().ChangeState(default, default, default);
-    }
-
-    public static void DummyMethod()
-    {
-        // Dummy method for expression tree
     }
 }
