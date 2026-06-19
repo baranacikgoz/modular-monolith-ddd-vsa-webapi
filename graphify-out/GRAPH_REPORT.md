@@ -1,4 +1,4 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-06-17)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-06-19)
 
 ## Corpus Check
 - 462 files · ~69,134 words
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `670d7c8d`
+- Built from commit: `75f47178`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -341,12 +341,12 @@ Cohesion: 0.1
 Nodes (8): AggregateTests, ApplicationUserId, DateOnly, ApplicationUserTests, StoreTests, ProductTemplate, StoreTests, Uri
 
 ### Community 12 - "Identity Error Localization"
-Cohesion: 0.13
-Nodes (13): ActivitySource, Counter, RequireFeatureFilter, Histogram, long, Meter, ObservableGauge, BackgroundJobsTelemetry (+5 more)
-
-### Community 13 - "Auth Policies & Feature Flags"
 Cohesion: 0.11
 Nodes (14): CustomActions, CustomResources, CustomClaims, JwtClaimNames, Checkout, FeatureFlags, IAM, Notifications (+6 more)
+
+### Community 13 - "Auth Policies & Feature Flags"
+Cohesion: 0.13
+Nodes (13): ActivitySource, Counter, RequireFeatureFilter, Histogram, long, Meter, ObservableGauge, BackgroundJobsTelemetry (+5 more)
 
 ### Community 14 - "IAM Module Registration"
 Cohesion: 0.09
@@ -362,7 +362,7 @@ Nodes (10): AuditableEntityConfiguration, ApplicationRoleConfig, ApplicationUser
 
 ### Community 17 - "Host Integration Test Factory"
 Cohesion: 0.1
-Nodes (12): RequestValidator, RequestValidator, CustomValidator, RequestValidator, DatabaseOptions, DatabaseOptionsValidator, SignalROptions, SignalROptionsValidator (+4 more)
+Nodes (12): RequestValidator, RequestValidator, CustomValidator, RequestValidator, CaptchaOptions, CaptchaOptionsValidator, ResxLocalizationOptions, ResxLocalizationOptionsValidator (+4 more)
 
 ### Community 18 - "Outbox Processor Worker"
 Cohesion: 0.16
@@ -406,11 +406,11 @@ Nodes (4): DbContext, IOutboxDbContext, OutboxDbContext, Setup
 
 ### Community 33 - "Community 33"
 Cohesion: 0.17
-Nodes (4): Faker, CheckRegistrationTests, GetTests, MeGetTests
+Nodes (4): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, MeGetTests
 
 ### Community 34 - "Community 34"
 Cohesion: 0.17
-Nodes (4): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, CreateTests
+Nodes (4): Faker, CreateTests, CheckRegistrationTests, GetTests
 
 ### Community 36 - "Community 36"
 Cohesion: 0.18
@@ -468,7 +468,7 @@ Nodes (3): RequestLoggingPathPostConfigure, Setup, IPostConfigureOptions
 Cohesion: 0.48
 Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
-### Community 68 - "Community 68"
+### Community 69 - "Community 69"
 Cohesion: 0.29
 Nodes (3): DummyOtpService, OtpService, OtpServiceBase
 
@@ -480,7 +480,7 @@ Nodes (3): IAggregateRoot, AuditableEntity, IAuditableEntity
 Cohesion: 0.29
 Nodes (3): IDatabaseSeeder, IamDatabaseSeeder, ProductsDatabaseSeeder
 
-### Community 84 - "Community 84"
+### Community 85 - "Community 85"
 Cohesion: 0.33
 Nodes (5): CachingEntryDefaults, CachingOptions, CachingOptionsValidator, Redis, RedisValidator
 
@@ -536,11 +536,11 @@ Nodes (3): RecurringBackgroundJobsService, IRecurringBackgroundJobs, RecurringJo
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `string` connect `Auth Policies & Feature Flags` to `Feature Management & Observability Tests`, `Community 194`, `DDD Aggregate Root Core`, `Community 68`, `Community 69`, `JSON / Strongly Typed ID Converters`, `Product Aggregate Domain`, `IAM Domain Types & Application User`, `Identity Error Localization`, `Community 109`, `Community 45`, `Community 142`, `Community 108`, `Community 46`, `Community 86`, `Cross-Module Message Handlers`, `Product EF Configurations`?**
+- **Why does `string` connect `Identity Error Localization` to `Feature Management & Observability Tests`, `Community 194`, `DDD Aggregate Root Core`, `Community 68`, `Community 69`, `JSON / Strongly Typed ID Converters`, `Product Aggregate Domain`, `IAM Domain Types & Application User`, `Community 108`, `Community 109`, `Community 45`, `Community 142`, `Auth Policies & Feature Flags`, `Community 46`, `Community 86`, `Cross-Module Message Handlers`, `Product EF Configurations`?**
   _High betweenness centrality (0.078) - this node is a cross-community bridge._
 - **Why does `int` connect `DDD Aggregate Root Core` to `Feature Management & Observability Tests`, `Product Aggregate Domain`, `Product Data Seeding`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `RequireFeatureFilterTests` connect `Cross-Module Message Handlers` to `Integration Test Infrastructure`, `Community 100`, `Community 166`, `Auth Policies & Feature Flags`, `Product EF Configurations`?**
+- **Why does `RequireFeatureFilterTests` connect `Cross-Module Message Handlers` to `Integration Test Infrastructure`, `Community 100`, `Community 166`, `Identity Error Localization`, `Product EF Configurations`?**
   _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **What connects `Host`, `Program`, `bool` to the rest of the system?**
   _94 weakly-connected nodes found - possible documentation gaps or missing edges._
