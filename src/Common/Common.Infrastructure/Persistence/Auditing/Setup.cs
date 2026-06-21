@@ -7,6 +7,7 @@ public static class Setup
     public static IServiceCollection AddAuditingInterceptors(this IServiceCollection services)
     {
         return services
-            .AddScoped<ApplyAuditingInterceptor>();
+            .AddScoped<ApplyAuditingInterceptor>()
+            .AddScoped<ApplySearchLanguageInterceptor>();
     }
 }

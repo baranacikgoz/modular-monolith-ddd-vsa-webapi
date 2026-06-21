@@ -1,4 +1,5 @@
 using Common.Domain.Aggregates;
+using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
@@ -24,7 +25,7 @@ public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
     }
 }
 
-public class Store : AggregateRoot<StoreId>
+public class Store : AggregateRoot<StoreId>, ISearchLocalized
 {
     private readonly List<Product> _products = [];
 
@@ -37,6 +38,10 @@ public class Store : AggregateRoot<StoreId>
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; }
     public string Address { get; private set; }
+
+    // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
+    public string Language { get; private set; } = "simple_unaccent";
+
     public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
     public static Store Create(ApplicationUserId ownerId, string name, string description, string address)

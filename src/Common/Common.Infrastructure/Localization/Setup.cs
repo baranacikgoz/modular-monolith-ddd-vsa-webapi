@@ -1,5 +1,6 @@
 using System.Globalization;
 using Common.Application.Options;
+using Common.Application.Search;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,8 @@ public static class Setup
     public static IServiceCollection AddCommonResxLocalization(this IServiceCollection services)
     {
         return services
+            // Same Accept-Language → CurrentUICulture source as IResxLocalizer; resolves the search config per request.
+            .AddSingleton<ISearchLanguageResolver, SearchLanguageResolver>()
             .AddLocalization()
             .UsingResXGenerator();
     }

@@ -1,14 +1,19 @@
+using System.Linq.Expressions;
 using Common.Application.Auth;
 using Common.Application.Extensions;
+using Common.Application.Options;
 using Common.Application.Pagination;
+using Common.Application.Search;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NpgsqlTypes;
 using Products.Application.Persistence;
+using Products.Domain.Products;
 
 namespace Products.Endpoints.Products.v1.My.Search;
 
@@ -28,17 +33,35 @@ internal static class Endpoint
         [AsParameters] Request request,
         ICurrentUser currentUser,
         IProductsDbContext dbContext,
+        ISearchLanguageResolver searchLanguageResolver,
+        IOptions<FullTextSearchOptions> fullTextSearchOptions,
         CancellationToken cancellationToken)
     {
+        var hasSearchTerm = !string.IsNullOrWhiteSpace(request.SearchTerm);
+        var searchTerm = request.SearchTerm ?? string.Empty;
+        var universalConfig = searchLanguageResolver.UniversalConfig;
+        var proseConfig = searchLanguageResolver.ResolveConfig();
+        var rankWeights = fullTextSearchOptions.Value.RankWeights.ToArray();
+
+        Expression<Func<Product, object>>? orderByRank = hasSearchTerm
+            ? p => EF.Property<NpgsqlTsVector>(p, FullTextSearchOptions.SearchVectorColumn)
+                .Rank(
+                    rankWeights,
+                    EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm)
+                        .Or(EF.Functions.WebSearchToTsQuery(proseConfig, searchTerm)))
+            : null;
+
         return await dbContext
             .Products
             .AsNoTracking()
             .TagWith(nameof(SearchMyProductsAsync))
             .Where(p => p.Store.OwnerId == currentUser.Id)
             .WhereIf(
-                p => EF.Property<NpgsqlTsVector>(p, "SearchVector")
-                    .Matches(EF.Functions.WebSearchToTsQuery("english", request.SearchTerm!)),
-                !string.IsNullOrWhiteSpace(request.SearchTerm))
+                p => EF.Property<NpgsqlTsVector>(p, FullTextSearchOptions.SearchVectorColumn)
+                         .Matches(EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm))
+                     || EF.Property<NpgsqlTsVector>(p, FullTextSearchOptions.SearchVectorColumn)
+                         .Matches(EF.Functions.WebSearchToTsQuery(proseConfig, searchTerm)),
+                hasSearchTerm)
             .WhereIf(p => EF.Functions.ILike(p.Name, $"%{request.Name}%"), !string.IsNullOrWhiteSpace(request.Name))
             .WhereIf(p => EF.Functions.ILike(p.Description, $"%{request.Description}%"),
                 !string.IsNullOrWhiteSpace(request.Description))
@@ -60,7 +83,7 @@ internal static class Endpoint
                     LastModifiedBy = p.LastModifiedBy,
                     LastModifiedOn = p.LastModifiedOn
                 },
-                orderByDescending: p => p.CreatedOn,
+                orderByDescending: orderByRank,
                 cancellationToken: cancellationToken);
     }
 }

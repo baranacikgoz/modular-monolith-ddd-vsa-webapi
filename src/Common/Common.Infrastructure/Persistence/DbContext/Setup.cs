@@ -22,7 +22,8 @@ public static class Setup
                     o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, moduleName))
                 .UseExceptionProcessor()
                 .AddInterceptors(
-                    sp.GetRequiredService<ApplyAuditingInterceptor>());
+                    sp.GetRequiredService<ApplyAuditingInterceptor>(),
+                    sp.GetRequiredService<ApplySearchLanguageInterceptor>());
         });
 
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TContextImplementation));
