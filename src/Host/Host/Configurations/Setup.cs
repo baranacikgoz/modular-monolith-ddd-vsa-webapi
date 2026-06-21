@@ -28,6 +28,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/securityHeaders");
         AddJsonFile(configuration, $"{configurationsDirectory}/featureFlags");
         AddJsonFile(configuration, $"{configurationsDirectory}/signalR");
+        AddJsonFile(configuration, $"{configurationsDirectory}/fullTextSearch");
 
         configuration.AddEnvironmentVariables();
 

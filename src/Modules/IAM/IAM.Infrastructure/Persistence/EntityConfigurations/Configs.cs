@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.ValueConverters;
 using IAM.Domain.Identity;
@@ -66,14 +67,15 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
             .HasConversion<StronglyTypedIdValueConverter<ApplicationUserId>>()
             .IsRequired(false);
 
+        // Universal layer only — FullName indexed language-neutral (simple_unaccent), never stemmed.
         builder
-            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
-            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ApplicationUser.FullName))
-            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+            .Property<NpgsqlTsVector>(FullTextSearchOptions.SearchVectorColumn)
+            .HasComputedColumnSql(@"setweight(to_tsvector('simple_unaccent', coalesce(""FullName"",'')), 'A')", stored: true)
+            .HasColumnName(FullTextSearchOptions.SearchVectorColumn);
 
         builder
-            .HasIndex(FullTextSearch.SearchVectorColumnName)
-            .HasMethod(FullTextSearch.GinIndexMethod);
+            .HasIndex(FullTextSearchOptions.SearchVectorColumn)
+            .HasMethod(FullTextSearchOptions.IndexMethod);
     }
 }
 

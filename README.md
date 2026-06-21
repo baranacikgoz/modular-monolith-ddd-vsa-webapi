@@ -9,6 +9,7 @@ facilitate the development of scalable and maintainable applications.
 - [Introduction](#introduction)
 - [Features](#features)
 - [Architecture Decisions](docs/ARCHITECTURE.md)
+- [Full-Text Search](docs/FULL_TEXT_SEARCH.md)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
   - [Split Deployment](#split-deployment-microservice-mode)

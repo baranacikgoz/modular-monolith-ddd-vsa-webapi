@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
@@ -43,13 +44,22 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .HasField("_products")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
+        // Per-row authored language feeding the prose layer of the two-layer vector. Stamped by interceptor.
         builder
-            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
-            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(Store.Name), nameof(Store.Description), nameof(Store.Address))
-            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+            .Property(s => s.Language)
+            .HasColumnName(FullTextSearchOptions.LanguageColumn)
+            .HasDefaultValue(FullTextSearchOptions.UniversalConfig)
+            .IsRequired();
+
+        // Two-layer generated tsvector: universal simple_unaccent over Name (A) + Address (B) + per-row Description (C).
+        // IMMUTABLE wrapper fts_store is created in the migration.
+        builder
+            .Property<NpgsqlTsVector>(FullTextSearchOptions.SearchVectorColumn)
+            .HasComputedColumnSql(@"fts_store(""Language"", ""Name"", ""Address"", ""Description"")", stored: true)
+            .HasColumnName(FullTextSearchOptions.SearchVectorColumn);
 
         builder
-            .HasIndex(FullTextSearch.SearchVectorColumnName)
-            .HasMethod(FullTextSearch.GinIndexMethod);
+            .HasIndex(FullTextSearchOptions.SearchVectorColumn)
+            .HasMethod(FullTextSearchOptions.IndexMethod);
     }
 }

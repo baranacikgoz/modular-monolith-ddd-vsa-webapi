@@ -133,3 +133,9 @@ Running a module as an isolated process requires:
 4. **Observability:** Already works. MassTransit propagates `TraceId` through RabbitMQ. The distributed trace spans both processes under a single ID in Aspire Dashboard / Jaeger with no additional wiring.
 
 See [`split-deployment-poc.md`](split-deployment-poc.md) for a live walkthrough.
+
+---
+
+## Related documents
+
+- [`FULL_TEXT_SEARCH.md`](FULL_TEXT_SEARCH.md) — multilingual, accent-insensitive, relevance-ranked search: design decisions, the write→query mechanism, and how to extend and maintain it.

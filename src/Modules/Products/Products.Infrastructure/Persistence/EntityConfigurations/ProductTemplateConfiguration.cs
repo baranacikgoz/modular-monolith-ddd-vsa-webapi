@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -39,13 +40,16 @@ internal sealed class ProductTemplateConfiguration : AuditableEntityConfiguratio
             .HasField("_products")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
+        // Universal layer only — proper-noun fields indexed language-neutral so brands are findable by every locale.
         builder
-            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
-            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(ProductTemplate.Brand), nameof(ProductTemplate.Model), nameof(ProductTemplate.Color))
-            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+            .Property<NpgsqlTsVector>(FullTextSearchOptions.SearchVectorColumn)
+            .HasComputedColumnSql(
+                @"setweight(to_tsvector('simple_unaccent', coalesce(""Brand"",'') || ' ' || coalesce(""Model"",'') || ' ' || coalesce(""Color"",'')), 'A')",
+                stored: true)
+            .HasColumnName(FullTextSearchOptions.SearchVectorColumn);
 
         builder
-            .HasIndex(FullTextSearch.SearchVectorColumnName)
-            .HasMethod(FullTextSearch.GinIndexMethod);
+            .HasIndex(FullTextSearchOptions.SearchVectorColumn)
+            .HasMethod(FullTextSearchOptions.IndexMethod);
     }
 }

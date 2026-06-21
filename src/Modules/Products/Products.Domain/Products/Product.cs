@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Common.Domain.Aggregates;
+using Common.Domain.Entities;
 using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products.DomainEvents.v1;
@@ -26,7 +27,7 @@ public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
     }
 }
 
-public class Product : AggregateRoot<ProductId>
+public class Product : AggregateRoot<ProductId>, ISearchLocalized
 {
     public Product() : base(new ProductId(DefaultIdType.Empty))
     {
@@ -44,6 +45,9 @@ public class Product : AggregateRoot<ProductId>
     public string Description { get; private set; } = string.Empty;
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
+
+    // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
+    public string Language { get; private set; } = "simple_unaccent";
 
     public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description,
         int quantity, decimal price)

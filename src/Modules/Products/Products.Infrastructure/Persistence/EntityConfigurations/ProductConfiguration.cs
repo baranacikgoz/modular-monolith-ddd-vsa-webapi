@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
@@ -43,13 +44,22 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
             .Property(sp => sp.Price)
             .IsRequired();
 
+        // Per-row authored language feeding the prose layer of the two-layer vector. Stamped by interceptor.
         builder
-            .Property<NpgsqlTsVector>(FullTextSearch.SearchVectorColumnName)
-            .IsGeneratedTsVectorColumn(FullTextSearch.Language, nameof(Product.Name), nameof(Product.Description))
-            .HasColumnName(FullTextSearch.SearchVectorColumnName);
+            .Property(sp => sp.Language)
+            .HasColumnName(FullTextSearchOptions.LanguageColumn)
+            .HasDefaultValue(FullTextSearchOptions.UniversalConfig)
+            .IsRequired();
+
+        // Two-layer generated tsvector: universal simple_unaccent over Name (A) + per-row-language Description (B).
+        // IMMUTABLE wrapper fts_product is created in the migration; Npgsql's IsGeneratedTsVectorColumn cannot express it.
+        builder
+            .Property<NpgsqlTsVector>(FullTextSearchOptions.SearchVectorColumn)
+            .HasComputedColumnSql(@"fts_product(""Language"", ""Name"", ""Description"")", stored: true)
+            .HasColumnName(FullTextSearchOptions.SearchVectorColumn);
 
         builder
-            .HasIndex(FullTextSearch.SearchVectorColumnName)
-            .HasMethod(FullTextSearch.GinIndexMethod);
+            .HasIndex(FullTextSearchOptions.SearchVectorColumn)
+            .HasMethod(FullTextSearchOptions.IndexMethod);
     }
 }
