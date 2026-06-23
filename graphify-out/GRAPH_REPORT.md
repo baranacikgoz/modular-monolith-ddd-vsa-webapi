@@ -1,553 +1,682 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-06-19)
+# Graph Report - .  (2026-06-23)
 
 ## Corpus Check
-- 462 files · ~69,134 words
-- Verdict: corpus is large enough that graph structure adds value.
+- Large corpus: 524 files · ~76,225 words. Semantic extraction will be expensive (many Claude tokens). Consider running on a subfolder.
 
 ## Summary
-- 1887 nodes · 2026 edges · 309 communities (112 shown, 197 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.8)
-- Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `b1e88fcd`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
+- 2092 nodes · 3600 edges · 280 communities (152 shown, 128 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 43 edges (avg confidence: 0.82)
+- Token cost: 0 input · 196,367 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Feature Management & Observability Tests|Feature Management & Observability Tests]]
-- [[_COMMUNITY_Architecture Docs & Project Config|Architecture Docs & Project Config]]
-- [[_COMMUNITY_Integration Test Infrastructure|Integration Test Infrastructure]]
-- [[_COMMUNITY_DDD Aggregate Root Core|DDD Aggregate Root Core]]
-- [[_COMMUNITY_Domain Errors & Aggregate Tests|Domain Errors & Aggregate Tests]]
-- [[_COMMUNITY_Product Data Seeding|Product Data Seeding]]
-- [[_COMMUNITY_K6 Load Testing|K6 Load Testing]]
-- [[_COMMUNITY_JSON  Strongly Typed ID Converters|JSON / Strongly Typed ID Converters]]
-- [[_COMMUNITY_Product Aggregate Domain|Product Aggregate Domain]]
-- [[_COMMUNITY_IAM Core Services|IAM Core Services]]
-- [[_COMMUNITY_IAM Domain Types & Application User|IAM Domain Types & Application User]]
-- [[_COMMUNITY_SignalR Notifications Hub|SignalR Notifications Hub]]
-- [[_COMMUNITY_Identity Error Localization|Identity Error Localization]]
-- [[_COMMUNITY_Auth Policies & Feature Flags|Auth Policies & Feature Flags]]
-- [[_COMMUNITY_IAM Module Registration|IAM Module Registration]]
-- [[_COMMUNITY_Captcha Service|Captcha Service]]
-- [[_COMMUNITY_EF Entity Configurations|EF Entity Configurations]]
-- [[_COMMUNITY_Host Integration Test Factory|Host Integration Test Factory]]
-- [[_COMMUNITY_Outbox Processor Worker|Outbox Processor Worker]]
-- [[_COMMUNITY_HTTP Middleware Pipeline|HTTP Middleware Pipeline]]
-- [[_COMMUNITY_FluentValidation Request Validators|FluentValidation Request Validators]]
-- [[_COMMUNITY_REPR Endpoint Handlers|REPR Endpoint Handlers]]
-- [[_COMMUNITY_BackgroundJobs Module|BackgroundJobs Module]]
-- [[_COMMUNITY_Product Audit Log Tests|Product Audit Log Tests]]
-- [[_COMMUNITY_OTel ActivitySource & Metrics|OTel ActivitySource & Metrics]]
-- [[_COMMUNITY_Rate Limiting Policies|Rate Limiting Policies]]
-- [[_COMMUNITY_Cross-Module Message Handlers|Cross-Module Message Handlers]]
-- [[_COMMUNITY_Outbox Configuration Tests|Outbox Configuration Tests]]
-- [[_COMMUNITY_Product EF Configurations|Product EF Configurations]]
-- [[_COMMUNITY_Feature Integration Tests|Feature Integration Tests]]
-- [[_COMMUNITY_Community 30|Community 30]]
-- [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_Community 32|Community 32]]
-- [[_COMMUNITY_Community 33|Community 33]]
-- [[_COMMUNITY_Community 34|Community 34]]
-- [[_COMMUNITY_Community 35|Community 35]]
-- [[_COMMUNITY_Community 36|Community 36]]
-- [[_COMMUNITY_Community 37|Community 37]]
-- [[_COMMUNITY_Community 38|Community 38]]
-- [[_COMMUNITY_Community 39|Community 39]]
-- [[_COMMUNITY_Community 40|Community 40]]
-- [[_COMMUNITY_Community 41|Community 41]]
-- [[_COMMUNITY_Community 42|Community 42]]
-- [[_COMMUNITY_Community 43|Community 43]]
-- [[_COMMUNITY_Community 44|Community 44]]
-- [[_COMMUNITY_Community 45|Community 45]]
-- [[_COMMUNITY_Community 46|Community 46]]
-- [[_COMMUNITY_Community 47|Community 47]]
-- [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 49|Community 49]]
-- [[_COMMUNITY_Community 50|Community 50]]
-- [[_COMMUNITY_Community 51|Community 51]]
-- [[_COMMUNITY_Community 52|Community 52]]
-- [[_COMMUNITY_Community 53|Community 53]]
-- [[_COMMUNITY_Community 54|Community 54]]
-- [[_COMMUNITY_Community 55|Community 55]]
-- [[_COMMUNITY_Community 56|Community 56]]
-- [[_COMMUNITY_Community 57|Community 57]]
-- [[_COMMUNITY_Community 58|Community 58]]
-- [[_COMMUNITY_Community 59|Community 59]]
-- [[_COMMUNITY_Community 60|Community 60]]
-- [[_COMMUNITY_Community 61|Community 61]]
-- [[_COMMUNITY_Community 62|Community 62]]
-- [[_COMMUNITY_Community 63|Community 63]]
-- [[_COMMUNITY_Community 64|Community 64]]
-- [[_COMMUNITY_Community 65|Community 65]]
-- [[_COMMUNITY_Community 66|Community 66]]
-- [[_COMMUNITY_Community 67|Community 67]]
-- [[_COMMUNITY_Community 68|Community 68]]
-- [[_COMMUNITY_Community 69|Community 69]]
-- [[_COMMUNITY_Community 70|Community 70]]
-- [[_COMMUNITY_Community 71|Community 71]]
-- [[_COMMUNITY_Community 72|Community 72]]
-- [[_COMMUNITY_Community 73|Community 73]]
-- [[_COMMUNITY_Community 74|Community 74]]
-- [[_COMMUNITY_Community 75|Community 75]]
-- [[_COMMUNITY_Community 76|Community 76]]
-- [[_COMMUNITY_Community 77|Community 77]]
-- [[_COMMUNITY_Community 78|Community 78]]
-- [[_COMMUNITY_Community 79|Community 79]]
-- [[_COMMUNITY_Community 80|Community 80]]
-- [[_COMMUNITY_Community 81|Community 81]]
-- [[_COMMUNITY_Community 82|Community 82]]
-- [[_COMMUNITY_Community 83|Community 83]]
-- [[_COMMUNITY_Community 84|Community 84]]
-- [[_COMMUNITY_Community 85|Community 85]]
-- [[_COMMUNITY_Community 86|Community 86]]
-- [[_COMMUNITY_Community 87|Community 87]]
-- [[_COMMUNITY_Community 88|Community 88]]
-- [[_COMMUNITY_Community 89|Community 89]]
-- [[_COMMUNITY_Community 90|Community 90]]
-- [[_COMMUNITY_Community 91|Community 91]]
-- [[_COMMUNITY_Community 92|Community 92]]
-- [[_COMMUNITY_Community 93|Community 93]]
-- [[_COMMUNITY_Community 94|Community 94]]
-- [[_COMMUNITY_Community 95|Community 95]]
-- [[_COMMUNITY_Community 96|Community 96]]
-- [[_COMMUNITY_Community 97|Community 97]]
-- [[_COMMUNITY_Community 98|Community 98]]
-- [[_COMMUNITY_Community 99|Community 99]]
-- [[_COMMUNITY_Community 100|Community 100]]
-- [[_COMMUNITY_Community 101|Community 101]]
-- [[_COMMUNITY_Community 102|Community 102]]
-- [[_COMMUNITY_Community 103|Community 103]]
-- [[_COMMUNITY_Community 104|Community 104]]
-- [[_COMMUNITY_Community 105|Community 105]]
-- [[_COMMUNITY_Community 106|Community 106]]
-- [[_COMMUNITY_Community 107|Community 107]]
-- [[_COMMUNITY_Community 108|Community 108]]
-- [[_COMMUNITY_Community 109|Community 109]]
-- [[_COMMUNITY_Community 110|Community 110]]
-- [[_COMMUNITY_Community 111|Community 111]]
-- [[_COMMUNITY_Community 112|Community 112]]
-- [[_COMMUNITY_Community 113|Community 113]]
-- [[_COMMUNITY_Community 114|Community 114]]
-- [[_COMMUNITY_Community 115|Community 115]]
-- [[_COMMUNITY_Community 116|Community 116]]
-- [[_COMMUNITY_Community 117|Community 117]]
-- [[_COMMUNITY_Community 118|Community 118]]
-- [[_COMMUNITY_Community 119|Community 119]]
-- [[_COMMUNITY_Community 120|Community 120]]
-- [[_COMMUNITY_Community 121|Community 121]]
-- [[_COMMUNITY_Community 122|Community 122]]
-- [[_COMMUNITY_Community 123|Community 123]]
-- [[_COMMUNITY_Community 124|Community 124]]
-- [[_COMMUNITY_Community 125|Community 125]]
-- [[_COMMUNITY_Community 126|Community 126]]
-- [[_COMMUNITY_Community 127|Community 127]]
-- [[_COMMUNITY_Community 128|Community 128]]
-- [[_COMMUNITY_Community 129|Community 129]]
-- [[_COMMUNITY_Community 130|Community 130]]
-- [[_COMMUNITY_Community 131|Community 131]]
-- [[_COMMUNITY_Community 132|Community 132]]
-- [[_COMMUNITY_Community 133|Community 133]]
-- [[_COMMUNITY_Community 134|Community 134]]
-- [[_COMMUNITY_Community 135|Community 135]]
-- [[_COMMUNITY_Community 136|Community 136]]
-- [[_COMMUNITY_Community 137|Community 137]]
-- [[_COMMUNITY_Community 138|Community 138]]
-- [[_COMMUNITY_Community 139|Community 139]]
-- [[_COMMUNITY_Community 140|Community 140]]
-- [[_COMMUNITY_Community 141|Community 141]]
-- [[_COMMUNITY_Community 142|Community 142]]
-- [[_COMMUNITY_Community 143|Community 143]]
-- [[_COMMUNITY_Community 144|Community 144]]
-- [[_COMMUNITY_Community 145|Community 145]]
-- [[_COMMUNITY_Community 146|Community 146]]
-- [[_COMMUNITY_Community 147|Community 147]]
-- [[_COMMUNITY_Community 148|Community 148]]
-- [[_COMMUNITY_Community 149|Community 149]]
-- [[_COMMUNITY_Community 150|Community 150]]
-- [[_COMMUNITY_Community 151|Community 151]]
-- [[_COMMUNITY_Community 152|Community 152]]
-- [[_COMMUNITY_Community 154|Community 154]]
-- [[_COMMUNITY_Community 155|Community 155]]
-- [[_COMMUNITY_Community 156|Community 156]]
-- [[_COMMUNITY_Community 157|Community 157]]
-- [[_COMMUNITY_Community 158|Community 158]]
-- [[_COMMUNITY_Community 159|Community 159]]
-- [[_COMMUNITY_Community 160|Community 160]]
-- [[_COMMUNITY_Community 161|Community 161]]
-- [[_COMMUNITY_Community 162|Community 162]]
-- [[_COMMUNITY_Community 163|Community 163]]
-- [[_COMMUNITY_Community 164|Community 164]]
-- [[_COMMUNITY_Community 165|Community 165]]
-- [[_COMMUNITY_Community 166|Community 166]]
-- [[_COMMUNITY_Community 167|Community 167]]
-- [[_COMMUNITY_Community 168|Community 168]]
-- [[_COMMUNITY_Community 169|Community 169]]
-- [[_COMMUNITY_Community 170|Community 170]]
-- [[_COMMUNITY_Community 171|Community 171]]
-- [[_COMMUNITY_Community 172|Community 172]]
-- [[_COMMUNITY_Community 173|Community 173]]
-- [[_COMMUNITY_Community 174|Community 174]]
-- [[_COMMUNITY_Community 175|Community 175]]
-- [[_COMMUNITY_Community 176|Community 176]]
-- [[_COMMUNITY_Community 177|Community 177]]
-- [[_COMMUNITY_Community 178|Community 178]]
-- [[_COMMUNITY_Community 179|Community 179]]
-- [[_COMMUNITY_Community 180|Community 180]]
-- [[_COMMUNITY_Community 181|Community 181]]
-- [[_COMMUNITY_Community 182|Community 182]]
-- [[_COMMUNITY_Community 183|Community 183]]
-- [[_COMMUNITY_Community 184|Community 184]]
-- [[_COMMUNITY_Community 185|Community 185]]
-- [[_COMMUNITY_Community 186|Community 186]]
-- [[_COMMUNITY_Community 187|Community 187]]
-- [[_COMMUNITY_Community 188|Community 188]]
-- [[_COMMUNITY_Community 189|Community 189]]
-- [[_COMMUNITY_Community 190|Community 190]]
-- [[_COMMUNITY_Community 191|Community 191]]
-- [[_COMMUNITY_Community 192|Community 192]]
-- [[_COMMUNITY_Community 193|Community 193]]
-- [[_COMMUNITY_Community 194|Community 194]]
-- [[_COMMUNITY_Community 195|Community 195]]
-- [[_COMMUNITY_Community 196|Community 196]]
-- [[_COMMUNITY_Community 197|Community 197]]
-- [[_COMMUNITY_Community 198|Community 198]]
-- [[_COMMUNITY_Community 199|Community 199]]
-- [[_COMMUNITY_Community 200|Community 200]]
-- [[_COMMUNITY_Community 201|Community 201]]
-- [[_COMMUNITY_Community 202|Community 202]]
-- [[_COMMUNITY_Community 203|Community 203]]
-- [[_COMMUNITY_Community 204|Community 204]]
-- [[_COMMUNITY_Community 205|Community 205]]
-- [[_COMMUNITY_Community 206|Community 206]]
-- [[_COMMUNITY_Community 207|Community 207]]
-- [[_COMMUNITY_Community 208|Community 208]]
-- [[_COMMUNITY_Community 209|Community 209]]
-- [[_COMMUNITY_Community 210|Community 210]]
-- [[_COMMUNITY_Community 211|Community 211]]
-- [[_COMMUNITY_Community 212|Community 212]]
-- [[_COMMUNITY_Community 213|Community 213]]
-- [[_COMMUNITY_Community 214|Community 214]]
-- [[_COMMUNITY_Community 215|Community 215]]
-- [[_COMMUNITY_Community 216|Community 216]]
-- [[_COMMUNITY_Community 217|Community 217]]
-- [[_COMMUNITY_Community 218|Community 218]]
-- [[_COMMUNITY_Community 219|Community 219]]
-- [[_COMMUNITY_Community 220|Community 220]]
-- [[_COMMUNITY_Community 221|Community 221]]
-- [[_COMMUNITY_Community 222|Community 222]]
-- [[_COMMUNITY_Community 223|Community 223]]
-- [[_COMMUNITY_Community 224|Community 224]]
-- [[_COMMUNITY_Community 225|Community 225]]
-- [[_COMMUNITY_Community 226|Community 226]]
-- [[_COMMUNITY_Community 227|Community 227]]
-- [[_COMMUNITY_Community 228|Community 228]]
-- [[_COMMUNITY_Community 229|Community 229]]
-- [[_COMMUNITY_Community 230|Community 230]]
-- [[_COMMUNITY_Community 231|Community 231]]
-- [[_COMMUNITY_Community 232|Community 232]]
-- [[_COMMUNITY_Community 233|Community 233]]
-- [[_COMMUNITY_Community 234|Community 234]]
-- [[_COMMUNITY_Community 235|Community 235]]
-- [[_COMMUNITY_Community 236|Community 236]]
-- [[_COMMUNITY_Community 238|Community 238]]
-- [[_COMMUNITY_Community 239|Community 239]]
-- [[_COMMUNITY_Community 240|Community 240]]
-- [[_COMMUNITY_Community 241|Community 241]]
-- [[_COMMUNITY_Community 242|Community 242]]
-- [[_COMMUNITY_Community 243|Community 243]]
-- [[_COMMUNITY_Community 244|Community 244]]
-- [[_COMMUNITY_Community 245|Community 245]]
-- [[_COMMUNITY_Community 246|Community 246]]
-- [[_COMMUNITY_Community 247|Community 247]]
-- [[_COMMUNITY_Community 248|Community 248]]
-- [[_COMMUNITY_Community 249|Community 249]]
-- [[_COMMUNITY_Community 250|Community 250]]
-- [[_COMMUNITY_Community 251|Community 251]]
-- [[_COMMUNITY_Community 252|Community 252]]
-- [[_COMMUNITY_Community 253|Community 253]]
-- [[_COMMUNITY_Community 254|Community 254]]
-- [[_COMMUNITY_Community 255|Community 255]]
-- [[_COMMUNITY_Community 256|Community 256]]
+- [[_COMMUNITY_Host Logging & Serilog Setup|Host Logging & Serilog Setup]]
+- [[_COMMUNITY_IAM User Identity & Auditing|IAM User Identity & Auditing]]
+- [[_COMMUNITY_Products Store & Audit Services|Products Store & Audit Services]]
+- [[_COMMUNITY_Notifications Dispatch & SignalR Client|Notifications Dispatch & SignalR Client]]
+- [[_COMMUNITY_Modular Monolith Architecture Concepts|Modular Monolith Architecture Concepts]]
+- [[_COMMUNITY_Cross-Module Comm & Arch Audit Skills|Cross-Module Comm & Arch Audit Skills]]
+- [[_COMMUNITY_Domain Event Handling & Outbox Collect|Domain Event Handling & Outbox Collect]]
+- [[_COMMUNITY_Host NuGet Deps (OTelHealth)|Host NuGet Deps (OTel/Health)]]
+- [[_COMMUNITY_k6 Load Test Scripts|k6 Load Test Scripts]]
+- [[_COMMUNITY_REPR Request Validators|REPR Request Validators]]
+- [[_COMMUNITY_IAM Error Catalogs|IAM Error Catalogs]]
+- [[_COMMUNITY_BackgroundJobs Service (Hangfire)|BackgroundJobs Service (Hangfire)]]
+- [[_COMMUNITY_IAM OTP Verify & Token Endpoint|IAM OTP Verify & Token Endpoint]]
+- [[_COMMUNITY_Project Files & Solution|Project Files & Solution]]
+- [[_COMMUNITY_Localized Identity Errors|Localized Identity Errors]]
+- [[_COMMUNITY_Functional Result Extensions|Functional Result Extensions]]
+- [[_COMMUNITY_Launch Settings|Launch Settings]]
+- [[_COMMUNITY_Module Installers (IModule)|Module Installers (IModule)]]
+- [[_COMMUNITY_Host Infrastructure Setup|Host Infrastructure Setup]]
+- [[_COMMUNITY_IAM OTP Send & Captcha|IAM OTP Send & Captcha]]
+- [[_COMMUNITY_Authz Constants & Feature Flags|Authz Constants & Feature Flags]]
+- [[_COMMUNITY_Bounded Capture Streams|Bounded Capture Streams]]
+- [[_COMMUNITY_SignalR Hub & Exception Middleware|SignalR Hub & Exception Middleware]]
+- [[_COMMUNITY_Telemetry (ActivitySourceMeter)|Telemetry (ActivitySource/Meter)]]
+- [[_COMMUNITY_Outbox Processor & Seeder|Outbox Processor & Seeder]]
+- [[_COMMUNITY_EF Core DbContexts|EF Core DbContexts]]
+- [[_COMMUNITY_Integration Event Handler Base|Integration Event Handler Base]]
+- [[_COMMUNITY_Product Template Aggregate|Product Template Aggregate]]
+- [[_COMMUNITY_Outbox Message & Tokens|Outbox Message & Tokens]]
+- [[_COMMUNITY_MassTransit & DI Setup|MassTransit & DI Setup]]
+- [[_COMMUNITY_PermissionAuthorizationHandler|PermissionAuthorizationHandler]]
+- [[_COMMUNITY_DbSet|DbSet]]
+- [[_COMMUNITY_CustomRateLimitingOptions|CustomRateLimitingOptions]]
+- [[_COMMUNITY_PaginationRequestValidator|PaginationRequestValidator]]
+- [[_COMMUNITY_Microsoft.EntityFrameworkCore.Abstractions|Microsoft.EntityFrameworkCore.Abstractions]]
+- [[_COMMUNITY_ISearchLocalized|ISearchLocalized]]
+- [[_COMMUNITY_StoreConfiguration|StoreConfiguration]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Hangfire.PostgreSql|Hangfire.PostgreSql]]
+- [[_COMMUNITY_EventDispatcher|EventDispatcher]]
+- [[_COMMUNITY_NetArchTest.Rules|NetArchTest.Rules]]
+- [[_COMMUNITY_Aigamo.ResXGenerator|Aigamo.ResXGenerator]]
+- [[_COMMUNITY_IOperationFilter|IOperationFilter]]
+- [[_COMMUNITY_IRateLimiterPolicy|IRateLimiterPolicy]]
+- [[_COMMUNITY_Seeder|Seeder]]
+- [[_COMMUNITY_AggregateRoot|AggregateRoot]]
+- [[_COMMUNITY_ApiVersionSet|ApiVersionSet]]
+- [[_COMMUNITY_Outbox Misuse Check|Outbox Misuse Check]]
+- [[_COMMUNITY_IntegrationTestFactory|IntegrationTestFactory]]
+- [[_COMMUNITY_Add Integration Event Command|Add Integration Event Command]]
+- [[_COMMUNITY_Asp.Versioning.Http|Asp.Versioning.Http]]
+- [[_COMMUNITY_IInterModuleRequestHandler|IInterModuleRequestHandler]]
+- [[_COMMUNITY_double|double]]
+- [[_COMMUNITY_RouteHandlerBuilderExtensions|RouteHandlerBuilderExtensions]]
+- [[_COMMUNITY_IList|IList]]
+- [[_COMMUNITY_Microsoft.AspNetCore.SignalR.StackExchangeRedis|Microsoft.AspNetCore.SignalR.StackExchangeRedis]]
+- [[_COMMUNITY_DummyOtpService|DummyOtpService]]
+- [[_COMMUNITY_Cross-Module Reference Violation|Cross-Module Reference Violation]]
+- [[_COMMUNITY_CollectionExtensions|CollectionExtensions]]
+- [[_COMMUNITY_coverlet.collector|coverlet.collector]]
+- [[_COMMUNITY_Bogus Test Data|Bogus Test Data]]
+- [[_COMMUNITY_decimal|decimal]]
+- [[_COMMUNITY_EndpointFilterDelegate|EndpointFilterDelegate]]
+- [[_COMMUNITY_Hangfire|Hangfire]]
+- [[_COMMUNITY_Seeder|Seeder]]
+- [[_COMMUNITY_ApplyAuditingInterceptor|ApplyAuditingInterceptor]]
+- [[_COMMUNITY_CustomRoles|CustomRoles]]
+- [[_COMMUNITY_AuthenticateResult|AuthenticateResult]]
+- [[_COMMUNITY_ValueObject|ValueObject]]
+- [[_COMMUNITY_IResxLocalizer|IResxLocalizer]]
+- [[_COMMUNITY_OutboxModule|OutboxModule]]
+- [[_COMMUNITY_V1ProductCreatedDomainEvent|V1ProductCreatedDomainEvent]]
+- [[_COMMUNITY_IAggregateRoot|IAggregateRoot]]
+- [[_COMMUNITY_ApiVersionDescription|ApiVersionDescription]]
+- [[_COMMUNITY_AsNoTracking Coverage Check|AsNoTracking Coverage Check]]
+- [[_COMMUNITY_GetSeedUserIdsRequest|GetSeedUserIdsRequest]]
+- [[_COMMUNITY_HostCollection|HostCollection]]
+- [[_COMMUNITY_Microsoft.AspNetCore.Identity.EntityFrameworkCore|Microsoft.AspNetCore.Identity.EntityFrameworkCore]]
+- [[_COMMUNITY_RequestLoggingPathPostConfigure|RequestLoggingPathPostConfigure]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_BaseIntegrationTest|BaseIntegrationTest]]
+- [[_COMMUNITY_HttpContextExtensions|HttpContextExtensions]]
+- [[_COMMUNITY_net10.0|net10.0]]
+- [[_COMMUNITY_IServiceProvider|IServiceProvider]]
+- [[_COMMUNITY_enabledManagers|enabledManagers]]
+- [[_COMMUNITY_Activity|Activity]]
+- [[_COMMUNITY_AuditLogRetentionJobRegistrar|AuditLogRetentionJobRegistrar]]
+- [[_COMMUNITY_AuditLogRetentionService|AuditLogRetentionService]]
+- [[_COMMUNITY_Configuration-Driven Module Registration|Configuration-Driven Module Registration]]
+- [[_COMMUNITY_ConfigurationManager|ConfigurationManager]]
+- [[_COMMUNITY_HostTestFactory|HostTestFactory]]
+- [[_COMMUNITY_HttpClient|HttpClient]]
+- [[_COMMUNITY_IntegrationTestWebAppFactory|IntegrationTestWebAppFactory]]
+- [[_COMMUNITY_IOpenApiSchema|IOpenApiSchema]]
+- [[_COMMUNITY_ISmsService|ISmsService]]
+- [[_COMMUNITY_CachingEntryDefaults|CachingEntryDefaults]]
+- [[_COMMUNITY_OutboxCleanupSettings|OutboxCleanupSettings]]
+- [[_COMMUNITY_OutboxTestWebAppFactory|OutboxTestWebAppFactory]]
+- [[_COMMUNITY_IDatabaseSeeder|IDatabaseSeeder]]
+- [[_COMMUNITY_HangfireCustomAuthorizationFilter|HangfireCustomAuthorizationFilter]]
+- [[_COMMUNITY_IdentityResultExtensions|IdentityResultExtensions]]
+- [[_COMMUNITY_ProblemDetailsExtensions|ProblemDetailsExtensions]]
+- [[_COMMUNITY_HttpContextTargetingContextAccessor|HttpContextTargetingContextAccessor]]
+- [[_COMMUNITY_IVariantFeatureManagerExtensions|IVariantFeatureManagerExtensions]]
+- [[_COMMUNITY_IMiddleware|IMiddleware]]
+- [[_COMMUNITY_IModelBinder|IModelBinder]]
+- [[_COMMUNITY_OutboxCleanupJob|OutboxCleanupJob]]
+- [[_COMMUNITY_ProductsModule|ProductsModule]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_RequestBody|RequestBody]]
+- [[_COMMUNITY_JobTargets|JobTargets]]
+- [[_COMMUNITY_CacheKeys|CacheKeys]]
+- [[_COMMUNITY_StringExtensions|StringExtensions]]
+- [[_COMMUNITY_ReverseProxyOptions|ReverseProxyOptions]]
+- [[_COMMUNITY_OutboxMetricsJob|OutboxMetricsJob]]
+- [[_COMMUNITY_SearchLanguageResolver|SearchLanguageResolver]]
+- [[_COMMUNITY_IRoleService|IRoleService]]
+- [[_COMMUNITY_DummySmsGateway|DummySmsGateway]]
+- [[_COMMUNITY_RequestBody|RequestBody]]
+- [[_COMMUNITY_RequestBody|RequestBody]]
+- [[_COMMUNITY_StronglyTypedIdHelper|StronglyTypedIdHelper]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_AuditLogOptions|AuditLogOptions]]
+- [[_COMMUNITY_BackgroundJobsOptions|BackgroundJobsOptions]]
+- [[_COMMUNITY_CaptchaOptions|CaptchaOptions]]
+- [[_COMMUNITY_CorsOptions|CorsOptions]]
+- [[_COMMUNITY_DatabaseOptions|DatabaseOptions]]
+- [[_COMMUNITY_HealthCheckOptions|HealthCheckOptions]]
+- [[_COMMUNITY_JwtOptions|JwtOptions]]
+- [[_COMMUNITY_ModulesOptions|ModulesOptions]]
+- [[_COMMUNITY_OpenApiOptions|OpenApiOptions]]
+- [[_COMMUNITY_OtpOptions|OtpOptions]]
+- [[_COMMUNITY_ResxLocalizationOptions|ResxLocalizationOptions]]
+- [[_COMMUNITY_SecurityHeadersOptions|SecurityHeadersOptions]]
+- [[_COMMUNITY_SignalROptions|SignalROptions]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_AutoMigrateMarker|AutoMigrateMarker]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_CurrentUser|CurrentUser]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Endpoint|Endpoint]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_Setup|Setup]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_Sync AI Settings Command|Sync AI Settings Command]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IInterModuleRequest|IInterModuleRequest]]
+- [[_COMMUNITY_check-csproj-refs.sh|check-csproj-refs.sh]]
+- [[_COMMUNITY_pre-commit-guard.sh|pre-commit-guard.sh]]
+- [[_COMMUNITY_sync-reminder.sh|sync-reminder.sh]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_ApplicationUser|ApplicationUser]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_RabbitMqOptions|RabbitMqOptions]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_IAssemblyReference|IAssemblyReference]]
+- [[_COMMUNITY_Graphify Knowledge Graph Workflow|Graphify Knowledge Graph Workflow]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_Idempotent SQL Script Generation|Idempotent SQL Script Generation]]
+- [[_COMMUNITY_Dual AI Toolchain Sync Contract|Dual AI Toolchain Sync Contract]]
+- [[_COMMUNITY_Central Package Management|Central Package Management]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
+- [[_COMMUNITY_RequestValidator|RequestValidator]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `string` - 37 edges
-2. `Faker` - 30 edges
-3. `LocalizedIdentityErrorDescriber` - 24 edges
-4. `RequireFeatureFilterTests` - 18 edges
-5. `Endpoint` - 17 edges
+1. `Result` - 73 edges
+2. `CustomValidator` - 55 edges
+3. `IProductsDbContext` - 28 edges
+4. `LocalizedIdentityErrorDescriber` - 24 edges
+5. `Error` - 19 edges
 6. `post()` - 16 edges
-7. `BoundedCaptureStream` - 15 edges
-8. `ResultTelemetryExtensionsTests` - 15 edges
-9. `NotificationsHubTests` - 15 edges
-10. `BoundedRequestCaptureStream` - 14 edges
+7. `Product` - 16 edges
+8. `Store` - 16 edges
+9. `ICurrentUser` - 15 edges
+10. `BoundedCaptureStream` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `revoke()` --calls--> `post()`  [INFERRED]
-  k6/lib/auth.js → k6/lib/http.js
-- `RequireFeatureFilterTests` --references--> `ActivityListener`  [EXTRACTED]
-  src/Common/Common.Tests/RequireFeatureFilterTests.cs → src/Common/Common.Tests/ResultTelemetryExtensionsTests.cs
-- `UserRegisteredSignalRHandlerTests` --references--> `FusionCache`  [EXTRACTED]
-  src/Modules/Notifications/Notifications.Tests/IntegrationEventHandlers/UserRegisteredSignalRHandlerTests.cs → src/Modules/Notifications/Notifications.Tests/IntegrationEventHandlers/UserRegisteredSmsHandlerTests.cs
-- `ensureAuth()` --calls--> `register()`  [INFERRED]
-  k6/scenarios/buyer.js → k6/lib/auth.js
-- `ensureAuth()` --calls--> `login()`  [INFERRED]
-  k6/scenarios/buyer.js → k6/lib/auth.js
+- `ISearchLanguageResolver (Culture-Driven Config)` --semantically_similar_to--> `Observability (OpenTelemetry)`  [INFERRED] [semantically similar]
+  docs/FULL_TEXT_SEARCH.md → CLAUDE.md
+- `Scaffold Module Command` --references--> `Telemetry Plan (ActivitySource/Meter)`  [INFERRED]
+  .claude/commands/scaffold-module.md → .claude/commands/plan-feature.md
+- `README (Boilerplate Overview)` --conceptually_related_to--> `Modular Monolith Architecture`  [INFERRED]
+  README.md → CLAUDE.md
+- `SignalR PoC — Notifications Hub Client` --conceptually_related_to--> `IntegrationEvents (Async Cross-Module)`  [INFERRED]
+  signalr-poc/signalr-poc.html → CLAUDE.md
+- `Aspire Dashboard Service (mm.aspire-dashboard)` --conceptually_related_to--> `Observability (OpenTelemetry)`  [INFERRED]
+  docker-compose.yml → CLAUDE.md
 
-## Communities (309 total, 197 thin omitted)
+## Import Cycles
+- None detected.
 
-### Community 0 - "Feature Management & Observability Tests"
-Cohesion: 0.07
-Nodes (9): bool, byte, IMiddleware, EnrichLogsWithUserInfoMiddleware, GlobalExceptionHandlingMiddleware, BoundedCaptureStream, BoundedRequestCaptureStream, RequestResponseBodyLoggingMiddleware (+1 more)
+## Hyperedges (group relationships)
+- **Feature Development Lifecycle** — skills_plan_feature_skill, skills_scaffold_tests_skill, skills_execute_feature_skill, skills_verify_feature_skill [INFERRED 0.80]
+- **Cross-Module Communication Patterns** — skills_add_integration_event_integrationevent, skills_add_integration_event_domaineventhandler, skills_add_inter_module_request_contract, skills_add_inter_module_request_handler [INFERRED 0.85]
+- **Architecture Quality Gate Checks** — skills_audit_architecture_cross_module_refs, skills_audit_architecture_outbox_violation, skills_audit_architecture_asnotracking, skills_audit_architecture_mapping_library [EXTRACTED 0.90]
+- **IntegrationEvent Publish/Consume Flow** — commands_add_integration_event_domaineventhandler, commands_add_integration_event_ieventbus, commands_add_integration_event_integrationevent, commands_add_integration_event_masstransit_consumer, commands_add_integration_event_moduleinstaller [EXTRACTED 1.00]
+- **REPR Endpoint File Set** — commands_implement_endpoint_repr_pattern, commands_implement_endpoint_customvalidator, commands_implement_endpoint_singleasresultasync, commands_implement_endpoint_setup_registration [EXTRACTED 1.00]
+- **Feature Lifecycle Command Chain** — commands_plan_feature_command, commands_execute_feature_command, commands_implement_endpoint_command, commands_verify_feature_command, commands_run_quality_gate_command [INFERRED 0.85]
+- **Transactional Outbox Publish Flow** — claude_transactional_outbox, claude_module_outbox, claude_integration_events, docker_compose_rabbitmq, docker_compose_postgres [EXTRACTED 1.00]
+- **Cross-Module Communication Mechanisms** — claude_integration_events, claude_inter_module_requests, docs_architecture_masstransit_request_client, docker_compose_rabbitmq [EXTRACTED 1.00]
+- **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-### Community 1 - "Architecture Docs & Project Config"
-Cohesion: 0.05
-Nodes (19): BaseIntegrationTest, IntegrationTestCollection, IntegrationTestFactory, PolymorphicEventConverterTests, DbContextExtensions, HostCollection, IntegrationTestCollection, IAsyncLifetime (+11 more)
+## Communities (280 total, 128 thin omitted)
 
-### Community 2 - "Integration Test Infrastructure"
+### Community 0 - "Host Logging & Serilog Setup"
 Cohesion: 0.06
-Nodes (13): AggregateRoot, AuditableEntity, AuditLogEntry, IntegrationEventOutbox, IAggregateRoot, ApplicationUser, ApplicationUser, IdentityUser (+5 more)
+Nodes (29): DbContextExtensions, IHostBuilder, IHostEnvironment, Setup, Setup, IntegrationEvent, IReadOnlyList, JsonConverter (+21 more)
 
-### Community 3 - "DDD Aggregate Root Core"
-Cohesion: 0.05
-Nodes (18): decimal, BodyLoggingHostFactory, RequestBodyLoggingTests, HostTestFactory, Constants, int, IOtpService, RequestLoggingOptions (+10 more)
-
-### Community 4 - "Domain Errors & Aggregate Tests"
+### Community 1 - "IAM User Identity & Auditing"
 Cohesion: 0.06
-Nodes (11): CaptchaErrors, AggregateTests, Error, IdentityErrors, OtpErrors, FeatureFlagResultExtensions, object, Result (+3 more)
+Nodes (31): ApplicationUser, ApplicationUserId, ClaimsPrincipalExtensions, ClaimsPrincipal, AuditLogEntry, AuditableEntityConfiguration, AuditLogEntryConfiguration, ApplicationRoleConfig (+23 more)
 
-### Community 5 - "Product Data Seeding"
+### Community 2 - "Products Store & Audit Services"
+Cohesion: 0.13
+Nodes (12): AuditLogDto, ICurrentUser, IFusionCache, IOptions, FullTextSearchOptions, FullTextSearchOptionsValidator, PaginationResponse, IProductsDbContext (+4 more)
+
+### Community 3 - "Notifications Dispatch & SignalR Client"
 Cohesion: 0.09
-Nodes (6): Seeder, Seeder, Seeder, Seeder, Seeder, Seeder
+Nodes (9): CancellationToken, INotificationDispatcher, INotificationsClient, SignalRNotificationDispatcher, Memory, NotificationPayload, OtpVerificationOutcome, ReadOnlyMemory (+1 more)
 
-### Community 6 - "K6 Load Testing"
-Cohesion: 0.15
-Nodes (22): login(), register(), revoke(), sendOtpForLogin(), sendOtpForRegistration(), turkishName(), bearerHeaders(), del() (+14 more)
-
-### Community 7 - "JSON / Strongly Typed ID Converters"
+### Community 4 - "Modular Monolith Architecture Concepts"
 Cohesion: 0.07
-Nodes (9): JsonConverter, JsonConverterFactory, StronglyTypedIdListReadOnlyJsonConverter, StronglyTypedIdReadOnlyJsonConverter, StronglyTypedIdWriteOnlyJsonConverter, NonNullableConverter, NullableConverter, NullableStronglyTypedIdReadOnlyJsonConverter (+1 more)
+Nodes (45): Configuration-Driven Module Loading, Consumer Idempotency (IntegrationEventHandlerBase), Hybrid DDD (Writes) / VSA (Reads), Functional Result Pipeline (Railway-Oriented), IntegrationEvents (Async Cross-Module), InterModuleRequests (Sync Cross-Module), Modular Monolith Architecture, BackgroundJobs Module (+37 more)
 
-### Community 8 - "Product Aggregate Domain"
-Cohesion: 0.07
-Nodes (10): MassTransitInterModuleRequestClient, HostTestFactory, InProcessSendOtpClient, InProcessVerifyOtpClient, IntegrationTestWebAppFactory, IInterModuleRequestClient, IntegrationTestFactory, OutboxTestWebAppFactory (+2 more)
+### Community 5 - "Cross-Module Comm & Arch Audit Skills"
+Cohesion: 0.06
+Nodes (45): IntegrationEvent Consumer, DomainEventHandler Publisher, IntegrationEvent Record, ModuleInstaller MassTransit Registration, Add Integration Event Skill, IInterModuleRequestClient Caller, InterModuleRequest Contract, InterModuleRequestHandler (+37 more)
 
-### Community 9 - "IAM Core Services"
-Cohesion: 0.1
-Nodes (5): AggregateRoot, New(), Product, New(), Store
+### Community 6 - "Domain Event Handling & Outbox Collect"
+Cohesion: 0.06
+Nodes (22): DateOnly, DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper, IIntegrationEventOutbox, IntegrationEventOutbox, IEvent, ApplicationUser (+14 more)
 
-### Community 10 - "IAM Domain Types & Application User"
-Cohesion: 0.1
-Nodes (8): AggregateTests, ApplicationUserId, DateOnly, ApplicationUserTests, StoreTests, ProductTemplate, StoreTests, Uri
+### Community 7 - "Host NuGet Deps (OTel/Health)"
+Cohesion: 0.05
+Nodes (37): AspNetCore.HealthChecks.NpgSql, AspNetCore.HealthChecks.RabbitMQ, AspNetCore.HealthChecks.Redis, AspNetCore.HealthChecks.UI.Client, Elastic.Serilog.Sinks, FluentValidation.DependencyInjectionExtensions, MassTransit.RabbitMQ, Microsoft.VisualStudio.Azure.Containers.Tools.Targets (+29 more)
 
-### Community 11 - "SignalR Notifications Hub"
-Cohesion: 0.09
-Nodes (15): CustomActions, CustomResources, CustomClaims, JwtClaimNames, FullTextSearch, Checkout, FeatureFlags, IAM (+7 more)
-
-### Community 13 - "Auth Policies & Feature Flags"
-Cohesion: 0.09
-Nodes (6): IamModule, IModule, ICoreModule, IModule, NotificationsModule, ProductsModule
-
-### Community 14 - "IAM Module Registration"
-Cohesion: 0.12
-Nodes (6): double, ICaptchaService, CachedCaptchaService, DummyCaptchaService, ReCaptchaResponse, ReCaptchaService
-
-### Community 15 - "Captcha Service"
-Cohesion: 0.12
-Nodes (10): AuditableEntityConfiguration, ApplicationRoleConfig, ApplicationUserConfig, IdentityRoleClaimConfig, IdentityUserClaimConfig, IdentityUserLoginConfig, IdentityUserRoleConfig, IdentityUserTokenConfig (+2 more)
-
-### Community 16 - "EF Entity Configurations"
+### Community 8 - "k6 Load Test Scripts"
 Cohesion: 0.16
-Nodes (3): BackgroundService, OutboxProcessor, DatabaseSeederOrchestrator
+Nodes (26): JSON_HEADERS, options, login(), register(), revoke(), sendOtpForLogin(), sendOtpForRegistration(), TURKISH_NAMES (+18 more)
 
-### Community 17 - "Host Integration Test Factory"
+### Community 9 - "REPR Request Validators"
+Cohesion: 0.07
+Nodes (17): AbstractValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator (+9 more)
+
+### Community 10 - "IAM Error Catalogs"
+Cohesion: 0.07
+Nodes (11): CaptchaErrors, ErrorExtensions, IdentityErrors, OtpErrors, TokenErrors, StringExtensions, StringLocalizerExtensions, ICollection (+3 more)
+
+### Community 11 - "BackgroundJobs Service (Hangfire)"
+Cohesion: 0.12
+Nodes (8): Action, BackgroundJobsService, IBackgroundJobs, IRecurringBackgroundJobs, RecurringBackgroundJobsService, Expression, RecurringJobOptions, TimeSpan
+
+### Community 12 - "IAM OTP Verify & Token Endpoint"
+Cohesion: 0.13
+Nodes (11): InProcessVerifyOtpClient, VerifyPhoneOtpRequestHandler, VerifyPhoneOtpResponseExtensions, IIAMDbContext, Endpoint, Endpoint, ITokenService, TimeProvider (+3 more)
+
+### Community 13 - "Project Files & Solution"
+Cohesion: 0.09
+Nodes (6): Microsoft.NET.Sdk, Microsoft.AspNetCore.OpenApi, Microsoft.NET.Sdk, Microsoft.NET.Sdk, Microsoft.NET.Sdk, docker-compose
+
+### Community 14 - "Localized Identity Errors"
+Cohesion: 0.14
+Nodes (3): LocalizedIdentityErrorDescriber, IdentityError, IdentityErrorDescriber
+
+### Community 15 - "Functional Result Extensions"
+Cohesion: 0.16
+Nodes (11): FeatureFlagResultExtensions, Func, AsyncExtensions, SyncExtensions, T1, T2, T3, TCurrent (+3 more)
+
+### Community 16 - "Launch Settings"
+Cohesion: 0.08
+Nodes (24): commandName, environmentVariables, launchBrowser, launchUrl, publishAllPorts, ASPNETCORE_ENVIRONMENT, ASPNETCORE_HTTP_PORTS, applicationUrl (+16 more)
+
+### Community 17 - "Module Installers (IModule)"
+Cohesion: 0.09
+Nodes (7): BackgroundJobsModule, IamModule, IApplicationBuilder, Setup, Setup, ICoreModule, IModule
+
+### Community 18 - "Host Infrastructure Setup"
+Cohesion: 0.10
+Nodes (8): Setup, Setup, IConfiguration, Setup, RateLimitingMiddleware, OnRejectedContext, Setup, PartitionedRateLimiter
+
+### Community 19 - "IAM OTP Send & Captcha"
+Cohesion: 0.13
+Nodes (9): IInterModuleRequestClient, InProcessSendOtpClient, IFeatureManager, SendPhoneOtpRequestHandler, SendPhoneOtpRequest, SendPhoneOtpResponse, CachedCaptchaService, DummyCaptchaService (+1 more)
+
+### Community 20 - "Authz Constants & Feature Flags"
 Cohesion: 0.11
-Nodes (10): RequestValidator, RequestValidator, CustomValidator, RequestValidator, CaptchaOptions, CaptchaOptionsValidator, RequestValidator, RequestValidator (+2 more)
+Nodes (14): CustomActions, CustomResources, CustomClaims, JwtClaimNames, Checkout, FeatureFlags, IAM, Notifications (+6 more)
 
-### Community 19 - "HTTP Middleware Pipeline"
-Cohesion: 0.16
-Nodes (3): BackgroundJobsModule, ICoreModule, OutboxModule
-
-### Community 20 - "FluentValidation Request Validators"
-Cohesion: 0.3
-Nodes (3): FakeDiagnosticContext, RequestResponseBodyLoggingMiddlewareTests, IDiagnosticContext
-
-### Community 21 - "REPR Endpoint Handlers"
-Cohesion: 0.2
-Nodes (9): ActivitySource, Counter, RequireFeatureFilter, Meter, BackgroundJobsTelemetry, IamTelemetry, NotificationsTelemetry, ProductsTelemetry (+1 more)
-
-### Community 22 - "BackgroundJobs Module"
+### Community 21 - "Bounded Capture Streams"
 Cohesion: 0.13
-Nodes (7): IRateLimiterPolicy, CreateStoreRateLimitingPolicy, Policies, Policies, RegisterRateLimitingPolicy, Policies, SmsRateLimitingPolicy
+Nodes (7): bool, byte, BoundedCaptureStream, BoundedRequestCaptureStream, ReadOnlySpan, SeekOrigin, Stream
 
-### Community 23 - "Product Audit Log Tests"
+### Community 22 - "SignalR Hub & Exception Middleware"
 Cohesion: 0.13
-Nodes (4): HubCallerContext, NotificationsHubTests, IGroupManager, NotificationsHub
+Nodes (6): Exception, Hub, NotificationsHub, GlobalExceptionHandlingMiddleware, SeedingCompletionTracker, TaskCompletionSource
 
-### Community 24 - "OTel ActivitySource & Metrics"
+### Community 23 - "Telemetry (ActivitySource/Meter)"
+Cohesion: 0.14
+Nodes (13): ActivitySource, Counter, RequireFeatureFilter, Histogram, long, Meter, ObservableGauge, BackgroundJobsTelemetry (+5 more)
+
+### Community 24 - "Outbox Processor & Seeder"
 Cohesion: 0.21
-Nodes (4): InterModuleRequestHandler, IntegrationEventHandlerBase, IConsumer, IInterModuleRequestHandler
+Nodes (4): BackgroundService, LoggerMessage, OutboxProcessor, DatabaseSeederOrchestrator
 
-### Community 26 - "Cross-Module Message Handlers"
-Cohesion: 0.31
-Nodes (3): RequireFeatureFilterTests, IFeatureManagerSnapshot, IResxLocalizer
+### Community 25 - "EF Core DbContexts"
+Cohesion: 0.10
+Nodes (8): DbContext, ModelBuilder, IOutboxDbContext, BaseDbContext, OutboxDbContext, ProductsDbContext, Setup, Setup
 
-### Community 27 - "Outbox Configuration Tests"
+### Community 26 - "Integration Event Handler Base"
+Cohesion: 0.16
+Nodes (7): ConsumeContext, DefaultIdType, IntegrationEventHandlerBase, IConsumer, UserRegisteredSignalRHandler, UserRegisteredSmsHandler, UserRegisteredIntegrationEvent
+
+### Community 27 - "Product Template Aggregate"
 Cohesion: 0.15
-Nodes (5): AuditableEntityConfiguration, AuditLogEntryConfiguration, ProductConfiguration, ProductTemplateConfiguration, StoreConfiguration
+Nodes (8): ProductTemplateConfiguration, List, ProductTemplateId, New(), ProductTemplate, TryParse(), Seeder, Seeder
 
-### Community 29 - "Feature Integration Tests"
-Cohesion: 0.2
-Nodes (4): IOperationFilter, DefaultResponsesOperationFilter, RemoveDefaultResponseSchemaFilter, SwaggerDefaultValues
+### Community 28 - "Outbox Message & Tokens"
+Cohesion: 0.16
+Nodes (7): accessToken, DateTimeOffset, expiresAt, IOutboxMessage, OutboxMessage, refreshTokenBytes, TokenService
 
-### Community 31 - "Community 31"
+### Community 29 - "MassTransit & DI Setup"
 Cohesion: 0.18
-Nodes (4): DbContext, IOutboxDbContext, OutboxDbContext, Setup
+Nodes (6): Assembly, Setup, Setup, IServiceCollection, IWebHostEnvironment, Setup
 
-### Community 33 - "Community 33"
-Cohesion: 0.17
-Nodes (4): Faker, CreateTests, CheckRegistrationTests, GetTests
+### Community 30 - "PermissionAuthorizationHandler"
+Cohesion: 0.13
+Nodes (10): PermissionAuthorizationHandler, PermissionPolicyProvider, PermissionRequirement, AuthorizationHandler, AuthorizationHandlerContext, AuthorizationPolicy, AllowAllAuthorizationHandler, IAuthorizationHandler (+2 more)
 
-### Community 34 - "Community 34"
-Cohesion: 0.17
-Nodes (4): BaseIntegrationTest, ClientKeyGetTests, AuditLogTests, MeGetTests
+### Community 31 - "DbSet"
+Cohesion: 0.13
+Nodes (8): DbSet, PaginationQueryableExtensions, PersistenceQueryableExtensions, IDisposable, IQueryable, PaginationRequest, IDbContext, TDto
 
-### Community 35 - "Community 35"
-Cohesion: 0.2
-Nodes (5): FusionCache, UserRegisteredSmsHandlerTests, ISmsService, DummySmsService, UserRegisteredSmsHandler
+### Community 32 - "CustomRateLimitingOptions"
+Cohesion: 0.20
+Nodes (7): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator, RateLimiterOptions, Policies, Policies
 
-### Community 37 - "Community 37"
+### Community 33 - "PaginationRequestValidator"
+Cohesion: 0.11
+Nodes (9): PaginationRequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator, RequestValidator (+1 more)
+
+### Community 34 - "Microsoft.EntityFrameworkCore.Abstractions"
+Cohesion: 0.13
+Nodes (13): Microsoft.EntityFrameworkCore.Abstractions, Microsoft.Extensions.Identity.Core, Microsoft.NET.Sdk, Microsoft.AspNetCore.Authentication.JwtBearer, Microsoft.NET.Sdk, Microsoft.NET.Sdk, Asp.Versioning.Http, FluentValidation (+5 more)
+
+### Community 35 - "ISearchLocalized"
 Cohesion: 0.18
-Nodes (3): RequestValidator, PaginationRequestValidator, RequestValidator
+Nodes (6): ISearchLocalized, ProductConfiguration, ProductId, New(), Product, TryParse()
 
-### Community 41 - "Community 41"
-Cohesion: 0.22
-Nodes (5): DomainEventHandlerBase, SimulateSomeBusinessHandler, StoreCreatedIntegrationEventPublishingHandler, V1StoreCreatedDomainEventHandlers, V1UserRegisteredDomainEventHandler
+### Community 36 - "StoreConfiguration"
+Cohesion: 0.15
+Nodes (7): StoreConfiguration, Store, V1ProductAddedToStoreDomainEvent, V1ProductRemovedFromStoreDomainEvent, V1StoreAddressUpdatedDomainEvent, V1StoreDescriptionUpdatedDomainEvent, V1StoreNameUpdatedDomainEvent
 
-### Community 43 - "Community 43"
-Cohesion: 0.2
-Nodes (5): NotificationDispatcherTests, IHubClients, IHubContext, INotificationsClient, SignalRNotificationDispatcher
+### Community 37 - "Setup"
+Cohesion: 0.17
+Nodes (5): Setup, Setup, LoadAll, Names, WebApplication
 
-### Community 44 - "Community 44"
-Cohesion: 0.2
-Nodes (4): InterModuleRequestHandler, GetSeedUserIdsRequestHandler, SendPhoneOtpRequestHandler, VerifyPhoneOtpRequestHandler
+### Community 38 - "Hangfire.PostgreSql"
+Cohesion: 0.12
+Nodes (14): Hangfire.PostgreSql, Microsoft.Extensions.Caching.StackExchangeRedis, Microsoft.Extensions.Http.Resilience, Microsoft.FeatureManagement.AspNetCore, Newtonsoft.Json, Npgsql, Scrutor, ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis (+6 more)
 
-### Community 45 - "Community 45"
-Cohesion: 0.22
+### Community 39 - "EventDispatcher"
+Cohesion: 0.23
+Nodes (4): EventDispatcher, ILogger, OutboxSaveHelper, Seeder
+
+### Community 40 - "NetArchTest.Rules"
+Cohesion: 0.13
+Nodes (13): NetArchTest.Rules, Respawn, Microsoft.AspNetCore.Mvc.Testing, Microsoft.NET.Test.Sdk, NSubstitute, Testcontainers.PostgreSql, xunit.runner.visualstudio, xunit.v3 (+5 more)
+
+### Community 41 - "Aigamo.ResXGenerator"
+Cohesion: 0.13
+Nodes (14): Aigamo.ResXGenerator, EntityFrameworkCore.Exceptions.PostgreSQL, Microsoft.Extensions.DependencyInjection.Abstractions, Microsoft.Extensions.Localization, Microsoft.FeatureManagement, Asp.Versioning.Http, FluentValidation, MassTransit (+6 more)
+
+### Community 42 - "IOperationFilter"
+Cohesion: 0.21
+Nodes (7): IOperationFilter, JsonValue, OpenApiOperation, OperationFilterContext, DefaultResponsesOperationFilter, RemoveDefaultResponseSchemaFilter, SwaggerDefaultValues
+
+### Community 43 - "IRateLimiterPolicy"
+Cohesion: 0.15
+Nodes (8): IRateLimiterPolicy, CreateStoreRateLimitingPolicy, Policies, Policies, RegisterRateLimitingPolicy, Policies, SmsRateLimitingPolicy, RateLimitPartition
+
+### Community 45 - "AggregateRoot"
+Cohesion: 0.25
+Nodes (3): AggregateRoot, DomainEvent, ApplicationUser
+
+### Community 46 - "ApiVersionSet"
+Cohesion: 0.14
+Nodes (4): ApiVersionSet, IEndpointRouteBuilder, NotificationsModule, Setup
+
+### Community 47 - "Outbox Misuse Check"
+Cohesion: 0.19
+Nodes (14): Outbox Misuse Check, Execute Feature Command, Aggregate RaiseEvent, Implement Endpoint Command, CustomValidator (FluentValidation), REPR Pattern, Setup.cs Endpoint Registration, SingleAsResultAsync (+6 more)
+
+### Community 48 - "IntegrationTestFactory"
+Cohesion: 0.15
+Nodes (6): IntegrationTestFactory, Host, Program, PostgreSqlContainer, IntegrationTestWebAppFactory, WebApplicationFactory
+
+### Community 49 - "Add Integration Event Command"
+Cohesion: 0.23
+Nodes (13): Add Integration Event Command, DomainEventHandler, IEventBus, IntegrationEvent, MassTransit IConsumer, ModuleInstaller, IInterModuleRequestClient, Add Inter-Module Request Command (+5 more)
+
+### Community 50 - "Asp.Versioning.Http"
+Cohesion: 0.17
+Nodes (9): Asp.Versioning.Http, Asp.Versioning.Mvc.ApiExplorer, SharpGrip.FluentValidation.AutoValidation.Endpoints, Microsoft.NET.Sdk, Microsoft.NET.Sdk, Microsoft.NET.Sdk, Microsoft.EntityFrameworkCore.Design, Npgsql.EntityFrameworkCore.PostgreSQL (+1 more)
+
+### Community 51 - "IInterModuleRequestHandler"
+Cohesion: 0.28
+Nodes (5): IInterModuleRequestHandler, InterModuleRequestHandler, MassTransitInterModuleRequestClient, TRequest, TResponse
+
+### Community 52 - "double"
+Cohesion: 0.23
+Nodes (4): double, FormUrlEncodedContent, ReCaptchaResponse, ReCaptchaService
+
+### Community 53 - "RouteHandlerBuilderExtensions"
+Cohesion: 0.20
+Nodes (4): RouteHandlerBuilderExtensions, RouteHandlerBuilderExtensions, RouteHandlerBuilderExtensions, RouteHandlerBuilder
+
+### Community 54 - "IList"
+Cohesion: 0.30
+Nodes (3): IList, RequestResponseBodyLoggingMiddleware, PathString
+
+### Community 55 - "Microsoft.AspNetCore.SignalR.StackExchangeRedis"
+Cohesion: 0.18
+Nodes (9): Microsoft.AspNetCore.SignalR.StackExchangeRedis, Microsoft.NET.Sdk, Microsoft.NET.Sdk, MassTransit, Microsoft.NET.Test.Sdk, NSubstitute, xunit.runner.visualstudio, ZiggyCreatures.FusionCache (+1 more)
+
+### Community 56 - "DummyOtpService"
+Cohesion: 0.17
+Nodes (4): DummyOtpService, IOtpService, OtpService, OtpServiceBase
+
+### Community 57 - "Cross-Module Reference Violation"
+Cohesion: 0.20
+Nodes (11): Cross-Module Reference Violation, Functional Result Pipeline, Execute Refactor Command, Manage Migration Command, Debezium CDC Connector, EF Core Migration, Idempotent SQL Script, Plan Refactor Command (+3 more)
+
+### Community 58 - "CollectionExtensions"
+Cohesion: 0.29
+Nodes (3): CollectionExtensions, IEnumerable, T
+
+### Community 59 - "coverlet.collector"
+Cohesion: 0.18
+Nodes (10): coverlet.collector, Testcontainers.RabbitMq, Bogus, Microsoft.AspNetCore.Mvc.Testing, Microsoft.NET.Test.Sdk, NSubstitute, Testcontainers.PostgreSql, xunit.runner.visualstudio (+2 more)
+
+### Community 60 - "Bogus Test Data"
+Cohesion: 0.24
+Nodes (10): Bogus Test Data, Fix Bug Command, OTel Trace ID Diagnosis, Scientific Red/Green Bug-Fix Method, IntegrationTestFactory, Scaffold Test Command, IClassFixture Test Pattern, OutboxMessages DB Assertion (+2 more)
+
+### Community 61 - "decimal"
+Cohesion: 0.20
+Nodes (6): decimal, Constants, int, Constants, Constants, Constants
+
+### Community 62 - "EndpointFilterDelegate"
+Cohesion: 0.33
+Nodes (6): EndpointFilterDelegate, EndpointFilterInvocationContext, ResultToCreatedResponseTransformer, ResultToResponseTransformer, IEndpointFilter, ValueTask
+
+### Community 63 - "Hangfire"
+Cohesion: 0.20
+Nodes (8): Hangfire, MassTransit, Microsoft.EntityFrameworkCore.Design, Microsoft.NET.Sdk, Bogus, Microsoft.NET.Test.Sdk, xunit.runner.visualstudio, Microsoft.NET.Sdk
+
+### Community 64 - "Seeder"
+Cohesion: 0.27
+Nodes (4): Seeder, StoreId, New(), TryParse()
+
+### Community 65 - "ApplyAuditingInterceptor"
+Cohesion: 0.28
+Nodes (5): ApplyAuditingInterceptor, ApplySearchLanguageInterceptor, DbContextEventData, InterceptionResult, SaveChangesInterceptor
+
+### Community 66 - "CustomRoles"
+Cohesion: 0.28
 Nodes (5): CustomRoles, CustomPermissions, FrozenDictionary, HashSet, IReadOnlySet
 
-### Community 53 - "Community 53"
+### Community 67 - "AuthenticateResult"
+Cohesion: 0.22
+Nodes (6): AuthenticateResult, AuthenticationHandler, AuthenticationProperties, AuthenticationSchemeOptions, TestAuthHandler, Guid
+
+### Community 69 - "IResxLocalizer"
 Cohesion: 0.28
-Nodes (3): IntegrationEventHandlerBase, UserRegisteredSignalRHandler, UserRegisteredSmsHandler
+Nodes (5): IResxLocalizer, IRuleBuilder, IRuleBuilderOptions, CommonValidations, CommonValidations
 
-### Community 54 - "Community 54"
-Cohesion: 0.28
-Nodes (4): RecurringBackgroundJobsServiceTests, IRecurringJobManagerV2, RecurringBackgroundJobsService, TimeProvider
+### Community 71 - "V1ProductCreatedDomainEvent"
+Cohesion: 0.22
+Nodes (7): V1ProductCreatedDomainEvent, V1ProductDescriptionUpdatedDomainEvent, V1ProductNameUpdatedDomainEvent, V1ProductPriceDecreasedDomainEvent, V1ProductPriceIncreasedDomainEvent, V1ProductQuantityDecreasedDomainEvent, V1ProductQuantityIncreasedDomainEvent
 
-### Community 56 - "Community 56"
-Cohesion: 0.25
-Nodes (3): HealthCheckTests, SanityTests, HttpClient
-
-### Community 62 - "Community 62"
-Cohesion: 0.25
-Nodes (4): PermissionPolicyProvider, PermissionRequirement, IAuthorizationPolicyProvider, IAuthorizationRequirement
-
-### Community 63 - "Community 63"
-Cohesion: 0.32
-Nodes (3): BackgroundJobsServiceTests, BackgroundJobsService, IBackgroundJobClientV2
-
-### Community 65 - "Community 65"
+### Community 72 - "IAggregateRoot"
 Cohesion: 0.29
-Nodes (3): RequestLoggingPathPostConfigure, Setup, IPostConfigureOptions
-
-### Community 66 - "Community 66"
-Cohesion: 0.48
-Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
-
-### Community 67 - "Community 67"
-Cohesion: 0.29
-Nodes (4): Histogram, long, ObservableGauge, OutboxTelemetry
-
-### Community 68 - "Community 68"
-Cohesion: 0.29
-Nodes (3): DummyOtpService, OtpService, OtpServiceBase
-
-### Community 76 - "Community 76"
-Cohesion: 0.33
 Nodes (3): IAggregateRoot, AuditableEntity, IAuditableEntity
 
-### Community 81 - "Community 81"
-Cohesion: 0.29
-Nodes (3): IDatabaseSeeder, IamDatabaseSeeder, ProductsDatabaseSeeder
+### Community 73 - "ApiVersionDescription"
+Cohesion: 0.32
+Nodes (5): ApiVersionDescription, IConfigureOptions, OpenApiInfo, ConfigureSwaggerOptions, SwaggerGenOptions
 
-### Community 86 - "Community 86"
+### Community 74 - "AsNoTracking Coverage Check"
+Cohesion: 0.39
+Nodes (8): AsNoTracking Coverage Check, Audit Architecture Command, Localization Drift Check (IResxLocalizer), Mapping Library Usage Check, REPR Minimal API (No Controllers), Run Quality Gate Command, NetArchTest Architecture Tests, Verify Feature Command
+
+### Community 75 - "GetSeedUserIdsRequest"
+Cohesion: 0.36
+Nodes (4): GetSeedUserIdsRequest, GetSeedUserIdsResponse, GetSeedUserIdsRequestHandler, IResult
+
+### Community 76 - "HostCollection"
+Cohesion: 0.29
+Nodes (5): HostCollection, IntegrationTestCollection, ICollectionFixture, IntegrationTestWebAppFactory, IntegrationTestCollection
+
+### Community 77 - "Microsoft.AspNetCore.Identity.EntityFrameworkCore"
+Cohesion: 0.25
+Nodes (6): Microsoft.AspNetCore.Identity.EntityFrameworkCore, Microsoft.NET.Sdk, Bogus, Microsoft.NET.Test.Sdk, xunit.runner.visualstudio, Microsoft.NET.Sdk
+
+### Community 78 - "RequestLoggingPathPostConfigure"
+Cohesion: 0.36
+Nodes (5): RequestLoggingPathPostConfigure, IPostConfigureOptions, RequestLoggingOptions, RequestLoggingOptionsValidator, SensitivePathRule
+
+### Community 79 - "Endpoint"
+Cohesion: 0.29
+Nodes (3): Endpoint, RouteGroupBuilder, Endpoint
+
+### Community 80 - "BaseIntegrationTest"
+Cohesion: 0.29
+Nodes (4): BaseIntegrationTest, IntegrationTestCollection, IAsyncLifetime, Respawner
+
+### Community 81 - "HttpContextExtensions"
+Cohesion: 0.29
+Nodes (3): HttpContextExtensions, HttpContext, SecurityHeadersMiddleware
+
+### Community 82 - "net10.0"
+Cohesion: 0.29
+Nodes (6): net10.0, Microsoft.AspNetCore.Mvc.Testing, Microsoft.NET.Test.Sdk, xunit.runner.visualstudio, xunit.v3, Microsoft.NET.Sdk
+
+### Community 84 - "enabledManagers"
+Cohesion: 0.29
+Nodes (6): enabledManagers, extends, packageRules, schedule, $schema, timezone
+
+### Community 88 - "Configuration-Driven Module Registration"
 Cohesion: 0.33
+Nodes (6): Configuration-Driven Module Registration, BaseDbContext, Scaffold Module Command, IModule Implementation, Split-Project DDD Layering, Module Telemetry Class
+
+### Community 89 - "ConfigurationManager"
+Cohesion: 0.40
+Nodes (3): ConfigurationManager, Setup, WebApplicationBuilder
+
+### Community 91 - "HttpClient"
+Cohesion: 0.33
+Nodes (4): HttpClient, HttpStandardResilienceOptions, IHttpClientBuilder, Setup
+
+### Community 93 - "IOpenApiSchema"
+Cohesion: 0.33
+Nodes (4): IOpenApiSchema, ISchemaFilter, SchemaFilterContext, StronglyTypedIdSchemaFilter
+
+### Community 95 - "CachingEntryDefaults"
+Cohesion: 0.47
 Nodes (5): CachingEntryDefaults, CachingOptions, CachingOptionsValidator, Redis, RedisValidator
 
-### Community 87 - "Community 87"
-Cohesion: 0.4
-Nodes (3): ResultToCreatedResponseTransformer, ResultToResponseTransformer, IEndpointFilter
-
-### Community 88 - "Community 88"
-Cohesion: 0.33
-Nodes (3): AuthenticationHandler, TestAuthHandler, Guid
-
-### Community 93 - "Community 93"
-Cohesion: 0.33
-Nodes (3): IClassFixture, OutboxBackoffTests, OutboxTestWebAppFactory
-
-### Community 99 - "Community 99"
-Cohesion: 0.33
-Nodes (3): IdentityDbContext, IIAMDbContext, IAMDbContext
-
-### Community 104 - "Community 104"
-Cohesion: 0.4
-Nodes (4): CustomRateLimitingOptions, CustomRateLimitingOptionsValidator, FixedWindow, FixedWindowValidator
-
-### Community 106 - "Community 106"
-Cohesion: 0.4
+### Community 96 - "OutboxCleanupSettings"
+Cohesion: 0.47
 Nodes (4): OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator
 
-### Community 107 - "Community 107"
-Cohesion: 0.4
+### Community 98 - "IDatabaseSeeder"
+Cohesion: 0.33
+Nodes (3): IDatabaseSeeder, IamDatabaseSeeder, ProductsDatabaseSeeder
+
+### Community 99 - "HangfireCustomAuthorizationFilter"
+Cohesion: 0.40
+Nodes (3): HangfireCustomAuthorizationFilter, DashboardContext, IDashboardAsyncAuthorizationFilter
+
+### Community 102 - "HttpContextTargetingContextAccessor"
+Cohesion: 0.40
+Nodes (3): HttpContextTargetingContextAccessor, ITargetingContextAccessor, TargetingContext
+
+### Community 103 - "IVariantFeatureManagerExtensions"
+Cohesion: 0.40
+Nodes (3): IVariantFeatureManagerExtensions, IVariantFeatureManager, TVariant
+
+### Community 104 - "IMiddleware"
+Cohesion: 0.40
+Nodes (3): IMiddleware, EnrichLogsWithUserInfoMiddleware, RequestDelegate
+
+### Community 105 - "IModelBinder"
+Cohesion: 0.40
+Nodes (3): IModelBinder, StronglyTypedIdBinder, ModelBindingContext
+
+### Community 109 - "RequestBody"
+Cohesion: 0.67
 Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
-### Community 108 - "Community 108"
-Cohesion: 0.4
-Nodes (3): DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper
+### Community 118 - "RequestBody"
+Cohesion: 0.67
+Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
-### Community 118 - "Community 118"
-Cohesion: 0.4
-Nodes (3): BaseDbContext, IProductsDbContext, ProductsDbContext
-
-### Community 134 - "Community 134"
-Cohesion: 0.4
-Nodes (3): IDbContext, IIAMDbContext, IProductsDbContext
-
-### Community 137 - "Community 137"
-Cohesion: 0.4
-Nodes (3): RecurringBackgroundJobsService, IRecurringBackgroundJobs, RecurringJobOptions
+### Community 119 - "RequestBody"
+Cohesion: 0.67
+Nodes (3): RequestBody, RequestBodyValidator, RequestValidator
 
 ## Knowledge Gaps
-- **94 isolated node(s):** `Host`, `Program`, `bool`, `CustomRateLimitingOptions`, `FixedWindow` (+89 more)
+- **233 isolated node(s):** `check-csproj-refs.sh script`, `pre-commit-guard.sh script`, `sync-reminder.sh script`, `docker-compose`, `TURKISH_NAMES` (+228 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **197 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **128 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `string` connect `SignalR Notifications Hub` to `Feature Management & Observability Tests`, `DDD Aggregate Root Core`, `Community 67`, `Community 69`, `Community 68`, `JSON / Strongly Typed ID Converters`, `Product Aggregate Domain`, `IAM Domain Types & Application User`, `Community 45`, `Community 110`, `Community 143`, `Community 111`, `Community 46`, `REPR Endpoint Handlers`, `Community 88`, `Cross-Module Message Handlers`, `Product EF Configurations`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Why does `int` connect `DDD Aggregate Root Core` to `Feature Management & Observability Tests`, `Product Aggregate Domain`, `Product Data Seeding`?**
+- **Why does `CustomValidator` connect `REPR Request Validators` to `Host Logging & Serilog Setup`, `Products Store & Audit Services`, `AuditLogOptions`, `BackgroundJobsOptions`, `CaptchaOptions`, `CorsOptions`, `DatabaseOptions`, `HealthCheckOptions`, `JwtOptions`, `ModulesOptions`, `OpenApiOptions`, `OtpOptions`, `ResxLocalizationOptions`, `SecurityHeadersOptions`, `SignalROptions`, `CustomRateLimitingOptions`, `PaginationRequestValidator`, `IInterModuleRequestHandler`, `RequestValidator`, `RequestLoggingPathPostConfigure`, `RequestValidator`, `RequestValidator`, `RequestValidator`, `RequestValidator`, `RequestValidator`, `CachingEntryDefaults`, `OutboxCleanupSettings`, `RequestValidator`, `RequestValidator`, `RequestBody`, `ReverseProxyOptions`, `RequestBody`, `RequestBody`?**
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+- **Why does `Result` connect `Products Store & Audit Services` to `Notifications Dispatch & SignalR Client`, `IdentityResultExtensions`, `IAM Error Catalogs`, `GetSeedUserIdsRequest`, `IAM OTP Verify & Token Endpoint`, `Functional Result Extensions`, `IAM OTP Send & Captcha`, `double`, `Activity`, `CollectionExtensions`, `Product Template Aggregate`, `DbSet`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `RequireFeatureFilterTests` connect `Cross-Module Message Handlers` to `Integration Test Infrastructure`, `Community 101`, `Community 167`, `SignalR Notifications Hub`, `Product EF Configurations`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **What connects `Host`, `Program`, `bool` to the rest of the system?**
-  _94 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Feature Management & Observability Tests` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
-- **Should `Architecture Docs & Project Config` be split into smaller, more focused modules?**
-  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
-- **Should `Integration Test Infrastructure` be split into smaller, more focused modules?**
-  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+- **Why does `FullTextSearchOptions` connect `Products Store & Audit Services` to `SearchLanguageResolver`, `Authz Constants & Feature Flags`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **What connects `check-csproj-refs.sh script`, `pre-commit-guard.sh script`, `sync-reminder.sh script` to the rest of the system?**
+  _239 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Host Logging & Serilog Setup` be split into smaller, more focused modules?**
+  _Cohesion score 0.05698778833107191 - nodes in this community are weakly interconnected._
+- **Should `IAM User Identity & Auditing` be split into smaller, more focused modules?**
+  _Cohesion score 0.057859703020993344 - nodes in this community are weakly interconnected._
+- **Should `Products Store & Audit Services` be split into smaller, more focused modules?**
+  _Cohesion score 0.12670068027210885 - nodes in this community are weakly interconnected._
