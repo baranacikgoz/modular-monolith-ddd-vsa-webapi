@@ -42,7 +42,7 @@ dotnet-build.log
 # UNIGNORE RULES — order matters; later rules override earlier ones
 # ══════════════════════════════════════════════════════════════════
 
-# C# source — aggregates, handlers, endpoints, tests, everything
+# C# source — aggregates, handlers, endpoints, domain, application, infra
 !**/*.cs
 # Re-ignore AFTER !**/*.cs so these are actually excluded:
 **/*.Designer.cs
@@ -52,21 +52,13 @@ dotnet-build.log
 **/*.g.cs
 # EF migration files are generated schema diffs — entity configs carry the same info
 **/Migrations/*.cs
+# Tests mirror prod structure — high node count, low architectural signal
+**/*Tests/**/*.cs
+**/*.Tests.cs
+**/*Tests.cs
 
-# Project and solution files — declare module boundaries & deps
-!**/*.csproj
-!*.sln
-
-# Central build and package manifests
-!Directory.Build.props
-!Directory.Packages.props
+# Root global usings (one small but real source file)
 !GlobalUsings.cs
-
-# App config — module registration lives here
-!**/appsettings.json
-
-# Localization resources
-!**/*.resx
 
 # Markdown docs and AI instructions
 !CLAUDE.md
@@ -76,17 +68,8 @@ dotnet-build.log
 !.claude/commands/*.md
 !.agents/skills/*.md
 
-# Postman collection — encodes complete API user journeys and endpoint sequences
-!postman/*.json
-
-# Infrastructure topology — encodes real architectural decisions:
-#   docker-compose.yml    service graph and networking
-#   debezium-init/        CDC connector: which DB tables → which Kafka topics
-#   db-init/              WAL level and Postgres publication setup
-#   kafka-init/           Kafka topic names and partition config
-#   observability/        OTel collector pipeline, Prometheus scrape targets
+# Infrastructure topology — canonical service graph & networking only.
+# Variant composes (.app/.split/.perf) are deploy permutations, not architecture.
 !docker-compose.yml
-!debezium-init/**
-!db-init/**
-!kafka-init/**
-!observability/**
+
+# k6 load-test scripts are intentionally excluded (perf harness, no arch value).
