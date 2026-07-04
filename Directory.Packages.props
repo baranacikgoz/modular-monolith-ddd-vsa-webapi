@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Aigamo.ResXGenerator" Version="4.3.0" />
+    <PackageVersion Include="Aigamo.ResXGenerator" Version="4.4.0" />
     <!-- Transitive pin: MessagePack <2.5.192 has GHSA-hv8m-jj95-wg3x (high). Pulled via SignalR.StackExchangeRedis. -->
     <PackageVersion Include="MessagePack" Version="3.1.7" />
     <PackageVersion Include="MessagePack.Annotations" Version="3.1.7" />
