@@ -10,7 +10,9 @@ internal sealed partial class Seeder
     private async Task SeedProductAsync(List<StoreId> storeIds, List<ProductTemplateId> productTemplateIds,
         int storeProductCountPerStore, CancellationToken cancellationToken)
     {
+#pragma warning disable S2245 // Fixed seed is intentional for reproducible seed data; not security-sensitive.
         var random = new Random(123);
+#pragma warning restore S2245
 
         for (var i = 0; i < storeIds.Count; i++)
         {
