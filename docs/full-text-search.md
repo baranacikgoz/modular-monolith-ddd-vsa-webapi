@@ -320,4 +320,4 @@ Run per module: `make test-iam`, `make test-products`.
 
 ---
 
-_When this design is implemented or changed, keep this document and `GEMINI.md`/`.agents/skills/` guidance in sync per the repository's two-toolchain sync contract._
+_When this design is implemented or changed, keep this document in sync with the relevant skills under `.claude/`._

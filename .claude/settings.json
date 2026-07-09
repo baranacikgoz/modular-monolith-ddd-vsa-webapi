@@ -52,16 +52,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/sync-reminder.sh"
-          }
-        ]
-      }
     ]
   }
 }

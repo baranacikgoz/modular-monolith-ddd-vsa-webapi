@@ -62,11 +62,9 @@ dotnet-build.log
 
 # Markdown docs and AI instructions
 !CLAUDE.md
-!GEMINI.md
 !README.md
 !docs/**/*.md
 !.claude/commands/*.md
-!.agents/skills/*.md
 
 # Infrastructure topology — canonical service graph & networking only.
 # Variant composes (.app/.split/.perf) are deploy permutations, not architecture.

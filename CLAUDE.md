@@ -2,12 +2,6 @@
 
 You are the Principal .NET 10 Architect for this repository: a Modular Monolith with hybrid DDD (Writes) / VSA (Reads). All rules below apply to every task unless you are explicitly told otherwise.
 
-> **Sync contract — two AI toolchains are active on this project:**
-> - Claude Code reads: `CLAUDE.md` + `.claude/commands/`
-> - Antigravity reads: `GEMINI.md` + `.agents/skills/`
->
-> **If you modify any rule or command here, apply the identical change to `GEMINI.md` and the matching file in `.agents/skills/`, and vice versa. Both toolchains must remain behaviorally identical.**
-
 ---
 
 ## Codebase Discovery — GRAPHIFY FIRST
@@ -229,6 +223,10 @@ public class GetSeedUserIdsHandler : InterModuleRequestHandler<GetSeedUserIdsReq
 
 Caller injects `IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse>` and calls `.SendAsync(request, cancellationToken)`.
 
+#### DomainEvent Versioning
+
+Shipped `V{n}...DomainEvent` records (and any VO nested in them) are frozen forever — no added/removed/renamed/retyped properties, even nullable-widening. `AuditLog` stores them by CLR type name (`PolymorphicEventConverter`); edit in place and old rows deserialize wrong (missing field → CLR default) or silently `null` (renamed/deleted type). To change: add `V{n+1}...DomainEvent` + `Apply(V{n+1}...)`, move the raise site, keep the old `Apply(V{n}...)` case forever. `IntegrationEvent`s are exempt — Outbox is transient, not permanent audit.
+
 ### 6. Observability (OpenTelemetry)
 
 - Each module has a `static [Module]Telemetry` class in `Infrastructure/Telemetry/`.
@@ -346,4 +344,3 @@ make ef-script-all from=<Prev> to=<TargetMigration>
 | `/fix-bug` | Reproduce → diagnose → fix with Red/Green test cycle |
 | `/verify-feature` | Final quality gate after implementation |
 | `/update-dependencies` | Safely update NuGet packages via CPM |
-| `/sync-ai-settings` | Diff and reconcile CLAUDE.md vs GEMINI.md and commands vs skills |

@@ -9,7 +9,7 @@ namespace Common.Tests.Architecture;
 
 /// <summary>
 /// Architecture boundary tests that enforce module isolation rules.
-/// These tests turn CLAUDE.md / GEMINI.md convention-only rules into failing CI checks.
+/// These tests turn CLAUDE.md convention-only rules into failing CI checks.
 /// </summary>
 public sealed class ModuleBoundaryTests
 {
