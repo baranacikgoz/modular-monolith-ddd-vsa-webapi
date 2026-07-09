@@ -154,12 +154,12 @@ public class RefreshTests : BaseIntegrationTest
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
 
-        // Assert — expired token must be rejected
-        Assert.False(response.IsSuccessStatusCode);
+        // Assert — expired token must be rejected as an auth failure (401), not a validation error (400)
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task RefreshToken_WithMalformedBase64_ReturnsBadRequest()
+    public async Task RefreshToken_WithMalformedBase64_ReturnsUnauthorized()
     {
         // Arrange — this specifically tests that the endpoint does NOT throw a 500
         // due to the FormatException that Convert.FromBase64String throws on bad input.
@@ -169,8 +169,7 @@ public class RefreshTests : BaseIntegrationTest
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
 
-        // Assert — must not be a 500; should be 4xx (domain error)
-        Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.False(response.IsSuccessStatusCode);
+        // Assert — an unusable token is an auth failure (401), not a validation error (400)
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }
