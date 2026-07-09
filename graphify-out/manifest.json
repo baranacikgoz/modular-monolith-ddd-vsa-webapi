@@ -85,9 +85,9 @@
     "semantic_hash": "0b9c2df48c9cbe983edd18ef79b21684"
   },
   "renovate.json": {
-    "mtime": 1781871562.1130807,
-    "ast_hash": "7edb7dd7600f17d50b9fe87eeef1be33",
-    "semantic_hash": "7edb7dd7600f17d50b9fe87eeef1be33"
+    "mtime": 1783592763.2751489,
+    "ast_hash": "aa2a576bff1a3c6b3d743e740b811837",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/AuditLog/AuditLogDto.cs": {
     "mtime": 1779899541.668817,
@@ -150,9 +150,9 @@
     "semantic_hash": "c7e0208d04c4e88978451d247fd17caf"
   },
   "src/Common/Common.Application/Common.Application.csproj": {
-    "mtime": 1779899541.6695573,
-    "ast_hash": "ab822c6a5f34a31a03250b2a6d541d18",
-    "semantic_hash": "ab822c6a5f34a31a03250b2a6d541d18"
+    "mtime": 1783592801.221242,
+    "ast_hash": "a8df6f8c94d33acd82ab6927cd5aa134",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/DTOs/AuditableEntityResponse.cs": {
     "mtime": 1779899541.6696477,
@@ -710,9 +710,9 @@
     "semantic_hash": "b052172ab296fee995a660798dcd3b75"
   },
   "src/Common/Common.IntegrationEvents/Common.IntegrationEvents.csproj": {
-    "mtime": 1779899541.6769454,
-    "ast_hash": "ee47f2b34805efb1f43b066190740deb",
-    "semantic_hash": "ee47f2b34805efb1f43b066190740deb"
+    "mtime": 1783592809.9440346,
+    "ast_hash": "38ce0591eee300d4b909704cb2e49d7c",
+    "semantic_hash": ""
   },
   "src/Common/Common.IntegrationEvents/IAM.cs": {
     "mtime": 1779899541.676989,
@@ -945,9 +945,9 @@
     "semantic_hash": "8927a1c1fd47f302feef7d3a2f7e9043"
   },
   "src/Host/Host/Host.csproj": {
-    "mtime": 1780498707.614873,
-    "ast_hash": "311dd6b8c16c6839a6f25d3a148bc219",
-    "semantic_hash": "311dd6b8c16c6839a6f25d3a148bc219"
+    "mtime": 1783592791.1237013,
+    "ast_hash": "001f717227c75de9b379e468128e4bfd",
+    "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.ForwardedHeaders.cs": {
     "mtime": 1779899541.6802542,
@@ -990,9 +990,9 @@
     "semantic_hash": "ad983791b01458023695af5d0ccf4498"
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1780314601.2864375,
-    "ast_hash": "07dba8469335ff8857a4d83f7ebfbf90",
-    "semantic_hash": "07dba8469335ff8857a4d83f7ebfbf90"
+    "mtime": 1783588249.6386077,
+    "ast_hash": "c1055f8228390e5df3fdf3dafb94c778",
+    "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/StringExtensions.cs": {
     "mtime": 1779899541.680859,
@@ -1040,7 +1040,7 @@
     "semantic_hash": "295c0b8dd3600dd211d9f22b9a9fa988"
   },
   "src/Host/Host/Swagger/DefaultResponsesOperationFilter.cs": {
-    "mtime": 1779899541.681519,
+    "mtime": 1783592649.5846233,
     "ast_hash": "2c5c2c8e444f5bb74dcc34edfd8247a1",
     "semantic_hash": "2c5c2c8e444f5bb74dcc34edfd8247a1"
   },
@@ -2305,9 +2305,9 @@
     "semantic_hash": "cc0c77b074457e1941933aa3468df643"
   },
   "src/Modules/Products/Products.Infrastructure/Persistence/Seeding/Seeder.Products.cs": {
-    "mtime": 1779899541.7030246,
-    "ast_hash": "0746f7fbcb74aa76f062b4502bf3b4c9",
-    "semantic_hash": "0746f7fbcb74aa76f062b4502bf3b4c9"
+    "mtime": 1783588249.6387835,
+    "ast_hash": "d825759debbe0060feafa2652757348b",
+    "semantic_hash": ""
   },
   "src/Modules/Products/Products.Infrastructure/Persistence/Seeding/Seeder.Stores.cs": {
     "mtime": 1779899541.7030861,
