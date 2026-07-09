@@ -4,7 +4,6 @@
     <PackageReference Include="Asp.Versioning.Http"/>
     <PackageReference Include="MassTransit"/>
     <PackageReference Include="FluentValidation"/>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"/>
     <PackageReference Include="ZiggyCreatures.FusionCache"/>
     <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"/>

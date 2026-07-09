@@ -1,10 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Common.Domain\Common.Domain.csproj"/>
   </ItemGroup>
 

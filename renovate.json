@@ -54,6 +54,12 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchPackageNames": ["Microsoft.OpenApi"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false,
+      "description": "Swashbuckle.AspNetCore 10.2.3 (latest) is binary-incompatible with Microsoft.OpenApi v3 (MissingMethodException on IOpenApiRequestBody.Content at runtime). Re-enable once Swashbuckle ships v3 support."
     }
   ]
 }
