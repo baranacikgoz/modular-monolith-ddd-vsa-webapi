@@ -7,7 +7,7 @@
     <PackageVersion Include="Aigamo.ResXGenerator" Version="4.4.0" />
     <!-- Transitive pin: MessagePack <2.5.192 has GHSA-hv8m-jj95-wg3x (high). Pulled via SignalR.StackExchangeRedis. -->
     <PackageVersion Include="MessagePack" Version="3.1.7" />
-    <PackageVersion Include="MessagePack.Annotations" Version="3.1.7" />
+    <PackageVersion Include="MessagePack.Annotations" Version="3.1.8" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" />
     <!-- Roslyn set kept aligned at 5.3.0. CSharp.Workspaces (transitive via EF Design) requires CSharp/Common = 5.3.0 exactly; pin all four so the constraint holds. -->
