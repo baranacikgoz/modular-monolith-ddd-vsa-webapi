@@ -93,7 +93,9 @@ internal static partial class Setup
                     }
                     else if (corsOptions.AllowedOrigins is ["*"])
                     {
+#pragma warning disable S5122 // Wildcard is explicit ops-configured opt-in via CorsOptions, not a hardcoded default.
                         builder.AllowAnyOrigin();
+#pragma warning restore S5122
                     }
                     else
                     {
