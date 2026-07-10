@@ -312,9 +312,11 @@ public class SessionEdgeCasesTests : BaseIntegrationTest
         var request = new RefreshRequest { RefreshToken = Convert.ToBase64String(tokenBytes) };
 
         // Act — fire both requests concurrently.
-        var task1 = client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
-        var task2 = client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
-        var responses = await Task.WhenAll(task1, task2);
+        var responses = await Task.WhenAll(
+            client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request),
+            client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request));
+        using var response1 = responses[0];
+        using var response2 = responses[1];
 
         // Assert — exactly one succeeded; the loser got a clean error, not a 500.
         var successCount = responses.Count(r => r.IsSuccessStatusCode);
