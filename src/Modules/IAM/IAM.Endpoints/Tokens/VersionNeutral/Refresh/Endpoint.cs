@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Common.Application.Extensions;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Extensions;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Constants = IAM.Infrastructure.RateLimiting.Constants;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
@@ -39,6 +41,7 @@ internal static partial class Endpoint
         ITokenService tokenService,
         HttpContext httpContext,
         ILogger<ApplicationUser> logger,
+        IOptions<JwtOptions> jwtOptions,
         CancellationToken cancellationToken)
     {
         using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
@@ -58,8 +61,8 @@ internal static partial class Endpoint
                         s => s.Id,
                         (rt, s) => new
                         {
-                            rt.Id, rt.ConsumedAt, rt.ExpiresAt, s.UserId, SessionId = s.Id, s.RevokedAt,
-                            s.AbsoluteExpiresAt
+                            rt.Id, rt.ConsumedAt, rt.ExpiresAt, rt.ReplacedByTokenId, s.UserId, SessionId = s.Id,
+                            s.RevokedAt, s.AbsoluteExpiresAt
                         })
                     .SingleOrDefaultAsync(cancellationToken);
 
@@ -82,24 +85,51 @@ internal static partial class Endpoint
                     return Result<Response>.Failure(TokenErrors.RefreshTokenExpired);
                 }
 
+                var effectiveTokenId = lookup.Id;
+
                 if (lookup.ConsumedAt is not null)
                 {
-                    // Theft signal: a previously-rotated-away token was replayed. Revoke only this one
-                    // session and report the same generic error — don't leak detection to the caller.
-                    LogTokenReuseDetected(logger, lookup.UserId, lookup.SessionId.ToString());
-                    IamTelemetry.TokenReuseDetected.Add(1);
+                    // Lost-response retry: the client rotated successfully but never saw the response
+                    // (e.g. process killed mid-flight) and retries with the now-dead token. If its
+                    // immediate successor is still live and we're within the grace window, rotate that
+                    // successor instead of flagging theft — replaying anything older than one hop back,
+                    // or past the window, still falls through to reuse detection below.
+                    RefreshTokenId? graceSuccessorId = null;
+                    if (lookup.ReplacedByTokenId is { } successorId &&
+                        utcNowForExpiryChecks - lookup.ConsumedAt.Value <=
+                        TimeSpan.FromSeconds(jwtOptions.Value.RefreshTokenReuseGraceWindowInSeconds))
+                    {
+                        graceSuccessorId = await dbContext
+                            .RefreshTokens
+                            .AsNoTracking()
+                            .TagWith(nameof(RefreshToken), successorId)
+                            .Where(rt => rt.Id == successorId && rt.ConsumedAt == null &&
+                                         rt.ExpiresAt > utcNowForExpiryChecks)
+                            .Select(rt => (RefreshTokenId?)rt.Id)
+                            .SingleOrDefaultAsync(cancellationToken);
+                    }
 
-                    await dbContext
-                        .Users
-                        .Include(u => u.Sessions.Where(s => s.Id == lookup.SessionId))
-                        .TagWith(nameof(RefreshToken), lookup.UserId)
-                        .Where(u => u.Id == lookup.UserId)
-                        .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
-                        .TapAsync(user => user.RevokeSession(
-                            user.Sessions.Single(), SessionRevokedReason.TokenReuseDetected, timeProvider.GetUtcNow()))
-                        .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+                    if (graceSuccessorId is null)
+                    {
+                        // Theft signal: a previously-rotated-away token was replayed. Revoke only this one
+                        // session and report the same generic error — don't leak detection to the caller.
+                        LogTokenReuseDetected(logger, lookup.UserId, lookup.SessionId.ToString());
+                        IamTelemetry.TokenReuseDetected.Add(1);
 
-                    return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
+                        await dbContext
+                            .Users
+                            .Include(u => u.Sessions.Where(s => s.Id == lookup.SessionId))
+                            .TagWith(nameof(RefreshToken), lookup.UserId)
+                            .Where(u => u.Id == lookup.UserId)
+                            .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
+                            .TapAsync(user => user.RevokeSession(
+                                user.Sessions.Single(), SessionRevokedReason.TokenReuseDetected, timeProvider.GetUtcNow()))
+                            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+
+                        return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
+                    }
+
+                    effectiveTokenId = graceSuccessorId.Value;
                 }
 
                 if (lookup.RevokedAt is not null)
@@ -110,7 +140,7 @@ internal static partial class Endpoint
                 return await dbContext
                     .Users
                     .Include(u => u.Sessions.Where(s => s.Id == lookup.SessionId))
-                    .ThenInclude(s => s.RefreshTokens.Where(rt => rt.Id == lookup.Id))
+                    .ThenInclude(s => s.RefreshTokens.Where(rt => rt.Id == effectiveTokenId))
                     .TagWith(nameof(RefreshToken), lookup.UserId)
                     .Where(u => u.Id == lookup.UserId)
                     .Select(u => new

@@ -92,7 +92,7 @@ public class RefreshTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task RefreshToken_ReuseOfConsumedToken_RevokesOnlyThatSessionAndReturnsGenericError()
+    public async Task RefreshToken_ReuseOfConsumedToken_OutsideGraceWindow_RevokesOnlyThatSessionAndReturnsGenericError()
     {
         // Arrange — two independent sessions for the same user.
         using var scope = Factory.Services.CreateScope();
@@ -106,8 +106,9 @@ public class RefreshTests : BaseIntegrationTest
 
         var utcNow = timeProvider.GetUtcNow();
         var (targetBytes, targetExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        var targetTokenHash = SHA256.HashData(targetBytes);
         user.IssueSessionAndToken(
-            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(targetBytes),
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, targetTokenHash,
             utcNow, targetExpiresAt, utcNow.AddDays(90));
 
         var (otherBytes, otherExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
@@ -130,7 +131,18 @@ public class RefreshTests : BaseIntegrationTest
         var firstJson = await firstResponse.Content.ReadAsStringAsync();
         var currentRefreshToken = JsonDocument.Parse(firstJson).RootElement.GetProperty("refreshToken").GetString();
 
-        // Act — replay the OLD (now-consumed) token: this is the theft signal.
+        // Push the consumed timestamp back past the reuse grace window — a real request retried
+        // seconds later must NOT be indistinguishable from a genuine delayed replay/theft attempt.
+        using (var mutateScope = Factory.Services.CreateScope())
+        {
+            var mutateDb = mutateScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+            var consumedToken = await mutateDb.RefreshTokens.SingleAsync(rt => rt.TokenHash == targetTokenHash);
+            mutateDb.Entry(consumedToken).Property(nameof(RefreshToken.ConsumedAt)).CurrentValue =
+                timeProvider.GetUtcNow().AddMinutes(-5);
+            await mutateDb.SaveChangesAsync();
+        }
+
+        // Act — replay the OLD (now-consumed, long past grace) token: this is the theft signal.
         var secondResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
 
         // Assert — same generic shape as an ordinary invalid/expired token, no leaked detection.
@@ -155,6 +167,117 @@ public class RefreshTests : BaseIntegrationTest
         Assert.Equal(HttpStatusCode.Unauthorized, thirdResponse.StatusCode);
         var thirdJson = await thirdResponse.Content.ReadAsStringAsync();
         Assert.Equal("SessionRevoked", JsonDocument.Parse(thirdJson).RootElement.GetProperty("errorKey").GetString());
+    }
+
+    [Fact]
+    public async Task RefreshToken_ReplayOfJustConsumedToken_WithinGraceWindow_RotatesSuccessorInstead()
+    {
+        // Arrange — simulates a lost-response retry: the client rotated successfully but the app
+        // died before it saw the response, so it retries moments later with the now-dead token.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(), phoneNumber, DateOnly.FromDateTime(_faker.Date.Past(30)));
+
+        var utcNow = timeProvider.GetUtcNow();
+        var (deadBytes, deadExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(deadBytes),
+            utcNow, deadExpiresAt, utcNow.AddDays(90));
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var sessionId = user.Sessions.Single().Id;
+
+        var client = Factory.CreateClient();
+        var request = new Request { RefreshToken = Convert.ToBase64String(deadBytes) };
+
+        // First use — rotates it away (this is the response the client never received).
+        var firstResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
+        Assert.True(firstResponse.IsSuccessStatusCode);
+
+        // Act — retry with the dead token moments later, well within the grace window.
+        var retryResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
+
+        // Assert — treated as a legitimate retry: fresh tokens, no reuse detection, session intact.
+        Assert.True(retryResponse.IsSuccessStatusCode);
+        var retryJson = await retryResponse.Content.ReadAsStringAsync();
+        var retryRoot = JsonDocument.Parse(retryJson).RootElement;
+        Assert.False(string.IsNullOrWhiteSpace(retryRoot.GetProperty("accessToken").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(retryRoot.GetProperty("refreshToken").GetString()));
+
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var session = await verifyDb.Sessions.AsNoTracking().SingleAsync(s => s.Id == sessionId);
+        Assert.Null(session.RevokedAt);
+    }
+
+    [Fact]
+    public async Task RefreshToken_ReplayWithinGraceWindow_ButSuccessorExpired_FailsClosedAsReuse()
+    {
+        // Arrange — the dead token's direct successor exists but is itself expired (edge of the
+        // sliding-session window). The grace bypass must fail closed to reuse detection here, not
+        // silently accept an expired successor. The real endpoint always mints a 14-day-out token,
+        // so this state is only reachable by rotating directly through the domain method.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(), phoneNumber, DateOnly.FromDateTime(_faker.Date.Past(30)));
+
+        var utcNow = timeProvider.GetUtcNow();
+        var (deadBytes, deadExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(deadBytes),
+            utcNow, deadExpiresAt, utcNow.AddDays(90));
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var sessionId = user.Sessions.Single().Id;
+
+        // Rotate directly through the domain to a successor whose expiry is already in the past.
+        using (var mutateScope = Factory.Services.CreateScope())
+        {
+            var mutateDb = mutateScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+            var trackedUser = await mutateDb.Users
+                .Include(u => u.Sessions.Where(s => s.Id == sessionId))
+                .ThenInclude(s => s.RefreshTokens)
+                .SingleAsync(u => u.Id == user.Id);
+            var trackedSession = trackedUser.Sessions.Single();
+            var trackedToken = trackedSession.RefreshTokens.Single();
+            var (successorBytes, _) = tokenService.GenerateRefreshToken(utcNow);
+
+            trackedUser.RotateRefreshToken(
+                trackedSession, trackedToken, SHA256.HashData(successorBytes), null, null, utcNow,
+                utcNow.AddSeconds(-1));
+            await mutateDb.SaveChangesAsync();
+        }
+
+        var client = Factory.CreateClient();
+        var request = new Request { RefreshToken = Convert.ToBase64String(deadBytes) };
+
+        // Act — replay the dead token immediately (within grace), but its successor is expired.
+        var response = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
+
+        // Assert — treated as reuse: generic 401, session revoked.
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        var json = await response.Content.ReadAsStringAsync();
+        Assert.Equal("InvalidRefreshToken", JsonDocument.Parse(json).RootElement.GetProperty("errorKey").GetString());
+
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var session = await verifyDb.Sessions.AsNoTracking().SingleAsync(s => s.Id == sessionId);
+        Assert.NotNull(session.RevokedAt);
+        Assert.Equal(SessionRevokedReason.TokenReuseDetected, session.RevokedReason);
     }
 
     [Fact]
