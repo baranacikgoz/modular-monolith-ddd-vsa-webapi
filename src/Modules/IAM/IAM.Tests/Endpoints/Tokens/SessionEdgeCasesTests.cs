@@ -7,6 +7,7 @@ using System.Text.Json;
 using Bogus;
 using Common.Application.Caching;
 using Common.Tests;
+using EntityFramework.Exceptions.Common;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
@@ -328,5 +329,71 @@ public class SessionEdgeCasesTests : BaseIntegrationTest
             .ToListAsync();
         Assert.Equal(2, tokens.Count); // original (now consumed) + exactly one new one
         Assert.Single(tokens, t => t.ConsumedAt == null);
+    }
+
+    [Fact]
+    public async Task RefreshToken_EmptyString_ReturnsBadRequest()
+    {
+        var client = Factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new RefreshRequest { RefreshToken = "" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RefreshToken_ExceedingMaxLength_ReturnsBadRequest()
+    {
+        // Arrange — a real refresh token base64-encodes to exactly 44 chars; nothing legitimate is longer.
+        var oversized = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var client = Factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new RefreshRequest { RefreshToken = oversized });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RefreshToken_WellFormedButNeverIssued_ReturnsGenericInvalidError()
+    {
+        // Arrange — syntactically valid base64, correct length, but no matching hash was ever persisted.
+        // Distinct from the "malformed base64" case: proves the DB-miss path also fails safely, not just decode failure.
+        var neverIssued = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var client = Factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new RefreshRequest { RefreshToken = neverIssued });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        var json = await response.Content.ReadAsStringAsync();
+        Assert.Equal("InvalidRefreshToken", JsonDocument.Parse(json).RootElement.GetProperty("errorKey").GetString());
+    }
+
+    [Fact]
+    public async Task RefreshTokens_DuplicateTokenHash_ViolatesUniqueConstraint()
+    {
+        // Arrange — proves the DB actually enforces hash uniqueness now. Without it, two rows sharing a
+        // hash would make the endpoint's SingleOrDefaultAsync throw and 500 every future request on that hash.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
+
+        var user = CreateUser();
+        var utcNow = timeProvider.GetUtcNow();
+        var collidingHash = SHA256.HashData(RandomNumberGenerator.GetBytes(32));
+
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, collidingHash,
+            utcNow, utcNow.AddDays(14), utcNow.AddDays(90));
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "web-app-1", null, null, null, collidingHash,
+            utcNow, utcNow.AddDays(14), utcNow.AddDays(90));
+
+        db.Users.Add(user);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<UniqueConstraintException>(() => db.SaveChangesAsync());
     }
 }

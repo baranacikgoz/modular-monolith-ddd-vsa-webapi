@@ -51,16 +51,10 @@ public static partial class Policies
             });
     }
 
-    private static void TokenRefreshPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    private static void TokenRefreshPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
-        rateLimiter
-            .AddFixedWindowLimiter(Constants.TokenRefresh, opt =>
-            {
-                var tokenRefresh = options.TokenRefresh ?? throw new InvalidOperationException("TokenRefresh rate limiting is null.");
-
-                opt.PermitLimit = tokenRefresh.Limit;
-                opt.Window = TimeSpan.FromMilliseconds(tokenRefresh.PeriodInMs);
-                opt.QueueLimit = tokenRefresh.QueueLimit;
-            });
+        // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
+        // caller, so one client exhausting it would 429 every user's refresh — see TokenRefreshRateLimitingPolicy.
+        rateLimiter.AddPolicy<string, TokenRefreshRateLimitingPolicy>(Constants.TokenRefresh);
     }
 }

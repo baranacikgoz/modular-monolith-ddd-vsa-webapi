@@ -28,7 +28,10 @@ internal sealed class RefreshTokenConfig : AuditableEntityConfiguration<RefreshT
             .Property(rt => rt.TokenHash)
             .IsRequired();
 
+        // Unique: the refresh endpoint looks up by hash with SingleOrDefaultAsync — a duplicate hash
+        // would make that throw for every future request against it, 500ing the flow permanently.
         builder
-            .HasIndex(rt => rt.TokenHash);
+            .HasIndex(rt => rt.TokenHash)
+            .IsUnique();
     }
 }

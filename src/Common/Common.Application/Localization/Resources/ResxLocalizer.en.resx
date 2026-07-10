@@ -525,6 +525,9 @@
   <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
     <value>Refresh token cannot be empty.</value>
   </data>
+  <data name="Tokens_Refresh_RefreshToken_MaxLength" xml:space="preserve">
+    <value>Refresh token cannot exceed ({0}) characters.</value>
+  </data>
   <data name="DbUpdateConcurrencyException" xml:space="preserve">
     <value>Database concurrency error. Please try again.</value>
   </data>

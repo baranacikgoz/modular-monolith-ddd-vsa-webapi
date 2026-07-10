@@ -569,6 +569,9 @@
   <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
     <value>Yenileme tokeni boş olamaz.</value>
   </data>
+  <data name="Tokens_Refresh_RefreshToken_MaxLength" xml:space="preserve">
+    <value>Yenileme tokeni en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="Tokens_Sessions_Revoke_Id_NotEmpty" xml:space="preserve">
     <value>Oturum kimliği boş olamaz.</value>
   </data>

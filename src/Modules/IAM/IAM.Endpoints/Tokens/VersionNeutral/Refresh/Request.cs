@@ -1,6 +1,7 @@
 using Common.Application.Localization.Resources;
 using Common.Application.Validation;
 using FluentValidation;
+using IAM.Domain.Identity.Sessions;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 
@@ -15,6 +16,8 @@ public sealed class RequestValidator : CustomValidator<Request>
     {
         RuleFor(x => x.RefreshToken)
             .NotEmpty()
-            .WithMessage(localizer.Tokens_Refresh_RefreshToken_NotEmpty);
+            .WithMessage(localizer.Tokens_Refresh_RefreshToken_NotEmpty)
+            .MaximumLength(Constants.RefreshTokenBase64MaxLength)
+            .WithMessage(localizer.Tokens_Refresh_RefreshToken_MaxLength);
     }
 }
