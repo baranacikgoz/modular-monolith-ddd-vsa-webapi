@@ -2,26 +2,23 @@ using System.Security.Cryptography;
 using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
-using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Errors;
 using IAM.Domain.Identity;
-using IAM.Domain.Identity.Sessions;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Constants = IAM.Infrastructure.RateLimiting.Constants;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Refresh;
 
-internal static partial class Endpoint
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder tokensApiGroup)
     {
@@ -34,13 +31,21 @@ internal static partial class Endpoint
             .TransformResultTo<Response>();
     }
 
+    // The refresh token is deliberately NOT rotated. Rotation + reuse detection punishes
+    // legitimate clients for every lost response, client-side timeout retry, or process kill
+    // between the server-side rotate and the client persisting the new token — each one ends in
+    // a spuriously revoked session and a forced re-login. And rotation buys nothing here: to be
+    // fully correct it would have to keep accepting the predecessor token indefinitely, which is
+    // equivalent to not rotating at all. Instead the same opaque 256-bit secret stays valid with
+    // a sliding expiry, capped by the session's AbsoluteExpiresAt; theft response is session
+    // revocation (sessions list / revoke endpoints). Refreshing is therefore idempotent and
+    // trivially safe under concurrency — two racing refreshes both succeed.
     private static async Task<Result<Response>> RefreshToken(
         Request request,
         IIAMDbContext dbContext,
         TimeProvider timeProvider,
         ITokenService tokenService,
         HttpContext httpContext,
-        ILogger<ApplicationUser> logger,
         IOptions<JwtOptions> jwtOptions,
         CancellationToken cancellationToken)
     {
@@ -61,7 +66,7 @@ internal static partial class Endpoint
                         s => s.Id,
                         (rt, s) => new
                         {
-                            rt.Id, rt.ConsumedAt, rt.ExpiresAt, rt.ReplacedByTokenId, s.UserId, SessionId = s.Id,
+                            rt.Id, rt.ConsumedAt, rt.ExpiresAt, s.UserId, SessionId = s.Id,
                             s.RevokedAt, s.AbsoluteExpiresAt
                         })
                     .SingleOrDefaultAsync(cancellationToken);
@@ -71,65 +76,24 @@ internal static partial class Endpoint
                     return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
                 }
 
-                var utcNowForExpiryChecks = timeProvider.GetUtcNow();
-
-                if (lookup.ExpiresAt < utcNowForExpiryChecks)
-                {
-                    return Result<Response>.Failure(TokenErrors.RefreshTokenExpired);
-                }
-
-                // Hard cap on session lifetime regardless of rotation — an absolute-expired session's
-                // dead tokens are just expired, not a theft signal, so this must be checked first.
-                if (lookup.AbsoluteExpiresAt < utcNowForExpiryChecks)
-                {
-                    return Result<Response>.Failure(TokenErrors.RefreshTokenExpired);
-                }
-
-                var effectiveTokenId = lookup.Id;
-
+                // Superseded by a newer login on the same (DeviceId, ClientId) — only the token
+                // issued by that login is live for this session.
                 if (lookup.ConsumedAt is not null)
                 {
-                    // Lost-response retry: the client rotated successfully but never saw the response
-                    // (e.g. process killed mid-flight) and retries with the now-dead token. If its
-                    // immediate successor is still live and we're within the grace window, rotate that
-                    // successor instead of flagging theft — replaying anything older than one hop back,
-                    // or past the window, still falls through to reuse detection below.
-                    RefreshTokenId? graceSuccessorId = null;
-                    if (lookup.ReplacedByTokenId is { } successorId &&
-                        utcNowForExpiryChecks - lookup.ConsumedAt.Value <=
-                        TimeSpan.FromSeconds(jwtOptions.Value.RefreshTokenReuseGraceWindowInSeconds))
-                    {
-                        graceSuccessorId = await dbContext
-                            .RefreshTokens
-                            .AsNoTracking()
-                            .TagWith(nameof(RefreshToken), successorId)
-                            .Where(rt => rt.Id == successorId && rt.ConsumedAt == null &&
-                                         rt.ExpiresAt > utcNowForExpiryChecks)
-                            .Select(rt => (RefreshTokenId?)rt.Id)
-                            .SingleOrDefaultAsync(cancellationToken);
-                    }
+                    return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
+                }
 
-                    if (graceSuccessorId is null)
-                    {
-                        // Theft signal: a previously-rotated-away token was replayed. Revoke only this one
-                        // session and report the same generic error — don't leak detection to the caller.
-                        LogTokenReuseDetected(logger, lookup.UserId, lookup.SessionId.ToString());
-                        IamTelemetry.TokenReuseDetected.Add(1);
+                var utcNow = timeProvider.GetUtcNow();
 
-                        await dbContext
-                            .Users
-                            .Include(u => u.Sessions.Where(s => s.Id == lookup.SessionId))
-                            .TagWith(nameof(RefreshToken), lookup.UserId)
-                            .Where(u => u.Id == lookup.UserId)
-                            .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
-                            .TapAsync(user => user.RevokeSession(
-                                user.Sessions.Single(), SessionRevokedReason.TokenReuseDetected, timeProvider.GetUtcNow()))
-                            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+                if (lookup.ExpiresAt < utcNow)
+                {
+                    return Result<Response>.Failure(TokenErrors.RefreshTokenExpired);
+                }
 
-                        return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
-                    }
-
-                    effectiveTokenId = graceSuccessorId.Value;
+                // Hard cap on session lifetime regardless of sliding token expiry.
+                if (lookup.AbsoluteExpiresAt < utcNow)
+                {
+                    return Result<Response>.Failure(TokenErrors.RefreshTokenExpired);
                 }
 
                 if (lookup.RevokedAt is not null)
@@ -140,7 +104,7 @@ internal static partial class Endpoint
                 return await dbContext
                     .Users
                     .Include(u => u.Sessions.Where(s => s.Id == lookup.SessionId))
-                    .ThenInclude(s => s.RefreshTokens.Where(rt => rt.Id == effectiveTokenId))
+                    .ThenInclude(s => s.RefreshTokens.Where(rt => rt.Id == lookup.Id))
                     .TagWith(nameof(RefreshToken), lookup.UserId)
                     .Where(u => u.Id == lookup.UserId)
                     .Select(u => new
@@ -163,38 +127,31 @@ internal static partial class Endpoint
                         var session = userObj.User.Sessions.Single();
                         var currentToken = session.RefreshTokens.Single();
 
-                        // Re-check freshly-loaded (tracked) state — the earlier no-tracking `lookup` snapshot
-                        // can be stale under concurrent refresh requests for the same token: another request
-                        // may have consumed/revoked it between that read and this one. Trusting the stale
-                        // snapshot here would let two concurrent requests both "win" the rotation.
-                        if (currentToken.ConsumedAt is not null)
-                        {
-                            LogTokenReuseDetected(logger, userObj.User.Id, session.Id.ToString());
-                            IamTelemetry.TokenReuseDetected.Add(1);
-
-                            userObj.User.RevokeSession(session, SessionRevokedReason.TokenReuseDetected, timeProvider.GetUtcNow());
-                            await dbContext.SaveChangesAsync(cancellationToken);
-
-                            return Result<Response>.Failure(TokenErrors.InvalidRefreshToken);
-                        }
-
-                        if (session.RevokedAt is not null)
-                        {
-                            return Result<Response>.Failure(TokenErrors.SessionRevoked);
-                        }
-
-                        var utcNow = timeProvider.GetUtcNow();
+                        var utcNowForIssue = timeProvider.GetUtcNow();
                         var (accessToken, accessTokenExpiresAt) =
-                            tokenService.GenerateAccessToken(utcNow, userObj.User.Id, lookup.SessionId, userObj.Roles);
-                        var (newRefreshTokenBytes, newRefreshTokenExpiresAt) =
-                            tokenService.GenerateRefreshToken(utcNow);
+                            tokenService.GenerateAccessToken(
+                                utcNowForIssue, userObj.User.Id, lookup.SessionId, userObj.Roles);
+
+                        var newRefreshTokenExpiresAt =
+                            utcNowForIssue.AddDays(jwtOptions.Value.RefreshTokenExpirationInDays);
                         var ip = httpContext.Connection.RemoteIpAddress?.ToString();
                         var userAgent = httpContext.Request.Headers.UserAgent.ToString();
 
-                        userObj.User.RotateRefreshToken(
-                            session, currentToken, SHA256.HashData(newRefreshTokenBytes), ip, userAgent, utcNow,
-                            newRefreshTokenExpiresAt);
-                        await dbContext.SaveChangesAsync(cancellationToken);
+                        ApplicationUser.SlideRefreshToken(
+                            session, currentToken, ip, userAgent, utcNowForIssue, newRefreshTokenExpiresAt);
+                        try
+                        {
+                            await dbContext.SaveChangesAsync(cancellationToken);
+                        }
+                        catch (DbUpdateConcurrencyException)
+                        {
+                            // A concurrent refresh of the same session won the write race (xmin
+                            // row-version on Session/RefreshToken). Both writes slide the same
+                            // token to effectively the same expiry, so the losing one is
+                            // redundant — answer success. Failing here would resurrect the exact
+                            // spurious-sign-out class (client timeout retry racing its own slow
+                            // first attempt) that this non-rotating design exists to kill.
+                        }
 
                         activity?.SetTag("session.id", lookup.SessionId.ToString());
 
@@ -202,7 +159,7 @@ internal static partial class Endpoint
                         {
                             AccessToken = accessToken,
                             AccessTokenExpiresAt = accessTokenExpiresAt,
-                            RefreshToken = Convert.ToBase64String(newRefreshTokenBytes),
+                            RefreshToken = Convert.ToBase64String(providedRefreshToken),
                             RefreshTokenExpiresAt = newRefreshTokenExpiresAt
                         });
                     });
@@ -225,9 +182,4 @@ internal static partial class Endpoint
             return TokenErrors.InvalidRefreshToken;
         }
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Refresh token reuse detected for user {UserId}, session {SessionId} — revoking session.")]
-    private static partial void LogTokenReuseDetected(ILogger logger, ApplicationUserId userId, string sessionId);
 }

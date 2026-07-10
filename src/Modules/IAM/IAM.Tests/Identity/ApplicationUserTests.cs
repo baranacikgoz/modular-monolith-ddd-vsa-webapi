@@ -89,10 +89,11 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
     }
 
     [Fact]
-    public void RotateRefreshToken_ConsumesOldAndLinksReplacedBy()
+    public void SlideRefreshToken_ExtendsExpiryAndKeepsSameToken()
     {
         var deviceId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
+        var slidExpiresAt = now.AddMinutes(1).AddDays(14);
 
         Given(() => ApplicationUser.Create(FullName, PhoneNumber, BirthDate, ImageUrl))
             .When(user =>
@@ -104,19 +105,20 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
             {
                 var session = user.Sessions.Single();
                 var current = session.RefreshTokens.Single();
-                user.RotateRefreshToken(session, current, [2], "2.2.2.2", "UA2", now.AddMinutes(1), now.AddDays(14));
+                ApplicationUser.SlideRefreshToken(session, current, "2.2.2.2", "UA2", now.AddMinutes(1), slidExpiresAt);
             })
             .Then(user =>
             {
-                var tokens = user.Sessions.Single().RefreshTokens;
-                Assert.Equal(2, tokens.Count);
-                var oldToken = tokens.Single(t => t.TokenHash.SequenceEqual((byte[]) [1]));
-                var newToken = tokens.Single(t => t.TokenHash.SequenceEqual((byte[]) [2]));
-                Assert.NotNull(oldToken.ConsumedAt);
-                Assert.Equal(newToken.Id, oldToken.ReplacedByTokenId);
-                Assert.Null(newToken.ConsumedAt);
+                var token = user.Sessions.Single().RefreshTokens.Single();
+                Assert.True(token.TokenHash.SequenceEqual((byte[]) [1]));
+                Assert.Equal(slidExpiresAt, token.ExpiresAt);
+                Assert.Null(token.ConsumedAt);
+                Assert.Null(token.ReplacedByTokenId);
             })
-            .Then<V1SessionRefreshedDomainEvent>(_ => { });
+            .Then(user => Assert.Equal("2.2.2.2", user.Sessions.Single().LastIp))
+            // No event: a slide must not bump the aggregate Version (Create + IssueSessionAndToken
+            // raised one event each) — see SlideRefreshToken docs.
+            .Then(user => Assert.Equal(2, user.Version));
     }
 
     [Fact]
@@ -231,9 +233,9 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
     }
 
     [Fact]
-    public void RotateRefreshToken_DoesNotExtendSessionAbsoluteExpiry()
+    public void SlideRefreshToken_DoesNotExtendSessionAbsoluteExpiry()
     {
-        // A plain token rotation must never reset the hard session-lifetime cap — only a fresh
+        // Sliding the token expiry must never reset the hard session-lifetime cap — only a fresh
         // login (IssueSessionAndToken) may do that. Otherwise the absolute-expiry cap is pointless.
         var deviceId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
@@ -249,7 +251,7 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
             {
                 var session = user.Sessions.Single();
                 var current = session.RefreshTokens.Single();
-                user.RotateRefreshToken(session, current, [2], null, null, now.AddDays(13), now.AddDays(27));
+                ApplicationUser.SlideRefreshToken(session, current, null, null, now.AddDays(13), now.AddDays(27));
             })
             .Then(user => Assert.Equal(originalAbsoluteExpiry, user.Sessions.Single().AbsoluteExpiresAt));
     }

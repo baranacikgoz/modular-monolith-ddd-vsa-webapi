@@ -16,16 +16,9 @@ public class JwtOptions
     public required int RefreshTokenExpirationInDays { get; set; }
 
     /// <summary>
-    /// Hard cap on a session's lifetime regardless of how many times its refresh token is rotated.
+    /// Hard cap on a session's lifetime regardless of how far its refresh token's expiry slides.
     /// </summary>
     public required int SessionAbsoluteExpirationInDays { get; set; }
-
-    /// <summary>
-    /// Window after a refresh token is consumed during which replaying it is treated as a lost-response
-    /// retry (re-rotates its still-unconsumed direct successor) instead of theft. Replaying anything older
-    /// than one hop back, or past this window, still triggers reuse detection.
-    /// </summary>
-    public required int RefreshTokenReuseGraceWindowInSeconds { get; set; }
 
     /// <summary>
     /// Allow-list of recognized client app ids (e.g. "mobile-app", "web-app") accepted on
@@ -63,10 +56,6 @@ public class JwtOptionsValidator : CustomValidator<JwtOptions>
         RuleFor(o => o.SessionAbsoluteExpirationInDays)
             .GreaterThan(0)
             .WithMessage("SessionAbsoluteExpirationInDays must be greater than 0.");
-
-        RuleFor(o => o.RefreshTokenReuseGraceWindowInSeconds)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("RefreshTokenReuseGraceWindowInSeconds must not be negative.");
 
         RuleFor(o => o.AllowedClientIds)
             .NotEmpty()

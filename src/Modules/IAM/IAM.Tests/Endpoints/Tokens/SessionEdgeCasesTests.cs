@@ -100,8 +100,8 @@ public class SessionEdgeCasesTests : BaseIntegrationTest
     public async Task RefreshToken_AfterSessionAbsoluteExpiry_ReturnsExpiredError()
     {
         // Arrange — the refresh TOKEN itself is still within its per-token expiry, but the SESSION's
-        // hard absolute-lifetime cap has passed. This must still be rejected even though rotation
-        // would otherwise be perfectly valid — proves the absolute cap is actually enforced.
+        // hard absolute-lifetime cap has passed. This must still be rejected even though the
+        // refresh would otherwise be perfectly valid — proves the absolute cap is actually enforced.
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
@@ -288,11 +288,11 @@ public class SessionEdgeCasesTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task RefreshToken_ConcurrentRotationOfSameToken_OnlyOneSucceeds()
+    public async Task RefreshToken_ConcurrentRefreshOfSameToken_BothSucceed()
     {
-        // Arrange — the classic refresh-token-rotation race: two requests hit /tokens/refresh with
-        // the SAME still-valid token at (almost) the same instant. Exactly one must win; the other
-        // must fail cleanly (not silently mint two children from one parent, not 500).
+        // Arrange — two requests hit /tokens/refresh with the SAME still-valid token at (almost)
+        // the same instant (e.g. a client-side timeout retry racing its slow first attempt).
+        // Without rotation this race is harmless by construction: both must succeed.
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
@@ -318,19 +318,19 @@ public class SessionEdgeCasesTests : BaseIntegrationTest
         using var response1 = responses[0];
         using var response2 = responses[1];
 
-        // Assert — exactly one succeeded; the loser got a clean error, not a 500.
-        var successCount = responses.Count(r => r.IsSuccessStatusCode);
-        Assert.Equal(1, successCount);
-        Assert.All(responses, r => Assert.NotEqual(HttpStatusCode.InternalServerError, r.StatusCode));
+        // Assert — both succeeded; no 500, no revoked session, no extra token rows.
+        Assert.All(responses, r => Assert.True(r.IsSuccessStatusCode, $"Unexpected status: {r.StatusCode}"));
 
-        // Assert — the DB reflects exactly one rotation, not two children from one parent.
         using var verifyScope = Factory.Services.CreateScope();
         var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokens = await verifyDb.RefreshTokens.AsNoTracking()
             .Where(rt => rt.SessionId == refreshToken.SessionId)
             .ToListAsync();
-        Assert.Equal(2, tokens.Count); // original (now consumed) + exactly one new one
-        Assert.Single(tokens, t => t.ConsumedAt == null);
+        var storedToken = Assert.Single(tokens); // still just the one token — nothing was rotated
+        Assert.Null(storedToken.ConsumedAt);
+
+        var session = await verifyDb.Sessions.AsNoTracking().SingleAsync(s => s.Id == refreshToken.SessionId);
+        Assert.Null(session.RevokedAt);
     }
 
     [Fact]

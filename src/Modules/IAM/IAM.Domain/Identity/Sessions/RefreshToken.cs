@@ -32,7 +32,7 @@ public sealed class RefreshToken : AuditableEntity<RefreshTokenId>
 
     public SessionId SessionId { get; private init; }
     public byte[] TokenHash { get; private init; } = [];
-    public DateTimeOffset ExpiresAt { get; private init; }
+    public DateTimeOffset ExpiresAt { get; private set; }
     public DateTimeOffset? ConsumedAt { get; private set; }
     public RefreshTokenId? ReplacedByTokenId { get; private set; }
 
@@ -51,6 +51,11 @@ public sealed class RefreshToken : AuditableEntity<RefreshTokenId>
     {
         ConsumedAt = now;
         ReplacedByTokenId = replacedByTokenId;
+    }
+
+    internal void ExtendExpiry(DateTimeOffset newExpiresAt)
+    {
+        ExpiresAt = newExpiresAt;
     }
 }
 #pragma warning restore CA1819

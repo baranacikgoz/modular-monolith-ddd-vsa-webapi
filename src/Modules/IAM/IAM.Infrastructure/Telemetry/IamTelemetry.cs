@@ -40,7 +40,4 @@ public static class IamTelemetry
 
     public static readonly Counter<long> SessionsRevoked =
         Meter.CreateCounter<long>("iam.sessions_revoked.total", description: "Total sessions revoked, tagged by reason");
-
-    public static readonly Counter<long> TokenReuseDetected =
-        Meter.CreateCounter<long>("iam.token_reuse_detected.total", description: "Total refresh token reuse (theft signal) detections");
 }
