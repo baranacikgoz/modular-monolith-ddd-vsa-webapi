@@ -1,10 +1,13 @@
 using System.Globalization;
 using Common.Application.Localization.Resources;
+using Common.Application.Options;
 using Common.Application.Validation;
 using Common.Domain.Extensions;
 using FluentValidation;
 using IAM.Domain.Identity;
 using IAM.Endpoints.Common.Validations;
+using Microsoft.Extensions.Options;
+using SessionConstants = IAM.Domain.Identity.Sessions.Constants;
 
 namespace IAM.Endpoints.Users.VersionNeutral.SelfRegister;
 
@@ -15,11 +18,14 @@ public sealed record Request
     public required string FullName { get; init; }
     public required string BirthDate { get; init; }
     public string? CaptchaToken { get; init; }
+    public required Guid DeviceId { get; init; }
+    public required string ClientId { get; init; }
+    public string? DeviceName { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IResxLocalizer localizer)
+    public RequestValidator(IResxLocalizer localizer, IOptions<JwtOptions> jwtOptions)
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
@@ -52,5 +58,19 @@ public sealed class RequestValidator : CustomValidator<Request>
                 Domain.Constants.TurkishDateFormat))
             .When(x => !string.IsNullOrWhiteSpace(x.BirthDate));
 
+        RuleFor(x => x.DeviceId)
+            .NotEmpty()
+            .WithMessage(localizer.Users_Tokens_Create_DeviceId_NotEmpty);
+
+        RuleFor(x => x.ClientId)
+            .NotEmpty()
+            .WithMessage(localizer.Users_Tokens_Create_ClientId_NotEmpty)
+            .Must(jwtOptions.Value.AllowedClientIds.Contains)
+            .WithMessage(localizer.Users_Tokens_Create_ClientId_Invalid)
+            .When(x => !string.IsNullOrWhiteSpace(x.ClientId));
+
+        RuleFor(x => x.DeviceName)
+            .MaximumLength(SessionConstants.DeviceNameMaxLength)
+            .WithMessage(localizer.Users_Tokens_Create_DeviceName_MaxLength);
     }
 }

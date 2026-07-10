@@ -539,6 +539,18 @@
   <data name="Users_Tokens_Create_Otp_NotEmpty" xml:space="preserve">
     <value>Doğrulama kodu boş olamaz.</value>
   </data>
+  <data name="Users_Tokens_Create_DeviceId_NotEmpty" xml:space="preserve">
+    <value>Cihaz kimliği boş olamaz.</value>
+  </data>
+  <data name="Users_Tokens_Create_ClientId_NotEmpty" xml:space="preserve">
+    <value>İstemci kimliği boş olamaz.</value>
+  </data>
+  <data name="Users_Tokens_Create_ClientId_Invalid" xml:space="preserve">
+    <value>İstemci kimliği tanınan bir istemci değil.</value>
+  </data>
+  <data name="Users_Tokens_Create_DeviceName_MaxLength" xml:space="preserve">
+    <value>Cihaz adı en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="Users_Tokens_Refresh_AccessToken_NotEmpty" xml:space="preserve">
     <value>Erişim tokeni boş olamaz.</value>
   </data>
@@ -556,6 +568,21 @@
   </data>
   <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
     <value>Yenileme tokeni boş olamaz.</value>
+  </data>
+  <data name="Tokens_Sessions_Revoke_Id_NotEmpty" xml:space="preserve">
+    <value>Oturum kimliği boş olamaz.</value>
+  </data>
+  <data name="Tokens_Refresh_DeviceId_NotEmpty" xml:space="preserve">
+    <value>Cihaz kimliği boş olamaz.</value>
+  </data>
+  <data name="Tokens_Refresh_ClientId_NotEmpty" xml:space="preserve">
+    <value>İstemci kimliği boş olamaz.</value>
+  </data>
+  <data name="Tokens_Refresh_ClientId_Invalid" xml:space="preserve">
+    <value>İstemci kimliği tanınan bir istemci değil.</value>
+  </data>
+  <data name="Tokens_Refresh_DeviceName_MaxLength" xml:space="preserve">
+    <value>Cihaz adı en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="DbUpdateConcurrencyException" xml:space="preserve">
     <value>Veritabanı eşzamanlılık hatası. Lütfen tekrar deneyiniz.</value>

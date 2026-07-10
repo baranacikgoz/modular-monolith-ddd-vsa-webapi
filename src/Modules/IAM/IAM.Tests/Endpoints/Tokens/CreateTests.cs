@@ -8,9 +8,11 @@ using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using IAM.Endpoints.Tokens.VersionNeutral.Create;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
+using RefreshRequest = IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request;
 
 namespace IAM.Tests.Endpoints.Tokens;
 
@@ -49,7 +51,10 @@ public class CreateTests : BaseIntegrationTest
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
-        var request = new Request { PhoneNumber = phoneNumber, Otp = otp };
+        var request = new Request
+        {
+            PhoneNumber = phoneNumber, Otp = otp, DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1"
+        };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), request);
@@ -103,7 +108,8 @@ public class CreateTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         var request = new Request
         {
-            PhoneNumber = phoneNumber, Otp = wrongOtp // deliberately wrong
+            PhoneNumber = phoneNumber, Otp = wrongOtp, // deliberately wrong
+            DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1"
         };
 
         // Act
@@ -144,13 +150,19 @@ public class CreateTests : BaseIntegrationTest
         // Act — 3 wrong attempts
         for (var i = 0; i < 3; i++)
         {
-            var badRequest = new Request { PhoneNumber = phoneNumber, Otp = wrongOtp };
+            var badRequest = new Request
+            {
+                PhoneNumber = phoneNumber, Otp = wrongOtp, DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1"
+            };
             var badResponse = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), badRequest);
             Assert.False(badResponse.IsSuccessStatusCode);
         }
 
         // Act — correct OTP after lockout
-        var goodRequest = new Request { PhoneNumber = phoneNumber, Otp = correctOtp };
+        var goodRequest = new Request
+        {
+            PhoneNumber = phoneNumber, Otp = correctOtp, DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1"
+        };
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), goodRequest);
 
         // Assert — OTP must be dead after 3 failed attempts
@@ -174,12 +186,118 @@ public class CreateTests : BaseIntegrationTest
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
 
         var client = Factory.CreateClient();
-        var request = new Request { PhoneNumber = phoneNumber, Otp = otp };
+        var request = new Request
+        {
+            PhoneNumber = phoneNumber, Otp = otp, DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1"
+        };
 
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative), request);
 
         // Assert — no user exists, expect a 4xx error
         Assert.False(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
+    public async Task CreateTokens_NewDeviceAppPair_CreatesIndependentSession()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        const string otp = "123456";
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(), phoneNumber, DateOnly.FromDateTime(_faker.Date.Past(30)));
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        var client = Factory.CreateClient();
+
+        // Act — log in twice with different (DeviceId, ClientId) pairs.
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var responseA = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative),
+            new Request { PhoneNumber = phoneNumber, Otp = otp, DeviceId = Guid.NewGuid(), ClientId = "mobile-app-1" });
+        responseA.EnsureSuccessStatusCode();
+
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var responseB = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative),
+            new Request { PhoneNumber = phoneNumber, Otp = otp, DeviceId = Guid.NewGuid(), ClientId = "web-app-1" });
+        responseB.EnsureSuccessStatusCode();
+
+        // Assert — two independent sessions exist.
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var sessions = await verifyDb.Sessions.AsNoTracking().Where(s => s.UserId == user.Id).ToListAsync();
+        Assert.Equal(2, sessions.Count);
+
+        var sessionB = sessions.Single(s => s.ClientId == "web-app-1");
+        var sessionBLastUsedAtBefore = sessionB.LastUsedAt;
+
+        // Act — refresh session A only.
+        var jsonA = await responseA.Content.ReadAsStringAsync();
+        var refreshTokenA = JsonDocument.Parse(jsonA).RootElement.GetProperty("refreshToken").GetString();
+        var refreshResponse = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new RefreshRequest { RefreshToken = refreshTokenA! });
+        refreshResponse.EnsureSuccessStatusCode();
+
+        // Assert — session B is completely untouched by session A's refresh.
+        using var verifyScope2 = Factory.Services.CreateScope();
+        var verifyDb2 = verifyScope2.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var sessionBAfter = await verifyDb2.Sessions.AsNoTracking().SingleAsync(s => s.Id == sessionB.Id);
+        Assert.Equal(sessionBLastUsedAtBefore, sessionBAfter.LastUsedAt);
+        Assert.Null(sessionBAfter.RevokedAt);
+    }
+
+    [Fact]
+    public async Task CreateTokens_SameTriple_ReusesSessionAndSupersedesOldToken()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        const string otp = "123456";
+        var deviceId = Guid.NewGuid();
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(), phoneNumber, DateOnly.FromDateTime(_faker.Date.Past(30)));
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "login");
+        var client = Factory.CreateClient();
+
+        // Act — log in twice with the SAME (DeviceId, ClientId) pair.
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var firstResponse = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative),
+            new Request { PhoneNumber = phoneNumber, Otp = otp, DeviceId = deviceId, ClientId = "mobile-app-1" });
+        firstResponse.EnsureSuccessStatusCode();
+        var firstJson = await firstResponse.Content.ReadAsStringAsync();
+        var firstRefreshToken = JsonDocument.Parse(firstJson).RootElement.GetProperty("refreshToken").GetString();
+
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+        var secondResponse = await client.PostAsJsonAsync(new Uri("/tokens", UriKind.Relative),
+            new Request { PhoneNumber = phoneNumber, Otp = otp, DeviceId = deviceId, ClientId = "mobile-app-1" });
+        secondResponse.EnsureSuccessStatusCode();
+
+        // Assert — still exactly one session for that (DeviceId, ClientId) pair.
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var sessions = await verifyDb.Sessions.AsNoTracking().Where(s => s.UserId == user.Id).ToListAsync();
+        Assert.Single(sessions);
+
+        // Assert — the first login's refresh token no longer works (superseded, not just orphaned).
+        var replayResponse = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new RefreshRequest { RefreshToken = firstRefreshToken! });
+        Assert.False(replayResponse.IsSuccessStatusCode);
     }
 }

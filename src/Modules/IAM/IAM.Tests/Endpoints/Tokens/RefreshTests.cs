@@ -8,7 +8,9 @@ using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
 using IAM.Domain.Identity;
+using IAM.Domain.Identity.Sessions;
 using IAM.Endpoints.Tokens.VersionNeutral.Refresh;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -24,7 +26,7 @@ public class RefreshTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task RefreshToken_WithValidToken_ReturnsNewAccessToken()
+    public async Task RefreshToken_ValidRotation_IssuesNewTokenAndConsumesOld()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -42,8 +44,10 @@ public class RefreshTests : BaseIntegrationTest
 
         var utcNow = timeProvider.GetUtcNow();
         var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
-
-        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+        var oldTokenHash = SHA256.HashData(refreshTokenBytes);
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", "iPhone", "1.1.1.1", "UA", oldTokenHash,
+            utcNow, refreshTokenExpiresAt, utcNow.AddDays(90));
 
         db.Users.Add(user);
         await db.SaveChangesAsync();
@@ -78,49 +82,79 @@ public class RefreshTests : BaseIntegrationTest
 
         Assert.True(root.TryGetProperty("refreshTokenExpiresAt", out var refreshExpiresAt));
         Assert.True(refreshExpiresAt.GetDateTimeOffset() > utcNow);
+
+        // Verify side-effect: the old token is consumed (not deleted), linked to its replacement.
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var oldToken = await verifyDb.RefreshTokens.AsNoTracking().SingleAsync(rt => rt.TokenHash == oldTokenHash);
+        Assert.NotNull(oldToken.ConsumedAt);
+        Assert.NotNull(oldToken.ReplacedByTokenId);
     }
 
     [Fact]
-    public async Task RefreshToken_ReusingOldToken_ReturnsError()
+    public async Task RefreshToken_ReuseOfConsumedToken_RevokesOnlyThatSessionAndReturnsGenericError()
     {
-        // Arrange — after a successful refresh, the old refresh token must be invalidated.
+        // Arrange — two independent sessions for the same user.
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
         var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-
         var user = ApplicationUser.Create(
-            _faker.Name.FullName(),
-            phoneNumber,
-            DateOnly.FromDateTime(_faker.Date.Past(30))
-        );
+            _faker.Name.FullName(), phoneNumber, DateOnly.FromDateTime(_faker.Date.Past(30)));
 
         var utcNow = timeProvider.GetUtcNow();
-        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        var (targetBytes, targetExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(targetBytes),
+            utcNow, targetExpiresAt, utcNow.AddDays(90));
 
-        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+        var (otherBytes, otherExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "web-app-1", null, null, null, SHA256.HashData(otherBytes),
+            utcNow, otherExpiresAt, utcNow.AddDays(90));
 
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
+        var targetSessionId = user.Sessions.Single(s => s.ClientId == "mobile-app-1").Id;
+        var otherSessionId = user.Sessions.Single(s => s.ClientId == "web-app-1").Id;
+
         var client = Factory.CreateClient();
-        var request = new Request { RefreshToken = Convert.ToBase64String(refreshTokenBytes) };
+        var request = new Request { RefreshToken = Convert.ToBase64String(targetBytes) };
 
-        // First use — must succeed
+        // First use — rotates it away (valid).
         var firstResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
-        if (!firstResponse.IsSuccessStatusCode)
-        {
-            var err = await firstResponse.Content.ReadAsStringAsync();
-            Assert.Fail($"First refresh failed unexpectedly. Status: {firstResponse.StatusCode}. Error: {err}");
-        }
+        Assert.True(firstResponse.IsSuccessStatusCode);
+        var firstJson = await firstResponse.Content.ReadAsStringAsync();
+        var currentRefreshToken = JsonDocument.Parse(firstJson).RootElement.GetProperty("refreshToken").GetString();
 
-        // Act — reuse the SAME old refresh token
+        // Act — replay the OLD (now-consumed) token: this is the theft signal.
         var secondResponse = await client.PostAsJsonAsync(new Uri("/tokens/refresh", UriKind.Relative), request);
 
-        // Assert — old token is now invalid
-        Assert.False(secondResponse.IsSuccessStatusCode);
+        // Assert — same generic shape as an ordinary invalid/expired token, no leaked detection.
+        Assert.Equal(HttpStatusCode.Unauthorized, secondResponse.StatusCode);
+        var secondJson = await secondResponse.Content.ReadAsStringAsync();
+        Assert.Equal("InvalidRefreshToken", JsonDocument.Parse(secondJson).RootElement.GetProperty("errorKey").GetString());
+
+        // Assert — only the target session was revoked; the unrelated session is untouched.
+        using var verifyScope = Factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+
+        var targetSession = await verifyDb.Sessions.AsNoTracking().SingleAsync(s => s.Id == targetSessionId);
+        Assert.NotNull(targetSession.RevokedAt);
+        Assert.Equal(SessionRevokedReason.TokenReuseDetected, targetSession.RevokedReason);
+
+        var otherSession = await verifyDb.Sessions.AsNoTracking().SingleAsync(s => s.Id == otherSessionId);
+        Assert.Null(otherSession.RevokedAt);
+
+        // Assert — even the CURRENT valid token for the now-revoked session fails, distinctly, going forward.
+        var thirdResponse = await client.PostAsJsonAsync(
+            new Uri("/tokens/refresh", UriKind.Relative), new Request { RefreshToken = currentRefreshToken! });
+        Assert.Equal(HttpStatusCode.Unauthorized, thirdResponse.StatusCode);
+        var thirdJson = await thirdResponse.Content.ReadAsStringAsync();
+        Assert.Equal("SessionRevoked", JsonDocument.Parse(thirdJson).RootElement.GetProperty("errorKey").GetString());
     }
 
     [Fact]
@@ -141,9 +175,12 @@ public class RefreshTests : BaseIntegrationTest
         );
 
         // Generate a refresh token but set expiry in the PAST
-        var (refreshTokenBytes, _) = tokenService.GenerateRefreshToken(timeProvider.GetUtcNow());
-        var expiredAt = timeProvider.GetUtcNow().AddDays(-1); // already expired
-        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), expiredAt);
+        var utcNow = timeProvider.GetUtcNow();
+        var (refreshTokenBytes, _) = tokenService.GenerateRefreshToken(utcNow);
+        var expiredAt = utcNow.AddDays(-1); // already expired
+        user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(refreshTokenBytes),
+            utcNow, expiredAt, utcNow.AddDays(90));
 
         db.Users.Add(user);
         await db.SaveChangesAsync();

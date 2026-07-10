@@ -7,6 +7,7 @@ using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
+using IAM.Domain.Identity.Sessions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,8 @@ public class IAMDbContext(
     IdentityRoleClaim<ApplicationUserId>, IdentityUserToken<ApplicationUserId>>(options), IIAMDbContext
 {
     public DbSet<AuditLogEntry> AuditLog => Set<AuditLogEntry>();
+    public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

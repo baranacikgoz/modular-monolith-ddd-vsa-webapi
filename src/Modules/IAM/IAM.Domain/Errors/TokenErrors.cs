@@ -16,4 +16,16 @@ public static class TokenErrors
         Key = nameof(InvalidRefreshToken),
         StatusCode = HttpStatusCode.Unauthorized
     };
+
+    public static readonly Error SessionRevoked = new()
+    {
+        Key = nameof(SessionRevoked),
+        StatusCode = HttpStatusCode.Unauthorized
+    };
+
+    public static readonly Error SessionNotFound = new()
+    {
+        Key = nameof(SessionNotFound),
+        StatusCode = HttpStatusCode.NotFound
+    };
 }

@@ -7,6 +7,7 @@ using Common.Application.Auth;
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using IAM.Application.Tokens.Services;
+using IAM.Domain.Identity.Sessions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,12 +16,13 @@ namespace IAM.Infrastructure.Tokens.Services;
 internal class TokenService(IOptions<JwtOptions> jwtOptionsProvider) : ITokenService
 {
     public (string accessToken, DateTimeOffset expiresAt) GenerateAccessToken(DateTimeOffset now,
-        ApplicationUserId userId, ICollection<string> roles)
+        ApplicationUserId userId, SessionId sessionId, ICollection<string> roles)
     {
-        var claims = new List<Claim>(3)
+        var claims = new List<Claim>(4)
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtClaimNames.SessionId, sessionId.Value.ToString()),
 
             // Emit a single JSON-array claim so the wire shape is always ["..."] — even for one role.
             new(JwtClaimNames.Roles, JsonSerializer.Serialize(roles), JsonClaimValueTypes.JsonArray)

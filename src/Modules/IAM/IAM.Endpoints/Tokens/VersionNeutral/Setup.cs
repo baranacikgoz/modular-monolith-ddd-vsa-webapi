@@ -16,5 +16,13 @@ public static class Setup
         Endpoint.MapEndpoint(tokensApiGroup);
         Refresh.Endpoint.MapEndpoint(tokensApiGroup);
         Revoke.Endpoint.MapEndpoint(tokensApiGroup);
+
+        var sessionsApiGroup = tokensApiGroup
+            .MapGroup("/sessions")
+            .WithTags("Sessions");
+
+        Sessions.List.Endpoint.MapEndpoint(sessionsApiGroup);
+        Sessions.Revoke.Endpoint.MapEndpoint(sessionsApiGroup);
+        Sessions.RevokeAll.Endpoint.MapEndpoint(sessionsApiGroup);
     }
 }

@@ -19,6 +19,9 @@ internal sealed class CurrentUser : ICurrentUser
         Roles = isAuthenticated
             ? user?.FindAll(JwtClaimNames.Roles).Select(x => x.Value).ToList() ?? []
             : [];
+        SessionId = isAuthenticated && Guid.TryParse(user?.FindFirstValue(JwtClaimNames.SessionId), out var sid)
+            ? sid
+            : null;
     }
 
     public ApplicationUserId Id { get; }
@@ -26,6 +29,8 @@ internal sealed class CurrentUser : ICurrentUser
     public string? IdAsString { get; }
 
     public ICollection<string> Roles { get; }
+
+    public Guid? SessionId { get; }
 
     public bool HasPermission(string permission)
         => Roles.Any(role => CustomPermissions.ForRole(role).Contains(permission));

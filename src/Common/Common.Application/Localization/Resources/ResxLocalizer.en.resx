@@ -480,6 +480,18 @@
   <data name="Users_Tokens_Create_Otp_NotEmpty" xml:space="preserve">
     <value>OTP cannot be empty.</value>
   </data>
+  <data name="Users_Tokens_Create_DeviceId_NotEmpty" xml:space="preserve">
+    <value>Device id cannot be empty.</value>
+  </data>
+  <data name="Users_Tokens_Create_ClientId_NotEmpty" xml:space="preserve">
+    <value>Client id cannot be empty.</value>
+  </data>
+  <data name="Users_Tokens_Create_ClientId_Invalid" xml:space="preserve">
+    <value>Client id is not a recognized client.</value>
+  </data>
+  <data name="Users_Tokens_Create_DeviceName_MaxLength" xml:space="preserve">
+    <value>Device name cannot exceed ({0}) characters.</value>
+  </data>
   <data name="Users_Tokens_Refresh_AccessToken_NotEmpty" xml:space="preserve">
     <value>Access token cannot be empty.</value>
   </data>
@@ -494,6 +506,21 @@
   </data>
   <data name="Users_CheckRegistration_PhoneNumber_NotEmpty" xml:space="preserve">
     <value>Phone number cannot be empty.</value>
+  </data>
+  <data name="Tokens_Sessions_Revoke_Id_NotEmpty" xml:space="preserve">
+    <value>Session id cannot be empty.</value>
+  </data>
+  <data name="Tokens_Refresh_DeviceId_NotEmpty" xml:space="preserve">
+    <value>Device id cannot be empty.</value>
+  </data>
+  <data name="Tokens_Refresh_ClientId_NotEmpty" xml:space="preserve">
+    <value>Client id cannot be empty.</value>
+  </data>
+  <data name="Tokens_Refresh_ClientId_Invalid" xml:space="preserve">
+    <value>Client id is not a recognized client.</value>
+  </data>
+  <data name="Tokens_Refresh_DeviceName_MaxLength" xml:space="preserve">
+    <value>Device name cannot exceed ({0}) characters.</value>
   </data>
   <data name="Tokens_Refresh_RefreshToken_NotEmpty" xml:space="preserve">
     <value>Refresh token cannot be empty.</value>

@@ -14,6 +14,17 @@ public class JwtOptions
     public required int AccessTokenExpirationInMinutes { get; set; }
 
     public required int RefreshTokenExpirationInDays { get; set; }
+
+    /// <summary>
+    /// Hard cap on a session's lifetime regardless of how many times its refresh token is rotated.
+    /// </summary>
+    public required int SessionAbsoluteExpirationInDays { get; set; }
+
+    /// <summary>
+    /// Allow-list of recognized client app ids (e.g. "mobile-app", "web-app") accepted on
+    /// token Create/Refresh requests as part of the (UserId, DeviceId, ClientId) session key.
+    /// </summary>
+    public required IReadOnlyCollection<string> AllowedClientIds { get; init; }
 }
 
 public class JwtOptionsValidator : CustomValidator<JwtOptions>
@@ -41,5 +52,13 @@ public class JwtOptionsValidator : CustomValidator<JwtOptions>
         RuleFor(o => o.RefreshTokenExpirationInDays)
             .GreaterThan(0)
             .WithMessage("RefreshTokenExpirationInDays must be greater than 0.");
+
+        RuleFor(o => o.SessionAbsoluteExpirationInDays)
+            .GreaterThan(0)
+            .WithMessage("SessionAbsoluteExpirationInDays must be greater than 0.");
+
+        RuleFor(o => o.AllowedClientIds)
+            .NotEmpty()
+            .WithMessage("AllowedClientIds must not be empty.");
     }
 }

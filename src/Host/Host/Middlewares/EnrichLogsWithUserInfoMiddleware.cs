@@ -10,6 +10,7 @@ internal class EnrichLogsWithUserInfoMiddleware(ICurrentUser currentUser) : IMid
         var userId = string.IsNullOrEmpty(currentUser.IdAsString) ? "Anonymous" : currentUser.IdAsString;
 
         using (LogContext.PushProperty("User", userId))
+        using (LogContext.PushProperty("SessionId", currentUser.SessionId))
         {
             await next(context);
         }

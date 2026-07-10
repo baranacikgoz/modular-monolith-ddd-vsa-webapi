@@ -36,18 +36,12 @@ internal class ApplicationUserConfig : IEntityTypeConfiguration<ApplicationUser>
                 str => str == null ? null : new Uri(str));
 
         builder
-            .Property(u => u.RefreshTokenHash)
-            .IsRequired();
-
-        builder
             .HasIndex(u => u.PhoneNumber);
 
         builder
-            .HasIndex(u => u.RefreshTokenHash);
-
-        builder
-            .Property(u => u.RefreshTokenExpiresAt)
-            .IsRequired();
+            .Navigation(u => u.Sessions)
+            .HasField("_sessions")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
 
         builder
             .Property(u => u.CreatedOn)

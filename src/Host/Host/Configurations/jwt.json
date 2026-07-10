@@ -4,6 +4,12 @@
     "Issuer": "Modular-Monolith",
     "Audience": ".NET Developers",
     "AccessTokenExpirationInMinutes": 15,
-    "RefreshTokenExpirationInDays": 14
+    "RefreshTokenExpirationInDays": 14,
+    "SessionAbsoluteExpirationInDays": 90,
+    "AllowedClientIds": [
+      "mobile-app-1",
+      "mobile-app-2",
+      "web-app-1"
+    ]
   }
 }

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Common.Application.Auth;
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
+using IAM.Domain.Identity.Sessions;
 using IAM.Infrastructure.Tokens.Services;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -16,14 +17,16 @@ public class TokenServiceTests
         Issuer = "test-issuer",
         Audience = "test-audience",
         AccessTokenExpirationInMinutes = 15,
-        RefreshTokenExpirationInDays = 7
+        RefreshTokenExpirationInDays = 7,
+        SessionAbsoluteExpirationInDays = 90,
+        AllowedClientIds = ["mobile-app-1", "web-app-1"]
     }));
 
     [Fact]
     public void GenerateAccessToken_WithSingleRole_EmitsRolesAsJsonArray()
     {
         var (accessToken, _) = _sut.GenerateAccessToken(
-            DateTimeOffset.UtcNow, new ApplicationUserId(DefaultIdType.NewGuid()), [CustomRoles.Basic]);
+            DateTimeOffset.UtcNow, new ApplicationUserId(DefaultIdType.NewGuid()), SessionId.New(), [CustomRoles.Basic]);
 
         var roles = DecodePayload(accessToken).GetProperty(JwtClaimNames.Roles);
 
@@ -36,7 +39,7 @@ public class TokenServiceTests
     public void GenerateAccessToken_WithMultipleRoles_EmitsAllRolesInArray()
     {
         var (accessToken, _) = _sut.GenerateAccessToken(
-            DateTimeOffset.UtcNow, new ApplicationUserId(DefaultIdType.NewGuid()),
+            DateTimeOffset.UtcNow, new ApplicationUserId(DefaultIdType.NewGuid()), SessionId.New(),
             [CustomRoles.Basic, CustomRoles.SystemAdmin]);
 
         var roles = DecodePayload(accessToken).GetProperty(JwtClaimNames.Roles);

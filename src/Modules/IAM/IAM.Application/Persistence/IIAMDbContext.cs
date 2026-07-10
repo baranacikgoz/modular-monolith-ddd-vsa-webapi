@@ -1,6 +1,7 @@
 using Common.Application.Persistence;
 using Common.Domain.StronglyTypedIds;
 using IAM.Domain.Identity;
+using IAM.Domain.Identity.Sessions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,8 @@ public interface IIAMDbContext : IDbContext
 #pragma warning restore S101 // Types should be named in PascalCase
 {
     DbSet<ApplicationUser> Users { get; }
+    DbSet<Session> Sessions { get; }
+    DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<IdentityRole<ApplicationUserId>> Roles { get; }
     DbSet<IdentityUserClaim<ApplicationUserId>> UserClaims { get; }
     DbSet<IdentityUserRole<ApplicationUserId>> UserRoles { get; }

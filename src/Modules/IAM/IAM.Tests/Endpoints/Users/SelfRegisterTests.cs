@@ -66,7 +66,9 @@ public class SelfRegisterTests : BaseIntegrationTest
             Otp = otp,
             FullName = _faker.Name.FullName() + " Yılmaz",
             BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken"
+            CaptchaToken = "dummyToken",
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
         };
 
         // Act
@@ -142,7 +144,9 @@ public class SelfRegisterTests : BaseIntegrationTest
             Otp = otp,
             FullName = _faker.Name.FullName() + " Yılmaz",
             BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken"
+            CaptchaToken = "dummyToken",
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
         };
 
         // Act
@@ -175,7 +179,9 @@ public class SelfRegisterTests : BaseIntegrationTest
             Otp = "999999", // wrong OTP
             FullName = _faker.Name.FullName() + " Yılmaz",
             BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken"
+            CaptchaToken = "dummyToken",
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
         };
 
         // Act
@@ -197,7 +203,9 @@ public class SelfRegisterTests : BaseIntegrationTest
             Otp = "123456",
             FullName = _faker.Name.FullName() + " Yılmaz",
             BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = string.Empty
+            CaptchaToken = string.Empty,
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
         };
 
         // Act
@@ -218,7 +226,9 @@ public class SelfRegisterTests : BaseIntegrationTest
             Otp = "123456",
             FullName = _faker.Name.FullName() + " Yılmaz",
             BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "invalid-token"
+            CaptchaToken = "invalid-token",
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
         };
 
         // Act

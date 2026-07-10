@@ -7,3 +7,9 @@ public sealed record UserRegisteredIntegrationEvent(
     string FullName,
     string PhoneNumber
 ) : IntegrationEvent;
+
+public sealed record SessionTokenReuseDetectedIntegrationEvent(
+    ApplicationUserId UserId,
+    Guid SessionId,
+    string? DeviceName
+) : IntegrationEvent;

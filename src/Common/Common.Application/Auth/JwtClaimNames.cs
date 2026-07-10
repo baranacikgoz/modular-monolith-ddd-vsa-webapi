@@ -11,4 +11,9 @@ public static class JwtClaimNames
     /// role — so the frontend never has to branch on string-vs-array.
     /// </summary>
     public const string Roles = "roles";
+
+    /// <summary>
+    /// Session id claim ("sid") — identifies which device/app session this access token belongs to.
+    /// </summary>
+    public const string SessionId = "sid";
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
@@ -23,7 +24,7 @@ public class RevokeTests : BaseIntegrationTest
     }
 
     [Fact]
-    public async Task RevokeToken_WithValidAuth_ClearsRefreshTokenOnUser()
+    public async Task RevokeToken_WithValidAuth_RevokesTheCallersSession()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -32,7 +33,7 @@ public class RevokeTests : BaseIntegrationTest
         var timeProvider = scope.ServiceProvider.GetRequiredService<TimeProvider>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToString(CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
             _faker.Name.FullName(),
@@ -40,8 +41,11 @@ public class RevokeTests : BaseIntegrationTest
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
-        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(timeProvider.GetUtcNow());
-        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+        var utcNow = timeProvider.GetUtcNow();
+        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        var refreshToken = user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(refreshTokenBytes),
+            utcNow, refreshTokenExpiresAt, utcNow.AddDays(90));
 
         db.Users.Add(user);
         await db.SaveChangesAsync(default);
@@ -50,6 +54,7 @@ public class RevokeTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
         client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
+        client.DefaultRequestHeaders.Add("X-Test-Session-Id", refreshToken.SessionId.Value.ToString());
 
         // Act
         var response = await client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
@@ -62,15 +67,13 @@ public class RevokeTests : BaseIntegrationTest
         }
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-        // Verify side-effect: refresh token fields must be cleared on the DB entity
+        // Verify side-effect: the session tied to the caller's sid claim is revoked.
         using var verifyScope = Factory.Services.CreateScope();
         var verifyDb = verifyScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-        var updatedUser = await verifyDb.Users.AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
+        var session = await verifyDb.Sessions.AsNoTracking()
+            .SingleAsync(s => s.Id == refreshToken.SessionId);
 
-        Assert.NotNull(updatedUser);
-        Assert.Empty(updatedUser.RefreshTokenHash);
-        Assert.Equal(DateTimeOffset.MinValue, updatedUser.RefreshTokenExpiresAt);
+        Assert.NotNull(session.RevokedAt);
     }
 
     [Fact]
@@ -98,7 +101,7 @@ public class RevokeTests : BaseIntegrationTest
         var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
-            .ToString(System.Globalization.CultureInfo.InvariantCulture);
+            .ToString(CultureInfo.InvariantCulture);
 
         var user = ApplicationUser.Create(
             _faker.Name.FullName(),
@@ -106,8 +109,11 @@ public class RevokeTests : BaseIntegrationTest
             DateOnly.FromDateTime(_faker.Date.Past(30))
         );
 
-        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(timeProvider.GetUtcNow());
-        user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+        var utcNow = timeProvider.GetUtcNow();
+        var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
+        var refreshToken = user.IssueSessionAndToken(
+            null, Guid.NewGuid(), "mobile-app-1", null, null, null, SHA256.HashData(refreshTokenBytes),
+            utcNow, refreshTokenExpiresAt, utcNow.AddDays(90));
 
         db.Users.Add(user);
         await db.SaveChangesAsync(default);
@@ -120,6 +126,7 @@ public class RevokeTests : BaseIntegrationTest
             new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
         revokeClient.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
         revokeClient.DefaultRequestHeaders.Add("X-Test-Jti", jti);
+        revokeClient.DefaultRequestHeaders.Add("X-Test-Session-Id", refreshToken.SessionId.Value.ToString());
 
         // Act — revoke the token
         var revokeResponse = await revokeClient.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);

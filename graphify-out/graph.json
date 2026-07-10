@@ -6332,7 +6332,7 @@
       },
       "_origin": "ast",
       "id": "src_common_common_domain_resultmonad_error_common_domain_resultmonad_error_violatesuniqueconstraint",
-      "community": 35,
+      "community": 120,
       "norm_label": ".violatesuniqueconstraint()"
     },
     {
@@ -7147,7 +7147,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:2c649dd3d7348cb0",
-      "community": 241,
+      "community": 18,
       "norm_label": "common.endpoints.versioning"
     },
     {
@@ -11265,7 +11265,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient",
-      "community": 233,
+      "community": 147,
       "norm_label": "masstransitintermodulerequestclient.cs"
     },
     {
@@ -11281,7 +11281,7 @@
       },
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient_common_intermodulerequests_contracts_masstransitintermodulerequestclient",
-      "community": 233,
+      "community": 147,
       "norm_label": "masstransitintermodulerequestclient"
     },
     {
@@ -11297,7 +11297,7 @@
       },
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient_common_intermodulerequests_contracts_masstransitintermodulerequestclient_sendasync",
-      "community": 233,
+      "community": 147,
       "norm_label": ".sendasync()"
     },
     {
@@ -11307,7 +11307,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient_cs_cancellationtoken",
-      "community": 233,
+      "community": 147,
       "norm_label": "cancellationtoken"
     },
     {
@@ -11317,7 +11317,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient_cs_task",
-      "community": 233,
+      "community": 147,
       "norm_label": "task"
     },
     {
@@ -13540,7 +13540,7 @@
       },
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_host_infrastructure_setup_addmodules",
-      "community": 125,
+      "community": 37,
       "norm_label": ".addmodules()"
     },
     {
@@ -13560,7 +13560,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_cs_iconfiguration",
-      "community": 125,
+      "community": 37,
       "norm_label": "iconfiguration"
     },
     {
@@ -13576,7 +13576,7 @@
       },
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_host_infrastructure_setup_usemodules",
-      "community": 200,
+      "community": 125,
       "norm_label": ".usemodules()"
     },
     {
@@ -13586,7 +13586,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_cs_webapplication",
-      "community": 200,
+      "community": 125,
       "norm_label": "webapplication"
     },
     {
@@ -13596,7 +13596,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_cs_iapplicationbuilder",
-      "community": 200,
+      "community": 125,
       "norm_label": "iapplicationbuilder"
     },
     {
@@ -13612,7 +13612,7 @@
       },
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_host_infrastructure_setup_mapmoduleendpoints",
-      "community": 200,
+      "community": 125,
       "norm_label": ".mapmoduleendpoints()"
     },
     {
@@ -13690,7 +13690,7 @@
       },
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_host_infrastructure_setup_getenabledmodulenames",
-      "community": 125,
+      "community": 37,
       "norm_label": ".getenabledmodulenames()"
     },
     {
@@ -13700,7 +13700,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup_modules_cs_ireadonlylist",
-      "community": 125,
+      "community": 37,
       "norm_label": "ireadonlylist"
     },
     {
@@ -13710,7 +13710,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "names",
-      "community": 125,
+      "community": 37,
       "norm_label": "names"
     },
     {
@@ -13720,7 +13720,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "loadall",
-      "community": 125,
+      "community": 37,
       "norm_label": "loadall"
     },
     {
@@ -17256,7 +17256,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_iam_application_captcha_services_icaptchaservice_validateasync",
-      "community": 147,
+      "community": 64,
       "norm_label": ".validateasync()"
     },
     {
@@ -17266,7 +17266,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_cancellationtoken",
-      "community": 147,
+      "community": 64,
       "norm_label": "cancellationtoken"
     },
     {
@@ -17276,7 +17276,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_task",
-      "community": 147,
+      "community": 64,
       "norm_label": "task"
     },
     {
@@ -18020,11 +18020,11 @@
       "label": "TokenErrors",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Domain/Errors/TokenErrors.cs",
-      "source_location": "L5",
+      "source_location": "L6",
       "metadata": {
         "namespace": "IAM.Domain.Errors",
         "scope_chain": [
-          "s34"
+          "s52"
         ]
       },
       "_origin": "ast",
@@ -19227,7 +19227,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_iam_endpoints_otp_versionneutral_sendforlogin_endpoint",
-      "community": 147,
+      "community": 33,
       "norm_label": "endpoint"
     },
     {
@@ -19243,7 +19243,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_mapendpoint",
-      "community": 147,
+      "community": 33,
       "norm_label": ".mapendpoint()"
     },
     {
@@ -19253,7 +19253,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_cs_routegroupbuilder",
-      "community": 147,
+      "community": 33,
       "norm_label": "routegroupbuilder"
     },
     {
@@ -19269,7 +19269,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_sendotp",
-      "community": 147,
+      "community": 33,
       "norm_label": ".sendotp()"
     },
     {
@@ -19279,7 +19279,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_cs_ifeaturemanager",
-      "community": 147,
+      "community": 33,
       "norm_label": "ifeaturemanager"
     },
     {
@@ -19289,7 +19289,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_cs_cancellationtoken",
-      "community": 147,
+      "community": 33,
       "norm_label": "cancellationtoken"
     },
     {
@@ -19299,7 +19299,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint_cs_task",
-      "community": 147,
+      "community": 33,
       "norm_label": "task"
     },
     {
@@ -28781,7 +28781,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_products_domain_producttemplates_producttemplate",
-      "community": 45,
+      "community": 105,
       "norm_label": "producttemplate"
     },
     {
@@ -28791,7 +28791,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_cs_list",
-      "community": 45,
+      "community": 105,
       "norm_label": "list"
     },
     {
@@ -28801,7 +28801,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_cs_ireadonlylist",
-      "community": 45,
+      "community": 105,
       "norm_label": "ireadonlylist"
     },
     {
@@ -28833,7 +28833,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_products_domain_producttemplates_producttemplate_activate",
-      "community": 45,
+      "community": 105,
       "norm_label": ".activate()"
     },
     {
@@ -28849,7 +28849,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_products_domain_producttemplates_producttemplate_deactivate",
-      "community": 45,
+      "community": 105,
       "norm_label": ".deactivate()"
     },
     {
@@ -29159,7 +29159,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_domain_products_product_products_domain_products_productid_new",
-      "community": 53,
+      "community": 45,
       "norm_label": ".new()"
     },
     {
@@ -29223,7 +29223,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_domain_products_product_products_domain_products_product_create",
-      "community": 53,
+      "community": 45,
       "norm_label": ".create()"
     },
     {
@@ -29821,7 +29821,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_iassemblyreference",
-      "community": 241,
+      "community": 18,
       "norm_label": "iassemblyreference.cs"
     },
     {
@@ -29836,7 +29836,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:a01b1462f59b81dc",
-      "community": 241,
+      "community": 18,
       "norm_label": "products.endpoints"
     },
     {
@@ -29852,7 +29852,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_iassemblyreference_products_endpoints_iassemblyreference",
-      "community": 241,
+      "community": 18,
       "norm_label": "iassemblyreference"
     },
     {
@@ -30124,7 +30124,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:dbe93251801678e7",
-      "community": 156,
+      "community": 205,
       "norm_label": "products.endpoints.producttemplates.v1.activate"
     },
     {
@@ -30212,7 +30212,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
+      "community": 205,
       "norm_label": "request.cs"
     },
     {
@@ -30228,7 +30228,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
+      "community": 205,
       "norm_label": "request"
     },
     {
@@ -30244,7 +30244,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_requestvalidator",
-      "community": 156,
+      "community": 205,
       "norm_label": "requestvalidator"
     },
     {
@@ -30440,7 +30440,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:430f23f7503d0437",
-      "community": 105,
+      "community": 156,
       "norm_label": "products.endpoints.producttemplates.v1.deactivate"
     },
     {
@@ -30528,7 +30528,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 105,
+      "community": 156,
       "norm_label": "request.cs"
     },
     {
@@ -30544,7 +30544,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 105,
+      "community": 156,
       "norm_label": "request"
     },
     {
@@ -30560,7 +30560,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_requestvalidator",
-      "community": 105,
+      "community": 156,
       "norm_label": "requestvalidator"
     },
     {
@@ -32051,7 +32051,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:8f78d0581f4f00a4",
-      "community": 75,
+      "community": 200,
       "norm_label": "products.endpoints.products.v1.update"
     },
     {
@@ -32139,7 +32139,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_update_request",
-      "community": 75,
+      "community": 200,
       "norm_label": "request.cs"
     },
     {
@@ -32155,7 +32155,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_update_request_products_endpoints_products_v1_update_request",
-      "community": 75,
+      "community": 200,
       "norm_label": "request"
     },
     {
@@ -32165,7 +32165,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_update_request_cs_requestbody",
-      "community": 75,
+      "community": 200,
       "norm_label": "requestbody"
     },
     {
@@ -32182,7 +32182,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_update_request_products_endpoints_products_v1_update_requestbody",
-      "community": 75,
+      "community": 200,
       "norm_label": "requestbody"
     },
     {
@@ -32198,7 +32198,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_update_request_products_endpoints_products_v1_update_requestvalidator",
-      "community": 75,
+      "community": 200,
       "norm_label": "requestvalidator"
     },
     {
@@ -32224,7 +32224,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_productsmodule",
-      "community": 241,
+      "community": 18,
       "norm_label": "productsmodule.cs"
     },
     {
@@ -33767,7 +33767,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:72577f269aee6ffe",
-      "community": 185,
+      "community": 75,
       "norm_label": "products.endpoints.stores.v1.my.removeproduct"
     },
     {
@@ -33855,7 +33855,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 185,
+      "community": 75,
       "norm_label": "request.cs"
     },
     {
@@ -33871,7 +33871,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 185,
+      "community": 75,
       "norm_label": "request"
     },
     {
@@ -33887,7 +33887,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_requestvalidator",
-      "community": 185,
+      "community": 75,
       "norm_label": "requestvalidator"
     },
     {
@@ -34383,7 +34383,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:1eb96c12d3a2e660",
-      "community": 9,
+      "community": 185,
       "norm_label": "products.endpoints.stores.v1.update"
     },
     {
@@ -34471,7 +34471,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_request",
-      "community": 9,
+      "community": 185,
       "norm_label": "request.cs"
     },
     {
@@ -34487,7 +34487,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_request_products_endpoints_stores_v1_update_request",
-      "community": 9,
+      "community": 185,
       "norm_label": "request"
     },
     {
@@ -34497,7 +34497,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_request_cs_requestbody",
-      "community": 9,
+      "community": 185,
       "norm_label": "requestbody"
     },
     {
@@ -34514,7 +34514,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_request_products_endpoints_stores_v1_update_requestbody",
-      "community": 9,
+      "community": 185,
       "norm_label": "requestbody"
     },
     {
@@ -34530,7 +34530,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_request_products_endpoints_stores_v1_update_requestvalidator",
-      "community": 9,
+      "community": 185,
       "norm_label": "requestvalidator"
     },
     {
@@ -34680,7 +34680,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_entityconfigurations_producttemplateconfiguration_products_infrastructure_persistence_entityconfigurations_producttemplateconfiguration",
-      "community": 45,
+      "community": 105,
       "norm_label": "producttemplateconfiguration"
     },
     {
@@ -34696,7 +34696,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_entityconfigurations_producttemplateconfiguration_products_infrastructure_persistence_entityconfigurations_producttemplateconfiguration_configure",
-      "community": 45,
+      "community": 105,
       "norm_label": ".configure()"
     },
     {
@@ -34706,7 +34706,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_entityconfigurations_producttemplateconfiguration_cs_entitytypebuilder",
-      "community": 45,
+      "community": 105,
       "norm_label": "entitytypebuilder"
     },
     {
@@ -34799,7 +34799,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_productsdbcontext_products_infrastructure_persistence_productsdbcontext",
-      "community": 44,
+      "community": 105,
       "norm_label": "productsdbcontext"
     },
     {
@@ -34809,7 +34809,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_productsdbcontext_cs_dbset",
-      "community": 44,
+      "community": 105,
       "norm_label": "dbset"
     },
     {
@@ -34825,7 +34825,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_productsdbcontext_products_infrastructure_persistence_productsdbcontext_onmodelcreating",
-      "community": 44,
+      "community": 105,
       "norm_label": ".onmodelcreating()"
     },
     {
@@ -34835,7 +34835,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_productsdbcontext_cs_modelbuilder",
-      "community": 44,
+      "community": 105,
       "norm_label": "modelbuilder"
     },
     {
@@ -35026,7 +35026,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products_products_infrastructure_persistence_seeding_seeder",
-      "community": 53,
+      "community": 45,
       "norm_label": "seeder"
     },
     {
@@ -35042,7 +35042,7 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products_products_infrastructure_persistence_seeding_seeder_seedproductasync",
-      "community": 53,
+      "community": 45,
       "norm_label": ".seedproductasync()"
     },
     {
@@ -35052,7 +35052,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products_cs_list",
-      "community": 53,
+      "community": 45,
       "norm_label": "list"
     },
     {
@@ -35062,7 +35062,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products_cs_cancellationtoken",
-      "community": 53,
+      "community": 45,
       "norm_label": "cancellationtoken"
     },
     {
@@ -35072,7 +35072,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products_cs_task",
-      "community": 53,
+      "community": 45,
       "norm_label": "task"
     },
     {
@@ -38213,7 +38213,7 @@
       "contributor": null,
       "community": 130,
       "norm_label": "signalr poc \u2014 notifications hub client",
-      "id": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc"
+      "id": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc"
     },
     {
       "label": "Deploy-Time Materialized Config",
@@ -56533,7 +56533,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Domain/Errors/TokenErrors.cs",
-      "source_location": "L1",
+      "source_location": "L2",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -57470,7 +57470,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Domain/Errors/TokenErrors.cs",
-      "source_location": "L8",
+      "source_location": "L14",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -76629,7 +76629,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Domain/Errors/TokenErrors.cs",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "source": "src_modules_iam_iam_domain_errors_tokenerrors",
       "target": "csharp_namespace:de66a5dc8cc512b1",
@@ -76705,7 +76705,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Domain/Errors/TokenErrors.cs",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "source": "src_modules_iam_iam_domain_errors_tokenerrors",
       "target": "src_modules_iam_iam_domain_errors_tokenerrors_iam_domain_errors_tokenerrors",
@@ -101358,7 +101358,7 @@
       "source_file": "signalr-poc/signalr-poc.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
+      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
       "target": "claude_integration_events"
     },
     {
@@ -101388,7 +101388,7 @@
       "source_file": "signalr-poc/signalr-poc.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
+      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
       "target": "claude_module_iam"
     },
     {
@@ -101408,7 +101408,7 @@
       "source_file": "signalr-poc/signalr-poc.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
+      "source": "signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc_signalr_poc",
       "target": "claude_module_notifications"
     },
     {
@@ -101578,5 +101578,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "2beec37f66d3f8fbdf27abdb5c886daa60bd981e"
+  "built_at_commit": "16ab1a89517b6dab3969494973162f871235d985"
 }

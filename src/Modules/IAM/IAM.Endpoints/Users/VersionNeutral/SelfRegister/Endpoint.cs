@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.FeatureManagement;
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Constants = IAM.Domain.Constants;
 
@@ -44,6 +46,8 @@ internal static class Endpoint
         ITokenService tokenService,
         TimeProvider timeProvider,
         IFeatureManager featureManager,
+        IOptions<JwtOptions> jwtOptionsProvider,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var captchaTask = await featureManager.IsEnabledAsync(FeatureFlags.IAM.Captcha)
@@ -52,7 +56,7 @@ internal static class Endpoint
 
         return await captchaTask
             .BindAsync(() => RegisterAndLoginAsync(request, userManager, otpClient, db, tokenService, timeProvider,
-                cancellationToken));
+                jwtOptionsProvider, httpContext, cancellationToken));
     }
 
     private static async Task<Result<Response>> RegisterAndLoginAsync(
@@ -62,6 +66,8 @@ internal static class Endpoint
         IIAMDbContext db,
         ITokenService tokenService,
         TimeProvider timeProvider,
+        IOptions<JwtOptions> jwtOptionsProvider,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         var verifyOtpResponse = await otpClient.SendAsync(
@@ -87,11 +93,22 @@ internal static class Endpoint
             .BindAsync(async user =>
             {
                 var utcNow = timeProvider.GetUtcNow();
-                var (accessToken, accessTokenExpiresAt) =
-                    tokenService.GenerateAccessToken(utcNow, user.Id, [CustomRoles.Basic]);
                 var (refreshTokenBytes, refreshTokenExpiresAt) = tokenService.GenerateRefreshToken(utcNow);
-                user.UpdateRefreshToken(SHA256.HashData(refreshTokenBytes), refreshTokenExpiresAt);
+                var sessionAbsoluteExpiresAt = utcNow.AddDays(jwtOptionsProvider.Value.SessionAbsoluteExpirationInDays);
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString();
+                var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+
+                // Brand-new user — there is no existing session to reuse.
+                var refreshToken = user.IssueSessionAndToken(
+                    existingSession: null, request.DeviceId, request.ClientId, request.DeviceName, ip, userAgent,
+                    SHA256.HashData(refreshTokenBytes), utcNow, refreshTokenExpiresAt, sessionAbsoluteExpiresAt);
+
+                var (accessToken, accessTokenExpiresAt) =
+                    tokenService.GenerateAccessToken(utcNow, user.Id, refreshToken.SessionId, [CustomRoles.Basic]);
+
                 await db.SaveChangesAsync(cancellationToken);
+                IamTelemetry.SessionsCreated.Add(1);
+
                 return Result<Response>.Success(new Response
                 {
                     AccessToken = accessToken,

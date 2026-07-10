@@ -16,6 +16,7 @@ public class TestAuthHandler(
     public const string AuthenticationScheme = "TestScheme";
     public static readonly Guid DefaultUserId = Guid.NewGuid();
     public static readonly string DefaultJti = Guid.NewGuid().ToString();
+    public static readonly Guid DefaultSessionId = Guid.NewGuid();
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -38,10 +39,17 @@ public class TestAuthHandler(
             jti = overrideJti.ToString();
         }
 
+        var sessionId = DefaultSessionId.ToString();
+        if (Request.Headers.TryGetValue("X-Test-Session-Id", out var overrideSessionId))
+        {
+            sessionId = overrideSessionId.ToString();
+        }
+
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, nameIdentifier),
             new(JwtRegisteredClaimNames.Jti, jti),
+            new(JwtClaimNames.SessionId, sessionId),
             new(ClaimTypes.Name, "TestUser"),
             // Add any essential custom permissions required by all endpoints implicitly.
             // Tests can override this by injecting different headers or using specific identities if needed.
@@ -51,6 +59,7 @@ public class TestAuthHandler(
             new("Permission", CustomActions.Delete + CustomResources.ApplicationUsers),
             new("Permission", CustomActions.ReadMy + CustomResources.ApplicationUsers),
             new("Permission", CustomActions.UpdateMy + CustomResources.ApplicationUsers),
+            new("Permission", CustomActions.DeleteMy + CustomResources.ApplicationUsers),
         };
 
         // Optional role claims — comma-separated header, e.g. "Basic,SystemAdmin".
