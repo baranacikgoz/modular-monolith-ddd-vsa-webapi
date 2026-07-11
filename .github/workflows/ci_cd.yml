@@ -27,14 +27,61 @@ jobs:
         with:
           global-json-file: global.json
 
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
       - name: Restore & Build
         run: dotnet build src/Host/Host/Host.csproj --configuration Release
 
-      - name: Test
-        run: make test
+  # One module per runner (separate VM/process) — each spins its own Testcontainers
+  # Postgres on a dynamically assigned port, so no shared state/port collision across
+  # legs. This is a different axis from xUnit's in-process parallelization (test classes
+  # within one assembly), which IClassFixture/ICollectionFixture usage already guards.
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: common
+            csproj: src/Common/Common.Tests/Common.Tests.csproj
+          - module: host
+            csproj: src/Host/Host.Tests/Host.Tests.csproj
+          - module: iam
+            csproj: src/Modules/IAM/IAM.Tests/IAM.Tests.csproj
+          - module: products
+            csproj: src/Modules/Products/Products.Tests/Products.Tests.csproj
+          - module: outbox
+            csproj: src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
+          - module: notifications
+            csproj: src/Modules/Notifications/Notifications.Tests/Notifications.Tests.csproj
+          - module: backgroundjobs
+            csproj: src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Test ${{ matrix.module }}
+        run: dotnet test ${{ matrix.csproj }}
 
   deploy:
-    needs: build
+    needs: [build, test]
     if: >
       startsWith(github.ref, 'refs/heads/release/') ||
       startsWith(github.ref, 'refs/heads/hotfix/') ||
