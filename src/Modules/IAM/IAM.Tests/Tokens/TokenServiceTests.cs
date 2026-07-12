@@ -19,6 +19,7 @@ public class TokenServiceTests
         AccessTokenExpirationInMinutes = 15,
         RefreshTokenExpirationInDays = 7,
         SessionAbsoluteExpirationInDays = 90,
+        RefreshTokenReuseGraceWindowInSeconds = 30,
         AllowedClientIds = ["mobile-app-1", "web-app-1"]
     }));
 

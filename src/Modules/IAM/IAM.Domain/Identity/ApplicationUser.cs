@@ -84,23 +84,20 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     }
 
     /// <summary>
-    ///     Records a successful refresh: slides the token's expiry forward and touches the session.
-    ///     The refresh token itself is NOT rotated — the same opaque secret stays valid until it
-    ///     expires, the session is revoked, or a new login on the same (DeviceId, ClientId)
-    ///     supersedes it. Pass the <paramref name="session" />/<paramref name="token" /> instances
-    ///     the caller already resolved (e.g. via a filtered EF <c>Include</c>). Caller must have
-    ///     already verified the session is not revoked/expired and the token is live.
-    ///     Deliberately raises no event: an event would bump the user aggregate's
-    ///     <see cref="Version" /> concurrency token, making two concurrent refreshes — a legitimate,
-    ///     harmless race (e.g. a client timeout retry) — fail with a concurrency conflict. A refresh
-    ///     only mutates Session/RefreshToken state; Session.LastUsedAt is its audit trail.
+    ///     Rotates a refresh token. Pass the <paramref name="session" />/<paramref name="current" /> instances the
+    ///     caller already resolved (e.g. via a filtered EF <c>Include</c>). Caller must have already verified the
+    ///     session is not revoked and <paramref name="current" /> is not already consumed.
     /// </summary>
-    public static void SlideRefreshToken(
-        Session session, RefreshToken token, string? ip, string? userAgent,
+    public RefreshToken RotateRefreshToken(
+        Session session, RefreshToken current, byte[] newHash, string? ip, string? userAgent,
         DateTimeOffset now, DateTimeOffset newExpiresAt)
     {
-        token.ExtendExpiry(newExpiresAt);
+        var newToken = session.IssueToken(newHash, newExpiresAt);
+        current.Consume(now, newToken.Id);
         session.Touch(ip, userAgent, now);
+
+        RaiseEvent(new V1SessionRefreshedDomainEvent(Id, session.Id));
+        return newToken;
     }
 
     /// <summary>
@@ -195,7 +192,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
 
     private void Apply(V1SessionRefreshedDomainEvent @event)
     {
-        // Nothing to do here — Session/RefreshToken state mutated directly in IssueSessionAndToken()/SlideRefreshToken().
+        // Nothing to do here — Session/RefreshToken state mutated directly in IssueSessionAndToken()/RotateRefreshToken().
     }
 
     private void Apply(V1SessionRevokedDomainEvent @event)
