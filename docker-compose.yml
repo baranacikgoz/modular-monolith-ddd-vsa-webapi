@@ -11,7 +11,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - "5001:5001"
+      - "127.0.0.1:5001:5001"
     volumes:
       # Config files are excluded from the published image (CopyToPublishDirectory=Never).
       # Local dev materializes them by mounting the committed placeholders read-only into the
@@ -66,7 +66,7 @@ services:
     networks:
       - local_shared_network
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -87,8 +87,8 @@ services:
     networks:
       - local_shared_network
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
@@ -108,8 +108,8 @@ services:
     networks:
       - local_shared_network
     ports:
-      - 6379:6379
-      - 8001:8001
+      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:8001:8001"
     environment:
       - REDIS_PASSWORD=admin
     command: redis-server --requirepass admin
@@ -121,9 +121,9 @@ services:
     networks:
       - local_shared_network
     ports:
-      - "18888:18888" # Dashboard UI
-      - "18889:18889" # OTLP gRPC
-      - "18890:18890" # OTLP HTTP
+      - "127.0.0.1:18888:18888" # Dashboard UI
+      - "127.0.0.1:18889:18889" # OTLP gRPC
+      - "127.0.0.1:18890:18890" # OTLP HTTP
     environment:
       - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
 
