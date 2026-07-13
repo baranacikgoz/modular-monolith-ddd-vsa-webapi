@@ -39,7 +39,7 @@ internal static partial class Setup
 
                 if (elapsed > thresholdMs)
                 {
-                    return LogEventLevel.Fatal;
+                    return LogEventLevel.Warning;
                 }
 
                 return ctx.Response.StatusCode switch
