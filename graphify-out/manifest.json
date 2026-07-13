@@ -2460,9 +2460,9 @@
     "semantic_hash": "e4d65dffae47ae3027fc5129f7de0b81"
   },
   "docker-compose.app.yml": {
-    "mtime": 1779899137.2004712,
-    "ast_hash": "1efd5bb2ac34d2e0dcc668e1fafadc1e",
-    "semantic_hash": "1efd5bb2ac34d2e0dcc668e1fafadc1e"
+    "mtime": 1783946670.7954798,
+    "ast_hash": "d5a0d4decbb18ebeadac442ee8619992",
+    "semantic_hash": ""
   },
   "docker-compose.perf.yml": {
     "mtime": 1779899541.6669142,
@@ -2470,14 +2470,14 @@
     "semantic_hash": "a20bb2df2b9447e9e4dab53890824322"
   },
   "docker-compose.split.yml": {
-    "mtime": 1779899541.6670012,
-    "ast_hash": "ada4847b3d77d16d7a356aba4b5301ba",
-    "semantic_hash": "ada4847b3d77d16d7a356aba4b5301ba"
+    "mtime": 1783946670.7959175,
+    "ast_hash": "ee3e82d49ce4edd60c38ae1a9070ab3f",
+    "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1780498714.7693288,
-    "ast_hash": "3552acff526265f7fdc27555b549ae6d",
-    "semantic_hash": "3552acff526265f7fdc27555b549ae6d"
+    "mtime": 1783946670.796515,
+    "ast_hash": "842fcf959c3312317ec06f05fd6d8632",
+    "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
     "mtime": 1782223164.50995,
