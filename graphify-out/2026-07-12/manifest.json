@@ -295,8 +295,8 @@
     "semantic_hash": "f185fb5722df742d050ece312d6c5821"
   },
   "src/Common/Common.Application/Options/JwtOptions.cs": {
-    "mtime": 1783875486.2173927,
-    "ast_hash": "e36c3a8684020f26a65426d0c984866b",
+    "mtime": 1783690804.114055,
+    "ast_hash": "9d69b99b99c300603fbf5d19dba2578f",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/ModulesOptions.cs": {
@@ -880,8 +880,8 @@
     "semantic_hash": "07c3a43e0959189878c722ad6605794b"
   },
   "src/Host/Host/Configurations/jwt.json": {
-    "mtime": 1783875500.1202183,
-    "ast_hash": "9b1e9d21e6435a6aa830c67d31467cb8",
+    "mtime": 1783690805.1752963,
+    "ast_hash": "76857c90ac9cf9a8cd8aff771fb33c34",
     "semantic_hash": ""
   },
   "src/Host/Host/Configurations/localization.json": {
@@ -1200,8 +1200,8 @@
     "semantic_hash": "a972024044ba110060c5b21ded8519d1"
   },
   "src/Modules/IAM/IAM.Domain/Identity/ApplicationUser.cs": {
-    "mtime": 1783875520.5422297,
-    "ast_hash": "720772de562a9eaadd97fd554e8a1c23",
+    "mtime": 1783690949.8852797,
+    "ast_hash": "d273a41e34c4e184182567d2a348e361",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Identity/Constants.cs": {
@@ -1320,8 +1320,8 @@
     "semantic_hash": "17817c4dfb9641d98bdbd0012516696f"
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Refresh/Endpoint.cs": {
-    "mtime": 1783875920.0896652,
-    "ast_hash": "66316f71f4e954fad7197c20854faf75",
+    "mtime": 1783690910.6147087,
+    "ast_hash": "54441c460dd86abdf4ecc0a83043d331",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Refresh/Request.cs": {
@@ -1555,8 +1555,8 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Telemetry/IamTelemetry.cs": {
-    "mtime": 1783875536.6269758,
-    "ast_hash": "7159929690e1568ce363a0ecba72fb0d",
+    "mtime": 1783690956.0100026,
+    "ast_hash": "cbb4e9ef92ba8bdb47ebb9cdf402c7bd",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Tokens/Services/TokenService.cs": {
@@ -2535,8 +2535,8 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Identity/Sessions/RefreshToken.cs": {
-    "mtime": 1783875504.6974292,
-    "ast_hash": "e464a59b3df10dc883d2372519322f39",
+    "mtime": 1783690953.8920443,
+    "ast_hash": "5b1ebe7d8cdde920b8faf8389feaf40f",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Identity/Sessions/Session.cs": {

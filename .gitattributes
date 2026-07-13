@@ -11,3 +11,8 @@
 *.png binary
 *.jpg binary
 *.dll binary
+
+# graphify artifacts are machine-generated; on merge always keep the current
+# branch's version (driver defined in .git/config: merge.graphify.driver=true).
+# The post-merge hook rebuilds them afterwards, so no staleness.
+graphify-out/** merge=graphify -diff
