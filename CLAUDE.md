@@ -131,6 +131,8 @@ return await db.Entities
 - Retrieval: `query.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), cancellationToken)` — never `Find` / `FirstOrDefault`.
 - Conditional filter: `.WhereIf(predicate, condition)` — never `if (condition) query = query.Where(...)`.
 - Writes: strict DDD — `Endpoint → Aggregate.Method() → RaiseEvent() → SaveChangesAsync`.
+- **No bare EF-mapped POCO.** Every persisted type is one of: `AggregateRoot<TId>` (raises events), `AuditableEntity<TId>` (has `IStronglyTypedId` key, no events), non-generic `AuditableEntity` (natural/composite key, e.g. a projection upserted by an IntegrationEvent consumer), or a `ValueObject`/owned type. Never a naked `class` with hand-rolled properties and no base — you lose `CreatedOn`/`LastModifiedBy` audit wiring for free otherwise.
+- **LEFT/RIGHT JOIN**: EF Core 10+ → use native `.LeftJoin(...)` / `.RightJoin(...)`. Never the old `.GroupJoin(...).SelectMany(x => x.Group.DefaultIfEmpty(), ...)` workaround — same SQL, extra ceremony.
 
 ### 3. REPR Pattern (Endpoints)
 
