@@ -36,13 +36,12 @@ internal static class Endpoint
             .TagWith(nameof(GetMyStoreAuditLogAsync), currentUser.Id)
             .AsNoTracking()
             .Where(x => x.OwnerId == currentUser.Id)
-            .Select(x => x.Id)
             .SingleAsResultAsync(resourceName: nameof(Store), cancellationToken)
 
-            .BindAsync(async id => await dbContext
+            .BindAsync(async store => await dbContext
                 .AuditLog
                 .GetAuditLogAsync<Store, StoreId>(
-                    id,
+                    store.Id,
                     request,
                     cancellationToken));
     }

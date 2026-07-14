@@ -21,6 +21,7 @@ public static class PersistenceQueryableExtensions
         this IQueryable<T> queryable,
         string resourceName,
         CancellationToken cancellationToken)
+        where T : class
     {
         return await Result<T>.CreateAsync(
             () => queryable.SingleOrDefaultAsync(cancellationToken),
@@ -31,6 +32,7 @@ public static class PersistenceQueryableExtensions
         this IQueryable<T> queryable,
         string resourceName,
         CancellationToken cancellationToken)
+        where T : class
     {
         return await Result<T>.CreateAsync(
             () => queryable.FirstOrDefaultAsync(cancellationToken),
