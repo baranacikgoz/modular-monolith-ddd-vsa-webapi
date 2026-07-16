@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Common.Application.Options;
 using Common.Endpoints.Versioning;
@@ -29,6 +30,9 @@ internal static partial class Setup
             .Configure<JsonOptions>(x =>
             {
                 x.SerializerOptions.Converters.Add(new StronglyTypedIdWriteOnlyJsonConverter());
+                x.SerializerOptions.Converters.Add(new StrictDateTimeOffsetJsonConverter());
+                x.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                x.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
             })
             .Configure<HostOptions>(x =>
             {
