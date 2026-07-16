@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Otp;
 using Notifications.Application.Sms;
+using Notifications.Infrastructure.Telemetry;
 
 namespace Notifications.Infrastructure.InterModuleRequestHandlers;
 
@@ -44,6 +45,7 @@ public sealed class SendPhoneOtpRequestHandler(
             cancellationToken);
         var message = string.Format(CultureInfo.InvariantCulture, template, otp);
         await smsGateway.SendAsync(request.PhoneNumber, message, cancellationToken);
+        NotificationsTelemetry.RecordOtpSent(request.Purpose);
         return new SendPhoneOtpResponse();
     }
 }

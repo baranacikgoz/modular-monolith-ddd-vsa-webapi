@@ -39,6 +39,7 @@ public sealed class BackgroundJobsModule : ICoreModule
 
                 cfg.UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
+                    .UseFilter(new JobMetricsFilter())
                     .UsePostgreSqlStorage(pgs => pgs.UseNpgsqlConnection(connectionString),
                         new PostgreSqlStorageOptions { SchemaName = nameof(BackgroundJobs) });
             });

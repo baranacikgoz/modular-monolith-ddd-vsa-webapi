@@ -106,7 +106,7 @@ internal static class Endpoint
                     RefreshTokenExpiresAt = refreshTokenExpiresAt
                 });
             })
-            .TapAsync(_ => IamTelemetry.TokensIssued.Add(1))
+            .TapAsync(_ => IamTelemetry.Logins.Add(1))
             .TapActivityAsync(activity);
     }
 }

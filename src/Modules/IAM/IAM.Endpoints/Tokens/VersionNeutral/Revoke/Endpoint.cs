@@ -73,6 +73,7 @@ internal static class Endpoint
                 : TokenErrors.SessionNotFound)
             .TapAsync(user => user.RevokeSession(user.Sessions.Single(), SessionRevokedReason.UserSignedOut, timeProvider.GetUtcNow()))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
+            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.UserSignedOut))
             .TapWhenAsync(
                 async _ => await cacheService.SetAsync<bool?>(
                     $"blacklisted_jti:{jti}",

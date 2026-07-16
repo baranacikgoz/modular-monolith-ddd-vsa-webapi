@@ -118,6 +118,6 @@ internal static class Endpoint
                 });
             })
             .TapAsync(_ => IamTelemetry.UsersRegistered.Add(1))
-            .TapAsync(_ => IamTelemetry.TokensIssued.Add(1));
+            .TapAsync(_ => IamTelemetry.Logins.Add(1));
     }
 }

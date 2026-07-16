@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence.Extensions;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using IAM.Domain.Identity.Sessions;
+using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -30,13 +31,20 @@ internal static class Endpoint
         TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
+        var revokedCount = 0;
+
         return await dbContext
             .Users
             .Include(u => u.Sessions)
             .TagWith(nameof(RevokeAllSessions), currentUser.Id)
             .Where(u => u.Id == currentUser.Id)
             .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
-            .TapAsync(user => user.RevokeAllSessions(SessionRevokedReason.SignedOutEverywhere, timeProvider.GetUtcNow()))
-            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
+            .TapAsync(user =>
+            {
+                revokedCount = user.Sessions.Count(s => s.RevokedAt is null);
+                user.RevokeAllSessions(SessionRevokedReason.SignedOutEverywhere, timeProvider.GetUtcNow());
+            })
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
+            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.SignedOutEverywhere, revokedCount));
     }
 }

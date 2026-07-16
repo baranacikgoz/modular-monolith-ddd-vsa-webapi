@@ -12,24 +12,24 @@ internal sealed class SignalRNotificationDispatcher(
     public async Task SendToUserAsync(ApplicationUserId userId, NotificationPayload payload, CancellationToken cancellationToken)
     {
         await hubContext.Clients.Group(NotificationGroupName.ForUser(userId)).ReceiveNotification(payload);
-        NotificationsTelemetry.NotificationsSent.Add(1);
+        NotificationsTelemetry.RecordNotificationSent(payload.Type);
     }
 
     public async Task SendToGroupAsync(string groupName, NotificationPayload payload, CancellationToken cancellationToken)
     {
         await hubContext.Clients.Group(groupName).ReceiveNotification(payload);
-        NotificationsTelemetry.NotificationsSent.Add(1);
+        NotificationsTelemetry.RecordNotificationSent(payload.Type);
     }
 
     public async Task SendToAllAsync(NotificationPayload payload, CancellationToken cancellationToken)
     {
         await hubContext.Clients.All.ReceiveNotification(payload);
-        NotificationsTelemetry.NotificationsSent.Add(1);
+        NotificationsTelemetry.RecordNotificationSent(payload.Type);
     }
 
     public async Task SendToAllExceptAsync(IReadOnlyList<string> excludedConnectionIds, NotificationPayload payload, CancellationToken cancellationToken)
     {
         await hubContext.Clients.AllExcept(excludedConnectionIds).ReceiveNotification(payload);
-        NotificationsTelemetry.NotificationsSent.Add(1);
+        NotificationsTelemetry.RecordNotificationSent(payload.Type);
     }
 }

@@ -250,7 +250,8 @@ internal static partial class Endpoint
                     .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
                     .TapAsync(user => user.RevokeSession(
                         user.Sessions.Single(), SessionRevokedReason.TokenReuseDetected, timeProvider.GetUtcNow()))
-                    .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
+                    .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+                    .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.TokenReuseDetected));
             }
             catch (Exception ex) when (ex is DbUpdateConcurrencyException or UniqueConstraintException)
             {

@@ -6,6 +6,7 @@ using IAM.Application.Persistence;
 using IAM.Domain.Errors;
 using IAM.Domain.Identity;
 using IAM.Domain.Identity.Sessions;
+using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -44,6 +45,7 @@ internal static class Endpoint
                 ? Result.Success
                 : TokenErrors.SessionNotFound)
             .TapAsync(user => user.RevokeSession(user.Sessions.Single(), SessionRevokedReason.UserSignedOut, timeProvider.GetUtcNow()))
-            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
+            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
+            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.UserSignedOut));
     }
 }

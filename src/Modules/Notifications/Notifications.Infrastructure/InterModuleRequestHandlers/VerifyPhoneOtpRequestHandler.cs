@@ -1,6 +1,7 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using Notifications.Application.Otp;
+using Notifications.Infrastructure.Telemetry;
 
 namespace Notifications.Infrastructure.InterModuleRequestHandlers;
 
@@ -17,6 +18,8 @@ public sealed class VerifyPhoneOtpRequestHandler(IOtpService otpService)
             request.Purpose,
             request.ContextId,
             cancellationToken);
+
+        NotificationsTelemetry.RecordOtpVerification(request.Purpose, outcome.ToString());
 
         return outcome switch
         {
