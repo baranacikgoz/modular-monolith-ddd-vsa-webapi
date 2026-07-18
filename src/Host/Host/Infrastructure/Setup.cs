@@ -31,7 +31,7 @@ internal static partial class Setup
             {
                 x.SerializerOptions.Converters.Add(new StronglyTypedIdWriteOnlyJsonConverter());
                 x.SerializerOptions.Converters.Add(new StrictDateTimeOffsetJsonConverter());
-                x.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                x.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
                 x.SerializerOptions.UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow;
             })
             .Configure<HostOptions>(x =>

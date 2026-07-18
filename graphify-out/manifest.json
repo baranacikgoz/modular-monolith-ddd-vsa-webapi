@@ -325,9 +325,9 @@
     "semantic_hash": "baffeda1fcbe9d2db204768079d9d971"
   },
   "src/Common/Common.Application/Options/RabbitMqOptions.cs": {
-    "mtime": 1779899541.6718428,
-    "ast_hash": "d9773078b53ab6c446c265503a4efd20",
-    "semantic_hash": "d9773078b53ab6c446c265503a4efd20"
+    "mtime": 1784239577.7382212,
+    "ast_hash": "8ce5388b642c4bdce2f92333d5204ee8",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/RequestLoggingOptions.cs": {
     "mtime": 1780302203.901183,
@@ -985,8 +985,8 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1783588249.6386077,
-    "ast_hash": "c1055f8228390e5df3fdf3dafb94c778",
+    "mtime": 1784239582.1204553,
+    "ast_hash": "6659f200d8375f4834aeebd8759a1550",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/StringExtensions.cs": {
@@ -2602,6 +2602,11 @@
   "src/Modules/BackgroundJobs/BackgroundJobs/JobMetricsFilter.cs": {
     "mtime": 1784194608.1898425,
     "ast_hash": "9058da1f51e88064ec98e39a252dac32",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/JsonConverters/StrictDateTimeOffsetJsonConverter.cs": {
+    "mtime": 1784239129.0837815,
+    "ast_hash": "ba1ef6bfcc527f92b19aa0e60c7b698c",
     "semantic_hash": ""
   }
 }
