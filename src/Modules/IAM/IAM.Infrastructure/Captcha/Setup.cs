@@ -1,3 +1,6 @@
+using Common.Application.Extensions;
+using Common.Application.Options;
+using Common.Infrastructure.Resiliency;
 using IAM.Application.Captcha.Services;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.Extensions.Configuration;
@@ -10,25 +13,38 @@ public static class Setup
     public static IServiceCollection AddCaptchaInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
-        return services.AddSingleton<ICaptchaService, DummyCaptchaService>();
+        var captchaOptions = configuration.GetSection(nameof(CaptchaOptions)).Get<CaptchaOptions>()
+            ?? throw new InvalidOperationException($"Configuration for {nameof(CaptchaOptions)} is null.");
 
-        // services.AddResilientHttpClient<ICaptchaService, ReCaptchaService>(
-        //     httpClient =>
-#pragma warning disable S125
-        //     {
-#pragma warning restore S125
-        //         httpClient.BaseAddress = new Uri(captchaOptions.BaseUrl);
-        //     },
-        //     resilience =>
-        //     {
-        //         // reCAPTCHA is a fast API — tighten per-attempt timeout
-        //         resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
-        //         resilience.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(15);
-        //     })
-        //     .Services
-        //     .Decorate<ICaptchaService>((decoree, sp) => new CachedCaptchaService(
-        //         decoree,
-        //         sp.GetRequiredService<IFusionCache>(),
-        //         sp.GetRequiredService<IOptions<OtpOptions>>()));
+        if (string.Equals(captchaOptions.Provider, "Dummy", StringComparison.OrdinalIgnoreCase))
+        {
+            if (services.IsProductionEnvironment())
+            {
+                throw new InvalidOperationException(
+                    "CaptchaOptions.Provider is 'Dummy' in Production. Dummy captcha always passes; " +
+                    "set Provider to 'ReCaptcha' (with real keys) before deploying.");
+            }
+
+            return services.AddSingleton<ICaptchaService, DummyCaptchaService>();
+        }
+
+        services.AddResilientHttpClient<ICaptchaService, ReCaptchaService>(
+            httpClient =>
+            {
+                // Trailing slash is REQUIRED: HttpClient drops the last BaseAddress segment
+                // when combining with a relative URI otherwise.
+#pragma warning disable S1075
+                httpClient.BaseAddress = new Uri(captchaOptions.BaseUrl.TrimEnd('/') + '/');
+#pragma warning restore S1075
+            },
+            resilience =>
+            {
+                // reCAPTCHA is a fast API — tighten timeouts.
+                resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(captchaOptions.AttemptTimeoutSeconds);
+                resilience.TotalRequestTimeout.Timeout =
+                    TimeSpan.FromSeconds(captchaOptions.TotalRequestTimeoutSeconds);
+            });
+
+        return services;
     }
 }

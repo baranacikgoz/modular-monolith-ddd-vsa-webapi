@@ -34,6 +34,7 @@ public sealed class UserRegisteredSignalRHandlerTests : IDisposable
                 FactoryHardTimeout = TimeSpan.FromMilliseconds(1500),
             },
             IdempotencyKeyDuration = TimeSpan.FromDays(1),
+            IdempotencyL1Duration = TimeSpan.FromHours(1),
         });
         _handler = new UserRegisteredSignalRHandler(logger, _cache, cachingOptions, _dispatcher);
     }

@@ -9,6 +9,20 @@ public class CachingOptions
     public Redis? Redis { get; set; }
     public required CachingEntryDefaults EntryDefaults { get; set; }
     public required TimeSpan IdempotencyKeyDuration { get; set; }
+
+    /// <summary>
+    ///     L1 (in-process memory) bound for consumer idempotency keys. Duplicate deliveries cluster
+    ///     within minutes (outbox retries, broker redelivery), so this is kept far shorter than
+    ///     <see cref="IdempotencyKeyDuration"/> (the L2/Redis window) to avoid unbounded memory growth
+    ///     proportional to daily event volume.
+    /// </summary>
+    public required TimeSpan IdempotencyL1Duration { get; set; }
+
+    /// <summary>
+    ///     Explicit opt-out for single-instance production deployments. With more than one instance,
+    ///     in-memory-only caching breaks OTP verification, consumer idempotency, and SignalR fan-out.
+    /// </summary>
+    public bool AllowInMemoryOnlyInProduction { get; set; }
 }
 
 public class CachingEntryDefaults
@@ -53,6 +67,7 @@ public class CachingOptionsValidator : CustomValidator<CachingOptions>
         });
 
         RuleFor(x => x.IdempotencyKeyDuration).GreaterThan(TimeSpan.Zero);
+        RuleFor(x => x.IdempotencyL1Duration).GreaterThan(TimeSpan.Zero);
     }
 }
 

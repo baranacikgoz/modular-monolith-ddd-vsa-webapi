@@ -74,6 +74,13 @@ internal static class Endpoint
             new VerifyPhoneOtpRequest(request.PhoneNumber, request.Otp, OtpPurposes.Registration),
             cancellationToken);
 
+        // One transaction for the whole user + role + session sequence: userManager.CreateAsync
+        // and userManager.AddToRoleAsync each call SaveChanges internally, but both share this
+        // DbContext/connection, so they participate in the same ambient transaction as the final
+        // db.SaveChangesAsync below. A failure anywhere in the chain rolls back everything instead
+        // of leaving a half-registered user (no role/session) that a retry can't recover from.
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
         return await verifyOtpResponse
             .ToResult()
             .BindAsync(async () =>
@@ -117,6 +124,7 @@ internal static class Endpoint
                     RefreshTokenExpiresAt = refreshTokenExpiresAt
                 });
             })
+            .TapAsync(async _ => await transaction.CommitAsync(cancellationToken))
             .TapAsync(_ => IamTelemetry.UsersRegistered.Add(1))
             .TapAsync(_ => IamTelemetry.Logins.Add(1));
     }

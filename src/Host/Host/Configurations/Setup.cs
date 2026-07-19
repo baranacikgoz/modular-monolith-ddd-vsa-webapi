@@ -17,6 +17,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/rateLimiting");
         AddJsonFile(configuration, $"{configurationsDirectory}/openApi");
         AddJsonFile(configuration, $"{configurationsDirectory}/eventBus");
+        AddJsonFile(configuration, $"{configurationsDirectory}/interModuleRequest");
         AddJsonFile(configuration, $"{configurationsDirectory}/outbox");
         AddJsonFile(configuration, $"{configurationsDirectory}/backgroundJobs");
         AddJsonFile(configuration, $"{configurationsDirectory}/caching");

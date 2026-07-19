@@ -6,6 +6,7 @@ namespace Common.Application.Options;
 public class AuditLogOptions
 {
     public required int RetentionDays { get; set; }
+    public required int PurgeBatchSize { get; set; }
 }
 
 public class AuditLogOptionsValidator : CustomValidator<AuditLogOptions>
@@ -15,5 +16,9 @@ public class AuditLogOptionsValidator : CustomValidator<AuditLogOptions>
         RuleFor(x => x.RetentionDays)
             .GreaterThanOrEqualTo(1)
             .WithMessage("Retention days must be at least 1.");
+
+        RuleFor(x => x.PurgeBatchSize)
+            .GreaterThanOrEqualTo(100)
+            .WithMessage("Purge batch size must be at least 100.");
     }
 }
