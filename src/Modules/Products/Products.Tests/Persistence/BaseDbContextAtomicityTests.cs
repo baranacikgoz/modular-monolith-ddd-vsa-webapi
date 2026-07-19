@@ -155,4 +155,70 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Store.Create = 1 event, Update with name + description = 2 events = total 3
         Assert.Equal(3, auditLogEntries.Count);
     }
+
+    [Fact]
+    public async Task SaveChanges_FirstAttemptFails_RetryPersistsAuditAndOutbox()
+    {
+        // Arrange - storeA and storeB share the same OwnerId, which violates the unique index on Stores.OwnerId
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var ownerId = new ApplicationUserId(Guid.NewGuid());
+
+        var storeA = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+        var storeB = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+
+        var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+
+        db.Stores.Add(storeA);
+        db.Stores.Add(storeB);
+
+        // Act - first attempt fails on the unique constraint violation
+        await Assert.ThrowsAnyAsync<Exception>(() => db.SaveChangesAsync());
+
+        // Fix the conflicting change in the SAME scope/context, as a client retry would
+        db.Entry(storeB).State = EntityState.Detached;
+
+        // Act - retry SaveChangesAsync on the SAME context instance
+        await db.SaveChangesAsync();
+
+        // Assert - storeA was persisted
+        var persistedStore = await db.Stores.AsNoTracking().SingleOrDefaultAsync(s => s.Id == storeA.Id);
+        Assert.NotNull(persistedStore);
+
+        // Assert - exactly one AuditLog row for storeA's event, zero for the never-persisted storeB
+        var storeAAuditEntries = await db.AuditLog
+            .AsNoTracking()
+            .Where(e => e.AggregateId == storeA.Id.Value)
+            .ToListAsync();
+        Assert.Single(storeAAuditEntries);
+
+        var storeBAuditEntries = await db.AuditLog
+            .AsNoTracking()
+            .Where(e => e.AggregateId == storeB.Id.Value)
+            .ToListAsync();
+        Assert.Empty(storeBAuditEntries);
+
+        // Assert - exactly one new OutboxMessage row for storeA's event
+        var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+        Assert.Equal(outboxCountBefore + 1, outboxCountAfter);
+    }
+
+    [Fact]
+    public async Task SaveChanges_Success_ClearsAggregateEvents()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
+        var ownerId = new ApplicationUserId(Guid.NewGuid());
+        var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+
+        db.Stores.Add(store);
+
+        // Act
+        await db.SaveChangesAsync();
+
+        // Assert
+        Assert.Empty(store.Events);
+    }
 }

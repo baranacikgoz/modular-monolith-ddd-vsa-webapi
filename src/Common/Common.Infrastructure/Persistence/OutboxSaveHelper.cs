@@ -65,8 +65,6 @@ public static partial class OutboxSaveHelper
                 auditLogEntries.Add(auditLogEntry);
                 domainEvents.Add(domainEvent);
             }
-
-            aggregateRoot.ClearEvents();
         }
 
         foreach (var entry in auditLogEntries)
@@ -136,6 +134,15 @@ public static partial class OutboxSaveHelper
             }
 
             await transaction.CommitAsync(cancellationToken);
+
+            // Only clear events once the transaction has actually committed — a failed save
+            // must leave events on the aggregates so a retry on the same context can rebuild
+            // audit + outbox from them.
+            foreach (var entry in aggregatesWithEvents)
+            {
+                entry.Entity.ClearEvents();
+            }
+
             return result;
         }
         catch (Exception ex)
@@ -150,6 +157,16 @@ public static partial class OutboxSaveHelper
             {
                 LogRollbackError(logger, rollbackEx);
             }
+
+            // Undo this attempt's bookkeeping so a retry of SaveChangesAsync on the same scope
+            // rebuilds audit + outbox from the (still-present) aggregate events instead of
+            // silently saving entities without them. The drained `integrationEvents` list is
+            // intentionally discarded — re-dispatch on retry regenerates them via DispatchAsync.
+            foreach (var auditEntry in auditLogEntries)
+            {
+                context.Entry(auditEntry).State = EntityState.Detached;
+            }
+
             LogSavingError(logger, ex);
             throw;
         }
