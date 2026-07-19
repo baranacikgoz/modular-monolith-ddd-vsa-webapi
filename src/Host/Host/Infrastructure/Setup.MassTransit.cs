@@ -52,6 +52,15 @@ internal static partial class Setup
                     h.PublisherConfirmation = true;
                 });
 
+                // Transient consumer failures (DB blips, pool timeouts) retry with backoff instead of
+                // faulting straight to the _error queue. Consumers are idempotent (IntegrationEventHandlerBase),
+                // so redelivery is safe.
+                cfg.UseMessageRetry(r => r.Exponential(
+                    retryLimit: 5,
+                    minInterval: TimeSpan.FromSeconds(1),
+                    maxInterval: TimeSpan.FromMinutes(2),
+                    intervalDelta: TimeSpan.FromSeconds(5)));
+
                 cfg.ConfigureEndpoints(ctx);
             });
         });
