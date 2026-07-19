@@ -21,7 +21,7 @@ public sealed class NotificationsModule : IModule
     {
         services.AddNotificationServices();
         services.AddNotificationsSignalR(configuration);
-        services.AddOtpServices();
+        services.AddOtpServices(configuration);
     }
 
     public void UseModule(IApplicationBuilder app)
