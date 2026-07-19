@@ -10,8 +10,8 @@ namespace Notifications.Infrastructure.Otp;
 /// <summary>
 ///     Redis-backed OTP store. Verification is a single atomic Lua script so concurrent attempts
 ///     cannot bypass the failed-attempt cap or consume the same OTP twice — across all instances.
-///     No automated test covers this class (no Redis container in CI); the script was verified manually
-///     against a local Redis instance. Do not "optimize" the script — keep it exactly as written.
+///     No automated test covers this class (no Redis container in CI); the scripts were verified manually
+///     against a local Redis instance. Do not "optimize" the scripts — keep them exactly as written.
 /// </summary>
 internal sealed class RedisOtpService(
     IConnectionMultiplexer redis,
@@ -37,13 +37,22 @@ internal sealed class RedisOtpService(
         return 0
         """;
 
+    // KEYS[1] = otp key, ARGV[1] = otp, ARGV[2] = ttl in milliseconds
+    // Single atomic EVAL: HSET and PEXPIRE must not be separate round trips — a disconnect between
+    // them would leave an OTP key with no TTL (a never-expiring OTP).
+    private const string StoreScript =
+        """
+        redis.call('HSET', KEYS[1], 'otp', ARGV[1], 'failed', 0)
+        redis.call('PEXPIRE', KEYS[1], ARGV[2])
+        return 1
+        """;
+
     public async Task StoreAsync(string phoneNumber, string otp, string purpose, TimeSpan duration,
         string? contextId, CancellationToken cancellationToken)
     {
         var key = CacheKeys.For.Otp(phoneNumber, purpose, contextId);
         var db = redis.GetDatabase();
-        await db.HashSetAsync(key, [new HashEntry("otp", otp), new HashEntry("failed", 0)]);
-        await db.KeyExpireAsync(key, duration);
+        await db.ScriptEvaluateAsync(StoreScript, [(RedisKey)key], [otp, (long)duration.TotalMilliseconds]);
     }
 
     public async Task<OtpVerificationOutcome> VerifyThenRemoveAsync(string phoneNumber, string otp,
