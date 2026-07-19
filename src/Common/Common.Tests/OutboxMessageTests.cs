@@ -98,4 +98,16 @@ public sealed class OutboxMessageTests
         Assert.True(message.IsProcessed);
         Assert.Equal(processedAt, message.ProcessedOn);
     }
+
+    [Fact]
+    public void ReleaseClaim_Always_ClearsNextRetryAt()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var message = OutboxMessage.Create(now, new TestableIntegrationEvent("x"));
+        message.IncrementRetryCount(now, TimeSpan.FromSeconds(30)); // sets NextRetryAt
+
+        message.ReleaseClaim();
+
+        Assert.Null(message.NextRetryAt);
+    }
 }

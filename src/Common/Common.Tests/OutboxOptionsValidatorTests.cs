@@ -15,6 +15,8 @@ public sealed class OutboxOptionsValidatorTests
         IsProcessor = true,
         BaseBackoffSeconds = 5,
         MaxBackoffSeconds = 600,
+        PublishTimeoutMs = 5000,
+        ClaimLeaseSeconds = 120,
         LagThresholdMinutes = 5,
         MetricsCronSchedule = "*/5 * * * *"
     };
@@ -123,6 +125,30 @@ public sealed class OutboxOptionsValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MaxBackoffSeconds));
+    }
+
+    [Fact]
+    public void PublishTimeoutMs_BelowMinimum_Fails()
+    {
+        var options = ValidOptions();
+        options.PublishTimeoutMs = 999;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.PublishTimeoutMs));
+    }
+
+    [Fact]
+    public void ClaimLeaseSeconds_BelowMinimum_Fails()
+    {
+        var options = ValidOptions();
+        options.ClaimLeaseSeconds = 59;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.ClaimLeaseSeconds));
     }
 
     [Fact]
