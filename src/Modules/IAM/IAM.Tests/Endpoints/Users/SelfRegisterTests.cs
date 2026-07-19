@@ -216,6 +216,68 @@ public class SelfRegisterTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task SelfRegister_RoleAssignmentFails_NothingPersisted()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
+        await EnsureBasicRoleExistsAsync(scope);
+
+        // Delete the Basic role so AddToRoleAsync fails mid-sequence — CreateAsync has
+        // already run (and, pre-fix, already committed) by the time this failure occurs.
+        var basicRole = await db.Roles.SingleAsync(r => r.Name == CustomRoles.Basic);
+        db.Roles.Remove(basicRole);
+        await db.SaveChangesAsync();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        var otp = "123456";
+
+        var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
+        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+
+        var sessionCountBefore = await db.Sessions.AsNoTracking().CountAsync();
+        var auditCountBefore = await db.AuditLog.AsNoTracking().CountAsync();
+        var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+
+        var client = Factory.CreateClient();
+        var request = new Request
+        {
+            PhoneNumber = phoneNumber,
+            Otp = otp,
+            FullName = _faker.Name.FullName() + " Yılmaz",
+            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
+            CaptchaToken = "dummyToken",
+            DeviceId = Guid.NewGuid(),
+            ClientId = "mobile-app-1"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
+
+        // Assert — non-success response
+        Assert.False(response.IsSuccessStatusCode);
+
+        // Assert — nothing persisted: the whole user+role+session sequence rolled back atomically
+        var createdUser = await db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        Assert.Null(createdUser);
+
+        var sessionCountAfter = await db.Sessions.AsNoTracking().CountAsync();
+        Assert.Equal(sessionCountBefore, sessionCountAfter);
+
+        var auditCountAfter = await db.AuditLog.AsNoTracking().CountAsync();
+        Assert.Equal(auditCountBefore, auditCountAfter);
+
+        var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+        Assert.Equal(outboxCountBefore, outboxCountAfter);
+
+        // No manual restore of the Basic role — Respawn resets DB state (including seed data
+        // each test re-creates via EnsureBasicRoleExistsAsync) between tests in this collection.
+    }
+
+    [Fact]
     public async Task SelfRegister_WithInvalidCaptcha_ReturnsBadRequest()
     {
         // Arrange

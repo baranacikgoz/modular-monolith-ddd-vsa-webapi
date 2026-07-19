@@ -88,7 +88,13 @@ public static partial class OutboxSaveHelper
 
         var integrationEvents = integrationEventOutbox.Drain();
 
-        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        // If the caller already opened a transaction (e.g. an endpoint composing multiple
+        // Identity/DbContext operations into one atomic unit), participate in it instead of
+        // nesting — only the owner commits/rolls back.
+        var ownsTransaction = context.Database.CurrentTransaction is null;
+        await using var transaction = ownsTransaction
+            ? await context.Database.BeginTransactionAsync(cancellationToken)
+            : null;
         try
         {
             var result = await baseSaveAsync(cancellationToken);
@@ -133,11 +139,16 @@ public static partial class OutboxSaveHelper
 #pragma warning restore S3265
             }
 
-            await transaction.CommitAsync(cancellationToken);
+            if (ownsTransaction)
+            {
+                await transaction!.CommitAsync(cancellationToken);
+            }
 
-            // Only clear events once the transaction has actually committed — a failed save
-            // must leave events on the aggregates so a retry on the same context can rebuild
-            // audit + outbox from them.
+            // Clear events once this save is durably committed. When we own the transaction,
+            // that's after our own CommitAsync. When an outer caller owns the transaction, our
+            // part of the work (base save + outbox insert) has still succeeded without error —
+            // if the outer transaction later rolls back, the DB rows disappear along with this
+            // request scope's aggregate instances, so clearing in-memory events here is safe.
             foreach (var entry in aggregatesWithEvents)
             {
                 entry.Entity.ClearEvents();
@@ -147,16 +158,21 @@ public static partial class OutboxSaveHelper
         }
         catch (Exception ex)
         {
-            // Use CancellationToken.None — cancelled request must still rollback.
-            // Wrap so a broken/already-aborted transaction doesn't mask the original error.
-            try
+            if (ownsTransaction)
             {
-                await transaction.RollbackAsync(CancellationToken.None);
+                // Use CancellationToken.None — cancelled request must still rollback.
+                // Wrap so a broken/already-aborted transaction doesn't mask the original error.
+                try
+                {
+                    await transaction!.RollbackAsync(CancellationToken.None);
+                }
+                catch (Exception rollbackEx)
+                {
+                    LogRollbackError(logger, rollbackEx);
+                }
             }
-            catch (Exception rollbackEx)
-            {
-                LogRollbackError(logger, rollbackEx);
-            }
+            // When we don't own the transaction, the outer owner is responsible for rolling back —
+            // we just propagate the exception below.
 
             // Undo this attempt's bookkeeping so a retry of SaveChangesAsync on the same scope
             // rebuilds audit + outbox from the (still-present) aggregate events instead of
