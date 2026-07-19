@@ -40,6 +40,7 @@ public sealed partial class AuditLogRetentionService(
             }
         }
 
+        var batchSize = auditLogOptions.Value.PurgeBatchSize;
         var totalDeleted = 0;
         foreach (var schema in schemas)
         {
@@ -48,18 +49,27 @@ public sealed partial class AuditLogRetentionService(
 #pragma warning disable CA2100 // Schema name is from information_schema, not user input
             var deleteQuery = $"""
                 DELETE FROM "{schema}"."AuditLog"
-                WHERE "CreatedOn" < @cutoffDate;
+                WHERE ctid IN (
+                    SELECT ctid FROM "{schema}"."AuditLog"
+                    WHERE "CreatedOn" < @cutoffDate
+                    LIMIT @batchSize
+                );
                 """;
 
-            await using var deleteCmd = new NpgsqlCommand(deleteQuery, connection);
-#pragma warning restore CA2100
-            deleteCmd.Parameters.AddWithValue("@cutoffDate", cutoffDate);
-
-            var deleted = await deleteCmd.ExecuteNonQueryAsync(cancellationToken);
-            totalDeleted += deleted;
-
-            if (deleted > 0)
+            while (!cancellationToken.IsCancellationRequested)
             {
+                await using var deleteCmd = new NpgsqlCommand(deleteQuery, connection);
+#pragma warning restore CA2100
+                deleteCmd.Parameters.AddWithValue("@cutoffDate", cutoffDate);
+                deleteCmd.Parameters.AddWithValue("@batchSize", batchSize);
+
+                var deleted = await deleteCmd.ExecuteNonQueryAsync(cancellationToken);
+                if (deleted == 0)
+                {
+                    break;
+                }
+
+                totalDeleted += deleted;
                 LogSchemaRetention(logger, schema, deleted);
             }
         }

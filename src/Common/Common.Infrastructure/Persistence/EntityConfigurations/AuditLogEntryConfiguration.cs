@@ -25,6 +25,8 @@ public class AuditLogEntryConfiguration : AuditableEntityConfiguration<AuditLogE
             .IsDescending(false, false, true)
             .HasDatabaseName("IX_AuditLog_AggregateId_AggregateType_CreatedOn");
 
+        builder.HasIndex(entry => entry.CreatedOn);
+
         builder
             .Property(entry => entry.AggregateId)
             .IsRequired();
