@@ -58,10 +58,16 @@ try
     await app.RunAsync();
 }
 #pragma warning disable CA1031
-catch (Exception ex)
+// HostAbortedException is control flow, not failure: EF design-time tools and WebApplicationFactory
+// abort Main once they've captured the builder.
+catch (Exception ex) when (ex is not HostAbortedException)
 #pragma warning restore CA1031
 {
     Log.Fatal(ex, "Server terminated unexpectedly.");
+
+    // Rethrow: swallowing here exits 0 (K8s sees a clean exit and won't restart-loop visibly) and
+    // leaves WebApplicationFactory waiting forever for a host that never started — a silent CI hang.
+    throw;
 }
 finally
 {
