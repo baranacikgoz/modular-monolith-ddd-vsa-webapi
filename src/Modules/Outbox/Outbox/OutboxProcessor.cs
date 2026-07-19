@@ -94,6 +94,7 @@ public sealed partial class OutboxProcessor(
             OutboxTelemetry.PollBatchSize.Record(messages.Count);
 
             var consecutiveFailures = 0;
+            var aborted = false;
 
             for (var i = 0; i < messages.Count; i++)
             {
@@ -109,6 +110,7 @@ public sealed partial class OutboxProcessor(
                         messages[j].ReleaseClaim();
                     }
 
+                    aborted = true;
                     break;
                 }
 
@@ -191,7 +193,11 @@ public sealed partial class OutboxProcessor(
 
             await db.SaveChangesAsync(ct);
             OutboxTelemetry.ProcessingDuration.Record(sw.Elapsed.TotalMilliseconds);
-            return messages.Count;
+
+            // On abort the released rows are immediately eligible again — report 0 so ExecuteAsync
+            // waits out PollIntervalMs instead of drain-fast re-claiming them in a tight loop
+            // against a broker that is almost certainly still down.
+            return aborted ? 0 : messages.Count;
         }
 #pragma warning disable CA1031
         catch (Exception ex) when (!ct.IsCancellationRequested)
