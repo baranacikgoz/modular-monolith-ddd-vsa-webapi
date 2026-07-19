@@ -18,6 +18,17 @@ public static class Setup
                              ?? throw new InvalidOperationException(
                                  $"Configuration for {nameof(CachingOptions)} is null.");
 
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var isProduction = string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase);
+
+        if (isProduction && !cachingOptions.UseRedis && !cachingOptions.AllowInMemoryOnlyInProduction)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(CachingOptions)}.{nameof(CachingOptions.UseRedis)} is false in Production. " +
+                "Multi-instance deployments require Redis for OTP storage, consumer idempotency, and the FusionCache backplane. " +
+                $"Set {nameof(CachingOptions.AllowInMemoryOnlyInProduction)} = true only for single-instance deployments.");
+        }
+
         var defaults = cachingOptions.EntryDefaults;
         var builder = services
             .AddFusionCache()
