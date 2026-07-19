@@ -10,6 +10,7 @@ SLNF_TESTS = ModularMonolith.Tests.slnf
 .PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
         ef-add-IAM ef-add-Products ef-add-Outbox \
         ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all \
+        check-migration-drift \
         perf perf-smoke perf-down \
         perf-rider perf-rider-smoke perf-rider-down \
         signalr-poc
@@ -128,6 +129,9 @@ ef-script-Outbox:
 
 ef-script-all: ef-script-IAM ef-script-Products ef-script-Outbox
 	@echo "All migration scripts generated."
+
+check-migration-drift:
+	@bash scripts/check-migration-drift.sh
 
 # ── Performance / Load Testing ───────────────────────────────────────────────
 # Requires: docker network create local_shared_network  (once, if not already present)

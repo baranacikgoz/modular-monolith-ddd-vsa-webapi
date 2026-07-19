@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'src/**'
+      - 'migrations/**'
       - 'Makefile'
       - 'Directory.Build.props'
       - 'Directory.Packages.props'
@@ -36,6 +37,9 @@ jobs:
 
       - name: Restore & Build
         run: dotnet build src/Host/Host/Host.csproj --configuration Release
+
+      - name: Migration drift check (model migrations must all have committed SQL)
+        run: make check-migration-drift
 
   # One module per runner (separate VM/process) — each spins its own Testcontainers
   # Postgres on a dynamically assigned port, so no shared state/port collision across
