@@ -48,4 +48,9 @@ public class OutboxMessage : IOutboxMessage
     }
 
     public void MarkAsFailed(DateTimeOffset failedOn) => FailedOn = failedOn;
+
+    // Undoes a claim lease (NextRetryAt pushed into the future by the claim query) for a message the
+    // processor never got to attempt this batch — makes it immediately eligible again instead of making
+    // callers wait out the full lease.
+    public void ReleaseClaim() => NextRetryAt = null;
 }

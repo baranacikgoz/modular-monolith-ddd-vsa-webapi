@@ -6,6 +6,8 @@
     "MaxRetryCount": 5,
     "BaseBackoffSeconds": 5,
     "MaxBackoffSeconds": 600,
+    "PublishTimeoutMs": 5000,
+    "ClaimLeaseSeconds": 120,
     "LagThresholdMinutes": 5,
     "MetricsCronSchedule": "*/5 * * * *",
     "Cleanup": {

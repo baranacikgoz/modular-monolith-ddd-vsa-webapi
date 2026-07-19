@@ -33,13 +33,23 @@ public sealed partial class OutboxProcessor(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await ProcessBatchAsync(stoppingToken);
+            var processed = await ProcessBatchAsync(stoppingToken);
+
+            // Drain fast when the queue is backed up: a full batch means more work is likely waiting,
+            // so poll again immediately instead of idling out PollIntervalMs.
+            if (processed >= options.Value.BatchSize)
+            {
+                continue;
+            }
+
             await Task.Delay(options.Value.PollIntervalMs, stoppingToken)
                 .ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
     }
 
-    private async Task ProcessBatchAsync(CancellationToken ct)
+    // internal (not private): unit-tested directly from Outbox.Tests via InternalsVisibleTo, calling
+    // ProcessBatchAsync once per test instead of racing the BackgroundService's poll-interval timer.
+    internal async Task<int> ProcessBatchAsync(CancellationToken ct)
     {
         using var scope = scopeFactory.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -48,29 +58,60 @@ public sealed partial class OutboxProcessor(
         var opts = options.Value;
         var sw = Stopwatch.StartNew();
 
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
         try
         {
+            // Lease-claim pattern: this single atomic UPDATE ... RETURNING claims up to BatchSize rows by
+            // pushing NextRetryAt into the future (the "lease") and returns them — no explicit transaction,
+            // autocommit, so the FOR UPDATE SKIP LOCKED row locks release the instant this statement
+            // commits. Publishing to RabbitMQ then happens with NO open transaction and NO held locks, so a
+            // slow/down broker can no longer starve the connection pool. A crash between claiming and
+            // publishing leaves the message leased-but-unpublished; once the lease (ClaimLeaseSeconds)
+            // expires it's picked up again by any instance. That can produce duplicate publishes — this is
+            // acceptable and by design, because all consumers inherit IntegrationEventHandlerBase (idempotent).
 #pragma warning disable S2077 // SQL queries should not be vulnerable to injection attacks — parameters are safe
             var messages = await db.OutboxMessages
                 .FromSqlRaw(
                     """
-                    SELECT * FROM "Outbox"."OutboxMessages"
-                    WHERE "IsProcessed" = false
-                      AND "FailedOn" IS NULL
-                      AND ("NextRetryAt" IS NULL OR "NextRetryAt" <= (NOW() AT TIME ZONE 'UTC'))
-                    ORDER BY "CreatedOn"
-                    LIMIT {0}
-                    FOR UPDATE SKIP LOCKED
+                    UPDATE "Outbox"."OutboxMessages" o
+                    SET "NextRetryAt" = (NOW() AT TIME ZONE 'UTC') + make_interval(secs => {1})
+                    FROM (
+                        SELECT "Id" FROM "Outbox"."OutboxMessages"
+                        WHERE "IsProcessed" = false
+                          AND "FailedOn" IS NULL
+                          AND ("NextRetryAt" IS NULL OR "NextRetryAt" <= (NOW() AT TIME ZONE 'UTC'))
+                        ORDER BY "CreatedOn"
+                        LIMIT {0}
+                        FOR UPDATE SKIP LOCKED
+                    ) c
+                    WHERE o."Id" = c."Id"
+                    RETURNING o.*
                     """,
-                    opts.BatchSize)
+                    opts.BatchSize,
+                    opts.ClaimLeaseSeconds)
                 .ToListAsync(ct);
 #pragma warning restore S2077
 
             OutboxTelemetry.PollBatchSize.Record(messages.Count);
 
-            foreach (var message in messages)
+            var consecutiveFailures = 0;
+
+            for (var i = 0; i < messages.Count; i++)
             {
+                var message = messages[i];
+
+                // Three publishes in a row have failed — the broker is very likely down. Stop attempting
+                // the rest of this batch and release their claims immediately so they don't sit idle for
+                // the full lease before becoming eligible again.
+                if (consecutiveFailures >= 3)
+                {
+                    for (var j = i; j < messages.Count; j++)
+                    {
+                        messages[j].ReleaseClaim();
+                    }
+
+                    break;
+                }
+
                 Activity? activity;
                 if (message.TraceId is not null && message.ParentSpanId is not null)
                 {
@@ -108,20 +149,33 @@ public sealed partial class OutboxProcessor(
                         continue;
                     }
 
-                    await publishEndpoint.Publish(integrationEvent, integrationEvent.GetType(), ct);
+                    using var publishCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                    publishCts.CancelAfter(opts.PublishTimeoutMs);
+                    await publishEndpoint.Publish(integrationEvent, integrationEvent.GetType(), publishCts.Token);
                     message.MarkAsProcessed(timeProvider.GetUtcNow());
                     OutboxTelemetry.MessagesPublished.Add(1);
                     activity?.SetStatus(ActivityStatusCode.Ok);
                     LogPublished(logger, message.Id, integrationEvent.GetType().Name);
+                    consecutiveFailures = 0;
+                }
+                catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                {
+                    // Real shutdown (not just this message's PublishTimeoutMs) — propagate, don't treat
+                    // it as a publish failure.
+                    throw;
                 }
 #pragma warning disable CA1031
                 catch (Exception ex)
 #pragma warning restore CA1031
                 {
+                    // Either a genuine publish failure or the per-publish PublishTimeoutMs firing
+                    // (OperationCanceledException with ct still live) — both go through the same
+                    // retry/backoff path.
                     activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                     activity?.SetTag("exception.message", ex.Message);
                     activity?.SetTag("exception.type", ex.GetType().Name);
                     message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
+                    consecutiveFailures++;
                     if (message.RetryCount >= opts.MaxRetryCount)
                     {
                         message.MarkAsFailed(timeProvider.GetUtcNow());
@@ -136,15 +190,15 @@ public sealed partial class OutboxProcessor(
             }
 
             await db.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
             OutboxTelemetry.ProcessingDuration.Record(sw.Elapsed.TotalMilliseconds);
+            return messages.Count;
         }
 #pragma warning disable CA1031
         catch (Exception ex) when (!ct.IsCancellationRequested)
 #pragma warning restore CA1031
         {
-            await tx.RollbackAsync(CancellationToken.None);
             LogBatchError(logger, ex);
+            return 0;
         }
     }
 
