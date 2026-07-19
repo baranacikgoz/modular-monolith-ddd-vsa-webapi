@@ -25,16 +25,15 @@ internal partial class ReCaptchaService(
 
     public async Task<Result> ValidateAsync(string captchaToken, CancellationToken cancellationToken)
     {
-        HttpResponseMessage httpResponseMessage;
-        using (var requestContent = GetRequestParameters(captchaToken, captchaOptionsProvider.Value.SecretKey))
-        {
-            // Use relative URI so the resilient HttpClient pipeline (retry, circuit breaker, timeout) is applied.
-            // BaseAddress is configured in the HttpClient registration (Captcha/Setup.cs).
-            httpResponseMessage = await httpClient.PostAsync(
-                new Uri(captchaOptionsProvider.Value.CaptchaEndpoint, UriKind.RelativeOrAbsolute),
-                requestContent,
-                cancellationToken);
-        }
+        using var requestContent = GetRequestParameters(captchaToken, captchaOptionsProvider.Value.SecretKey);
+
+        // A relative URI is used here so that the resilient HttpClient pipeline (retry, circuit
+        // breaker, timeout) still applies. The base address is configured where this HttpClient
+        // is registered, in the Captcha module setup.
+        using var httpResponseMessage = await httpClient.PostAsync(
+            new Uri(captchaOptionsProvider.Value.CaptchaEndpoint, UriKind.RelativeOrAbsolute),
+            requestContent,
+            cancellationToken);
 
         if (httpResponseMessage is not { IsSuccessStatusCode: true } succeededResult)
         {
