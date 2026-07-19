@@ -18,6 +18,9 @@ public class CaptchaOptions
     ///     Valid range: 0.0 to 1.0. Defaults to 0.5 if not set or zero.
     /// </summary>
     public double ScoreThreshold { get; init; }
+
+    /// <summary>"Dummy" (non-production only) or "ReCaptcha".</summary>
+    public string Provider { get; init; } = "ReCaptcha";
 }
 
 public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
@@ -41,5 +44,9 @@ public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
         RuleFor(o => o.SecretKey)
             .NotEmpty()
             .WithMessage("SecretKey must not be empty.");
+
+        RuleFor(o => o.Provider)
+            .Must(p => p is "Dummy" or "ReCaptcha")
+            .WithMessage("Provider must be 'Dummy' or 'ReCaptcha'.");
     }
 }
