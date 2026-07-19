@@ -100,10 +100,10 @@ public sealed partial class OutboxProcessor(
             {
                 var message = messages[i];
 
-                // Three publishes in a row have failed — the broker is very likely down. Stop attempting
-                // the rest of this batch and release their claims immediately so they don't sit idle for
-                // the full lease before becoming eligible again.
-                if (consecutiveFailures >= 3)
+                // MaxConsecutiveFailures publishes in a row have failed — the broker is very likely down.
+                // Stop attempting the rest of this batch and release their claims immediately so they
+                // don't sit idle for the full lease before becoming eligible again.
+                if (consecutiveFailures >= opts.MaxConsecutiveFailures)
                 {
                     for (var j = i; j < messages.Count; j++)
                     {

@@ -39,6 +39,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         MaxBackoffSeconds = 2,
         PublishTimeoutMs = 2000,
         ClaimLeaseSeconds = 120,
+        MaxConsecutiveFailures = 3,
         LagThresholdMinutes = 5,
         MetricsCronSchedule = "*/5 * * * *"
     };

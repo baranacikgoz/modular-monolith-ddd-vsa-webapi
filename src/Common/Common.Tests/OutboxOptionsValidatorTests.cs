@@ -17,6 +17,7 @@ public sealed class OutboxOptionsValidatorTests
         MaxBackoffSeconds = 600,
         PublishTimeoutMs = 5000,
         ClaimLeaseSeconds = 120,
+        MaxConsecutiveFailures = 3,
         LagThresholdMinutes = 5,
         MetricsCronSchedule = "*/5 * * * *"
     };
@@ -149,6 +150,18 @@ public sealed class OutboxOptionsValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.ClaimLeaseSeconds));
+    }
+
+    [Fact]
+    public void MaxConsecutiveFailures_Zero_Fails()
+    {
+        var options = ValidOptions();
+        options.MaxConsecutiveFailures = 0;
+        var validator = new OutboxOptionsValidator();
+        var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.MaxConsecutiveFailures));
     }
 
     [Fact]

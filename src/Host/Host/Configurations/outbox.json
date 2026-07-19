@@ -8,6 +8,7 @@
     "MaxBackoffSeconds": 600,
     "PublishTimeoutMs": 5000,
     "ClaimLeaseSeconds": 120,
+    "MaxConsecutiveFailures": 3,
     "LagThresholdMinutes": 5,
     "MetricsCronSchedule": "*/5 * * * *",
     "Cleanup": {

@@ -17,6 +17,7 @@ public class OutboxOptions
     // see the comment above OutboxProcessor.ProcessBatchAsync's claim query for the full rationale.
     public required int PublishTimeoutMs { get; set; }
     public required int ClaimLeaseSeconds { get; set; }
+    public required int MaxConsecutiveFailures { get; set; }
 
     public required int LagThresholdMinutes { get; set; }
     public required string MetricsCronSchedule { get; set; }
@@ -83,6 +84,10 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
         RuleFor(o => o.ClaimLeaseSeconds)
             .GreaterThanOrEqualTo(60)
             .WithMessage("ClaimLeaseSeconds must be at least 60.");
+
+        RuleFor(o => o.MaxConsecutiveFailures)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage("MaxConsecutiveFailures must be at least 1.");
 
         RuleFor(o => o.LagThresholdMinutes)
             .GreaterThanOrEqualTo(1)
