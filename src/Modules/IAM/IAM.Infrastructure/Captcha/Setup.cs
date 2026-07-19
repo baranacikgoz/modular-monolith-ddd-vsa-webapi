@@ -40,8 +40,9 @@ public static class Setup
             resilience =>
             {
                 // reCAPTCHA is a fast API — tighten timeouts.
-                resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
-                resilience.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(15);
+                resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(captchaOptions.AttemptTimeoutSeconds);
+                resilience.TotalRequestTimeout.Timeout =
+                    TimeSpan.FromSeconds(captchaOptions.TotalRequestTimeoutSeconds);
             });
 
         return services;

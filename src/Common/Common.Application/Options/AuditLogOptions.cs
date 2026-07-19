@@ -6,7 +6,7 @@ namespace Common.Application.Options;
 public class AuditLogOptions
 {
     public required int RetentionDays { get; set; }
-    public int PurgeBatchSize { get; set; } = 5000;
+    public required int PurgeBatchSize { get; set; }
 }
 
 public class AuditLogOptionsValidator : CustomValidator<AuditLogOptions>

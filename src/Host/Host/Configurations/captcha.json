@@ -4,6 +4,8 @@
     "BaseUrl": "https://www.google.com/recaptcha/api",
     "CaptchaEndpoint": "siteverify",
     "ClientKey": "myClientKey",
-    "SecretKey": "mySecretKey"
+    "SecretKey": "mySecretKey",
+    "AttemptTimeoutSeconds": 5,
+    "TotalRequestTimeoutSeconds": 15
   }
 }

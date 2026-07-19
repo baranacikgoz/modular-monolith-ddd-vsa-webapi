@@ -4,6 +4,10 @@
     "Port": 5672,
     "VirtualHost": "/",
     "Username": "guest",
-    "Password": "guest"
+    "Password": "guest",
+    "RetryLimit": 5,
+    "RetryMinIntervalMs": 1000,
+    "RetryMaxIntervalMs": 120000,
+    "RetryIntervalDeltaMs": 5000
   }
 }

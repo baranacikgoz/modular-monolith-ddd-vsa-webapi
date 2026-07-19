@@ -19,7 +19,9 @@ public class CaptchaSetupTests
                 { $"{nameof(CaptchaOptions)}:BaseUrl", "https://www.google.com/recaptcha/api" },
                 { $"{nameof(CaptchaOptions)}:CaptchaEndpoint", "siteverify" },
                 { $"{nameof(CaptchaOptions)}:ClientKey", "clientKey" },
-                { $"{nameof(CaptchaOptions)}:SecretKey", "secretKey" }
+                { $"{nameof(CaptchaOptions)}:SecretKey", "secretKey" },
+                { $"{nameof(CaptchaOptions)}:AttemptTimeoutSeconds", "5" },
+                { $"{nameof(CaptchaOptions)}:TotalRequestTimeoutSeconds", "15" }
             })
             .Build();
     }

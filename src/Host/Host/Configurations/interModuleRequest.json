@@ -1,0 +1,5 @@
+{
+  "InterModuleRequestOptions": {
+    "TimeoutSeconds": 10
+  }
+}

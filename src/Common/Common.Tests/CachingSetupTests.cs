@@ -21,6 +21,7 @@ public sealed class CachingSetupTests
                 ["CachingOptions:EntryDefaults:FactorySoftTimeout"] = "00:00:00.1",
                 ["CachingOptions:EntryDefaults:FactoryHardTimeout"] = "00:00:01.5",
                 ["CachingOptions:IdempotencyKeyDuration"] = "1.00:00:00",
+                ["CachingOptions:IdempotencyL1Duration"] = "01:00:00",
             })
             .Build();
 

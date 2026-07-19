@@ -1,5 +1,6 @@
 {
   "AuditLogOptions": {
-    "RetentionDays": 90
+    "RetentionDays": 90,
+    "PurgeBatchSize": 5000
   }
 }

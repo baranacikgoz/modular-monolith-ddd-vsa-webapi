@@ -56,10 +56,10 @@ internal static partial class Setup
                 // faulting straight to the _error queue. Consumers are idempotent (IntegrationEventHandlerBase),
                 // so redelivery is safe.
                 cfg.UseMessageRetry(r => r.Exponential(
-                    retryLimit: 5,
-                    minInterval: TimeSpan.FromSeconds(1),
-                    maxInterval: TimeSpan.FromMinutes(2),
-                    intervalDelta: TimeSpan.FromSeconds(5)));
+                    retryLimit: opts.RetryLimit,
+                    minInterval: TimeSpan.FromMilliseconds(opts.RetryMinIntervalMs),
+                    maxInterval: TimeSpan.FromMilliseconds(opts.RetryMaxIntervalMs),
+                    intervalDelta: TimeSpan.FromMilliseconds(opts.RetryIntervalDeltaMs)));
 
                 cfg.ConfigureEndpoints(ctx);
             });

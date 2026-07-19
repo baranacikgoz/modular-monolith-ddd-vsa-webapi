@@ -52,10 +52,10 @@ public abstract partial class IntegrationEventHandlerBase<TEvent>(
             {
                 // L1 bound: duplicates cluster within minutes; keeping every key in process
                 // memory for the full IdempotencyKeyDuration grows unbounded with event volume.
-                Duration = TimeSpan.FromHours(1),
+                Duration = cachingOptions.Value.IdempotencyL1Duration,
                 // L2 (Redis, when configured) holds the key for the full idempotency window.
-                // Without Redis, the effective idempotency window shrinks to 1h — acceptable
-                // because no-Redis is a single-instance dev/test configuration.
+                // Without Redis, the effective idempotency window shrinks to IdempotencyL1Duration —
+                // acceptable because no-Redis is a single-instance dev/test configuration.
                 DistributedCacheDuration = cachingOptions.Value.IdempotencyKeyDuration,
             },
             token: cancellationToken);
