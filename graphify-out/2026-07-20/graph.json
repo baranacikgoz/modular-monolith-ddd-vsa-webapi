@@ -3992,7 +3992,7 @@
       "label": "OutboxCleanupSettings",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "metadata": {
         "namespace": "Common.Application.Options",
         "scope_chain": [
@@ -4009,7 +4009,7 @@
       "label": "OutboxCleanupSettingsValidator",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L36",
+      "source_location": "L35",
       "metadata": {
         "namespace": "Common.Application.Options",
         "scope_chain": [
@@ -4026,7 +4026,7 @@
       "label": "OutboxOptionsValidator",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L54",
+      "source_location": "L53",
       "metadata": {
         "namespace": "Common.Application.Options",
         "scope_chain": [
@@ -4427,8 +4427,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptions.cs"
     },
     {
@@ -4444,8 +4444,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptions",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptions"
     },
     {
@@ -4461,8 +4461,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptionsvalidator",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptionsvalidator"
     },
     {
@@ -7039,8 +7039,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_caching_setup",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "setup.cs"
     },
     {
@@ -7055,8 +7055,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:e90b8cd72cc54639",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "common.infrastructure.caching"
     },
     {
@@ -7812,8 +7812,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_localization_setup",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "setup.cs"
     },
     {
@@ -7828,8 +7828,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:4657b706aef842a7",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "common.infrastructure.localization"
     },
     {
@@ -12908,8 +12908,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_infrastructure_setup",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "setup.cs"
     },
     {
@@ -18619,8 +18619,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "otppurposes.cs"
     },
     {
@@ -18635,8 +18635,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:5b575266b731d1e9",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "iam.endpoints.otp"
     },
     {
@@ -18652,8 +18652,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes_iam_endpoints_otp_otppurposes",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "otppurposes"
     },
     {
@@ -18663,8 +18663,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes_cs_string",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "string"
     },
     {
@@ -18674,8 +18674,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_verifyphoneotpresponseextensions",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "verifyphoneotpresponseextensions.cs"
     },
     {
@@ -19125,8 +19125,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_create_endpoint",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "endpoint.cs"
     },
     {
@@ -23116,8 +23116,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_intermodulerequesthandlers_getseeduseridsrequesthandler",
-      "community": 34,
-      "community_name": "Microsoft.EntityFrameworkCore.Abstractions",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "getseeduseridsrequesthandler.cs"
     },
     {
@@ -23132,8 +23132,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0d453a58e2cd9b0",
-      "community": 34,
-      "community_name": "Microsoft.EntityFrameworkCore.Abstractions",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "iam.infrastructure.intermodulerequesthandlers"
     },
     {
@@ -24451,8 +24451,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "constants.cs"
     },
     {
@@ -24484,8 +24484,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants_iam_infrastructure_ratelimiting_constants",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "constants"
     },
     {
@@ -24495,8 +24495,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants_cs_string",
-      "community": 7,
-      "community_name": "Host NuGet Deps (OTel/Health)",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "string"
     },
     {
@@ -30867,8 +30867,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:dbe93251801678e7",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "products.endpoints.producttemplates.v1.activate"
     },
     {
@@ -30962,8 +30962,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "request.cs"
     },
     {
@@ -30979,8 +30979,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "request"
     },
     {
@@ -30996,8 +30996,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_requestvalidator",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "requestvalidator"
     },
     {
@@ -31207,8 +31207,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:430f23f7503d0437",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "products.endpoints.producttemplates.v1.deactivate"
     },
     {
@@ -31302,8 +31302,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request.cs"
     },
     {
@@ -31319,8 +31319,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request"
     },
     {
@@ -31336,8 +31336,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_requestvalidator",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "requestvalidator"
     },
     {
@@ -34777,8 +34777,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:72577f269aee6ffe",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "products.endpoints.stores.v1.my.removeproduct"
     },
     {
@@ -34872,8 +34872,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request.cs"
     },
     {
@@ -34889,8 +34889,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request"
     },
     {
@@ -34906,8 +34906,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_requestvalidator",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "requestvalidator"
     },
     {
@@ -35089,8 +35089,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:df2faa74957cc31d",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "products.endpoints.stores.v1.removeproduct"
     },
     {
@@ -35184,8 +35184,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "request.cs"
     },
     {
@@ -35201,8 +35201,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request_products_endpoints_stores_v1_removeproduct_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "request"
     },
     {
@@ -35218,8 +35218,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request_products_endpoints_stores_v1_removeproduct_requestvalidator",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "requestvalidator"
     },
     {
@@ -49188,7 +49188,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_options_outboxoptions",
@@ -49199,7 +49199,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L36",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_options_outboxoptions",
@@ -49221,7 +49221,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L54",
+      "source_location": "L53",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_options_outboxoptions",
@@ -49232,7 +49232,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L25",
+      "source_location": "L24",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -49247,7 +49247,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L54",
+      "source_location": "L53",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -49277,7 +49277,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L36",
+      "source_location": "L35",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -49292,7 +49292,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L36",
+      "source_location": "L35",
       "weight": 1.0,
       "metadata": {
         "ref_token": "CustomValidator"
@@ -49306,7 +49306,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Options/OutboxOptions.cs",
-      "source_location": "L54",
+      "source_location": "L53",
       "weight": 1.0,
       "metadata": {
         "ref_token": "CustomValidator"
@@ -105997,5 +105997,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "44aac189370194de13b57217f1c83ab3110b275a"
+  "built_at_commit": "6848ce5aa1fe70df471b3ae57ed9200b2e1368ec"
 }
