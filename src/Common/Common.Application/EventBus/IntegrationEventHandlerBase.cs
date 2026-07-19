@@ -48,7 +48,16 @@ public abstract partial class IntegrationEventHandlerBase<TEvent>(
                 LogProcessingCompleted(logger, eventType, eventId);
                 return true;
             },
-            options: new FusionCacheEntryOptions { Duration = cachingOptions.Value.IdempotencyKeyDuration },
+            options: new FusionCacheEntryOptions
+            {
+                // L1 bound: duplicates cluster within minutes; keeping every key in process
+                // memory for the full IdempotencyKeyDuration grows unbounded with event volume.
+                Duration = TimeSpan.FromHours(1),
+                // L2 (Redis, when configured) holds the key for the full idempotency window.
+                // Without Redis, the effective idempotency window shrinks to 1h — acceptable
+                // because no-Redis is a single-instance dev/test configuration.
+                DistributedCacheDuration = cachingOptions.Value.IdempotencyKeyDuration,
+            },
             token: cancellationToken);
 
         if (factoryRan)
