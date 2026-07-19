@@ -1,5 +1,6 @@
 {
   "CaptchaOptions": {
+    "Provider": "Dummy",
     "BaseUrl": "https://www.google.com/recaptcha/api",
     "CaptchaEndpoint": "siteverify",
     "ClientKey": "myClientKey",
