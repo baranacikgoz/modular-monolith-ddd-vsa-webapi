@@ -10,7 +10,7 @@
       "Bash(grep *)",
       "Bash(ls *)",
       "Bash(cat *)",
-      "Write(**)"
+      "Edit(**)"
     ],
     "deny": [
       "Bash(git push --force*)",
