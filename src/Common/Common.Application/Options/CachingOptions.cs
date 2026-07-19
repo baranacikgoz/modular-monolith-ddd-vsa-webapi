@@ -9,6 +9,12 @@ public class CachingOptions
     public Redis? Redis { get; set; }
     public required CachingEntryDefaults EntryDefaults { get; set; }
     public required TimeSpan IdempotencyKeyDuration { get; set; }
+
+    /// <summary>
+    ///     Explicit opt-out for single-instance production deployments. With more than one instance,
+    ///     in-memory-only caching breaks OTP verification, consumer idempotency, and SignalR fan-out.
+    /// </summary>
+    public bool AllowInMemoryOnlyInProduction { get; set; }
 }
 
 public class CachingEntryDefaults
