@@ -3,6 +3,7 @@
 using Common.Infrastructure.Caching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Common.Tests;
@@ -25,57 +26,41 @@ public sealed class CachingSetupTests
             })
             .Build();
 
-    private static void WithEnvironment(string? environment, Action action)
+    private static ServiceCollection BuildServices(string environmentName)
     {
-        var original = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        try
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", environment);
-            action();
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", original);
-        }
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
+        return services;
     }
 
     [Fact]
     public void AddCommonCaching_ProductionWithoutRedis_Throws()
     {
-        WithEnvironment("Production", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
+        var services = BuildServices(Environments.Production);
+        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
 
-            var exception = Assert.Throws<InvalidOperationException>(
-                () => services.AddCommonCaching(configuration));
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => services.AddCommonCaching(configuration));
 
-            Assert.Contains("UseRedis", exception.Message, StringComparison.Ordinal);
-        });
+        Assert.Contains("UseRedis", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void AddCommonCaching_ProductionWithoutRedisButAllowed_DoesNotThrow()
     {
-        WithEnvironment("Production", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: true);
+        var services = BuildServices(Environments.Production);
+        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: true);
 
-            services.AddCommonCaching(configuration);
-        });
+        services.AddCommonCaching(configuration);
     }
 
     [Fact]
     public void AddCommonCaching_DevelopmentWithoutRedis_DoesNotThrow()
     {
-        WithEnvironment("Development", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
+        var services = BuildServices(Environments.Development);
+        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
 
-            services.AddCommonCaching(configuration);
-        });
+        services.AddCommonCaching(configuration);
     }
 }
 

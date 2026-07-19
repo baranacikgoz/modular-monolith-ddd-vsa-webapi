@@ -1,9 +1,11 @@
 using Common.Application.Options;
+using Common.Tests;
 using IAM.Application.Captcha.Services;
 using IAM.Infrastructure.Captcha;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace IAM.Tests.Captcha;
@@ -26,50 +28,39 @@ public class CaptchaSetupTests
             .Build();
     }
 
+    private static ServiceCollection BuildServices(string environmentName)
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
+        return services;
+    }
+
     [Fact]
     public void AddCaptchaInfrastructure_DummyProviderInProduction_Throws()
     {
-        var previousEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
-        try
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration("Dummy");
+        var services = BuildServices(Environments.Production);
+        var configuration = BuildConfiguration("Dummy");
 
-            Assert.Throws<InvalidOperationException>(() => services.AddCaptchaInfrastructure(configuration));
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", previousEnvironment);
-        }
+        Assert.Throws<InvalidOperationException>(() => services.AddCaptchaInfrastructure(configuration));
     }
 
     [Fact]
     public void AddCaptchaInfrastructure_DummyProviderInDevelopment_RegistersDummy()
     {
-        var previousEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-        try
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration("Dummy");
+        var services = BuildServices(Environments.Development);
+        var configuration = BuildConfiguration("Dummy");
 
-            services.AddCaptchaInfrastructure(configuration);
+        services.AddCaptchaInfrastructure(configuration);
 
-            Assert.Contains(services, descriptor =>
-                descriptor.ServiceType == typeof(ICaptchaService) &&
-                descriptor.ImplementationType == typeof(DummyCaptchaService));
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", previousEnvironment);
-        }
+        Assert.Contains(services, descriptor =>
+            descriptor.ServiceType == typeof(ICaptchaService) &&
+            descriptor.ImplementationType == typeof(DummyCaptchaService));
     }
 
     [Fact]
     public void AddCaptchaInfrastructure_ReCaptchaProvider_RegistersTypedHttpClient()
     {
-        var services = new ServiceCollection();
+        var services = BuildServices(Environments.Development);
         var configuration = BuildConfiguration("ReCaptcha");
 
         services.AddCaptchaInfrastructure(configuration);

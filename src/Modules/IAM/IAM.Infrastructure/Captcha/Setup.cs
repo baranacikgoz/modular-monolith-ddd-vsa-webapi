@@ -1,3 +1,4 @@
+using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
 using IAM.Application.Captcha.Services;
@@ -17,8 +18,7 @@ public static class Setup
 
         if (string.Equals(captchaOptions.Provider, "Dummy", StringComparison.OrdinalIgnoreCase))
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase))
+            if (services.IsProductionEnvironment())
             {
                 throw new InvalidOperationException(
                     "CaptchaOptions.Provider is 'Dummy' in Production. Dummy captcha always passes; " +

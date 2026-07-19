@@ -1,5 +1,7 @@
+using Common.Tests;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Notifications.Infrastructure.Hubs;
 using Xunit;
 
@@ -16,56 +18,40 @@ public sealed class SignalRSetupTests
             })
             .Build();
 
-    private static void WithEnvironment(string? environment, Action action)
+    private static ServiceCollection BuildServices(string environmentName)
     {
-        var original = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        try
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", environment);
-            action();
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", original);
-        }
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
+        return services;
     }
 
     [Fact]
     public void AddNotificationsSignalR_ProductionWithoutRedisBackplane_Throws()
     {
-        WithEnvironment("Production", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedisBackplane: false);
+        var services = BuildServices(Environments.Production);
+        var configuration = BuildConfiguration(useRedisBackplane: false);
 
-            var exception = Assert.Throws<InvalidOperationException>(
-                () => services.AddNotificationsSignalR(configuration));
+        var exception = Assert.Throws<InvalidOperationException>(
+            () => services.AddNotificationsSignalR(configuration));
 
-            Assert.Contains("UseRedisBackplane", exception.Message, StringComparison.Ordinal);
-        });
+        Assert.Contains("UseRedisBackplane", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
     public void AddNotificationsSignalR_ProductionWithRedisBackplane_DoesNotThrow()
     {
-        WithEnvironment("Production", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedisBackplane: true);
+        var services = BuildServices(Environments.Production);
+        var configuration = BuildConfiguration(useRedisBackplane: true);
 
-            services.AddNotificationsSignalR(configuration);
-        });
+        services.AddNotificationsSignalR(configuration);
     }
 
     [Fact]
     public void AddNotificationsSignalR_DevelopmentWithoutRedisBackplane_DoesNotThrow()
     {
-        WithEnvironment("Development", () =>
-        {
-            var services = new ServiceCollection();
-            var configuration = BuildConfiguration(useRedisBackplane: false);
+        var services = BuildServices(Environments.Development);
+        var configuration = BuildConfiguration(useRedisBackplane: false);
 
-            services.AddNotificationsSignalR(configuration);
-        });
+        services.AddNotificationsSignalR(configuration);
     }
 }

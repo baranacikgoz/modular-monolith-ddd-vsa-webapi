@@ -1,3 +1,4 @@
+using Common.Application.Extensions;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +14,7 @@ internal static class Setup
     {
         var options = configuration.GetSection(nameof(SignalROptions)).Get<SignalROptions>();
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        var isProduction = string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase);
-
-        if (isProduction && options?.UseRedisBackplane != true)
+        if (services.IsProductionEnvironment() && options?.UseRedisBackplane != true)
         {
             throw new InvalidOperationException(
                 "SignalROptions.UseRedisBackplane is false in Production. " +

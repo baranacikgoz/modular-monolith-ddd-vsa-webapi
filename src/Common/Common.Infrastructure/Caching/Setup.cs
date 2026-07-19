@@ -1,3 +1,4 @@
+using Common.Application.Extensions;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,10 +19,7 @@ public static class Setup
                              ?? throw new InvalidOperationException(
                                  $"Configuration for {nameof(CachingOptions)} is null.");
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        var isProduction = string.Equals(environment, "Production", StringComparison.OrdinalIgnoreCase);
-
-        if (isProduction && !cachingOptions.UseRedis && !cachingOptions.AllowInMemoryOnlyInProduction)
+        if (services.IsProductionEnvironment() && !cachingOptions.UseRedis && !cachingOptions.AllowInMemoryOnlyInProduction)
         {
             throw new InvalidOperationException(
                 $"{nameof(CachingOptions)}.{nameof(CachingOptions.UseRedis)} is false in Production. " +
