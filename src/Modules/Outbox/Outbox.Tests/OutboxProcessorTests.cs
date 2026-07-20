@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using Outbox.Persistence;
+using Respawn;
+using Respawn.Graph;
 using Xunit;
 
 #pragma warning disable CA1707
@@ -16,8 +19,16 @@ namespace Outbox.Tests;
 // Calls OutboxProcessor.ProcessBatchAsync directly (internal, via InternalsVisibleTo) instead of going
 // through the BackgroundService's poll-interval timer — deterministic, no timing races. IsProcessor stays
 // false (base IntegrationTestFactory default) so no auto-polling instance runs concurrently underneath.
-public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFactory>
+public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFactory>, IAsyncLifetime
 {
+    // This class doesn't inherit BaseIntegrationTest (it needs its own single-purpose factory, not the
+    // shared IntegrationTestCollection one), so it doesn't get that base's per-test Respawn reset for free.
+    // Without it, messages left behind by one test (e.g. released/retried rows) leak into a later test's
+    // claim batch (ORDER BY CreatedOn LIMIT batchSize has no per-test filter) and skew its
+    // RetryCount/consecutiveFailures assertions. Scoped to the Outbox schema only — this class never
+    // touches any other module's tables.
+    private static Respawner? _respawner;
+
     private readonly OutboxProcessorTestFactory _factory;
     private readonly FakePublishEndpoint _fakePublishEndpoint;
 
@@ -28,6 +39,30 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         _fakePublishEndpoint = factory.Services.GetRequiredService<FakePublishEndpoint>();
         _fakePublishEndpoint.OnPublish = _ => Task.CompletedTask; // reset before every test
     }
+
+    public async ValueTask InitializeAsync()
+    {
+        if (_respawner == null)
+        {
+            await using var conn = new NpgsqlConnection(_factory.ConnectionString);
+            await conn.OpenAsync();
+
+            _respawner = await Respawner.CreateAsync(conn,
+                new RespawnerOptions
+                {
+                    DbAdapter = DbAdapter.Postgres,
+                    SchemasToInclude = new[] { "Outbox" },
+                    TablesToIgnore = new[] { new Table("__EFMigrationsHistory") }
+                });
+        }
+
+        await using var connection = new NpgsqlConnection(_factory.ConnectionString);
+        await connection.OpenAsync();
+
+        await _respawner.ResetAsync(connection);
+    }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     private static OutboxOptions BuildOptions(int batchSize = 10, int maxRetryCount = 3) => new()
     {
