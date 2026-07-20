@@ -71,8 +71,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_auditlog_auditlogdto_common_application_auditlog_auditlogdto",
-      "community": 143,
-      "community_name": "OpenApiOptions",
+      "community": 40,
+      "community_name": "NetArchTest.Rules",
       "norm_label": "auditlogdto"
     },
     {
@@ -1202,8 +1202,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler",
-      "community": 93,
-      "community_name": "IOpenApiSchema",
+      "community": 79,
+      "community_name": "Endpoint",
       "norm_label": "ieventhandler.cs"
     },
     {
@@ -1219,8 +1219,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_common_application_eventbus_ieventhandler",
-      "community": 93,
-      "community_name": "IOpenApiSchema",
+      "community": 79,
+      "community_name": "Endpoint",
       "norm_label": "ieventhandler"
     },
     {
@@ -1236,8 +1236,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_common_application_eventbus_ieventhandler_handleasync",
-      "community": 93,
-      "community_name": "IOpenApiSchema",
+      "community": 79,
+      "community_name": "Endpoint",
       "norm_label": ".handleasync()"
     },
     {
@@ -1247,8 +1247,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_cs_cancellationtoken",
-      "community": 93,
-      "community_name": "IOpenApiSchema",
+      "community": 79,
+      "community_name": "Endpoint",
       "norm_label": "cancellationtoken"
     },
     {
@@ -1258,8 +1258,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_cs_task",
-      "community": 93,
-      "community_name": "IOpenApiSchema",
+      "community": 79,
+      "community_name": "Endpoint",
       "norm_label": "task"
     },
     {
@@ -3092,8 +3092,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_auditlogoptions",
-      "community": 228,
-      "community_name": "IAM",
+      "community": 160,
+      "community_name": "SignalROptions.cs",
       "norm_label": "auditlogoptions.cs"
     },
     {
@@ -3125,8 +3125,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_auditlogoptions_common_application_options_auditlogoptions",
-      "community": 228,
-      "community_name": "IAM",
+      "community": 160,
+      "community_name": "SignalROptions.cs",
       "norm_label": "auditlogoptions"
     },
     {
@@ -3142,8 +3142,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_auditlogoptions_common_application_options_auditlogoptionsvalidator",
-      "community": 228,
-      "community_name": "IAM",
+      "community": 160,
+      "community_name": "SignalROptions.cs",
       "norm_label": "auditlogoptionsvalidator"
     },
     {
@@ -4427,8 +4427,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptions.cs"
     },
     {
@@ -4444,8 +4444,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptions",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptions"
     },
     {
@@ -4461,8 +4461,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptionsvalidator",
-      "community": 160,
-      "community_name": "SignalROptions.cs",
+      "community": 228,
+      "community_name": "IAM",
       "norm_label": "signalroptionsvalidator"
     },
     {
@@ -5029,8 +5029,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "isearchlanguageresolver.cs"
     },
     {
@@ -5062,8 +5062,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_isearchlanguageresolver",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "isearchlanguageresolver"
     },
     {
@@ -5079,8 +5079,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_isearchlanguageresolver_resolveconfig",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".resolveconfig()"
     },
     {
@@ -5096,8 +5096,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "searchlanguageresolver"
     },
     {
@@ -5107,8 +5107,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_cs_string",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "string"
     },
     {
@@ -5124,8 +5124,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver_resolveconfig",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".resolveconfig()"
     },
     {
@@ -5141,8 +5141,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver_appendunaccent",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".appendunaccent()"
     },
     {
@@ -8636,8 +8636,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_savingchangesasync",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".savingchangesasync()"
     },
     {
@@ -8647,8 +8647,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_dbcontexteventdata",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "dbcontexteventdata"
     },
     {
@@ -8658,8 +8658,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_interceptionresult",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "interceptionresult"
     },
     {
@@ -8669,8 +8669,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_cancellationtoken",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "cancellationtoken"
     },
     {
@@ -8680,8 +8680,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_valuetask",
-      "community": 65,
-      "community_name": "ApplyAuditingInterceptor",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "valuetask"
     },
     {
@@ -14391,7 +14391,7 @@
       "label": "Host",
       "file_type": "code",
       "source_file": "src/Host/Host/Program.cs",
-      "source_location": "L72",
+      "source_location": "L78",
       "type": "namespace",
       "metadata": {
         "kind": "csharp_namespace",
@@ -14407,11 +14407,11 @@
       "label": "Program",
       "file_type": "code",
       "source_file": "src/Host/Host/Program.cs",
-      "source_location": "L74",
+      "source_location": "L80",
       "metadata": {
         "namespace": "Host",
         "scope_chain": [
-          "s1969"
+          "s2372"
         ]
       },
       "_origin": "ast",
@@ -30867,8 +30867,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:dbe93251801678e7",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "products.endpoints.producttemplates.v1.activate"
     },
     {
@@ -30962,8 +30962,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "request.cs"
     },
     {
@@ -30979,8 +30979,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "request"
     },
     {
@@ -30996,8 +30996,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_request_products_endpoints_producttemplates_v1_activate_requestvalidator",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 121,
+      "community_name": "Setup",
       "norm_label": "requestvalidator"
     },
     {
@@ -31207,8 +31207,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:430f23f7503d0437",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "products.endpoints.producttemplates.v1.deactivate"
     },
     {
@@ -31302,8 +31302,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request.cs"
     },
     {
@@ -31319,8 +31319,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_request",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request"
     },
     {
@@ -31336,8 +31336,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_deactivate_request_products_endpoints_producttemplates_v1_deactivate_requestvalidator",
-      "community": 121,
-      "community_name": "Setup",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "requestvalidator"
     },
     {
@@ -34777,8 +34777,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:72577f269aee6ffe",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "products.endpoints.stores.v1.my.removeproduct"
     },
     {
@@ -34872,8 +34872,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request.cs"
     },
     {
@@ -34889,8 +34889,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_request",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "request"
     },
     {
@@ -34906,8 +34906,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_removeproduct_request_products_endpoints_stores_v1_my_removeproduct_requestvalidator",
-      "community": 125,
-      "community_name": "Endpoint",
+      "community": 156,
+      "community_name": "CurrentUser",
       "norm_label": "requestvalidator"
     },
     {
@@ -35089,8 +35089,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:df2faa74957cc31d",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "products.endpoints.stores.v1.removeproduct"
     },
     {
@@ -35184,8 +35184,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "request.cs"
     },
     {
@@ -35201,8 +35201,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request_products_endpoints_stores_v1_removeproduct_request",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "request"
     },
     {
@@ -35218,8 +35218,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_removeproduct_request_products_endpoints_stores_v1_removeproduct_requestvalidator",
-      "community": 156,
-      "community_name": "CurrentUser",
+      "community": 125,
+      "community_name": "Endpoint",
       "norm_label": "requestvalidator"
     },
     {
@@ -73135,7 +73135,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Program.cs",
-      "source_location": "L72",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_program",
@@ -73163,7 +73163,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Program.cs",
-      "source_location": "L74",
+      "source_location": "L80",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_program",
@@ -105997,5 +105997,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "44aac189370194de13b57217f1c83ab3110b275a"
+  "built_at_commit": "9a8f5ea1c824d2acd93cad1196958942b42771b9"
 }

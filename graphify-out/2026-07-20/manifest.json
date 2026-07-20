@@ -750,9 +750,9 @@
     "semantic_hash": "64d982d4ca26af880131ec7853733f68"
   },
   "src/Host/Host/Program.cs": {
-    "mtime": 1779899541.6812704,
-    "ast_hash": "862e5f606b1528c1f812dae83eb6f43d",
-    "semantic_hash": "862e5f606b1528c1f812dae83eb6f43d"
+    "mtime": 1784501849.781739,
+    "ast_hash": "16f88d0a41bd6f7e2fa25d04ef687c16",
+    "semantic_hash": ""
   },
   "src/Host/Host/Swagger/ConfigureSwaggerOptions.cs": {
     "mtime": 1779899541.68146,
@@ -1965,98 +1965,98 @@
     "semantic_hash": "2b9e878356fbdca21d3aab5140858d7e"
   },
   ".claude/commands/add-integration-event.md": {
-    "mtime": 1779899541.6636846,
-    "ast_hash": "79cdd6564d2a135589b26cdd6993ae58",
-    "semantic_hash": "79cdd6564d2a135589b26cdd6993ae58"
+    "mtime": 1784543313.0700731,
+    "ast_hash": "d7597ca78e287cf566a68572d7f63dcd",
+    "semantic_hash": ""
   },
   ".claude/commands/add-inter-module-request.md": {
-    "mtime": 1779899541.6637268,
-    "ast_hash": "9e834da4d3e79f2c62db6e3125810c77",
-    "semantic_hash": "9e834da4d3e79f2c62db6e3125810c77"
+    "mtime": 1784543307.970501,
+    "ast_hash": "5c62b315ab9b9fc313a35de29433ed53",
+    "semantic_hash": ""
   },
   ".claude/commands/audit-architecture.md": {
-    "mtime": 1779899541.663766,
-    "ast_hash": "618905240797429d3fc3087d1433498e",
-    "semantic_hash": "618905240797429d3fc3087d1433498e"
+    "mtime": 1784543309.984586,
+    "ast_hash": "412d50ef23247d9c935c35d9a8f58fc4",
+    "semantic_hash": ""
   },
   ".claude/commands/execute-feature.md": {
-    "mtime": 1779899541.6638076,
-    "ast_hash": "3730173b5d942abbd9f3d2bd4b2bccc2",
-    "semantic_hash": "3730173b5d942abbd9f3d2bd4b2bccc2"
+    "mtime": 1784543309.192578,
+    "ast_hash": "6c3e33df5a44f856dc4db5c3a6691caf",
+    "semantic_hash": ""
   },
   ".claude/commands/execute-refactor.md": {
-    "mtime": 1779899541.663844,
+    "mtime": 1784543009.945251,
     "ast_hash": "075978dadad601c4859bc66fc8cb0fea",
     "semantic_hash": "075978dadad601c4859bc66fc8cb0fea"
   },
   ".claude/commands/fix-bug.md": {
-    "mtime": 1779899541.6638887,
-    "ast_hash": "5a7b4466864edbb8bc80f946a1c3acad",
-    "semantic_hash": "5a7b4466864edbb8bc80f946a1c3acad"
+    "mtime": 1784543312.1042185,
+    "ast_hash": "20073d997afbd86c68c139a51f9c1f89",
+    "semantic_hash": ""
   },
   ".claude/commands/implement-endpoint.md": {
-    "mtime": 1779899541.663928,
-    "ast_hash": "da2d51878d97becb6e215c249082c005",
-    "semantic_hash": "da2d51878d97becb6e215c249082c005"
+    "mtime": 1784543324.491353,
+    "ast_hash": "b306499c965ca200b0d3c241c0318ea6",
+    "semantic_hash": ""
   },
   ".claude/commands/manage-feature-flag.md": {
-    "mtime": 1779899541.6639707,
-    "ast_hash": "f11d5ea8540c467cb0d830b47b7ce859",
-    "semantic_hash": "f11d5ea8540c467cb0d830b47b7ce859"
+    "mtime": 1784543312.5953567,
+    "ast_hash": "053ef39ea3276106f3d28026a461ce69",
+    "semantic_hash": ""
   },
   ".claude/commands/manage-migration.md": {
-    "mtime": 1779899541.6640105,
-    "ast_hash": "77f7ea90f78d8e6056859d87fb093c0e",
-    "semantic_hash": "77f7ea90f78d8e6056859d87fb093c0e"
+    "mtime": 1784543314.2567081,
+    "ast_hash": "f6415c1a63cc7a7007cbb75bfe4e1dc4",
+    "semantic_hash": ""
   },
   ".claude/commands/plan-feature.md": {
-    "mtime": 1779899541.6640487,
+    "mtime": 1784543009.9454474,
     "ast_hash": "3fcba998f2ee3d21e938b3254b3cab05",
     "semantic_hash": "3fcba998f2ee3d21e938b3254b3cab05"
   },
   ".claude/commands/plan-refactor.md": {
-    "mtime": 1779899541.6640897,
-    "ast_hash": "59c0f1c8a6020fd1c92619e388c71305",
-    "semantic_hash": "59c0f1c8a6020fd1c92619e388c71305"
+    "mtime": 1784543317.9304004,
+    "ast_hash": "2458797dae6357f06414074e1f22ed42",
+    "semantic_hash": ""
   },
   ".claude/commands/run-quality-gate.md": {
-    "mtime": 1779899541.6641285,
-    "ast_hash": "3fd951c0658c48516edca29be13a5aa5",
-    "semantic_hash": "3fd951c0658c48516edca29be13a5aa5"
+    "mtime": 1784543326.0530767,
+    "ast_hash": "c0ba120e2bba16552687ca9859374d37",
+    "semantic_hash": ""
   },
   ".claude/commands/scaffold-feature.md": {
-    "mtime": 1779899541.6641743,
-    "ast_hash": "e90add6aaa0cdbb2890233e88075eee7",
-    "semantic_hash": "e90add6aaa0cdbb2890233e88075eee7"
+    "mtime": 1784543335.5017302,
+    "ast_hash": "73fb500f4e06289af9759a5d2ca81913",
+    "semantic_hash": ""
   },
   ".claude/commands/scaffold-module.md": {
-    "mtime": 1780071388.1061285,
-    "ast_hash": "637284a69a2d2b15d81bb5ab70f88672",
-    "semantic_hash": "637284a69a2d2b15d81bb5ab70f88672"
+    "mtime": 1784543364.3377333,
+    "ast_hash": "3b5948ca2b3c42f1d3e8174d561bfed0",
+    "semantic_hash": ""
   },
   ".claude/commands/scaffold-test.md": {
-    "mtime": 1779899541.664253,
-    "ast_hash": "59026b93ecfb038659b95823a54f4614",
-    "semantic_hash": "59026b93ecfb038659b95823a54f4614"
+    "mtime": 1784543404.2028072,
+    "ast_hash": "97f0001d5330c3bad7cacf75c965367d",
+    "semantic_hash": ""
   },
   ".claude/commands/scaffold-tests.md": {
-    "mtime": 1779899541.6642914,
-    "ast_hash": "981ba9c4d37e5693f1330f51937bd8c8",
-    "semantic_hash": "981ba9c4d37e5693f1330f51937bd8c8"
+    "mtime": 1784543338.036843,
+    "ast_hash": "2f1dc5c2200973b34bab753fa799fd9e",
+    "semantic_hash": ""
   },
   ".claude/commands/update-dependencies.md": {
-    "mtime": 1779899541.6643713,
-    "ast_hash": "59da4d26aa2224f545b51daea0b45d8f",
-    "semantic_hash": "59da4d26aa2224f545b51daea0b45d8f"
+    "mtime": 1784543342.3124156,
+    "ast_hash": "923233516fce0a42bb2ff5b90c4d80e5",
+    "semantic_hash": ""
   },
   ".claude/commands/verify-feature.md": {
-    "mtime": 1779899541.6644123,
-    "ast_hash": "448292d62db0d14dd110797c4eff1a79",
-    "semantic_hash": "448292d62db0d14dd110797c4eff1a79"
+    "mtime": 1784543346.470058,
+    "ast_hash": "8592dfea9ef8b2cb7b3dd263223c9d28",
+    "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1784030160.962858,
-    "ast_hash": "f65e428ef7a9665812152349f1024125",
+    "mtime": 1784543342.215496,
+    "ast_hash": "15befa23235e72bcc3e73ce328690196",
     "semantic_hash": ""
   },
   "README.md": {

@@ -71,8 +71,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_auditlog_auditlogdto_common_application_auditlog_auditlogdto",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 143,
+      "community_name": "OpenApiOptions",
       "norm_label": "auditlogdto"
     },
     {
@@ -763,8 +763,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_backgroundjobs_irecurringbackgroundjobs_common_application_backgroundjobs_irecurringbackgroundjobs_addorupdate",
-      "community": 58,
-      "community_name": "CollectionExtensions",
+      "community": 17,
+      "community_name": "Module Installers (IModule)",
       "norm_label": ".addorupdate()"
     },
     {
@@ -774,8 +774,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_backgroundjobs_irecurringbackgroundjobs_cs_expression",
-      "community": 58,
-      "community_name": "CollectionExtensions",
+      "community": 17,
+      "community_name": "Module Installers (IModule)",
       "norm_label": "expression"
     },
     {
@@ -785,8 +785,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_backgroundjobs_irecurringbackgroundjobs_cs_action",
-      "community": 58,
-      "community_name": "CollectionExtensions",
+      "community": 17,
+      "community_name": "Module Installers (IModule)",
       "norm_label": "action"
     },
     {
@@ -796,8 +796,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_backgroundjobs_irecurringbackgroundjobs_cs_func",
-      "community": 58,
-      "community_name": "CollectionExtensions",
+      "community": 17,
+      "community_name": "Module Installers (IModule)",
       "norm_label": "func"
     },
     {
@@ -807,8 +807,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_backgroundjobs_irecurringbackgroundjobs_cs_task",
-      "community": 58,
-      "community_name": "CollectionExtensions",
+      "community": 17,
+      "community_name": "Module Installers (IModule)",
       "norm_label": "task"
     },
     {
@@ -1082,7 +1082,7 @@
       "label": "ResultToCreatedResponseTransformer",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L54",
+      "source_location": "L59",
       "metadata": {
         "namespace": "Common.Application.EndpointFilters",
         "scope_chain": [
@@ -1099,7 +1099,7 @@
       "label": ".InvokeAsync()",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "metadata": {
         "namespace": "Common.Application.EndpointFilters",
         "scope_chain": [
@@ -1202,8 +1202,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler",
-      "community": 79,
-      "community_name": "Endpoint",
+      "community": 93,
+      "community_name": "IOpenApiSchema",
       "norm_label": "ieventhandler.cs"
     },
     {
@@ -1219,8 +1219,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_common_application_eventbus_ieventhandler",
-      "community": 79,
-      "community_name": "Endpoint",
+      "community": 93,
+      "community_name": "IOpenApiSchema",
       "norm_label": "ieventhandler"
     },
     {
@@ -1236,8 +1236,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_common_application_eventbus_ieventhandler_handleasync",
-      "community": 79,
-      "community_name": "Endpoint",
+      "community": 93,
+      "community_name": "IOpenApiSchema",
       "norm_label": ".handleasync()"
     },
     {
@@ -1247,8 +1247,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_cs_cancellationtoken",
-      "community": 79,
-      "community_name": "Endpoint",
+      "community": 93,
+      "community_name": "IOpenApiSchema",
       "norm_label": "cancellationtoken"
     },
     {
@@ -1258,8 +1258,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_eventbus_ieventhandler_cs_task",
-      "community": 79,
-      "community_name": "Endpoint",
+      "community": 93,
+      "community_name": "IOpenApiSchema",
       "norm_label": "task"
     },
     {
@@ -5029,8 +5029,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "isearchlanguageresolver.cs"
     },
     {
@@ -5062,8 +5062,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_isearchlanguageresolver",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "isearchlanguageresolver"
     },
     {
@@ -5079,8 +5079,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_isearchlanguageresolver_resolveconfig",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": ".resolveconfig()"
     },
     {
@@ -5096,8 +5096,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "searchlanguageresolver"
     },
     {
@@ -5107,8 +5107,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_cs_string",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "string"
     },
     {
@@ -5124,8 +5124,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver_resolveconfig",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": ".resolveconfig()"
     },
     {
@@ -5141,8 +5141,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_search_isearchlanguageresolver_common_application_search_searchlanguageresolver_appendunaccent",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": ".appendunaccent()"
     },
     {
@@ -7962,8 +7962,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_common_infrastructure_modules_imodule",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "imodule"
     },
     {
@@ -7973,8 +7973,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_cs_ienumerable",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "ienumerable"
     },
     {
@@ -7984,8 +7984,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_cs_action",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "action"
     },
     {
@@ -7995,8 +7995,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_cs_ratelimiteroptions",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "ratelimiteroptions"
     },
     {
@@ -8051,8 +8051,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_common_infrastructure_modules_imodule_usemodule",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": ".usemodule()"
     },
     {
@@ -8062,8 +8062,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_cs_iapplicationbuilder",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "iapplicationbuilder"
     },
     {
@@ -8079,8 +8079,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_common_infrastructure_modules_imodule_mapendpoints",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": ".mapendpoints()"
     },
     {
@@ -8090,8 +8090,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_modules_imodule_cs_iendpointroutebuilder",
-      "community": 114,
-      "community_name": "OutboxMetricsJob",
+      "community": 118,
+      "community_name": "RequestBody",
       "norm_label": "iendpointroutebuilder"
     },
     {
@@ -8636,8 +8636,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_savingchangesasync",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": ".savingchangesasync()"
     },
     {
@@ -8647,8 +8647,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_dbcontexteventdata",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": "dbcontexteventdata"
     },
     {
@@ -8658,8 +8658,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_interceptionresult",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": "interceptionresult"
     },
     {
@@ -8669,8 +8669,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_cancellationtoken",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": "cancellationtoken"
     },
     {
@@ -8680,8 +8680,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor_cs_valuetask",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 65,
+      "community_name": "ApplyAuditingInterceptor",
       "norm_label": "valuetask"
     },
     {
@@ -15007,8 +15007,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_backgroundjobsmodule",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "backgroundjobsmodule.cs"
     },
     {
@@ -15023,8 +15023,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:8bb709e967b56344",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "backgroundjobs"
     },
     {
@@ -15157,8 +15157,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_backgroundjobsservice",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "backgroundjobsservice.cs"
     },
     {
@@ -15431,8 +15431,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_jobmetricsfilter",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "jobmetricsfilter.cs"
     },
     {
@@ -15448,8 +15448,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_jobmetricsfilter_backgroundjobs_jobmetricsfilter",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 172,
+      "community_name": "Endpoint",
       "norm_label": "jobmetricsfilter"
     },
     {
@@ -15459,8 +15459,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iserverfilter",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 172,
+      "community_name": "Endpoint",
       "norm_label": "iserverfilter"
     },
     {
@@ -15470,8 +15470,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_jobmetricsfilter_cs_string",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 172,
+      "community_name": "Endpoint",
       "norm_label": "string"
     },
     {
@@ -15487,8 +15487,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_jobmetricsfilter_backgroundjobs_jobmetricsfilter_onperforming",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 172,
+      "community_name": "Endpoint",
       "norm_label": ".onperforming()"
     },
     {
@@ -15498,8 +15498,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "performingcontext",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 172,
+      "community_name": "Endpoint",
       "norm_label": "performingcontext"
     },
     {
@@ -15637,8 +15637,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_backgroundjobs_backgroundjobs_telemetry_backgroundjobstelemetry",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "backgroundjobstelemetry.cs"
     },
     {
@@ -15653,8 +15653,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:4736f31f793fd152",
-      "community": 17,
-      "community_name": "Module Installers (IModule)",
+      "community": 58,
+      "community_name": "CollectionExtensions",
       "norm_label": "backgroundjobs.telemetry"
     },
     {
@@ -41494,7 +41494,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L54",
+      "source_location": "L59",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_endpointfilters_resulttoresponsetransformer",
@@ -41505,7 +41505,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L92",
+      "source_location": "L102",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_endpointfilters_resulttoresponsetransformer",
@@ -41533,7 +41533,7 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L92",
+      "source_location": "L102",
       "weight": 1.0,
       "metadata": {
         "ref_token": "IEndpointFilter"
@@ -41547,7 +41547,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L95",
+      "source_location": "L105",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_endpointfilters_resulttoresponsetransformer_common_application_endpointfilters_resulttoresponsetransformer",
@@ -41558,7 +41558,7 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L54",
+      "source_location": "L59",
       "weight": 1.0,
       "metadata": {
         "ref_token": "IEndpointFilter"
@@ -41586,7 +41586,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L95",
+      "source_location": "L105",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -41601,7 +41601,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L95",
+      "source_location": "L105",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -41616,7 +41616,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L95",
+      "source_location": "L105",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -41631,7 +41631,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -41646,7 +41646,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -41661,7 +41661,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -41676,7 +41676,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/EndpointFilters/ResultToResponseTransformer.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_endpointfilters_resulttoresponsetransformer_common_application_endpointfilters_resulttocreatedresponsetransformer",
@@ -105997,5 +105997,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "9a8f5ea1c824d2acd93cad1196958942b42771b9"
+  "built_at_commit": "2889e46864910f7a6f19263326b8622f4d19416f"
 }

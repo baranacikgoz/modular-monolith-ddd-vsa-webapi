@@ -168,6 +168,7 @@ v1.Entity.Feature.Endpoint.MapEndpoint(v1Group);
 
 - **Zero warnings** — treat warnings as errors. Nullability enabled and enforced.
 - Primary constructors. `required` properties on DTOs.
+- **Using directives, never full qualifiers.** Add `using` for the type's namespace instead of writing `List<Appointments.Domain.TimeBlock>` inline — write `List<TimeBlock>`. Fully-qualified names in code are a smell; only exception is a genuine ambiguity needing disambiguation at the exact call site.
 - **Logging**: `LoggerMessage` source generation only — `static partial` methods with `[LoggerMessage]` attributes. No interpolated log strings.
 - **Localization**: `IResxLocalizer` (Aigamo.ResXGenerator) — no `IStringLocalizer`, no magic string keys.
 - **Mapping**: No AutoMapper or any mapping library. Inline `.Select(x => new Response { ... })` only.
@@ -309,6 +310,15 @@ Never hardcode a tunable (timeout, retry count, threshold, duration, limit, inte
 4. Inject `IOptions<<Name>Options>` — never hand-roll `services.Configure<T>(...)`. `AddCommonOptions` (`Options/Setup.cs`) assembly-scans for every `*Options` type, auto-binds its section, and runs its validator at startup.
 
 Test: would an operator plausibly want to change this without a code change? If yes, it's a tunable. Structural constants (array size tied to an enum, a protocol magic number) are not.
+
+### 11. Proactive Issue Reporting — Never Silently Pass Over a Bug
+
+If you spot a bug, architecture violation, security hole, dead code, or footgun while working — even in a file you didn't touch and even if it's unrelated to the current task — **flag it explicitly to the user** before finishing your response. `file:line` + one-line description + severity is enough.
+
+- Never silently fix it (scope creep) and never silently ignore it.
+- Never write "this was already broken / pre-existing / unrelated to my change" as a reason to drop it — that sentence is a prompt to report, not an excuse to skip.
+- Flag it even when it blocks nothing and the current task succeeds anyway.
+- Exception: findings already produced by a dedicated review/audit skill (`/audit-architecture`, `/code-review`, etc.) — report those through that skill's own output format, not as an ad hoc aside.
 
 ---
 
