@@ -126,13 +126,19 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
 
         var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow, "0001002");
 
+        // Capture "before" here, not a fresh UtcNow after the DB round trip below: ComputeBackoff uses
+        // full jitter (uniform in [0, cap)), so the scheduled backoff can be near-zero. Asserting against
+        // a later clock read races the SaveChangesAsync + GetMessageAsync round trip and flakes on a slow
+        // CI runner (see OutboxProcessorTests CI failure 2026-07-20). Assert against the timestamp taken
+        // before ProcessBatchAsync ran instead — NextRetryAt is always computed after this point.
+        var before = DateTimeOffset.UtcNow;
         using var processor = CreateProcessor(BuildOptions(maxRetryCount: 3));
         await processor.ProcessBatchAsync(CancellationToken.None);
         var message = await GetMessageAsync(messageId);
 
         Assert.Equal(1, message.RetryCount);
         Assert.NotNull(message.NextRetryAt);
-        Assert.True(message.NextRetryAt > DateTimeOffset.UtcNow);
+        Assert.True(message.NextRetryAt >= before);
         Assert.False(message.IsProcessed);
         Assert.Null(message.FailedOn);
     }
@@ -174,6 +180,10 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
             ids.Add(await SeedMessageAsync(now.AddMilliseconds(i), $"000200{i}"));
         }
 
+        // See ProcessBatch_PublishFails_SchedulesRetryWithLease: assert against the timestamp taken
+        // before ProcessBatchAsync ran, not a fresh UtcNow after the round trip below — full-jitter
+        // backoff can be near-zero and a later clock read races the DB round trip.
+        var before = DateTimeOffset.UtcNow;
         using var processor = CreateProcessor(BuildOptions(batchSize: 10, maxRetryCount: 5));
         await processor.ProcessBatchAsync(CancellationToken.None);
 
@@ -182,7 +192,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
             var attempted = await GetMessageAsync(ids[i]);
             Assert.Equal(1, attempted.RetryCount);
             Assert.NotNull(attempted.NextRetryAt);
-            Assert.True(attempted.NextRetryAt > DateTimeOffset.UtcNow);
+            Assert.True(attempted.NextRetryAt >= before);
         }
 
         for (var i = 3; i < 5; i++)

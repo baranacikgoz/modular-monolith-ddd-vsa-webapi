@@ -1550,9 +1550,9 @@
     "semantic_hash": "4bda1e60c6f47bd53164923d35664254"
   },
   "src/Modules/Products/Products.Endpoints/Probe/v1/Endpoint.cs": {
-    "mtime": 1779899541.6969364,
-    "ast_hash": "ad5542227bc594a8577b76e33ec41d17",
-    "semantic_hash": "ad5542227bc594a8577b76e33ec41d17"
+    "mtime": 1784580287.572676,
+    "ast_hash": "d2f9ed9861c7e3a72b5f29d4350b5198",
+    "semantic_hash": ""
   },
   "src/Modules/Products/Products.Endpoints/ProductTemplates/Setup.cs": {
     "mtime": 1779899541.69704,
@@ -1660,9 +1660,9 @@
     "semantic_hash": "2a020f0875cedaac5327d342dea3aa5d"
   },
   "src/Modules/Products/Products.Endpoints/Products/v1/My/Get/Request.cs": {
-    "mtime": 1779899541.6986468,
-    "ast_hash": "f50d06f0eee5a3392a3253c740fb52d7",
-    "semantic_hash": "f50d06f0eee5a3392a3253c740fb52d7"
+    "mtime": 1784580185.9304085,
+    "ast_hash": "c6d7a4285e782a8f5a5c875846fba8e0",
+    "semantic_hash": ""
   },
   "src/Modules/Products/Products.Endpoints/Products/v1/My/Get/Response.cs": {
     "mtime": 1779899541.698694,
@@ -1840,9 +1840,9 @@
     "semantic_hash": "e85198c894db6eab23f4a7617d12d65e"
   },
   "src/Modules/Products/Products.Endpoints/Stores/v1/My/RemoveProduct/Request.cs": {
-    "mtime": 1779899541.7010448,
-    "ast_hash": "ec78bbbf85a398cf0c1b803c6bf1c760",
-    "semantic_hash": "ec78bbbf85a398cf0c1b803c6bf1c760"
+    "mtime": 1784580418.2689586,
+    "ast_hash": "33bedddf9908c27bd14106913697b812",
+    "semantic_hash": ""
   },
   "src/Modules/Products/Products.Endpoints/Stores/v1/My/Update/Endpoint.cs": {
     "mtime": 1779899541.7011502,
@@ -1995,7 +1995,7 @@
     "semantic_hash": ""
   },
   ".claude/commands/implement-endpoint.md": {
-    "mtime": 1784579758.4431975,
+    "mtime": 1784579803.2726572,
     "ast_hash": "fdb15e368ca163a82b32bb1420190c1f",
     "semantic_hash": ""
   },
@@ -2025,7 +2025,7 @@
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-feature.md": {
-    "mtime": 1784579783.1428878,
+    "mtime": 1784579803.272783,
     "ast_hash": "4485bbe578dcdb3f724b89de1c82af22",
     "semantic_hash": ""
   },
@@ -2150,8 +2150,8 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Sessions/Revoke/Request.cs": {
-    "mtime": 1783629266.211509,
-    "ast_hash": "b9339d9c06235e7fc689435e80b229fc",
+    "mtime": 1784580417.3053746,
+    "ast_hash": "d97587c2fad6869a61c9ae70ff2f9b6f",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Sessions/RevokeAll/Endpoint.cs": {
@@ -2202,6 +2202,11 @@
   "src/Modules/Notifications/Notifications.Infrastructure/Otp/RedisOtpService.cs": {
     "mtime": 1784481847.5034459,
     "ast_hash": "3be432d12f6c8ea7cad26d683b28d5b0",
+    "semantic_hash": ""
+  },
+  "src/Modules/Products/Products.Endpoints/Probe/v1/Request.cs": {
+    "mtime": 1784580282.555771,
+    "ast_hash": "bf4c7b12d302727200ab006e7f20ff3d",
     "semantic_hash": ""
   }
 }

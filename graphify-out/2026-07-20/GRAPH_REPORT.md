@@ -1,16 +1,16 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-07-20)
 
 ## Corpus Check
-- 440 files · ~59,051 words
+- 440 files · ~60,771 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2769 nodes · 4864 edges · 301 communities (195 shown, 106 thin omitted)
+- 2769 nodes · 4864 edges · 301 communities (194 shown, 107 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9a8f5ea1`
+- Built from commit: `2889e468`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -345,7 +345,7 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (301 total, 106 thin omitted)
+## Communities (301 total, 107 thin omitted)
 
 ### Community 0 - "Host Logging & Serilog Setup"
 Cohesion: 0.26
@@ -412,8 +412,8 @@ Cohesion: 0.07
 Nodes (19): Common.Infrastructure.Localization, Common.Application.FeatureManagement, IAM.Domain.Captcha, IAM.Endpoints, Common.Infrastructure.Extensions, Common.Application.Options, IAM.Infrastructure.Captcha.Services, IAM.Application.Captcha.Services (+11 more)
 
 ### Community 17 - "Module Installers (IModule)"
-Cohesion: 0.20
-Nodes (6): BackgroundJobs.Telemetry, BackgroundJobs, IServerFilter, PerformingContext, JobMetricsFilter, string
+Cohesion: 0.40
+Nodes (4): Action, Expression, Func, Task
 
 ### Community 18 - "Host Infrastructure Setup"
 Cohesion: 0.15
@@ -452,8 +452,8 @@ Cohesion: 0.25
 Nodes (5): Outbox, Common.Infrastructure.Persistence.Outbox, Outbox.Persistence, Outbox.Telemetry, OutboxMetricsJob
 
 ### Community 27 - "Product Template Aggregate"
-Cohesion: 0.12
-Nodes (12): ISearchLanguageResolver, SearchLanguageResolver, string, CancellationToken, DbContextEventData, InterceptionResult, ValueTask, CancellationToken (+4 more)
+Cohesion: 0.29
+Nodes (5): CancellationToken, IOptions, RouteGroupBuilder, Task, Endpoint
 
 ### Community 28 - "Outbox Message & Tokens"
 Cohesion: 0.40
@@ -504,8 +504,8 @@ Cohesion: 0.15
 Nodes (9): AggregateRoot, IEnumerable, IReadOnlyCollection, List, IAggregateRoot, IEnumerable, IReadOnlyCollection, IAuditableEntity (+1 more)
 
 ### Community 40 - "NetArchTest.Rules"
-Cohesion: 0.20
-Nodes (8): Products.Endpoints.Stores.v1.AuditLog, AuditLogDto, CancellationToken, RouteGroupBuilder, Task, Endpoint, Request, RequestValidator
+Cohesion: 0.22
+Nodes (7): Products.Endpoints.Stores.v1.AuditLog, CancellationToken, RouteGroupBuilder, Task, Endpoint, Request, RequestValidator
 
 ### Community 41 - "Aigamo.ResXGenerator"
 Cohesion: 0.25
@@ -560,12 +560,12 @@ Cohesion: 0.39
 Nodes (4): CancellationToken, IReadOnlyList, Task, SignalRNotificationDispatcher
 
 ### Community 56 - "DummyOtpService"
-Cohesion: 0.17
-Nodes (10): FullTextSearchOptions, FullTextSearchOptionsValidator, Dictionary, IReadOnlyList, string, CancellationToken, IOptions, RouteGroupBuilder (+2 more)
+Cohesion: 0.13
+Nodes (13): FullTextSearchOptions, FullTextSearchOptionsValidator, Dictionary, IReadOnlyList, string, ISearchLanguageResolver, SearchLanguageResolver, string (+5 more)
 
 ### Community 58 - "CollectionExtensions"
-Cohesion: 0.18
-Nodes (8): Common.Application.BackgroundJobs, RecurringJobOptions, IRecurringBackgroundJobs, Action, Expression, Func, Task, RecurringBackgroundJobsService
+Cohesion: 0.21
+Nodes (6): Common.Application.BackgroundJobs, BackgroundJobs.Telemetry, BackgroundJobs, RecurringJobOptions, IRecurringBackgroundJobs, RecurringBackgroundJobsService
 
 ### Community 59 - "coverlet.collector"
 Cohesion: 0.33
@@ -588,8 +588,8 @@ Cohesion: 0.28
 Nodes (6): CancellationToken, int, string, Task, TimeSpan, RedisOtpService
 
 ### Community 65 - "ApplyAuditingInterceptor"
-Cohesion: 0.25
-Nodes (7): SaveChangesInterceptor, ApplyAuditingInterceptor, CancellationToken, DbContextEventData, InterceptionResult, ValueTask, ApplySearchLanguageInterceptor
+Cohesion: 0.14
+Nodes (11): SaveChangesInterceptor, ApplyAuditingInterceptor, CancellationToken, DbContextEventData, InterceptionResult, ValueTask, ApplySearchLanguageInterceptor, CancellationToken (+3 more)
 
 ### Community 66 - "CustomRoles"
 Cohesion: 0.28
@@ -636,8 +636,8 @@ Cohesion: 0.17
 Nodes (11): IPostConfigureOptions, BackgroundJobsOptions, BackgroundJobsOptionsValidator, RequestLoggingOptions, RequestLoggingOptionsValidator, SensitivePathRule, IList, int (+3 more)
 
 ### Community 79 - "Endpoint"
-Cohesion: 0.14
-Nodes (9): Common.IntegrationEvents, Notifications.Application.IntegrationEventHandlers, IAM.Application.Users.DomainEventHandlers.v1, Common.Application.EventBus, IEventHandler, CancellationToken, Task, Setup (+1 more)
+Cohesion: 0.21
+Nodes (6): Common.IntegrationEvents, Notifications.Application.IntegrationEventHandlers, IAM.Application.Users.DomainEventHandlers.v1, Common.Application.EventBus, Setup, IServiceCollection
 
 ### Community 81 - "HttpContextExtensions"
 Cohesion: 0.13
@@ -680,8 +680,8 @@ Cohesion: 0.21
 Nodes (10): GetSeedUserIdsRequest, GetSeedUserIdsResponse, CancellationToken, Task, GetSeedUserIdsRequestHandler, CancellationToken, IResult, RouteGroupBuilder (+2 more)
 
 ### Community 93 - "IOpenApiSchema"
-Cohesion: 0.26
-Nodes (8): Products.Application.Stores.DomainEventHandlers.v1, DomainEventHandlerBase, CancellationToken, Task, SimulateSomeBusinessHandler, StoreCreatedIntegrationEventPublishingHandler, V1StoreCreatedDomainEventHandlers, V1StoreCreatedDomainEvent
+Cohesion: 0.16
+Nodes (11): Products.Application.Stores.DomainEventHandlers.v1, DomainEventHandlerBase, IEventHandler, CancellationToken, Task, CancellationToken, Task, SimulateSomeBusinessHandler (+3 more)
 
 ### Community 95 - "Request.cs"
 Cohesion: 0.40
@@ -759,10 +759,6 @@ Nodes (8): Common.Infrastructure.Modules, Host.Infrastructure, OtlpExportProtoco
 Cohesion: 0.40
 Nodes (4): Action, Expression, Func, Task
 
-### Community 114 - "OutboxMetricsJob"
-Cohesion: 0.18
-Nodes (8): IModule, Action, IApplicationBuilder, IConfiguration, IEndpointRouteBuilder, IEnumerable, IServiceCollection, RateLimiterOptions
-
 ### Community 115 - "SearchLanguageResolver"
 Cohesion: 0.26
 Nodes (7): BackgroundJobsService, Action, DateTimeOffset, Expression, Func, Task, TimeSpan
@@ -776,8 +772,8 @@ Cohesion: 0.33
 Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 118 - "RequestBody"
-Cohesion: 0.27
-Nodes (8): OpenTelemetryBuilder, ResourceBuilder, Action, IConfiguration, IHostEnvironment, IReadOnlyList, IServiceCollection, Setup
+Cohesion: 0.15
+Nodes (14): OpenTelemetryBuilder, ResourceBuilder, IModule, Action, IApplicationBuilder, IEndpointRouteBuilder, IEnumerable, RateLimiterOptions (+6 more)
 
 ### Community 119 - "RequestBody"
 Cohesion: 0.18
@@ -860,8 +856,8 @@ Cohesion: 0.33
 Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 143 - "OpenApiOptions"
-Cohesion: 0.22
-Nodes (7): Products.Endpoints.Products.v1.AuditLog, CancellationToken, RouteGroupBuilder, Task, Endpoint, Request, RequestValidator
+Cohesion: 0.20
+Nodes (8): Products.Endpoints.Products.v1.AuditLog, AuditLogDto, CancellationToken, RouteGroupBuilder, Task, Endpoint, Request, RequestValidator
 
 ### Community 144 - "OtpOptions"
 Cohesion: 0.33
@@ -944,8 +940,8 @@ Cohesion: 0.29
 Nodes (4): Common.InterModuleRequests, IAssemblyReference, Setup, IServiceCollection
 
 ### Community 172 - "Endpoint"
-Cohesion: 0.22
-Nodes (7): PerformedContext, BackgroundJobsTelemetry, ActivitySource, Counter, Histogram, Meter, string
+Cohesion: 0.14
+Nodes (11): IServerFilter, PerformedContext, PerformingContext, JobMetricsFilter, string, BackgroundJobsTelemetry, ActivitySource, Counter (+3 more)
 
 ### Community 173 - "Endpoint"
 Cohesion: 0.33
@@ -1122,12 +1118,12 @@ Nodes (7): Products.Endpoints.Stores.v1.My.Update, CancellationToken, RouteGroup
 ## Knowledge Gaps
 - **139 isolated node(s):** `CacheKeys`, `OtpCacheEntry`, `FeatureFlags`, `Common.Domain`, `Common.Infrastructure` (+134 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **106 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **107 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `Launch Settings` to `Host NuGet Deps (OTel/Health)`, `CorsOptions`, `BackgroundJobs Service (Hangfire)`, `HealthCheckOptions`, `SecurityHeadersOptions.cs`, `Functional Result Extensions`, `Module Installers (IModule)`, `SignalR Hub & Exception Middleware`, `Setup`, `Integration Event Handler Base`, `Product Template Aggregate`, `Setup`, `SignalROptions.cs`, `Endpoint`, `Microsoft.EntityFrameworkCore.Abstractions`, `Endpoint`, `StoreConfiguration`, `Endpoint`, `Endpoint`, `Aigamo.ResXGenerator`, `Endpoint`, `DummyOtpService`, `Endpoint`, `AuthenticateResult`, `IAssemblyReference`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `RequestLoggingPathPostConfigure`, `Endpoint`, `BaseIntegrationTest`, `Request.cs`, `net10.0`, `AuditLogRetentionJobRegistrar`, `Products.Endpoints.Probe`, `IAM`, `IntegrationEvent`, `IModelBinder`, `ReverseProxyOptions.cs`, `StringExtensions`, `IRoleService`, `Setup`, `Setup`, `Setup`?**
+- **Why does `Common.Application.Options` connect `Launch Settings` to `Host NuGet Deps (OTel/Health)`, `CorsOptions`, `BackgroundJobs Service (Hangfire)`, `HealthCheckOptions`, `SecurityHeadersOptions.cs`, `Functional Result Extensions`, `SignalR Hub & Exception Middleware`, `Setup`, `Integration Event Handler Base`, `Setup`, `SignalROptions.cs`, `Endpoint`, `Microsoft.EntityFrameworkCore.Abstractions`, `Endpoint`, `StoreConfiguration`, `Endpoint`, `Endpoint`, `Aigamo.ResXGenerator`, `Endpoint`, `DummyOtpService`, `Endpoint`, `CollectionExtensions`, `AuthenticateResult`, `IAssemblyReference`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `RequestLoggingPathPostConfigure`, `Endpoint`, `BaseIntegrationTest`, `Request.cs`, `net10.0`, `AuditLogRetentionJobRegistrar`, `Products.Endpoints.Probe`, `IAM`, `IntegrationEvent`, `IModelBinder`, `ReverseProxyOptions.cs`, `StringExtensions`, `IRoleService`, `Setup`, `Setup`, `Setup`?**
   _High betweenness centrality (0.350) - this node is a cross-community bridge._
 - **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `CustomRoles`, `HangfireCustomAuthorizationFilter`, `Microsoft.EntityFrameworkCore.Abstractions`, `HttpContextTargetingContextAccessor`, `Host NuGet Deps (OTel/Health)`, `IMiddleware`, `Functional Result Extensions`, `Launch Settings`, `Response`, `Response`, `SignalR Hub & Exception Middleware`, `Setup`, `Host.Swagger`, `PermissionAuthorizationHandler`?**
   _High betweenness centrality (0.092) - this node is a cross-community bridge._
