@@ -21,11 +21,11 @@ internal static class Endpoint
     }
 
     private static async Task<IResult> HandleAsync(
-        [FromQuery] int count,
+        [AsParameters] Request request,
         [FromServices] IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse> client,
         CancellationToken cancellationToken)
     {
-        var response = await client.SendAsync(new GetSeedUserIdsRequest(count), cancellationToken);
+        var response = await client.SendAsync(new GetSeedUserIdsRequest(request.Count), cancellationToken);
         return Results.Ok(response);
     }
 }

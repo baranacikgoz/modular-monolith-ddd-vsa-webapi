@@ -321,6 +321,9 @@
   <data name="Products_v1_Get_Id_NotEmpty" xml:space="preserve">
     <value>Product ID cannot be empty.</value>
   </data>
+  <data name="Products_v1_Probe_Count_GreaterThan" xml:space="preserve">
+    <value>Count must be greater than 0.</value>
+  </data>
   <data name="Products_v1_My_Get_Id_Empty" xml:space="preserve">
     <value>Product ID cannot be empty.</value>
   </data>

@@ -11,7 +11,7 @@ public sealed record Request
 {
     [FromRoute]
     [ModelBinder<StronglyTypedIdBinder<SessionId>>]
-    public SessionId Id { get; set; }
+    public required SessionId Id { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>

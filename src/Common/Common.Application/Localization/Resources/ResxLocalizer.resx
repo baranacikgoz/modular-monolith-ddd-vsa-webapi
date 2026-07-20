@@ -380,6 +380,9 @@
   <data name="Products_v1_Get_Id_NotEmpty" xml:space="preserve">
     <value>Ürün Id boş olamaz.</value>
   </data>
+  <data name="Products_v1_Probe_Count_GreaterThan" xml:space="preserve">
+    <value>Sayı sıfırdan büyük olmalıdır.</value>
+  </data>
   <data name="Products_v1_My_Get_Id_Empty" xml:space="preserve">
     <value>Ürün Id boş olamaz.</value>
   </data>

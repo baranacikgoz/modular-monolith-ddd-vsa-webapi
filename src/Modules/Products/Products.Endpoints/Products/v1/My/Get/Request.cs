@@ -14,7 +14,7 @@ public sealed record Request
     public ProductId Id { get; set; }
 }
 
-public class RequestValidator : CustomValidator<Request>
+public sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IResxLocalizer localizer)
     {

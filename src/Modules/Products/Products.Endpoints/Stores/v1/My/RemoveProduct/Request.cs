@@ -11,7 +11,7 @@ public sealed record Request
 {
     [FromRoute]
     [ModelBinder<StronglyTypedIdBinder<ProductId>>]
-    public ProductId Id { get; init; }
+    public required ProductId Id { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
