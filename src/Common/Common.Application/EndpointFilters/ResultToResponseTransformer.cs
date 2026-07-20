@@ -42,6 +42,11 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
                 problemDetails.AddErrorKey(error.Key);
                 problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
 
+                if (error.Value is not null)
+                {
+                    problemDetails.Extensions.TryAdd("detail", error.Value);
+                }
+
                 problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
 
@@ -80,6 +85,11 @@ internal sealed class ResultToCreatedResponseTransformer<T>(IServiceProvider ser
                 problemDetails.AddErrorKey(error.Key);
                 problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
 
+                if (error.Value is not null)
+                {
+                    problemDetails.Extensions.TryAdd("detail", error.Value);
+                }
+
                 problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
 
@@ -117,6 +127,11 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
 
                 problemDetails.AddErrorKey(error.Key);
                 problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
+
+                if (error.Value is not null)
+                {
+                    problemDetails.Extensions.TryAdd("detail", error.Value);
+                }
 
                 problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
                 problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
