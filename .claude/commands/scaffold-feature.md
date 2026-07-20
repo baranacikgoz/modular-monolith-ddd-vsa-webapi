@@ -37,19 +37,11 @@ internal static class Endpoint
 
 **READ slice** — handler returns `Task<Result<Response>>`, uses `.AsNoTracking()`, projects inline to `Response` via `.Select(...)`.
 
-**`Request.cs`:**
+**`Request.cs`** — record plus an inline validator appended at the bottom of the same file (not a separate `RequestValidator.cs`). Validation auto-fires via `AddFluentValidationAutoValidation()`, registered once at module root — no per-endpoint wiring:
 ```csharp
 public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);
 public sealed record Body(string Prop /* add fields */);
-```
 
-**`Response.cs`:**
-```csharp
-public sealed record Response { public required string Prop { get; init; } }
-```
-
-**`RequestValidator.cs`:**
-```csharp
 public sealed class RequestValidator : CustomValidator<Request>
 {
     public RequestValidator(IResxLocalizer localizer)
@@ -59,6 +51,16 @@ public sealed class RequestValidator : CustomValidator<Request>
 }
 ```
 
+**`Response.cs`:**
+```csharp
+public sealed record Response { public required string Prop { get; init; } }
+```
+
 **Domain method (WRITE)**: ensure `{Aggregate}` has `{Feature}(...)` calling `RaiseEvent(new {Feature}Event(...))` and `ApplyEvent` handles the state mutation.
+
+**Register** in the feature's `Setup.cs` — do not call `.MapToApiVersion(...)` here, versioning is applied once at the module root:
+```csharp
+v1.{Feature}.Endpoint.MapEndpoint(group);
+```
 
 Run `make build` to confirm zero warnings.

@@ -235,8 +235,8 @@
     "semantic_hash": "e8891042548120ad96936bce7ea5b721"
   },
   "src/Common/Common.Application/Options/OutboxOptions.cs": {
-    "mtime": 1784481847.4933894,
-    "ast_hash": "7f8d24c3d9cf2feaf749e7db572bbbd1",
+    "mtime": 1784499137.5268047,
+    "ast_hash": "4ba31bfaf017d273e9e29f0f50a82e50",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/RabbitMqOptions.cs": {
@@ -1405,8 +1405,8 @@
     "semantic_hash": "29665b998baf400e7cfdb8b6bdd32a65"
   },
   "src/Modules/Outbox/Outbox/OutboxProcessor.cs": {
-    "mtime": 1784481847.5060117,
-    "ast_hash": "fb9e6c123a195b3b62643b923e761e2e",
+    "mtime": 1784499140.9432502,
+    "ast_hash": "e64739168d73c356de72e821a97c8625",
     "semantic_hash": ""
   },
   "src/Modules/Outbox/Outbox/Persistence/OutboxDbContext.cs": {

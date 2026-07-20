@@ -10,7 +10,7 @@ Scaffold Red-phase tests for module: $ARGUMENTS
 
 2. **Unit tests**: in `src/Modules/{Module}/{Module}.Tests/`, write unit tests for pure domain logic and aggregate state mutations. Inherit from `AggregateTests` if applicable.
 
-3. **Integration tests**: write slice integration tests implementing `IClassFixture<{Module}TestFactory>`. Retrieve services via `_factory.Services.CreateScope()`.
+3. **Integration tests**: write slice integration tests implementing `IClassFixture<{Module}TestFactory>` (or `ICollectionFixture` + `[Collection("Name")]` if another test class in this module already uses the same factory type — see `/scaffold-test` for the decision rule). Retrieve services via `_factory.Services.CreateScope()`. Note: `AddInMemoryCollection` test config only reaches runtime `IOptions<T>`, not registration-time reads — use `UseSetting(...)` for those.
 
 4. **Confirm Red state**: run `make test-{module}`. The new tests **must fail** — because the implementation does not yet exist. If they pass, the tests are not testing the planned behavior; revise them.
 

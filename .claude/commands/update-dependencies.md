@@ -8,9 +8,10 @@ Update NuGet dependencies.
 
 1. **Analyze**: read `Directory.Packages.props` to understand the current ecosystem.
 
-2. **Find outdated**:
+2. **Find outdated**. Running against the whole solution fails (`docker-compose.dcproj` errors `NU1105: Invalid target framework ''`) — scope per project instead:
    ```bash
-   dotnet list package --outdated
+   dotnet list src/Host/Host/Host.csproj package --outdated
+   # repeat per .csproj, or loop over `find . -name '*.csproj'`
    ```
 
 3. **Draft plan**: list each package with current → target version. Do not upgrade major versions without explicit approval.

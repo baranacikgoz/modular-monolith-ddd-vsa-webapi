@@ -12,7 +12,7 @@ Manage feature flag: $ARGUMENTS
 
 | Subcommand | Action |
 |------------|--------|
-| `create <Name>` | Add new boolean flag set to `false` in `featureFlags.json` and `featureFlags.Development.json` set to `true`. |
+| `create <Name>` | Add new boolean flag set to `false` in `featureFlags.json`. Also add a `const string` for it to `src/Common/Common.Application/FeatureManagement/FeatureFlags.cs` (nested under the owning module's static class) — never reference the flag by raw string. There is no per-environment override file (`featureFlags.{Environment}.json` loading is disabled in `Setup.cs` — this repo has no Vault-like secret injection, one config instance per deploy). |
 | `toggle <Name> <true/false>` | Update flag value in `featureFlags.json`. |
 | `variant <Name>` | Add variant flag skeleton with two variants (VariantA, VariantB) in config. |
 | `apply <Name> [EndpointDir]` | Add `.RequireFeature("<Name>")` to endpoint(s) in `[EndpointDir]`. If no dir given, search all `Endpoint.cs` files. |
@@ -40,13 +40,13 @@ Manage feature flag: $ARGUMENTS
 }
 ```
 
-**Step 4 — Apply to endpoint.** Insert `.RequireFeature("<Name>")` in `MapEndpoint` chain after `.MustHavePermission()` (or after `.WithDescription()` if no permission):
+**Step 4 — Apply to endpoint.** Insert `.RequireFeature(FeatureFlags.{Module}.{Name})` in `MapEndpoint` chain after `.MustHavePermission()` (or after `.WithDescription()` if no permission) — use the typed constant from `FeatureFlags.cs`, never a raw string:
 
 ```csharp
 group.MapGet("{id}", HandleAsync)
     .WithDescription("...")
     .MustHavePermission(CustomActions.Read, CustomResources.Products)
-    .RequireFeature("Products.NewCheckout")
+    .RequireFeature(FeatureFlags.Products.NewCheckout)
     .TransformResultTo<Response>();
 ```
 

@@ -28,7 +28,7 @@ Never reach for grep, find, or Bash search as a first instinct. The graph knows 
 - Modules communicate **only** via `IntegrationEvents` (async/MassTransit) or `Common.InterModuleRequests` (sync).
 - `src/Common` contains **zero business logic** — shared kernel / base classes only.
 - No module `.csproj` may reference another module `.csproj`. Violation = immediate fail.
-- Module registration is **configuration-driven** via `appsettings.json` `"Modules"` array. Never hardcode `.Add[Module]()` in `Setup.Modules.cs`.
+- Module registration is **configuration-driven** via `src/Host/Host/Configurations/modules.json` (`ModulesOptions.EnabledModules` array). Never hardcode `.Add[Module]()` in `Setup.Modules.cs`.
 
 ### Module Inventory
 
@@ -80,6 +80,7 @@ Infrastructure/worker modules use a simplified structure:
 | Consumer Idempotency | `IntegrationEventHandlerBase` checks `processed_event:{event.Id}` in FusionCache before invoking `ProcessAsync`; writes the key with `IdempotencyKeyDuration` TTL on first execution. | Inherit `IntegrationEventHandlerBase<T>` for all `IConsumer<T>` implementations — never implement `IConsumer<T>` directly. |
 | Auditing | `ApplyAuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. | Do not set audit fields manually. |
 | Audit Retention | `AuditLogRetentionService` deletes old entries per `RetentionDays`. | Do not manually delete `AuditLog` entries. |
+| DomainEvent Versioning | Serialized to `AuditLog` by CLR type name (`PolymorphicEventConverter`) for history replay. | Never edit a shipped `V{n}` event. Add `V{n+1}` instead — see §5. |
 
 Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.aspire-dashboard`.
 
@@ -170,6 +171,8 @@ v1.Entity.Feature.Endpoint.MapEndpoint(v1Group);
 - **Logging**: `LoggerMessage` source generation only — `static partial` methods with `[LoggerMessage]` attributes. No interpolated log strings.
 - **Localization**: `IResxLocalizer` (Aigamo.ResXGenerator) — no `IStringLocalizer`, no magic string keys.
 - **Mapping**: No AutoMapper or any mapping library. Inline `.Select(x => new Response { ... })` only.
+- **Result wrapping**: Never `(Result<T>)value` explicit cast. `Result<T>` has implicit operators for `T → Result<T>` and `Error → Result<T>` — rely on them. When compiler needs a hint inside async lambdas, use `Result<T>.Success(value)` — never cast.
+- **Typed parameters over raw strings**: Never branch on raw `string` query/route parameters (e.g. `filter == "ARCHIVED"`). Use a dedicated `enum`, `bool`, or strongly-typed value instead. ASP.NET Core model binding validates and parses these automatically — no magic strings in handler logic.
 - Prefer `struct` / `ref struct` for hot-path small objects.
 
 ### 5. Cross-Module Communication
@@ -185,24 +188,23 @@ public sealed record UserRegisteredIntegrationEvent(
 ) : IntegrationEvent;
 ```
 
-Published from a `DomainEventHandler` in `{Module}.Application/{Aggregate}/DomainEventHandlers/`:
+Published from a `DomainEventHandler` in `{Module}.Application/{Aggregate}/DomainEventHandlers/v1/`:
 ```csharp
-public class V1UserRegisteredDomainEventHandler(IEventBus eventBus)
-    : EventHandlerBase<V1UserRegisteredDomainEvent>
+public class V1UserRegisteredDomainEventHandler(IIntegrationEventOutbox outbox)
+    : DomainEventHandlerBase<V1UserRegisteredDomainEvent>
 {
-    protected override async Task HandleAsync(
-        ConsumeContext<V1UserRegisteredDomainEvent> context,
+    public override Task HandleAsync(
         V1UserRegisteredDomainEvent @event,
         CancellationToken cancellationToken)
     {
-        await eventBus.PublishAsync(
-            new UserRegisteredIntegrationEvent(@event.UserId, @event.Name, @event.PhoneNumber),
-            cancellationToken);
+        outbox.Collect(
+            new UserRegisteredIntegrationEvent(@event.UserId, @event.Name, @event.PhoneNumber));
+        return Task.CompletedTask;
     }
 }
 ```
 
-Consumer in target module: implement `IConsumer<UserRegisteredIntegrationEvent>` and register via MassTransit in the module's `ModuleInstaller`.
+Consumer in target module: inherit `IntegrationEventHandlerBase<UserRegisteredIntegrationEvent>` and override `ProcessAsync` (never implement `IConsumer<T>` directly — see Platform Infrastructure table above). Consumers auto-register via assembly scan (`x.AddConsumers(moduleAssemblies)` in `Setup.MassTransit.cs`) — no manual registration step, no `ModuleInstaller` file exists.
 
 #### Sync — InterModuleRequests
 
@@ -212,12 +214,11 @@ public sealed record GetSeedUserIdsRequest(int Count) : IInterModuleRequest<GetS
 public sealed record GetSeedUserIdsResponse(ICollection<ApplicationUserId> UserIds);
 ```
 
-Handler in source module's Application layer — inherits `InterModuleRequestHandler<TRequest, TResponse>`:
+Handler in source module's `{Module}.Infrastructure/InterModuleRequestHandlers/` — inherits `InterModuleRequestHandler<TRequest, TResponse>`:
 ```csharp
-public class GetSeedUserIdsHandler : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
+public class GetSeedUserIdsRequestHandler : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
 {
-    protected override async Task<GetSeedUserIdsResponse> HandleAsync(
-        ConsumeContext<GetSeedUserIdsRequest> context,
+    public override async Task<GetSeedUserIdsResponse> HandleAsync(
         GetSeedUserIdsRequest request,
         CancellationToken cancellationToken) { ... }
 }
@@ -298,6 +299,17 @@ public class FeatureBTests(MyModuleTestFactory factory) { ... }
 - Use OTel Trace IDs to locate the exact failing span when available.
 - **CI-only failures: observe the failing environment before fixing — do not reason from the stack trace and push a guess.** If a test passes locally but fails only in CI, first instrument the failing path to emit the CI environment's real state, then fix from that evidence. For a DB lock/timeout (e.g. Respawn `Timeout during reading attempt`), dump `pg_stat_activity` and `pg_blocking_pids(...)` plus the *effective* option values from inside the catch, throw it in the exception message (xUnit swallows `Console`), and read it from the CI log. Local-green/CI-red means the local box is masking the cause (a running broker, more CPU, or config that only diverges under CI), so local repro will mislead — one instrumented CI run beats three reasoned guesses.
 
+### 10. Tunable Values — Options Pattern Only
+
+Never hardcode a tunable (timeout, retry count, threshold, duration, limit, interval, template string) as a literal in application code. Route it through Options:
+
+1. `<Name>Options` class in `src/Common/Common.Application/Options/<Name>Options.cs` — `required` props, paired `<Name>OptionsValidator : CustomValidator<<Name>Options>` in the same file.
+2. Config JSON at `src/Host/Host/Configurations/<name>.json`, top-level key = bare class name (no `Module:Sub` nesting).
+3. Register the file in `src/Host/Host/Configurations/Setup.cs`'s `AddJsonFile(...)` list.
+4. Inject `IOptions<<Name>Options>` — never hand-roll `services.Configure<T>(...)`. `AddCommonOptions` (`Options/Setup.cs`) assembly-scans for every `*Options` type, auto-binds its section, and runs its validator at startup.
+
+Test: would an operator plausibly want to change this without a code change? If yes, it's a tunable. Structural constants (array size tied to an enum, a protocol magic number) are not.
+
 ---
 
 ## Makefile — Always Use These Targets
@@ -312,6 +324,10 @@ make test-products
 make test-outbox
 make test-notifications
 make test-backgroundjobs
+
+make inspect                     # ReSharper/Rider inspections (jb inspectcode) — same verdicts Rider shows
+make inspect SEV=SUGGESTION      # include suggestions/notes
+make inspect INCLUDE="**/Foo.cs" # scope to files
 
 make ef-add-IAM name=<Name>
 make ef-add-Products name=<Name>

@@ -14,10 +14,12 @@ Implement planned feature for module: $ARGUMENTS
 
 4. **Application/Infrastructure layer**: implement internal services and repository logic following the functional Result pipeline throughout.
 
-5. **Cross-module integration** (if required): define `IntegrationEvents` in `Common.IntegrationEvents` and implement MassTransit consumers. Never publish to the bus directly from Write-side paths — use `RaiseEvent`.
+5. **Cross-module integration** (if required): for async, define `IntegrationEvents` in `Common.IntegrationEvents` and implement consumers (see `/add-integration-event`) — never publish to the bus directly from Write-side paths, use `RaiseEvent`. For synchronous cross-module calls, define an `InterModuleRequest` in `Common.InterModuleRequests` and implement the handler (see `/add-inter-module-request`).
 
 6. **Endpoints**: run `/implement-endpoint` for each new endpoint in the plan.
 
-7. **Verification**: run `/verify-feature {Module}` for the full quality gate.
+7. **Tests**: write or extend integration tests covering the new behavior (see `/scaffold-test`). Do not rely solely on existing coverage.
 
-8. **Audit**: inspect all modified `.csproj` files — zero cross-module references. Confirm `.AsNoTracking()` on all reads and no mapping library usage.
+8. **Verification**: run `/verify-feature {Module}` for the full quality gate.
+
+9. **Audit**: inspect all modified `.csproj` files — zero cross-module references. Confirm `.AsNoTracking()` on all reads and no mapping library usage.

@@ -8,7 +8,7 @@ Scaffold test: $ARGUMENTS
 
 1. **Load the factory**: read the module-specific test factory (or `src/Common/Common.Tests/IntegrationTestFactory.cs`) to understand the fixture pattern.
 
-2. **Create test file** at `src/Modules/{Module}/{Module}.Tests/Endpoints/{Feature}Tests.cs`:
+2. **Pick the fixture pattern**: does another test class in this module already use `{Module}TestFactory`? If yes, use `ICollectionFixture` + `[Collection("Name")]` (two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared static state) — call `factory.CreateClient()` lazily inside each test body, not the constructor. Otherwise use `IClassFixture` with eager `CreateClient()`:
    ```csharp
    public class {Feature}Tests : IClassFixture<{Module}TestFactory>
    {
@@ -22,6 +22,8 @@ Scaffold test: $ARGUMENTS
        }
    }
    ```
+
+   **Config gotcha**: values set via `AddInMemoryCollection` in `IntegrationTestFactory.ConfigureWebHost` only reach runtime `IOptions<T>` resolution — they do NOT affect `configuration.Get<T>()`/`GetValue<T>()` calls made during DI registration (transport selection, conditional `AddHostedService`, etc.). Anything consumed at registration time needs `builder.UseSetting(...)` instead. A test override that "has no effect" is almost always this.
 
 3. **WRITE test**:
    - Arrange: build request DTO with Bogus.

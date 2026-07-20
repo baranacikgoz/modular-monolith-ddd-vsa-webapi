@@ -13,7 +13,7 @@ Fix bug in: $ARGUMENTS
 Do NOT touch production code yet.
 
 1. Search for keywords from the error/trace to locate the specific Endpoint, Aggregate, or Service.
-2. If a Trace ID is provided, use it to find the failing OTel span in `src/Common` or `src/Modules` logs.
+2. If a Trace ID is provided, look up the failing OTel span in the Aspire dashboard (local) or your environment's trace backend (dev/prod). Traces are not stored as files under `src/Common`/`src/Modules`.
 3. Create: `src/Modules/{Module}/{Module}.Tests/Bugs/Issue_{Timestamp}.cs`
 4. Use Bogus to recreate the exact state from the bug report.
 5. Write a test asserting the **expected** (correct) behavior.
@@ -39,3 +39,11 @@ Step through the failing logic and check:
 2. Move the reproduction test to `src/Modules/{Module}/{Module}.Tests/Endpoints/`.
 3. Delete the temporary `Bugs/Issue_{Timestamp}.cs`.
 4. Report: root cause, fix applied, test that now prevents regression.
+
+**CI-only failures (passes locally, fails only in CI) — do not reason from the stack trace**
+
+Local-green/CI-red means the local box is masking the cause (a running broker, more CPU, config that only diverges under CI). One instrumented CI run beats three reasoned guesses:
+
+1. Instrument the failing path to emit the CI environment's real state (e.g. for a DB lock/timeout, dump `pg_stat_activity` and `pg_blocking_pids(...)` plus effective option values from inside the `catch`).
+2. Throw that state into the exception message — xUnit swallows `Console` output, so it must be in the assertion/exception text to show up in the CI log.
+3. Push, let CI run, read the dumped state from the CI log, then fix from that evidence — not from the original stack trace alone.

@@ -18,6 +18,13 @@ Verify feature for module: $ARGUMENTS
    - All logging uses `LoggerMessage` source generation
    - All localized strings use `IResxLocalizer`, not magic keys
    - No imperative `if (result.IsFailure)` blocks where functional pipeline applies
+   - No branching on raw `string` query/route parameters — use a typed `enum`/`bool`/value instead
    - New endpoints registered in the feature's `Setup.cs`
 
-5. **Report**: what was verified, test results, ready-for-review confirmation.
+5. **ReSharper/Rider inspections**:
+   ```bash
+   make inspect INCLUDE="<glob of changed files>"
+   ```
+   Fix real findings; known false positives (`NotAccessedPositionalProperty.Global`, `UnusedAutoPropertyAccessor.Global` on DTO/record props) can be ignored.
+
+6. **Report**: what was verified, test results, ready-for-review confirmation.

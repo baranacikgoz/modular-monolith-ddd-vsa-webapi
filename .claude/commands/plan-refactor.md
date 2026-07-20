@@ -20,6 +20,6 @@ Plan refactor: $ARGUMENTS
 
 2. **File inventory**: list every file to be modified, what the current code looks like (brief excerpt), and what it will look like after.
 
-3. **Risk assessment**: flag any changes that could break the Outbox flow, CDC pipeline, or cross-module communication.
+3. **Risk assessment**: flag any changes that could break the Outbox flow, shipped `V{n}...DomainEvent` versioning (never edit in place — add `V{n+1}` instead), or cross-module communication (`IntegrationEvents` / `InterModuleRequests`).
 
 4. **Output**: produce a structured markdown plan. Implementation begins only after this plan is approved.

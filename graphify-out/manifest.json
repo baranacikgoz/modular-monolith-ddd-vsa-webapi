@@ -750,9 +750,9 @@
     "semantic_hash": "64d982d4ca26af880131ec7853733f68"
   },
   "src/Host/Host/Program.cs": {
-    "mtime": 1779899541.6812704,
-    "ast_hash": "862e5f606b1528c1f812dae83eb6f43d",
-    "semantic_hash": "862e5f606b1528c1f812dae83eb6f43d"
+    "mtime": 1784501849.781739,
+    "ast_hash": "16f88d0a41bd6f7e2fa25d04ef687c16",
+    "semantic_hash": ""
   },
   "src/Host/Host/Swagger/ConfigureSwaggerOptions.cs": {
     "mtime": 1779899541.68146,

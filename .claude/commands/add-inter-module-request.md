@@ -12,13 +12,12 @@ public sealed record {RequestName}Request(/* params */) : IInterModuleRequest<{R
 public sealed record {RequestName}Response(/* params */);
 ```
 
-**Step 2 — Handler** in `src/Modules/{SourceModule}/{SourceModule}.Application/`:
+**Step 2 — Handler** in `src/Modules/{SourceModule}/{SourceModule}.Infrastructure/InterModuleRequestHandlers/{RequestName}RequestHandler.cs`:
 ```csharp
-public class {RequestName}Handler(I{SourceModule}DbContext db)
+public class {RequestName}RequestHandler(I{SourceModule}DbContext db)
     : InterModuleRequestHandler<{RequestName}Request, {RequestName}Response>
 {
-    protected override async Task<{RequestName}Response> HandleAsync(
-        ConsumeContext<{RequestName}Request> context,
+    public override async Task<{RequestName}Response> HandleAsync(
         {RequestName}Request request,
         CancellationToken cancellationToken)
     {
@@ -28,7 +27,7 @@ public class {RequestName}Handler(I{SourceModule}DbContext db)
 }
 ```
 
-**Step 3 — Register**: in the source module's `ModuleInstaller.cs`, add `AddConsumer<{RequestName}Handler>()` to the MassTransit configuration.
+**Step 3 — No manual registration.** Consumers auto-register via assembly scan (`x.AddConsumers(moduleAssemblies)` in `src/Host/Host/Infrastructure/Setup.MassTransit.cs`). There is no `ModuleInstaller.cs` file in this repo — skip this step entirely once the handler class exists.
 
 **Step 4 — Caller**: in the consuming module, inject `IInterModuleRequestClient<{RequestName}Request, {RequestName}Response>` and call:
 ```csharp
