@@ -37,7 +37,7 @@ internal static class Endpoint
 
 **READ slice** — handler returns `Task<Result<Response>>`, uses `.AsNoTracking()`, projects inline to `Response` via `.Select(...)`.
 
-**`Request.cs`** — record plus an inline validator appended at the bottom of the same file (not a separate `RequestValidator.cs`). Validation auto-fires via `AddFluentValidationAutoValidation()`, registered once at module root — no per-endpoint wiring:
+**`Request.cs`** — **always scaffold this file, no exception**, even for an Id-only request or an empty pagination-only request (empty `RequestValidator` body is fine, but the class stays). Record plus an inline validator appended at the bottom of the same file (not a separate `RequestValidator.cs`). Validation auto-fires via `AddFluentValidationAutoValidation()`, registered once at module root — no per-endpoint wiring:
 ```csharp
 public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);
 public sealed record Body(string Prop /* add fields */);
@@ -50,6 +50,10 @@ public sealed class RequestValidator : CustomValidator<Request>
     }
 }
 ```
+
+Strongly-typed route/query ids use `[ModelBinder<StronglyTypedIdBinder<TId>>]` instead of raw `Guid`.
+
+**`[AsParameters]` rule**: only bind `Request` via `[AsParameters]` when it mixes binding sources (route+body, route+query, as in the WRITE example above). A pure-body Request (Create with only `[FromBody]` fields) or an endpoint with no Request at all (`ICurrentUser`-only read) binds the parameter directly — no `[AsParameters]`.
 
 **`Response.cs`:**
 ```csharp
