@@ -45,18 +45,22 @@ internal static class Endpoint
 
         var jti = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
 
+        // Blacklist unconditionally, before touching the session: the caller is authenticated and
+        // explicitly logging out, so this jti belongs to their live access token regardless of
+        // whether the session record is still around to revoke (already revoked/gone must not
+        // skip this — that left the access token usable until natural expiry).
+        if (!string.IsNullOrEmpty(jti))
+        {
+            await cacheService.SetAsync<bool?>(
+                $"blacklisted_jti:{jti}",
+                true,
+                options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes) },
+                token: cancellationToken);
+        }
+
         if (currentUser.SessionId is not { } rawSessionId)
         {
-            // Access token predates session tracking — nothing to revoke, but blacklist the jti anyway.
-            if (!string.IsNullOrEmpty(jti))
-            {
-                await cacheService.SetAsync<bool?>(
-                    $"blacklisted_jti:{jti}",
-                    true,
-                    options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes) },
-                    token: cancellationToken);
-            }
-
+            // Access token predates session tracking — nothing else to revoke.
             return Result.Success;
         }
 
@@ -74,13 +78,6 @@ internal static class Endpoint
             .TapAsync(user => user.RevokeSession(user.Sessions.Single(), SessionRevokedReason.UserSignedOut, timeProvider.GetUtcNow()))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
             .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.UserSignedOut))
-            .TapWhenAsync(
-                async _ => await cacheService.SetAsync<bool?>(
-                    $"blacklisted_jti:{jti}",
-                    true,
-                    options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes) },
-                    token: cancellationToken),
-                when: () => !string.IsNullOrEmpty(jti))
             .TapActivityAsync(activity);
     }
 }

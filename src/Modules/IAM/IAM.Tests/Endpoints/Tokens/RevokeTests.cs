@@ -144,4 +144,47 @@ public class RevokeTests : BaseIntegrationTest
         var isBlacklisted = await cache.GetOrDefaultAsync<bool?>($"blacklisted_jti:{jti}");
         Assert.True(isBlacklisted == true, "Expected the revoked jti to be present in the blacklist cache.");
     }
+
+    [Fact]
+    public async Task RevokeToken_WhenSessionAlreadyGone_StillBlacklistsJti()
+    {
+        // Arrange — a live access token whose session record has already vanished (e.g. cleaned up
+        // by account deletion) must still get its jti blacklisted: the caller is authenticated and
+        // explicitly signing out, so the token must die regardless of the session lookup outcome.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
+            .ToString(CultureInfo.InvariantCulture);
+
+        var user = ApplicationUser.Create(
+            _faker.Name.FullName(),
+            phoneNumber,
+            DateOnly.FromDateTime(_faker.Date.Past(30))
+        );
+
+        db.Users.Add(user);
+        await db.SaveChangesAsync(default);
+
+        var jti = Guid.NewGuid().ToString();
+        var goneSessionId = Guid.NewGuid(); // no Session row exists for this id under this user
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
+        client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
+        client.DefaultRequestHeaders.Add("X-Test-Jti", jti);
+        client.DefaultRequestHeaders.Add("X-Test-Session-Id", goneSessionId.ToString());
+
+        // Act
+        var response = await client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
+
+        // Assert — the endpoint still fails the Result (session not found)...
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        // ...but must have blacklisted the jti before attempting the session lookup.
+        var isBlacklisted = await cache.GetOrDefaultAsync<bool?>($"blacklisted_jti:{jti}");
+        Assert.True(isBlacklisted == true, "Expected the jti to be blacklisted even though the session was already gone.");
+    }
 }

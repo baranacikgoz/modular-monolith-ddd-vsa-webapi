@@ -1995,8 +1995,8 @@
     "semantic_hash": ""
   },
   ".claude/commands/implement-endpoint.md": {
-    "mtime": 1784579803.2726572,
-    "ast_hash": "fdb15e368ca163a82b32bb1420190c1f",
+    "mtime": 1784585140.854819,
+    "ast_hash": "4871745c95f3eed64cf0d09a11f34791",
     "semantic_hash": ""
   },
   ".claude/commands/manage-feature-flag.md": {
@@ -2025,8 +2025,8 @@
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-feature.md": {
-    "mtime": 1784579803.272783,
-    "ast_hash": "4485bbe578dcdb3f724b89de1c82af22",
+    "mtime": 1784585156.804625,
+    "ast_hash": "0430d94adfa92a1fee6a40431d2aa87b",
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-module.md": {
