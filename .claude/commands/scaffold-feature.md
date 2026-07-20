@@ -51,9 +51,9 @@ public sealed class RequestValidator : CustomValidator<Request>
 }
 ```
 
-Strongly-typed route/query ids use `[ModelBinder<StronglyTypedIdBinder<TId>>]` instead of raw `Guid`.
+Strongly-typed route/query ids use `[ModelBinder<StronglyTypedIdBinder<TId>>]` instead of raw `Guid`. Every `Request` property carries an explicit `[FromRoute]`/`[FromQuery]`/`[FromBody]` attribute — never rely on implicit name-matching against the route template, even when a property name happens to match a route segment.
 
-**`[AsParameters]` rule**: only bind `Request` via `[AsParameters]` when it mixes binding sources (route+body, route+query, as in the WRITE example above). A pure-body Request (Create with only `[FromBody]` fields) or an endpoint with no Request at all (`ICurrentUser`-only read) binds the parameter directly — no `[AsParameters]`.
+**`[AsParameters]` rule**: bind `Request` via `[AsParameters]` whenever it has **any** `[FromRoute]` or `[FromQuery]` property — this includes a Request bound from a single pure-route or pure-query source, not just mixed sources (route+body, route+query, as in the WRITE example above). Minimal APIs infer a bare complex-type parameter with no attribute as bound from the JSON body by default; without `[AsParameters]`, a pure-query or pure-route Request silently stops binding from the URL and instead expects — and never receives — a JSON body. A pure-body Request (Create with only `[FromBody]` fields) or an endpoint with no Request at all (`ICurrentUser`-only read) binds the parameter directly — no `[AsParameters]`.
 
 **`Response.cs`:**
 ```csharp
