@@ -1,10 +1,12 @@
+using Common.Application.Options;
+using Common.Application.Validation;
 using Common.Tests;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Notifications.Application.Sms;
+using Notifications.Application.Otp;
 using Notifications.Infrastructure.Otp;
-using Notifications.Infrastructure.Sms;
 using Xunit;
 
 namespace Notifications.Tests.Otp;
@@ -19,33 +21,51 @@ public sealed class OtpSetupTests
             })
             .Build();
 
-    private static ServiceCollection BuildServices(string environmentName)
+    private static ValidationContext<SmsOptions> BuildContext(SmsProvider provider, string environmentName)
+    {
+        var context = new ValidationContext<SmsOptions>(new SmsOptions { Provider = provider });
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return context;
+    }
+
+    [Fact]
+    public void Validate_DummyProviderInProduction_Invalid()
+    {
+        var result = new SmsOptionsValidator().Validate(BuildContext(SmsProvider.Dummy, Environments.Production));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Dummy", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_DummyProviderInDevelopment_Valid()
+    {
+        var result = new SmsOptionsValidator().Validate(BuildContext(SmsProvider.Dummy, Environments.Development));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void AddOtpServices_UseRedis_RegistersRedisOtpService()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
-        return services;
-    }
-
-    [Fact]
-    public void AddOtpServices_Production_ThrowsBecauseSmsGatewayIsDummy()
-    {
-        var services = BuildServices(Environments.Production);
         var configuration = BuildConfiguration(useRedis: true);
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => services.AddOtpServices(configuration));
+        services.AddOtpServices(configuration);
 
-        Assert.Contains(nameof(DummySmsGateway), exception.Message, StringComparison.Ordinal);
+        Assert.Contains(services, descriptor =>
+            descriptor.ServiceType == typeof(IOtpService) && descriptor.ImplementationType == typeof(RedisOtpService));
     }
 
     [Fact]
-    public void AddOtpServices_Development_DoesNotThrow()
+    public void AddOtpServices_WithoutRedis_RegistersDummyOtpService()
     {
-        var services = BuildServices(Environments.Development);
+        var services = new ServiceCollection();
         var configuration = BuildConfiguration(useRedis: false);
 
         services.AddOtpServices(configuration);
 
-        Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(ISmsGateway));
+        Assert.Contains(services, descriptor =>
+            descriptor.ServiceType == typeof(IOtpService) && descriptor.ImplementationType == typeof(DummyOtpService));
     }
 }

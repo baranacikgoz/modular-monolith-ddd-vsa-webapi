@@ -3108,8 +3108,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:8c4a2641eac5dab9",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "common.application.options"
     },
     {
@@ -4488,8 +4488,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d07c77b809a38e37",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "common.application.pagination"
     },
     {
@@ -5045,8 +5045,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:182b4e48fb4aeab9",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "common.application.search"
     },
     {
@@ -6789,8 +6789,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:2c649dd3d7348cb0",
-      "community": 225,
-      "community_name": "Products.Endpoints.Probe",
+      "community": 46,
+      "community_name": "ApiVersionSet",
       "norm_label": "common.endpoints.versioning"
     },
     {
@@ -7423,8 +7423,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_extensions_httpcontextextensions",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 241,
+      "community_name": "Setup",
       "norm_label": "httpcontextextensions.cs"
     },
     {
@@ -7456,8 +7456,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_extensions_httpcontextextensions_common_infrastructure_extensions_httpcontextextensions",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 241,
+      "community_name": "Setup",
       "norm_label": "httpcontextextensions"
     },
     {
@@ -7473,8 +7473,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_extensions_httpcontextextensions_common_infrastructure_extensions_httpcontextextensions_getipaddress",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 241,
+      "community_name": "Setup",
       "norm_label": ".getipaddress()"
     },
     {
@@ -7484,8 +7484,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_extensions_httpcontextextensions_cs_httpcontext",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 241,
+      "community_name": "Setup",
       "norm_label": "httpcontext"
     },
     {
@@ -7812,8 +7812,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_localization_setup",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "setup.cs"
     },
     {
@@ -8602,8 +8602,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "applysearchlanguageinterceptor.cs"
     },
     {
@@ -9353,8 +9353,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "paginationdbcontextextensions.cs"
     },
     {
@@ -10874,8 +10874,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7511c8267a1fac8b",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "common.intermodulerequests.contracts"
     },
     {
@@ -11131,8 +11131,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_masstransitintermodulerequestclient",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "masstransitintermodulerequestclient.cs"
     },
     {
@@ -11364,8 +11364,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_notifications_verifyphoneotp",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "verifyphoneotp.cs"
     },
     {
@@ -11381,8 +11381,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_notifications_verifyphoneotp_common_intermodulerequests_notifications_otpverificationfailurereason",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "otpverificationfailurereason"
     },
     {
@@ -13746,8 +13746,8 @@
       },
       "_origin": "ast",
       "id": "src_host_host_middlewares_requestresponsebodyloggingmiddleware_host_middlewares_requestresponsebodyloggingmiddleware_isloggablecontenttype",
-      "community": 54,
-      "community_name": "IList",
+      "community": 21,
+      "community_name": "Bounded Capture Streams",
       "norm_label": ".isloggablecontenttype()"
     },
     {
@@ -18419,8 +18419,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_iammodule",
-      "community": 63,
-      "community_name": "Hangfire",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iammodule.cs"
     },
     {
@@ -18435,8 +18435,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:83bf76d95523227e",
-      "community": 63,
-      "community_name": "Hangfire",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iam.endpoints"
     },
     {
@@ -18591,8 +18591,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_iassemblyreference",
-      "community": 63,
-      "community_name": "Hangfire",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iassemblyreference.cs"
     },
     {
@@ -18608,8 +18608,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_iassemblyreference_iam_endpoints_iassemblyreference",
-      "community": 63,
-      "community_name": "Hangfire",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iassemblyreference"
     },
     {
@@ -18619,8 +18619,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes",
-      "community": 143,
-      "community_name": "OtpPurposes.cs",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "otppurposes.cs"
     },
     {
@@ -18652,8 +18652,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes_iam_endpoints_otp_otppurposes",
-      "community": 143,
-      "community_name": "OtpPurposes.cs",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "otppurposes"
     },
     {
@@ -18663,8 +18663,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_otppurposes_cs_string",
-      "community": 143,
-      "community_name": "OtpPurposes.cs",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "string"
     },
     {
@@ -18719,8 +18719,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_otp_versionneutral_sendforlogin_endpoint",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "endpoint.cs"
     },
     {
@@ -20876,8 +20876,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_search_endpoint",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "endpoint.cs"
     },
     {
@@ -22509,8 +22509,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:dcdf4319e0dc220e",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iam.infrastructure.captcha"
     },
     {
@@ -23116,8 +23116,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_intermodulerequesthandlers_getseeduseridsrequesthandler",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "getseeduseridsrequesthandler.cs"
     },
     {
@@ -23132,8 +23132,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0d453a58e2cd9b0",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "iam.infrastructure.intermodulerequesthandlers"
     },
     {
@@ -24451,8 +24451,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "constants.cs"
     },
     {
@@ -24484,8 +24484,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants_iam_infrastructure_ratelimiting_constants",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "constants"
     },
     {
@@ -24495,8 +24495,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_constants_cs_string",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 7,
+      "community_name": "Host NuGet Deps (OTel/Health)",
       "norm_label": "string"
     },
     {
@@ -26067,8 +26067,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:084677276edec9bf",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "notifications.application.otp"
     },
     {
@@ -26212,8 +26212,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:14bfbcee0cc4dc29",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "notifications.application.sms"
     },
     {
@@ -26854,8 +26854,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_intermodulerequesthandlers_sendphoneotprequesthandler",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "sendphoneotprequesthandler.cs"
     },
     {
@@ -26870,8 +26870,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:9f0a65be8494ca6e",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "notifications.infrastructure.intermodulerequesthandlers"
     },
     {
@@ -26937,8 +26937,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_intermodulerequesthandlers_verifyphoneotprequesthandler",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "verifyphoneotprequesthandler.cs"
     },
     {
@@ -27523,8 +27523,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_setup",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "setup.cs"
     },
     {
@@ -27540,8 +27540,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_setup_notifications_infrastructure_otp_setup",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "setup"
     },
     {
@@ -27557,8 +27557,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_setup_notifications_infrastructure_otp_setup_addotpservices",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": ".addotpservices()"
     },
     {
@@ -27568,8 +27568,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_setup_cs_iservicecollection",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "iservicecollection"
     },
     {
@@ -27579,8 +27579,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_setup_cs_iconfiguration",
-      "community": 134,
-      "community_name": "Common.InterModuleRequests.Contracts",
+      "community": 122,
+      "community_name": "Setup",
       "norm_label": "iconfiguration"
     },
     {
@@ -28074,8 +28074,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_outboxmetricsjob",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "outboxmetricsjob.cs"
     },
     {
@@ -28091,8 +28091,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_outboxmetricsjob_outbox_outboxmetricsjob",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "outboxmetricsjob"
     },
     {
@@ -28147,8 +28147,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_outboxmetricsjob_outbox_outboxmetricsjob_logmetrics",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": ".logmetrics()"
     },
     {
@@ -28158,8 +28158,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_outboxmetricsjob_cs_ilogger",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "ilogger"
     },
     {
@@ -28169,8 +28169,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_outboxmetricsjob_cs_loggermessage",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "loggermessage"
     },
     {
@@ -28863,8 +28863,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_outbox_outbox_telemetry_outboxtelemetry",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "outboxtelemetry.cs"
     },
     {
@@ -28879,8 +28879,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:9bba8e01d16ad91a",
-      "community": 26,
-      "community_name": "Integration Event Handler Base",
+      "community": 81,
+      "community_name": "HttpContextExtensions",
       "norm_label": "outbox.telemetry"
     },
     {
@@ -31576,8 +31576,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "endpoint.cs"
     },
     {
@@ -32367,8 +32367,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_search_endpoint",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "endpoint.cs"
     },
     {
@@ -32764,8 +32764,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_search_endpoint",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "endpoint.cs"
     },
     {
@@ -33333,8 +33333,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:2b0eaf9391dfef21",
-      "community": 35,
-      "community_name": "ISearchLocalized",
+      "community": 225,
+      "community_name": "Products.Endpoints.Probe",
       "norm_label": "products.endpoints.stores"
     },
     {
@@ -35274,8 +35274,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_search_endpoint",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "endpoint.cs"
     },
     {
@@ -82194,7 +82194,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Revoke/Endpoint.cs",
-      "source_location": "L80",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_endpoints_tokens_versionneutral_revoke_endpoint_iam_endpoints_tokens_versionneutral_revoke_endpoint_revoketoken",
@@ -106136,5 +106136,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "fdbf5d3218b303825fb443b8165ee73073e670f1"
+  "built_at_commit": "24a4dd2c3bcc08bb95eca23468666dc8830afc1e"
 }

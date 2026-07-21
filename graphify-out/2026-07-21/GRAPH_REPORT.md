@@ -1,16 +1,16 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-07-21)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-07-20)
 
 ## Corpus Check
-- 441 files · ~61,420 words
+- 441 files · ~61,220 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2772 nodes · 4871 edges · 287 communities (187 shown, 100 thin omitted)
+- 2772 nodes · 4871 edges · 286 communities (186 shown, 100 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fdbf5d32`
+- Built from commit: `24a4dd2c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -149,7 +149,6 @@
 - Setup
 - .ToResult
 - Setup
-- Common.InterModuleRequests.Contracts
 - HostEnvironmentExtensions.cs
 - BackgroundJobsOptions
 - CaptchaOptions
@@ -158,7 +157,6 @@
 - HealthCheckOptions
 - SecurityHeadersOptions.cs
 - ModulesOptions
-- OtpPurposes.cs
 - OtpOptions
 - SecurityHeadersOptions
 - SignalROptions
@@ -215,6 +213,7 @@
 - IAM.Endpoints.Otp.VersionNeutral
 - DefaultResponsesOperationFilter
 - SendPhoneOtp
+- Setup
 - Response
 - Response
 - Response
@@ -331,11 +330,11 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (287 total, 100 thin omitted)
+## Communities (286 total, 100 thin omitted)
 
 ### Community 0 - "Host Logging & Serilog Setup"
 Cohesion: 0.12
-Nodes (9): Common.Infrastructure.Extensions, IAM.Infrastructure.RateLimiting, HttpContextExtensions, HttpContext, string, Constants, Policies, Policies (+1 more)
+Nodes (11): Common.Application.Search, IAM.Endpoints, Common.Infrastructure.Extensions, Common.Application.Options, IAM.Infrastructure.RateLimiting, Common.Application.Pagination, IAM.Infrastructure.Captcha, IAssemblyReference (+3 more)
 
 ### Community 1 - "IAM User Identity & Auditing"
 Cohesion: 0.13
@@ -358,8 +357,8 @@ Cohesion: 0.29
 Nodes (5): CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint
 
 ### Community 7 - "Host NuGet Deps (OTel/Health)"
-Cohesion: 0.13
-Nodes (13): IAM.Endpoints.Users.VersionNeutral.SelfRegister, IAM.Application.Tokens.Services, IAM.Application.Extensions, IAM.Endpoints.Otp, IAM.Domain.Identity, IAM.Endpoints.Tokens.VersionNeutral.Revoke, Common.Domain.Extensions, IAM.Infrastructure.Telemetry (+5 more)
+Cohesion: 0.10
+Nodes (17): IAM.Endpoints.Users.VersionNeutral.SelfRegister, IAM.Application.Tokens.Services, IAM.Application.Extensions, IAM.Endpoints.Otp, IAM.Domain.Identity, IAM.Endpoints.Tokens.VersionNeutral.Revoke, Common.Domain.Extensions, IAM.Infrastructure.Telemetry (+9 more)
 
 ### Community 8 - "k6 Load Test Scripts"
 Cohesion: 0.30
@@ -394,8 +393,8 @@ Cohesion: 0.16
 Nodes (8): Common.Domain.StronglyTypedIds, IAM.Domain.Identity.DomainEvents.v1, Common.Domain.Events, IAM.Domain.Identity.Sessions, Common.Domain.Entities, Common.Domain.Aggregates, IAuditableEntity, DateTimeOffset
 
 ### Community 16 - "Launch Settings"
-Cohesion: 0.09
-Nodes (12): Common.Application.FeatureManagement, IAM.Domain.Captcha, IAM.Infrastructure.Captcha.Services, IAM.Application.Captcha.Services, IAM.Infrastructure.Captcha, DateTime, RouteHandlerBuilderExtensions, RouteHandlerBuilder (+4 more)
+Cohesion: 0.08
+Nodes (14): Common.Application.FeatureManagement, IAM.Domain.Captcha, Common.InterModuleRequests.Contracts, IAM.Infrastructure.Captcha.Services, IAM.Application.Captcha.Services, IAM.Infrastructure.InterModuleRequestHandlers, DateTime, RouteHandlerBuilderExtensions (+6 more)
 
 ### Community 17 - "Module Installers (IModule)"
 Cohesion: 0.14
@@ -414,7 +413,7 @@ Cohesion: 0.09
 Nodes (18): IAM.Endpoints.Otp.VersionNeutral.SendForLogin, IAM.Endpoints.Otp.VersionNeutral.SendForRegistration, IAM.Endpoints.Common.Validations, IResxLocalizer, IRuleBuilder, IRuleBuilderOptions, CommonValidations, IResxLocalizer (+10 more)
 
 ### Community 21 - "Bounded Capture Streams"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (8): bool, byte, ReadOnlySpan, SeekOrigin, int, BoundedCaptureStream, BoundedRequestCaptureStream, Stream
 
 ### Community 22 - "SignalR Hub & Exception Middleware"
@@ -434,8 +433,8 @@ Cohesion: 0.10
 Nodes (17): Products.Endpoints.Stores.v1.AuditLog, Products.Endpoints.Products.v1.AuditLog, PaginationRequest, PaginationRequestValidator, int, int, Constants, Request (+9 more)
 
 ### Community 26 - "Integration Event Handler Base"
-Cohesion: 0.21
-Nodes (7): Outbox, Common.Infrastructure.Persistence.Outbox, Outbox.Persistence, Outbox.Telemetry, ILogger, LoggerMessage, OutboxMetricsJob
+Cohesion: 0.47
+Nodes (3): Outbox, Common.Infrastructure.Persistence.Outbox, Outbox.Persistence
 
 ### Community 27 - "Product Template Aggregate"
 Cohesion: 0.18
@@ -470,8 +469,8 @@ Cohesion: 0.22
 Nodes (6): Products.Infrastructure.Persistence.Seeding, Common.InterModuleRequests.IAM, ILogger, int, LoggerMessage, Seeder
 
 ### Community 35 - "ISearchLocalized"
-Cohesion: 0.25
-Nodes (5): Products.Endpoints.Stores, RouteGroupBuilder, Setup, RouteGroupBuilder, Endpoint
+Cohesion: 0.29
+Nodes (4): RouteGroupBuilder, Setup, RouteGroupBuilder, Endpoint
 
 ### Community 36 - "StoreConfiguration"
 Cohesion: 0.26
@@ -514,8 +513,8 @@ Cohesion: 0.31
 Nodes (5): ProductTemplateId, CancellationToken, List, Task, Seeder
 
 ### Community 46 - "ApiVersionSet"
-Cohesion: 0.29
-Nodes (4): ApiVersionSet, Setup, IEndpointRouteBuilder, IServiceCollection
+Cohesion: 0.25
+Nodes (5): ApiVersionSet, Common.Endpoints.Versioning, Setup, IEndpointRouteBuilder, IServiceCollection
 
 ### Community 48 - "IntegrationTestFactory"
 Cohesion: 0.25
@@ -538,7 +537,7 @@ Cohesion: 0.15
 Nodes (11): StoreId, CancellationToken, Task, CancellationToken, List, Task, Seeder, CancellationToken (+3 more)
 
 ### Community 54 - "IList"
-Cohesion: 0.19
+Cohesion: 0.20
 Nodes (7): PathString, IApplicationBuilder, HttpContext, IList, RequestDelegate, string, RequestResponseBodyLoggingMiddleware
 
 ### Community 55 - "Microsoft.AspNetCore.SignalR.StackExchangeRedis"
@@ -566,8 +565,8 @@ Cohesion: 0.11
 Nodes (16): Common.Application.EndpointFilters, IEndpointFilter, ResultToCreatedResponseTransformer, ResultToResponseTransformer, EndpointFilterDelegate, EndpointFilterInvocationContext, ValueTask, RouteHandlerBuilderExtensions (+8 more)
 
 ### Community 63 - "Hangfire"
-Cohesion: 0.18
-Nodes (6): IAM.Endpoints, IAM.Infrastructure.Tokens, IAM.Infrastructure.Tokens.Services, IAssemblyReference, IServiceCollection, Setup
+Cohesion: 0.29
+Nodes (4): IAM.Infrastructure.Tokens, IAM.Infrastructure.Tokens.Services, IServiceCollection, Setup
 
 ### Community 64 - "Seeder"
 Cohesion: 0.28
@@ -630,8 +629,8 @@ Cohesion: 0.13
 Nodes (10): Common.IntegrationEvents, Notifications.Application.IntegrationEventHandlers, IAM.Application.Users.DomainEventHandlers.v1, Common.Infrastructure.EventBus, Common.Application.EventBus, IEventHandler, CancellationToken, Task (+2 more)
 
 ### Community 81 - "HttpContextExtensions"
-Cohesion: 0.17
-Nodes (10): long, ObservableGauge, CancellationToken, Task, ActivitySource, Counter, Histogram, Meter (+2 more)
+Cohesion: 0.12
+Nodes (14): Outbox.Telemetry, long, ObservableGauge, CancellationToken, ILogger, LoggerMessage, Task, OutboxMetricsJob (+6 more)
 
 ### Community 83 - "IServiceProvider"
 Cohesion: 0.44
@@ -778,8 +777,8 @@ Cohesion: 0.67
 Nodes (3): ModulesOptions, ModulesOptionsValidator, IReadOnlyList
 
 ### Community 122 - "Setup"
-Cohesion: 0.14
-Nodes (8): Common.Application.Search, Common.Application.Caching, Common.Application.Options, Notifications.Infrastructure.Otp, Common.Application.Pagination, CacheKeys, For, OtpCacheEntry
+Cohesion: 0.12
+Nodes (11): Notifications.Application.Otp, Notifications.Application.Sms, Common.Application.Caching, Notifications.Infrastructure.InterModuleRequestHandlers, Notifications.Infrastructure.Otp, CacheKeys, For, OtpCacheEntry (+3 more)
 
 ### Community 124 - "Setup"
 Cohesion: 0.18
@@ -808,10 +807,6 @@ Nodes (17): Configuration-Driven Module Loading, IntegrationEvents (Async Cross-
 ### Community 131 - "Setup"
 Cohesion: 0.16
 Nodes (10): DbSet, IProductsDbContext, IReadOnlyList, List, ProductTemplate, EntityTypeBuilder, ProductTemplateConfiguration, DbSet (+2 more)
-
-### Community 134 - "Common.InterModuleRequests.Contracts"
-Cohesion: 0.14
-Nodes (9): Notifications.Application.Otp, Notifications.Application.Sms, Common.InterModuleRequests.Contracts, Notifications.Infrastructure.InterModuleRequestHandlers, IAM.Infrastructure.InterModuleRequestHandlers, OtpVerificationFailureReason, IConfiguration, IServiceCollection (+1 more)
 
 ### Community 136 - "BackgroundJobsOptions"
 Cohesion: 0.33
@@ -1031,7 +1026,7 @@ Nodes (3): IAM.Endpoints.Users.VersionNeutral, RouteGroupBuilder, Setup
 
 ### Community 225 - "Products.Endpoints.Probe"
 Cohesion: 0.20
-Nodes (6): Common.Endpoints.Versioning, Products.Endpoints.Probe, Products.Endpoints, IAssemblyReference, RouteGroupBuilder, Setup
+Nodes (6): Products.Endpoints.Stores, Products.Endpoints.Probe, Products.Endpoints, IAssemblyReference, RouteGroupBuilder, Setup
 
 ### Community 228 - "IAM"
 Cohesion: 0.11
@@ -1081,17 +1076,17 @@ Nodes (7): Products.Endpoints.Stores.v1.My.Update, CancellationToken, RouteGroup
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `Setup` to `Host Logging & Serilog Setup`, `Endpoint`, `Common.InterModuleRequests.Contracts`, `Host NuGet Deps (OTel/Health)`, `CorsOptions`, `BackgroundJobs Service (Hangfire)`, `HealthCheckOptions`, `SecurityHeadersOptions.cs`, `Launch Settings`, `SecurityHeadersOptions`, `Authz Constants & Feature Flags`, `Integration Event Handler Base`, `Setup`, `Endpoint`, `StoreConfiguration`, `Endpoint`, `Endpoint`, `Endpoint`, `Endpoint`, `DummyOtpService`, `Endpoint`, `Endpoint`, `CollectionExtensions`, `Hangfire`, `IAssemblyReference`, `Request.cs`, `RequestLoggingPathPostConfigure`, `Endpoint`, `net10.0`, `AuditLogRetentionJobRegistrar`, `Products.Endpoints.Probe`, `IAM`, `IntegrationEvent`, `Response`, `IModelBinder`, `ReverseProxyOptions.cs`, `JobTargets`, `StringExtensions`, `IRoleService`, `RequestBody`, `Request.cs`, `Setup`, `Setup`?**
+- **Why does `Common.Application.Options` connect `Host Logging & Serilog Setup` to `Endpoint`, `Host NuGet Deps (OTel/Health)`, `CorsOptions`, `BackgroundJobs Service (Hangfire)`, `HealthCheckOptions`, `SecurityHeadersOptions.cs`, `Launch Settings`, `SecurityHeadersOptions`, `Authz Constants & Feature Flags`, `Integration Event Handler Base`, `Setup`, `Endpoint`, `StoreConfiguration`, `Endpoint`, `Endpoint`, `Endpoint`, `Endpoint`, `DummyOtpService`, `Endpoint`, `Endpoint`, `CollectionExtensions`, `Hangfire`, `IAssemblyReference`, `Request.cs`, `RequestLoggingPathPostConfigure`, `Endpoint`, `HttpContextExtensions`, `net10.0`, `AuditLogRetentionJobRegistrar`, `Products.Endpoints.Probe`, `IAM`, `IntegrationEvent`, `Response`, `IModelBinder`, `ReverseProxyOptions.cs`, `JobTargets`, `StringExtensions`, `IRoleService`, `RequestBody`, `Request.cs`, `Setup`, `Setup`, `Setup`?**
   _High betweenness centrality (0.348) - this node is a cross-community bridge._
-- **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `CustomRoles`, `HangfireCustomAuthorizationFilter`, `HttpContextTargetingContextAccessor`, `Host NuGet Deps (OTel/Health)`, `IMiddleware`, `Common.InterModuleRequests.Contracts`, `Functional Result Extensions`, `Launch Settings`, `Endpoint`, `Response`, `Response`, `DummySmsGateway`, `SignalR Hub & Exception Middleware`, `Response`, `Setup`, `Host.Swagger`, `PermissionAuthorizationHandler`, `Hangfire`?**
+- **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `Host Logging & Serilog Setup`, `CustomRoles`, `HangfireCustomAuthorizationFilter`, `HttpContextTargetingContextAccessor`, `Host NuGet Deps (OTel/Health)`, `IMiddleware`, `Functional Result Extensions`, `Launch Settings`, `Endpoint`, `Response`, `Response`, `DummySmsGateway`, `SignalR Hub & Exception Middleware`, `Response`, `Host.Swagger`, `PermissionAuthorizationHandler`, `Hangfire`?**
   _High betweenness centrality (0.091) - this node is a cross-community bridge._
 - **Why does `Result` connect `MassTransit & DI Setup` to `Setup`, `Setup`, `.ToResult`, `Domain Event Handling & Outbox Collect`, `BackgroundJobsOptions`, `IAM Error Catalogs`, `IAM OTP Verify & Token Endpoint`, `Project Files & Solution`, `ModulesOptions`, `OtpOptions`, `Outbox Processor & Seeder`, `Product Template Aggregate`, `PaginationRequestValidator`, `Hangfire.PostgreSql`, `Endpoint`, `double`, `Microsoft.AspNetCore.SignalR.StackExchangeRedis`, `DummyOtpService`, `coverlet.collector`, `decimal`, `NameFor`, `CustomRoles`, `IAggregateRoot`, `ApiVersionDescription`, `IAssemblyReference`, `IAssemblyReference`, `HostCollection`, `.GetProductTemplateAsync`, `IAssemblyReference`, `Activity`, `.DeactivateProductTemplateAsync`, `Request.cs`, `HostTestFactory`, `.RevokeAllSessions`, `.RemoveProductAsync`, `OutboxTestWebAppFactory`, `IModelBinder`, `.RemoveMyProductAsync`, `ProductsModule`, `RequestBody`, `DummySmsGateway`, `SecurityHeadersOptions.cs`, `Endpoint`?**
   _High betweenness centrality (0.083) - this node is a cross-community bridge._
 - **What connects `CacheKeys`, `OtpCacheEntry`, `FeatureFlags` to the rest of the system?**
   _138 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Host Logging & Serilog Setup` be split into smaller, more focused modules?**
-  _Cohesion score 0.11695906432748537 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1164021164021164 - nodes in this community are weakly interconnected._
 - **Should `IAM User Identity & Auditing` be split into smaller, more focused modules?**
   _Cohesion score 0.13227513227513227 - nodes in this community are weakly interconnected._
 - **Should `Host NuGet Deps (OTel/Health)` be split into smaller, more focused modules?**
-  _Cohesion score 0.1268939393939394 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09986504723346828 - nodes in this community are weakly interconnected._

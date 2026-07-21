@@ -1,4 +1,3 @@
-using Common.Application.Extensions;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,14 +17,6 @@ public static class Setup
                                  .Get<CachingOptions>()
                              ?? throw new InvalidOperationException(
                                  $"Configuration for {nameof(CachingOptions)} is null.");
-
-        if (services.IsProductionEnvironment() && !cachingOptions.UseRedis && !cachingOptions.AllowInMemoryOnlyInProduction)
-        {
-            throw new InvalidOperationException(
-                $"{nameof(CachingOptions)}.{nameof(CachingOptions.UseRedis)} is false in Production. " +
-                "Multi-instance deployments require Redis for OTP storage, consumer idempotency, and the FusionCache backplane. " +
-                $"Set {nameof(CachingOptions.AllowInMemoryOnlyInProduction)} = true only for single-instance deployments.");
-        }
 
         var defaults = cachingOptions.EntryDefaults;
         var builder = services

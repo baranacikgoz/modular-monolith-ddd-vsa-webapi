@@ -1,7 +1,11 @@
+using Common.Application.Options;
+using Common.Application.Validation;
 using Common.Tests;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Notifications.Application.Hubs;
 using Notifications.Infrastructure.Hubs;
 using Xunit;
 
@@ -18,40 +22,51 @@ public sealed class SignalRSetupTests
             })
             .Build();
 
-    private static ServiceCollection BuildServices(string environmentName)
+    private static ValidationContext<SignalROptions> BuildContext(bool useRedisBackplane, string environmentName)
+    {
+        var options = new SignalROptions
+        {
+            UseRedisBackplane = useRedisBackplane,
+            RedisConnectionString = useRedisBackplane ? "localhost:6379" : "",
+        };
+        var context = new ValidationContext<SignalROptions>(options);
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return context;
+    }
+
+    [Fact]
+    public void Validate_ProductionWithoutRedisBackplane_Invalid()
+    {
+        var result = new SignalROptionsValidator().Validate(BuildContext(useRedisBackplane: false, Environments.Production));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("UseRedisBackplane", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_ProductionWithRedisBackplane_Valid()
+    {
+        var result = new SignalROptionsValidator().Validate(BuildContext(useRedisBackplane: true, Environments.Production));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_DevelopmentWithoutRedisBackplane_Valid()
+    {
+        var result = new SignalROptionsValidator().Validate(BuildContext(useRedisBackplane: false, Environments.Development));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void AddNotificationsSignalR_WithoutRedisBackplane_RegistersDispatcher()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
-        return services;
-    }
-
-    [Fact]
-    public void AddNotificationsSignalR_ProductionWithoutRedisBackplane_Throws()
-    {
-        var services = BuildServices(Environments.Production);
-        var configuration = BuildConfiguration(useRedisBackplane: false);
-
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => services.AddNotificationsSignalR(configuration));
-
-        Assert.Contains("UseRedisBackplane", exception.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void AddNotificationsSignalR_ProductionWithRedisBackplane_DoesNotThrow()
-    {
-        var services = BuildServices(Environments.Production);
-        var configuration = BuildConfiguration(useRedisBackplane: true);
-
-        services.AddNotificationsSignalR(configuration);
-    }
-
-    [Fact]
-    public void AddNotificationsSignalR_DevelopmentWithoutRedisBackplane_DoesNotThrow()
-    {
-        var services = BuildServices(Environments.Development);
         var configuration = BuildConfiguration(useRedisBackplane: false);
 
         services.AddNotificationsSignalR(configuration);
+
+        Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(INotificationDispatcher));
     }
 }

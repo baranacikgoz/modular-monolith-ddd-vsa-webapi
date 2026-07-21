@@ -1,4 +1,3 @@
-using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
 using IAM.Application.Captcha.Services;
@@ -16,18 +15,16 @@ public static class Setup
         var captchaOptions = configuration.GetSection(nameof(CaptchaOptions)).Get<CaptchaOptions>()
             ?? throw new InvalidOperationException($"Configuration for {nameof(CaptchaOptions)} is null.");
 
-        if (string.Equals(captchaOptions.Provider, "Dummy", StringComparison.OrdinalIgnoreCase))
+        return captchaOptions.Provider switch
         {
-            if (services.IsProductionEnvironment())
-            {
-                throw new InvalidOperationException(
-                    "CaptchaOptions.Provider is 'Dummy' in Production. Dummy captcha always passes; " +
-                    "set Provider to 'ReCaptcha' (with real keys) before deploying.");
-            }
+            CaptchaProvider.Dummy => services.AddSingleton<ICaptchaService, DummyCaptchaService>(),
+            CaptchaProvider.ReCaptcha => services.AddReCaptcha(captchaOptions),
+            _ => throw new ArgumentOutOfRangeException(nameof(configuration), captchaOptions.Provider, "Unknown CaptchaProvider.")
+        };
+    }
 
-            return services.AddSingleton<ICaptchaService, DummyCaptchaService>();
-        }
-
+    private static IServiceCollection AddReCaptcha(this IServiceCollection services, CaptchaOptions captchaOptions)
+    {
         services.AddResilientHttpClient<ICaptchaService, ReCaptchaService>(
             httpClient =>
             {

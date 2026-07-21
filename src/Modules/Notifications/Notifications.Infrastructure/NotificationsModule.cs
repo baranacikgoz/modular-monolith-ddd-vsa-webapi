@@ -19,7 +19,7 @@ public sealed class NotificationsModule : IModule
 
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddNotificationServices();
+        services.AddNotificationServices(configuration);
         services.AddNotificationsSignalR(configuration);
         services.AddOtpServices(configuration);
     }

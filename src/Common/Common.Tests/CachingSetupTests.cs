@@ -1,8 +1,8 @@
 #pragma warning disable CA1707 // Remove the underscores from member name
 
-using Common.Infrastructure.Caching;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Common.Application.Options;
+using Common.Application.Validation;
+using FluentValidation;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -10,57 +10,58 @@ namespace Common.Tests;
 
 public sealed class CachingSetupTests
 {
-    private static IConfiguration BuildConfiguration(bool useRedis, bool allowInMemoryOnlyInProduction) =>
-        new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["CachingOptions:UseRedis"] = useRedis.ToString(),
-                ["CachingOptions:AllowInMemoryOnlyInProduction"] = allowInMemoryOnlyInProduction.ToString(),
-                ["CachingOptions:EntryDefaults:Duration"] = "00:05:00",
-                ["CachingOptions:EntryDefaults:FailSafeMaxDuration"] = "02:00:00",
-                ["CachingOptions:EntryDefaults:FailSafeThrottleDuration"] = "00:00:30",
-                ["CachingOptions:EntryDefaults:FactorySoftTimeout"] = "00:00:00.1",
-                ["CachingOptions:EntryDefaults:FactoryHardTimeout"] = "00:00:01.5",
-                ["CachingOptions:IdempotencyKeyDuration"] = "1.00:00:00",
-                ["CachingOptions:IdempotencyL1Duration"] = "01:00:00",
-            })
-            .Build();
-
-    private static ServiceCollection BuildServices(string environmentName)
+    private static CachingOptions BuildOptions(bool useRedis, bool allowInMemoryOnlyInProduction) => new()
     {
-        var services = new ServiceCollection();
-        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment(environmentName));
-        return services;
+        UseRedis = useRedis,
+        AllowInMemoryOnlyInProduction = allowInMemoryOnlyInProduction,
+        EntryDefaults = new CachingEntryDefaults
+        {
+            Duration = TimeSpan.FromMinutes(5),
+            FailSafeMaxDuration = TimeSpan.FromHours(2),
+            FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+            FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
+            FactoryHardTimeout = TimeSpan.FromSeconds(1.5),
+        },
+        IdempotencyKeyDuration = TimeSpan.FromDays(1),
+        IdempotencyL1Duration = TimeSpan.FromHours(1),
+    };
+
+    private static ValidationContext<CachingOptions> BuildContext(CachingOptions options, string environmentName)
+    {
+        var context = new ValidationContext<CachingOptions>(options);
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return context;
     }
 
     [Fact]
-    public void AddCommonCaching_ProductionWithoutRedis_Throws()
+    public void Validate_ProductionWithoutRedis_Invalid()
     {
-        var services = BuildServices(Environments.Production);
-        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
+        var options = BuildOptions(useRedis: false, allowInMemoryOnlyInProduction: false);
 
-        var exception = Assert.Throws<InvalidOperationException>(
-            () => services.AddCommonCaching(configuration));
+        var result = new CachingOptionsValidator().Validate(BuildContext(options, Environments.Production));
 
-        Assert.Contains("UseRedis", exception.Message, StringComparison.Ordinal);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("UseRedis", StringComparison.Ordinal));
     }
 
     [Fact]
-    public void AddCommonCaching_ProductionWithoutRedisButAllowed_DoesNotThrow()
+    public void Validate_ProductionWithoutRedisButAllowed_Valid()
     {
-        var services = BuildServices(Environments.Production);
-        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: true);
+        var options = BuildOptions(useRedis: false, allowInMemoryOnlyInProduction: true);
 
-        services.AddCommonCaching(configuration);
+        var result = new CachingOptionsValidator().Validate(BuildContext(options, Environments.Production));
+
+        Assert.True(result.IsValid);
     }
 
     [Fact]
-    public void AddCommonCaching_DevelopmentWithoutRedis_DoesNotThrow()
+    public void Validate_DevelopmentWithoutRedis_Valid()
     {
-        var services = BuildServices(Environments.Development);
-        var configuration = BuildConfiguration(useRedis: false, allowInMemoryOnlyInProduction: false);
+        var options = BuildOptions(useRedis: false, allowInMemoryOnlyInProduction: false);
 
-        services.AddCommonCaching(configuration);
+        var result = new CachingOptionsValidator().Validate(BuildContext(options, Environments.Development));
+
+        Assert.True(result.IsValid);
     }
 }
 

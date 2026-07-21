@@ -1,4 +1,3 @@
-using Common.Application.Extensions;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,13 +12,6 @@ internal static class Setup
     internal static IServiceCollection AddNotificationsSignalR(this IServiceCollection services, IConfiguration configuration)
     {
         var options = configuration.GetSection(nameof(SignalROptions)).Get<SignalROptions>();
-
-        if (services.IsProductionEnvironment() && options?.UseRedisBackplane != true)
-        {
-            throw new InvalidOperationException(
-                "SignalROptions.UseRedisBackplane is false in Production. " +
-                "Multi-instance deployments require the Redis backplane for SignalR fan-out.");
-        }
 
         var builder = services.AddSignalR();
 

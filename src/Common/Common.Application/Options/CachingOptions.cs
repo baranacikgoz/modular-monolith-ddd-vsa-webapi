@@ -68,6 +68,16 @@ public class CachingOptionsValidator : CustomValidator<CachingOptions>
 
         RuleFor(x => x.IdempotencyKeyDuration).GreaterThan(TimeSpan.Zero);
         RuleFor(x => x.IdempotencyL1Duration).GreaterThan(TimeSpan.Zero);
+
+        // Multi-instance deployments require Redis for consumer idempotency, OTP storage, and the
+        // FusionCache backplane. AllowInMemoryOnlyInProduction is the explicit opt-out for single-instance
+        // deployments.
+        RuleFor(x => x)
+            .Must((options, _, context) => !context.IsProduction() || options.UseRedis || options.AllowInMemoryOnlyInProduction)
+            .WithMessage(
+                $"{nameof(CachingOptions)}.{nameof(CachingOptions.UseRedis)} is false in Production. " +
+                "Multi-instance deployments require Redis for OTP storage, consumer idempotency, and the FusionCache backplane. " +
+                $"Set {nameof(CachingOptions.AllowInMemoryOnlyInProduction)} = true only for single-instance deployments.");
     }
 }
 

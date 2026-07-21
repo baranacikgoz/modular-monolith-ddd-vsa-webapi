@@ -3,12 +3,14 @@ using Common.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Common.Application.Options;
 
 public static class Setup
 {
-    public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCommonOptions(this IServiceCollection services, IConfiguration configuration,
+        IHostEnvironment env)
     {
         var assembly = typeof(DatabaseOptions).Assembly; // Use an arbitrary option to get the namespace
 
@@ -43,7 +45,10 @@ public static class Setup
                                      throw new InvalidOperationException(
                                          $"Could not bind section {sectionName} to {type.Name}");
 
-                var validationResult = validator.Validate(new ValidationContext<object>(optionInstance));
+                var validationContext = new ValidationContext<object>(optionInstance);
+                validationContext.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = env;
+
+                var validationResult = validator.Validate(validationContext);
 
                 if (!validationResult.IsValid)
                 {

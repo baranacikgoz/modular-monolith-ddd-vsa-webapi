@@ -1030,8 +1030,8 @@
     "semantic_hash": "83ac5863d5d5e6349946679f449a01ed"
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Revoke/Endpoint.cs": {
-    "mtime": 1784587227.9696724,
-    "ast_hash": "c09246015f5025eeb8a51408c7e07242",
+    "mtime": 1784194535.9138918,
+    "ast_hash": "990c22d0a5f6f20c75b1c9abf5b92cf1",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Setup.cs": {

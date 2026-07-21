@@ -3,6 +3,13 @@ using FluentValidation;
 
 namespace Common.Application.Options;
 
+public enum CaptchaProvider
+{
+    /// <summary>No-op, always passes. Non-production only.</summary>
+    Dummy,
+    ReCaptcha
+}
+
 public class CaptchaOptions
 {
     public required string BaseUrl { get; init; }
@@ -19,8 +26,7 @@ public class CaptchaOptions
     /// </summary>
     public double ScoreThreshold { get; init; }
 
-    /// <summary>"Dummy" (non-production only) or "ReCaptcha".</summary>
-    public required string Provider { get; init; }
+    public required CaptchaProvider Provider { get; init; }
 
     /// <summary>Per-attempt timeout for the resilient HTTP client calling the captcha provider.</summary>
     public required int AttemptTimeoutSeconds { get; init; }
@@ -51,9 +57,11 @@ public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
             .NotEmpty()
             .WithMessage("SecretKey must not be empty.");
 
+        // Dummy captcha always passes; set Provider to 'ReCaptcha' (with real keys) before deploying.
         RuleFor(o => o.Provider)
-            .Must(p => p is "Dummy" or "ReCaptcha")
-            .WithMessage("Provider must be 'Dummy' or 'ReCaptcha'.");
+            .Must((_, provider, context) => !context.IsProduction() || provider != CaptchaProvider.Dummy)
+            .WithMessage("CaptchaOptions.Provider is 'Dummy' in Production. Dummy captcha always passes; " +
+                         "set Provider to 'ReCaptcha' (with real keys) before deploying.");
 
         RuleFor(o => o.AttemptTimeoutSeconds)
             .GreaterThan(0)
