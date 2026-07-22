@@ -175,13 +175,13 @@
     "semantic_hash": "9e1625c250d9efb6b980b9ba29d55ae2"
   },
   "src/Common/Common.Application/Options/CachingOptions.cs": {
-    "mtime": 1784673095.6576176,
-    "ast_hash": "68088cde61def3080cdadab04767acf0",
+    "mtime": 1784481847.4925625,
+    "ast_hash": "e8cafe80a45d26b7c4dff1e404894d07",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/CaptchaOptions.cs": {
-    "mtime": 1784673796.6338706,
-    "ast_hash": "8e8cf24e0e720988eebb635d0f94c9e5",
+    "mtime": 1784481847.4929082,
+    "ast_hash": "5bb9efc18daf9ccdfdc2e2ed967adc81",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/CorsOptions.cs": {
@@ -265,14 +265,14 @@
     "semantic_hash": "f6b274d46f56a97854878bf9f6e4f8be"
   },
   "src/Common/Common.Application/Options/Setup.cs": {
-    "mtime": 1784672453.725705,
-    "ast_hash": "9b323ed5cd2873bc3f91f760c0b53c75",
-    "semantic_hash": ""
+    "mtime": 1779899541.6720767,
+    "ast_hash": "d8c923eb6d05e200bdedd65f20f734c6",
+    "semantic_hash": "d8c923eb6d05e200bdedd65f20f734c6"
   },
   "src/Common/Common.Application/Options/SignalROptions.cs": {
-    "mtime": 1784672505.8503573,
-    "ast_hash": "190f8c1b3e9c4a39ed75ec31f76c3bbf",
-    "semantic_hash": ""
+    "mtime": 1779899137.2068336,
+    "ast_hash": "43c9cbe89565f14f9787584eb906df77",
+    "semantic_hash": "43c9cbe89565f14f9787584eb906df77"
   },
   "src/Common/Common.Application/Pagination/PaginationRequest.cs": {
     "mtime": 1779899541.6721718,
@@ -420,8 +420,8 @@
     "semantic_hash": "f1e3afa9c95d036305efb564cb0b6717"
   },
   "src/Common/Common.Infrastructure/Caching/Setup.cs": {
-    "mtime": 1784672487.5185208,
-    "ast_hash": "41662a52ccc3e0fe5f2e850e80fb3117",
+    "mtime": 1784481847.4951627,
+    "ast_hash": "3d14011b1f89bad618996e383e762a2a",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/EventBus/EventDispatcher.cs": {
@@ -670,8 +670,8 @@
     "semantic_hash": "66a76e7736d06c9402bdb729e29a1721"
   },
   "src/Host/Host/Configurations/Setup.cs": {
-    "mtime": 1784672574.8389592,
-    "ast_hash": "70241c84e0a31b69af719b9b985775a4",
+    "mtime": 1784481847.4985893,
+    "ast_hash": "a1f8ec186f74db5bc769b6e2d02d7b84",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.ForwardedHeaders.cs": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1784672558.072618,
-    "ast_hash": "bc7e86f29e859f93cdd6a23ee6654281",
+    "mtime": 1784382468.4901192,
+    "ast_hash": "f28952fbb97d08b4a0fe22ab02e0716a",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/StringExtensions.cs": {
@@ -1165,8 +1165,8 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Captcha/Setup.cs": {
-    "mtime": 1784673807.2823691,
-    "ast_hash": "eb87a65991d04075924ffc3150e5a68d",
+    "mtime": 1784481847.5009856,
+    "ast_hash": "dc399764461682309e6b388961550643",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/IAssemblyReference.cs": {
@@ -1320,8 +1320,8 @@
     "semantic_hash": "1dde43226beac435b233a263926fd7e7"
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Hubs/Setup.SignalR.cs": {
-    "mtime": 1784672513.4560173,
-    "ast_hash": "4783863995868799fd93e16663576ce4",
+    "mtime": 1784481847.5025501,
+    "ast_hash": "7e5568b4cf5aea7dad3b02d168635484",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Hubs/SignalRNotificationDispatcher.cs": {
@@ -1345,8 +1345,8 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/NotificationsModule.cs": {
-    "mtime": 1784672544.407319,
-    "ast_hash": "4bf7d6c922833758d78d9da3697e3d9e",
+    "mtime": 1784481847.5029845,
+    "ast_hash": "5c3516778fd4d57042c164b07aae19ed",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Otp/DummyOtpService.cs": {
@@ -1365,8 +1365,8 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Otp/Setup.cs": {
-    "mtime": 1784672534.4973922,
-    "ast_hash": "873021154831edf80e096743728b73fa",
+    "mtime": 1784481847.5037515,
+    "ast_hash": "1b398e980716087063f64310a20478bc",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Sms/DummySmsGateway.cs": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "bec9bd5c744ac3fc627796a37c23f3b4"
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Sms/Setup.cs": {
-    "mtime": 1784672833.1512778,
-    "ast_hash": "b08a6f67c6db25046284ce5067ff67d9",
-    "semantic_hash": ""
+    "mtime": 1779899541.6932936,
+    "ast_hash": "52a8ba1c392c452320b56632b40ca00b",
+    "semantic_hash": "52a8ba1c392c452320b56632b40ca00b"
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Telemetry/NotificationsTelemetry.cs": {
     "mtime": 1784194581.0873408,
@@ -2189,6 +2189,11 @@
     "ast_hash": "ba1ef6bfcc527f92b19aa0e60c7b698c",
     "semantic_hash": ""
   },
+  "src/Common/Common.Application/Extensions/HostEnvironmentExtensions.cs": {
+    "mtime": 1784481847.4915848,
+    "ast_hash": "03b0cfd991f6c18d3df298c22ed58024",
+    "semantic_hash": ""
+  },
   "src/Common/Common.Application/Options/InterModuleRequestOptions.cs": {
     "mtime": 1784481847.493102,
     "ast_hash": "abf07b14c8f135c8d741e79a08307503",
@@ -2202,16 +2207,6 @@
   "src/Modules/Products/Products.Endpoints/Probe/v1/Request.cs": {
     "mtime": 1784580282.555771,
     "ast_hash": "bf4c7b12d302727200ab006e7f20ff3d",
-    "semantic_hash": ""
-  },
-  "src/Common/Common.Application/Options/SmsOptions.cs": {
-    "mtime": 1784672526.1273053,
-    "ast_hash": "2da086ad7a769e9e7423150d82509117",
-    "semantic_hash": ""
-  },
-  "src/Common/Common.Application/Validation/ValidationContextExtensions.cs": {
-    "mtime": 1784672444.0459323,
-    "ast_hash": "ec873d80c5b8a07174ab20ff23e0d8bf",
     "semantic_hash": ""
   }
 }

@@ -86,4 +86,18 @@ public class GetTests : BaseIntegrationTest
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Get_WithMalformedId_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var response = await client.GetAsync(new Uri("/v1/products/not-a-guid", UriKind.Relative));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

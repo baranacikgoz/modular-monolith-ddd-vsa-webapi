@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using AspNetResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace Common.Application.EndpointFilters;
 
@@ -19,6 +20,15 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var resultObj = await next(context);
+
+        // An inner filter or the framework itself (e.g. a disabled RequireFeature check,
+        // minimal-API parameter binding) can short-circuit before a Result is produced,
+        // yielding an ASP.NET IResult. Our Result implements only the domain IResult, so
+        // it never matches here — pass the short-circuit response through untouched.
+        if (resultObj is AspNetResult shortCircuit)
+        {
+            return shortCircuit;
+        }
 
         if (resultObj is not Result result)
         {
@@ -63,6 +73,12 @@ internal sealed class ResultToCreatedResponseTransformer<T>(IServiceProvider ser
     {
         var resultObj = await next(context);
 
+        // See ResultToResponseTransformer above for why this check exists.
+        if (resultObj is AspNetResult shortCircuit)
+        {
+            return shortCircuit;
+        }
+
         if (resultObj is not Result<T> result)
         {
             throw new InvalidOperationException(
@@ -105,6 +121,12 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var resultObj = await next(context);
+
+        // See ResultToResponseTransformer above for why this check exists.
+        if (resultObj is AspNetResult shortCircuit)
+        {
+            return shortCircuit;
+        }
 
         if (resultObj is not Result<T> result)
         {
