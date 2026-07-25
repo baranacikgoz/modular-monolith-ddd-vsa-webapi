@@ -93,4 +93,20 @@ public sealed class ThrottledSmsGatewayTests : IDisposable
         Assert.False(result.IsFailure);
         Assert.Equal(2, inner.CallCount);
     }
+
+    [Fact]
+    public async Task SendAsync_PerPhoneCapHitForOnePhone_DoesNotThrottleAnotherPhone()
+    {
+        var inner = new RecordingGateway();
+        var sut = new ThrottledSmsGateway(inner, _cache, BuildOptions(maxPerPhoneNumberPerDay: 1, maxPerDay: 100));
+
+        var firstPhoneFirstSend = await sut.SendAsync(new SmsMessage("905380718209", "text", SmsCategory.Transactional), CancellationToken.None);
+        var firstPhoneSecondSend = await sut.SendAsync(new SmsMessage("905380718209", "text", SmsCategory.Transactional), CancellationToken.None);
+        var secondPhoneFirstSend = await sut.SendAsync(new SmsMessage("905380718210", "text", SmsCategory.Transactional), CancellationToken.None);
+
+        Assert.False(firstPhoneFirstSend.IsFailure);
+        Assert.True(firstPhoneSecondSend.IsFailure);
+        Assert.False(secondPhoneFirstSend.IsFailure);
+        Assert.Equal(2, inner.CallCount);
+    }
 }

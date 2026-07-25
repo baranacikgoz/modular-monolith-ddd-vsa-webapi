@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -109,6 +110,11 @@ internal sealed partial class NetGsmSmsGateway(
             {
                 LogDeserializationFailed(logger, (int)httpResponse.StatusCode, null);
                 return SmsErrors.ProviderUnavailable;
+            }
+
+            if (parsed.Code == CodeSuccess)
+            {
+                Activity.Current?.SetTag("netgsm.jobid", parsed.JobId);
             }
 
             return MapCode(parsed.Code, parsed.Description);
