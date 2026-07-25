@@ -266,8 +266,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_auth_icurrentuser_common_application_auth_icurrentuser",
-      "community": 135,
-      "community_name": "HostEnvironmentExtensions.cs",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "icurrentuser"
     },
     {
@@ -277,8 +277,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_auth_icurrentuser_cs_icollection",
-      "community": 135,
-      "community_name": "HostEnvironmentExtensions.cs",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "icollection"
     },
     {
@@ -288,8 +288,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_auth_icurrentuser_cs_guid",
-      "community": 135,
-      "community_name": "HostEnvironmentExtensions.cs",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "guid"
     },
     {
@@ -1599,8 +1599,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_extensions_collectionextensions",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "collectionextensions.cs"
     },
     {
@@ -1901,8 +1901,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_extensions_stringlocalizerextensions",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "stringlocalizerextensions.cs"
     },
     {
@@ -1990,8 +1990,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_common_application_featuremanagement_featureflagresultextensions",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": "featureflagresultextensions"
     },
     {
@@ -2007,8 +2007,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_common_application_featuremanagement_featureflagresultextensions_tapwhenfeatureenabledasync",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": ".tapwhenfeatureenabledasync()"
     },
     {
@@ -2018,8 +2018,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_cs_task",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": "task"
     },
     {
@@ -2029,8 +2029,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_cs_ifeaturemanager",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": "ifeaturemanager"
     },
     {
@@ -2040,8 +2040,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_cs_action",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": "action"
     },
     {
@@ -2051,8 +2051,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_featureflagresultextensions_cs_func",
-      "community": 192,
-      "community_name": "NameFor",
+      "community": 103,
+      "community_name": "IVariantFeatureManagerExtensions",
       "norm_label": "func"
     },
     {
@@ -2173,8 +2173,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_ivariantfeaturemanagerextensions",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": "ivariantfeaturemanagerextensions.cs"
     },
     {
@@ -2190,8 +2190,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_ivariantfeaturemanagerextensions_common_application_featuremanagement_ivariantfeaturemanagerextensions",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": "ivariantfeaturemanagerextensions"
     },
     {
@@ -2207,8 +2207,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_ivariantfeaturemanagerextensions_common_application_featuremanagement_ivariantfeaturemanagerextensions_getvariantasync",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": ".getvariantasync()"
     },
     {
@@ -2218,8 +2218,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "ivariantfeaturemanager",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": "ivariantfeaturemanager"
     },
     {
@@ -2229,8 +2229,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_ivariantfeaturemanagerextensions_cs_cancellationtoken",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": "cancellationtoken"
     },
     {
@@ -2240,8 +2240,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_featuremanagement_ivariantfeaturemanagerextensions_cs_task",
-      "community": 103,
-      "community_name": "IVariantFeatureManagerExtensions",
+      "community": 192,
+      "community_name": "NameFor",
       "norm_label": "task"
     },
     {
@@ -5970,8 +5970,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:cdd85c1df89674d1",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "common.domain.resultmonad"
     },
     {
@@ -8603,8 +8603,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:c42fe2eecaf9f71a",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "common.infrastructure.persistence.auditing"
     },
     {
@@ -8703,8 +8703,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_auditing_applysearchlanguageinterceptor",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "applysearchlanguageinterceptor.cs"
     },
     {
@@ -8864,8 +8864,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:08b34812973d4dd9",
-      "community": 15,
-      "community_name": "Functional Result Extensions",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "common.infrastructure.persistence"
     },
     {
@@ -9138,8 +9138,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_dbcontext_setup",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "dbcontext/setup.cs"
     },
     {
@@ -9171,8 +9171,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_dbcontext_setup_common_infrastructure_persistence_dbcontext_setup",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "setup"
     },
     {
@@ -9188,8 +9188,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_dbcontext_setup_common_infrastructure_persistence_dbcontext_setup_addmoduledbcontext",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": ".addmoduledbcontext()"
     },
     {
@@ -9199,8 +9199,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_dbcontext_setup_cs_iservicecollection",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "iservicecollection"
     },
     {
@@ -9349,8 +9349,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_dbcontextextensions",
-      "community": 15,
-      "community_name": "Functional Result Extensions",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "dbcontextextensions.cs"
     },
     {
@@ -9554,8 +9554,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_persistencedbcontextextensions",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "persistencedbcontextextensions.cs"
     },
     {
@@ -10314,8 +10314,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_setup",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "common.infrastructure/persistence/setup.cs"
     },
     {
@@ -10331,8 +10331,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_setup_common_infrastructure_persistence_setup",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "setup"
     },
     {
@@ -10348,8 +10348,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_setup_common_infrastructure_persistence_setup_addcommonpersistence",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": ".addcommonpersistence()"
     },
     {
@@ -10359,8 +10359,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_setup_cs_iservicecollection",
-      "community": 25,
-      "community_name": "EF Core DbContexts",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "iservicecollection"
     },
     {
@@ -11315,8 +11315,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7371b3fc93830d48",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "common.intermodulerequests.iam"
     },
     {
@@ -16236,8 +16236,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_persistence_iiamdbcontext",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iiamdbcontext.cs"
     },
     {
@@ -16989,8 +16989,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "applicationuser.aggregateroot.cs"
     },
     {
@@ -17005,8 +17005,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7ec3d3eff7aeb15e",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "iam.domain.identity"
     },
     {
@@ -17134,8 +17134,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_domain_identity_applicationuser_auditing",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 0,
+      "community_name": "Host Logging & Serilog Setup",
       "norm_label": "applicationuser.auditing.cs"
     },
     {
@@ -18159,8 +18159,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_captcha_versionneutral_clientkey_get_endpoint",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "clientkey/get/endpoint.cs"
     },
     {
@@ -20276,8 +20276,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "endpoint"
     },
     {
@@ -20293,8 +20293,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_mapendpoint",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -20304,8 +20304,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_cs_routegroupbuilder",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -20321,8 +20321,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_revokeallsessions",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": ".revokeallsessions()"
     },
     {
@@ -20332,8 +20332,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_cs_timeprovider",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "timeprovider"
     },
     {
@@ -20343,8 +20343,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_cs_cancellationtoken",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "cancellationtoken"
     },
     {
@@ -20354,8 +20354,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_tokens_versionneutral_sessions_revokeall_endpoint_cs_task",
-      "community": 145,
-      "community_name": "ICurrentUser",
+      "community": 219,
+      "community_name": ".RevokeAllSessions",
       "norm_label": "task"
     },
     {
@@ -20437,8 +20437,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_checkregistration_endpoint",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "checkregistration/endpoint.cs"
     },
     {
@@ -20621,8 +20621,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_get_endpoint",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "versionneutral/get/endpoint.cs"
     },
     {
@@ -20816,8 +20816,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_me_get_endpoint",
-      "community": 0,
-      "community_name": "Host Logging & Serilog Setup",
+      "community": 11,
+      "community_name": "BackgroundJobs Service (Hangfire)",
       "norm_label": "me/get/endpoint.cs"
     },
     {
@@ -23234,8 +23234,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_intermodulerequesthandlers_getseeduseridsrequesthandler",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "getseeduseridsrequesthandler.cs"
     },
     {
@@ -23250,8 +23250,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0d453a58e2cd9b0",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "iam.infrastructure.intermodulerequesthandlers"
     },
     {
@@ -25674,8 +25674,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient_notifications_application_hubs_inotificationsclient_receivenotification",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": ".receivenotification()"
     },
     {
@@ -25685,8 +25685,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient_cs_task",
-      "community": 122,
-      "community_name": "Setup",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": "task"
     },
     {
@@ -27738,7 +27738,7 @@
       "label": "Notifications.Infrastructure.Sms.NetGsm",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L12",
+      "source_location": "L13",
       "type": "namespace",
       "metadata": {
         "kind": "csharp_namespace",
@@ -27754,11 +27754,11 @@
       "label": "NetGsmSmsGateway",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L20",
+      "source_location": "L21",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27793,11 +27793,11 @@
       "label": ".SendAsync()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27832,11 +27832,11 @@
       "label": ".SendCoreAsync()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27860,11 +27860,11 @@
       "label": ".MapCode()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L118",
+      "source_location": "L124",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27877,11 +27877,11 @@
       "label": ".NormalizePhoneNumber()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L152",
+      "source_location": "L158",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27894,11 +27894,11 @@
       "label": ".RequiresTurkishEncoding()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L157",
+      "source_location": "L163",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27911,11 +27911,11 @@
       "label": ".ToIysFilter()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L159",
+      "source_location": "L165",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27928,11 +27928,11 @@
       "label": ".MaskPhoneNumber()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L167",
+      "source_location": "L173",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27945,11 +27945,11 @@
       "label": ".LogRequestFailed()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L170",
+      "source_location": "L176",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -27995,11 +27995,11 @@
       "label": ".LogDeserializationFailed()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L173",
+      "source_location": "L179",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28012,11 +28012,11 @@
       "label": ".LogRejected()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L176",
+      "source_location": "L182",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28029,11 +28029,11 @@
       "label": ".LogRejectedPageWorthy()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L179",
+      "source_location": "L185",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28046,11 +28046,11 @@
       "label": ".LogProviderSystemError()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L182",
+      "source_location": "L188",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28063,11 +28063,11 @@
       "label": ".LogUnknownCode()",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L185",
+      "source_location": "L191",
       "metadata": {
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28080,12 +28080,12 @@
       "label": "SendRequestBody",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L188",
+      "source_location": "L194",
       "metadata": {
         "is_nested_type": true,
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28120,12 +28120,12 @@
       "label": "SendMessageBody",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L197",
+      "source_location": "L203",
       "metadata": {
         "is_nested_type": true,
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -28138,12 +28138,12 @@
       "label": "SendResponseBody",
       "file_type": "code",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L203",
+      "source_location": "L209",
       "metadata": {
         "is_nested_type": true,
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
-          "s353"
+          "s379"
         ]
       },
       "_origin": "ast",
@@ -29677,8 +29677,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_application_persistence_iproductsdbcontext",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "iproductsdbcontext.cs"
     },
     {
@@ -29928,8 +29928,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:daafaf7397aa9ae6",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "products.domain.producttemplates"
     },
     {
@@ -30152,8 +30152,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:7e82026f4789ac54",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 15,
+      "community_name": "Functional Result Extensions",
       "norm_label": "products.domain.products"
     },
     {
@@ -30202,8 +30202,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_domain_products_domainevents_v1_v1productcreateddomainevent",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "v1productcreateddomainevent.cs"
     },
     {
@@ -36514,8 +36514,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_productsdbcontext",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 22,
+      "community_name": "SignalR Hub & Exception Middleware",
       "norm_label": "productsdbcontext.cs"
     },
     {
@@ -36597,8 +36597,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_productsdatabaseseeder",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "productsdatabaseseeder.cs"
     },
     {
@@ -36613,8 +36613,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:1b92120445fab729",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "products.infrastructure.persistence.seeding"
     },
     {
@@ -36680,8 +36680,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_producttemplates",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "seeder.producttemplates.cs"
     },
     {
@@ -36775,8 +36775,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_products",
-      "community": 11,
-      "community_name": "BackgroundJobs Service (Hangfire)",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "seeder.products.cs"
     },
     {
@@ -36853,8 +36853,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder_stores",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "seeder.stores.cs"
     },
     {
@@ -36948,8 +36948,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_infrastructure_persistence_seeding_seeder",
-      "community": 22,
-      "community_name": "SignalR Hub & Exception Middleware",
+      "community": 25,
+      "community_name": "EF Core DbContexts",
       "norm_label": "products.infrastructure/persistence/seeding/seeder.cs"
     },
     {
@@ -47683,7 +47683,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -56937,7 +56937,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -58486,7 +58486,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L118",
+      "source_location": "L124",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -58501,7 +58501,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -58516,7 +58516,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -62588,7 +62588,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -90910,7 +90910,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -90960,7 +90960,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L159",
+      "source_location": "L165",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91005,7 +91005,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91060,7 +91060,7 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "metadata": {
         "ref_token": "ISmsGateway"
@@ -92938,7 +92938,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -92954,7 +92954,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -92965,7 +92965,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -92993,7 +92993,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -93008,7 +93008,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L44",
+      "source_location": "L45",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -93023,7 +93023,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93034,7 +93034,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L182",
+      "source_location": "L188",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93045,7 +93045,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L176",
+      "source_location": "L182",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93056,7 +93056,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L179",
+      "source_location": "L185",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93067,7 +93067,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L170",
+      "source_location": "L176",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93078,7 +93078,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L185",
+      "source_location": "L191",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93089,7 +93089,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L118",
+      "source_location": "L124",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93100,7 +93100,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L167",
+      "source_location": "L173",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93111,7 +93111,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L152",
+      "source_location": "L158",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93122,7 +93122,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L157",
+      "source_location": "L163",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93133,7 +93133,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93144,7 +93144,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93155,7 +93155,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L159",
+      "source_location": "L165",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93166,7 +93166,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L197",
+      "source_location": "L203",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93177,7 +93177,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L188",
+      "source_location": "L194",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93188,7 +93188,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L203",
+      "source_location": "L209",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway",
@@ -93199,7 +93199,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93214,7 +93214,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L46",
+      "source_location": "L47",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -93230,7 +93230,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendasync",
@@ -93242,7 +93242,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L55",
+      "source_location": "L56",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendasync",
@@ -93254,7 +93254,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L60",
+      "source_location": "L61",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendasync",
@@ -93266,7 +93266,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L56",
+      "source_location": "L57",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendasync",
@@ -93279,7 +93279,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L61",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendasync",
@@ -93289,7 +93289,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93304,7 +93304,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -93319,7 +93319,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93335,7 +93335,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L93",
+      "source_location": "L94",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendcoreasync",
@@ -93347,7 +93347,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L75",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendcoreasync",
@@ -93359,7 +93359,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L114",
+      "source_location": "L120",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendcoreasync",
@@ -93371,7 +93371,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L75",
+      "source_location": "L76",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_sendcoreasync",
@@ -93383,7 +93383,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L144",
+      "source_location": "L150",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_mapcode",
@@ -93395,7 +93395,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L131",
+      "source_location": "L137",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_mapcode",
@@ -93407,7 +93407,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L137",
+      "source_location": "L143",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_mapcode",
@@ -93419,7 +93419,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L147",
+      "source_location": "L153",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_mapcode",
@@ -93432,7 +93432,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L125",
+      "source_location": "L131",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_mapcode",
@@ -93442,7 +93442,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L170",
+      "source_location": "L176",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93457,7 +93457,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L170",
+      "source_location": "L176",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93472,7 +93472,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L170",
+      "source_location": "L176",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -93487,7 +93487,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93502,7 +93502,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L182",
+      "source_location": "L188",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93517,7 +93517,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L176",
+      "source_location": "L182",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93532,7 +93532,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L179",
+      "source_location": "L185",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93547,7 +93547,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L185",
+      "source_location": "L191",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93562,7 +93562,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -93577,7 +93577,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L173",
+      "source_location": "L179",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -93592,7 +93592,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L182",
+      "source_location": "L188",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -93607,7 +93607,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L176",
+      "source_location": "L182",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -93622,21 +93622,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L179",
-      "weight": 1.0,
-      "context": "attribute",
-      "metadata": {
-        "ref_token": "LoggerMessage"
-      },
-      "_origin": "ast",
-      "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_logrejectedpageworthy",
-      "target": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_cs_loggermessage",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
       "source_location": "L185",
       "weight": 1.0,
       "context": "attribute",
@@ -93644,7 +93629,7 @@
         "ref_token": "LoggerMessage"
       },
       "_origin": "ast",
-      "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_logunknowncode",
+      "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_logrejectedpageworthy",
       "target": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_cs_loggermessage",
       "confidence_score": 1.0
     },
@@ -93653,6 +93638,21 @@
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
       "source_location": "L191",
+      "weight": 1.0,
+      "context": "attribute",
+      "metadata": {
+        "ref_token": "LoggerMessage"
+      },
+      "_origin": "ast",
+      "source": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_logunknowncode",
+      "target": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_cs_loggermessage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
+      "source_location": "L197",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -93667,7 +93667,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs",
-      "source_location": "L191",
+      "source_location": "L197",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -108001,5 +108001,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "dcbfb12926522854792c63e9b944c57b6583b6a5"
+  "built_at_commit": "b22f707cf1a47df8e95f182056a583dffa774f9f"
 }
