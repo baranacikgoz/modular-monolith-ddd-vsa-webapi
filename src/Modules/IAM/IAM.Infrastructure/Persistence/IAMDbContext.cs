@@ -5,12 +5,14 @@ using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.ValueConverters;
 using IAM.Application.Persistence;
 using IAM.Domain.Identity;
 using IAM.Domain.Identity.Sessions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace IAM.Infrastructure.Persistence;
@@ -39,6 +41,12 @@ public class IAMDbContext(
             eventDispatcher, integrationEventOutbox,
             ct => base.SaveChangesAsync(ct),
             cancellationToken);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.Properties<DateTimeOffset>().HaveConversion<UtcDateTimeOffsetConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
