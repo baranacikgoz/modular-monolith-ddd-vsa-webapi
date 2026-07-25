@@ -23,7 +23,11 @@ public sealed class OtpSetupTests
 
     private static ValidationContext<SmsOptions> BuildContext(SmsProvider provider, string environmentName)
     {
-        var context = new ValidationContext<SmsOptions>(new SmsOptions { Provider = provider });
+        var context = new ValidationContext<SmsOptions>(new SmsOptions
+        {
+            Provider = provider,
+            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
+        });
         context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
         return context;
     }

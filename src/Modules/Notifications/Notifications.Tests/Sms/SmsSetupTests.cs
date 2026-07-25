@@ -23,7 +23,11 @@ public sealed class SmsSetupTests
     [Fact]
     public void Validate_NetGsmMissingCredentials_Invalid()
     {
-        var options = new SmsOptions { Provider = SmsProvider.NetGsm };
+        var options = new SmsOptions
+        {
+            Provider = SmsProvider.NetGsm,
+            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
+        };
 
         var result = new SmsOptionsValidator().Validate(BuildContext(options, Environments.Development));
 
@@ -45,6 +49,7 @@ public sealed class SmsSetupTests
             MaxRetryAttempts = 1,
             MaxPerPhoneNumberPerDay = 10,
             MaxPerDay = 5000,
+            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         };
 
         var result = new SmsOptionsValidator().Validate(BuildContext(options, Environments.Production));

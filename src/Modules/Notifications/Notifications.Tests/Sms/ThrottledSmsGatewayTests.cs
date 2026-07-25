@@ -24,7 +24,13 @@ public sealed class ThrottledSmsGatewayTests : IDisposable
     }
 
     private static IOptions<SmsOptions> BuildOptions(int maxPerPhoneNumberPerDay, int maxPerDay) =>
-        Options.Create(new SmsOptions { Provider = SmsProvider.NetGsm, MaxPerPhoneNumberPerDay = maxPerPhoneNumberPerDay, MaxPerDay = maxPerDay });
+        Options.Create(new SmsOptions
+        {
+            Provider = SmsProvider.NetGsm,
+            MaxPerPhoneNumberPerDay = maxPerPhoneNumberPerDay,
+            MaxPerDay = maxPerDay,
+            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
+        });
 
     private sealed class RecordingGateway : ISmsGateway
     {

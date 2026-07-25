@@ -336,7 +336,12 @@ public sealed class NetGsmSmsGatewayTests
                 BaseAddress = new Uri("https://api.netgsm.com.tr/"),
                 MaxResponseContentBufferSize = MaxResponseContentBufferBytes,
             };
-            var smsOptions = new SmsOptions { Provider = SmsProvider.NetGsm, MsgHeader = "TESTHEADER" };
+            var smsOptions = new SmsOptions
+            {
+                Provider = SmsProvider.NetGsm,
+                MsgHeader = "TESTHEADER",
+                Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
+            };
             configureOptions?.Invoke(smsOptions);
             Gateway = new NetGsmSmsGateway(_httpClient, Options.Create(smsOptions), NullLogger<NetGsmSmsGateway>.Instance);
         }
