@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Microsoft.Extensions.Logging;
 using Notifications.Application.Sms;
@@ -6,8 +7,8 @@ namespace Notifications.Infrastructure.Sms;
 
 /// <summary>
 /// No-op gateway for non-production environments. Logs the message instead of sending it, so a
-/// developer can read an OTP straight from the console. <see cref="SmsOptionsValidator"/> (see
-/// <c>Common.Application.Options.SmsOptionsValidator</c>) blocks <c>Provider = Dummy</c> in Production.
+/// developer can read an OTP straight from the console. <see cref="SmsOptionsValidator"/> blocks
+/// <c>Provider = Dummy</c> in Production.
 /// </summary>
 internal sealed partial class DummySmsGateway(ILogger<DummySmsGateway> logger) : ISmsGateway
 {
