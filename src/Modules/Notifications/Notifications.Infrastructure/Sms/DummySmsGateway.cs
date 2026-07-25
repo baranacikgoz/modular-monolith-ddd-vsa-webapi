@@ -1,9 +1,22 @@
+using Common.Domain.ResultMonad;
+using Microsoft.Extensions.Logging;
 using Notifications.Application.Sms;
 
 namespace Notifications.Infrastructure.Sms;
 
-internal sealed class DummySmsGateway : ISmsGateway
+/// <summary>
+/// No-op gateway for non-production environments. Logs the message instead of sending it, so a
+/// developer can read an OTP straight from the console. <see cref="SmsOptionsValidator"/> (see
+/// <c>Common.Application.Options.SmsOptionsValidator</c>) blocks <c>Provider = Dummy</c> in Production.
+/// </summary>
+internal sealed partial class DummySmsGateway(ILogger<DummySmsGateway> logger) : ISmsGateway
 {
-    public Task SendAsync(string phoneNumber, string message, CancellationToken cancellationToken)
-        => Task.CompletedTask;
+    public Task<Result> SendAsync(SmsMessage message, CancellationToken cancellationToken)
+    {
+        LogSmsNotSent(logger, message.PhoneNumber, message.Text);
+        return Task.FromResult(Result.Success);
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "SMS not sent (dummy gateway) to {PhoneNumber}: {Text}")]
+    private static partial void LogSmsNotSent(ILogger logger, string phoneNumber, string text);
 }

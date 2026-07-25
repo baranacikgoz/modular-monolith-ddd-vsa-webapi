@@ -44,7 +44,7 @@ public sealed class SendPhoneOtpRequestHandler(
             request.ContextId,
             cancellationToken);
         var message = string.Format(CultureInfo.InvariantCulture, template, otp);
-        await smsGateway.SendAsync(request.PhoneNumber, message, cancellationToken);
+        await smsGateway.SendAsync(new SmsMessage(request.PhoneNumber, message, SmsCategory.Transactional), cancellationToken);
         NotificationsTelemetry.RecordOtpSent(request.Purpose);
         return new SendPhoneOtpResponse();
     }

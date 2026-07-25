@@ -1,5 +1,14 @@
 {
   "SmsOptions": {
-    "Provider": "Dummy"
+    "Provider": "Dummy",
+    "BaseUrl": "https://api.netgsm.com.tr",
+    "UserCode": "myUserCode",
+    "Password": "myPassword",
+    "MsgHeader": "myMsgHeader",
+    "AttemptTimeoutSeconds": 4,
+    "TotalRequestTimeoutSeconds": 8,
+    "MaxRetryAttempts": 1,
+    "MaxPerPhoneNumberPerDay": 10,
+    "MaxPerDay": 5000
   }
 }

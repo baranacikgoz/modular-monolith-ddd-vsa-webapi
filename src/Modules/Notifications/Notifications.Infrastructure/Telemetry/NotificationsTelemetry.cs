@@ -39,4 +39,27 @@ internal static class NotificationsTelemetry
         OtpVerifications.Add(1,
             new KeyValuePair<string, object?>("otp.purpose", purpose),
             new KeyValuePair<string, object?>("otp.outcome", outcome));
+
+    public static readonly Counter<long> SmsSent =
+        Meter.CreateCounter<long>("notifications.sms.sent", "sms",
+            "Total SMS send attempts via ISmsGateway, tagged by category and outcome.");
+
+    public static void RecordSmsSent(string category, string outcome) =>
+        SmsSent.Add(1,
+            new KeyValuePair<string, object?>("sms.category", category),
+            new KeyValuePair<string, object?>("sms.outcome", outcome));
+
+    public static readonly Counter<long> SmsProviderErrors =
+        Meter.CreateCounter<long>("notifications.sms.provider_errors", "errors",
+            "Total NetGSM error codes returned on send, tagged by the raw provider code.");
+
+    public static void RecordSmsProviderError(string netGsmCode) =>
+        SmsProviderErrors.Add(1, new KeyValuePair<string, object?>("netgsm.code", netGsmCode));
+
+    public static readonly Counter<long> SmsThrottled =
+        Meter.CreateCounter<long>("notifications.sms.throttled", "sms",
+            "Total SMS sends rejected by our own spend guard before reaching the provider, tagged by which cap was hit.");
+
+    public static void RecordSmsThrottled(string reason) =>
+        SmsThrottled.Add(1, new KeyValuePair<string, object?>("throttle.reason", reason));
 }

@@ -1,7 +1,7 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-07-22)
 
 ## Corpus Check
-- 442 files · ~61,592 words
+- 442 files · ~61,690 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `053f28dd`
+- Built from commit: `70f5abf7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -370,8 +370,8 @@ Cohesion: 0.19
 Nodes (10): DateTimeOffset, Guid, DateTimeOffset, Guid, IReadOnlyCollection, List, Session, SessionRevokedReason (+2 more)
 
 ### Community 6 - "Domain Event Handling & Outbox Collect"
-Cohesion: 0.13
-Nodes (12): IAM.Endpoints.Users.VersionNeutral.Search, int, Constants, CancellationToken, IOptions, RouteGroupBuilder, Task, Endpoint (+4 more)
+Cohesion: 0.22
+Nodes (7): IAM.Endpoints.Users.VersionNeutral.Search, int, Constants, Request, RequestValidator, DateOnly, Response
 
 ### Community 7 - "Host NuGet Deps (OTel/Health)"
 Cohesion: 0.11
@@ -474,8 +474,8 @@ Cohesion: 0.14
 Nodes (15): LoadAll, Names, Assembly, Exception, IApplicationBuilder, IConfiguration, IEnumerable, ILogger (+7 more)
 
 ### Community 32 - "CustomRateLimitingOptions"
-Cohesion: 0.12
-Nodes (15): Products.Endpoints.ProductTemplates.v1.Search, Common.Application.DTOs, Products.Endpoints.Stores.v1.Get, IAM.Endpoints.Users.VersionNeutral.Me.Get, Products.Endpoints.ProductTemplates.v1.Get, Products.Endpoints.Stores.v1.My.Get, AuditableEntityResponse, DateTimeOffset (+7 more)
+Cohesion: 0.11
+Nodes (16): Common.Application.DTOs, IAM.Endpoints.Users.VersionNeutral.Get, Products.Endpoints.Stores.v1.Get, IAM.Endpoints.Users.VersionNeutral.Me.Get, Products.Endpoints.ProductTemplates.v1.Get, Products.Endpoints.Stores.v1.My.Get, AuditableEntityResponse, DateTimeOffset (+8 more)
 
 ### Community 33 - "PaginationRequestValidator"
 Cohesion: 0.48
@@ -882,8 +882,8 @@ Cohesion: 0.40
 Nodes (5): Products.Endpoints.Stores.v1.Update, RequestBody, Request, RequestBody, RequestValidator
 
 ### Community 144 - "OtpOptions"
-Cohesion: 0.20
-Nodes (7): IAM.Endpoints.Users.VersionNeutral.Get, CancellationToken, RouteGroupBuilder, Task, Endpoint, DateOnly, Response
+Cohesion: 0.33
+Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 145 - "ICurrentUser"
 Cohesion: 0.33
@@ -914,8 +914,8 @@ Cohesion: 0.33
 Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 152 - "ProductTemplates/v1/Search/Request.cs"
-Cohesion: 0.40
-Nodes (4): int, Constants, Request, RequestValidator
+Cohesion: 0.14
+Nodes (11): Products.Endpoints.ProductTemplates.v1.Search, int, Constants, CancellationToken, IOptions, RouteGroupBuilder, Task, Endpoint (+3 more)
 
 ### Community 153 - "Endpoint"
 Cohesion: 0.22
@@ -1173,7 +1173,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.351) - this node is a cross-community bridge._
 - **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `Host Logging & Serilog Setup`, `CustomRoles`, `HangfireCustomAuthorizationFilter`, `Microsoft.EntityFrameworkCore.Abstractions`, `Endpoint`, `HttpContextTargetingContextAccessor`, `Host NuGet Deps (OTel/Health)`, `IMiddleware`, `Functional Result Extensions`, `Response`, `Response`, `SignalR Hub & Exception Middleware`, `Host.Swagger`, `PermissionAuthorizationHandler`?**
   _High betweenness centrality (0.112) - this node is a cross-community bridge._
-- **Why does `Common.Domain.StronglyTypedIds` connect `Functional Result Extensions` to `Endpoint`, `IAM User Identity & Auditing`, `Host Logging & Serilog Setup`, `Domain Event Handling & Outbox Collect`, `BackgroundJobs Service (Hangfire)`, `OtpOptions`, `SecurityHeadersOptions`, `IAM OTP Send & Captcha`, `SignalR Hub & Exception Middleware`, `CurrentUser`, `PermissionAuthorizationHandler`, `CustomRateLimitingOptions`, `Microsoft.EntityFrameworkCore.Abstractions`, `Endpoint`, `Hangfire.PostgreSql`, `Asp.Versioning.Http`, `Endpoint`, `IResxLocalizer`, `IAssemblyReference`, `Endpoint`, `.LogDispatchingNotification`, `Request.cs`, `IDatabaseSeeder`, `ReverseProxyOptions.cs`, `JobTargets`?**
+- **Why does `Common.Domain.StronglyTypedIds` connect `Functional Result Extensions` to `Endpoint`, `IAM User Identity & Auditing`, `Host Logging & Serilog Setup`, `Domain Event Handling & Outbox Collect`, `BackgroundJobs Service (Hangfire)`, `SecurityHeadersOptions`, `IAM OTP Send & Captcha`, `SignalR Hub & Exception Middleware`, `CurrentUser`, `PermissionAuthorizationHandler`, `CustomRateLimitingOptions`, `Microsoft.EntityFrameworkCore.Abstractions`, `Endpoint`, `Hangfire.PostgreSql`, `Asp.Versioning.Http`, `Endpoint`, `IResxLocalizer`, `IAssemblyReference`, `Endpoint`, `.LogDispatchingNotification`, `Request.cs`, `IDatabaseSeeder`, `ReverseProxyOptions.cs`, `JobTargets`?**
   _High betweenness centrality (0.088) - this node is a cross-community bridge._
 - **What connects `OtpCacheEntry`, `Common.Domain`, `Common.Infrastructure` to the rest of the system?**
   _132 weakly-connected nodes found - possible documentation gaps or missing edges._
