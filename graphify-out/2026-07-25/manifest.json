@@ -1279,20 +1279,10 @@
     "ast_hash": "cb4b0ea4556b7aa9bdbbc2a688c62702",
     "semantic_hash": "cb4b0ea4556b7aa9bdbbc2a688c62702"
   },
-  "src/Modules/Notifications/Notifications.Application/ISmsService.cs": {
-    "mtime": 1779899541.6928287,
-    "ast_hash": "aa1083fe723f1bdd2af32e1778a61ee6",
-    "semantic_hash": "aa1083fe723f1bdd2af32e1778a61ee6"
-  },
   "src/Modules/Notifications/Notifications.Application/IntegrationEventHandlers/UserRegisteredSignalRHandler.cs": {
     "mtime": 1779899137.2289236,
     "ast_hash": "38803cf739551d425b38c82456920e59",
     "semantic_hash": "38803cf739551d425b38c82456920e59"
-  },
-  "src/Modules/Notifications/Notifications.Application/IntegrationEventHandlers/UserRegisteredSmsHandler.cs": {
-    "mtime": 1779899137.2289743,
-    "ast_hash": "326d63c30d28fdb3dc10ff2358a65cbe",
-    "semantic_hash": "326d63c30d28fdb3dc10ff2358a65cbe"
   },
   "src/Modules/Notifications/Notifications.Application/Otp/IOtpService.cs": {
     "mtime": 1780023602.7320461,
@@ -1300,9 +1290,9 @@
     "semantic_hash": "26ff63a2af862c4f71c5a4748b31c6da"
   },
   "src/Modules/Notifications/Notifications.Application/Sms/ISmsGateway.cs": {
-    "mtime": 1779990214.2269108,
-    "ast_hash": "9fa47a4d9957cc76da333d8c31d63c93",
-    "semantic_hash": "9fa47a4d9957cc76da333d8c31d63c93"
+    "mtime": 1784989793.4595785,
+    "ast_hash": "e4e3fda710a62d2e47d28fd31ce400c4",
+    "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Domain/IAssemblyReference.cs": {
     "mtime": 1779899541.6929398,
@@ -1335,8 +1325,8 @@
     "semantic_hash": "892c575f31b2cc6a479e45337f58e254"
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/SendPhoneOtpRequestHandler.cs": {
-    "mtime": 1784194590.0623317,
-    "ast_hash": "1b373706f6b52202d8a13ef4caa6c23b",
+    "mtime": 1784990375.5833013,
+    "ast_hash": "58afdab00c4500c137dd7dc777aeb45c",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/VerifyPhoneOtpRequestHandler.cs": {
@@ -1370,23 +1360,18 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Sms/DummySmsGateway.cs": {
-    "mtime": 1779990215.6986427,
-    "ast_hash": "5d49ee879f0a609b90631b729a93ff25",
-    "semantic_hash": "5d49ee879f0a609b90631b729a93ff25"
-  },
-  "src/Modules/Notifications/Notifications.Infrastructure/Sms/DummySmsService.cs": {
-    "mtime": 1779899541.6932375,
-    "ast_hash": "bec9bd5c744ac3fc627796a37c23f3b4",
-    "semantic_hash": "bec9bd5c744ac3fc627796a37c23f3b4"
+    "mtime": 1784989820.7428846,
+    "ast_hash": "b513513d920d449724007ca459b19712",
+    "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Sms/Setup.cs": {
-    "mtime": 1784672833.1512778,
-    "ast_hash": "b08a6f67c6db25046284ce5067ff67d9",
+    "mtime": 1784990121.1409132,
+    "ast_hash": "fa9414bb512e9457901f123c88412bfd",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Telemetry/NotificationsTelemetry.cs": {
-    "mtime": 1784194581.0873408,
-    "ast_hash": "344a383748d0730468e096efba3eadba",
+    "mtime": 1784989997.841941,
+    "ast_hash": "e3f1646c71ab189f95799ee1b89c5541",
     "semantic_hash": ""
   },
   "src/Modules/Outbox/Outbox/OutboxCleanupJob.cs": {
@@ -2205,13 +2190,28 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/SmsOptions.cs": {
-    "mtime": 1784672526.1273053,
-    "ast_hash": "2da086ad7a769e9e7423150d82509117",
+    "mtime": 1784989842.7149255,
+    "ast_hash": "cd025597df9ba05550ec54031c0d984d",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Validation/ValidationContextExtensions.cs": {
     "mtime": 1784672444.0459323,
     "ast_hash": "ec873d80c5b8a07174ab20ff23e0d8bf",
+    "semantic_hash": ""
+  },
+  "src/Modules/Notifications/Notifications.Application/Sms/SmsErrors.cs": {
+    "mtime": 1784989799.6449153,
+    "ast_hash": "67389f298d845bc11150257058a68264",
+    "semantic_hash": ""
+  },
+  "src/Modules/Notifications/Notifications.Infrastructure/Sms/NetGsm/NetGsmSmsGateway.cs": {
+    "mtime": 1784990014.174153,
+    "ast_hash": "77dfb6262116051f2496dccf539ba4eb",
+    "semantic_hash": ""
+  },
+  "src/Modules/Notifications/Notifications.Infrastructure/Sms/ThrottledSmsGateway.cs": {
+    "mtime": 1784990043.6958942,
+    "ast_hash": "ab1358521c7892c1d2eddc8d60ac92e1",
     "semantic_hash": ""
   }
 }
