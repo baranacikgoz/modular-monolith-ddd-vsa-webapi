@@ -1,16 +1,16 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-07-25)
 
 ## Corpus Check
-- 442 files · ~63,319 words
+- 442 files · ~63,329 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2813 nodes · 4964 edges · 305 communities (202 shown, 103 thin omitted)
+- 2813 nodes · 4964 edges · 304 communities (201 shown, 103 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 76 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dcbfb129`
+- Built from commit: `b22f707c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -160,7 +160,6 @@
 - ModulesOptions
 - OtpPurposes.cs
 - OtpOptions
-- ICurrentUser
 - SecurityHeadersOptions
 - SignalROptions
 - Setup
@@ -349,11 +348,11 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (305 total, 103 thin omitted)
+## Communities (304 total, 103 thin omitted)
 
 ### Community 0 - "Host Logging & Serilog Setup"
 Cohesion: 0.10
-Nodes (14): IAM.Application.Tokens.Services, IAM.Application.Extensions, IAM.Endpoints.Otp, Common.Infrastructure.Extensions, IAM.Endpoints.Tokens.VersionNeutral.Revoke, IAM.Infrastructure.Telemetry, Common.Domain.ResultMonad, IAM.Application.Persistence (+6 more)
+Nodes (14): IAM.Application.Tokens.Services, IAM.Application.Extensions, IAM.Endpoints.Otp, IAM.Domain.Identity, Common.Infrastructure.Extensions, IAM.Endpoints.Tokens.VersionNeutral.Revoke, IAM.Infrastructure.Telemetry, IAM.Application.Persistence (+6 more)
 
 ### Community 1 - "IAM User Identity & Auditing"
 Cohesion: 0.12
@@ -393,7 +392,7 @@ Nodes (11): HttpStatusCode, IStringLocalizer, StringLocalizerExtensions, Error, 
 
 ### Community 11 - "BackgroundJobs Service (Hangfire)"
 Cohesion: 0.17
-Nodes (11): Common.Application.Search, Common.Application.AuditLog, Common.Infrastructure.Persistence.Extensions, Common.Application.Extensions, Products.Domain.Products, Products.Infrastructure.Telemetry, Products.Application.Persistence, Products.Domain.Stores (+3 more)
+Nodes (10): Common.Application.Search, Common.Application.AuditLog, Common.Infrastructure.Persistence.Extensions, Common.Application.Extensions, Products.Infrastructure.Telemetry, Products.Application.Persistence, Products.Domain.Stores, Common.Domain.ResultMonad (+2 more)
 
 ### Community 12 - "IAM OTP Verify & Token Endpoint"
 Cohesion: 0.17
@@ -408,8 +407,8 @@ Cohesion: 0.15
 Nodes (3): IdentityError, IdentityErrorDescriber, LocalizedIdentityErrorDescriber
 
 ### Community 15 - "Functional Result Extensions"
-Cohesion: 0.10
-Nodes (9): Common.Infrastructure.Persistence, Common.Domain.StronglyTypedIds, IAM.Domain.Identity.DomainEvents.v1, Common.Domain.Events, IAM.Domain.Identity.Sessions, Common.Infrastructure.EventBus, Common.Domain.Entities, Common.Domain.Aggregates (+1 more)
+Cohesion: 0.11
+Nodes (9): Common.Domain.StronglyTypedIds, IAM.Domain.Identity.DomainEvents.v1, Common.Domain.Events, Products.Domain.Products, IAM.Domain.Identity.Sessions, Common.Infrastructure.EventBus, Common.Domain.Entities, Common.Domain.Aggregates (+1 more)
 
 ### Community 16 - "Launch Settings"
 Cohesion: 0.83
@@ -436,8 +435,8 @@ Cohesion: 0.07
 Nodes (20): bool, byte, Memory, PathString, ReadOnlyMemory, ReadOnlySpan, SeekOrigin, IApplicationBuilder (+12 more)
 
 ### Community 22 - "SignalR Hub & Exception Middleware"
-Cohesion: 0.09
-Nodes (11): Products.Infrastructure.Persistence, Products.Infrastructure.Persistence.Seeding, Common.Application.Persistence, IAM.Infrastructure.Persistence, IAM.Infrastructure.Persistence.Seeding, Common.InterModuleRequests.IAM, IAM.Domain.Identity, IAM.Infrastructure.InterModuleRequestHandlers (+3 more)
+Cohesion: 0.08
+Nodes (13): Common.Infrastructure.Persistence, Products.Infrastructure.Persistence, Common.Application.Persistence, IAM.Infrastructure.Persistence, IAM.Infrastructure.Persistence.Seeding, Common.Infrastructure.Persistence.Auditing, Common.Infrastructure.Persistence.DbContext, Setup (+5 more)
 
 ### Community 23 - "Telemetry (ActivitySource/Meter)"
 Cohesion: 0.06
@@ -448,8 +447,8 @@ Cohesion: 0.12
 Nodes (14): IAM.Endpoints.Tokens.VersionNeutral.Refresh, CancellationToken, HttpContext, ILogger, IOptions, LoggerMessage, RouteGroupBuilder, Task (+6 more)
 
 ### Community 25 - "EF Core DbContexts"
-Cohesion: 0.20
-Nodes (5): Common.Infrastructure.Persistence.Auditing, Setup, IServiceCollection, Setup, IServiceCollection
+Cohesion: 0.22
+Nodes (4): Products.Infrastructure.Persistence.Seeding, Common.InterModuleRequests.IAM, IAM.Infrastructure.InterModuleRequestHandlers, Products.Domain.ProductTemplates
 
 ### Community 26 - "Integration Event Handler Base"
 Cohesion: 0.30
@@ -733,7 +732,7 @@ Nodes (8): Common.Infrastructure.FeatureManagement, ITargetingContextAccessor, H
 
 ### Community 103 - "IVariantFeatureManagerExtensions"
 Cohesion: 0.33
-Nodes (4): IVariantFeatureManager, IVariantFeatureManagerExtensions, CancellationToken, Task
+Nodes (5): FeatureFlagResultExtensions, Action, Func, IFeatureManager, Task
 
 ### Community 104 - "IMiddleware"
 Cohesion: 0.33
@@ -808,8 +807,8 @@ Cohesion: 0.33
 Nodes (4): Products.Endpoints.Products.v1.Get, CancellationToken, Task, Response
 
 ### Community 122 - "Setup"
-Cohesion: 0.35
-Nodes (6): CancellationToken, IReadOnlyList, Task, INotificationDispatcher, Task, NotificationPayload
+Cohesion: 0.47
+Nodes (5): CancellationToken, IReadOnlyList, Task, INotificationDispatcher, NotificationPayload
 
 ### Community 123 - "Setup"
 Cohesion: 0.22
@@ -856,8 +855,8 @@ Cohesion: 0.40
 Nodes (3): HttpContext, Task, SecurityHeadersMiddleware
 
 ### Community 135 - "HostEnvironmentExtensions.cs"
-Cohesion: 0.13
-Nodes (12): IAM.Endpoints.Tokens.VersionNeutral.Sessions.List, ICurrentUser, Guid, ICollection, CancellationToken, IReadOnlyCollection, RouteGroupBuilder, Task (+4 more)
+Cohesion: 0.17
+Nodes (9): IAM.Endpoints.Tokens.VersionNeutral.Sessions.List, CancellationToken, IReadOnlyCollection, RouteGroupBuilder, Task, Endpoint, DateTimeOffset, Guid (+1 more)
 
 ### Community 136 - "BackgroundJobsOptions"
 Cohesion: 0.33
@@ -895,13 +894,9 @@ Nodes (5): Products.Endpoints.Stores.v1.Update, RequestBody, Request, RequestBod
 Cohesion: 0.20
 Nodes (7): IAM.Endpoints.Users.VersionNeutral.Get, CancellationToken, RouteGroupBuilder, Task, Endpoint, DateOnly, Response
 
-### Community 145 - "ICurrentUser"
-Cohesion: 0.29
-Nodes (5): CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint
-
 ### Community 146 - "SecurityHeadersOptions"
-Cohesion: 0.17
-Nodes (6): Notifications.Infrastructure.Hubs, Notifications.Application.Hubs, INotificationsClient, IConfiguration, IServiceCollection, Setup
+Cohesion: 0.14
+Nodes (7): Notifications.Infrastructure.Hubs, Notifications.Application.Hubs, Task, INotificationsClient, IConfiguration, IServiceCollection, Setup
 
 ### Community 147 - "SignalROptions"
 Cohesion: 0.40
@@ -1053,7 +1048,7 @@ Nodes (7): Concurrent safety, Cross-process call path, Files added by this PoC, 
 
 ### Community 192 - "NameFor"
 Cohesion: 0.12
-Nodes (14): Common.Application.FeatureManagement, FeatureFlagResultExtensions, Action, Func, IFeatureManager, Task, Checkout, FeatureFlags (+6 more)
+Nodes (13): Common.Application.FeatureManagement, IVariantFeatureManager, Checkout, FeatureFlags, IAM, Notifications, Products, string (+5 more)
 
 ### Community 202 - "IAssemblyReference"
 Cohesion: 0.18
@@ -1096,8 +1091,8 @@ Cohesion: 0.33
 Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 219 - ".RevokeAllSessions"
-Cohesion: 0.15
-Nodes (10): CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint, ActivitySource, Counter, Meter (+2 more)
+Cohesion: 0.09
+Nodes (18): ICurrentUser, Guid, ICollection, CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint (+10 more)
 
 ### Community 221 - "NotificationsTelemetry"
 Cohesion: 0.19
@@ -1159,16 +1154,16 @@ Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `StringExtensions` to `Host Logging & Serilog Setup`, `Setup`, `Common.InterModuleRequests.Contracts`, `Host NuGet Deps (OTel/Health)`, `DatabaseOptions`, `BackgroundJobs Service (Hangfire)`, `Functional Result Extensions`, `Launch Settings`, `SecurityHeadersOptions`, `SignalROptions`, `.GetMeAsync`, `EF Core DbContexts`, `Endpoint`, `Endpoint`, `StoreConfiguration`, `.Get`, `IRateLimiterPolicy`, `FeatureManagement/RouteHandlerBuilderExtensions.cs`, `CustomRateLimitingOptions.cs`, `Endpoint`, `Endpoint`, `SmsOptions.cs`, `ReCaptchaResponse`, `DummyOtpService`, `Endpoint`, `IAutoMigrateMarker.cs`, `DatabaseOptions.cs`, `Seeder`, `HealthCheckOptions.cs`, `Sync AI Settings Command`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `RequestLoggingPathPostConfigure`, `Endpoint`, `IAssemblyReference`, `HttpContextExtensions`, `net10.0`, `ConfigurationManager`, `HttpClient`, `ISmsService`, `IAM`, `IntegrationEvent`, `AccessTokenDto`, `IModelBinder`, `IAM.Endpoints.Otp.VersionNeutral`, `JobTargets`, `RequestBody`, `Request.cs`?**
+- **Why does `Common.Application.Options` connect `StringExtensions` to `Host Logging & Serilog Setup`, `Setup`, `Common.InterModuleRequests.Contracts`, `Host NuGet Deps (OTel/Health)`, `DatabaseOptions`, `BackgroundJobs Service (Hangfire)`, `Functional Result Extensions`, `Launch Settings`, `SecurityHeadersOptions`, `SignalROptions`, `SignalR Hub & Exception Middleware`, `.GetMeAsync`, `Endpoint`, `Endpoint`, `StoreConfiguration`, `.Get`, `IRateLimiterPolicy`, `FeatureManagement/RouteHandlerBuilderExtensions.cs`, `CustomRateLimitingOptions.cs`, `Endpoint`, `Endpoint`, `SmsOptions.cs`, `ReCaptchaResponse`, `DummyOtpService`, `Endpoint`, `IAutoMigrateMarker.cs`, `DatabaseOptions.cs`, `Seeder`, `HealthCheckOptions.cs`, `Sync AI Settings Command`, `Microsoft.AspNetCore.Identity.EntityFrameworkCore`, `RequestLoggingPathPostConfigure`, `Endpoint`, `IAssemblyReference`, `HttpContextExtensions`, `net10.0`, `ConfigurationManager`, `HttpClient`, `ISmsService`, `IAM`, `IntegrationEvent`, `AccessTokenDto`, `IModelBinder`, `IAM.Endpoints.Otp.VersionNeutral`, `JobTargets`, `RequestBody`, `Request.cs`?**
   _High betweenness centrality (0.351) - this node is a cross-community bridge._
-- **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `Host Logging & Serilog Setup`, `CustomRoles`, `HangfireCustomAuthorizationFilter`, `Endpoint`, `HttpContextTargetingContextAccessor`, `Functional Result Extensions`, `Response`, `Response`, `SignalR Hub & Exception Middleware`, `PermissionAuthorizationHandler`, `Setup`, `Host.Swagger`, `EndpointFilterDelegate`?**
+- **Why does `Common.Application.Auth` connect `BackgroundJobs Service (Hangfire)` to `Host Logging & Serilog Setup`, `CustomRoles`, `HangfireCustomAuthorizationFilter`, `Endpoint`, `HttpContextTargetingContextAccessor`, `Functional Result Extensions`, `Response`, `Response`, `SignalR Hub & Exception Middleware`, `PermissionAuthorizationHandler`, `EF Core DbContexts`, `Setup`, `Host.Swagger`, `EndpointFilterDelegate`?**
   _High betweenness centrality (0.103) - this node is a cross-community bridge._
-- **Why does `Common.Domain.StronglyTypedIds` connect `Functional Result Extensions` to `Endpoint`, `IAM User Identity & Auditing`, `Host Logging & Serilog Setup`, `Cross-Module Comm & Arch Audit Skills`, `Domain Event Handling & Outbox Collect`, `OtpOptions`, `SecurityHeadersOptions`, `IAM OTP Send & Captcha`, `SignalR Hub & Exception Middleware`, `Endpoint`, `CurrentUser`, `PermissionAuthorizationHandler`, `Endpoint`, `CustomRateLimitingOptions`, `Microsoft.EntityFrameworkCore.Abstractions`, `Hangfire.PostgreSql`, `EventDispatcher`, `Aigamo.ResXGenerator`, `IResxLocalizer`, `IAssemblyReference`, `Endpoint`, `IAssemblyReference`, `ISmsService`, `ReverseProxyOptions.cs`, `Setup`?**
+- **Why does `Common.Domain.StronglyTypedIds` connect `Functional Result Extensions` to `Endpoint`, `IAM User Identity & Auditing`, `Host Logging & Serilog Setup`, `Cross-Module Comm & Arch Audit Skills`, `Domain Event Handling & Outbox Collect`, `BackgroundJobs Service (Hangfire)`, `OtpOptions`, `SecurityHeadersOptions`, `IAM OTP Send & Captcha`, `SignalR Hub & Exception Middleware`, `Endpoint`, `EF Core DbContexts`, `CurrentUser`, `PermissionAuthorizationHandler`, `Endpoint`, `CustomRateLimitingOptions`, `Microsoft.EntityFrameworkCore.Abstractions`, `Hangfire.PostgreSql`, `EventDispatcher`, `Aigamo.ResXGenerator`, `IResxLocalizer`, `IAssemblyReference`, `Endpoint`, `IAssemblyReference`, `ISmsService`, `ReverseProxyOptions.cs`, `Setup`?**
   _High betweenness centrality (0.100) - this node is a cross-community bridge._
 - **What connects `OtpCacheEntry`, `Common.Domain`, `Common.Infrastructure` to the rest of the system?**
   _135 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Host Logging & Serilog Setup` be split into smaller, more focused modules?**
-  _Cohesion score 0.09759759759759759 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10037878787878787 - nodes in this community are weakly interconnected._
 - **Should `IAM User Identity & Auditing` be split into smaller, more focused modules?**
   _Cohesion score 0.11612903225806452 - nodes in this community are weakly interconnected._
 - **Should `Cross-Module Comm & Arch Audit Skills` be split into smaller, more focused modules?**

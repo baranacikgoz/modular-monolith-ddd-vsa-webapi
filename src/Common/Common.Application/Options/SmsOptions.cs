@@ -47,12 +47,29 @@ public class SmsOptions
 
     /// <summary>Max SMS sends across all phone numbers per day, enforced by ThrottledSmsGateway.</summary>
     public int MaxPerDay { get; set; }
+
+    public required SmsTemplatesOptions Templates { get; set; }
+}
+
+/// <summary>Future templates (e.g. OrderConfirmed) get added here as sibling language-code dictionaries.</summary>
+public class SmsTemplatesOptions
+{
+    /// <summary>Language code (e.g. "en", "tr") -> template. Must contain "{0}" as the OTP placeholder.</summary>
+    public Dictionary<string, string> Otp { get; } = [];
 }
 
 public class SmsOptionsValidator : CustomValidator<SmsOptions>
 {
     public SmsOptionsValidator()
     {
+        RuleFor(o => o.Templates.Otp)
+            .NotEmpty()
+            .WithMessage("Templates.Otp must contain at least one entry.");
+
+        RuleForEach(o => o.Templates.Otp)
+            .Must(kv => kv.Value.Contains("{0}", StringComparison.Ordinal))
+            .WithMessage("Each Templates.Otp value must contain '{0}' as the OTP placeholder.");
+
         // DummySmsGateway is a no-op: OTPs and notifications are generated but never reach the user.
         // In Production that silently bricks every SMS flow, so fail fast until Provider is switched
         // to NetGsm (with real credentials) below.

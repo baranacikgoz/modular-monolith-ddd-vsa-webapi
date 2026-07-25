@@ -9,6 +9,12 @@
     "TotalRequestTimeoutSeconds": 8,
     "MaxRetryAttempts": 1,
     "MaxPerPhoneNumberPerDay": 10,
-    "MaxPerDay": 5000
+    "MaxPerDay": 5000,
+    "Templates": {
+      "Otp": {
+        "en": "Your verification code is: {0}. Do not share it with anyone.",
+        "tr": "Doğrulama kodunuz: {0}. Kimseyle paylaşmayın."
+      }
+    }
   }
 }

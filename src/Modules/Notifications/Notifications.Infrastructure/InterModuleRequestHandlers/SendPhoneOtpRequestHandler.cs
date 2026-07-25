@@ -14,6 +14,7 @@ public sealed class SendPhoneOtpRequestHandler(
     IOtpService otpService,
     ISmsGateway smsGateway,
     IOptions<OtpOptions> otpOptionsProvider,
+    IOptions<SmsOptions> smsOptionsProvider,
     IOptions<RequestLocalizationOptions> localizationOptionsProvider
 ) : InterModuleRequestHandler<SendPhoneOtpRequest, SendPhoneOtpResponse>
 {
@@ -22,16 +23,17 @@ public sealed class SendPhoneOtpRequestHandler(
         CancellationToken cancellationToken)
     {
         var opts = otpOptionsProvider.Value;
+        var templates = smsOptionsProvider.Value.Templates.Otp;
         var language = request.Language
                        ?? localizationOptionsProvider.Value.DefaultRequestCulture.UICulture.TwoLetterISOLanguageName;
 
-        if (!opts.SmsTemplates.TryGetValue(language, out var template))
+        if (!templates.TryGetValue(language, out var template))
         {
             var fallback = localizationOptionsProvider.Value.DefaultRequestCulture.UICulture.TwoLetterISOLanguageName;
-            if (!opts.SmsTemplates.TryGetValue(fallback, out template))
+            if (!templates.TryGetValue(fallback, out template))
             {
                 throw new InvalidOperationException(
-                    $"No SmsTemplate configured for language '{language}' or default language '{fallback}'. Add an entry to OtpOptions:SmsTemplates.");
+                    $"No SmsTemplate configured for language '{language}' or default language '{fallback}'. Add an entry to SmsOptions:Templates:Otp.");
             }
         }
 
