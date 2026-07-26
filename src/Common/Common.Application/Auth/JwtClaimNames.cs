@@ -16,4 +16,10 @@ public static class JwtClaimNames
     /// Session id claim ("sid") — identifies which device/app session this access token belongs to.
     /// </summary>
     public const string SessionId = "sid";
+
+    /// <summary>
+    /// Direct permission grant claim, emitted once per permission (e.g. by API-key principals that
+    /// have no role to derive permissions from). Value format matches <c>CustomPermission.NameFor</c>.
+    /// </summary>
+    public const string Permission = "permission";
 }

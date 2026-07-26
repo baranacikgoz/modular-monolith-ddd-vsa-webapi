@@ -9,6 +9,7 @@ internal static class Setup
 
         AddJsonFile(configuration, $"{configurationsDirectory}/localization");
         AddJsonFile(configuration, $"{configurationsDirectory}/jwt");
+        AddJsonFile(configuration, $"{configurationsDirectory}/apikeys");
         AddJsonFile(configuration, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, $"{configurationsDirectory}/captcha");

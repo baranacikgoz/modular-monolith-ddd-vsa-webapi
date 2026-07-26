@@ -30,6 +30,15 @@ internal sealed class ConfigureSwaggerOptions(
                 Scheme = "Bearer"
             });
 
+        options.AddSecurityDefinition("ApiKey",
+            new OpenApiSecurityScheme
+            {
+                Name = "X-Api-Key",
+                Description = "Machine-caller credential — see ApiKeysOptions.",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey
+            });
+
         options.AddSecurityRequirement(document =>
         {
             var schemeReference = new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document);

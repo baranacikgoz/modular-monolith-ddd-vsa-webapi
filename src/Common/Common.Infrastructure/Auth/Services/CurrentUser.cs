@@ -19,10 +19,15 @@ internal sealed class CurrentUser : ICurrentUser
         Roles = isAuthenticated
             ? user?.FindAll(JwtClaimNames.Roles).Select(x => x.Value).ToList() ?? []
             : [];
+        _directPermissions = isAuthenticated
+            ? user?.FindAll(JwtClaimNames.Permission).Select(x => x.Value).ToHashSet(StringComparer.Ordinal) ?? []
+            : [];
         SessionId = isAuthenticated && Guid.TryParse(user?.FindFirstValue(JwtClaimNames.SessionId), out var sid)
             ? sid
             : null;
     }
+
+    private readonly HashSet<string> _directPermissions;
 
     public ApplicationUserId Id { get; }
 
@@ -32,6 +37,9 @@ internal sealed class CurrentUser : ICurrentUser
 
     public Guid? SessionId { get; }
 
+    // Role-derived permissions cover human callers (JWT); direct permission claims cover
+    // machine callers (API keys), which have no role to derive permissions from.
     public bool HasPermission(string permission)
-        => Roles.Any(role => CustomPermissions.ForRole(role).Contains(permission));
+        => _directPermissions.Contains(permission)
+           || Roles.Any(role => CustomPermissions.ForRole(role).Contains(permission));
 }
