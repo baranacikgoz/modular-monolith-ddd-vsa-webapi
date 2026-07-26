@@ -79,8 +79,7 @@ internal sealed partial class RedisFixedWindowRateLimiter : RateLimiter
         try
         {
             var db = _redis.GetDatabase();
-            var raw = await db.ScriptEvaluateAsync(
-                Script, [(RedisKey)_key], [(RedisValue)(long)_window.TotalMilliseconds]);
+            var raw = await db.ScriptEvaluateAsync(Script, [_key], [(long)_window.TotalMilliseconds]);
             var result = (RedisResult[])raw!;
             var count = (long)result[0];
             var pttlMs = (long)result[1];
