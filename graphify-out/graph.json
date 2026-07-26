@@ -4606,8 +4606,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_pagination_paginationresponse",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "paginationresponse.cs"
     },
     {
@@ -4623,8 +4623,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_pagination_paginationresponse_common_application_pagination_paginationresponse",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "paginationresponse"
     },
     {
@@ -6077,8 +6077,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_domain_resultmonad_error_common_domain_resultmonad_error_violatesuniqueconstraint",
-      "community": 136,
-      "community_name": "BackgroundJobsOptions",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": ".violatesuniqueconstraint()"
     },
     {
@@ -6611,8 +6611,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_domain_stronglytypedids_applicationuserid_common_domain_stronglytypedids_applicationuserid_tostring",
-      "community": 1,
-      "community_name": "IAM User Identity & Auditing",
+      "community": 100,
+      "community_name": "IdentityResultExtensions",
       "norm_label": ".tostring()"
     },
     {
@@ -9516,8 +9516,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_common_infrastructure_persistence_extensions_paginationqueryableextensions",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "paginationqueryableextensions"
     },
     {
@@ -9533,8 +9533,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_common_infrastructure_persistence_extensions_paginationqueryableextensions_paginateasync",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": ".paginateasync()"
     },
     {
@@ -9544,8 +9544,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_iqueryable",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "iqueryable"
     },
     {
@@ -9555,8 +9555,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_expression",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "expression"
     },
     {
@@ -9566,8 +9566,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_func",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "func"
     },
     {
@@ -9577,8 +9577,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_cancellationtoken",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "cancellationtoken"
     },
     {
@@ -9588,8 +9588,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_task",
-      "community": 152,
-      "community_name": "ProductTemplates/v1/Search/Request.cs",
+      "community": 175,
+      "community_name": "Endpoint",
       "norm_label": "task"
     },
     {
@@ -10804,8 +10804,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_common_infrastructure_ratelimiting_ratelimitpartitions",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 73,
+      "community_name": "ApiVersionDescription",
       "norm_label": "ratelimitpartitions"
     },
     {
@@ -10821,8 +10821,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_common_infrastructure_ratelimiting_ratelimitpartitions_fixedwindow",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 73,
+      "community_name": "ApiVersionDescription",
       "norm_label": ".fixedwindow()"
     },
     {
@@ -10832,8 +10832,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_cs_httpcontext",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 73,
+      "community_name": "ApiVersionDescription",
       "norm_label": "httpcontext"
     },
     {
@@ -10843,8 +10843,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_cs_ratelimitpartition",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 73,
+      "community_name": "ApiVersionDescription",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -11062,7 +11062,7 @@
       "label": ".LogRedisUnavailable()",
       "file_type": "code",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L103",
+      "source_location": "L102",
       "metadata": {
         "namespace": "Common.Infrastructure.RateLimiting",
         "scope_chain": [
@@ -11101,7 +11101,7 @@
       "label": "FixedWindowLease",
       "file_type": "code",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L106",
+      "source_location": "L105",
       "metadata": {
         "is_nested_type": true,
         "namespace": "Common.Infrastructure.RateLimiting",
@@ -11130,7 +11130,7 @@
       "label": ".TryGetMetadata()",
       "file_type": "code",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L121",
+      "source_location": "L120",
       "metadata": {
         "namespace": "Common.Infrastructure.RateLimiting",
         "scope_chain": [
@@ -11422,8 +11422,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_iintermodulerequest",
-      "community": 155,
-      "community_name": "VerifyPhoneOtpRequest",
+      "community": 34,
+      "community_name": "Microsoft.EntityFrameworkCore.Abstractions",
       "norm_label": "iintermodulerequest.cs"
     },
     {
@@ -11455,8 +11455,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_intermodulerequests_contracts_iintermodulerequest_common_intermodulerequests_contracts_iintermodulerequest",
-      "community": 155,
-      "community_name": "VerifyPhoneOtpRequest",
+      "community": 34,
+      "community_name": "Microsoft.EntityFrameworkCore.Abstractions",
       "norm_label": "iintermodulerequest"
     },
     {
@@ -14947,8 +14947,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_program",
-      "community": 139,
-      "community_name": "DatabaseOptions",
+      "community": 89,
+      "community_name": "ConfigurationManager",
       "norm_label": "program.cs"
     },
     {
@@ -14963,8 +14963,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:3960ec4ca5fb5e5d",
-      "community": 139,
-      "community_name": "DatabaseOptions",
+      "community": 89,
+      "community_name": "ConfigurationManager",
       "norm_label": "host"
     },
     {
@@ -14980,8 +14980,8 @@
       },
       "_origin": "ast",
       "id": "src_host_host_program_host_program",
-      "community": 139,
-      "community_name": "DatabaseOptions",
+      "community": 89,
+      "community_name": "ConfigurationManager",
       "norm_label": "program"
     },
     {
@@ -15007,8 +15007,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0790ff52ee7104b",
-      "community": 139,
-      "community_name": "DatabaseOptions",
+      "community": 121,
+      "community_name": "My/Search/Request.cs",
       "norm_label": "host.swagger"
     },
     {
@@ -15113,8 +15113,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_swagger_defaultresponsesoperationfilter",
-      "community": 139,
-      "community_name": "DatabaseOptions",
+      "community": 121,
+      "community_name": "My/Search/Request.cs",
       "norm_label": "defaultresponsesoperationfilter.cs"
     },
     {
@@ -16533,8 +16533,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_iam_application_captcha_services_icaptchaservice_validateasync",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 116,
+      "community_name": "IRoleService",
       "norm_label": ".validateasync()"
     },
     {
@@ -16544,8 +16544,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_cancellationtoken",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 116,
+      "community_name": "IRoleService",
       "norm_label": "cancellationtoken"
     },
     {
@@ -16555,8 +16555,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_task",
-      "community": 56,
-      "community_name": "DummyOtpService",
+      "community": 116,
+      "community_name": "IRoleService",
       "norm_label": "task"
     },
     {
@@ -25161,8 +25161,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iratelimiterpolicy",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 43,
+      "community_name": "IRateLimiterPolicy",
       "norm_label": "iratelimiterpolicy"
     },
     {
@@ -25222,8 +25222,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_checkregistration_iam_infrastructure_ratelimiting_checkregistrationratelimitingpolicy_getpartition",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 40,
+      "community_name": "NetArchTest.Rules",
       "norm_label": ".getpartition()"
     },
     {
@@ -25233,8 +25233,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_checkregistration_cs_httpcontext",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 40,
+      "community_name": "NetArchTest.Rules",
       "norm_label": "httpcontext"
     },
     {
@@ -25244,8 +25244,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_checkregistration_cs_ratelimitpartition",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 40,
+      "community_name": "NetArchTest.Rules",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -25272,8 +25272,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_iam_infrastructure_ratelimiting_policies",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "policies"
     },
     {
@@ -25290,8 +25290,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_iam_infrastructure_ratelimiting_registerratelimitingpolicy",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "registerratelimitingpolicy"
     },
     {
@@ -25301,8 +25301,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_func",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "func"
     },
     {
@@ -25312,8 +25312,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_onrejectedcontext",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "onrejectedcontext"
     },
     {
@@ -25323,8 +25323,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_cancellationtoken",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "cancellationtoken"
     },
     {
@@ -25334,8 +25334,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_valuetask",
-      "community": 40,
-      "community_name": "NetArchTest.Rules",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "valuetask"
     },
     {
@@ -25779,11 +25779,11 @@
       "label": "Policies",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L7",
+      "source_location": "L6",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25796,11 +25796,11 @@
       "label": ".Get()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25846,11 +25846,11 @@
       "label": ".SmsPolicy()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L18",
+      "source_location": "L17",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25863,11 +25863,11 @@
       "label": ".RegisterPolicy()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L23",
+      "source_location": "L22",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25880,11 +25880,11 @@
       "label": ".TokenCreatePolicy()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25897,11 +25897,11 @@
       "label": ".CheckRegistrationPolicy()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L35",
+      "source_location": "L34",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -25914,11 +25914,11 @@
       "label": ".TokenRefreshPolicy()",
       "file_type": "code",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L42",
+      "source_location": "L41",
       "metadata": {
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
-          "s113"
+          "s76"
         ]
       },
       "_origin": "ast",
@@ -26389,8 +26389,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient",
-      "community": 154,
-      "community_name": "v1/RemoveProduct/Request.cs",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": "inotificationsclient.cs"
     },
     {
@@ -26406,8 +26406,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient_notifications_application_hubs_inotificationsclient",
-      "community": 154,
-      "community_name": "v1/RemoveProduct/Request.cs",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": "inotificationsclient"
     },
     {
@@ -26423,8 +26423,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient_notifications_application_hubs_inotificationsclient_receivenotification",
-      "community": 154,
-      "community_name": "v1/RemoveProduct/Request.cs",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": ".receivenotification()"
     },
     {
@@ -26434,8 +26434,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_hubs_inotificationsclient_cs_task",
-      "community": 154,
-      "community_name": "v1/RemoveProduct/Request.cs",
+      "community": 146,
+      "community_name": "SecurityHeadersOptions",
       "norm_label": "task"
     },
     {
@@ -27123,8 +27123,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_hubs_notificationgroupname_notifications_infrastructure_hubs_notificationgroupname",
-      "community": 146,
-      "community_name": "SecurityHeadersOptions",
+      "community": 26,
+      "community_name": "Integration Event Handler Base",
       "norm_label": "notificationgroupname"
     },
     {
@@ -27140,8 +27140,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_hubs_notificationgroupname_notifications_infrastructure_hubs_notificationgroupname_foruser",
-      "community": 1,
-      "community_name": "IAM User Identity & Auditing",
+      "community": 26,
+      "community_name": "Integration Event Handler Base",
       "norm_label": ".foruser()"
     },
     {
@@ -27157,8 +27157,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_hubs_notificationgroupname_notifications_infrastructure_hubs_notificationgroupname_forrole",
-      "community": 146,
-      "community_name": "SecurityHeadersOptions",
+      "community": 26,
+      "community_name": "Integration Event Handler Base",
       "norm_label": ".forrole()"
     },
     {
@@ -27174,8 +27174,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_hubs_notificationgroupname_notifications_infrastructure_hubs_notificationgroupname_forresource",
-      "community": 146,
-      "community_name": "SecurityHeadersOptions",
+      "community": 26,
+      "community_name": "Integration Event Handler Base",
       "norm_label": ".forresource()"
     },
     {
@@ -30487,8 +30487,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_application_persistence_iproductsdbcontext_products_application_persistence_iproductsdbcontext",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "iproductsdbcontext"
     },
     {
@@ -30498,8 +30498,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_application_persistence_iproductsdbcontext_cs_dbset",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "dbset"
     },
     {
@@ -33001,8 +33001,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "endpoint"
     },
     {
@@ -33018,8 +33018,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint_mapendpoint",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -33029,8 +33029,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_routegroupbuilder",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -33046,8 +33046,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint_searchproducttemplatesasync",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": ".searchproducttemplatesasync()"
     },
     {
@@ -33057,8 +33057,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_ioptions",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "ioptions"
     },
     {
@@ -33068,8 +33068,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_cancellationtoken",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "cancellationtoken"
     },
     {
@@ -33079,8 +33079,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_task",
-      "community": 39,
-      "community_name": "EventDispatcher",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "task"
     },
     {
@@ -33987,8 +33987,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_products_endpoints_products_v1_my_update_endpoint",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "endpoint"
     },
     {
@@ -34004,8 +34004,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_products_endpoints_products_v1_my_update_endpoint_mapendpoint",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -34015,8 +34015,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_cs_routegroupbuilder",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -34032,8 +34032,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_products_endpoints_products_v1_my_update_endpoint_updatemyproductasync",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".updatemyproductasync()"
     },
     {
@@ -34043,8 +34043,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_cs_cancellationtoken",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "cancellationtoken"
     },
     {
@@ -34054,8 +34054,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_products_v1_my_update_endpoint_cs_task",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "task"
     },
     {
@@ -35245,8 +35245,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_products_endpoints_stores_v1_create_endpoint_createstoreasync",
-      "community": 136,
-      "community_name": "BackgroundJobsOptions",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": ".createstoreasync()"
     },
     {
@@ -35256,8 +35256,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_cs_cancellationtoken",
-      "community": 136,
-      "community_name": "BackgroundJobsOptions",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "cancellationtoken"
     },
     {
@@ -35267,8 +35267,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_cs_task",
-      "community": 136,
-      "community_name": "BackgroundJobsOptions",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "task"
     },
     {
@@ -36387,8 +36387,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "endpoint"
     },
     {
@@ -36404,8 +36404,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint_mapendpoint",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -36415,8 +36415,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_routegroupbuilder",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -36432,8 +36432,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint_updatemystoreasync",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": ".updatemystoreasync()"
     },
     {
@@ -36443,8 +36443,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_cancellationtoken",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -36454,8 +36454,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_task",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "task"
     },
     {
@@ -36894,8 +36894,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "endpoint"
     },
     {
@@ -36911,8 +36911,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint_mapendpoint",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -36922,8 +36922,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_routegroupbuilder",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -36939,8 +36939,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint_updatestoreasync",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": ".updatestoreasync()"
     },
     {
@@ -36950,8 +36950,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_cancellationtoken",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "cancellationtoken"
     },
     {
@@ -36961,8 +36961,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_task",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 72,
+      "community_name": "IAggregateRoot",
       "norm_label": "task"
     },
     {
@@ -48256,7 +48256,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L2",
+      "source_location": "L1",
       "weight": 1.0,
       "metadata": {
         "using_kind": "namespace",
@@ -49447,7 +49447,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L35",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -49462,7 +49462,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -49477,7 +49477,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -49492,7 +49492,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -49507,7 +49507,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -49522,7 +49522,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L42",
+      "source_location": "L41",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -69380,7 +69380,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L106",
+      "source_location": "L105",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_infrastructure_ratelimiting_redisfixedwindowratelimiter_common_infrastructure_ratelimiting_redisfixedwindowratelimiter",
@@ -69424,7 +69424,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L103",
+      "source_location": "L102",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_infrastructure_ratelimiting_redisfixedwindowratelimiter_common_infrastructure_ratelimiting_redisfixedwindowratelimiter",
@@ -69525,7 +69525,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L106",
+      "source_location": "L105",
       "weight": 1.0,
       "metadata": {
         "ref_token": "RateLimitLease"
@@ -69569,7 +69569,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L103",
+      "source_location": "L102",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -69600,7 +69600,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L98",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_infrastructure_ratelimiting_redisfixedwindowratelimiter_common_infrastructure_ratelimiting_redisfixedwindowratelimiter_acquireasynccore",
@@ -69641,7 +69641,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L103",
+      "source_location": "L102",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -69656,7 +69656,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L103",
+      "source_location": "L102",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -69671,7 +69671,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L121",
+      "source_location": "L120",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_infrastructure_ratelimiting_redisfixedwindowratelimiter_common_infrastructure_ratelimiting_fixedwindowlease",
@@ -69682,7 +69682,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs",
-      "source_location": "L110",
+      "source_location": "L109",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -90361,7 +90361,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies",
@@ -91141,7 +91141,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L7",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies",
@@ -91152,7 +91152,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L35",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91163,7 +91163,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91174,7 +91174,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91185,7 +91185,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91196,7 +91196,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91207,7 +91207,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L42",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_modules_iam_iam_infrastructure_ratelimiting_policies_iam_infrastructure_ratelimiting_policies",
@@ -91218,7 +91218,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -91233,7 +91233,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -91248,7 +91248,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -91263,7 +91263,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L35",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91278,7 +91278,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91293,7 +91293,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91308,7 +91308,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -91323,7 +91323,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.cs",
-      "source_location": "L42",
+      "source_location": "L41",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -110000,5 +110000,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "976b4f354adacff740fcdceb5f9b6116e6fc369c"
+  "built_at_commit": "aacaf4e781dba6d1f555794086c0b2b2729ea27e"
 }

@@ -5,6 +5,7 @@ using Common.Application.Localization.Resources;
 using Common.Application.Options;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.RateLimiting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -54,18 +55,23 @@ internal static class RateLimitingMiddleware
         });
     }
 
+    // Shape matches ResultToResponseTransformer (Common.Application/EndpointFilters) so every 429 in the
+    // API — whether raised here by the ASP.NET rate limiter or from a Result-returning handler that maps
+    // its own throttling into the same "TooManyRequests" error key — looks identical on the wire.
     private static Func<OnRejectedContext, CancellationToken, ValueTask> WriteTooManyRequestsToResponse()
     {
         return (context, _) =>
         {
-            var localizer = context.HttpContext.RequestServices.GetRequiredService<IResxLocalizer>();
+            var httpContext = context.HttpContext;
+            var localizer = httpContext.RequestServices.GetRequiredService<IResxLocalizer>();
+            var env = httpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+            var problemDetailsService = httpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
 
-            var problemDetailsService =
-                context.HttpContext.RequestServices.GetRequiredService<IProblemDetailsService>();
             var problemDetails = new ProblemDetails
             {
                 Status = (int)HttpStatusCode.TooManyRequests,
-                Title = localizer.TooManyRequests
+                Title = localizer.TooManyRequests,
+                Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
             };
 
             if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
@@ -75,11 +81,14 @@ internal static class RateLimitingMiddleware
             }
 
             problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
+            problemDetails.AddErrors([]);
+            problemDetails.Extensions.TryAdd("traceId", httpContext.TraceIdentifier);
+            problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
 
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+            httpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
             return problemDetailsService.WriteAsync(new ProblemDetailsContext
             {
-                HttpContext = context.HttpContext, ProblemDetails = problemDetails
+                HttpContext = httpContext, ProblemDetails = problemDetails
             });
         };
     }
