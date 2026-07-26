@@ -1,6 +1,7 @@
 using System.Threading.RateLimiting;
 using Common.Application.Options;
 using Common.Infrastructure.Extensions;
+using Common.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -17,16 +18,10 @@ public static partial class Policies
 
         public RateLimitPartition<string> GetPartition(HttpContext httpContext)
         {
-            var partition = httpContext.GetIpAddress() ?? "unknown";
-            var opts = rateLimitingOptionsProvider.Value.Register;
+            var partitionKey = httpContext.GetIpAddress() ?? "unknown";
 
-            return RateLimitPartition.GetFixedWindowLimiter(partition,
-                _ => new FixedWindowRateLimiterOptions
-                {
-                    PermitLimit = opts.Limit,
-                    Window = TimeSpan.FromMilliseconds(opts.PeriodInMs),
-                    QueueLimit = opts.QueueLimit,
-                });
+            return RateLimitPartitions.FixedWindow(
+                httpContext, Constants.Register, partitionKey, rateLimitingOptionsProvider.Value.Register);
         }
     }
 }

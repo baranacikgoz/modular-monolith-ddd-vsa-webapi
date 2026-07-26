@@ -10,11 +10,11 @@ namespace IAM.Infrastructure.RateLimiting;
 
 public static partial class Policies
 {
-    // internal (not private): unit-tested directly from IAM.Tests via InternalsVisibleTo, since
-    // AddFixedWindowLimiter's single shared bucket previously rate-limited /tokens/refresh globally
-    // across every caller — one client could exhaust it and lock out all other users' refreshes.
-    internal sealed class TokenRefreshRateLimitingPolicy(IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider)
-        : IRateLimiterPolicy<string>
+    // internal (not private): unit-tested directly from IAM.Tests via InternalsVisibleTo, mirroring the
+    // TokenRefresh fix — AddFixedWindowLimiter is a single bucket shared by every caller, so one client
+    // exhausting it 429s registration-check for every user.
+    internal sealed class CheckRegistrationRateLimitingPolicy(
+        IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider) : IRateLimiterPolicy<string>
     {
         // Null → falls through to global OnRejected set in GlobalOnRejected()
         public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => null;
@@ -24,7 +24,8 @@ public static partial class Policies
             var partitionKey = httpContext.GetIpAddress() ?? "unknown";
 
             return RateLimitPartitions.FixedWindow(
-                httpContext, Constants.TokenRefresh, partitionKey, rateLimitingOptionsProvider.Value.TokenRefresh);
+                httpContext, Constants.CheckRegistration, partitionKey,
+                rateLimitingOptionsProvider.Value.CheckRegistration);
         }
     }
 }

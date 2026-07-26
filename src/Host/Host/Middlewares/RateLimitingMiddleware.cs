@@ -4,6 +4,7 @@ using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
 using Common.Infrastructure.Extensions;
+using Common.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -44,23 +45,13 @@ internal static class RateLimitingMiddleware
     private static PartitionedRateLimiter<HttpContext> GlobalRateLimiter(CustomRateLimitingOptions rateLimitingOptions)
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-            RateLimitPartition.GetFixedWindowLimiter(
-                httpContext.GetIpAddress() ?? "N/A",
-                _ =>
-                {
-                    var globalRateLimiting = rateLimitingOptions.Global ??
-                                             throw new InvalidOperationException("Global rate limiting is null.");
-                    var permitLimit = globalRateLimiting.Limit;
-                    var periodInMs = globalRateLimiting.PeriodInMs;
+        {
+            var globalRateLimiting = rateLimitingOptions.Global ??
+                                      throw new InvalidOperationException("Global rate limiting is null.");
+            var partitionKey = httpContext.GetIpAddress() ?? "N/A";
 
-                    return new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = permitLimit,
-                        Window = TimeSpan.FromMilliseconds(periodInMs),
-                        QueueLimit = globalRateLimiting.QueueLimit
-                    };
-                }
-            ));
+            return RateLimitPartitions.FixedWindow(httpContext, "Global", partitionKey, globalRateLimiting);
+        });
     }
 
     private static Func<OnRejectedContext, CancellationToken, ValueTask> WriteTooManyRequestsToResponse()

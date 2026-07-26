@@ -25,30 +25,18 @@ public static partial class Policies
         rateLimiter.AddPolicy<string, RegisterRateLimitingPolicy>(Constants.Register);
     }
 
-    private static void TokenCreatePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    private static void TokenCreatePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
-        rateLimiter
-            .AddFixedWindowLimiter(Constants.TokenCreate, opt =>
-            {
-                var tokenCreate = options.TokenCreate ?? throw new InvalidOperationException("TokenCreate rate limiting is null.");
-
-                opt.PermitLimit = tokenCreate.Limit;
-                opt.Window = TimeSpan.FromMilliseconds(tokenCreate.PeriodInMs);
-                opt.QueueLimit = tokenCreate.QueueLimit;
-            });
+        // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
+        // caller, so one client exhausting it would 429 login for every user — see TokenCreateRateLimitingPolicy.
+        rateLimiter.AddPolicy<string, TokenCreateRateLimitingPolicy>(Constants.TokenCreate);
     }
 
-    private static void CheckRegistrationPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions options)
+    private static void CheckRegistrationPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
-        rateLimiter
-            .AddFixedWindowLimiter(Constants.CheckRegistration, opt =>
-            {
-                var checkRegistration = options.CheckRegistration ?? throw new InvalidOperationException("CheckRegistration rate limiting is null.");
-
-                opt.PermitLimit = checkRegistration.Limit;
-                opt.Window = TimeSpan.FromMilliseconds(checkRegistration.PeriodInMs);
-                opt.QueueLimit = checkRegistration.QueueLimit;
-            });
+        // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
+        // caller — see CheckRegistrationRateLimitingPolicy.
+        rateLimiter.AddPolicy<string, CheckRegistrationRateLimitingPolicy>(Constants.CheckRegistration);
     }
 
     private static void TokenRefreshPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
