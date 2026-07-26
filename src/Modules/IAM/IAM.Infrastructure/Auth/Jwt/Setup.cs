@@ -6,6 +6,7 @@ using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,17 +20,13 @@ namespace IAM.Infrastructure.Auth.Jwt;
 
 internal static class Setup
 {
-    internal static IServiceCollection AddJwtAuthentication(this IServiceCollection services,
+    internal static AuthenticationBuilder AddJwtBearerScheme(this AuthenticationBuilder builder,
         IConfiguration configuration)
     {
         var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
         ArgumentNullException.ThrowIfNull(jwtOptions);
 
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+        return builder
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
@@ -154,7 +151,5 @@ internal static class Setup
                     }
                 };
             });
-
-        return services;
     }
 }

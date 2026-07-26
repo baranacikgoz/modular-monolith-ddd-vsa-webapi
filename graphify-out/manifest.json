@@ -735,8 +735,8 @@
     "semantic_hash": "01c1774588f6f7706ad815d385754e36"
   },
   "src/Host/Host/Middlewares/RateLimitingMiddleware.cs": {
-    "mtime": 1785057659.769812,
-    "ast_hash": "9ff23c92a77af46167fa58821379cc4c",
+    "mtime": 1785059685.2133129,
+    "ast_hash": "bdafc32189088c1a0226063d0ef491a1",
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/RequestResponseBodyLoggingMiddleware.cs": {
