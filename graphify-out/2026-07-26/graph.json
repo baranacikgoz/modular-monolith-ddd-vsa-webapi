@@ -834,8 +834,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:410d59c38eea749e",
-      "community": 98,
-      "community_name": "IDatabaseSeeder",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "common.application.caching"
     },
     {
@@ -897,8 +897,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_caching_otpcacheentry",
-      "community": 98,
-      "community_name": "IDatabaseSeeder",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "otpcacheentry.cs"
     },
     {
@@ -914,8 +914,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_caching_otpcacheentry_common_application_caching_otpcacheentry",
-      "community": 98,
-      "community_name": "IDatabaseSeeder",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "otpcacheentry"
     },
     {
@@ -4606,8 +4606,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_pagination_paginationresponse",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "paginationresponse.cs"
     },
     {
@@ -4623,8 +4623,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_application_pagination_paginationresponse_common_application_pagination_paginationresponse",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "paginationresponse"
     },
     {
@@ -6077,8 +6077,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_domain_resultmonad_error_common_domain_resultmonad_error_violatesuniqueconstraint",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 136,
+      "community_name": "BackgroundJobsOptions",
       "norm_label": ".violatesuniqueconstraint()"
     },
     {
@@ -6611,8 +6611,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_domain_stronglytypedids_applicationuserid_common_domain_stronglytypedids_applicationuserid_tostring",
-      "community": 100,
-      "community_name": "IdentityResultExtensions",
+      "community": 26,
+      "community_name": "Integration Event Handler Base",
       "norm_label": ".tostring()"
     },
     {
@@ -9516,8 +9516,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_common_infrastructure_persistence_extensions_paginationqueryableextensions",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "paginationqueryableextensions"
     },
     {
@@ -9533,8 +9533,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_common_infrastructure_persistence_extensions_paginationqueryableextensions_paginateasync",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": ".paginateasync()"
     },
     {
@@ -9544,8 +9544,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_iqueryable",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "iqueryable"
     },
     {
@@ -9555,8 +9555,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_expression",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "expression"
     },
     {
@@ -9566,8 +9566,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_func",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "func"
     },
     {
@@ -9577,8 +9577,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_cancellationtoken",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "cancellationtoken"
     },
     {
@@ -9588,8 +9588,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_persistence_extensions_paginationdbcontextextensions_cs_task",
-      "community": 175,
-      "community_name": "Endpoint",
+      "community": 59,
+      "community_name": "coverlet.collector",
       "norm_label": "task"
     },
     {
@@ -10804,8 +10804,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_common_infrastructure_ratelimiting_ratelimitpartitions",
-      "community": 73,
-      "community_name": "ApiVersionDescription",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "ratelimitpartitions"
     },
     {
@@ -10821,8 +10821,8 @@
       },
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_common_infrastructure_ratelimiting_ratelimitpartitions_fixedwindow",
-      "community": 73,
-      "community_name": "ApiVersionDescription",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": ".fixedwindow()"
     },
     {
@@ -10832,8 +10832,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_cs_httpcontext",
-      "community": 73,
-      "community_name": "ApiVersionDescription",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "httpcontext"
     },
     {
@@ -10843,8 +10843,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_infrastructure_ratelimiting_ratelimitpartitions_cs_ratelimitpartition",
-      "community": 73,
-      "community_name": "ApiVersionDescription",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -14005,11 +14005,11 @@
       "label": "RateLimitingMiddleware",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L13",
+      "source_location": "L14",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s331"
+          "s367"
         ]
       },
       "_origin": "ast",
@@ -14022,11 +14022,11 @@
       "label": ".AddCustomRateLimiting()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s331"
+          "s367"
         ]
       },
       "_origin": "ast",
@@ -14061,11 +14061,11 @@
       "label": ".GetCustomRateLimitingOptions()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L37",
+      "source_location": "L38",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s331"
+          "s367"
         ]
       },
       "_origin": "ast",
@@ -14078,11 +14078,11 @@
       "label": ".GlobalRateLimiter()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L45",
+      "source_location": "L46",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s331"
+          "s367"
         ]
       },
       "_origin": "ast",
@@ -14117,11 +14117,11 @@
       "label": ".WriteTooManyRequestsToResponse()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s331"
+          "s367"
         ]
       },
       "_origin": "ast",
@@ -14947,8 +14947,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_program",
-      "community": 89,
-      "community_name": "ConfigurationManager",
+      "community": 154,
+      "community_name": "Host.Swagger",
       "norm_label": "program.cs"
     },
     {
@@ -14963,8 +14963,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:3960ec4ca5fb5e5d",
-      "community": 89,
-      "community_name": "ConfigurationManager",
+      "community": 154,
+      "community_name": "Host.Swagger",
       "norm_label": "host"
     },
     {
@@ -14980,8 +14980,8 @@
       },
       "_origin": "ast",
       "id": "src_host_host_program_host_program",
-      "community": 89,
-      "community_name": "ConfigurationManager",
+      "community": 154,
+      "community_name": "Host.Swagger",
       "norm_label": "program"
     },
     {
@@ -15007,8 +15007,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0790ff52ee7104b",
-      "community": 121,
-      "community_name": "My/Search/Request.cs",
+      "community": 154,
+      "community_name": "Host.Swagger",
       "norm_label": "host.swagger"
     },
     {
@@ -15113,8 +15113,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_swagger_defaultresponsesoperationfilter",
-      "community": 121,
-      "community_name": "My/Search/Request.cs",
+      "community": 154,
+      "community_name": "Host.Swagger",
       "norm_label": "defaultresponsesoperationfilter.cs"
     },
     {
@@ -16533,8 +16533,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_iam_application_captcha_services_icaptchaservice_validateasync",
-      "community": 116,
-      "community_name": "IRoleService",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": ".validateasync()"
     },
     {
@@ -16544,8 +16544,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_cancellationtoken",
-      "community": 116,
-      "community_name": "IRoleService",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "cancellationtoken"
     },
     {
@@ -16555,8 +16555,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_captcha_services_icaptchaservice_cs_task",
-      "community": 116,
-      "community_name": "IRoleService",
+      "community": 56,
+      "community_name": "DummyOtpService",
       "norm_label": "task"
     },
     {
@@ -25161,8 +25161,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iratelimiterpolicy",
-      "community": 43,
-      "community_name": "IRateLimiterPolicy",
+      "community": 55,
+      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
       "norm_label": "iratelimiterpolicy"
     },
     {
@@ -25351,8 +25351,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_iam_infrastructure_ratelimiting_registerratelimitingpolicy_getpartition",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": ".getpartition()"
     },
     {
@@ -25362,8 +25362,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_httpcontext",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "httpcontext"
     },
     {
@@ -25373,8 +25373,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_ratelimitpartition",
-      "community": 55,
-      "community_name": "Microsoft.AspNetCore.SignalR.StackExchangeRedis",
+      "community": 132,
+      "community_name": ".RemoveMyProductAsync",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -27905,8 +27905,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_dummyotpservice",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 188,
+      "community_name": "DummyOtpService",
       "norm_label": "dummyotpservice.cs"
     },
     {
@@ -27938,8 +27938,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_dummyotpservice_notifications_infrastructure_otp_dummyotpservice",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 188,
+      "community_name": "DummyOtpService",
       "norm_label": "dummyotpservice"
     },
     {
@@ -27949,8 +27949,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_dummyotpservice_cs_string",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 188,
+      "community_name": "DummyOtpService",
       "norm_label": "string"
     },
     {
@@ -27966,8 +27966,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_dummyotpservice_notifications_infrastructure_otp_dummyotpservice_generate",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 188,
+      "community_name": "DummyOtpService",
       "norm_label": ".generate()"
     },
     {
@@ -28039,8 +28039,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_otpservicebase_notifications_infrastructure_otp_otpservicebase",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 94,
+      "community_name": "OtpServiceBase",
       "norm_label": "otpservicebase"
     },
     {
@@ -28050,8 +28050,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_otpservicebase_cs_int",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 94,
+      "community_name": "OtpServiceBase",
       "norm_label": "int"
     },
     {
@@ -28061,8 +28061,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "semaphoreslim",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 94,
+      "community_name": "OtpServiceBase",
       "norm_label": "semaphoreslim"
     },
     {
@@ -28145,8 +28145,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_otpservicebase_notifications_infrastructure_otp_otpservicebase_generate",
-      "community": 16,
-      "community_name": "Launch Settings",
+      "community": 94,
+      "community_name": "OtpServiceBase",
       "norm_label": ".generate()"
     },
     {
@@ -28156,8 +28156,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_otp_redisotpservice",
-      "community": 98,
-      "community_name": "IDatabaseSeeder",
+      "community": 16,
+      "community_name": "Launch Settings",
       "norm_label": "redisotpservice.cs"
     },
     {
@@ -30487,8 +30487,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_application_persistence_iproductsdbcontext_products_application_persistence_iproductsdbcontext",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "iproductsdbcontext"
     },
     {
@@ -30498,8 +30498,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_application_persistence_iproductsdbcontext_cs_dbset",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "dbset"
     },
     {
@@ -33001,8 +33001,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "endpoint"
     },
     {
@@ -33018,8 +33018,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint_mapendpoint",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -33029,8 +33029,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_routegroupbuilder",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -33046,8 +33046,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_products_endpoints_producttemplates_v1_search_endpoint_searchproducttemplatesasync",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": ".searchproducttemplatesasync()"
     },
     {
@@ -33057,8 +33057,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_ioptions",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "ioptions"
     },
     {
@@ -33068,8 +33068,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_cancellationtoken",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "cancellationtoken"
     },
     {
@@ -33079,8 +33079,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_search_endpoint_cs_task",
-      "community": 59,
-      "community_name": "coverlet.collector",
+      "community": 39,
+      "community_name": "EventDispatcher",
       "norm_label": "task"
     },
     {
@@ -35245,8 +35245,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_products_endpoints_stores_v1_create_endpoint_createstoreasync",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 136,
+      "community_name": "BackgroundJobsOptions",
       "norm_label": ".createstoreasync()"
     },
     {
@@ -35256,8 +35256,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_cs_cancellationtoken",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 136,
+      "community_name": "BackgroundJobsOptions",
       "norm_label": "cancellationtoken"
     },
     {
@@ -35267,8 +35267,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_create_endpoint_cs_task",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 136,
+      "community_name": "BackgroundJobsOptions",
       "norm_label": "task"
     },
     {
@@ -36092,8 +36092,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "endpoint"
     },
     {
@@ -36109,8 +36109,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_mapendpoint",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -36120,8 +36120,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_routegroupbuilder",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -36137,8 +36137,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_getmystoreasync",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": ".getmystoreasync()"
     },
     {
@@ -36148,8 +36148,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_cancellationtoken",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -36159,8 +36159,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_task",
-      "community": 27,
-      "community_name": "Product Template Aggregate",
+      "community": 139,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "task"
     },
     {
@@ -36387,8 +36387,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "endpoint"
     },
     {
@@ -36404,8 +36404,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint_mapendpoint",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -36415,8 +36415,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_routegroupbuilder",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -36432,8 +36432,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_products_endpoints_stores_v1_my_update_endpoint_updatemystoreasync",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": ".updatemystoreasync()"
     },
     {
@@ -36443,8 +36443,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_cancellationtoken",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "cancellationtoken"
     },
     {
@@ -36454,8 +36454,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_update_endpoint_cs_task",
-      "community": 132,
-      "community_name": ".RemoveMyProductAsync",
+      "community": 27,
+      "community_name": "Product Template Aggregate",
       "norm_label": "task"
     },
     {
@@ -36894,8 +36894,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": "endpoint"
     },
     {
@@ -36911,8 +36911,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint_mapendpoint",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -36922,8 +36922,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_routegroupbuilder",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -36939,8 +36939,8 @@
       },
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_products_endpoints_stores_v1_update_endpoint_updatestoreasync",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": ".updatestoreasync()"
     },
     {
@@ -36950,8 +36950,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_cancellationtoken",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -36961,8 +36961,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_update_endpoint_cs_task",
-      "community": 72,
-      "community_name": "IAggregateRoot",
+      "community": 152,
+      "community_name": ".UpdateStoreAsync",
       "norm_label": "task"
     },
     {
@@ -49402,7 +49402,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -49417,7 +49417,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -69255,7 +69255,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L53",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware_globalratelimiter",
@@ -74059,7 +74059,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware",
@@ -74499,7 +74499,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware",
@@ -74510,7 +74510,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware",
@@ -74521,7 +74521,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware",
@@ -74532,7 +74532,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware",
@@ -74543,7 +74543,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware",
@@ -74554,7 +74554,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -74569,7 +74569,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -74585,7 +74585,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware_addcustomratelimiting",
@@ -74597,7 +74597,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware_addcustomratelimiting",
@@ -74609,7 +74609,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_ratelimitingmiddleware_host_middlewares_ratelimitingmiddleware_addcustomratelimiting",
@@ -74620,7 +74620,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -74635,7 +74635,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -74650,7 +74650,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -74665,7 +74665,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -74680,7 +74680,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -74695,7 +74695,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -74710,7 +74710,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/RateLimitingMiddleware.cs",
-      "source_location": "L57",
+      "source_location": "L61",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -110000,5 +110000,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "aacaf4e781dba6d1f555794086c0b2b2729ea27e"
+  "built_at_commit": "30d01dd9bfc82f516cc0406783a4c93c0fe0c5f8"
 }

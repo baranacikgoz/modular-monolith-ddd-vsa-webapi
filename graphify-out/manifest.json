@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Auth/JwtClaimNames.cs": {
-    "mtime": 1783628685.2106001,
-    "ast_hash": "cfc9708916f3c98e5f44f78cefb96288",
+    "mtime": 1785066470.502849,
+    "ast_hash": "712bcd47c7afc5f32e2c5295c82d36f1",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Auth/Permissions.cs": {
@@ -410,8 +410,8 @@
     "semantic_hash": "f7ee87cadf70ef79714a8d86135f68e7"
   },
   "src/Common/Common.Infrastructure/Auth/Services/CurrentUser.cs": {
-    "mtime": 1783628696.8803918,
-    "ast_hash": "54b69a88c5603046acff57636287e2c3",
+    "mtime": 1785066576.6283848,
+    "ast_hash": "3729385ca6eb0b588a991ffd60321cb3",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Auth/Setup.cs": {
@@ -670,8 +670,8 @@
     "semantic_hash": "66a76e7736d06c9402bdb729e29a1721"
   },
   "src/Host/Host/Configurations/Setup.cs": {
-    "mtime": 1784672574.8389592,
-    "ast_hash": "70241c84e0a31b69af719b9b985775a4",
+    "mtime": 1785066543.224409,
+    "ast_hash": "758571d86405db6be47cdad7d04c8296",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.ForwardedHeaders.cs": {
@@ -755,9 +755,9 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Swagger/ConfigureSwaggerOptions.cs": {
-    "mtime": 1779899541.68146,
-    "ast_hash": "295c0b8dd3600dd211d9f22b9a9fa988",
-    "semantic_hash": "295c0b8dd3600dd211d9f22b9a9fa988"
+    "mtime": 1785066562.0377839,
+    "ast_hash": "d046e1028734acfb2758c2c2eb071d30",
+    "semantic_hash": ""
   },
   "src/Host/Host/Swagger/DefaultResponsesOperationFilter.cs": {
     "mtime": 1783592649.5846233,
@@ -1125,9 +1125,9 @@
     "semantic_hash": "f699da855245715b8284ad8d7e343d28"
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/Jwt/Setup.cs": {
-    "mtime": 1780158070.4599907,
-    "ast_hash": "fbc3280165285fc563cf6c9f114eedd8",
-    "semantic_hash": "fbc3280165285fc563cf6c9f114eedd8"
+    "mtime": 1785066525.1811202,
+    "ast_hash": "72f13f7c39eb751063c27e50e7119dff",
+    "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/PermissionAuthorizationHandler.cs": {
     "mtime": 1779899541.6882164,
@@ -1145,9 +1145,9 @@
     "semantic_hash": "b042a62edc16156dbfdf0672542c0b60"
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/Setup.cs": {
-    "mtime": 1779899541.6884243,
-    "ast_hash": "a6189fda2d22da8b6ce82b9490d2e5a1",
-    "semantic_hash": "a6189fda2d22da8b6ce82b9490d2e5a1"
+    "mtime": 1785066537.2994413,
+    "ast_hash": "52a33ba4a0aaad7502ef5bfaef33964a",
+    "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Captcha/Services/CachedCaptchaService.cs": {
     "mtime": 1779899541.6885707,
@@ -2237,6 +2237,36 @@
   "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.TokenCreate.cs": {
     "mtime": 1785057693.8606305,
     "ast_hash": "3bae5dbe31d6ba707865d8c87c243a3f",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Options/ApiKeysOptions.cs": {
+    "mtime": 1785067319.4383245,
+    "ast_hash": "59576c1f12cbade877b990d68ec1a6ef",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Infrastructure/Auth/ApiKey/ApiKeyAuthenticationHandler.cs": {
+    "mtime": 1785067328.4188464,
+    "ast_hash": "9c1afb9ae0e74a2752d4c05e75c74390",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Infrastructure/Auth/ApiKey/ApiKeyDefaults.cs": {
+    "mtime": 1785066485.711728,
+    "ast_hash": "6554ebf0cd4e1571c365a1822011f867",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Infrastructure/Auth/ApiKey/ApiKeyHasher.cs": {
+    "mtime": 1785066487.9123147,
+    "ast_hash": "f27bd55218d9e751da8abf66f707106c",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Infrastructure/Auth/ApiKey/Setup.cs": {
+    "mtime": 1785066502.5179799,
+    "ast_hash": "6560b732204b44962a0c9a5081dc8378",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Infrastructure/Auth/MultiAuthDefaults.cs": {
+    "mtime": 1785066530.0342193,
+    "ast_hash": "ff24b6c8903261bf34d76ed73bb1ce0e",
     "semantic_hash": ""
   }
 }
