@@ -62,4 +62,18 @@ internal static class NotificationsTelemetry
 
     public static void RecordSmsThrottled(string reason) =>
         SmsThrottled.Add(1, new KeyValuePair<string, object?>("throttle.reason", reason));
+
+    public static readonly Counter<long> PushSent =
+        Meter.CreateCounter<long>("notifications.push.sent", "push",
+            "Total push send attempts per device token via IPushGateway, tagged by outcome.");
+
+    public static void RecordPushSent(string outcome) =>
+        PushSent.Add(1, new KeyValuePair<string, object?>("push.outcome", outcome));
+
+    public static readonly Counter<long> PushTokensRejected =
+        Meter.CreateCounter<long>("notifications.push.tokens_rejected", "tokens",
+            "Total device tokens FCM rejected on send, tagged by the raw MessagingErrorCode.");
+
+    public static void RecordPushTokenRejected(string fcmCode) =>
+        PushTokensRejected.Add(1, new KeyValuePair<string, object?>("fcm.code", fcmCode));
 }

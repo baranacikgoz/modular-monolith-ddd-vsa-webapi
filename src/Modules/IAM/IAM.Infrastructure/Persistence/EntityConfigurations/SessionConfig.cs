@@ -35,6 +35,10 @@ internal sealed class SessionConfig : AuditableEntityConfiguration<Session, Sess
             .HasConversion<string>();
 
         builder
+            .Property(s => s.PushToken)
+            .HasMaxLength(SessionConstants.PushTokenMaxLength);
+
+        builder
             .HasIndex(s => new { s.UserId, s.DeviceId, s.ClientId })
             .IsUnique();
 

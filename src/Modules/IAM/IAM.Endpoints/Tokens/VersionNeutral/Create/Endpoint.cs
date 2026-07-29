@@ -86,6 +86,14 @@ internal static class Endpoint
                     existingSession, request.DeviceId, request.ClientId, request.DeviceName, ip, userAgent,
                     SHA256.HashData(refreshTokenBytes), utcNow, refreshTokenExpiresAt, sessionAbsoluteExpiresAt);
 
+                if (request.PushToken is not null)
+                {
+                    // IssueSessionAndToken always leaves exactly one (freshly created or reactivated)
+                    // session in this Include-filtered collection.
+                    userObj.User.UpdateSessionPushToken(
+                        existingSession ?? userObj.User.Sessions.Single(), request.PushToken, utcNow);
+                }
+
                 var (accessToken, accessTokenExpiresAt) = tokenService.GenerateAccessToken(
                     utcNow, userObj.User.Id, refreshToken.SessionId, userObj.Roles);
 

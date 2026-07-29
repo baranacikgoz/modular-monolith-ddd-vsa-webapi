@@ -495,6 +495,12 @@
   <data name="Users_Tokens_Create_DeviceName_MaxLength" xml:space="preserve">
     <value>Device name cannot exceed ({0}) characters.</value>
   </data>
+  <data name="Users_Tokens_Create_PushToken_MaxLength" xml:space="preserve">
+    <value>Push token cannot exceed ({0}) characters.</value>
+  </data>
+  <data name="Tokens_Sessions_UpdatePushToken_PushToken_MaxLength" xml:space="preserve">
+    <value>Push token cannot exceed ({0}) characters.</value>
+  </data>
   <data name="Users_Tokens_Refresh_AccessToken_NotEmpty" xml:space="preserve">
     <value>Access token cannot be empty.</value>
   </data>
