@@ -54,6 +54,6 @@ public static class PaginationQueryableExtensions
             .Select(selector)
             .ToListAsync(cancellationToken);
 
-        return new PaginationResponse<TDto>(data, totalCount, request.PageNumber, data.Count);
+        return new PaginationResponse<TDto>(data, totalCount, request.PageNumber, request.PageSize);
     }
 }

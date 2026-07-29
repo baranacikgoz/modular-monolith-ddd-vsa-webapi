@@ -118,6 +118,39 @@ public class SearchTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task Search_OnPartialLastPage_ReportsRequestedPageSizeNotItemCount()
+    {
+        // Arrange — 3 users sharing a unique name, PageSize=2 so the last page holds only 1 item.
+        // PaginationResponse.PageSize must reflect the requested page size, not the returned item
+        // count, otherwise TotalPages/HasNext are computed from the wrong divisor on a partial page.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+
+        var sharedName = "PartialPageName_" + Guid.NewGuid().ToString("N")[..8];
+        db.Users.Add(CreateUser(sharedName + " One"));
+        db.Users.Add(CreateUser(sharedName + " Two"));
+        db.Users.Add(CreateUser(sharedName + " Three"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=2&PageSize=2&fullName={sharedName}", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(3, result.TotalCount);
+        Assert.Single(result.Data);
+        Assert.Equal(2, result.PageSize);
+        Assert.Equal(2, result.TotalPages);
+        Assert.False(result.HasNext);
+    }
+
+    [Fact]
     public async Task Search_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
     {
         // Arrange
