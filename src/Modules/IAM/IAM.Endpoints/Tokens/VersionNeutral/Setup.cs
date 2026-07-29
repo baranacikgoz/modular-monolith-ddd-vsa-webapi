@@ -24,5 +24,6 @@ public static class Setup
         Sessions.List.Endpoint.MapEndpoint(sessionsApiGroup);
         Sessions.Revoke.Endpoint.MapEndpoint(sessionsApiGroup);
         Sessions.RevokeAll.Endpoint.MapEndpoint(sessionsApiGroup);
+        Sessions.UpdatePushToken.Endpoint.MapEndpoint(sessionsApiGroup);
     }
 }

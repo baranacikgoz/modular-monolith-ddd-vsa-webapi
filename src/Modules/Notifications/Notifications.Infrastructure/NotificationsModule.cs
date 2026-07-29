@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifications.Infrastructure.Hubs;
 using Notifications.Infrastructure.Otp;
+using Notifications.Infrastructure.Push;
 using Notifications.Infrastructure.Sms;
 using Notifications.Infrastructure.Telemetry;
 
@@ -22,6 +23,7 @@ public sealed class NotificationsModule : IModule
         services.AddNotificationServices(configuration);
         services.AddNotificationsSignalR(configuration);
         services.AddOtpServices(configuration);
+        services.AddPushServices(configuration);
     }
 
     public void UseModule(IApplicationBuilder app)

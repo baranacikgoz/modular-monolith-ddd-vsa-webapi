@@ -41,6 +41,8 @@ public sealed class Session : AuditableEntity<SessionId>
     public DateTimeOffset AbsoluteExpiresAt { get; private set; }
     public DateTimeOffset? RevokedAt { get; private set; }
     public SessionRevokedReason? RevokedReason { get; private set; }
+    public string? PushToken { get; private set; }
+    public DateTimeOffset? PushTokenUpdatedOn { get; private set; }
 
     public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
@@ -104,5 +106,13 @@ public sealed class Session : AuditableEntity<SessionId>
     {
         RevokedAt = now;
         RevokedReason = reason;
+    }
+
+    /// <summary>Sets or rotates the FCM device token for this (device, app) session. Pass null to clear it
+    /// (e.g. the client unregistered locally).</summary>
+    internal void SetPushToken(string? token, DateTimeOffset now)
+    {
+        PushToken = token;
+        PushTokenUpdatedOn = now;
     }
 }

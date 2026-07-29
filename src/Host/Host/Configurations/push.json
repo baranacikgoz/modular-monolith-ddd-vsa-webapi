@@ -1,0 +1,15 @@
+{
+  "PushOptions": {
+    "Provider": "Dummy",
+    "ServiceAccount": {
+      "Type": "service_account",
+      "ProjectId": "myProjectId",
+      "PrivateKeyId": "myPrivateKeyId",
+      "PrivateKey": "myPrivateKey",
+      "ClientEmail": "myClientEmail",
+      "ClientId": "myClientId",
+      "TokenUri": "https://oauth2.googleapis.com/token"
+    },
+    "SendTimeoutSeconds": 8
+  }
+}

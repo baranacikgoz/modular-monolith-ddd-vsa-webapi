@@ -127,6 +127,20 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         RaiseEvent(new V1AllSessionsRevokedDomainEvent(Id, reason));
     }
 
+    /// <summary>
+    ///     Sets or rotates the FCM push token for the <paramref name="session" /> the caller already resolved
+    ///     (e.g. via a filtered EF <c>Include</c>). No DomainEvent raised — see the note above about token
+    ///     material never reaching AuditLog. Instance method (not static) to match every other Session
+    ///     mutation on this aggregate — all go through ApplicationUser even where, like here, no aggregate
+    ///     state is touched.
+    /// </summary>
+#pragma warning disable CA1822, S2325
+    public void UpdateSessionPushToken(Session session, string? pushToken, DateTimeOffset now)
+    {
+        session.SetPushToken(pushToken, now);
+    }
+#pragma warning restore CA1822, S2325
+
     private void ApplyEvent(IEvent @event)
     {
         switch (@event)

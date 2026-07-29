@@ -15,6 +15,7 @@ public sealed record Request
     public required Guid DeviceId { get; init; }
     public required string ClientId { get; init; }
     public string? DeviceName { get; init; }
+    public string? PushToken { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
@@ -46,5 +47,9 @@ public sealed class RequestValidator : CustomValidator<Request>
         RuleFor(x => x.DeviceName)
             .MaximumLength(Constants.DeviceNameMaxLength)
             .WithMessage(localizer.Users_Tokens_Create_DeviceName_MaxLength);
+
+        RuleFor(x => x.PushToken)
+            .MaximumLength(Constants.PushTokenMaxLength)
+            .WithMessage(localizer.Users_Tokens_Create_PushToken_MaxLength);
     }
 }
