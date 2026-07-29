@@ -10,7 +10,7 @@ public class PaginationRequestValidator<T> : CustomValidator<T>
 {
     private const int PageNumberGreaterThanOrEqualTo = 1;
     private const int PageSizeInclusiveMin = 1;
-    private const int PageSizeInclusiveMax = 1000;
+    private const int PageSizeInclusiveMax = 200;
 
     public PaginationRequestValidator(IResxLocalizer localizer)
     {
