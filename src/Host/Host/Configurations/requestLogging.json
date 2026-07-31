@@ -8,7 +8,8 @@
     "ExcludedPathPrefixes": [
       "/health",
       "/metrics",
-      "/swagger"
+      "/swagger",
+      "/hubs"
     ],
     "SensitiveRequestBodyPaths": [
       {
@@ -61,6 +62,13 @@
         "Path": "/users/search",
         "Methods": [
           "GET"
+        ]
+      },
+      {
+        "Path": "/hubs",
+        "Methods": [
+          "GET",
+          "POST"
         ]
       }
     ]

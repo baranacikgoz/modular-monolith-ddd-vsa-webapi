@@ -34,6 +34,7 @@
       "Limit": 20,
       "PeriodInMs": 60000,
       "QueueLimit": 0
-    }
+    },
+    "ExemptPathPrefixes": [ "/hubs" ]
   }
 }

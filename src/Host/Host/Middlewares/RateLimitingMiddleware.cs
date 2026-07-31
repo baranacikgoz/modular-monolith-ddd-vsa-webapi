@@ -47,12 +47,31 @@ internal static class RateLimitingMiddleware
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         {
+            var partitionKey = httpContext.GetIpAddress() ?? "N/A";
+
+            if (IsExempt(httpContext.Request.Path, rateLimitingOptions.ExemptPathPrefixes))
+            {
+                return RateLimitPartition.GetNoLimiter(partitionKey);
+            }
+
             var globalRateLimiting = rateLimitingOptions.Global ??
                                       throw new InvalidOperationException("Global rate limiting is null.");
-            var partitionKey = httpContext.GetIpAddress() ?? "N/A";
 
             return RateLimitPartitions.FixedWindow(httpContext, "Global", partitionKey, globalRateLimiting);
         });
+    }
+
+    private static bool IsExempt(PathString path, IReadOnlyList<string> exemptPathPrefixes)
+    {
+        for (var i = 0; i < exemptPathPrefixes.Count; i++)
+        {
+            if (path.StartsWithSegments(exemptPathPrefixes[i], StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Shape matches ResultToResponseTransformer (Common.Application/EndpointFilters) so every 429 in the

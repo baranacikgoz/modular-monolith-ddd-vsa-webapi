@@ -18,6 +18,12 @@ public class CustomRateLimitingOptions
     public required FixedWindow CheckRegistration { get; set; }
 
     public required FixedWindow TokenRefresh { get; set; }
+
+    /// <summary>
+    /// Path prefixes the global limiter never applies to. Rate-limiting a persistent connection (e.g.
+    /// a SignalR hub) is meaningless — reconnect storms and long-polling fallback would otherwise 429.
+    /// </summary>
+    public IReadOnlyList<string> ExemptPathPrefixes { get; set; } = [];
 }
 
 public class FixedWindow
