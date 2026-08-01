@@ -36,7 +36,7 @@ public sealed class HttpContextTargetingContextAccessorTests
     public async Task GetContextAsync_WithoutCurrentUser_ReturnsNullUserIdAndEmptyGroups()
     {
         var serviceProvider = Substitute.For<IServiceProvider>();
-        serviceProvider.GetService(typeof(ICurrentUser)).Returns(null);
+        serviceProvider.GetService(typeof(ICurrentUser)).Returns((object?)null);
 
         var httpContext = new DefaultHttpContext { RequestServices = serviceProvider };
         var accessor = Substitute.For<IHttpContextAccessor>();

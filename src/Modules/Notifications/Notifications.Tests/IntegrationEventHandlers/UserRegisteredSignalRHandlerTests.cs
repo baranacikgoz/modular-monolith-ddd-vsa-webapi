@@ -63,7 +63,7 @@ public sealed class UserRegisteredSignalRHandlerTests : IDisposable
 
         await _dispatcher.Received(1).SendToUserAsync(
             userId,
-            Arg.Is<NotificationPayload>(p => p.Type == "user.registered"),
+            Arg.Is<NotificationPayload>(p => p != null && p.Type == "user.registered"),
             Arg.Any<CancellationToken>());
     }
 
