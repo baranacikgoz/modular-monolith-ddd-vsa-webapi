@@ -38,7 +38,7 @@ public class RecurringBackgroundJobsServiceTests
             jobId,
             Arg.Any<Job>(),
             Arg.Is<string>(x => x == "0 0 * * *"),
-            Arg.Is<RecurringJobOptions>(opts => opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
+            Arg.Is<RecurringJobOptions>(opts => opts != null && opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
     }
 
     [Fact]
@@ -57,6 +57,6 @@ public class RecurringBackgroundJobsServiceTests
             jobId,
             Arg.Any<Job>(),
             Arg.Is<string>(x => x == "*/5 * * * *"),
-            Arg.Is<RecurringJobOptions>(opts => opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
+            Arg.Is<RecurringJobOptions>(opts => opts != null && opts.MisfireHandling == MisfireHandlingMode.Relaxed && opts.TimeZone == _timeProvider.LocalTimeZone));
     }
 }

@@ -73,7 +73,7 @@ public sealed class NotificationDispatcherTests
         await _dispatcher.SendToAllExceptAsync(excluded, payload, CancellationToken.None);
 
         _clients.Received(1).AllExcept(Arg.Is<IReadOnlyList<string>>(l =>
-            l.Count == 2 && l.Contains("conn-1") && l.Contains("conn-2")));
+            l != null && l.Count == 2 && l.Contains("conn-1") && l.Contains("conn-2")));
         await _proxy.Received(1).ReceiveNotification(payload);
     }
 }
