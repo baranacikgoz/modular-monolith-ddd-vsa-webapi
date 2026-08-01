@@ -141,7 +141,9 @@ public static partial class OutboxSaveHelper
 
             if (ownsTransaction)
             {
+#pragma warning disable S8969 // Sonar's non-null inference is wrong: transaction stays nullable across the ownsTransaction check.
                 await transaction!.CommitAsync(cancellationToken);
+#pragma warning restore S8969
             }
 
             // Clear events once this save is durably committed. When we own the transaction,
@@ -164,7 +166,9 @@ public static partial class OutboxSaveHelper
                 // Wrap so a broken/already-aborted transaction doesn't mask the original error.
                 try
                 {
+#pragma warning disable S8969 // Sonar's non-null inference is wrong: transaction stays nullable across the ownsTransaction check.
                     await transaction!.RollbackAsync(CancellationToken.None);
+#pragma warning restore S8969
                 }
                 catch (Exception rollbackEx)
                 {

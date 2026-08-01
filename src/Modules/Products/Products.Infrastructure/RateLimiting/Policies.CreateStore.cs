@@ -30,7 +30,7 @@ public static partial class Policies
         {
             var localizedMessage = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
                 ? LocalizedMessage(retryAfter)
-                : LocalizedMessage(TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore!.PeriodInMs!));
+                : LocalizedMessage(TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs));
 
             var problemDetails = new ProblemDetails
             {
@@ -59,9 +59,9 @@ public static partial class Policies
             return RateLimitPartition.GetFixedWindowLimiter(userId, opt =>
                 new FixedWindowRateLimiterOptions
                 {
-                    Window = TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore!.PeriodInMs!),
-                    PermitLimit = rateLimitingOptionsProvider.Value.CreateStore!.Limit!,
-                    QueueLimit = rateLimitingOptionsProvider.Value.CreateStore!.QueueLimit!
+                    Window = TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs),
+                    PermitLimit = rateLimitingOptionsProvider.Value.CreateStore.Limit,
+                    QueueLimit = rateLimitingOptionsProvider.Value.CreateStore.QueueLimit
                 });
         }
 

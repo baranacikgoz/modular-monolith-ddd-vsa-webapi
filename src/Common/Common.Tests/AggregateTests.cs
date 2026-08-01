@@ -57,7 +57,7 @@ public abstract class AggregateTests<TAggregate, TId>
     public AggregateTests<TAggregate, TId> When(Func<TAggregate, object, Result> func)
     {
         Assert.NotNull(_objectUnderTheTestAlongWithAggregate);
-        var result = func(Aggregate, _objectUnderTheTestAlongWithAggregate!);
+        var result = func(Aggregate, _objectUnderTheTestAlongWithAggregate);
         _plainResult = result;
         _error = result.Error;
         return this;
@@ -143,7 +143,7 @@ public abstract class AggregateTests<TAggregate, TId>
 
         if (assertions.Length > 0)
         {
-            Assert.All(assertions, assert => assert(Aggregate, _objectUnderTheTestAlongWithAggregate!, @event));
+            Assert.All(assertions, assert => assert(Aggregate, _objectUnderTheTestAlongWithAggregate, @event));
         }
 
         return this;
@@ -182,7 +182,7 @@ public abstract class AggregateTests<TAggregate, TId>
 
         if (assertions.Length > 0)
         {
-            Assert.All(assertions, assert => assert(_error!));
+            Assert.All(assertions, assert => assert(_error));
         }
 
         return this;
