@@ -21,7 +21,7 @@ public static class CollectionExtensions
             }
             else
             {
-                result = value!;
+                result = value;
             }
         }
         catch (InvalidOperationException)

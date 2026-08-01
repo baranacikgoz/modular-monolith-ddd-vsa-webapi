@@ -80,7 +80,9 @@ internal sealed partial class RedisFixedWindowRateLimiter : RateLimiter
         {
             var db = _redis.GetDatabase();
             var raw = await db.ScriptEvaluateAsync(Script, [_key], [(long)_window.TotalMilliseconds]);
+#pragma warning disable S8969 // Sonar's non-null inference is wrong here: raw is RedisResult?, cast needs the assertion.
             var result = (RedisResult[])raw!;
+#pragma warning restore S8969
             var count = (long)result[0];
             var pttlMs = (long)result[1];
 

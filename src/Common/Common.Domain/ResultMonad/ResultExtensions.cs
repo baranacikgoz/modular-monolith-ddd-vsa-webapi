@@ -456,13 +456,13 @@ public static class AsyncExtensions
             return Result<(T1, T2, T3)>.Failure(result12.Error!);
         }
 
-        var thirdResult = await thirdSelector(result12.Value!).ConfigureAwait(false);
+        var thirdResult = await thirdSelector(result12.Value).ConfigureAwait(false);
         if (thirdResult.IsFailure)
         {
             return Result<(T1, T2, T3)>.Failure(thirdResult.Error!);
         }
 
-        var (item1, item2) = result12.Value!;
+        var (item1, item2) = result12.Value;
         return Result<(T1, T2, T3)>.Success((item1, item2, thirdResult.Value!));
     }
 
@@ -476,13 +476,13 @@ public static class AsyncExtensions
             return Result<(T1, T2, T3)>.Failure(result12.Error!);
         }
 
-        var thirdResult = thirdSelector(result12.Value!);
+        var thirdResult = thirdSelector(result12.Value);
         if (thirdResult.IsFailure)
         {
             return Result<(T1, T2, T3)>.Failure(thirdResult.Error!);
         }
 
-        var (item1, item2) = result12.Value!;
+        var (item1, item2) = result12.Value;
         return Result<(T1, T2, T3)>.Success((item1, item2, thirdResult.Value!));
     }
 
