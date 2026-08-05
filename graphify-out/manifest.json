@@ -440,8 +440,8 @@
     "semantic_hash": "bffc469c0c6ce1c2cff546b45617176b"
   },
   "src/Common/Common.Infrastructure/Extensions/HttpContextExtensions.cs": {
-    "mtime": 1785057640.5466182,
-    "ast_hash": "643fea483927b57779a3312af6666d8a",
+    "mtime": 1785912843.1330955,
+    "ast_hash": "32ab7865550162f50d34198237925f2b",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Extensions/ResultTelemetryExtensions.cs": {
@@ -715,8 +715,8 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1784672558.072618,
-    "ast_hash": "bc7e86f29e859f93cdd6a23ee6654281",
+    "mtime": 1785912806.1395202,
+    "ast_hash": "12e3caebbe2444b13ee222c320b3e8dc",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/StringExtensions.cs": {
@@ -1930,9 +1930,9 @@
     "semantic_hash": "4c80cf19290f1c91de9f0806dbf4893f"
   },
   "src/Modules/Products/Products.Infrastructure/RateLimiting/Policies.CreateStore.cs": {
-    "mtime": 1779899541.703345,
-    "ast_hash": "8b5b8af4e102c13668d78a8bc880eae3",
-    "semantic_hash": "8b5b8af4e102c13668d78a8bc880eae3"
+    "mtime": 1785913026.3189528,
+    "ast_hash": "9b087a5e08c97a36b09c6bb85944322d",
+    "semantic_hash": ""
   },
   "src/Modules/Products/Products.Infrastructure/RateLimiting/Policies.cs": {
     "mtime": 1779899541.7034025,
@@ -2317,6 +2317,11 @@
   "src/Modules/Notifications/Notifications.Infrastructure/Push/Setup.cs": {
     "mtime": 1785367011.0302052,
     "ast_hash": "6e909d1a467eaa7d5f43f2af4a25eb79",
+    "semantic_hash": ""
+  },
+  "src/Modules/Products/Products.Infrastructure/AssemblyInfo.cs": {
+    "mtime": 1785913035.293859,
+    "ast_hash": "ffd1568e2545d74a91e2a02cce115fd6",
     "semantic_hash": ""
   }
 }
