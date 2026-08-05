@@ -1,13 +1,12 @@
 using System.Net;
 using System.Threading.RateLimiting;
-using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Application.Localization.Resources;
+using Common.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Products.Infrastructure.RateLimiting;
@@ -20,7 +19,8 @@ public static partial class Policies
             .AddPolicy<string, CreateStoreRateLimitingPolicy>(RateLimitingConstants.CreateStore);
     }
 
-    private sealed class CreateStoreRateLimitingPolicy(
+    // internal (not private): unit-tested directly from Products.Tests via InternalsVisibleTo.
+    internal sealed class CreateStoreRateLimitingPolicy(
         IProblemDetailsService problemDetailsService,
         IResxLocalizer localizer,
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider
@@ -50,13 +50,9 @@ public static partial class Policies
 
         public RateLimitPartition<string> GetPartition(HttpContext httpContext)
         {
-            var userId = httpContext
-                             .RequestServices
-                             .GetRequiredService<ICurrentUser>()
-                             .IdAsString
-                         ?? throw new InvalidOperationException("User is not authenticated.");
+            var partitionKey = httpContext.GetUserIdOrIpAddress();
 
-            return RateLimitPartition.GetFixedWindowLimiter(userId, opt =>
+            return RateLimitPartition.GetFixedWindowLimiter(partitionKey, opt =>
                 new FixedWindowRateLimiterOptions
                 {
                     Window = TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs),

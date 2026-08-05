@@ -64,7 +64,6 @@ internal static partial class Setup
             .UseMiddleware<SecurityHeadersMiddleware>()
             .UseHttpRequestLogging()
             .UseCommonResxLocalization()
-            .UseRateLimiter()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware();
 
@@ -72,8 +71,16 @@ internal static partial class Setup
         if (hasAuth)
         {
             app.UseAuthentication()
-                .UseMiddleware<EnrichLogsWithUserInfoMiddleware>()
-                .UseAuthorization();
+                .UseMiddleware<EnrichLogsWithUserInfoMiddleware>();
+        }
+
+        // After UseAuthentication so policies can partition by the authenticated caller; before
+        // UseAuthorization so 401/403 traffic still counts against the global per-IP limiter.
+        app.UseRateLimiter();
+
+        if (hasAuth)
+        {
+            app.UseAuthorization();
         }
 
         return app;
