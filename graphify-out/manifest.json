@@ -190,8 +190,8 @@
     "semantic_hash": "5ad954a95e8db46f4d6d1ed09d101407"
   },
   "src/Common/Common.Application/Options/CustomRateLimitingOptions.cs": {
-    "mtime": 1785057634.3803463,
-    "ast_hash": "e828776419a556442d550c55d4ca80a1",
+    "mtime": 1785458775.509936,
+    "ast_hash": "479d80921eb612c11c23b770c6b79b9e",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/DatabaseOptions.cs": {
@@ -735,8 +735,8 @@
     "semantic_hash": "01c1774588f6f7706ad815d385754e36"
   },
   "src/Host/Host/Middlewares/RateLimitingMiddleware.cs": {
-    "mtime": 1785059685.2133129,
-    "ast_hash": "bdafc32189088c1a0226063d0ef491a1",
+    "mtime": 1785458782.7896924,
+    "ast_hash": "6751957be4925d2657f4c0e6e6f339a6",
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/RequestResponseBodyLoggingMiddleware.cs": {
@@ -1300,14 +1300,14 @@
     "semantic_hash": "552c6f28f1b54495180d3947097a36bf"
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Hubs/NotificationGroupName.cs": {
-    "mtime": 1779899137.2292187,
-    "ast_hash": "824e6d55811855a03274821e902a0a69",
-    "semantic_hash": "824e6d55811855a03274821e902a0a69"
+    "mtime": 1785458804.5516334,
+    "ast_hash": "9f5777e737b7fd5bfcafedf0510be2a4",
+    "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Hubs/NotificationsHub.cs": {
-    "mtime": 1779899137.2292666,
-    "ast_hash": "1dde43226beac435b233a263926fd7e7",
-    "semantic_hash": "1dde43226beac435b233a263926fd7e7"
+    "mtime": 1785458801.2267773,
+    "ast_hash": "1e109792e6f5c57141e3e81c120d2754",
+    "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Hubs/Setup.SignalR.cs": {
     "mtime": 1784672513.4560173,

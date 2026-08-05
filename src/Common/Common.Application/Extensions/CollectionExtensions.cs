@@ -17,7 +17,7 @@ public static class CollectionExtensions
             var value = collection.SingleOrDefault(predicate);
             if (value is null)
             {
-                result = Error.NotFound(nameof(T));
+                result = Error.NotFound(typeof(T).Name);
             }
             else
             {
@@ -26,7 +26,7 @@ public static class CollectionExtensions
         }
         catch (InvalidOperationException)
         {
-            result = Result<T>.Failure(Error.ViolatesUniqueConstraint(nameof(T)));
+            result = Result<T>.Failure(Error.ViolatesUniqueConstraint(typeof(T).Name));
         }
 
         return result;
@@ -35,6 +35,6 @@ public static class CollectionExtensions
     public static Result<T> FirstAsResult<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
     {
         var value = collection.FirstOrDefault(predicate);
-        return value is null ? Error.NotFound(nameof(T)) : (Result<T>)value;
+        return value is null ? Error.NotFound(typeof(T).Name) : (Result<T>)value;
     }
 }
