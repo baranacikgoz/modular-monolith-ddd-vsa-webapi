@@ -20,6 +20,7 @@ public class TokenServiceTests
         RefreshTokenExpirationInDays = 7,
         SessionAbsoluteExpirationInDays = 90,
         RefreshTokenReuseGraceWindowInSeconds = 30,
+        SessionRevocationCacheDurationInSeconds = 30,
         AllowedClientIds = ["mobile-app-1", "web-app-1"]
     }));
 
@@ -31,7 +32,7 @@ public class TokenServiceTests
 
         var roles = DecodePayload(accessToken).GetProperty(JwtClaimNames.Roles);
 
-        // Even for ONE role the wire shape must be a JSON array — the FE never branches on string-vs-array.
+        // Even for ONE role the wire shape must be a JSON array: the FE never branches on string-vs-array.
         Assert.Equal(JsonValueKind.Array, roles.ValueKind);
         Assert.Equal([CustomRoles.Basic], roles.EnumerateArray().Select(x => x.GetString()!).ToArray());
     }

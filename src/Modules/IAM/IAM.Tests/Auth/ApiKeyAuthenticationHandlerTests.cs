@@ -19,13 +19,13 @@ using Xunit;
 
 namespace IAM.Tests.Auth;
 
-// Standalone host — deliberately NOT the shared IntegrationTestWebAppFactory: that factory forces
+// Standalone host, deliberately NOT the shared IntegrationTestWebAppFactory: that factory forces
 // TestAuthHandler as the default scheme and registers AllowAllAuthorizationHandler, which succeeds
 // every pending requirement (including PermissionRequirement) for any authenticated principal. That's
 // correct for the rest of the suite (auth is a given, tests focus on business logic) but it makes the
 // 401/403 distinction this feature depends on unobservable. This host wires the real
-// AddAuthInfrastructure pipeline — MultiAuth forwarding, PermissionPolicyProvider,
-// PermissionAuthorizationHandler, ApiKeyAuthenticationHandler — with no Postgres and no bypass.
+// AddAuthInfrastructure pipeline (MultiAuth forwarding, PermissionPolicyProvider,
+// PermissionAuthorizationHandler, ApiKeyAuthenticationHandler) with no Postgres and no bypass.
 public sealed class ApiKeyAuthenticationHandlerTests : IAsyncLifetime
 {
     private static readonly string GrantedPermission =
@@ -52,6 +52,7 @@ public sealed class ApiKeyAuthenticationHandlerTests : IAsyncLifetime
                         ["JwtOptions:RefreshTokenExpirationInDays"] = "14",
                         ["JwtOptions:SessionAbsoluteExpirationInDays"] = "90",
                         ["JwtOptions:RefreshTokenReuseGraceWindowInSeconds"] = "30",
+                        ["JwtOptions:SessionRevocationCacheDurationInSeconds"] = "30",
                         ["JwtOptions:AllowedClientIds:0"] = "test-app",
                         ["ApiKeysOptions:Keys:0:Name"] = "test-caller-granted",
                         ["ApiKeysOptions:Keys:0:KeyHash"] = ApiKeyHasher.Hash(ValidKey),

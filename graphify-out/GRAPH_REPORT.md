@@ -1,16 +1,16 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-08-05)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-08-06)
 
 ## Corpus Check
-- 464 files · ~67,143 words
+- 464 files · ~67,565 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2961 nodes · 5242 edges · 296 communities (198 shown, 98 thin omitted)
+- 2961 nodes · 5242 edges · 297 communities (199 shown, 98 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 63 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `186cf8d0`
+- Built from commit: `2be86b6b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,7 +38,7 @@
 - IAM.Endpoints.Common.Validations
 - BoundedCaptureStream
 - IDatabaseSeeder
-- Common.InterModuleRequests.Notifications
+- Notifications.Application.Otp
 - IIAMDbContext
 - NetGsmSmsGateway
 - IEvent
@@ -54,8 +54,8 @@
 - CustomRateLimitingOptions
 - Seeder
 - .RefreshToken
-- .SearchUsersAsync
-- RegisterRateLimitingPolicy
+- .SendToUserAsync
+- .FixedWindow
 - AuditableEntityResponse
 - .SaveWithOutboxAsync
 - CreateStoreRateLimitingPolicy
@@ -70,7 +70,7 @@
 - ReCaptchaService
 - Seeder
 - .AddResilientHttpClient
-- .FixedWindow
+- CheckRegistrationRateLimitingPolicy
 - Notifications.Application.Sms
 - Cross-Module Reference Violation
 - IStronglyTypedId
@@ -137,8 +137,8 @@
 - ProductsModule
 - IAM.Infrastructure.Auth.ApiKey
 - IntegrationEventOutbox
-- SmsRateLimitingPolicy
-- NotificationsModule
+- TokenRefreshRateLimitingPolicy
+- NotificationsModule.cs
 - .LogHealthChecksRegistered
 - .TapWhenFeatureEnabledAsync
 - GlobalExceptionHandlingMiddleware
@@ -190,13 +190,13 @@
 - BackgroundJobsTelemetry
 - SecurityHeadersOptions.cs
 - IAM.Application.Tokens.DTOs
-- PaginationResponse
+- .GetMyStoreAuditLogAsync
 - ApiKeysOptions.cs
 - PermissionPolicyProvider
 - EventBus/Setup.cs
 - CachingOptions.cs
 - SmsOptions.cs
-- Notifications.Infrastructure.Telemetry
+- Notifications.Infrastructure.Hubs
 - Constants
 - SendRequestBody
 - Setup
@@ -204,6 +204,7 @@
 - InterModuleRequestOptions.cs
 - Caching/Setup.cs
 - IAM.Infrastructure.Auth
+- Notifications.Infrastructure.Telemetry
 - Split-Deployment PoC
 - .UpdateMyProductAsync
 - .UpdateMyStoreAsync
@@ -339,7 +340,7 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (296 total, 98 thin omitted)
+## Communities (297 total, 98 thin omitted)
 
 ### Community 0 - "IAM.Domain.Identity.Sessions"
 Cohesion: 0.14
@@ -406,7 +407,7 @@ Cohesion: 0.16
 Nodes (9): CancellationToken, Task, ISmsGateway, SmsCategory, SmsMessage, CancellationToken, Task, TimeSpan (+1 more)
 
 ### Community 17 - "Common.Application.BackgroundJobs"
-Cohesion: 0.28
+Cohesion: 0.24
 Nodes (5): Common.Application.BackgroundJobs, BackgroundJobs, RecurringJobOptions, IRecurringBackgroundJobs, RecurringBackgroundJobsService
 
 ### Community 18 - "DomainEvent"
@@ -429,9 +430,9 @@ Nodes (27): byte, IPostConfigureOptions, Memory, ReadOnlyMemory, ReadOnlySpan, S
 Cohesion: 0.14
 Nodes (9): IDatabaseSeeder, CancellationToken, Task, CancellationToken, Task, IamDatabaseSeeder, CancellationToken, Task (+1 more)
 
-### Community 23 - "Common.InterModuleRequests.Notifications"
-Cohesion: 0.12
-Nodes (11): Notifications.Application.Otp, Common.Application.Caching, Notifications.Infrastructure.InterModuleRequestHandlers, Notifications.Infrastructure.Otp, Common.InterModuleRequests.Notifications, CacheKeys, For, OtpCacheEntry (+3 more)
+### Community 23 - "Notifications.Application.Otp"
+Cohesion: 0.14
+Nodes (9): Notifications.Application.Otp, Common.Application.Caching, Notifications.Infrastructure.Otp, CacheKeys, For, OtpCacheEntry, IConfiguration, IServiceCollection (+1 more)
 
 ### Community 24 - "IIAMDbContext"
 Cohesion: 0.05
@@ -493,13 +494,13 @@ Nodes (11): Task, IdentityRole, ILogger, LoggerMessage, Task, Seeder, Action, Da
 Cohesion: 0.13
 Nodes (14): IAM.Endpoints.Tokens.VersionNeutral.Refresh, CancellationToken, HttpContext, ILogger, IOptions, LoggerMessage, RouteGroupBuilder, Task (+6 more)
 
-### Community 39 - ".SearchUsersAsync"
-Cohesion: 0.29
-Nodes (5): CancellationToken, IOptions, RouteGroupBuilder, Task, Endpoint
+### Community 39 - ".SendToUserAsync"
+Cohesion: 0.40
+Nodes (4): CancellationToken, IReadOnlyList, Task, SignalRNotificationDispatcher
 
-### Community 40 - "RegisterRateLimitingPolicy"
-Cohesion: 0.25
-Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, RegisterRateLimitingPolicy
+### Community 40 - ".FixedWindow"
+Cohesion: 0.10
+Nodes (18): IRateLimiterPolicy, RateLimitPartitions, HttpContext, RateLimitPartition, CancellationToken, Func, HttpContext, OnRejectedContext (+10 more)
 
 ### Community 41 - "AuditableEntityResponse"
 Cohesion: 0.05
@@ -549,9 +550,9 @@ Nodes (10): Products.Infrastructure.Persistence.Seeding, CancellationToken, ILog
 Cohesion: 0.22
 Nodes (7): Common.Infrastructure.Resiliency, HttpClient, HttpStandardResilienceOptions, IHttpClientBuilder, Setup, Action, IServiceCollection
 
-### Community 55 - ".FixedWindow"
-Cohesion: 0.10
-Nodes (18): IRateLimiterPolicy, RateLimitPartitions, HttpContext, RateLimitPartition, CancellationToken, Func, HttpContext, OnRejectedContext (+10 more)
+### Community 55 - "CheckRegistrationRateLimitingPolicy"
+Cohesion: 0.25
+Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, CheckRegistrationRateLimitingPolicy
 
 ### Community 56 - "Notifications.Application.Sms"
 Cohesion: 0.16
@@ -562,8 +563,8 @@ Cohesion: 0.06
 Nodes (31): JsonConverter, StrictDateTimeOffsetJsonConverter, DateTimeOffset, JsonSerializerOptions, Type, Utf8JsonReader, Utf8JsonWriter, StronglyTypedIdListReadOnlyJsonConverter (+23 more)
 
 ### Community 59 - "NotificationPayload"
-Cohesion: 0.25
-Nodes (9): CancellationToken, IReadOnlyList, Task, INotificationDispatcher, NotificationPayload, CancellationToken, IReadOnlyList, Task (+1 more)
+Cohesion: 0.22
+Nodes (8): Notifications.Application.Hubs, CancellationToken, IReadOnlyList, Task, INotificationDispatcher, Task, INotificationsClient, NotificationPayload
 
 ### Community 61 - ".AddProductToMyStoreAsync"
 Cohesion: 0.16
@@ -574,8 +575,8 @@ Cohesion: 0.33
 Nodes (6): IEndpointFilter, ResultToCreatedResponseTransformer, ResultToResponseTransformer, EndpointFilterDelegate, EndpointFilterInvocationContext, ValueTask
 
 ### Community 63 - "NotificationsHub"
-Cohesion: 0.21
-Nodes (8): Hub, Task, INotificationsClient, Exception, ILogger, LoggerMessage, Task, NotificationsHub
+Cohesion: 0.33
+Nodes (6): Hub, Exception, ILogger, LoggerMessage, Task, NotificationsHub
 
 ### Community 64 - "InterModuleRequestHandler"
 Cohesion: 0.18
@@ -642,8 +643,8 @@ Cohesion: 0.19
 Nodes (9): IEventHandlerWrapper, CancellationToken, Task, EventDispatcher, ActivitySource, CancellationToken, ILogger, LoggerMessage (+1 more)
 
 ### Community 81 - ".GenerateAccessToken"
-Cohesion: 0.22
-Nodes (7): accessToken, DateTimeOffset, expiresAt, ICollection, refreshTokenBytes, TokenService, NotificationGroupName
+Cohesion: 0.32
+Nodes (6): accessToken, DateTimeOffset, expiresAt, ICollection, refreshTokenBytes, TokenService
 
 ### Community 82 - "SelfRegister/Request.cs"
 Cohesion: 0.14
@@ -706,11 +707,11 @@ Cohesion: 0.40
 Nodes (3): Exception, ILogger, LoggerMessage
 
 ### Community 98 - ".SearchMyProductsAsync"
-Cohesion: 0.07
-Nodes (23): FullTextSearchOptions, FullTextSearchOptionsValidator, Dictionary, IReadOnlyList, string, ISearchLanguageResolver, SearchLanguageResolver, string (+15 more)
+Cohesion: 0.06
+Nodes (29): FullTextSearchOptions, FullTextSearchOptionsValidator, Dictionary, IReadOnlyList, string, PaginationResponse, ISearchLanguageResolver, SearchLanguageResolver (+21 more)
 
 ### Community 99 - ".AuthorizeAsync"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (7): DashboardContext, IDashboardAsyncAuthorizationFilter, CustomPermission, RouteHandlerBuilderExtensions, RouteHandlerBuilder, HangfireCustomAuthorizationFilter, Task
 
 ### Community 100 - ".SendCoreAsync"
@@ -797,13 +798,13 @@ Nodes (5): IAM.Infrastructure.Auth.ApiKey, string, ApiKeyDefaults, Authenticatio
 Cohesion: 0.25
 Nodes (5): Lock, IIntegrationEventOutbox, IntegrationEventOutbox, IReadOnlyList, List
 
-### Community 122 - "SmsRateLimitingPolicy"
+### Community 122 - "TokenRefreshRateLimitingPolicy"
 Cohesion: 0.25
-Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, SmsRateLimitingPolicy
+Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, TokenRefreshRateLimitingPolicy
 
-### Community 123 - "NotificationsModule"
-Cohesion: 0.22
-Nodes (6): IApplicationBuilder, IConfiguration, IEndpointRouteBuilder, IEnumerable, IServiceCollection, NotificationsModule
+### Community 123 - "NotificationsModule.cs"
+Cohesion: 0.15
+Nodes (8): Notifications.Infrastructure, IAssemblyReference, IApplicationBuilder, IConfiguration, IEndpointRouteBuilder, IEnumerable, IServiceCollection, NotificationsModule
 
 ### Community 124 - ".LogHealthChecksRegistered"
 Cohesion: 0.33
@@ -997,9 +998,9 @@ Nodes (3): SecurityHeadersOptions, SecurityHeadersOptionsValidator, Dictionary
 Cohesion: 0.29
 Nodes (5): IAM.Application.Tokens.DTOs, DateTimeOffset, AccessTokenDto, DateTimeOffset, TokensDto
 
-### Community 175 - "PaginationResponse"
-Cohesion: 0.10
-Nodes (14): AuditLogDto, PaginationResponse, CancellationToken, RouteGroupBuilder, Task, Endpoint, CancellationToken, RouteGroupBuilder (+6 more)
+### Community 175 - ".GetMyStoreAuditLogAsync"
+Cohesion: 0.11
+Nodes (13): AuditLogDto, CancellationToken, RouteGroupBuilder, Task, Endpoint, CancellationToken, RouteGroupBuilder, Task (+5 more)
 
 ### Community 176 - "ApiKeysOptions.cs"
 Cohesion: 0.48
@@ -1017,9 +1018,9 @@ Nodes (6): CachingEntryDefaults, CachingOptions, CachingOptionsValidator, Redis,
 Cohesion: 0.23
 Nodes (9): SmsOptions, SmsOptionsValidator, SmsProvider, SmsTemplatesOptions, Dictionary, IConfiguration, IServiceCollection, long (+1 more)
 
-### Community 181 - "Notifications.Infrastructure.Telemetry"
-Cohesion: 0.15
-Nodes (8): Notifications.Infrastructure.Telemetry, Notifications.Infrastructure.Hubs, Notifications.Application.Hubs, Notifications.Infrastructure, IConfiguration, IServiceCollection, Setup, IAssemblyReference
+### Community 181 - "Notifications.Infrastructure.Hubs"
+Cohesion: 0.20
+Nodes (5): Notifications.Infrastructure.Hubs, NotificationGroupName, IConfiguration, IServiceCollection, Setup
 
 ### Community 182 - "Constants"
 Cohesion: 0.33
@@ -1044,6 +1045,10 @@ Nodes (4): Common.Infrastructure.Caching, Setup, IConfiguration, IServiceCollect
 ### Community 188 - "IAM.Infrastructure.Auth"
 Cohesion: 0.24
 Nodes (5): ClaimsPrincipal, IAM.Infrastructure.Auth, ClaimsPrincipalExtensions, string, MultiAuthDefaults
+
+### Community 190 - "Notifications.Infrastructure.Telemetry"
+Cohesion: 0.47
+Nodes (3): Notifications.Infrastructure.Telemetry, Notifications.Infrastructure.InterModuleRequestHandlers, Common.InterModuleRequests.Notifications
 
 ### Community 191 - "Split-Deployment PoC"
 Cohesion: 0.25
@@ -1129,11 +1134,11 @@ Nodes (3): AuthenticationBuilder, IConfiguration, Setup
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `Common.Application.Options` to `IAM.Domain.Identity.Sessions`, `Common.Infrastructure.Persistence`, `IAMModule.cs`, `Common.Domain.ResultMonad`, `Common.Infrastructure.Persistence.ValueConverters`, `.SendAsync`, `MassTransitInterModuleRequestClient.cs`, `IAM.Endpoints.Common.Validations`, `BoundedCaptureStream`, `Common.InterModuleRequests.Notifications`, `Host.Swagger`, `CustomRateLimitingOptions`, `Policies.CreateStore.cs`, `SecurityHeadersOptions.cs`, `ProductsModule.cs`, `ApiKeysOptions.cs`, `CachingOptions.cs`, `SmsOptions.cs`, `Notifications.Infrastructure.Telemetry`, `.FixedWindow`, `Notifications.Application.Sms`, `InterModuleRequestOptions.cs`, `Caching/Setup.cs`, `OutboxTelemetry`, `OtpServiceBase`, `Common.Application.Validation`, `Common.IntegrationEvents`, `SelfRegister/Request.cs`, `AuditLogRetentionJobRegistrar`, `PushOptions.cs`, `.CreateTokens`, `CaptchaOptions.cs`, `Common.Infrastructure.Extensions`, `FirebasePushGateway.cs`, `.SearchMyProductsAsync`, `ModulesOptions.cs`, `CustomValidator`, `.AddCommonOptions`, `.SendAsync`, `OutboxCleanupJob.cs`, `BackgroundJobsModule.cs`, `IModule`?**
+- **Why does `Common.Application.Options` connect `Common.Application.Options` to `IAM.Domain.Identity.Sessions`, `Common.Infrastructure.Persistence`, `IAMModule.cs`, `Common.Domain.ResultMonad`, `Common.Infrastructure.Persistence.ValueConverters`, `.SendAsync`, `MassTransitInterModuleRequestClient.cs`, `IAM.Endpoints.Common.Validations`, `BoundedCaptureStream`, `Notifications.Application.Otp`, `Host.Swagger`, `CustomRateLimitingOptions`, `.FixedWindow`, `Policies.CreateStore.cs`, `SecurityHeadersOptions.cs`, `ProductsModule.cs`, `ApiKeysOptions.cs`, `CachingOptions.cs`, `SmsOptions.cs`, `Notifications.Infrastructure.Hubs`, `Notifications.Application.Sms`, `InterModuleRequestOptions.cs`, `Caching/Setup.cs`, `Notifications.Infrastructure.Telemetry`, `OutboxTelemetry`, `OtpServiceBase`, `Common.Application.Validation`, `Common.IntegrationEvents`, `SelfRegister/Request.cs`, `AuditLogRetentionJobRegistrar`, `PushOptions.cs`, `.CreateTokens`, `CaptchaOptions.cs`, `Common.Infrastructure.Extensions`, `FirebasePushGateway.cs`, `.SearchMyProductsAsync`, `ModulesOptions.cs`, `CustomValidator`, `.AddCommonOptions`, `.SendAsync`, `OutboxCleanupJob.cs`, `BackgroundJobsModule.cs`, `IModule`?**
   _High betweenness centrality (0.403) - this node is a cross-community bridge._
 - **Why does `Setup` connect `Setup` to `Common.Application.Options`, `BoundedCaptureStream`, `IModule`, `.LogHealthChecksRegistered`, `.AddModules`?**
   _High betweenness centrality (0.088) - this node is a cross-community bridge._
-- **Why does `Common.Domain.StronglyTypedIds` connect `Common.Domain.StronglyTypedIds` to `IAM.Domain.Identity.Sessions`, `ApplicationUserId`, `.HandleAsync`, `OutboxMessage`, `Common.InterModuleRequests.Contracts`, `Common.Infrastructure.Persistence`, `AuditableEntityResponse`, `Common.Domain.ResultMonad`, `.TryDeserialize`, `Common.Application.Validation`, `Common.Infrastructure.Persistence.ValueConverters`, `Common.IntegrationEvents`, `IAM.Infrastructure.Auth`, `Notifications.Infrastructure.Telemetry`, `Seeder`, `Host.Swagger`, `IStronglyTypedId`, `Common.Application.ModelBinders`?**
+- **Why does `Common.Domain.StronglyTypedIds` connect `Common.Domain.StronglyTypedIds` to `IAM.Domain.Identity.Sessions`, `ApplicationUserId`, `Common.Infrastructure.Persistence`, `Common.Domain.ResultMonad`, `Common.Infrastructure.Persistence.ValueConverters`, `Host.Swagger`, `Common.Application.ModelBinders`, `.HandleAsync`, `OutboxMessage`, `.SendToUserAsync`, `AuditableEntityResponse`, `Notifications.Infrastructure.Hubs`, `Seeder`, `IStronglyTypedId`, `NotificationPayload`, `IAM.Infrastructure.Auth`, `Common.InterModuleRequests.Contracts`, `Common.Application.Validation`, `Common.IntegrationEvents`, `.TryDeserialize`?**
   _High betweenness centrality (0.081) - this node is a cross-community bridge._
 - **What connects `OtpCacheEntry`, `Common.Domain`, `Common.Infrastructure` to the rest of the system?**
   _135 weakly-connected nodes found - possible documentation gaps or missing edges._

@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using Bogus;
 using ZiggyCreatures.Caching.Fusion;
+using Common.Application.Caching;
 using Common.Tests;
 using IAM.Application.Persistence;
 using IAM.Application.Tokens.Services;
@@ -86,12 +87,12 @@ public class RevokeTests : BaseIntegrationTest
         // Act
         var response = await client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
 
-        // Assert — unauthenticated callers must be rejected
+        // Assert: unauthenticated callers must be rejected
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task RevokeToken_ThenUseAccessToken_ReturnsUnauthorized()
+    public async Task RevokeToken_RemovesCachedSessionValidity()
     {
         // Arrange
         using var scope = Factory.Services.CreateScope();
@@ -118,18 +119,18 @@ public class RevokeTests : BaseIntegrationTest
         db.Users.Add(user);
         await db.SaveChangesAsync(default);
 
-        // Use a unique jti for this test to avoid cross-test cache collisions
-        var jti = Guid.NewGuid().ToString();
+        // Simulate a prior authenticated request having cached this session as valid.
+        var sessionValidKey = CacheKeys.For.SessionValid(refreshToken.SessionId.Value);
+        await cache.SetAsync(sessionValidKey, true);
 
-        var revokeClient = Factory.CreateClient();
-        revokeClient.DefaultRequestHeaders.Authorization =
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
-        revokeClient.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
-        revokeClient.DefaultRequestHeaders.Add("X-Test-Jti", jti);
-        revokeClient.DefaultRequestHeaders.Add("X-Test-Session-Id", refreshToken.SessionId.Value.ToString());
+        client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
+        client.DefaultRequestHeaders.Add("X-Test-Session-Id", refreshToken.SessionId.Value.ToString());
 
-        // Act — revoke the token
-        var revokeResponse = await revokeClient.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
+        // Act
+        var revokeResponse = await client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
 
         // Assert revoke succeeded
         if (!revokeResponse.IsSuccessStatusCode)
@@ -139,21 +140,21 @@ public class RevokeTests : BaseIntegrationTest
         }
         Assert.Equal(HttpStatusCode.NoContent, revokeResponse.StatusCode);
 
-        // Assert — the jti is now stored in the blacklist cache
-        // This proves the OnTokenValidated hook will reject any real JWT carrying this jti.
-        var isBlacklisted = await cache.GetOrDefaultAsync<bool?>($"blacklisted_jti:{jti}");
-        Assert.True(isBlacklisted == true, "Expected the revoked jti to be present in the blacklist cache.");
+        // The V1SessionRevokedDomainEventHandler must have removed the cached verdict, so the next
+        // real auth check falls through to Postgres instead of serving the stale cached "valid".
+        var stillCached = await cache.GetOrDefaultAsync<bool?>(sessionValidKey);
+        Assert.Null(stillCached);
     }
 
     [Fact]
-    public async Task RevokeToken_WhenSessionAlreadyGone_StillBlacklistsJti()
+    public async Task RevokeToken_WhenSessionAlreadyGone_ReturnsNotFound()
     {
-        // Arrange — a live access token whose session record has already vanished (e.g. cleaned up
-        // by account deletion) must still get its jti blacklisted: the caller is authenticated and
-        // explicitly signing out, so the token must die regardless of the session lookup outcome.
+        // Arrange: a live access token whose session record has already vanished (e.g. cleaned up
+        // by account deletion). Revocation is now sid-keyed and DB-backed (see JwtOptions-driven
+        // OnTokenValidated check), so a session with no matching row already fails closed on read
+        // without needing an explicit blacklist step here.
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
 
         var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999)
             .ToString(CultureInfo.InvariantCulture);
@@ -167,24 +168,18 @@ public class RevokeTests : BaseIntegrationTest
         db.Users.Add(user);
         await db.SaveChangesAsync(default);
 
-        var jti = Guid.NewGuid().ToString();
         var goneSessionId = Guid.NewGuid(); // no Session row exists for this id under this user
 
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
         client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
-        client.DefaultRequestHeaders.Add("X-Test-Jti", jti);
         client.DefaultRequestHeaders.Add("X-Test-Session-Id", goneSessionId.ToString());
 
         // Act
         var response = await client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
 
-        // Assert — the endpoint still fails the Result (session not found)...
+        // Assert: the endpoint still fails the Result (session not found).
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-        // ...but must have blacklisted the jti before attempting the session lookup.
-        var isBlacklisted = await cache.GetOrDefaultAsync<bool?>($"blacklisted_jti:{jti}");
-        Assert.True(isBlacklisted == true, "Expected the jti to be blacklisted even though the session was already gone.");
     }
 }

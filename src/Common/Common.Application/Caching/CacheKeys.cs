@@ -13,5 +13,10 @@ public static class CacheKeys
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(input)));
             return $"otp:{purpose}:{hash}";
         }
+
+        public static string SessionValid(Guid sessionId)
+        {
+            return $"session_valid:{sessionId}";
+        }
     }
 }

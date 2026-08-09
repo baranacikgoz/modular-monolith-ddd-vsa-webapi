@@ -1,8 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
@@ -15,8 +12,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Revoke;
 
@@ -35,32 +30,14 @@ internal static class Endpoint
     private static async Task<Result> RevokeToken(
         ICurrentUser currentUser,
         IIAMDbContext dbContext,
-        IFusionCache cacheService,
-        IOptions<JwtOptions> jwtOptionsProvider,
         TimeProvider timeProvider,
-        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
         using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
 
-        var jti = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
-
-        // Blacklist unconditionally, before touching the session: the caller is authenticated and
-        // explicitly logging out, so this jti belongs to their live access token regardless of
-        // whether the session record is still around to revoke (already revoked/gone must not
-        // skip this — that left the access token usable until natural expiry).
-        if (!string.IsNullOrEmpty(jti))
-        {
-            await cacheService.SetAsync<bool?>(
-                $"blacklisted_jti:{jti}",
-                true,
-                options: new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(jwtOptionsProvider.Value.AccessTokenExpirationInMinutes) },
-                token: cancellationToken);
-        }
-
         if (currentUser.SessionId is not { } rawSessionId)
         {
-            // Access token predates session tracking — nothing else to revoke.
+            // Access token predates session tracking, nothing else to revoke.
             return Result.Success;
         }
 

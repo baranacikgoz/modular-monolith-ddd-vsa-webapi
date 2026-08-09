@@ -32,6 +32,14 @@ public class JwtOptions
     /// token Create/Refresh requests as part of the (UserId, DeviceId, ClientId) session key.
     /// </summary>
     public required IReadOnlyCollection<string> AllowedClientIds { get; init; }
+
+    /// <summary>
+    /// TTL for the per-session revocation-check cache entry read on every request (see
+    /// OnTokenValidated in IAM.Infrastructure/Auth/Jwt/Setup.cs). Bounds both how long a revoked
+    /// session's access token can still validate on an instance that hasn't seen the revocation,
+    /// and how often the check falls back to a Postgres read.
+    /// </summary>
+    public required int SessionRevocationCacheDurationInSeconds { get; set; }
 }
 
 public class JwtOptionsValidator : CustomValidator<JwtOptions>
@@ -71,5 +79,9 @@ public class JwtOptionsValidator : CustomValidator<JwtOptions>
         RuleFor(o => o.AllowedClientIds)
             .NotEmpty()
             .WithMessage("AllowedClientIds must not be empty.");
+
+        RuleFor(o => o.SessionRevocationCacheDurationInSeconds)
+            .GreaterThan(0)
+            .WithMessage("SessionRevocationCacheDurationInSeconds must be greater than 0.");
     }
 }

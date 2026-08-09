@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Extensions/CollectionExtensions.cs": {
-    "mtime": 1785910601.7214642,
-    "ast_hash": "df5a8fdac6aca5725ffb3ccc0734dc42",
+    "mtime": 1785913457.1896796,
+    "ast_hash": "b242e5e2347019b1bf3e3901b6bdb699",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Extensions/ProblemDetailsExtensions.cs": {
@@ -380,9 +380,9 @@
     "semantic_hash": "e302f6d746d09f0bc50d6c2eca8eb4b7"
   },
   "src/Common/Common.Domain/ResultMonad/ResultExtensions.cs": {
-    "mtime": 1780021771.4149659,
-    "ast_hash": "564811fc716f459c41acddb74c96156c",
-    "semantic_hash": "564811fc716f459c41acddb74c96156c"
+    "mtime": 1785913456.7180648,
+    "ast_hash": "162f0f2f0ac04150a892b8bcd762405b",
+    "semantic_hash": ""
   },
   "src/Common/Common.Domain/StronglyTypedIds/ApplicationUserId.cs": {
     "mtime": 1779899541.6737428,
@@ -440,7 +440,7 @@
     "semantic_hash": "bffc469c0c6ce1c2cff546b45617176b"
   },
   "src/Common/Common.Infrastructure/Extensions/HttpContextExtensions.cs": {
-    "mtime": 1785912843.1330955,
+    "mtime": 1785913457.3078506,
     "ast_hash": "32ab7865550162f50d34198237925f2b",
     "semantic_hash": ""
   },
@@ -560,8 +560,8 @@
     "semantic_hash": "bbb084d651737855d33fdbfbcbf06724"
   },
   "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs": {
-    "mtime": 1784481847.4964483,
-    "ast_hash": "2617f2175f437077e7d396e7f51d1de5",
+    "mtime": 1785913456.7194622,
+    "ast_hash": "6f318193d2b3233fa52974d54bdea34f",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Persistence/SeedingCompletionTracker.cs": {
@@ -715,7 +715,7 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1785912806.1395202,
+    "mtime": 1785913457.3080153,
     "ast_hash": "12e3caebbe2444b13ee222c320b3e8dc",
     "semantic_hash": ""
   },
@@ -1930,8 +1930,8 @@
     "semantic_hash": "4c80cf19290f1c91de9f0806dbf4893f"
   },
   "src/Modules/Products/Products.Infrastructure/RateLimiting/Policies.CreateStore.cs": {
-    "mtime": 1785913026.3189528,
-    "ast_hash": "9b087a5e08c97a36b09c6bb85944322d",
+    "mtime": 1785913457.3082833,
+    "ast_hash": "7e016bcbc3246f5677b6e75ea32b86e6",
     "semantic_hash": ""
   },
   "src/Modules/Products/Products.Infrastructure/RateLimiting/Policies.cs": {
@@ -1990,8 +1990,8 @@
     "semantic_hash": ""
   },
   ".claude/commands/manage-migration.md": {
-    "mtime": 1784543314.2567081,
-    "ast_hash": "f6415c1a63cc7a7007cbb75bfe4e1dc4",
+    "mtime": 1785971455.9917357,
+    "ast_hash": "3397f6c3f56260ff0c8cecf602e7a302",
     "semantic_hash": ""
   },
   ".claude/commands/plan-feature.md": {
@@ -2225,8 +2225,8 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/RateLimiting/RedisFixedWindowRateLimiter.cs": {
-    "mtime": 1785058920.697222,
-    "ast_hash": "4a888b1c97367a5f4223bbe908c87e15",
+    "mtime": 1785913456.7205956,
+    "ast_hash": "8475d42e183cc77b13608b8ac70e03bc",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/RateLimiting/Policies.CheckRegistration.cs": {
@@ -2320,7 +2320,7 @@
     "semantic_hash": ""
   },
   "src/Modules/Products/Products.Infrastructure/AssemblyInfo.cs": {
-    "mtime": 1785913035.293859,
+    "mtime": 1785913457.3081338,
     "ast_hash": "ffd1568e2545d74a91e2a02cce115fd6",
     "semantic_hash": ""
   }

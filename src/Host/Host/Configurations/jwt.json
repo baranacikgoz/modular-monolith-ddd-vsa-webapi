@@ -7,6 +7,7 @@
     "RefreshTokenExpirationInDays": 14,
     "SessionAbsoluteExpirationInDays": 90,
     "RefreshTokenReuseGraceWindowInSeconds": 30,
+    "SessionRevocationCacheDurationInSeconds": 30,
     "AllowedClientIds": [
       "mobile-app-1",
       "mobile-app-2",

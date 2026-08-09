@@ -3,14 +3,19 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Common.Application.Auth;
+using Common.Application.Caching;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
+using Common.Infrastructure.Persistence.Extensions;
+using IAM.Application.Persistence;
+using IAM.Domain.Identity.Sessions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -49,21 +54,37 @@ internal static class Setup
                 {
                     OnTokenValidated = async context =>
                     {
-                        var jti = context.Principal?.FindFirstValue(JwtRegisteredClaimNames.Jti);
-                        if (jti is null)
+                        var sid = context.Principal?.FindFirstValue(JwtClaimNames.SessionId);
+                        if (sid is null || !SessionId.TryParse(sid, out var sessionId))
                         {
-                            context.Fail("Missing jti claim.");
+                            context.Fail("Missing or malformed sid claim.");
                             return;
                         }
 
-                        var cacheService = context.HttpContext.RequestServices.GetRequiredService<IFusionCache>();
-                        var isBlacklisted = await cacheService.GetOrDefaultAsync<bool?>(
-                            $"blacklisted_jti:{jti}",
+                        var cache = context.HttpContext.RequestServices.GetRequiredService<IFusionCache>();
+                        var db = context.HttpContext.RequestServices.GetRequiredService<IIAMDbContext>();
+
+                        // GetOrSetAsync's factory queries Postgres, the source of truth, so a Redis
+                        // outage falls back to a DB read instead of reading a cache miss as "not
+                        // revoked". IsFailSafeEnabled = false: on a factory failure this throws (routed
+                        // to OnAuthenticationFailed -> 401) instead of serving a stale cached value for
+                        // up to FailSafeMaxDuration.
+                        var isValid = await cache.GetOrSetAsync(
+                            CacheKeys.For.SessionValid(sessionId.Value),
+                            async ct => await db.Sessions
+                                .AsNoTracking()
+                                .TagWith("OnTokenValidated", sessionId.Value)
+                                .AnyAsync(s => s.Id == sessionId && s.RevokedAt == null, ct),
+                            options: new FusionCacheEntryOptions
+                            {
+                                Duration = TimeSpan.FromSeconds(jwtOptions.SessionRevocationCacheDurationInSeconds),
+                                IsFailSafeEnabled = false
+                            },
                             token: context.HttpContext.RequestAborted);
 
-                        if (isBlacklisted == true)
+                        if (!isValid)
                         {
-                            context.Fail("Token has been revoked.");
+                            context.Fail("Session has been revoked.");
                         }
                     },
                     OnChallenge = async context =>

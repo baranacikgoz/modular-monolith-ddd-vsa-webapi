@@ -31,13 +31,22 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         return ["*"];
     }
 
+    /// <summary>
+    /// When true (default), every request authenticates via <see cref="TestAuthHandler"/> and every
+    /// permission check auto-succeeds via <see cref="AllowAllAuthorizationHandler"/>, so tests can focus
+    /// on business logic. Override to false to exercise the real auth pipeline (JwtBearer/ApiKey via
+    /// MultiAuth forwarding, real permission checks) end to end, e.g. to prove a JwtBearerEvents hook
+    /// actually rejects a request.
+    /// </summary>
+    protected virtual bool UseTestAuthentication => true;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         var overrideModule = string.Join(",", GetActiveModules());
         builder.UseSetting("TestModuleOverride", overrideModule);
 
         // Transport is chosen at module-registration time, before ConfigureAppConfiguration's in-memory
-        // overrides are merged — so it must travel via UseSetting (which IS visible at registration, like
+        // overrides are merged, so it must travel via UseSetting (which IS visible at registration, like
         // TestModuleOverride). In-memory transport delivers inter-module request/response in-process so
         // tests need no RabbitMQ broker. Outbox.Tests overrides this back to RabbitMQ for its own broker.
         builder.UseSetting("MassTransitOptions:UseInMemoryTransport", "true");
@@ -90,23 +99,26 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         {
             services.AddSingleton<IAutoMigrateMarker>(new AutoMigrateMarker());
 
-            services.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
-                    options => { });
-
-            services.Configure<AuthenticationOptions>(options =>
+            if (UseTestAuthentication)
             {
-                options.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
-                options.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
-            });
+                services.AddAuthentication(TestAuthHandler.AuthenticationScheme)
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme,
+                        options => { });
 
-            services.AddAuthorizationBuilder()
-                .SetDefaultPolicy(new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(TestAuthHandler.AuthenticationScheme)
-                    .RequireAuthenticatedUser()
-                    .Build());
+                services.Configure<AuthenticationOptions>(options =>
+                {
+                    options.DefaultAuthenticateScheme = TestAuthHandler.AuthenticationScheme;
+                    options.DefaultChallengeScheme = TestAuthHandler.AuthenticationScheme;
+                });
 
-            services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
+                services.AddAuthorizationBuilder()
+                    .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+                        .AddAuthenticationSchemes(TestAuthHandler.AuthenticationScheme)
+                        .RequireAuthenticatedUser()
+                        .Build());
+
+                services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
+            }
         });
     }
 
