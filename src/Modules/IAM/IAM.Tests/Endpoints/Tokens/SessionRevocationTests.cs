@@ -7,11 +7,8 @@ using Common.Application.Auth;
 using Common.Application.Caching;
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
-using IAM.Application.Persistence;
 using IAM.Domain.Identity;
-using IAM.Domain.Identity.Sessions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -130,6 +127,14 @@ public class SessionRevocationTests : BaseIntegrationTest
         return client.PostAsync(new Uri("/tokens/revoke", UriKind.Relative), null);
     }
 
+    private static async Task<Guid> GetFirstSessionIdAsync(HttpClient client)
+    {
+        var response = await GetMySessionsAsync(client);
+        var rawJson = await response.Content.ReadAsStringAsync();
+        using var doc = System.Text.Json.JsonDocument.Parse(rawJson);
+        return doc.RootElement.EnumerateArray().First().GetProperty("id").GetGuid();
+    }
+
     [Fact]
     public async Task RevokedSession_WithRealJwt_ReturnsUnauthorized()
     {
@@ -228,26 +233,44 @@ public class SessionRevocationTests : BaseIntegrationTest
         Assert.Equal(HttpStatusCode.OK, (await GetMySessionsAsync(clientA)).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await GetMySessionsAsync(clientB)).StatusCode);
 
-        // Sessions/RevokeAll (DELETE /tokens/sessions) requires DeleteMy/ApplicationUsers, which no
-        // role in this codebase currently grants (see Permissions.cs), flagged separately as a
-        // pre-existing bug. Drive the same domain method directly so this test still verifies what
-        // it is meant to: that revoking every session invalidates every cached entry, not one role
-        // gap in an unrelated feature.
-        using (var revokeScope = Factory.Services.CreateScope())
-        {
-            var db = revokeScope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-            var timeProvider = revokeScope.ServiceProvider.GetRequiredService<TimeProvider>();
-
-            var user = await db.Users
-                .Include(u => u.Sessions)
-                .Where(u => u.PhoneNumber == phoneNumber)
-                .SingleAsync();
-
-            user.RevokeAllSessions(SessionRevokedReason.SignedOutEverywhere, timeProvider.GetUtcNow());
-            await db.SaveChangesAsync(default);
-        }
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await clientA.DeleteAsync(new Uri("/tokens/sessions", UriKind.Relative))).StatusCode);
 
         Assert.Equal(HttpStatusCode.Unauthorized, (await GetMySessionsAsync(clientA)).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, (await GetMySessionsAsync(clientB)).StatusCode);
+    }
+
+    [Fact]
+    public async Task RevokeSession_WithRealJwtAndBasicRole_ReturnsNoContent()
+    {
+        using var scope = Factory.Services.CreateScope();
+        await EnsureBasicRoleExistsAsync(scope);
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var client = Factory.CreateClient();
+        var accessToken = await RegisterAsync(client, cache, NewPhoneNumber(), Guid.NewGuid());
+        AuthorizedClient(client, accessToken);
+
+        var sessionId = await GetFirstSessionIdAsync(client);
+
+        var response = await client.DeleteAsync(new Uri($"/tokens/sessions/{sessionId}", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RevokeAllSessions_WithRealJwtAndBasicRole_ReturnsNoContent()
+    {
+        using var scope = Factory.Services.CreateScope();
+        await EnsureBasicRoleExistsAsync(scope);
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+
+        var client = Factory.CreateClient();
+        var accessToken = await RegisterAsync(client, cache, NewPhoneNumber(), Guid.NewGuid());
+        AuthorizedClient(client, accessToken);
+
+        var response = await client.DeleteAsync(new Uri("/tokens/sessions", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 }

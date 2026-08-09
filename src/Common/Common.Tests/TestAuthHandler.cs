@@ -53,16 +53,16 @@ public class TestAuthHandler(
             new(ClaimTypes.Name, "TestUser"),
             // Add any essential custom permissions required by all endpoints implicitly.
             // Tests can override this by injecting different headers or using specific identities if needed.
-            new("Permission", CustomActions.Read + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.Create + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.Update + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.Delete + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.ReadMy + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.UpdateMy + CustomResources.ApplicationUsers),
-            new("Permission", CustomActions.DeleteMy + CustomResources.ApplicationUsers),
+            new("Permission", CustomPermission.NameFor(CustomActions.Read, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.Create, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.Update, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.Delete, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.ReadMy, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.UpdateMy, CustomResources.ApplicationUsers)),
+            new("Permission", CustomPermission.NameFor(CustomActions.DeleteMy, CustomResources.ApplicationUsers)),
         };
 
-        // Optional role claims — comma-separated header, e.g. "Basic,SystemAdmin".
+        // Optional role claims, comma-separated header, e.g. "Basic,SystemAdmin".
         if (Request.Headers.TryGetValue("X-Test-Roles", out var roles))
         {
             claims.AddRange(roles

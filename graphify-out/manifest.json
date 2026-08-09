@@ -55,9 +55,9 @@
     "semantic_hash": "62ef8d82cade820ec10f9341205d965e"
   },
   "src/Common/Common.Application/Caching/CacheKeys.cs": {
-    "mtime": 1780024595.9429245,
-    "ast_hash": "53a2a842bc195d3d4492fcb2406139cd",
-    "semantic_hash": "53a2a842bc195d3d4492fcb2406139cd"
+    "mtime": 1786273763.534531,
+    "ast_hash": "c31c8766236eec1d40a929f9726fcac4",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/Caching/OtpCacheEntry.cs": {
     "mtime": 1780024189.8138008,
@@ -210,8 +210,8 @@
     "semantic_hash": "f185fb5722df742d050ece312d6c5821"
   },
   "src/Common/Common.Application/Options/JwtOptions.cs": {
-    "mtime": 1783875486.2173927,
-    "ast_hash": "e36c3a8684020f26a65426d0c984866b",
+    "mtime": 1786273788.1590574,
+    "ast_hash": "6be767bbfba757241a06c8ad9b2ff5cd",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/ModulesOptions.cs": {
@@ -410,14 +410,14 @@
     "semantic_hash": "f7ee87cadf70ef79714a8d86135f68e7"
   },
   "src/Common/Common.Infrastructure/Auth/Services/CurrentUser.cs": {
-    "mtime": 1785238165.5457325,
-    "ast_hash": "3729385ca6eb0b588a991ffd60321cb3",
+    "mtime": 1786279875.2579398,
+    "ast_hash": "6e0ca2e5ec0bac692a6d0447c97480b1",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Auth/Setup.cs": {
-    "mtime": 1779899541.6742332,
-    "ast_hash": "f1e3afa9c95d036305efb564cb0b6717",
-    "semantic_hash": "f1e3afa9c95d036305efb564cb0b6717"
+    "mtime": 1786279790.323963,
+    "ast_hash": "309bfb006ab3b898f2e28f9bd5f254ad",
+    "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Caching/Setup.cs": {
     "mtime": 1784672487.5185208,
@@ -1030,8 +1030,8 @@
     "semantic_hash": "83ac5863d5d5e6349946679f449a01ed"
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Revoke/Endpoint.cs": {
-    "mtime": 1784587227.9696724,
-    "ast_hash": "c09246015f5025eeb8a51408c7e07242",
+    "mtime": 1786273907.43671,
+    "ast_hash": "2aa4b4fe222c1c73c918d09c46483556",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Setup.cs": {
@@ -1125,12 +1125,12 @@
     "semantic_hash": "f699da855245715b8284ad8d7e343d28"
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/Jwt/Setup.cs": {
-    "mtime": 1785238165.5487263,
-    "ast_hash": "72f13f7c39eb751063c27e50e7119dff",
+    "mtime": 1786279843.5205207,
+    "ast_hash": "d47cf20010baac2b5dac2667fd2fa162",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/PermissionAuthorizationHandler.cs": {
-    "mtime": 1779899541.6882164,
+    "mtime": 1786275209.875307,
     "ast_hash": "086f8acfa1cb46f2ee04b038f3e3c855",
     "semantic_hash": "086f8acfa1cb46f2ee04b038f3e3c855"
   },
@@ -2075,8 +2075,8 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Application/Users/DomainEventHandlers/v1/V1SessionRevokedDomainEventHandler.cs": {
-    "mtime": 1783628852.8479638,
-    "ast_hash": "52ef8165cb05b78a33f516792e350899",
+    "mtime": 1786273943.6723876,
+    "ast_hash": "3f8b6923e22d3e59f6a65e9cc1b0c5e9",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Identity/DomainEvents/v1/V1AllSessionsRevokedDomainEvent.cs": {
@@ -2322,6 +2322,16 @@
   "src/Modules/Products/Products.Infrastructure/AssemblyInfo.cs": {
     "mtime": 1785913457.3081338,
     "ast_hash": "ffd1568e2545d74a91e2a02cce115fd6",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Application/Users/DomainEventHandlers/v1/V1AllSessionsRevokedCacheInvalidationHandler.cs": {
+    "mtime": 1786274010.9049692,
+    "ast_hash": "9f313d0b8026d1cde04910694241b921",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Application/Users/DomainEventHandlers/v1/V1SessionRefreshedCacheInvalidationHandler.cs": {
+    "mtime": 1786274033.4460304,
+    "ast_hash": "49365c6849006e4a007d2752af8b45eb",
     "semantic_hash": ""
   }
 }

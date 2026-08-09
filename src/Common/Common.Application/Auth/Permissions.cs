@@ -8,6 +8,7 @@ public static class CustomPermissions
     [
         new("Read My Profile", CustomActions.ReadMy, CustomResources.ApplicationUsers),
         new("Update My Profile", CustomActions.UpdateMy, CustomResources.ApplicationUsers),
+        new("Delete My Sessions", CustomActions.DeleteMy, CustomResources.ApplicationUsers),
 
         new("Create My Store", CustomActions.CreateMy, CustomResources.Stores),
         new("Read My Store", CustomActions.ReadMy, CustomResources.Stores),
