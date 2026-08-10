@@ -16,7 +16,17 @@ public class StronglyTypedIdReadOnlyJsonConverter<T> : JsonConverter<T>
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var value = reader.GetString() ?? string.Empty;
-        var guid = DefaultIdType.Parse(value);
+
+        DefaultIdType guid;
+        try
+        {
+            guid = DefaultIdType.Parse(value);
+        }
+        catch (Exception ex)
+        {
+            throw new JsonException($"Error parsing the value '{value}' for type {typeToConvert}.", ex);
+        }
+
         return new T { Value = guid };
     }
 

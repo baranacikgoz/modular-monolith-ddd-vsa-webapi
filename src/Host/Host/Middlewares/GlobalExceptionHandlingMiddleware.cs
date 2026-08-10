@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using Common.Application.Localization.Resources;
 using EntityFramework.Exceptions.Common;
@@ -123,7 +124,8 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
             return;
         }
 
-        var details = new ProblemDetails { Status = statusCode, Title = title };
+        var formattedTitle = string.Format(CultureInfo.CurrentCulture, title, context.TraceIdentifier);
+        var details = new ProblemDetails { Status = statusCode, Title = formattedTitle };
 
         context.Response.StatusCode = statusCode;
         await problemDetailsService.WriteAsync(new ProblemDetailsContext
