@@ -1,16 +1,16 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-08-10)
 
 ## Corpus Check
-- 466 files · ~67,989 words
+- 466 files · ~68,017 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2965 nodes · 5258 edges · 302 communities (199 shown, 103 thin omitted)
+- 2965 nodes · 5258 edges · 300 communities (198 shown, 102 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 62 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3be7702b`
+- Built from commit: `34be98ec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -104,7 +104,7 @@
 - AuditLogRetentionJobRegistrar
 - .LogDispatchingNotification
 - Configuration-Driven Module Registration
-- Setup
+- Program.cs
 - .CreateTokens
 - CaptchaOptions.cs
 - Common.Domain.StronglyTypedIds
@@ -157,7 +157,7 @@
 - My/Create/Request.cs
 - .MapEndpoint
 - Infrastructure/Setup.cs
-- .ActivateProductTemplateAsync
+- .GetMyStoreAsync
 - IDbContext
 - IIAMDbContext
 - .FixedWindow
@@ -166,7 +166,7 @@
 - Setup
 - .GetRoleIdByName
 - FeatureFlags
-- StronglyTypedIdSchemaFilter.cs
+- Host.Swagger
 - .SendOtp
 - Setup
 - IOperationFilter
@@ -188,7 +188,7 @@
 - Notifications.Application/IAssemblyReference.cs
 - .UpdateStoreAsync
 - BackgroundJobsTelemetry
-- Host.Swagger
+- PushOptions.cs
 - IAM.Application.Tokens.DTOs
 - .GetAuditLogAsync
 - ApiKeysOptions.cs
@@ -215,7 +215,6 @@
 - .AddCustomMassTransit
 - ReCaptchaResponse
 - NotificationsTelemetry
-- SignalROptions.cs
 - HttpContextExtensions.cs
 - .UpdateProductAsync
 - Configuration-Driven Module Loading
@@ -229,7 +228,6 @@
 - Auditing/Setup.cs
 - .UpdateCurrentSessionPushToken
 - JwtClaimNames.cs
-- ModulesOptions.cs
 - DatabaseOptions.cs
 - .AddCommonOptions
 - ActionsAndResources.cs
@@ -345,7 +343,7 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (302 total, 103 thin omitted)
+## Communities (300 total, 102 thin omitted)
 
 ### Community 0 - "SelfRegister/Endpoint.cs"
 Cohesion: 0.12
@@ -381,7 +379,7 @@ Nodes (13): FirebaseApp, FirebaseMessaging, PushMessage, CancellationToken, Exce
 
 ### Community 9 - "CustomValidator"
 Cohesion: 0.13
-Nodes (19): Products.Endpoints.Products.v1.My.Update, OtpOptions, OtpOptionsValidator, OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator, ResxLocalizationOptions (+11 more)
+Nodes (19): Products.Endpoints.Products.v1.My.Update, OpenApiOptions, OpenApiOptionsValidator, OutboxCleanupSettings, OutboxCleanupSettingsValidator, OutboxOptions, OutboxOptionsValidator, SecurityHeadersOptions (+11 more)
 
 ### Community 10 - "Error"
 Cohesion: 0.10
@@ -444,7 +442,7 @@ Cohesion: 0.10
 Nodes (15): CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint, CancellationToken, RouteGroupBuilder, Task (+7 more)
 
 ### Community 25 - "NetGsmSmsGateway"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (11): SendRequestBody, CancellationToken, Exception, ILogger, JsonSerializerOptions, LoggerMessage, string, Task (+3 more)
 
 ### Community 26 - "IEvent"
@@ -504,8 +502,8 @@ Cohesion: 0.20
 Nodes (8): KeyValuePair, LoggerConfiguration, LoggerMinimumLevelConfiguration, ObservabilityOptions, ObservabilityOptionsValidator, Dictionary, IEnumerable, IHostEnvironment
 
 ### Community 40 - "SmsRateLimitingPolicy"
-Cohesion: 0.33
-Nodes (6): IRateLimiterPolicy, CancellationToken, Func, OnRejectedContext, ValueTask, SmsRateLimitingPolicy
+Cohesion: 0.25
+Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, SmsRateLimitingPolicy
 
 ### Community 41 - "AuditableEntityResponse"
 Cohesion: 0.06
@@ -560,7 +558,7 @@ Cohesion: 0.25
 Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, CheckRegistrationRateLimitingPolicy
 
 ### Community 56 - ".SendAsync"
-Cohesion: 0.16
+Cohesion: 0.18
 Nodes (10): CancellationToken, Task, ISmsGateway, SmsCategory, SmsMessage, CancellationToken, ILogger, LoggerMessage (+2 more)
 
 ### Community 58 - "StronglyTypedIdWriteOnlyJsonConverter"
@@ -616,8 +614,8 @@ Cohesion: 0.08
 Nodes (25): 1. Per-row authored language, not a fixed column language, 2. Two-layer vector: a universal layer plus a per-language prose layer, 3. Generated column with an `IMMUTABLE` wrapper function (not a trigger), 4. Accent folding via custom `*_unaccent` configs, 5. Language resolved from request culture, never from a query parameter, 6. No language filter on read, Add a new language/culture, Add search to a new entity _(Build checklist)_ (+17 more)
 
 ### Community 72 - "IProductsDbContext"
-Cohesion: 0.05
-Nodes (32): ICurrentUser, Guid, ICollection, DbSet, IProductsDbContext, CancellationToken, RouteGroupBuilder, Task (+24 more)
+Cohesion: 0.06
+Nodes (27): ICurrentUser, Guid, ICollection, DbSet, IProductsDbContext, CancellationToken, RouteGroupBuilder, Task (+19 more)
 
 ### Community 73 - ".WriteAsync"
 Cohesion: 0.33
@@ -628,12 +626,12 @@ Cohesion: 0.11
 Nodes (16): Products.Endpoints.Stores.v1.My.RemoveProduct, Products.Endpoints.Products.v1.Update, Products.Endpoints.Stores.v1.RemoveProduct, ProductId, Request, RequestValidator, Request, RequestValidator (+8 more)
 
 ### Community 76 - "Common.Application.Validation"
-Cohesion: 0.10
-Nodes (18): Common.Application.Validation, AuditLogOptions, AuditLogOptionsValidator, BackgroundJobsOptions, BackgroundJobsOptionsValidator, InterModuleRequestOptions, InterModuleRequestOptionsValidator, OpenApiOptions (+10 more)
+Cohesion: 0.09
+Nodes (19): Common.Application.Validation, AuditLogOptions, AuditLogOptionsValidator, BackgroundJobsOptions, BackgroundJobsOptionsValidator, InterModuleRequestOptions, InterModuleRequestOptionsValidator, ModulesOptions (+11 more)
 
 ### Community 77 - ".GetStoreAsync"
-Cohesion: 0.33
-Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
+Cohesion: 0.15
+Nodes (8): CancellationToken, RouteGroupBuilder, Task, Endpoint, CancellationToken, RouteGroupBuilder, Task, Endpoint
 
 ### Community 78 - "TokenCreateRateLimitingPolicy"
 Cohesion: 0.25
@@ -675,9 +673,9 @@ Nodes (16): Common.Infrastructure.Persistence.AuditLog, IHostedService, AuditLog
 Cohesion: 0.28
 Nodes (7): SessionTokenReuseDetectedIntegrationEvent, CancellationToken, Guid, ILogger, LoggerMessage, Task, SessionTokenReuseDetectedSignalRHandler
 
-### Community 89 - "Setup"
-Cohesion: 0.33
-Nodes (4): ConfigurationManager, Host.Configurations, Setup, WebApplicationBuilder
+### Community 89 - "Program.cs"
+Cohesion: 0.22
+Nodes (6): ConfigurationManager, Host, Host.Configurations, Setup, Program, WebApplicationBuilder
 
 ### Community 90 - ".CreateTokens"
 Cohesion: 0.15
@@ -883,9 +881,9 @@ Nodes (4): IAM.Endpoints.Users.VersionNeutral, RouteGroupBuilder, RouteGroupBuil
 Cohesion: 0.08
 Nodes (15): Common.InterModuleRequests, Common.Endpoints.Versioning, Common.Infrastructure.Localization, Common.Infrastructure.Auth.Services, Common.Infrastructure.Caching, Common.Infrastructure.Auth, Setup, IServiceCollection (+7 more)
 
-### Community 142 - ".ActivateProductTemplateAsync"
-Cohesion: 0.33
-Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
+### Community 142 - ".GetMyStoreAsync"
+Cohesion: 0.29
+Nodes (5): CancellationToken, RouteGroupBuilder, Task, Endpoint, Response
 
 ### Community 143 - "IDbContext"
 Cohesion: 0.20
@@ -919,9 +917,9 @@ Nodes (8): CancellationToken, DefaultIdType, Task, IRoleService, CancellationTok
 Cohesion: 0.43
 Nodes (6): Checkout, FeatureFlags, IAM, Notifications, Products, string
 
-### Community 151 - "StronglyTypedIdSchemaFilter.cs"
-Cohesion: 0.33
-Nodes (4): IOpenApiSchema, ISchemaFilter, SchemaFilterContext, StronglyTypedIdSchemaFilter
+### Community 151 - "Host.Swagger"
+Cohesion: 0.25
+Nodes (5): Host.Swagger, IOpenApiSchema, ISchemaFilter, SchemaFilterContext, StronglyTypedIdSchemaFilter
 
 ### Community 152 - ".SendOtp"
 Cohesion: 0.20
@@ -948,8 +946,8 @@ Cohesion: 0.29
 Nodes (5): CancellationToken, IFeatureManager, RouteGroupBuilder, Task, Endpoint
 
 ### Community 158 - "RegisterRateLimitingPolicy"
-Cohesion: 0.25
-Nodes (7): CancellationToken, Func, HttpContext, OnRejectedContext, RateLimitPartition, ValueTask, RegisterRateLimitingPolicy
+Cohesion: 0.33
+Nodes (6): IRateLimiterPolicy, CancellationToken, Func, OnRejectedContext, ValueTask, RegisterRateLimitingPolicy
 
 ### Community 160 - "ValidationContextExtensions"
 Cohesion: 0.40
@@ -999,9 +997,9 @@ Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 Cohesion: 0.25
 Nodes (8): ConcurrentDictionary, BackgroundJobsTelemetry, ActivitySource, Counter, Histogram, Meter, ObservableGauge, string
 
-### Community 173 - "Host.Swagger"
-Cohesion: 0.40
-Nodes (3): Host, Host.Swagger, Program
+### Community 173 - "PushOptions.cs"
+Cohesion: 0.70
+Nodes (4): FirebaseServiceAccountOptions, PushOptions, PushOptionsValidator, PushProvider
 
 ### Community 174 - "IAM.Application.Tokens.DTOs"
 Cohesion: 0.29
@@ -1115,10 +1113,6 @@ Nodes (4): CancellationToken, RouteGroupBuilder, Task, Endpoint
 Cohesion: 0.20
 Nodes (8): IAM.Endpoints.Tokens.VersionNeutral.Sessions.UpdatePushToken, CancellationToken, RouteGroupBuilder, Task, TimeProvider, Endpoint, Request, RequestValidator
 
-### Community 226 - "ModulesOptions.cs"
-Cohesion: 0.67
-Nodes (3): ModulesOptions, ModulesOptionsValidator, IReadOnlyList
-
 ### Community 229 - ".AddCommonOptions"
 Cohesion: 0.33
 Nodes (4): Setup, IConfiguration, IHostEnvironment, IServiceCollection
@@ -1134,14 +1128,14 @@ Nodes (3): CustomRoles, HashSet, string
 ## Knowledge Gaps
 - **135 isolated node(s):** `OtpCacheEntry`, `Common.Domain`, `Common.Infrastructure`, `IAssemblyReference`, `PushTarget` (+130 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **103 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **102 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `Common.Application.Options` to `SelfRegister/Endpoint.cs`, `Common.Infrastructure.Persistence.Auditing`, `CustomValidator`, `Common.Application.FeatureManagement`, `Common.Domain.ResultMonad`, `.RegisterAndLoginAsync`, `Infrastructure/Setup.cs`, `Products.Domain.ProductTemplates`, `Notifications.Application.Sms`, `Setup`, `IAM.Endpoints.Common.Validations`, `Notifications.Infrastructure.Telemetry`, `CustomRateLimitingOptions`, `Host.Middlewares`, `ObservabilityOptions`, `ProductsModule.cs`, `Host.Swagger`, `ApiKeysOptions.cs`, `CachingOptions.cs`, `SmsOptions.cs`, `Setup.SignalR.cs`, `IAMModule.cs`, `ReverseProxyOptions.cs`, `RequestLoggingOptions`, `CorsOptions.cs`, `OutboxModule`, `JwtOptions`, `Common.InterModuleRequests.Contracts`, `SignalROptions.cs`, `Common.Application.Validation`, `Common.Application.EventBus`, `AuditLogRetentionJobRegistrar`, `CaptchaOptions.cs`, `Common.Domain.StronglyTypedIds`, `ConfigureSwaggerOptions`, `.SearchMyProductsAsync`, `ModulesOptions.cs`, `DatabaseOptions.cs`, `.AddCommonOptions`, `Common.Application.BackgroundJobs`, `IModule`?**
+- **Why does `Common.Application.Options` connect `Common.Application.Options` to `SelfRegister/Endpoint.cs`, `Common.Infrastructure.Persistence.Auditing`, `CustomValidator`, `Common.Application.FeatureManagement`, `Common.Domain.ResultMonad`, `.RegisterAndLoginAsync`, `Infrastructure/Setup.cs`, `Products.Domain.ProductTemplates`, `Notifications.Application.Sms`, `Setup`, `IAM.Endpoints.Common.Validations`, `Notifications.Infrastructure.Telemetry`, `CustomRateLimitingOptions`, `Host.Middlewares`, `ObservabilityOptions`, `ProductsModule.cs`, `PushOptions.cs`, `ApiKeysOptions.cs`, `CachingOptions.cs`, `SmsOptions.cs`, `Setup.SignalR.cs`, `IAMModule.cs`, `ReverseProxyOptions.cs`, `RequestLoggingOptions`, `CorsOptions.cs`, `OutboxModule`, `JwtOptions`, `Common.InterModuleRequests.Contracts`, `Common.Application.Validation`, `Common.Application.EventBus`, `AuditLogRetentionJobRegistrar`, `Program.cs`, `CaptchaOptions.cs`, `Common.Domain.StronglyTypedIds`, `ConfigureSwaggerOptions`, `.SearchMyProductsAsync`, `DatabaseOptions.cs`, `.AddCommonOptions`, `Common.Application.BackgroundJobs`, `IModule`?**
   _High betweenness centrality (0.373) - this node is a cross-community bridge._
-- **Why does `Result` connect `Result` to `.GetProductAsync`, `.RemoveProductAsync`, `.ListSessions`, `.SingleAsResult`, `FirebasePushGateway`, `Error`, `.RegisterAndLoginAsync`, `.ActivateProductTemplateAsync`, `IIAMDbContext`, `Notifications.Application.Sms`, `.RevokeSession`, `.SendOtp`, `.RevokeToken`, `NetGsmSmsGateway`, `VerifyPhoneOtpRequest`, `.SendOtp`, `v1/AddProduct/Request.cs`, `.GetMeAsync`, `.RefreshToken`, `CachedCaptchaService`, `.UpdateStoreAsync`, `ProductTemplateId`, `.GetAuditLogAsync`, `ICaptchaService`, `ReCaptchaService`, `.SendAsync`, `.AddProductToMyStoreAsync`, `.GetProductTemplateAsync`, `IProductsDbContext`, `.UpdateProductAsync`, `.GetStoreAsync`, `ResultTelemetryExtensions`, `.DeactivateProductTemplateAsync`, `.CreateTokens`, `.UpdateCurrentSessionPushToken`, `.SearchMyProductsAsync`, `.SendAsync`, `ProductTemplate`, `.IsRegisteredAsync`, `.TapWhenFeatureEnabledAsync`?**
+- **Why does `Result` connect `Result` to `.GetProductAsync`, `.RemoveProductAsync`, `.ListSessions`, `.SingleAsResult`, `FirebasePushGateway`, `Error`, `.RegisterAndLoginAsync`, `.GetMyStoreAsync`, `IIAMDbContext`, `Notifications.Application.Sms`, `.RevokeSession`, `.SendOtp`, `.RevokeToken`, `NetGsmSmsGateway`, `VerifyPhoneOtpRequest`, `.SendOtp`, `v1/AddProduct/Request.cs`, `.GetMeAsync`, `.RefreshToken`, `CachedCaptchaService`, `.UpdateStoreAsync`, `ProductTemplateId`, `.GetAuditLogAsync`, `ICaptchaService`, `ReCaptchaService`, `.SendAsync`, `.AddProductToMyStoreAsync`, `.GetProductTemplateAsync`, `IProductsDbContext`, `.UpdateProductAsync`, `.GetStoreAsync`, `ResultTelemetryExtensions`, `.DeactivateProductTemplateAsync`, `.CreateTokens`, `.UpdateCurrentSessionPushToken`, `.SearchMyProductsAsync`, `.SendAsync`, `ProductTemplate`, `.IsRegisteredAsync`, `.TapWhenFeatureEnabledAsync`?**
   _High betweenness centrality (0.095) - this node is a cross-community bridge._
 - **Why does `Setup` connect `Setup` to `Host.Middlewares`, `.AddCustomMassTransit`, `ObservabilityOptions`, `RequestResponseBodyLoggingMiddleware`, `Infrastructure/Setup.cs`, `.AddModules`, `IModule`, `.LogAssemblyLoadFailed`, `.LogHealthChecksRegistered`, `RequestLoggingOptions`, `.AddInfrastructure`?**
   _High betweenness centrality (0.082) - this node is a cross-community bridge._

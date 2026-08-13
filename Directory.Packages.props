@@ -38,6 +38,8 @@
     <PackageVersion Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="2.0.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.10" />
+    <!-- Transitive pin: SSH.NET <=2025.1.0 has GHSA-q939-rpr3-3284 (high). Pulled via Testcontainers. -->
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.Kafka" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.13.0" />
