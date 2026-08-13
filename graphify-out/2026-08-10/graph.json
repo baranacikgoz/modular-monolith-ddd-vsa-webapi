@@ -431,7 +431,7 @@
       "label": ".ForRole()",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L82",
+      "source_location": "L83",
       "metadata": {
         "namespace": "Common.Application.Auth",
         "scope_chain": [
@@ -449,7 +449,7 @@
       "label": ".ForRoles()",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L85",
+      "source_location": "L86",
       "metadata": {
         "namespace": "Common.Application.Auth",
         "scope_chain": [
@@ -2556,8 +2556,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_strictdatetimeoffsetjsonconverter",
-      "community": 128,
-      "community_name": "Common.Application.JsonConverters",
+      "community": 81,
+      "community_name": "StrictDateTimeOffsetJsonConverter",
       "norm_label": "strictdatetimeoffsetjsonconverter.cs"
     },
     {
@@ -2602,8 +2602,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "jsonconverter",
-      "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community": 58,
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "jsonconverter"
     },
     {
@@ -2843,8 +2843,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
-      "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community": 128,
+      "community_name": "Common.Application.JsonConverters",
       "norm_label": "stronglytypedidreadonlyjsonconverter.cs"
     },
     {
@@ -2863,7 +2863,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": "stronglytypedidreadonlyjsonconverter"
     },
     {
@@ -2881,7 +2881,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_canconvert",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": ".canconvert()"
     },
     {
@@ -2892,7 +2892,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_cs_type",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": "type"
     },
     {
@@ -2910,7 +2910,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_read",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": ".read()"
     },
     {
@@ -2921,7 +2921,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_cs_utf8jsonreader",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": "utf8jsonreader"
     },
     {
@@ -2932,7 +2932,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_cs_jsonserializeroptions",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": "jsonserializeroptions"
     },
     {
@@ -2950,7 +2950,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_write",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": ".write()"
     },
     {
@@ -2961,7 +2961,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_cs_utf8jsonwriter",
       "community": 64,
-      "community_name": "StronglyTypedIdReadOnlyJsonConverter",
+      "community_name": "IStronglyTypedId",
       "norm_label": "utf8jsonwriter"
     },
     {
@@ -2972,7 +2972,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "stronglytypedidwriteonlyjsonconverter.cs"
     },
     {
@@ -2991,7 +2991,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "stronglytypedidwriteonlyjsonconverter"
     },
     {
@@ -3009,7 +3009,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_canconvert",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": ".canconvert()"
     },
     {
@@ -3020,7 +3020,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_cs_type",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "type"
     },
     {
@@ -3038,7 +3038,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_read",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": ".read()"
     },
     {
@@ -3049,7 +3049,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_cs_utf8jsonreader",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "utf8jsonreader"
     },
     {
@@ -3060,7 +3060,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_cs_jsonserializeroptions",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "jsonserializeroptions"
     },
     {
@@ -3078,7 +3078,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_write",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": ".write()"
     },
     {
@@ -3089,7 +3089,7 @@
       "_origin": "ast",
       "id": "src_common_common_application_jsonconverters_stronglytypedidwriteonlyjsonconverter_cs_utf8jsonwriter",
       "community": 58,
-      "community_name": "IStronglyTypedId",
+      "community_name": "StronglyTypedIdWriteOnlyJsonConverter",
       "norm_label": "utf8jsonwriter"
     },
     {
@@ -7213,7 +7213,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_domain_stronglytypedids_istronglytypedid",
-      "community": 58,
+      "community": 64,
       "community_name": "IStronglyTypedId",
       "norm_label": "istronglytypedid.cs"
     },
@@ -7232,7 +7232,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_domain_stronglytypedids_istronglytypedid_common_domain_stronglytypedids_istronglytypedid",
-      "community": 58,
+      "community": 64,
       "community_name": "IStronglyTypedId",
       "norm_label": "istronglytypedid"
     },
@@ -7243,7 +7243,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_domain_stronglytypedids_istronglytypedid_cs_defaultidtype",
-      "community": 58,
+      "community": 64,
       "community_name": "IStronglyTypedId",
       "norm_label": "defaultidtype"
     },
@@ -18165,8 +18165,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler",
-      "community": 192,
-      "community_name": "V1SessionRefreshedDomainEvent",
+      "community": 69,
+      "community_name": "DomainEventHandlerBase",
       "norm_label": "v1sessionrefreshedcacheinvalidationhandler"
     },
     {
@@ -18183,8 +18183,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler_handleasync",
-      "community": 192,
-      "community_name": "V1SessionRefreshedDomainEvent",
+      "community": 69,
+      "community_name": "DomainEventHandlerBase",
       "norm_label": ".handleasync()"
     },
     {
@@ -18194,8 +18194,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler_cs_cancellationtoken",
-      "community": 192,
-      "community_name": "V1SessionRefreshedDomainEvent",
+      "community": 69,
+      "community_name": "DomainEventHandlerBase",
       "norm_label": "cancellationtoken"
     },
     {
@@ -18205,8 +18205,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1sessionrefreshedcacheinvalidationhandler_cs_task",
-      "community": 192,
-      "community_name": "V1SessionRefreshedDomainEvent",
+      "community": 69,
+      "community_name": "DomainEventHandlerBase",
       "norm_label": "task"
     },
     {
@@ -18305,8 +18305,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler",
-      "community": 69,
-      "community_name": "DomainEventHandlerBase",
+      "community": 192,
+      "community_name": "V1UserRegisteredDomainEvent",
       "norm_label": "v1userregistereddomaineventhandler"
     },
     {
@@ -18323,8 +18323,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler_handleasync",
-      "community": 69,
-      "community_name": "DomainEventHandlerBase",
+      "community": 192,
+      "community_name": "V1UserRegisteredDomainEvent",
       "norm_label": ".handleasync()"
     },
     {
@@ -18334,8 +18334,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler_cs_cancellationtoken",
-      "community": 69,
-      "community_name": "DomainEventHandlerBase",
+      "community": 192,
+      "community_name": "V1UserRegisteredDomainEvent",
       "norm_label": "cancellationtoken"
     },
     {
@@ -18345,8 +18345,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_application_users_domaineventhandlers_v1_v1userregistereddomaineventhandler_cs_task",
-      "community": 69,
-      "community_name": "DomainEventHandlerBase",
+      "community": 192,
+      "community_name": "V1UserRegisteredDomainEvent",
       "norm_label": "task"
     },
     {
@@ -18983,8 +18983,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_domain_identity_applicationuser_iam_domain_identity_applicationuser_revokeallsessions",
-      "community": 5,
-      "community_name": "Session",
+      "community": 101,
+      "community_name": "ApplicationUser",
       "norm_label": ".revokeallsessions()"
     },
     {
@@ -19244,8 +19244,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_domain_identity_domainevents_v1_v1sessionrefresheddomainevent_iam_domain_identity_domainevents_v1_v1sessionrefresheddomainevent",
-      "community": 192,
-      "community_name": "V1SessionRefreshedDomainEvent",
+      "community": 69,
+      "community_name": "DomainEventHandlerBase",
       "norm_label": "v1sessionrefresheddomainevent"
     },
     {
@@ -19334,8 +19334,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_domain_identity_domainevents_v1_v1userregistereddomainevent_iam_domain_identity_domainevents_v1_v1userregistereddomainevent",
-      "community": 69,
-      "community_name": "DomainEventHandlerBase",
+      "community": 192,
+      "community_name": "V1UserRegisteredDomainEvent",
       "norm_label": "v1userregistereddomainevent"
     },
     {
@@ -26333,8 +26333,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:4f8088686331a0f0",
-      "community": 15,
-      "community_name": "Products.Domain.ProductTemplates",
+      "community": 34,
+      "community_name": "IAM.Domain.Identity",
       "norm_label": "iam.infrastructure.persistence"
     },
     {
@@ -27246,8 +27246,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iratelimiterpolicy",
-      "community": 158,
-      "community_name": "RegisterRateLimitingPolicy",
+      "community": 40,
+      "community_name": "SmsRateLimitingPolicy",
       "norm_label": "iratelimiterpolicy"
     },
     {
@@ -27423,8 +27423,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_iam_infrastructure_ratelimiting_registerratelimitingpolicy_getpartition",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 158,
+      "community_name": "RegisterRateLimitingPolicy",
       "norm_label": ".getpartition()"
     },
     {
@@ -27434,8 +27434,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_httpcontext",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 158,
+      "community_name": "RegisterRateLimitingPolicy",
       "norm_label": "httpcontext"
     },
     {
@@ -27445,8 +27445,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_ratelimitpartition",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 158,
+      "community_name": "RegisterRateLimitingPolicy",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -27538,8 +27538,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_iam_infrastructure_ratelimiting_smsratelimitingpolicy_getpartition",
-      "community": 40,
-      "community_name": "SmsRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": ".getpartition()"
     },
     {
@@ -27549,8 +27549,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_cs_httpcontext",
-      "community": 40,
-      "community_name": "SmsRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": "httpcontext"
     },
     {
@@ -27560,8 +27560,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_cs_ratelimitpartition",
-      "community": 40,
-      "community_name": "SmsRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -28976,8 +28976,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:22cdc2adb5f6032c",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 94,
+      "community_name": "Common.Application.Options",
       "norm_label": "notifications.application.push"
     },
     {
@@ -29111,8 +29111,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:14bfbcee0cc4dc29",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "notifications.application.sms"
     },
     {
@@ -29219,8 +29219,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_sms_smserrors",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "smserrors.cs"
     },
     {
@@ -29238,8 +29238,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_application_sms_smserrors_notifications_application_sms_smserrors",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "smserrors"
     },
     {
@@ -30534,8 +30534,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_dummypushgateway",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 94,
+      "community_name": "Common.Application.Options",
       "norm_label": "dummypushgateway.cs"
     },
     {
@@ -30550,8 +30550,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:4705f65de31aade0",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 23,
+      "community_name": "Notifications.Infrastructure.Telemetry",
       "norm_label": "notifications.infrastructure.push"
     },
     {
@@ -30661,8 +30661,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_firebase_firebasepushgateway",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 94,
+      "community_name": "Common.Application.Options",
       "norm_label": "firebasepushgateway.cs"
     },
     {
@@ -30677,8 +30677,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:e381a7e60d8661fa",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 94,
+      "community_name": "Common.Application.Options",
       "norm_label": "notifications.infrastructure.push.firebase"
     },
     {
@@ -30937,8 +30937,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_setup",
-      "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community": 94,
+      "community_name": "Common.Application.Options",
       "norm_label": "push/setup.cs"
     },
     {
@@ -30957,7 +30957,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_setup_notifications_infrastructure_push_setup",
       "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community_name": ".AddPushServices",
       "norm_label": "setup"
     },
     {
@@ -30975,7 +30975,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_setup_notifications_infrastructure_push_setup_addpushservices",
       "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community_name": ".AddPushServices",
       "norm_label": ".addpushservices()"
     },
     {
@@ -30986,7 +30986,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_setup_cs_iservicecollection",
       "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community_name": ".AddPushServices",
       "norm_label": "iservicecollection"
     },
     {
@@ -30997,7 +30997,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_push_setup_cs_iconfiguration",
       "community": 96,
-      "community_name": "FirebasePushGateway.cs",
+      "community_name": ".AddPushServices",
       "norm_label": "iconfiguration"
     },
     {
@@ -31007,8 +31007,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_dummysmsgateway",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "dummysmsgateway.cs"
     },
     {
@@ -31023,8 +31023,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:480c91cd616ca83f",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "notifications.infrastructure.sms"
     },
     {
@@ -31150,8 +31150,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d2ccc239ac2974fd",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "notifications.infrastructure.sms.netgsm"
     },
     {
@@ -31333,8 +31333,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_toiysfilter",
-      "community": 25,
-      "community_name": "NetGsmSmsGateway",
+      "community": 56,
+      "community_name": ".SendAsync",
       "norm_label": ".toiysfilter()"
     },
     {
@@ -31585,8 +31585,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_setup",
-      "community": 94,
-      "community_name": "Common.Application.Options",
+      "community": 16,
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "sms/setup.cs"
     },
     {
@@ -31685,7 +31685,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "throttledsmsgateway.cs"
     },
     {
@@ -31704,7 +31704,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_notifications_infrastructure_sms_throttledsmsgateway",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "throttledsmsgateway"
     },
     {
@@ -31715,7 +31715,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_cs_timespan",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "timespan"
     },
     {
@@ -31733,7 +31733,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_notifications_infrastructure_sms_throttledsmsgateway_sendasync",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": ".sendasync()"
     },
     {
@@ -31744,7 +31744,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_cs_cancellationtoken",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "cancellationtoken"
     },
     {
@@ -31755,7 +31755,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_cs_task",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": "task"
     },
     {
@@ -31773,7 +31773,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_throttledsmsgateway_notifications_infrastructure_sms_throttledsmsgateway_hash",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": ".hash()"
     },
     {
@@ -31982,7 +31982,7 @@
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_telemetry_notificationstelemetry_notifications_infrastructure_telemetry_notificationstelemetry_recordsmsthrottled",
       "community": 16,
-      "community_name": ".SendAsync",
+      "community_name": "Notifications.Application.Sms",
       "norm_label": ".recordsmsthrottled()"
     },
     {
@@ -33479,8 +33479,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_constants",
-      "community": 15,
-      "community_name": "Products.Domain.ProductTemplates",
+      "community": 167,
+      "community_name": "Common.Application.Pagination",
       "norm_label": "producttemplates/constants.cs"
     },
     {
@@ -33514,8 +33514,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_constants_products_domain_producttemplates_constants",
-      "community": 15,
-      "community_name": "Products.Domain.ProductTemplates",
+      "community": 167,
+      "community_name": "Common.Application.Pagination",
       "norm_label": "constants"
     },
     {
@@ -33525,8 +33525,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_domain_producttemplates_constants_cs_int",
-      "community": 15,
-      "community_name": "Products.Domain.ProductTemplates",
+      "community": 167,
+      "community_name": "Common.Application.Pagination",
       "norm_label": "int"
     },
     {
@@ -35203,7 +35203,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": "endpoint"
     },
     {
@@ -35221,7 +35221,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint_mapendpoint",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -35232,7 +35232,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_routegroupbuilder",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -35250,7 +35250,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint_activateproducttemplateasync",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": ".activateproducttemplateasync()"
     },
     {
@@ -35261,7 +35261,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_cancellationtoken",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -35272,7 +35272,7 @@
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_task",
       "community": 142,
-      "community_name": ".GetStoreAsync",
+      "community_name": ".ActivateProductTemplateAsync",
       "norm_label": "task"
     },
     {
@@ -38426,7 +38426,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_products_endpoints_stores_v1_get_endpoint",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": "endpoint"
     },
@@ -38444,7 +38444,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_products_endpoints_stores_v1_get_endpoint_mapendpoint",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": ".mapendpoint()"
     },
@@ -38455,7 +38455,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_cs_routegroupbuilder",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": "routegroupbuilder"
     },
@@ -38473,7 +38473,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_products_endpoints_stores_v1_get_endpoint_getstoreasync",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": ".getstoreasync()"
     },
@@ -38484,7 +38484,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_cs_cancellationtoken",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": "cancellationtoken"
     },
@@ -38495,7 +38495,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_get_endpoint_cs_task",
-      "community": 142,
+      "community": 77,
       "community_name": ".GetStoreAsync",
       "norm_label": "task"
     },
@@ -39172,8 +39172,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": "endpoint"
     },
     {
@@ -39190,8 +39190,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_mapendpoint",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -39201,8 +39201,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_routegroupbuilder",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -39219,8 +39219,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_getmystoreasync",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": ".getmystoreasync()"
     },
     {
@@ -39230,8 +39230,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_cancellationtoken",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": "cancellationtoken"
     },
     {
@@ -39241,8 +39241,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_task",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": "task"
     },
     {
@@ -39271,8 +39271,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_response_products_endpoints_stores_v1_my_get_response",
-      "community": 77,
-      "community_name": ".GetMyStoreAsync",
+      "community": 72,
+      "community_name": "IProductsDbContext",
       "norm_label": "response"
     },
     {
@@ -44861,7 +44861,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L73",
+      "source_location": "L74",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -44876,7 +44876,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L67",
+      "source_location": "L68",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -44891,7 +44891,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L82",
+      "source_location": "L83",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_auth_permissions_common_application_auth_custompermissions",
@@ -44902,7 +44902,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L85",
+      "source_location": "L86",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_auth_permissions_common_application_auth_custompermissions",
@@ -44913,7 +44913,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0,
       "context": "field",
       "metadata": {
@@ -44928,7 +44928,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L82",
+      "source_location": "L83",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -44943,7 +44943,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L85",
+      "source_location": "L86",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -44970,7 +44970,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/Auth/Permissions.cs",
-      "source_location": "L85",
+      "source_location": "L86",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -116067,5 +116067,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "219eb98342b87890ce31c29b2ca9106cfc8fa362"
+  "built_at_commit": "3be7702b311359a063017770e4b48a92438161a1"
 }
