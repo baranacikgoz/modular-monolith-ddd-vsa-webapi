@@ -35,9 +35,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Auth/Permissions.cs": {
-    "mtime": 1780157405.9855354,
-    "ast_hash": "fad9700573931aaa4e2978d2f30ab7e3",
-    "semantic_hash": "fad9700573931aaa4e2978d2f30ab7e3"
+    "mtime": 1786290602.8800426,
+    "ast_hash": "f3994f2a22563b5cac4d21ead877e54c",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/Auth/RouteHandlerBuilderExtensions.cs": {
     "mtime": 1779899541.6691988,
