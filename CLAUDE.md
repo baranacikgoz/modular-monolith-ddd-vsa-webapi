@@ -254,7 +254,8 @@ Shipped `V{n}...DomainEvent` records (and any VO nested in them) are frozen fore
 
 - **Framework**: xUnit. **Mocking**: NSubstitute (external APIs only). **Data**: Bogus.
 - Integration tests hit **real** Postgres via Testcontainers. `Respawn` resets DB state between tests.
-- **Assertions**: built-in xUnit `Assert.*` only — no FluentAssertions.
+- **Assertions**: built-in xUnit `Assert.*` only - no FluentAssertions.
+- **Timestamp equality against a DB-round-tripped value**: never bare `Assert.Equal(expected, actual)` on `DateTime`/`DateTimeOffset`. Postgres `timestamptz` stores microsecond precision; .NET ticks are 100ns - the last tick digit gets silently truncated on write, so an in-memory value compared to the value read back fails nondeterministically (passes/fails depending on the captured tick's last digit). Always use the tolerance overload: `Assert.Equal(expected, actual, TimeSpan.FromSeconds(1))`. Comparing two purely in-memory values (no DB round-trip) is exact-equality-safe and doesn't need this.
 - Naming: `Method_Scenario_Expectation`.
 - For writes: assert entity in DB + record in `OutboxMessages`. Do NOT mock MassTransit in slice tests.
 - **Factory isolation rule**: use `IClassFixture<TFactory>` when only one test class needs the factory. When multiple test classes share the same factory type, use `ICollectionFixture<TFactory>` + `[Collection("Name")]` — two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared global state (Serilog static logger, OTel `ActivitySource`).
