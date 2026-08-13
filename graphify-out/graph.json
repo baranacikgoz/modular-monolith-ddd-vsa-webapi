@@ -2939,7 +2939,7 @@
       "label": ".Write()",
       "file_type": "code",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L23",
+      "source_location": "L33",
       "metadata": {
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
@@ -4051,8 +4051,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_modulesoptions",
-      "community": 226,
-      "community_name": "ModulesOptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "modulesoptions.cs"
     },
     {
@@ -4070,8 +4070,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_modulesoptions_common_application_options_modulesoptions",
-      "community": 226,
-      "community_name": "ModulesOptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "modulesoptions"
     },
     {
@@ -4081,8 +4081,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_options_modulesoptions_cs_ireadonlylist",
-      "community": 226,
-      "community_name": "ModulesOptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "ireadonlylist"
     },
     {
@@ -4100,8 +4100,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_modulesoptions_common_application_options_modulesoptionsvalidator",
-      "community": 226,
-      "community_name": "ModulesOptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "modulesoptionsvalidator"
     },
     {
@@ -4171,8 +4171,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_openapioptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "openapioptions.cs"
     },
     {
@@ -4190,8 +4190,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_openapioptions_common_application_options_openapioptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "openapioptions"
     },
     {
@@ -4209,8 +4209,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_openapioptions_common_application_options_openapioptionsvalidator",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "openapioptionsvalidator"
     },
     {
@@ -4220,8 +4220,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_otpoptions",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "otpoptions.cs"
     },
     {
@@ -4239,8 +4239,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_otpoptions_common_application_options_otpoptions",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "otpoptions"
     },
     {
@@ -4258,8 +4258,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_otpoptions_common_application_options_otpoptionsvalidator",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "otpoptionsvalidator"
     },
     {
@@ -4356,8 +4356,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_pushoptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 173,
+      "community_name": "PushOptions.cs",
       "norm_label": "pushoptions.cs"
     },
     {
@@ -4375,8 +4375,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_pushoptions_common_application_options_pushprovider",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 173,
+      "community_name": "PushOptions.cs",
       "norm_label": "pushprovider"
     },
     {
@@ -4394,8 +4394,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_pushoptions_common_application_options_pushoptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 173,
+      "community_name": "PushOptions.cs",
       "norm_label": "pushoptions"
     },
     {
@@ -4413,8 +4413,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_pushoptions_common_application_options_firebaseserviceaccountoptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 173,
+      "community_name": "PushOptions.cs",
       "norm_label": "firebaseserviceaccountoptions"
     },
     {
@@ -4432,8 +4432,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_pushoptions_common_application_options_pushoptionsvalidator",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 173,
+      "community_name": "PushOptions.cs",
       "norm_label": "pushoptionsvalidator"
     },
     {
@@ -4582,8 +4582,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_resxlocalizationoptions",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "resxlocalizationoptions.cs"
     },
     {
@@ -4601,8 +4601,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_resxlocalizationoptions_common_application_options_resxlocalizationoptions",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "resxlocalizationoptions"
     },
     {
@@ -4612,8 +4612,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_options_resxlocalizationoptions_cs_icollection",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "icollection"
     },
     {
@@ -4631,8 +4631,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_resxlocalizationoptions_common_application_options_resxlocalizationoptionsvalidator",
-      "community": 9,
-      "community_name": "CustomValidator",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "resxlocalizationoptionsvalidator"
     },
     {
@@ -4720,8 +4720,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_securityheadersoptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "securityheadersoptions.cs"
     },
     {
@@ -4739,8 +4739,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_securityheadersoptions_common_application_options_securityheadersoptions",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "securityheadersoptions"
     },
     {
@@ -4750,8 +4750,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_common_common_application_options_securityheadersoptions_cs_dictionary",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "dictionary"
     },
     {
@@ -4769,8 +4769,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_securityheadersoptions_common_application_options_securityheadersoptionsvalidator",
-      "community": 76,
-      "community_name": "Common.Application.Validation",
+      "community": 9,
+      "community_name": "CustomValidator",
       "norm_label": "securityheadersoptionsvalidator"
     },
     {
@@ -4861,8 +4861,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions",
-      "community": 201,
-      "community_name": "SignalROptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "signalroptions.cs"
     },
     {
@@ -4880,8 +4880,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptions",
-      "community": 201,
-      "community_name": "SignalROptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "signalroptions"
     },
     {
@@ -4899,8 +4899,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_common_common_application_options_signalroptions_common_application_options_signalroptionsvalidator",
-      "community": 201,
-      "community_name": "SignalROptions.cs",
+      "community": 76,
+      "community_name": "Common.Application.Validation",
       "norm_label": "signalroptionsvalidator"
     },
     {
@@ -12951,7 +12951,7 @@
       "_origin": "ast",
       "id": "src_host_host_configurations_setup",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": "configurations/setup.cs"
     },
     {
@@ -12967,7 +12967,7 @@
       "_origin": "ast",
       "id": "csharp_namespace:7e942b0b06314d3e",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": "host.configurations"
     },
     {
@@ -12986,7 +12986,7 @@
       "_origin": "ast",
       "id": "src_host_host_configurations_setup_host_configurations_setup",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": "setup"
     },
     {
@@ -13004,7 +13004,7 @@
       "_origin": "ast",
       "id": "src_host_host_configurations_setup_host_configurations_setup_addconfigurations",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": ".addconfigurations()"
     },
     {
@@ -13015,7 +13015,7 @@
       "_origin": "ast",
       "id": "webapplicationbuilder",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": "webapplicationbuilder"
     },
     {
@@ -13033,7 +13033,7 @@
       "_origin": "ast",
       "id": "src_host_host_configurations_setup_host_configurations_setup_addjsonfile",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": ".addjsonfile()"
     },
     {
@@ -13044,7 +13044,7 @@
       "_origin": "ast",
       "id": "configurationmanager",
       "community": 89,
-      "community_name": "Setup",
+      "community_name": "Program.cs",
       "norm_label": "configurationmanager"
     },
     {
@@ -14651,12 +14651,12 @@
       "label": "GlobalExceptionHandlingMiddleware",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L9",
+      "source_location": "L10",
       "metadata": {
         "is_partial": true,
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -14671,11 +14671,11 @@
       "label": ".InvokeAsync()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -14722,11 +14722,11 @@
       "label": ".HandleExceptionAsync()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L116",
+      "source_location": "L117",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -14751,11 +14751,11 @@
       "label": ".LogError()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -14791,11 +14791,11 @@
       "label": ".LogCantWriteResponse()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L140",
+      "source_location": "L142",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -14809,11 +14809,11 @@
       "label": ".LogRequestAborted()",
       "file_type": "code",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L145",
+      "source_location": "L147",
       "metadata": {
         "namespace": "Host.Middlewares",
         "scope_chain": [
-          "s178"
+          "s206"
         ]
       },
       "_callable": true,
@@ -15862,8 +15862,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_program",
-      "community": 173,
-      "community_name": "Host.Swagger",
+      "community": 89,
+      "community_name": "Program.cs",
       "norm_label": "program.cs"
     },
     {
@@ -15878,8 +15878,8 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:3960ec4ca5fb5e5d",
-      "community": 173,
-      "community_name": "Host.Swagger",
+      "community": 89,
+      "community_name": "Program.cs",
       "norm_label": "host"
     },
     {
@@ -15897,8 +15897,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_host_host_program_host_program",
-      "community": 173,
-      "community_name": "Host.Swagger",
+      "community": 89,
+      "community_name": "Program.cs",
       "norm_label": "program"
     },
     {
@@ -15924,7 +15924,7 @@
       },
       "_origin": "ast",
       "id": "csharp_namespace:d0790ff52ee7104b",
-      "community": 173,
+      "community": 151,
       "community_name": "Host.Swagger",
       "norm_label": "host.swagger"
     },
@@ -16034,7 +16034,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_host_host_swagger_defaultresponsesoperationfilter",
-      "community": 173,
+      "community": 151,
       "community_name": "Host.Swagger",
       "norm_label": "defaultresponsesoperationfilter.cs"
     },
@@ -16332,7 +16332,7 @@
       "_origin": "ast",
       "id": "src_host_host_swagger_stronglytypedidschemafilter",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": "stronglytypedidschemafilter.cs"
     },
     {
@@ -16351,7 +16351,7 @@
       "_origin": "ast",
       "id": "src_host_host_swagger_stronglytypedidschemafilter_host_swagger_stronglytypedidschemafilter",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": "stronglytypedidschemafilter"
     },
     {
@@ -16362,7 +16362,7 @@
       "_origin": "ast",
       "id": "ischemafilter",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": "ischemafilter"
     },
     {
@@ -16380,7 +16380,7 @@
       "_origin": "ast",
       "id": "src_host_host_swagger_stronglytypedidschemafilter_host_swagger_stronglytypedidschemafilter_apply",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": ".apply()"
     },
     {
@@ -16391,7 +16391,7 @@
       "_origin": "ast",
       "id": "iopenapischema",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": "iopenapischema"
     },
     {
@@ -16402,7 +16402,7 @@
       "_origin": "ast",
       "id": "schemafiltercontext",
       "community": 151,
-      "community_name": "StronglyTypedIdSchemaFilter.cs",
+      "community_name": "Host.Swagger",
       "norm_label": "schemafiltercontext"
     },
     {
@@ -27246,8 +27246,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "iratelimiterpolicy",
-      "community": 40,
-      "community_name": "SmsRateLimitingPolicy",
+      "community": 158,
+      "community_name": "RegisterRateLimitingPolicy",
       "norm_label": "iratelimiterpolicy"
     },
     {
@@ -27423,8 +27423,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_iam_infrastructure_ratelimiting_registerratelimitingpolicy_getpartition",
-      "community": 158,
-      "community_name": "RegisterRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": ".getpartition()"
     },
     {
@@ -27434,8 +27434,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_httpcontext",
-      "community": 158,
-      "community_name": "RegisterRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": "httpcontext"
     },
     {
@@ -27445,8 +27445,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_register_cs_ratelimitpartition",
-      "community": 158,
-      "community_name": "RegisterRateLimitingPolicy",
+      "community": 145,
+      "community_name": ".FixedWindow",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -27538,8 +27538,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_iam_infrastructure_ratelimiting_smsratelimitingpolicy_getpartition",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 40,
+      "community_name": "SmsRateLimitingPolicy",
       "norm_label": ".getpartition()"
     },
     {
@@ -27549,8 +27549,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_cs_httpcontext",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 40,
+      "community_name": "SmsRateLimitingPolicy",
       "norm_label": "httpcontext"
     },
     {
@@ -27560,8 +27560,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_iam_iam_infrastructure_ratelimiting_policies_sms_cs_ratelimitpartition",
-      "community": 145,
-      "community_name": ".FixedWindow",
+      "community": 40,
+      "community_name": "SmsRateLimitingPolicy",
       "norm_label": "ratelimitpartition"
     },
     {
@@ -31333,8 +31333,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_notifications_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_notifications_infrastructure_sms_netgsm_netgsmsmsgateway_toiysfilter",
-      "community": 56,
-      "community_name": ".SendAsync",
+      "community": 25,
+      "community_name": "NetGsmSmsGateway",
       "norm_label": ".toiysfilter()"
     },
     {
@@ -35202,8 +35202,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": "endpoint"
     },
     {
@@ -35220,8 +35220,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint_mapendpoint",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -35231,8 +35231,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_routegroupbuilder",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -35249,8 +35249,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_products_endpoints_producttemplates_v1_activate_endpoint_activateproducttemplateasync",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": ".activateproducttemplateasync()"
     },
     {
@@ -35260,8 +35260,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_cancellationtoken",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -35271,8 +35271,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_producttemplates_v1_activate_endpoint_cs_task",
-      "community": 142,
-      "community_name": ".ActivateProductTemplateAsync",
+      "community": 77,
+      "community_name": ".GetStoreAsync",
       "norm_label": "task"
     },
     {
@@ -39172,8 +39172,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "endpoint"
     },
     {
@@ -39190,8 +39190,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_mapendpoint",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": ".mapendpoint()"
     },
     {
@@ -39201,8 +39201,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_routegroupbuilder",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "routegroupbuilder"
     },
     {
@@ -39219,8 +39219,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_products_endpoints_stores_v1_my_get_endpoint_getmystoreasync",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": ".getmystoreasync()"
     },
     {
@@ -39230,8 +39230,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_cancellationtoken",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "cancellationtoken"
     },
     {
@@ -39241,8 +39241,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_endpoint_cs_task",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "task"
     },
     {
@@ -39271,8 +39271,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "src_modules_products_products_endpoints_stores_v1_my_get_response_products_endpoints_stores_v1_my_get_response",
-      "community": 72,
-      "community_name": "IProductsDbContext",
+      "community": 142,
+      "community_name": ".GetMyStoreAsync",
       "norm_label": "response"
     },
     {
@@ -49578,7 +49578,7 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L30",
+      "source_location": "L40",
       "weight": 1.0,
       "metadata": {
         "ref_token": "JsonConverter"
@@ -49924,7 +49924,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L30",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
@@ -49935,7 +49935,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L35",
+      "source_location": "L45",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
@@ -49946,7 +49946,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L47",
+      "source_location": "L57",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
@@ -49957,7 +49957,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L102",
+      "source_location": "L112",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_common_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter_common_application_jsonconverters_stronglytypedidreadonlyjsonconverter",
@@ -49968,7 +49968,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L30",
+      "source_location": "L40",
       "weight": 1.0,
       "context": "generic_arg",
       "metadata": {
@@ -49983,7 +49983,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L35",
+      "source_location": "L45",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -49998,7 +49998,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L47",
+      "source_location": "L57",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -50013,7 +50013,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L47",
+      "source_location": "L57",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -50028,7 +50028,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L47",
+      "source_location": "L57",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -50043,7 +50043,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L47",
+      "source_location": "L57",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -50058,7 +50058,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L102",
+      "source_location": "L112",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -50073,7 +50073,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L102",
+      "source_location": "L112",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -50088,7 +50088,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Common/Common.Application/JsonConverters/StronglyTypedIdReadOnlyJsonConverter.cs",
-      "source_location": "L102",
+      "source_location": "L112",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78293,7 +78293,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78362,7 +78362,7 @@
       "relation": "implements",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "metadata": {
         "ref_token": "IMiddleware"
@@ -78435,7 +78435,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78446,7 +78446,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78457,7 +78457,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78468,7 +78468,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L140",
+      "source_location": "L142",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78479,7 +78479,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78490,7 +78490,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L145",
+      "source_location": "L147",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware",
@@ -78501,7 +78501,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78516,7 +78516,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78531,7 +78531,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -78547,7 +78547,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_invokeasync",
@@ -78559,7 +78559,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L94",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_invokeasync",
@@ -78570,7 +78570,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78585,7 +78585,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0,
       "context": "return_type",
       "metadata": {
@@ -78600,7 +78600,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78616,7 +78616,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L122",
+      "source_location": "L123",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_handleexceptionasync",
@@ -78628,7 +78628,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118",
+      "source_location": "L119",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_handleexceptionasync",
@@ -78639,7 +78639,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78654,7 +78654,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78669,7 +78669,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -78684,7 +78684,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L140",
+      "source_location": "L142",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78699,7 +78699,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L145",
+      "source_location": "L147",
       "weight": 1.0,
       "context": "parameter_type",
       "metadata": {
@@ -78714,7 +78714,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L140",
+      "source_location": "L142",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -78729,7 +78729,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L145",
+      "source_location": "L147",
       "weight": 1.0,
       "context": "attribute",
       "metadata": {
@@ -116067,5 +116067,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "3be7702b311359a063017770e4b48a92438161a1"
+  "built_at_commit": "34be98ecadaf619f1d054ccde3a4704fb864e467"
 }
