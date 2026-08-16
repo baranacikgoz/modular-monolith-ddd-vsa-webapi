@@ -107,7 +107,7 @@ internal static class Setup
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
 
                         context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+                        await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
                         {
                             HttpContext = context.HttpContext, ProblemDetails = problemDetails
                         });
@@ -145,7 +145,7 @@ internal static class Setup
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Unauthorized));
 
                         context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+                        await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
                         {
                             HttpContext = context.HttpContext, ProblemDetails = problemDetails
                         });
@@ -165,7 +165,7 @@ internal static class Setup
                         problemDetails.AddErrorKey(nameof(HttpStatusCode.Forbidden));
 
                         context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+                        await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
                         {
                             HttpContext = context.HttpContext, ProblemDetails = problemDetails
                         });

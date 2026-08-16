@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Net;
+using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
 using EntityFramework.Exceptions.Common;
 using Microsoft.AspNetCore.Mvc;
@@ -128,7 +129,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         var details = new ProblemDetails { Status = statusCode, Title = formattedTitle };
 
         context.Response.StatusCode = statusCode;
-        await problemDetailsService.WriteAsync(new ProblemDetailsContext
+        await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context, Exception = exception, ProblemDetails = details
         });
