@@ -24,6 +24,15 @@ internal static class NotificationsTelemetry
     public static void RecordNotificationSent(string notificationType) =>
         NotificationsSent.Add(1, new KeyValuePair<string, object?>("notification.type", notificationType));
 
+    public static readonly Counter<long> SignalRErrors =
+        Meter.CreateCounter<long>("notifications.signalr.errors", "errors",
+            "Total SignalR hub connect and dispatch failures, tagged by operation and exception type.");
+
+    public static void RecordSignalRError(string operation, string errorType) =>
+        SignalRErrors.Add(1,
+            new KeyValuePair<string, object?>("signalr.operation", operation),
+            new KeyValuePair<string, object?>("error.type", errorType));
+
     public static readonly Counter<long> OtpSent =
         Meter.CreateCounter<long>("notifications.otp.sent", "otps",
             "Total OTP SMS sent via the gateway, tagged by purpose.");
@@ -33,7 +42,7 @@ internal static class NotificationsTelemetry
 
     public static readonly Counter<long> OtpVerifications =
         Meter.CreateCounter<long>("notifications.otp.verifications", "verifications",
-            "Total OTP verification attempts, tagged by purpose and outcome — sent vs verified is the OTP funnel; failure spikes flag delivery issues or brute force.");
+            "Total OTP verification attempts, tagged by purpose and outcome: sent vs verified is the OTP funnel, and failure spikes flag delivery issues or brute force.");
 
     public static void RecordOtpVerification(string purpose, string outcome) =>
         OtpVerifications.Add(1,

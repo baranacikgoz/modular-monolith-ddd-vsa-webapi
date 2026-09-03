@@ -76,4 +76,15 @@ public sealed class NotificationDispatcherTests
             l != null && l.Count == 2 && l.Contains("conn-1") && l.Contains("conn-2")));
         await _proxy.Received(1).ReceiveNotification(payload);
     }
+
+    [Fact]
+    public async Task SendToUserAsync_ClientThrows_PropagatesException()
+    {
+        var userId = ApplicationUserId.New();
+        var payload = new NotificationPayload("product.price.updated", "prod-1");
+        _proxy.ReceiveNotification(payload).Returns(Task.FromException(new InvalidOperationException("transport failure")));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _dispatcher.SendToUserAsync(userId, payload, CancellationToken.None));
+    }
 }

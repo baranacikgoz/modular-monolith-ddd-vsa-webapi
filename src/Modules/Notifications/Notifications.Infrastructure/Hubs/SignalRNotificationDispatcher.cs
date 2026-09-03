@@ -9,27 +9,30 @@ internal sealed class SignalRNotificationDispatcher(
     IHubContext<NotificationsHub, INotificationsClient> hubContext
 ) : INotificationDispatcher
 {
-    public async Task SendToUserAsync(ApplicationUserId userId, NotificationPayload payload, CancellationToken cancellationToken)
-    {
-        await hubContext.Clients.Group(NotificationGroupName.ForUser(userId)).ReceiveNotification(payload);
-        NotificationsTelemetry.RecordNotificationSent(payload.Type);
-    }
+    public Task SendToUserAsync(ApplicationUserId userId, NotificationPayload payload, CancellationToken cancellationToken) =>
+        DispatchAsync(hubContext.Clients.Group(NotificationGroupName.ForUser(userId)), payload);
 
-    public async Task SendToGroupAsync(string groupName, NotificationPayload payload, CancellationToken cancellationToken)
-    {
-        await hubContext.Clients.Group(groupName).ReceiveNotification(payload);
-        NotificationsTelemetry.RecordNotificationSent(payload.Type);
-    }
+    public Task SendToGroupAsync(string groupName, NotificationPayload payload, CancellationToken cancellationToken) =>
+        DispatchAsync(hubContext.Clients.Group(groupName), payload);
 
-    public async Task SendToAllAsync(NotificationPayload payload, CancellationToken cancellationToken)
-    {
-        await hubContext.Clients.All.ReceiveNotification(payload);
-        NotificationsTelemetry.RecordNotificationSent(payload.Type);
-    }
+    public Task SendToAllAsync(NotificationPayload payload, CancellationToken cancellationToken) =>
+        DispatchAsync(hubContext.Clients.All, payload);
 
-    public async Task SendToAllExceptAsync(IReadOnlyList<string> excludedConnectionIds, NotificationPayload payload, CancellationToken cancellationToken)
+    public Task SendToAllExceptAsync(IReadOnlyList<string> excludedConnectionIds, NotificationPayload payload, CancellationToken cancellationToken) =>
+        DispatchAsync(hubContext.Clients.AllExcept(excludedConnectionIds), payload);
+
+    private static async Task DispatchAsync(INotificationsClient client, NotificationPayload payload)
     {
-        await hubContext.Clients.AllExcept(excludedConnectionIds).ReceiveNotification(payload);
+        try
+        {
+            await client.ReceiveNotification(payload);
+        }
+        catch (Exception ex)
+        {
+            NotificationsTelemetry.RecordSignalRError("send", ex.GetType().Name);
+            throw;
+        }
+
         NotificationsTelemetry.RecordNotificationSent(payload.Type);
     }
 }

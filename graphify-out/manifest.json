@@ -730,8 +730,8 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs": {
-    "mtime": 1786386865.6303158,
-    "ast_hash": "517668729341a6f4be03fc23af49aa30",
+    "mtime": 1786898254.8000298,
+    "ast_hash": "7ac6f366695cd021911dd75e28f70551",
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/RateLimitingMiddleware.cs": {
@@ -1125,8 +1125,8 @@
     "semantic_hash": "f699da855245715b8284ad8d7e343d28"
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/Jwt/Setup.cs": {
-    "mtime": 1786279843.5205207,
-    "ast_hash": "d47cf20010baac2b5dac2667fd2fa162",
+    "mtime": 1786898249.1000013,
+    "ast_hash": "79bd338d7481ff3a10e232b8b46f3442",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Auth/PermissionAuthorizationHandler.cs": {
@@ -2040,7 +2040,7 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1786630554.7729008,
+    "mtime": 1786630650.2551422,
     "ast_hash": "249158ce1eb981d918557e763093bdb0",
     "semantic_hash": ""
   },
@@ -2332,6 +2332,11 @@
   "src/Modules/IAM/IAM.Application/Users/DomainEventHandlers/v1/V1SessionRefreshedCacheInvalidationHandler.cs": {
     "mtime": 1786274033.4460304,
     "ast_hash": "49365c6849006e4a007d2752af8b45eb",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Extensions/ProblemDetailsServiceExtensions.cs": {
+    "mtime": 1786898270.0048285,
+    "ast_hash": "6416933fe7bccb912d05e6981a491afe",
     "semantic_hash": ""
   }
 }

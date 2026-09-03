@@ -12,15 +12,23 @@ internal sealed partial class NotificationsHub(ILogger<NotificationsHub> logger)
 {
     public override async Task OnConnectedAsync()
     {
-        var userId = Context.UserIdentifier
-                     ?? throw new HubException("Unauthenticated connection rejected.");
+        try
+        {
+            var userId = Context.UserIdentifier
+                         ?? throw new HubException("Unauthenticated connection rejected.");
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForUser(userId));
+            await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForUser(userId));
 
-        NotificationsTelemetry.ActiveConnections.Add(1);
-        LogConnected(logger, userId, Context.ConnectionId);
+            NotificationsTelemetry.ActiveConnections.Add(1);
+            LogConnected(logger, userId, Context.ConnectionId);
 
-        await base.OnConnectedAsync();
+            await base.OnConnectedAsync();
+        }
+        catch (Exception ex)
+        {
+            NotificationsTelemetry.RecordSignalRError("connect", ex.GetType().Name);
+            throw;
+        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
