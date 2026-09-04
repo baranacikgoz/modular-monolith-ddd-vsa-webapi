@@ -23,7 +23,7 @@ export TestModuleOverride='*'
 
 # module : infrastructure project : DbContext  (mirrors the ef-script-* Makefile targets)
 MODULES="
-IAM:src/Modules/IAM/IAM.Infrastructure:IAMDbContext
+Notifications:src/Modules/Notifications/Notifications.Infrastructure:NotificationsDbContext
 Products:src/Modules/Products/Products.Infrastructure:ProductsDbContext
 Outbox:src/Modules/Outbox/Outbox:OutboxDbContext
 "

@@ -85,12 +85,11 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         _factory.Services.GetRequiredService<TimeProvider>(),
         _factory.Services.GetRequiredService<ILogger<OutboxProcessor>>());
 
-    private async Task<int> SeedMessageAsync(DateTimeOffset createdOn, string phoneSuffix, Action<OutboxMessage>? configure = null)
+    private async Task<int> SeedMessageAsync(DateTimeOffset createdOn, Action<OutboxMessage>? configure = null)
     {
         await using var scope = _factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-        var message = OutboxMessage.Create(createdOn, new UserRegisteredIntegrationEvent(
-            ApplicationUserId.New(), "Test User", $"+90555{phoneSuffix}"));
+        var message = OutboxMessage.Create(createdOn, new StoreCreatedIntegrationEvent(DefaultIdType.CreateVersion7(), ApplicationUserId.New()));
         configure?.Invoke(message);
         db.OutboxMessages.Add(message);
         await db.SaveChangesAsync();
@@ -107,7 +106,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
     [Fact]
     public async Task ProcessBatch_PublishSucceeds_MarksProcessed()
     {
-        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow, "0001001");
+        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow);
 
         using var processor = CreateProcessor(BuildOptions());
         var processed = await processor.ProcessBatchAsync(CancellationToken.None);
@@ -124,7 +123,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
     {
         _fakePublishEndpoint.OnPublish = _ => throw new InvalidOperationException("simulated broker failure");
 
-        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow, "0001002");
+        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow);
 
         // Capture "before" here, not a fresh UtcNow after the DB round trip below: ComputeBackoff uses
         // full jitter (uniform in [0, cap)), so the scheduled backoff can be near-zero. Asserting against
@@ -149,7 +148,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         _fakePublishEndpoint.OnPublish = _ => throw new InvalidOperationException("simulated broker failure");
 
         const int maxRetryCount = 3;
-        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow, "0001003", message =>
+        var messageId = await SeedMessageAsync(DateTimeOffset.UtcNow, message =>
         {
             for (var i = 0; i < maxRetryCount - 1; i++)
             {
@@ -177,7 +176,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         var ids = new List<int>();
         for (var i = 0; i < 5; i++)
         {
-            ids.Add(await SeedMessageAsync(now.AddMilliseconds(i), $"000200{i}"));
+            ids.Add(await SeedMessageAsync(now.AddMilliseconds(i)));
         }
 
         // See ProcessBatch_PublishFails_SchedulesRetryWithLease: assert against the timestamp taken
@@ -217,7 +216,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         var ids = new List<int>();
         for (var i = 0; i < 20; i++)
         {
-            ids.Add(await SeedMessageAsync(now.AddMilliseconds(i), $"00030{i:D2}"));
+            ids.Add(await SeedMessageAsync(now.AddMilliseconds(i)));
         }
 
         // BatchSize (12) < total messages (20): neither single ProcessBatchAsync call can claim everything

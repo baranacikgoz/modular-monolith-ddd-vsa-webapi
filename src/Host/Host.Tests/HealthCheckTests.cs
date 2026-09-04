@@ -16,9 +16,9 @@ public class HealthCheckTests(HostTestFactory factory)
     {
         var response = await _client.GetAsync(new Uri(endpoint, UriKind.Relative));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
         var content = await response.Content.ReadAsStringAsync();
+        Assert.True(response.StatusCode == HttpStatusCode.OK, $"{endpoint} returned {response.StatusCode}: {content}");
+
         using var doc = JsonDocument.Parse(content);
         var status = doc.RootElement.GetProperty("status").GetString();
         Assert.Equal("Healthy", status);
@@ -29,9 +29,9 @@ public class HealthCheckTests(HostTestFactory factory)
     {
         var response = await _client.GetAsync(new Uri("/health/ready", UriKind.Relative));
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
         var content = await response.Content.ReadAsStringAsync();
+        Assert.True(response.StatusCode == HttpStatusCode.OK, $"/health/ready returned {response.StatusCode}: {content}");
+
         using var doc = JsonDocument.Parse(content);
 
         var entries = doc.RootElement.GetProperty("entries");

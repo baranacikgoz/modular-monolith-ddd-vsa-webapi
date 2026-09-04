@@ -84,7 +84,7 @@ export function setup() {
     { headers: JSON_HEADERS });
 
   const loginRes = http.post(`${BASE_URL}/tokens`,
-    JSON.stringify({ phoneNumber: ADMIN_PHONE, otp: '123456' }),
+    JSON.stringify({ phoneNumber: ADMIN_PHONE, otp: '123456', deviceId: '00000000-0000-4000-8000-000000000000', clientId: 'web-app-1' }),
     { headers: JSON_HEADERS });
 
   if (loginRes.status !== 200) {

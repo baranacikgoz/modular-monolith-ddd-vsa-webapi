@@ -20,7 +20,7 @@ internal static class Endpoint
         myStoresApiGroup
             .MapPost("", CreateStoreAsync)
             .WithDescription("Create a store.")
-            .MustHavePermission(CustomActions.Create, CustomResources.Stores)
+            .RequireScope(KeycloakScopes.Stores.Create)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

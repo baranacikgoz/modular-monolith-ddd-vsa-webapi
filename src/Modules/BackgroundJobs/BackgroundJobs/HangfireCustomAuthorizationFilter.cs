@@ -1,20 +1,23 @@
 using Common.Application.Auth;
 using Hangfire.Annotations;
 using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BackgroundJobs;
 
 public class HangfireCustomAuthorizationFilter : IDashboardAsyncAuthorizationFilter
 {
-    public Task<bool> AuthorizeAsync([NotNull] DashboardContext context)
+    private static readonly string PolicyName =
+        KeycloakPermission.FromScope(KeycloakScopes.Hangfire.Manage).PolicyName();
+
+    public async Task<bool> AuthorizeAsync([NotNull] DashboardContext context)
     {
-        var currentUser = context.GetHttpContext().RequestServices.GetRequiredService<ICurrentUser>();
+        var httpContext = context.GetHttpContext();
+        var authorizationService = httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
 
-        var permissionName = CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire);
+        var result = await authorizationService.AuthorizeAsync(httpContext.User, PolicyName);
 
-        var hasPermission = currentUser.HasPermission(permissionName);
-
-        return Task.FromResult(hasPermission);
+        return result.Succeeded;
     }
 }

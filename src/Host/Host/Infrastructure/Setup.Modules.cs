@@ -184,6 +184,16 @@ internal static partial class Setup
             .ToArray();
     }
 
+    /// <summary>True when <paramref name="moduleName" /> was selected for this process (after <see cref="AddModules" />).</summary>
+    public static bool IsModuleActive(this IServiceCollection services, string moduleName)
+    {
+        var registry =
+            services.LastOrDefault(d => d.ServiceType == typeof(ModuleRegistry))?.ImplementationInstance as
+                ModuleRegistry;
+
+        return registry?.ActiveModuleNames.Contains(moduleName, StringComparer.Ordinal) == true;
+    }
+
     private static (IReadOnlyList<string>? Names, bool LoadAll) GetEnabledModuleNames(IConfiguration configuration)
     {
         var overrideModule = configuration["TestModuleOverride"];

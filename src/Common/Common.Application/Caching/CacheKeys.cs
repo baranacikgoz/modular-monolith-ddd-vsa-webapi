@@ -14,9 +14,13 @@ public static class CacheKeys
             return $"otp:{purpose}:{hash}";
         }
 
-        public static string SessionValid(Guid sessionId)
+        /// <summary>
+        ///     Cached Keycloak authorization decision for one access token (<paramref name="jti" />) and one
+        ///     <c>resource#scope</c> permission. Keyed by jti, not sid, so the entry can never outlive the token.
+        /// </summary>
+        public static string AuthorizationDecision(string jti, string permission)
         {
-            return $"session_valid:{sessionId}";
+            return $"authz_decision:{jti}:{permission}";
         }
     }
 }

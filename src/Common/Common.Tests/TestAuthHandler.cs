@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Common.Application.Auth;
@@ -8,6 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace Common.Tests;
 
+/// <summary>
+///     Stand-in for the Keycloak JwtBearer scheme: emits the same claim shape Keycloak access tokens carry
+///     (<c>sub</c>, <c>jti</c>, <c>sid</c>, <c>roles</c>). Permission checks are short-circuited by
+///     <see cref="AllowAllAuthorizationHandler" />, so no Keycloak instance is needed for slice tests.
+/// </summary>
 public class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
@@ -16,7 +20,7 @@ public class TestAuthHandler(
     public const string AuthenticationScheme = "TestScheme";
     public static readonly Guid DefaultUserId = Guid.NewGuid();
     public static readonly string DefaultJti = Guid.NewGuid().ToString();
-    public static readonly Guid DefaultSessionId = Guid.NewGuid();
+    public static readonly string DefaultSessionId = "test-session-" + Guid.NewGuid().ToString("N")[..12];
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -27,10 +31,10 @@ public class TestAuthHandler(
             return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        var nameIdentifier = DefaultUserId.ToString();
+        var subject = DefaultUserId.ToString();
         if (Request.Headers.TryGetValue("X-Test-User-Id", out var overrideId))
         {
-            nameIdentifier = overrideId.ToString();
+            subject = overrideId.ToString();
         }
 
         var jti = DefaultJti;
@@ -39,7 +43,7 @@ public class TestAuthHandler(
             jti = overrideJti.ToString();
         }
 
-        var sessionId = DefaultSessionId.ToString();
+        var sessionId = DefaultSessionId;
         if (Request.Headers.TryGetValue("X-Test-Session-Id", out var overrideSessionId))
         {
             sessionId = overrideSessionId.ToString();
@@ -47,22 +51,13 @@ public class TestAuthHandler(
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, nameIdentifier),
-            new(JwtRegisteredClaimNames.Jti, jti),
+            new(JwtClaimNames.Subject, subject),
+            new(JwtClaimNames.Jti, jti),
             new(JwtClaimNames.SessionId, sessionId),
-            new(ClaimTypes.Name, "TestUser"),
-            // Add any essential custom permissions required by all endpoints implicitly.
-            // Tests can override this by injecting different headers or using specific identities if needed.
-            new("Permission", CustomPermission.NameFor(CustomActions.Read, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.Create, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.Update, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.Delete, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.ReadMy, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.UpdateMy, CustomResources.ApplicationUsers)),
-            new("Permission", CustomPermission.NameFor(CustomActions.DeleteMy, CustomResources.ApplicationUsers)),
+            new(JwtClaimNames.PreferredUsername, "test-user")
         };
 
-        // Optional role claims, comma-separated header, e.g. "Basic,SystemAdmin".
+        // Optional role claims, comma-separated header, e.g. "basic,system-admin".
         if (Request.Headers.TryGetValue("X-Test-Roles", out var roles))
         {
             claims.AddRange(roles

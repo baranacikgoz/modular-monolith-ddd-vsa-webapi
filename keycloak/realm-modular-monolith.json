@@ -1,0 +1,892 @@
+{
+  "id": "modular-monolith",
+  "realm": "modular-monolith",
+  "displayName": "Modular Monolith",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 10,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1209600,
+  "ssoSessionMaxLifespan": 7776000,
+  "clientSessionIdleTimeout": 0,
+  "clientSessionMaxLifespan": 0,
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "accessCodeLifespanUserAction": 300,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined)",
+  "defaultSignatureAlgorithm": "RS256",
+  "roles": {
+    "realm": [
+      {
+        "name": "basic",
+        "description": "Mobile end users (phone + OTP login).",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "staff",
+        "description": "Support and management users (email + password login).",
+        "composite": false,
+        "clientRole": false
+      },
+      {
+        "name": "system-admin",
+        "description": "Full administrative access. Includes staff.",
+        "composite": true,
+        "clientRole": false,
+        "composites": {
+          "realm": [
+            "staff"
+          ]
+        }
+      }
+    ]
+  },
+  "authenticationFlows": [
+    {
+      "id": "a3f4c8e2-1b2d-4e5f-9a6b-7c8d9e0f1a2b",
+      "alias": "trusted-login",
+      "description": "Direct grant flow for the backend after it verified an OTP itself: identifies the user by username only. Bound exclusively to the backend-trusted-login client.",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "direct-grant-validate-username",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "backend-api",
+      "name": "Backend API",
+      "description": "Resource server. Email + password direct grant, service account for the Admin REST API, Authorization Services host.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "backend-api-dev-secret-change-me",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "fullScopeAllowed": true,
+      "attributes": {
+        "access.token.lifespan": "300",
+        "use.refresh.tokens": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "backend-api audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "backend-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles as roles claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": false,
+        "policyEnforcementMode": "ENFORCING",
+        "decisionStrategy": "AFFIRMATIVE",
+        "resources": [
+          {
+            "name": "users",
+            "displayName": "Users",
+            "type": "urn:backend-api:resources:users",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/users/*"
+            ],
+            "scopes": [
+              {
+                "name": "users:view"
+              },
+              {
+                "name": "users:search"
+              },
+              {
+                "name": "users:manage"
+              },
+              {
+                "name": "users:view-own"
+              },
+              {
+                "name": "users:update-own"
+              }
+            ]
+          },
+          {
+            "name": "sessions",
+            "displayName": "Sessions",
+            "type": "urn:backend-api:resources:sessions",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/tokens/sessions/*",
+              "/tokens/revoke"
+            ],
+            "scopes": [
+              {
+                "name": "sessions:view-own"
+              },
+              {
+                "name": "sessions:revoke-own"
+              }
+            ]
+          },
+          {
+            "name": "devices",
+            "displayName": "Devices",
+            "type": "urn:backend-api:resources:devices",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/notifications/devices/*"
+            ],
+            "scopes": [
+              {
+                "name": "devices:update-own"
+              }
+            ]
+          },
+          {
+            "name": "stores",
+            "displayName": "Stores",
+            "type": "urn:backend-api:resources:stores",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/stores/*"
+            ],
+            "scopes": [
+              {
+                "name": "stores:create"
+              },
+              {
+                "name": "stores:view"
+              },
+              {
+                "name": "stores:search"
+              },
+              {
+                "name": "stores:update"
+              },
+              {
+                "name": "stores:delete"
+              },
+              {
+                "name": "stores:create-own"
+              },
+              {
+                "name": "stores:view-own"
+              },
+              {
+                "name": "stores:update-own"
+              },
+              {
+                "name": "stores:delete-own"
+              }
+            ]
+          },
+          {
+            "name": "products",
+            "displayName": "Products",
+            "type": "urn:backend-api:resources:products",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/products/*"
+            ],
+            "scopes": [
+              {
+                "name": "products:create"
+              },
+              {
+                "name": "products:view"
+              },
+              {
+                "name": "products:search"
+              },
+              {
+                "name": "products:update"
+              },
+              {
+                "name": "products:delete"
+              },
+              {
+                "name": "products:create-own"
+              },
+              {
+                "name": "products:view-own"
+              },
+              {
+                "name": "products:update-own"
+              },
+              {
+                "name": "products:delete-own"
+              },
+              {
+                "name": "products:search-own"
+              }
+            ]
+          },
+          {
+            "name": "product-templates",
+            "displayName": "Product templates",
+            "type": "urn:backend-api:resources:product-templates",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/product-templates/*"
+            ],
+            "scopes": [
+              {
+                "name": "product-templates:create"
+              },
+              {
+                "name": "product-templates:view"
+              },
+              {
+                "name": "product-templates:search"
+              },
+              {
+                "name": "product-templates:update"
+              },
+              {
+                "name": "product-templates:delete"
+              }
+            ]
+          },
+          {
+            "name": "hangfire",
+            "displayName": "Hangfire dashboard",
+            "type": "urn:backend-api:resources:hangfire",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/hangfire/*"
+            ],
+            "scopes": [
+              {
+                "name": "hangfire:manage"
+              }
+            ]
+          }
+        ],
+        "policies": [
+          {
+            "name": "Basic Role Policy",
+            "description": "Users holding the realm role 'basic'.",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "fetchRoles": "true",
+              "roles": "[{\"id\":\"basic\",\"required\":false}]"
+            }
+          },
+          {
+            "name": "Staff Role Policy",
+            "description": "Users holding the realm role 'staff'.",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "fetchRoles": "true",
+              "roles": "[{\"id\":\"staff\",\"required\":false}]"
+            }
+          },
+          {
+            "name": "System Admin Role Policy",
+            "description": "Users holding the realm role 'system-admin'.",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "fetchRoles": "true",
+              "roles": "[{\"id\":\"system-admin\",\"required\":false}]"
+            }
+          },
+          {
+            "name": "Service Account Policy",
+            "description": "Machine callers authenticating with client credentials.",
+            "type": "client",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "clients": "[\"ci-integration\"]"
+            }
+          },
+          {
+            "name": "Any Authenticated User Policy",
+            "description": "Any user holding one of the application roles.",
+            "type": "aggregate",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "applyPolicies": "[\"Basic Role Policy\",\"Staff Role Policy\",\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Users Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"users\"]",
+              "scopes": "[\"users:view-own\",\"users:update-own\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Users Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"users\"]",
+              "scopes": "[\"users:view\",\"users:search\",\"users:manage\"]",
+              "applyPolicies": "[\"Staff Role Policy\",\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Sessions Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"sessions\"]",
+              "scopes": "[\"sessions:view-own\",\"sessions:revoke-own\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Devices Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"devices\"]",
+              "scopes": "[\"devices:update-own\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Stores Catalog Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stores\"]",
+              "scopes": "[\"stores:view\",\"stores:search\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Stores Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stores\"]",
+              "scopes": "[\"stores:create-own\",\"stores:view-own\",\"stores:update-own\",\"stores:delete-own\"]",
+              "applyPolicies": "[\"Basic Role Policy\"]"
+            }
+          },
+          {
+            "name": "Stores Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stores\"]",
+              "scopes": "[\"stores:create\",\"stores:update\",\"stores:delete\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Products Catalog Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"products\"]",
+              "scopes": "[\"products:view\",\"products:search\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Products Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"products\"]",
+              "scopes": "[\"products:create-own\",\"products:view-own\",\"products:update-own\",\"products:delete-own\",\"products:search-own\"]",
+              "applyPolicies": "[\"Basic Role Policy\"]"
+            }
+          },
+          {
+            "name": "Products Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"products\"]",
+              "scopes": "[\"products:create\",\"products:update\",\"products:delete\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Product Templates Catalog Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"product-templates\"]",
+              "scopes": "[\"product-templates:view\",\"product-templates:search\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Product Templates Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"product-templates\"]",
+              "scopes": "[\"product-templates:create\",\"product-templates:update\",\"product-templates:delete\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Hangfire Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"hangfire\"]",
+              "scopes": "[\"hangfire:manage\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Machine Integration Permission",
+            "description": "Read-only catalog access for service accounts.",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "scopes": "[\"stores:view\",\"products:view\",\"product-templates:view\"]",
+              "applyPolicies": "[\"Service Account Policy\"]"
+            }
+          }
+        ],
+        "scopes": [
+          {
+            "name": "users:view"
+          },
+          {
+            "name": "users:search"
+          },
+          {
+            "name": "users:manage"
+          },
+          {
+            "name": "users:view-own"
+          },
+          {
+            "name": "users:update-own"
+          },
+          {
+            "name": "sessions:view-own"
+          },
+          {
+            "name": "sessions:revoke-own"
+          },
+          {
+            "name": "devices:update-own"
+          },
+          {
+            "name": "stores:create"
+          },
+          {
+            "name": "stores:view"
+          },
+          {
+            "name": "stores:search"
+          },
+          {
+            "name": "stores:update"
+          },
+          {
+            "name": "stores:delete"
+          },
+          {
+            "name": "stores:create-own"
+          },
+          {
+            "name": "stores:view-own"
+          },
+          {
+            "name": "stores:update-own"
+          },
+          {
+            "name": "stores:delete-own"
+          },
+          {
+            "name": "products:create"
+          },
+          {
+            "name": "products:view"
+          },
+          {
+            "name": "products:search"
+          },
+          {
+            "name": "products:update"
+          },
+          {
+            "name": "products:delete"
+          },
+          {
+            "name": "products:create-own"
+          },
+          {
+            "name": "products:view-own"
+          },
+          {
+            "name": "products:update-own"
+          },
+          {
+            "name": "products:delete-own"
+          },
+          {
+            "name": "products:search-own"
+          },
+          {
+            "name": "product-templates:create"
+          },
+          {
+            "name": "product-templates:view"
+          },
+          {
+            "name": "product-templates:search"
+          },
+          {
+            "name": "product-templates:update"
+          },
+          {
+            "name": "product-templates:delete"
+          },
+          {
+            "name": "hangfire:manage"
+          }
+        ]
+      }
+    },
+    {
+      "clientId": "backend-trusted-login",
+      "name": "Backend trusted login",
+      "description": "Used only by the backend after it has verified a one-time code itself. Its direct grant flow identifies the user by username without a credential, so this secret is equivalent to every end user's password: vault only.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "backend-trusted-login-dev-secret-change-me",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "authenticationFlowBindingOverrides": {
+        "direct_grant": "a3f4c8e2-1b2d-4e5f-9a6b-7c8d9e0f1a2b"
+      },
+      "attributes": {
+        "access.token.lifespan": "300",
+        "use.refresh.tokens": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "backend-api audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "backend-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm roles as roles claim",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "ci-integration",
+      "name": "CI integration (sample machine caller)",
+      "description": "Example service-account client. Machine callers obtain tokens with client_credentials and are authorized through the Service Account Policy.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "ci-integration-dev-secret-change-me",
+      "publicClient": false,
+      "bearerOnly": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": false,
+      "fullScopeAllowed": true,
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "protocolMappers": [
+        {
+          "name": "backend-api audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "backend-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-backend-api",
+      "enabled": true,
+      "serviceAccountClientId": "backend-api",
+      "clientRoles": {
+        "realm-management": [
+          "view-realm",
+          "view-users",
+          "query-users",
+          "manage-users"
+        ]
+      }
+    },
+    {
+      "username": "service-account-ci-integration",
+      "enabled": true,
+      "serviceAccountClientId": "ci-integration"
+    },
+    {
+      "username": "901111111111",
+      "email": "admin@modular-monolith.local",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111111"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "SystemAdmin-Dev-Password-1",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "system-admin"
+      ],
+      "firstName": "Baran",
+      "lastName": "Açıkgöz"
+    },
+    {
+      "username": "staff@modular-monolith.local",
+      "email": "staff@modular-monolith.local",
+      "emailVerified": true,
+      "enabled": true,
+      "attributes": {},
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Staff-Dev-Password-1",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "staff"
+      ],
+      "firstName": "Support",
+      "lastName": "Staff"
+    },
+    {
+      "username": "901111111112",
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111112"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "realmRoles": [
+        "basic"
+      ],
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    {
+      "username": "901111111113",
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111113"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "realmRoles": [
+        "basic"
+      ],
+      "firstName": "Michael",
+      "lastName": "Scott"
+    },
+    {
+      "username": "901111111114",
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111114"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "realmRoles": [
+        "basic"
+      ],
+      "firstName": "Pam",
+      "lastName": "Beesly"
+    },
+    {
+      "username": "901111111115",
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111115"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "realmRoles": [
+        "basic"
+      ],
+      "firstName": "Dwight",
+      "lastName": "Schrute"
+    },
+    {
+      "username": "901111111116",
+      "enabled": true,
+      "attributes": {
+        "phoneNumber": [
+          "901111111116"
+        ],
+        "phoneNumberVerified": [
+          "true"
+        ],
+        "birthDate": [
+          "2001-06-20"
+        ]
+      },
+      "realmRoles": [
+        "basic"
+      ],
+      "firstName": "Jim",
+      "lastName": "Halpert"
+    }
+  ],
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"multivalued\":false},{\"name\":\"firstName\",\"displayName\":\"${firstName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"admin\",\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"lastName\",\"displayName\":\"${lastName}\",\"validations\":{\"length\":{\"max\":255},\"person-name-prohibited-characters\":{}},\"required\":{\"roles\":[\"admin\",\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"phoneNumber\",\"displayName\":\"Phone number\",\"validations\":{\"pattern\":{\"pattern\":\"^[0-9]{10,15}$\",\"error-message\":\"Phone number must be 10 to 15 digits\"}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"multivalued\":false},{\"name\":\"phoneNumberVerified\",\"displayName\":\"Phone number verified\",\"validations\":{\"options\":{\"options\":[\"true\",\"false\"]}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"multivalued\":false},{\"name\":\"birthDate\",\"displayName\":\"Birth date\",\"validations\":{\"pattern\":{\"pattern\":\"^[0-9]{4}-[0-9]{2}-[0-9]{2}$\",\"error-message\":\"Birth date must be ISO 8601 (yyyy-MM-dd)\"}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\"]},\"multivalued\":false}],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}]}"
+          ]
+        }
+      }
+    ]
+  }
+}

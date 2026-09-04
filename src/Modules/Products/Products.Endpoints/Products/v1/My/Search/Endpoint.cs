@@ -24,7 +24,7 @@ internal static class Endpoint
         myStoresApiGroup
             .MapGet("my/search", SearchMyProductsAsync)
             .WithDescription("Search my store's products.")
-            .MustHavePermission(CustomActions.SearchMy, CustomResources.Products)
+            .RequireScope(KeycloakScopes.Products.SearchOwn)
             .Produces<PaginationResponse<Response>>()
             .TransformResultTo<PaginationResponse<Response>>();
     }

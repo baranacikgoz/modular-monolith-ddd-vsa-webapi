@@ -1,12 +1,10 @@
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Persistence.Extensions;
-using IAM.Application.Persistence;
+using IAM.Application.Keycloak;
 using IAM.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Users.VersionNeutral.CheckRegistration;
 
@@ -25,15 +23,12 @@ internal static class Endpoint
 
     private static async Task<Result<Response>> IsRegisteredAsync(
         [AsParameters] Request request,
-        IIAMDbContext dbContext,
+        IKeycloakAdminClient adminClient,
         CancellationToken cancellationToken)
     {
-        return await dbContext
-            .Users
-            .AsNoTracking()
-            .TagWith(nameof(IsRegisteredAsync))
-            .Where(u => u.PhoneNumber == request.PhoneNumber)
-            .AnyAsResultAsync(cancellationToken)
-            .MapAsync(any => new Response { IsRegistered = any });
+        // Phone users are registered with their digits-only number as the Keycloak username.
+        var user = await adminClient.FindUserByUsernameAsync(request.PhoneNumber, cancellationToken);
+
+        return new Response { IsRegistered = user is not null };
     }
 }

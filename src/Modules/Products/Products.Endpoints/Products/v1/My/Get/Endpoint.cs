@@ -17,7 +17,7 @@ internal static class Endpoint
         myProductsApiGroup
             .MapGet("my/{id}", GetMyProductAsync)
             .WithDescription("Get my product.")
-            .MustHavePermission(CustomActions.ReadMy, CustomResources.Products)
+            .RequireScope(KeycloakScopes.Products.ViewOwn)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

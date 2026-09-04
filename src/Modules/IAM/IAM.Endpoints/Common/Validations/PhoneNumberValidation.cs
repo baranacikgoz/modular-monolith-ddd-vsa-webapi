@@ -1,7 +1,7 @@
 using System.Globalization;
 using Common.Application.Localization.Resources;
 using FluentValidation;
-using IAM.Domain.Identity;
+using IAM.Domain.Users;
 
 namespace IAM.Endpoints.Common.Validations;
 
