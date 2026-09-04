@@ -11,11 +11,11 @@ public class OutboxMessage : IOutboxMessage
         Event = @event;
     }
 
-#pragma warning disable
+#pragma warning disable CS8618 // Event is non-nullable, left unassigned here, EF/deserialization sets it via reflection.
     public OutboxMessage() // Required for deserialization
     {
     }
-#pragma warning restore
+#pragma warning restore CS8618
 
     public int Id { get; set; }
     public DateTimeOffset CreatedOn { get; set; }
@@ -50,7 +50,7 @@ public class OutboxMessage : IOutboxMessage
     public void MarkAsFailed(DateTimeOffset failedOn) => FailedOn = failedOn;
 
     // Undoes a claim lease (NextRetryAt pushed into the future by the claim query) for a message the
-    // processor never got to attempt this batch — makes it immediately eligible again instead of making
+    // processor never got to attempt this batch, makes it immediately eligible again instead of making
     // callers wait out the full lease.
     public void ReleaseClaim() => NextRetryAt = null;
 }

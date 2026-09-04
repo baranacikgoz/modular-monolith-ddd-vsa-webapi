@@ -1,4 +1,3 @@
-using System.Reflection;
 using Common.IntegrationEvents;
 using NetArchTest.Rules;
 using Xunit;
@@ -13,39 +12,21 @@ namespace Common.Tests.Architecture;
 /// </summary>
 public sealed class ModuleBoundaryTests
 {
-    // Modules that have a dedicated .Domain assembly.
-    // BackgroundJobs and Outbox are single-project modules with no Domain split.
-    private static readonly string[] DomainModules =
-    [
-        "IAM",
-        "Products",
-        "Notifications",
-    ];
-
-    // Modules that have a dedicated .Application assembly.
-    private static readonly string[] ApplicationModules =
-    [
-        "IAM",
-        "Products",
-        "Notifications",
-    ];
-
     /// <summary>
     /// No Domain assembly may take a compile-time dependency on any other module's namespace.
-    /// Rule source: CLAUDE.md — "No module .csproj may reference another module .csproj."
+    /// Rule source: CLAUDE.md: "No module .csproj may reference another module .csproj."
     /// </summary>
     [Fact]
     public void ModuleDomain_MustNotDependOn_OtherModules()
     {
-        foreach (var module in DomainModules)
+        foreach (var assembly in SolutionAssemblies.DomainAssemblies)
         {
-            var assembly = Assembly.Load($"{module}.Domain");
+            var module = assembly.GetName().Name!.Split('.')[0];
 
-            // All other module root namespaces (both Domain and single-project modules)
-            var forbidden = DomainModules
+            // All other module root namespaces (both Domain-split and single-project modules).
+            var forbidden = SolutionAssemblies.ModuleNames
                 .Except([module])
                 .Select(m => $"{m}.")
-                .Concat(["BackgroundJobs.", "Outbox."])
                 .ToArray();
 
             var result = Types
@@ -63,20 +44,15 @@ public sealed class ModuleBoundaryTests
 
     /// <summary>
     /// IntegrationEvent subclasses must live in Common.IntegrationEvents, never inside a module assembly.
-    /// Rule source: CLAUDE.md — "Defined in src/Common/Common.IntegrationEvents/{SourceModule}.cs"
+    /// Rule source: CLAUDE.md: "Defined in src/Common/Common.IntegrationEvents/{SourceModule}.cs"
     /// </summary>
     [Fact]
     public void IntegrationEvents_MustLiveIn_CommonIntegrationEvents()
     {
-        // Collect all module assemblies that could illegally define IntegrationEvents
-        var moduleAssemblies = ApplicationModules
-            .SelectMany<string, Assembly>(m =>
-            [
-                Assembly.Load($"{m}.Domain"),
-                Assembly.Load($"{m}.Application"),
-            ])
-            .Append(Assembly.Load("BackgroundJobs"))
-            .Append(Assembly.Load("Outbox"))
+        // Every discovered assembly outside the shared kernel (Common.IntegrationEvents is the
+        // one legitimate home for an IntegrationEvent, and it lives in the "Common" module).
+        var moduleAssemblies = SolutionAssemblies.All
+            .Where(a => a.GetName().Name!.Split('.')[0] != "Common")
             .ToList();
 
         var result = Types

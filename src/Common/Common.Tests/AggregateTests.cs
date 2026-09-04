@@ -26,12 +26,6 @@ public abstract class AggregateTests<TAggregate, TId>
         return this;
     }
 
-    public AggregateTests<TAggregate, TId> Given(params DomainEvent[] events)
-    {
-        Aggregate.LoadFromHistory(events);
-        return this;
-    }
-
     public AggregateTests<TAggregate, TId> When(Action<TAggregate> action)
     {
         action(Aggregate);

@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Common.Application.AuditLog;
+using Common.Application.JsonConverters;
 using Common.Application.Pagination;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
@@ -13,7 +15,12 @@ public static class DbContextExtensions
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = false
+        WriteIndented = false,
+        Converters =
+        {
+            new StronglyTypedIdWriteOnlyJsonConverter(),
+            new JsonStringEnumConverter()
+        }
     };
 
     public static async Task<Result<PaginationResponse<AuditLogDto>>> GetAuditLogAsync<TAggregate, TId>(

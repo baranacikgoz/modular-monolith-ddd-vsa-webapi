@@ -48,6 +48,12 @@ public class SmsOptions
     /// <summary>Max SMS sends across all phone numbers per day, enforced by ThrottledSmsGateway.</summary>
     public int MaxPerDay { get; set; }
 
+    /// <summary>
+    /// TTL for ThrottledSmsGateway's per-day counters. The counter key buckets by UTC day, so this must
+    /// stay above 24h or a bucket could expire before its day ends.
+    /// </summary>
+    public required int ThrottleCounterTtlHours { get; set; }
+
     public required SmsTemplatesOptions Templates { get; set; }
 }
 
@@ -69,6 +75,10 @@ public class SmsOptionsValidator : CustomValidator<SmsOptions>
         RuleForEach(o => o.Templates.Otp)
             .Must(kv => kv.Value.Contains("{0}", StringComparison.Ordinal))
             .WithMessage("Each Templates.Otp value must contain '{0}' as the OTP placeholder.");
+
+        RuleFor(o => o.ThrottleCounterTtlHours)
+            .GreaterThanOrEqualTo(24)
+            .WithMessage("ThrottleCounterTtlHours must be at least 24.");
 
         // DummySmsGateway is a no-op: OTPs and notifications are generated but never reach the user.
         // In Production that silently bricks every SMS flow, so fail fast until Provider is switched

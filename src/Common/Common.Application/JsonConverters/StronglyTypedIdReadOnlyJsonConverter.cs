@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Domain.StronglyTypedIds;
@@ -64,7 +63,7 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
         }
 
         // Parse the string value to the underlying ID type (e.g., Guid)
-        object parsedValue;
+        DefaultIdType parsedValue;
         try
         {
             parsedValue = DefaultIdType.Parse(stringValue);
@@ -77,30 +76,15 @@ public class StronglyTypedIdReadOnlyJsonConverter : JsonConverter<IStronglyTyped
         // If the type is nullable, obtain its underlying type.
         var effectiveType = Nullable.GetUnderlyingType(typeToConvert) ?? typeToConvert;
 
-        // Create an instance of the effective (non-nullable) type.
-        var instance = Activator.CreateInstance(effectiveType)
+        // Every strongly-typed id has exactly one constructor taking its DefaultIdType value
+        // (positional record struct, or the explicit form like ApplicationUserId(DefaultIdType)).
+        var instance = Activator.CreateInstance(effectiveType, parsedValue)
                        ?? throw new JsonException($"Could not create an instance of {effectiveType}.");
 
         // Ensure the instance implements IStronglyTypedId.
         if (instance is not IStronglyTypedId stronglyTypedId)
         {
             throw new JsonException($"Instance of {effectiveType} does not implement IStronglyTypedId.");
-        }
-
-        // Use reflection to set the "Value" property on the instance.
-        var propertyInfo = effectiveType.GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
-        if (propertyInfo is null || !propertyInfo.CanWrite)
-        {
-            throw new JsonException($"Property 'Value' not found or not writable on type {effectiveType}.");
-        }
-
-        try
-        {
-            propertyInfo.SetValue(stronglyTypedId, parsedValue);
-        }
-        catch (Exception ex)
-        {
-            throw new JsonException($"Error setting the 'Value' property on {effectiveType}.", ex);
         }
 
         return stronglyTypedId;

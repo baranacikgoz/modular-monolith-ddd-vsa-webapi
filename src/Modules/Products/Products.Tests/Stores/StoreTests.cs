@@ -105,7 +105,8 @@ public class StoreTests
         Assert.Single(events);
 
         var @event = Assert.IsType<V1ProductAddedToStoreDomainEvent>(events.First());
-        Assert.Equal(product, @event.Product);
+        Assert.Equal(product.Id, @event.Product.ProductId);
+        Assert.Equal(product.Name, @event.Product.Name);
     }
 
     [Fact]
@@ -127,6 +128,7 @@ public class StoreTests
         Assert.Single(events);
 
         var @event = Assert.IsType<V1ProductRemovedFromStoreDomainEvent>(events.First());
-        Assert.Equal(product, @event.Product);
+        Assert.Equal(product.Id, @event.Product.ProductId);
+        Assert.Equal(product.Name, @event.Product.Name);
     }
 }

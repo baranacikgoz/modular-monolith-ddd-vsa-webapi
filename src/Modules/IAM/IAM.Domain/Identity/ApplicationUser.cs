@@ -31,30 +31,38 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         Uri? imageUrl = null)
     {
         var id = ApplicationUserId.New();
+        var trimmedFullName = fullName.Trim();
         var @event = new V1UserRegisteredDomainEvent(
             id,
-            fullName.Trim(),
+            trimmedFullName,
             phoneNumber,
             birthDate,
             imageUrl);
 
-        var user = new ApplicationUser();
+        var user = new ApplicationUser
+        {
+            Id = id,
+            FullName = trimmedFullName,
+            PhoneNumber = phoneNumber,
+            UserName = phoneNumber.TrimStart('+'), // UserName must be digits-only per AllowedUserNameCharacters
+            BirthDate = birthDate
+        };
+
         user.RaiseEvent(@event);
         return user;
     }
 
     public void UpdateImageUrl(Uri imageUrl)
     {
-        var @event = new V1UserImageUrlUpdatedDomainEvent(Id, imageUrl);
-        RaiseEvent(@event);
+        ImageUrl = imageUrl;
+        RaiseEvent(new V1UserImageUrlUpdatedDomainEvent(Id, imageUrl));
     }
 
-    // Intentionally does not follow the RaiseEvent-then-Apply replay pattern: events here are persisted
-    // (AuditLog) and must never carry token hashes, so state is mutated directly and the event is a marker.
+    // Events here are persisted to AuditLog and must never carry token hashes.
 
     /// <summary>
     ///     Issues a new refresh token for the (DeviceId, ClientId) session pair. Pass the <paramref name="existingSession" />
-    ///     the caller already resolved for that pair (e.g. via a filtered EF <c>Include</c>) — <c>null</c> if this is its
+    ///     the caller already resolved for that pair (e.g. via a filtered EF <c>Include</c>): <c>null</c> if this is its
     ///     first login, in which case a new session is created; otherwise it is reused/superseded (re-login on same device+app).
     /// </summary>
     public RefreshToken IssueSessionAndToken(
@@ -74,7 +82,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
             session = existingSession;
 
             // Same (DeviceId, ClientId) logging in again supersedes prior un-consumed tokens on that
-            // session — otherwise "reuse the same session" would leave old tokens usable.
+            // session: otherwise "reuse the same session" would leave old tokens usable.
             session.SupersedeUnconsumedTokens(now);
             session.Reactivate(deviceName, ip, userAgent, now, sessionAbsoluteExpiresAt);
             RaiseEvent(new V1SessionRefreshedDomainEvent(Id, session.Id));
@@ -108,7 +116,7 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
     {
         session.Revoke(reason, now);
 
-        RaiseEvent(new V1SessionRevokedDomainEvent(Id, session.Id, reason));
+        RaiseEvent(new V1SessionRevokedDomainEvent(Id, session.Id, reason.ToRevokedSnapshot()));
     }
 
     public void RevokeAllSessions(SessionRevokedReason reason, DateTimeOffset now)
@@ -124,14 +132,14 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
             session.Revoke(reason, now);
         }
 
-        RaiseEvent(new V1AllSessionsRevokedDomainEvent(Id, reason));
+        RaiseEvent(new V1AllSessionsRevokedDomainEvent(Id, reason.ToAllRevokedSnapshot()));
     }
 
     /// <summary>
     ///     Sets or rotates the FCM push token for the <paramref name="session" /> the caller already resolved
-    ///     (e.g. via a filtered EF <c>Include</c>). No DomainEvent raised — see the note above about token
+    ///     (e.g. via a filtered EF <c>Include</c>). No DomainEvent raised: see the note above about token
     ///     material never reaching AuditLog. Instance method (not static) to match every other Session
-    ///     mutation on this aggregate — all go through ApplicationUser even where, like here, no aggregate
+    ///     mutation on this aggregate: all go through ApplicationUser even where, like here, no aggregate
     ///     state is touched.
     /// </summary>
 #pragma warning disable CA1822, S2325
@@ -140,85 +148,6 @@ public sealed partial class ApplicationUser : IdentityUser<ApplicationUserId>, I
         session.SetPushToken(pushToken, now);
     }
 #pragma warning restore CA1822, S2325
-
-    private void ApplyEvent(IEvent @event)
-    {
-        switch (@event)
-        {
-            case V1UserRegisteredDomainEvent e:
-                Apply(e);
-                break;
-            case V1UserImageUrlUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1RefreshTokenUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1RefreshTokenRevokedDomainEvent e:
-                Apply(e);
-                break;
-            case V1SessionCreatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1SessionRefreshedDomainEvent e:
-                Apply(e);
-                break;
-            case V1SessionRevokedDomainEvent e:
-                Apply(e);
-                break;
-            case V1AllSessionsRevokedDomainEvent e:
-                Apply(e);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown event {@event.GetType().Name}");
-        }
-    }
-
-    private void Apply(V1UserRegisteredDomainEvent @event)
-    {
-        Id = @event.UserId;
-        FullName = @event.FullName;
-        PhoneNumber = @event.PhoneNumber;
-        UserName = @event.PhoneNumber.TrimStart('+'); // UserName must be digits-only per AllowedUserNameCharacters
-        BirthDate = @event.BirthDate;
-    }
-
-    private void Apply(V1UserImageUrlUpdatedDomainEvent @event)
-    {
-        ImageUrl = @event.ImageUrl;
-    }
-
-#pragma warning disable CA1822, S1186, IDE0060
-    private void Apply(V1RefreshTokenUpdatedDomainEvent @event)
-    {
-        // Nothing to do here — frozen no-op, kept only so historical AuditLog rows still replay (see versioning rule).
-    }
-
-    private void Apply(V1RefreshTokenRevokedDomainEvent @event)
-    {
-        // Nothing to do here — frozen no-op, kept only so historical AuditLog rows still replay (see versioning rule).
-    }
-
-    private void Apply(V1SessionCreatedDomainEvent @event)
-    {
-        // Nothing to do here — Session is added directly in IssueSessionAndToken(); see explanation above.
-    }
-
-    private void Apply(V1SessionRefreshedDomainEvent @event)
-    {
-        // Nothing to do here — Session/RefreshToken state mutated directly in IssueSessionAndToken()/RotateRefreshToken().
-    }
-
-    private void Apply(V1SessionRevokedDomainEvent @event)
-    {
-        // Nothing to do here — Session state mutated directly in RevokeSession().
-    }
-
-    private void Apply(V1AllSessionsRevokedDomainEvent @event)
-    {
-        // Nothing to do here — Session state mutated directly in RevokeAllSessions().
-    }
-#pragma warning restore CA1822, S1186, IDE0060
 
     // EF Core and ASP.NET Identity materialise entities via the inherited parameterless constructor
     // from IdentityUser<ApplicationUserId>. No explicit constructor needed here.

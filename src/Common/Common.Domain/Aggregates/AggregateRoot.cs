@@ -15,14 +15,6 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
 
     [JsonIgnore] public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
 
-    public void LoadFromHistory(IEnumerable<DomainEvent> events)
-    {
-        foreach (var @event in events)
-        {
-            RaiseEvent(@event);
-        }
-    }
-
     [ConcurrencyCheck] public new long Version { get; set; }
 
     public void ClearEvents()
@@ -35,14 +27,11 @@ public abstract class AggregateRoot<TId>(TId id) : AuditableEntity<TId>(id), IAg
         _events.Add(@event);
     }
 
-    protected abstract void ApplyEvent(DomainEvent @event);
-
 #pragma warning disable CA1030
     protected void RaiseEvent(DomainEvent @event)
     {
         Version++;
         @event.Version = Version;
-        ApplyEvent(@event);
         AddEvent(@event);
     }
 #pragma warning restore CA1030

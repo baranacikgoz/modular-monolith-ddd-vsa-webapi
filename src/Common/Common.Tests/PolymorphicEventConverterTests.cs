@@ -85,9 +85,15 @@ public sealed class PolymorphicEventConverterTests
     }
 
     [Fact]
-    public void EventConverter_WriteOptions_WriteIndentedIsFalse()
+    public void Deserialize_UnresolvableEventType_ReturnsUnknownDomainEventSentinel()
     {
-        Assert.False(EventConverter.WriteOptions.WriteIndented);
+        const string json = """{"eventTypeFullName":"Some.Disabled.Module.SomeDomainEvent","eventData":{"foo":"bar"}}""";
+
+        var restored = JsonSerializer.Deserialize<IEvent>(json, Options);
+
+        var sentinel = Assert.IsType<UnknownDomainEvent>(restored);
+        Assert.Equal("Some.Disabled.Module.SomeDomainEvent", sentinel.EventTypeFullName);
+        Assert.Contains("bar", sentinel.RawEventData, StringComparison.Ordinal);
     }
 
     [Fact]

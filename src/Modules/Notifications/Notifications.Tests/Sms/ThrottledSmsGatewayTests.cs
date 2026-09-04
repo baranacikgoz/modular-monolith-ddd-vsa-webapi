@@ -29,6 +29,7 @@ public sealed class ThrottledSmsGatewayTests : IDisposable
             Provider = SmsProvider.NetGsm,
             MaxPerPhoneNumberPerDay = maxPerPhoneNumberPerDay,
             MaxPerDay = maxPerDay,
+            ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         });
 

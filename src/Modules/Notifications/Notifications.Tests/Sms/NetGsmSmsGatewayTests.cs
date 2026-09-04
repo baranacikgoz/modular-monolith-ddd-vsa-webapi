@@ -340,6 +340,7 @@ public sealed class NetGsmSmsGatewayTests
             {
                 Provider = SmsProvider.NetGsm,
                 MsgHeader = "TESTHEADER",
+                ThrottleCounterTtlHours = 25,
                 Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
             };
             configureOptions?.Invoke(smsOptions);

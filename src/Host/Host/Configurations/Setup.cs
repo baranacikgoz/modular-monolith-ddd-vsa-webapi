@@ -33,6 +33,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/fullTextSearch");
         AddJsonFile(configuration, $"{configurationsDirectory}/sms");
         AddJsonFile(configuration, $"{configurationsDirectory}/push");
+        AddJsonFile(configuration, $"{configurationsDirectory}/resiliency");
 
         configuration.AddEnvironmentVariables();
 
@@ -46,8 +47,8 @@ internal static class Setup
         // Intentionally disabled: this repo has no HashiCorp Vault-like integration, so these
         // settings must be materialized at deploy time using the same file names (no {environment}
         // suffix). Using per-environment overrides makes that deploy-time materialization complex
-        // and confusing — one instance injected per deploy is fine.
-#pragma warning disable S125 // Sections of code should not be commented out — kept deliberately to document the disabled override
+        // and confusing: one instance injected per deploy is fine.
+#pragma warning disable S125 // Sections of code should not be commented out: kept deliberately to document the disabled override
         // var environment = builder.Environment.EnvironmentName;
         // configuration.AddJsonFile($"{filePath}.{environment}.json", true, true);
 #pragma warning restore S125

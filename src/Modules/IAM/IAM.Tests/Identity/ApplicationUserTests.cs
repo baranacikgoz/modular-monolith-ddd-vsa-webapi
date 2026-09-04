@@ -143,7 +143,8 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
                 Assert.Equal(SessionRevokedReason.UserSignedOut, session.RevokedReason);
                 Assert.Equal(revokedAt, session.RevokedAt);
             })
-            .Then<V1SessionRevokedDomainEvent>(@event => Assert.Equal(SessionRevokedReason.UserSignedOut, @event.Reason));
+            .Then<V1SessionRevokedDomainEvent>(
+                @event => Assert.Equal(V1SessionRevokedDomainEvent.ReasonSnapshot.UserSignedOut, @event.Reason));
     }
 
     [Fact]
@@ -163,7 +164,7 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
             .Then(user => Assert.All(
                 user.Sessions, s => Assert.Equal(SessionRevokedReason.SignedOutEverywhere, s.RevokedReason)))
             .Then<V1AllSessionsRevokedDomainEvent>(
-                @event => Assert.Equal(SessionRevokedReason.SignedOutEverywhere, @event.Reason));
+                @event => Assert.Equal(V1AllSessionsRevokedDomainEvent.ReasonSnapshot.SignedOutEverywhere, @event.Reason));
     }
 
     [Fact]
@@ -234,7 +235,7 @@ public class ApplicationUserTests : AggregateTests<ApplicationUser, ApplicationU
     [Fact]
     public void RotateRefreshToken_DoesNotExtendSessionAbsoluteExpiry()
     {
-        // A plain token rotation must never reset the hard session-lifetime cap — only a fresh
+        // A plain token rotation must never reset the hard session-lifetime cap: only a fresh
         // login (IssueSessionAndToken) may do that. Otherwise the absolute-expiry cap is pointless.
         var deviceId = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;

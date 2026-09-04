@@ -1,0 +1,13 @@
+{
+  "ResiliencyOptions": {
+    "PooledConnectionLifetimeMinutes": 15,
+    "TotalRequestTimeoutSeconds": 30,
+    "MaxRetryAttempts": 3,
+    "RetryDelaySeconds": 1,
+    "CircuitBreakerSamplingDurationSeconds": 30,
+    "CircuitBreakerFailureRatio": 0.1,
+    "CircuitBreakerMinimumThroughput": 10,
+    "CircuitBreakerBreakDurationSeconds": 15,
+    "AttemptTimeoutSeconds": 10
+  }
+}

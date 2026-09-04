@@ -10,6 +10,7 @@
     "MaxRetryAttempts": 1,
     "MaxPerPhoneNumberPerDay": 10,
     "MaxPerDay": 5000,
+    "ThrottleCounterTtlHours": 25,
     "Templates": {
       "Otp": {
         "en": "Your verification code is: {0}. Do not share it with anyone.",

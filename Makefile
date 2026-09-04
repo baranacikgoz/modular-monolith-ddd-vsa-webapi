@@ -1,11 +1,10 @@
-# Makefile — single entry point for all developer commands
+# Makefile: single entry point for all developer commands
 
 # Include the .env file (SonarQube vars)
 -include .env
 
 # Temporary solution filter that excludes docker-compose.dcproj
 SLNF_BUILD = ModularMonolith.Build.slnf
-SLNF_TESTS = ModularMonolith.Tests.slnf
 
 .PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
         ef-add-IAM ef-add-Products ef-add-Outbox \
@@ -153,12 +152,12 @@ perf-down:
 	docker compose -f docker-compose.yml -f docker-compose.perf.yml down
 
 # ── Rider workflow (infra already running via Rider's Docker integration) ──────
-# Rider owns postgres/rabbitmq/redis/aspire-dashboard — do NOT touch them.
+# Rider owns postgres/rabbitmq/redis/aspire-dashboard: do NOT touch them.
 # These targets build only mm.host and run k6 against the existing infra.
 # Before running: stop any natively-running app in Rider (free port 5001).
 
 signalr-poc:
-	@echo "Serving signalr-poc/ on http://localhost:8888 — open http://localhost:8888/signalr-poc.html"
+	@echo "Serving signalr-poc/ on http://localhost:8888, open http://localhost:8888/signalr-poc.html"
 	python3 -m http.server 8888 --directory signalr-poc
 
 perf-rider:
@@ -167,7 +166,7 @@ perf-rider:
 	docker compose -f docker-compose.app.yml -f docker-compose.perf.yml up --build --abort-on-container-exit k6
 
 perf-rider-smoke:
-	@echo "Smoke test (1 VU, 30 s) — starting mm.host then running buyer scenario..."
+	@echo "Smoke test (1 VU, 30 s): starting mm.host then running buyer scenario..."
 	docker compose -f docker-compose.app.yml up --build -d
 	docker run --rm -i \
 		--network local_shared_network \

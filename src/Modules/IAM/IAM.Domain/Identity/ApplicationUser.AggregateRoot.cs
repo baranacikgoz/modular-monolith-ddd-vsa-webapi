@@ -9,14 +9,6 @@ public sealed partial class ApplicationUser
 
     [JsonIgnore] public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
 
-    public void LoadFromHistory(IEnumerable<DomainEvent> events)
-    {
-        foreach (var @event in events)
-        {
-            RaiseEvent(@event);
-        }
-    }
-
     public void ClearEvents()
     {
         _events.Clear();
@@ -31,7 +23,6 @@ public sealed partial class ApplicationUser
     {
         Version++;
         @event.Version = Version;
-        ApplyEvent(@event);
         AddEvent(@event);
     }
 }

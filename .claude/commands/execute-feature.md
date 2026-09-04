@@ -10,11 +10,11 @@ Implement planned feature for module: $ARGUMENTS
 
 2. **Green baseline**: run `make test-{module}` to confirm existing tests pass before touching anything.
 
-3. **Domain layer**: implement or update Aggregates/Entities. Domain methods must call `RaiseEvent(new DomainEvent(...))`. Update `ApplyEvent` for state mutations.
+3. **Domain layer**: implement or update Aggregates/Entities. Domain methods mutate aggregate state inline, then call `RaiseEvent(new DomainEvent(...))` to record it. No `Apply`/`ApplyEvent`.
 
 4. **Application/Infrastructure layer**: implement internal services and repository logic following the functional Result pipeline throughout.
 
-5. **Cross-module integration** (if required): for async, define `IntegrationEvents` in `Common.IntegrationEvents` and implement consumers (see `/add-integration-event`) — never publish to the bus directly from Write-side paths, use `RaiseEvent`. For synchronous cross-module calls, define an `InterModuleRequest` in `Common.InterModuleRequests` and implement the handler (see `/add-inter-module-request`).
+5. **Cross-module integration** (if required): for async, define `IntegrationEvents` in `Common.IntegrationEvents` and implement consumers (see `/add-integration-event`): never publish to the bus directly from Write-side paths, use `RaiseEvent`. For synchronous cross-module calls, define an `InterModuleRequest` in `Common.InterModuleRequests` and implement the handler (see `/add-inter-module-request`).
 
 6. **Endpoints**: run `/implement-endpoint` for each new endpoint in the plan.
 
@@ -22,4 +22,4 @@ Implement planned feature for module: $ARGUMENTS
 
 8. **Verification**: run `/verify-feature {Module}` for the full quality gate.
 
-9. **Audit**: inspect all modified `.csproj` files — zero cross-module references. Confirm `.AsNoTracking()` on all reads and no mapping library usage.
+9. **Audit**: inspect all modified `.csproj` files: zero cross-module references. Confirm `.AsNoTracking()` on all reads and no mapping library usage.

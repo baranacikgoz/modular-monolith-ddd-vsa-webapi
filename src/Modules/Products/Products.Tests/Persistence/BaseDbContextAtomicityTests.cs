@@ -3,7 +3,7 @@ using Common.Domain.StronglyTypedIds;
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Outbox.Persistence;
+using Common.Infrastructure.Persistence.Outbox;
 using Products.Infrastructure.Persistence;
 using Products.Domain.Stores;
 using Xunit;
@@ -27,7 +27,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
-        var outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
         var ownerId = new ApplicationUserId(Guid.NewGuid());
         var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
 
@@ -82,7 +82,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
-        var outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
         var ownerId = new ApplicationUserId(Guid.NewGuid());
         var store = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
 
@@ -109,7 +109,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Arrange
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
-        var outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
 
         // Count existing records before
         var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
@@ -162,7 +162,7 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         // Arrange - storeA and storeB share the same OwnerId, which violates the unique index on Stores.OwnerId
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
-        var outboxDb = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
         var ownerId = new ApplicationUserId(Guid.NewGuid());
 
         var storeA = Store.Create(ownerId, _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());

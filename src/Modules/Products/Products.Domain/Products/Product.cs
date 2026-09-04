@@ -57,6 +57,15 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
         var @event =
             new V1ProductCreatedDomainEvent(id, storeId, productTemplateId, name, description, quantity, price);
+
+        product.Id = id;
+        product.StoreId = storeId;
+        product.ProductTemplateId = productTemplateId;
+        product.Name = name;
+        product.Description = description;
+        product.Quantity = quantity;
+        product.Price = price;
+
         product.RaiseEvent(@event);
 
         return product;
@@ -92,6 +101,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
+        Name = name;
         RaiseEvent(new V1ProductNameUpdatedDomainEvent(Id, name));
     }
 
@@ -102,6 +112,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
+        Description = description;
         RaiseEvent(new V1ProductDescriptionUpdatedDomainEvent(Id, description));
     }
 
@@ -112,10 +123,13 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
-        RaiseEvent(
-            quantity > Quantity
-                ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
-                : new V1ProductQuantityDecreasedDomainEvent(Id, quantity));
+        // Event choice depends on the OLD Quantity: build before mutating.
+        var @event = quantity > Quantity
+            ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
+            : (DomainEvent)new V1ProductQuantityDecreasedDomainEvent(Id, quantity);
+
+        Quantity = quantity;
+        RaiseEvent(@event);
     }
 
     private void UpdatePrice(decimal price)
@@ -125,80 +139,12 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
-        RaiseEvent(
-            price > Price
-                ? new V1ProductPriceIncreasedDomainEvent(Id, price)
-                : new V1ProductPriceDecreasedDomainEvent(Id, price));
-    }
+        // Event choice depends on the OLD Price: build before mutating.
+        var @event = price > Price
+            ? new V1ProductPriceIncreasedDomainEvent(Id, price)
+            : (DomainEvent)new V1ProductPriceDecreasedDomainEvent(Id, price);
 
-    protected override void ApplyEvent(DomainEvent @event)
-    {
-        switch (@event)
-        {
-            case V1ProductCreatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductNameUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductDescriptionUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductQuantityIncreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductQuantityDecreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductPriceIncreasedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductPriceDecreasedDomainEvent e:
-                Apply(e);
-                break;
-            default:
-                throw new InvalidOperationException($"Can not apply the unknown event {@event.GetType().Name}");
-        }
-    }
-
-    private void Apply(V1ProductCreatedDomainEvent @event)
-    {
-        Id = @event.ProductId;
-        StoreId = @event.StoreId;
-        ProductTemplateId = @event.ProductTemplateId;
-        Name = @event.Name;
-        Description = @event.Description;
-        Quantity = @event.Quantity;
-        Price = @event.Price;
-    }
-
-    private void Apply(V1ProductNameUpdatedDomainEvent @event)
-    {
-        Name = @event.Name;
-    }
-
-    private void Apply(V1ProductDescriptionUpdatedDomainEvent @event)
-    {
-        Description = @event.Description;
-    }
-
-    private void Apply(V1ProductQuantityIncreasedDomainEvent @event)
-    {
-        Quantity = @event.Quantity;
-    }
-
-    private void Apply(V1ProductQuantityDecreasedDomainEvent @event)
-    {
-        Quantity = @event.Quantity;
-    }
-
-    private void Apply(V1ProductPriceIncreasedDomainEvent @event)
-    {
-        Price = @event.Price;
-    }
-
-    private void Apply(V1ProductPriceDecreasedDomainEvent @event)
-    {
-        Price = @event.Price;
+        Price = price;
+        RaiseEvent(@event);
     }
 }

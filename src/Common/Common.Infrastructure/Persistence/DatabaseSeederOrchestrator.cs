@@ -54,7 +54,7 @@ internal sealed partial class DatabaseSeederOrchestrator(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while seeding the database.");
+            LogSeedingError(logger, ex);
             seedingCompletionTracker.MarkFaulted(ex);
             throw;
         }
@@ -79,4 +79,8 @@ internal sealed partial class DatabaseSeederOrchestrator(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "All {Count} seeder(s) completed successfully.")]
     private static partial void LogAllSeedersCompleted(ILogger logger, int count);
+
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "An error occurred while seeding the database.")]
+    private static partial void LogSeedingError(ILogger logger, Exception ex);
 }

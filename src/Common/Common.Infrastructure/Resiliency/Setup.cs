@@ -1,5 +1,7 @@
+using Common.Application.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
+using Microsoft.Extensions.Options;
 using Polly;
 
 namespace Common.Infrastructure.Resiliency;
@@ -31,31 +33,34 @@ public static class Setup
     {
         var builder = services
             .AddHttpClient<TClient, TImplementation>(configureClient)
-            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            .ConfigurePrimaryHttpMessageHandler(sp => new SocketsHttpHandler
             {
-                PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+                PooledConnectionLifetime = TimeSpan.FromMinutes(
+                    sp.GetRequiredService<IOptions<ResiliencyOptions>>().Value.PooledConnectionLifetimeMinutes),
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
-        builder.AddStandardResilienceHandler(options =>
+        builder.AddStandardResilienceHandler().Configure((options, serviceProvider) =>
         {
-            // Total request timeout (outer): 30s — hard ceiling including all retries
-            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
+            var resiliency = serviceProvider.GetRequiredService<IOptions<ResiliencyOptions>>().Value;
 
-            // Retry: 3 attempts, exponential backoff with jitter, median 1s delay
-            options.Retry.MaxRetryAttempts = 3;
-            options.Retry.Delay = TimeSpan.FromSeconds(1);
+            // Total request timeout (outer): hard ceiling including all retries
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(resiliency.TotalRequestTimeoutSeconds);
+
+            // Retry: exponential backoff with jitter
+            options.Retry.MaxRetryAttempts = resiliency.MaxRetryAttempts;
+            options.Retry.Delay = TimeSpan.FromSeconds(resiliency.RetryDelaySeconds);
             options.Retry.BackoffType = DelayBackoffType.Exponential;
             options.Retry.UseJitter = true;
 
-            // Circuit breaker: 10% failure rate over 30s window, break for 15s
-            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
-            options.CircuitBreaker.FailureRatio = 0.1;
-            options.CircuitBreaker.MinimumThroughput = 10;
-            options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
+            // Circuit breaker: failure ratio over a sampling window, then break
+            options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(resiliency.CircuitBreakerSamplingDurationSeconds);
+            options.CircuitBreaker.FailureRatio = resiliency.CircuitBreakerFailureRatio;
+            options.CircuitBreaker.MinimumThroughput = resiliency.CircuitBreakerMinimumThroughput;
+            options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(resiliency.CircuitBreakerBreakDurationSeconds);
 
-            // Per-attempt timeout (inner): 10s
-            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+            // Per-attempt timeout (inner)
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(resiliency.AttemptTimeoutSeconds);
 
             // Allow caller to override any/all of the above
             configureResilience?.Invoke(options);

@@ -26,6 +26,7 @@ public sealed class SmsSetupTests
         var options = new SmsOptions
         {
             Provider = SmsProvider.NetGsm,
+            ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         };
 
@@ -49,6 +50,7 @@ public sealed class SmsSetupTests
             MaxRetryAttempts = 1,
             MaxPerPhoneNumberPerDay = 10,
             MaxPerDay = 5000,
+            ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         };
 
@@ -71,6 +73,7 @@ public sealed class SmsSetupTests
                 [$"{nameof(SmsOptions)}:{nameof(SmsOptions.MaxRetryAttempts)}"] = "1",
                 [$"{nameof(SmsOptions)}:{nameof(SmsOptions.MaxPerPhoneNumberPerDay)}"] = "10",
                 [$"{nameof(SmsOptions)}:{nameof(SmsOptions.MaxPerDay)}"] = "5000",
+                [$"{nameof(SmsOptions)}:{nameof(SmsOptions.ThrottleCounterTtlHours)}"] = "25",
             })
             .Build();
 

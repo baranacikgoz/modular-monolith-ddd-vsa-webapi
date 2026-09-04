@@ -26,6 +26,7 @@ public sealed class OtpSetupTests
         var context = new ValidationContext<SmsOptions>(new SmsOptions
         {
             Provider = provider,
+            ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         });
         context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);

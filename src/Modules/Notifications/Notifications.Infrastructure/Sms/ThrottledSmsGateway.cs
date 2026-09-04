@@ -14,7 +14,7 @@ namespace Notifications.Infrastructure.Sms;
 /// Decorator over the real <see cref="ISmsGateway"/> enforcing a per-phone-number and a global daily send
 /// cap, so a bug or an attacker driving repeated sends cannot run up an unbounded SMS bill. Registered
 /// only when <see cref="SmsOptions.Provider"/> is <see cref="SmsProvider.NetGsm"/> (see <see cref="Setup"/>),
-/// so every caller of <see cref="ISmsGateway"/> is covered — the cap cannot be bypassed by adding a new caller.
+/// so every caller of <see cref="ISmsGateway"/> is covered: the cap cannot be bypassed by adding a new caller.
 /// </summary>
 internal sealed class ThrottledSmsGateway(
     ISmsGateway decoree,
@@ -22,11 +22,10 @@ internal sealed class ThrottledSmsGateway(
     IOptions<SmsOptions> optionsProvider
 ) : ISmsGateway
 {
-    private static readonly TimeSpan CounterTtl = TimeSpan.FromHours(25);
-
     public async Task<Result> SendAsync(SmsMessage message, CancellationToken cancellationToken)
     {
         var options = optionsProvider.Value;
+        var counterTtl = TimeSpan.FromHours(options.ThrottleCounterTtlHours);
         var today = DateTimeOffset.UtcNow.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
         var phoneKey = $"sms:count:phone:{Hash(message.PhoneNumber)}:{today}";
         var globalKey = $"sms:count:global:{today}";
@@ -49,9 +48,9 @@ internal sealed class ThrottledSmsGateway(
 
         if (!result.IsFailure)
         {
-            // ponytail: FusionCache get+set is not atomic across replicas — a race can overshoot a cap
+            // ponytail: FusionCache get+set is not atomic across replicas: a race can overshoot a cap
             // by a few sends. Move to Redis INCR/EXPIRE if the overshoot ever costs real money.
-            var entryOptions = new FusionCacheEntryOptions { Duration = CounterTtl };
+            var entryOptions = new FusionCacheEntryOptions { Duration = counterTtl };
             await cache.SetAsync(phoneKey, phoneCount + 1, entryOptions, cancellationToken);
             await cache.SetAsync(globalKey, globalCount + 1, entryOptions, cancellationToken);
         }

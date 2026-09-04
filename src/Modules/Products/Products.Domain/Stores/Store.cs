@@ -1,6 +1,5 @@
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
-using Common.Domain.Events;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
 using Products.Domain.Stores.DomainEvents.v1;
@@ -50,6 +49,13 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
         var store = new Store();
 
         var @event = new V1StoreCreatedDomainEvent(id, ownerId, name, description, address);
+
+        store.Id = id;
+        store.OwnerId = ownerId;
+        store.Name = name;
+        store.Description = description;
+        store.Address = address;
+
         store.RaiseEvent(@event);
 
         return store;
@@ -75,92 +81,35 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
 
     private void UpdateName(string name)
     {
-        var storeNameUpdatedEvent = new V1StoreNameUpdatedDomainEvent(Id, name);
-        RaiseEvent(storeNameUpdatedEvent);
+        Name = name;
+        RaiseEvent(new V1StoreNameUpdatedDomainEvent(Id, name));
     }
 
     private void UpdateDescription(string description)
     {
-        var storeDescriptionUpdatedEvent = new V1StoreDescriptionUpdatedDomainEvent(Id, description);
-        RaiseEvent(storeDescriptionUpdatedEvent);
+        Description = description;
+        RaiseEvent(new V1StoreDescriptionUpdatedDomainEvent(Id, description));
     }
 
     private void UpdateAddress(string address)
     {
-        var storeAddressUpdatedEvent = new V1StoreAddressUpdatedDomainEvent(Id, address);
-        RaiseEvent(storeAddressUpdatedEvent);
+        Address = address;
+        RaiseEvent(new V1StoreAddressUpdatedDomainEvent(Id, address));
     }
 
+    // Event carries only a ProductSnapshot (CLAUDE.md §5), never the live entity: EF's Products
+    // navigation (HasField("_products")) needs the real instance to track the FK.
     public void AddProduct(Product product)
     {
-        var @event = new V1ProductAddedToStoreDomainEvent(Id, product);
+        _products.Add(product);
+        var @event = new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot());
         RaiseEvent(@event);
     }
 
     public void RemoveProduct(Product product)
     {
-        var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product);
+        _products.Remove(product);
+        var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product.ToRemovedSnapshot());
         RaiseEvent(@event);
-    }
-
-    protected override void ApplyEvent(DomainEvent @event)
-    {
-        switch (@event)
-        {
-            case V1StoreCreatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1StoreNameUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1StoreDescriptionUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1StoreAddressUpdatedDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductAddedToStoreDomainEvent e:
-                Apply(e);
-                break;
-            case V1ProductRemovedFromStoreDomainEvent e:
-                Apply(e);
-                break;
-            default:
-                throw new InvalidOperationException($"Can not apply the unknown event {@event.GetType().Name}");
-        }
-    }
-
-    private void Apply(V1StoreCreatedDomainEvent @event)
-    {
-        Id = @event.StoreId;
-        OwnerId = @event.OwnerId;
-        Name = @event.Name;
-        Description = @event.Description;
-        Address = @event.Address;
-    }
-
-    private void Apply(V1StoreNameUpdatedDomainEvent @event)
-    {
-        Name = @event.Name;
-    }
-
-    private void Apply(V1StoreDescriptionUpdatedDomainEvent @event)
-    {
-        Description = @event.Description;
-    }
-
-    private void Apply(V1StoreAddressUpdatedDomainEvent @event)
-    {
-        Address = @event.Address;
-    }
-
-    private void Apply(V1ProductAddedToStoreDomainEvent @event)
-    {
-        _products.Add(@event.Product);
-    }
-
-    private void Apply(V1ProductRemovedFromStoreDomainEvent @event)
-    {
-        _products.Remove(@event.Product);
     }
 }
