@@ -260,7 +260,7 @@ internal static class V1ProductAddedToStoreDomainEventExtensions
 
 Raise site: `RaiseEvent(new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot()));` Enforced by `DomainEventContractTests.cs` (`make test-common`).
 
-**State mutation lives in the command method.** Aggregates are not event-sourced: state loads from EF-mapped columns, never rebuilt by replaying events. A command method mutates its own fields inline, then calls `RaiseEvent(...)` purely to record the change (`AuditLog`) and trigger `DomainEventHandler`s. No `Apply`/`ApplyEvent` dispatch: do not reintroduce one. Build the event before mutating when the event choice depends on the old value (e.g. `Product.UpdateQuantity` picks Increased vs Decreased by comparing against the current `Quantity`).
+**State mutation lives in the command method.** Aggregates are not event-sourced: state loads from EF-mapped columns, never rebuilt by replaying events. A command method always builds its event(s) first, from pre-mutation state and its own parameters, then mutates its fields, then calls `RaiseEvent(@event)` purely to record the change (`AuditLog`) and trigger `DomainEventHandler`s. No `Apply`/`ApplyEvent` dispatch: do not reintroduce one. This build-first order is unconditional, not a case-by-case judgment call: apply it even when the event's payload has no dependency on the old value, so nobody has to reason about which commands need it. `Product.UpdateQuantity` picking Increased vs Decreased by comparing against the current `Quantity` is why the rule exists, not the only time it applies.
 
 ### 6. Observability (OpenTelemetry)
 

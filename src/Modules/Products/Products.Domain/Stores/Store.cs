@@ -81,20 +81,23 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
 
     private void UpdateName(string name)
     {
+        var @event = new V1StoreNameUpdatedDomainEvent(Id, name);
         Name = name;
-        RaiseEvent(new V1StoreNameUpdatedDomainEvent(Id, name));
+        RaiseEvent(@event);
     }
 
     private void UpdateDescription(string description)
     {
+        var @event = new V1StoreDescriptionUpdatedDomainEvent(Id, description);
         Description = description;
-        RaiseEvent(new V1StoreDescriptionUpdatedDomainEvent(Id, description));
+        RaiseEvent(@event);
     }
 
     private void UpdateAddress(string address)
     {
+        var @event = new V1StoreAddressUpdatedDomainEvent(Id, address);
         Address = address;
-        RaiseEvent(new V1StoreAddressUpdatedDomainEvent(Id, address));
+        RaiseEvent(@event);
     }
 
     // Event carries only a ProductSnapshot (CLAUDE.md §5), never the live entity: EF's Products

@@ -101,8 +101,9 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
+        var @event = new V1ProductNameUpdatedDomainEvent(Id, name);
         Name = name;
-        RaiseEvent(new V1ProductNameUpdatedDomainEvent(Id, name));
+        RaiseEvent(@event);
     }
 
     private void UpdateDescription(string description)
@@ -112,8 +113,9 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
+        var @event = new V1ProductDescriptionUpdatedDomainEvent(Id, description);
         Description = description;
-        RaiseEvent(new V1ProductDescriptionUpdatedDomainEvent(Id, description));
+        RaiseEvent(@event);
     }
 
     private void UpdateQuantity(int quantity)
@@ -123,7 +125,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
-        // Event choice depends on the OLD Quantity: build before mutating.
+        // Always build the event before mutating (house style, not just for old-value reads).
         var @event = quantity > Quantity
             ? new V1ProductQuantityIncreasedDomainEvent(Id, quantity)
             : (DomainEvent)new V1ProductQuantityDecreasedDomainEvent(Id, quantity);
@@ -139,7 +141,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             return;
         }
 
-        // Event choice depends on the OLD Price: build before mutating.
+        // Always build the event before mutating (house style, not just for old-value reads).
         var @event = price > Price
             ? new V1ProductPriceIncreasedDomainEvent(Id, price)
             : (DomainEvent)new V1ProductPriceDecreasedDomainEvent(Id, price);
