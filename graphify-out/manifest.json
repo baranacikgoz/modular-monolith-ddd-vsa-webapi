@@ -2388,9 +2388,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/run-quality-gate.md": {
-    "mtime": 1788463107.4861746,
-    "seen": 1788521409.3639889,
-    "ast_hash": "b934060ba7d81d4062baaa6e71197ff9",
+    "mtime": 1788523832.3656545,
+    "seen": 1788523834.198925,
+    "ast_hash": "a13c5d0e0c4919a20912793ee350988e",
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-feature.md": {
