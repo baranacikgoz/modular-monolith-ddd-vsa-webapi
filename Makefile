@@ -26,31 +26,31 @@ build:
 
 test-common:
 	@echo "▶️ Testing Common..."
-	dotnet test src/Common/Common.Tests/Common.Tests.csproj
+	dotnet test --project src/Common/Common.Tests/Common.Tests.csproj
 
 test-host:
 	@echo "▶️ Testing Host..."
-	dotnet test src/Host/Host.Tests/Host.Tests.csproj
+	dotnet test --project src/Host/Host.Tests/Host.Tests.csproj
 
 test-iam:
 	@echo "▶️ Testing IAM..."
-	dotnet test src/Modules/IAM/IAM.Tests/IAM.Tests.csproj
+	dotnet test --project src/Modules/IAM/IAM.Tests/IAM.Tests.csproj
 
 test-products:
 	@echo "▶️ Testing Products..."
-	dotnet test src/Modules/Products/Products.Tests/Products.Tests.csproj
+	dotnet test --project src/Modules/Products/Products.Tests/Products.Tests.csproj
 
 test-outbox:
 	@echo "▶️ Testing Outbox..."
-	dotnet test src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
+	dotnet test --project src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
 
 test-notifications:
 	@echo "▶️ Testing Notifications..."
-	dotnet test src/Modules/Notifications/Notifications.Tests/Notifications.Tests.csproj
+	dotnet test --project src/Modules/Notifications/Notifications.Tests/Notifications.Tests.csproj
 
 test-backgroundjobs:
 	@echo "▶️ Testing BackgroundJobs..."
-	dotnet test src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj
+	dotnet test --project src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj
 
 test: test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs
 	@echo "=========================================================="

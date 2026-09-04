@@ -15345,7 +15345,7 @@
       },
       "norm_label": ".updatedescription()",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L108"
+      "source_location": "L109"
     },
     {
       "id": "src_modules_products_products_domain_products_product_products_domain_products_product_updatename",
@@ -15381,7 +15381,7 @@
       },
       "norm_label": ".updateprice()",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L135"
+      "source_location": "L137"
     },
     {
       "id": "src_modules_products_products_domain_products_product_products_domain_products_product_updatequantity",
@@ -15399,7 +15399,7 @@
       },
       "norm_label": ".updatequantity()",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L119"
+      "source_location": "L121"
     },
     {
       "id": "src_host_host_infrastructure_setup_masstransit_host_infrastructure_setup_addcustommasstransit",
@@ -18873,7 +18873,7 @@
       },
       "norm_label": ".addproduct()",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L102"
+      "source_location": "L105"
     },
     {
       "id": "src_modules_products_products_domain_stores_store_products_domain_stores_store_removeproduct",
@@ -18891,7 +18891,7 @@
       },
       "norm_label": ".removeproduct()",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L109"
+      "source_location": "L112"
     },
     {
       "id": "src_common_common_domain_stronglytypedids_applicationuserid_common_domain_stronglytypedids_applicationuserid_tostring",
@@ -22437,7 +22437,7 @@
       },
       "norm_label": ".updateaddress()",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L94"
+      "source_location": "L96"
     },
     {
       "id": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatedescription",
@@ -22455,7 +22455,7 @@
       },
       "norm_label": ".updatedescription()",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L88"
+      "source_location": "L89"
     },
     {
       "id": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatename",
@@ -111369,7 +111369,7 @@
         "ref_token": "Product"
       },
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L102",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -111384,7 +111384,7 @@
         "ref_token": "Product"
       },
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L109",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -140352,7 +140352,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L108",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -140363,7 +140363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L119",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -140374,7 +140374,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L135",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -140495,7 +140495,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L102",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -140506,7 +140506,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L109",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -140539,7 +140539,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L88",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -140550,7 +140550,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L94",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -143067,18 +143067,6 @@
     },
     {
       "source": "src_modules_products_products_domain_products_product_products_domain_products_product_updatedescription",
-      "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "call",
-      "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L116",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_products_products_domain_products_product_products_domain_products_product_updatedescription",
       "target": "src_modules_products_products_domain_products_domainevents_v1_v1productdescriptionupdateddomainevent_products_domain_products_domainevents_v1_v1productdescriptionupdateddomainevent",
       "relation": "calls",
       "_origin": "ast",
@@ -143090,7 +143078,7 @@
       "weight": 1.0
     },
     {
-      "source": "src_modules_products_products_domain_products_product_products_domain_products_product_updatename",
+      "source": "src_modules_products_products_domain_products_product_products_domain_products_product_updatedescription",
       "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
       "relation": "calls",
       "_origin": "ast",
@@ -143098,7 +143086,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L105",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -143110,7 +143098,19 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L105",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_products_products_domain_products_product_products_domain_products_product_updatename",
+      "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -143122,7 +143122,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L144",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -143134,7 +143134,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L145",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -143146,7 +143146,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L148",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -143158,7 +143158,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L128",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -143170,7 +143170,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L129",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -143182,7 +143182,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Products/Product.cs",
-      "source_location": "L132",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -143194,7 +143194,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L105",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -143206,7 +143206,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L106",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -143230,7 +143230,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L112",
+      "source_location": "L115",
       "weight": 1.0
     },
     {
@@ -143242,7 +143242,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L113",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -143254,7 +143254,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L97",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -143266,19 +143266,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L97",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatedescription",
-      "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "call",
-      "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L91",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -143294,7 +143282,7 @@
       "weight": 1.0
     },
     {
-      "source": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatename",
+      "source": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatedescription",
       "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
       "relation": "calls",
       "_origin": "ast",
@@ -143302,7 +143290,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L85",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -143314,7 +143302,19 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
-      "source_location": "L85",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_products_products_domain_stores_store_products_domain_stores_store_updatename",
+      "target": "src_modules_iam_iam_domain_identity_applicationuser_aggregateroot_iam_domain_identity_applicationuser_raiseevent",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "src/Modules/Products/Products.Domain/Stores/Store.cs",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -143780,5 +143780,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "38208ee6bfaf1a3a5f75853fad275891a24ea916"
+  "built_at_commit": "389abbf13726fb8cccd5c13531491e1ed4a4e00a"
 }
