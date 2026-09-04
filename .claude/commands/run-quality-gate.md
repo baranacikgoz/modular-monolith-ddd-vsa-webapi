@@ -8,7 +8,7 @@ Run quality gate: $ARGUMENTS
 
 1. **Architecture audit**: run `/audit-architecture`. Resolve all FAILs before proceeding.
 
-2. **Architecture tests** (fast fail before full suite): `dotnet test src/Common/Common.Tests/Common.Tests.csproj --filter FullyQualifiedName~Architecture`
+2. **Architecture tests** (fast fail before full suite): `dotnet test --project src/Common/Common.Tests/Common.Tests.csproj --filter-class "*Architecture*"`
 
 3. **Tests**: run module-specific if arg provided, full suite otherwise:
    ```bash

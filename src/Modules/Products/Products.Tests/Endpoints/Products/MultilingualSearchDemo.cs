@@ -20,7 +20,7 @@ namespace Products.Tests.Endpoints.Products;
 // Human-readable end-to-end demonstration: seeds a known Turkish + English catalog through the real
 // write pipeline (interceptor stamps per-row Language), dumps what Postgres actually stored (Language +
 // tsvector lexemes), then runs real HTTP searches and prints the ranked results. Run with:
-//   dotnet test --filter FullyQualifiedName~MultilingualSearchDemo -l "console;verbosity=detailed"
+//   dotnet test --project Products.Tests.csproj --filter-class "*MultilingualSearchDemo*" -- -showLiveOutput
 [Collection("IntegrationTestCollection")]
 public class MultilingualSearchDemo : BaseIntegrationTest
 {

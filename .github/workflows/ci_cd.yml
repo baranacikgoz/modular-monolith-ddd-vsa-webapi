@@ -82,7 +82,7 @@ jobs:
             nuget-${{ runner.os }}-
 
       - name: Test ${{ matrix.module }}
-        run: dotnet test ${{ matrix.csproj }}
+        run: dotnet test --project ${{ matrix.csproj }}
 
   deploy:
     needs: [build, test]

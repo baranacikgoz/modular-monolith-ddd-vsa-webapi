@@ -1758,9 +1758,9 @@
     "semantic_hash": "50fe9e5e7766431411a5266f4b1513a8"
   },
   "src/Modules/Products/Products.Domain/Products/Product.cs": {
-    "mtime": 1788518749.3556035,
-    "seen": 1788521409.363944,
-    "ast_hash": "4e552ab3702db4df12993982cf76e63a",
+    "mtime": 1788523098.3239825,
+    "seen": 1788523394.595544,
+    "ast_hash": "c338b79ded143f8a27b867a509ba3e4b",
     "semantic_hash": ""
   },
   "src/Modules/Products/Products.Domain/Stores/Constants.cs": {
@@ -1806,9 +1806,9 @@
     "semantic_hash": "1841fd296bf0e5a2a66f7fdbaf97da0d"
   },
   "src/Modules/Products/Products.Domain/Stores/Store.cs": {
-    "mtime": 1788518775.8180358,
-    "seen": 1788521409.363948,
-    "ast_hash": "1955fdd82c323f2fd7fbb4171d20f19b",
+    "mtime": 1788523098.324146,
+    "seen": 1788523394.595548,
+    "ast_hash": "d448a7927d76ea658d4af2645574a70a",
     "semantic_hash": ""
   },
   "src/Modules/Products/Products.Endpoints/IAssemblyReference.cs": {
@@ -2430,9 +2430,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1788520766.3729067,
-    "seen": 1788521409.363992,
-    "ast_hash": "53c778b2112f16514f2a9059f4d94d67",
+    "mtime": 1788523098.274066,
+    "seen": 1788523394.595602,
+    "ast_hash": "849110be3cd87280fafaa40afe5d35a5",
     "semantic_hash": ""
   },
   "README.md": {
