@@ -8,11 +8,18 @@ using Xunit;
 
 namespace Host.Tests;
 
-// Guards against endpoints requiring a resource#scope that the realm does not declare (or that no permission
-// covers), which otherwise 403s every caller silently. The realm JSON is the source of truth for both.
+// Guards both directions between endpoints and the realm JSON (the source of truth): an endpoint requiring a
+// resource#scope the realm does not declare (or no permission covers) 403s every caller silently, and a realm
+// scope no endpoint requires is a dropped endpoint or dead configuration nobody notices.
 [Collection("Host")]
 public class PermissionCoverageTests
 {
+    // Enforced outside endpoint metadata (HangfireCustomAuthorizationFilter asks IAuthorizationService directly).
+    private static readonly HashSet<string> ScopesEnforcedOutsideEndpoints = new(StringComparer.Ordinal)
+    {
+        KeycloakScopes.Hangfire.Manage
+    };
+
     [Fact]
     public async Task AllEndpointScopes_AreDeclaredAndCoveredByAPermissionInTheRealm()
     {
@@ -21,15 +28,7 @@ public class PermissionCoverageTests
         _ = factory.CreateClient();
 
         var realm = LoadRealmAuthorization();
-
-        var dataSource = factory.Services.GetRequiredService<EndpointDataSource>();
-        var required = dataSource.Endpoints
-            .SelectMany(e => e.Metadata.GetOrderedMetadata<IAuthorizeData>())
-            .Select(a => a.Policy)
-            .Distinct()
-            .Select(policy => KeycloakPermission.TryParse(policy, out var permission) ? permission : (KeycloakPermission?)null)
-            .OfType<KeycloakPermission>()
-            .ToList();
+        var required = CollectEndpointPermissions(factory);
 
         Assert.NotEmpty(required);
         Assert.All(required, permission =>
@@ -39,6 +38,40 @@ public class PermissionCoverageTests
             Assert.Contains(permission.Scope, scopes);
             Assert.Contains(permission.Scope, realm.ScopesWithAPermission);
         });
+    }
+
+    [Fact]
+    public async Task AllRealmScopes_AreRequiredBySomeEndpoint()
+    {
+        await using var factory = new HostTestFactory();
+        await factory.InitializeAsync();
+        _ = factory.CreateClient();
+
+        var realm = LoadRealmAuthorization();
+        var requiredScopes = CollectEndpointPermissions(factory)
+            .Select(p => p.Scope)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var unused = realm.ScopesByResource.Values
+            .SelectMany(scopes => scopes)
+            .Where(scope => !requiredScopes.Contains(scope) && !ScopesEnforcedOutsideEndpoints.Contains(scope))
+            .Order(StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(unused.Count == 0,
+            $"Realm declares scopes no endpoint requires: {string.Join(", ", unused)}. Map an endpoint or drop them from the realm.");
+    }
+
+    private static List<KeycloakPermission> CollectEndpointPermissions(HostTestFactory factory)
+    {
+        var dataSource = factory.Services.GetRequiredService<EndpointDataSource>();
+        return dataSource.Endpoints
+            .SelectMany(e => e.Metadata.GetOrderedMetadata<IAuthorizeData>())
+            .Select(a => a.Policy)
+            .Distinct()
+            .Select(policy => KeycloakPermission.TryParse(policy, out var permission) ? permission : (KeycloakPermission?)null)
+            .OfType<KeycloakPermission>()
+            .ToList();
     }
 
     private static (IReadOnlyDictionary<string, HashSet<string>> ScopesByResource, HashSet<string> ScopesWithAPermission)

@@ -16,7 +16,7 @@ internal static class Endpoint
     {
         tokensApiGroup
             .MapPost("refresh", RefreshToken)
-            .WithDescription("Rotate a refresh token. Keycloak revokes the whole session when a rotated-away token is replayed.")
+            .WithDescription("Rotate a refresh token. One retry of the same token is tolerated (lost response); replaying it again is treated as theft and the whole session is revoked.")
             .AllowAnonymous()
             .RequireRateLimiting(Constants.TokenRefresh)
             .Produces<Response>()

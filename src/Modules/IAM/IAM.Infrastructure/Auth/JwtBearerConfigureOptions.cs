@@ -62,10 +62,12 @@ internal sealed class JwtBearerConfigureOptions(IOptions<KeycloakOptions> keyclo
             OnMessageReceived = context =>
             {
                 // SignalR cannot set headers on WebSocket upgrade: the hub client sends the token in the query string.
+                // Only override when it is actually there; a hub client using the Authorization header keeps it.
                 var path = context.HttpContext.Request.Path;
-                if (path.StartsWithSegments("/hubs", StringComparison.Ordinal))
+                var accessToken = context.Request.Query["access_token"];
+                if (path.StartsWithSegments("/hubs", StringComparison.Ordinal) && !string.IsNullOrEmpty(accessToken))
                 {
-                    context.Token = context.Request.Query["access_token"];
+                    context.Token = accessToken;
                 }
 
                 return Task.CompletedTask;

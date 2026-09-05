@@ -18,7 +18,7 @@ already exists, so a changed file only lands on a fresh database (dev: `rm -rf .
 | `ci-integration` | Sample machine caller (client credentials). Authorized through `Service Account Policy`. |
 | Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
 | Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. |
-| Tokens | Access token 5 min. SSO idle 14 days, SSO max 90 days. Refresh token rotation on, max reuse 0 (a replayed refresh token kills the session). |
+| Tokens | Access token 5 min. SSO idle 14 days, SSO max 90 days. Refresh token rotation on, max reuse 1 (one lost-response retry of the same refresh token is tolerated; the next replay makes Keycloak detach the client session and the API revoke the whole user session). |
 | User profile | `username`, `email`, `firstName`, `lastName` (required), `phoneNumber`, `phoneNumberVerified`, `birthDate` (admin-edit only). Unmanaged attributes disabled. |
 
 The backend checks `resource#scope` through the token endpoint

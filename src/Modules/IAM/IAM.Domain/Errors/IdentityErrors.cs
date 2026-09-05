@@ -25,6 +25,26 @@ public static class IdentityErrors
         StatusCode = HttpStatusCode.BadRequest
     };
 
+    /// <summary>
+    ///     Same rejection, carrying the offending field and Keycloak's message key (e.g. <c>error-invalid-length</c>)
+    ///     so the caller knows what to fix. Falls back to the generic error when Keycloak sent no detail.
+    /// </summary>
+    public static Error IdentityProviderRejectedUserField(string? field, string? message)
+    {
+        if (string.IsNullOrEmpty(field) && string.IsNullOrEmpty(message))
+        {
+            return IdentityProviderRejectedUser;
+        }
+
+        return new Error
+        {
+            Key = nameof(IdentityProviderRejectedUser),
+            StatusCode = HttpStatusCode.BadRequest,
+            ParameterName = field,
+            SubErrors = [string.IsNullOrEmpty(field) ? message! : $"{field}: {message}"]
+        };
+    }
+
     /// <summary>Keycloak is unreachable, timed out, the circuit is open, or it answered with something unexpected.</summary>
     public static readonly Error IdentityProviderUnavailable = new()
     {

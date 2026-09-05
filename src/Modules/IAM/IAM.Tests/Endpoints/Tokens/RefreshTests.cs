@@ -32,18 +32,42 @@ public class RefreshTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
     }
 
     [Fact]
-    public async Task Refresh_ReplayedToken_Returns401AndKillsTheSession()
+    public async Task Refresh_SameTokenTwice_IsToleratedAsLostResponseRetry()
     {
         var login = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
-        var rotated = await RefreshAsync(login.RefreshToken);
+        var first = await RefreshAsync(login.RefreshToken);
 
-        // Replay of the rotated-away token: Keycloak's reuse detection revokes the whole session.
+        // refreshTokenMaxReuse = 1: a client whose response got lost may retry the same token once.
+        var retry = await RefreshAsync(login.RefreshToken);
+
+        Assert.Equal(login.SessionId, retry.SessionId);
+        Assert.NotEqual(first.RefreshToken, retry.RefreshToken);
+    }
+
+    [Fact]
+    public async Task Refresh_TokenReplayedBeyondTolerance_Returns401AndRevokesTheSession()
+    {
+        var phone = await IamTestClient.RegisterFreshUserAsync(Factory);
+        var login = await IamTestClient.LoginByPhoneAsync(Factory, phone);
+        _ = await RefreshAsync(login.RefreshToken);
+        var latest = await RefreshAsync(login.RefreshToken);
+
+        // Third use of the same token exceeds the tolerance: Keycloak reports reuse, the API treats it as theft.
         using var replay = await RefreshRawAsync(login.RefreshToken);
         Assert.Equal(HttpStatusCode.Unauthorized, replay.StatusCode);
 
-        using var afterReplay = await RefreshRawAsync(rotated.RefreshToken);
+        // The thief's (or victim's) most recent token is dead too, and the session is gone from Keycloak.
+        using var afterReplay = await RefreshRawAsync(latest.RefreshToken);
         Assert.Equal(HttpStatusCode.Unauthorized, afterReplay.StatusCode);
+
+        var observer = await IamTestClient.LoginByPhoneAsync(Factory, phone, clientId: "mobile-app-2");
+        var sessions = await IamTestClient.Authorized(Factory, observer)
+            .GetFromJsonAsync<List<SessionView>>(new Uri("/tokens/sessions", UriKind.Relative));
+        Assert.NotNull(sessions);
+        Assert.DoesNotContain(sessions, s => s.Id == login.SessionId);
     }
+
+    private sealed record SessionView(string Id);
 
     [Fact]
     public async Task Refresh_GarbageToken_Returns401()

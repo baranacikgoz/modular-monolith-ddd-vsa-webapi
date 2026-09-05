@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Common.Application.Auth;
 using Common.Application.Caching;
 using Common.Application.Options;
+using Common.Domain.StronglyTypedIds;
 using IAM.Application.Keycloak;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Authentication;
@@ -16,8 +17,9 @@ namespace IAM.Infrastructure.Auth;
 
 /// <summary>
 ///     Asks Keycloak whether the caller's token is granted <c>resource#scope</c> and caches the answer per
-///     (token jti, permission) for at most the token's remaining lifetime. A transport failure propagates, so an
-///     unreachable Keycloak fails closed (500) instead of silently denying or allowing.
+///     (token jti, permission) for at most the token's remaining lifetime. Entries are tagged with the session and
+///     the user so <see cref="IKeycloakAdminClient" /> can purge them when either is revoked. A transport failure
+///     propagates, so an unreachable Keycloak fails closed (500) instead of silently denying or allowing.
 /// </summary>
 internal sealed class KeycloakPermissionAuthorizationHandler(
     IKeycloakPermissionClient permissionClient,
@@ -85,10 +87,29 @@ internal sealed class KeycloakPermissionAuthorizationHandler(
             // IsFailSafeEnabled = false: a Keycloak outage must surface as an error, not as a stale decision
             // served for up to FailSafeMaxDuration.
             new FusionCacheEntryOptions { Duration = duration, IsFailSafeEnabled = false },
-            token: cancellationToken);
+            RevocationTags(user),
+            cancellationToken);
 
         IamTelemetry.RecordAuthorizationDecision(granted, fromCache);
         return granted;
+    }
+
+    /// <summary>Session tag is absent for service accounts (no <c>sid</c>); they are only purged per user.</summary>
+    private static List<string> RevocationTags(ClaimsPrincipal user)
+    {
+        var tags = new List<string>(2);
+
+        if (DefaultIdType.TryParse(user.FindFirstValue(JwtClaimNames.Subject), out var subject))
+        {
+            tags.Add(CacheKeys.For.AuthorizationDecisionUserTag(new ApplicationUserId(subject)));
+        }
+
+        if (user.FindFirstValue(JwtClaimNames.SessionId) is { Length: > 0 } sessionId)
+        {
+            tags.Add(CacheKeys.For.AuthorizationDecisionSessionTag(sessionId));
+        }
+
+        return tags;
     }
 
     private TimeSpan RemainingCacheDuration(ClaimsPrincipal user)

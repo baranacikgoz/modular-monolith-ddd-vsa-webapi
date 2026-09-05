@@ -11,9 +11,7 @@ public static class KeycloakScopes
     {
         public const string View = "users:view";
         public const string Search = "users:search";
-        public const string Manage = "users:manage";
         public const string ViewOwn = "users:view-own";
-        public const string UpdateOwn = "users:update-own";
     }
 
     public static class Sessions
@@ -33,11 +31,9 @@ public static class KeycloakScopes
         public const string View = "stores:view";
         public const string Search = "stores:search";
         public const string Update = "stores:update";
-        public const string Delete = "stores:delete";
         public const string CreateOwn = "stores:create-own";
         public const string ViewOwn = "stores:view-own";
         public const string UpdateOwn = "stores:update-own";
-        public const string DeleteOwn = "stores:delete-own";
     }
 
     public static class Products
@@ -60,7 +56,6 @@ public static class KeycloakScopes
         public const string View = "product-templates:view";
         public const string Search = "product-templates:search";
         public const string Update = "product-templates:update";
-        public const string Delete = "product-templates:delete";
     }
 
     public static class Hangfire

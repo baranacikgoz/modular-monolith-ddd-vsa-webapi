@@ -1,8 +1,10 @@
 using Common.Domain.ResultMonad;
+using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using IAM.Application.Keycloak;
 using IAM.Infrastructure.Telemetry;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
@@ -26,9 +28,20 @@ internal static partial class LoginCompletion
         ILogger logger,
         CancellationToken cancellationToken)
     {
-        var bound = await deviceClient.SendAsync(
-            new BindDeviceSessionRequest(tokens.UserId, tokens.SessionId, deviceId, clientId, deviceName, pushToken),
-            cancellationToken);
+        BindDeviceSessionResponse bound;
+        try
+        {
+            bound = await deviceClient.SendAsync(
+                new BindDeviceSessionRequest(tokens.UserId, tokens.SessionId, deviceId, clientId, deviceName, pushToken),
+                cancellationToken);
+        }
+        catch (MassTransitException ex)
+        {
+            // Notifications is down, disabled in modules.json, timed out, or its handler faulted. Keycloak already
+            // issued the tokens, so the login stands; only push delivery and the supersede rule skip this session.
+            LogDeviceBindingFailed(logger, tokens.UserId, tokens.SessionId, ex);
+            return tokens;
+        }
 
         if (bound.SupersededSessionId is not { } supersededSessionId)
         {
@@ -54,4 +67,8 @@ internal static partial class LoginCompletion
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Could not revoke superseded Keycloak session {SessionId}; it will expire on its own.")]
     private static partial void LogSupersededSessionRevocationFailed(ILogger logger, string sessionId, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "Could not bind Keycloak session {SessionId} of user {UserId} to its device; login continues without device metadata.")]
+    private static partial void LogDeviceBindingFailed(ILogger logger, ApplicationUserId userId, string sessionId, Exception ex);
 }

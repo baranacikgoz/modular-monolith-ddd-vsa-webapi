@@ -8,6 +8,7 @@ using Common.Domain.StronglyTypedIds;
 using IAM.Application.Keycloak;
 using IAM.Domain.Errors;
 using IAM.Infrastructure.Keycloak.Representations;
+using IAM.Infrastructure.Telemetry;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -18,12 +19,21 @@ namespace IAM.Infrastructure.Keycloak;
 
 internal sealed partial class KeycloakTokenClient(
     HttpClient httpClient,
+    IKeycloakAdminClient adminClient,
     IOptions<KeycloakOptions> keycloakOptionsProvider,
     TimeProvider timeProvider,
     ILogger<KeycloakTokenClient> logger
 ) : IKeycloakTokenClient
 {
     private const string InvalidGrant = "invalid_grant";
+    private const string RefreshTokenGrant = "refresh_token";
+
+    // Keycloak's exact error_description values for a replayed refresh token (TokenManager.validateTokenReuse):
+    // the current token used more than refreshTokenMaxReuse times, or an older rotated-away token replayed.
+    // Both are raised only after the signature was verified, so a forged token can never trigger them.
+    private const string ReuseExceededDescription = "Maximum allowed refresh token reuse exceeded";
+    private const string StaleTokenDescription = "Stale token";
+
     private static readonly JsonWebTokenHandler TokenHandler = new();
 
     public Task<Result<KeycloakTokens>> TrustedLoginAsync(string username, CancellationToken cancellationToken)
@@ -88,7 +98,7 @@ internal sealed partial class KeycloakTokenClient(
         return RequestTokensAsync(
             new Dictionary<string, string>
             {
-                ["grant_type"] = "refresh_token",
+                ["grant_type"] = RefreshTokenGrant,
                 ["client_id"] = clientId,
                 ["client_secret"] = clientSecret,
                 ["refresh_token"] = refreshToken
@@ -116,10 +126,16 @@ internal sealed partial class KeycloakTokenClient(
 
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
             {
-                var error = await ReadErrorAsync(response, cancellationToken);
+                var error = await response.Content.TryReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
                 if (string.Equals(error?.Error, InvalidGrant, StringComparison.Ordinal))
                 {
                     LogGrantRejected(logger, form["grant_type"], error?.ErrorDescription);
+
+                    if (IsRefreshTokenReuse(form, error?.ErrorDescription))
+                    {
+                        await RevokeReplayedSessionAsync(form[RefreshTokenGrant], cancellationToken);
+                    }
+
                     return errorOnInvalidGrant;
                 }
 
@@ -166,6 +182,42 @@ internal sealed partial class KeycloakTokenClient(
             sessionId);
     }
 
+    private static bool IsRefreshTokenReuse(Dictionary<string, string> form, string? errorDescription)
+    {
+        return string.Equals(form["grant_type"], RefreshTokenGrant, StringComparison.Ordinal)
+               && errorDescription is ReuseExceededDescription or StaleTokenDescription;
+    }
+
+    /// <summary>
+    ///     Keycloak only detaches the client session on reuse, which leaves the thief's already-rotated token
+    ///     alive until the SSO session idles out. Revoking the whole user session closes that window. Best
+    ///     effort: the caller gets the same 401 either way, and the session still expires on its own.
+    /// </summary>
+    private async Task RevokeReplayedSessionAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var jwt = new JsonWebToken(refreshToken);
+        var sessionId = jwt.TryGetClaim(JwtClaimNames.SessionId, out var sidClaim) ? sidClaim.Value : null;
+
+        IamTelemetry.RecordRefreshTokenReuseDetected();
+        LogRefreshTokenReuseDetected(logger, jwt.Subject, sessionId);
+
+        if (string.IsNullOrEmpty(sessionId))
+        {
+            return;
+        }
+
+        try
+        {
+            await adminClient.DeleteSessionAsync(sessionId, cancellationToken);
+            IamTelemetry.RecordSessionRevoked(SessionRevokedReasons.TokenReuseDetected);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException
+                                       or BrokenCircuitException or TimeoutRejectedException)
+        {
+            LogReplayedSessionRevocationFailed(logger, sessionId, ex);
+        }
+    }
+
     private static bool TryReadAuthorizedParty(string refreshToken, out string authorizedParty)
     {
         authorizedParty = string.Empty;
@@ -184,19 +236,6 @@ internal sealed partial class KeycloakTokenClient(
         return true;
     }
 
-    private static async Task<TokenErrorRepresentation?> ReadErrorAsync(HttpResponseMessage response,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await response.Content.ReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
-
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Keycloak rejected a {GrantType} grant: {Description}.")]
     private static partial void LogGrantRejected(ILogger logger, string grantType, string? description);
@@ -207,4 +246,12 @@ internal sealed partial class KeycloakTokenClient(
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Keycloak token endpoint unreachable.")]
     private static partial void LogTokenEndpointUnreachable(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Refresh token reuse detected for user {UserId} session {SessionId}: possible token theft. Revoking the session.")]
+    private static partial void LogRefreshTokenReuseDetected(ILogger logger, string? userId, string? sessionId);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Could not revoke Keycloak session {SessionId} after refresh token reuse; it will expire on its own.")]
+    private static partial void LogReplayedSessionRevocationFailed(ILogger logger, string sessionId, Exception ex);
 }

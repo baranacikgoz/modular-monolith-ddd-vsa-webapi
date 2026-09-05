@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Common.Domain.StronglyTypedIds;
 
 namespace Common.Application.Caching;
 
@@ -21,6 +22,21 @@ public static class CacheKeys
         public static string AuthorizationDecision(string jti, string permission)
         {
             return $"authz_decision:{jti}:{permission}";
+        }
+
+        /// <summary>
+        ///     FusionCache tag on every decision made under one Keycloak session (<c>sid</c>), so revoking that
+        ///     session purges its decisions without knowing the token jtis.
+        /// </summary>
+        public static string AuthorizationDecisionSessionTag(string sessionId)
+        {
+            return $"authz_session:{sessionId}";
+        }
+
+        /// <summary>FusionCache tag on every decision made for one user; sign-out-everywhere purges by it.</summary>
+        public static string AuthorizationDecisionUserTag(ApplicationUserId userId)
+        {
+            return $"authz_user:{userId}";
         }
     }
 }

@@ -1,7 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using Common.Domain.StronglyTypedIds;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
 using Common.Tests;
-using IAM.Tests.Endpoints.Users;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using RefreshRequest = IAM.Endpoints.Tokens.VersionNeutral.Refresh.Request;
 
@@ -31,6 +34,27 @@ public class SessionsTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
         var other = Assert.Single(sessions, s => !s.IsCurrent);
         Assert.Equal(phoneLogin.SessionId, other.Id);
         Assert.Equal("Pixel 9", other.DeviceName);
+    }
+
+    [Fact]
+    public async Task List_TwoRegistrationsOnOneSession_Returns200WithSingleEntry()
+    {
+        var phone = await RegisterFreshUserAsync();
+        var login = await IamTestClient.LoginByPhoneAsync(Factory, phone, deviceName: "Pixel 9");
+
+        // The registry is unique per (user, device, client app), not per session, so a second device can end up
+        // bound to the same Keycloak session id. The list must degrade, not 500 on a duplicate dictionary key.
+        var bindClient = Scope.ServiceProvider
+            .GetRequiredService<IInterModuleRequestClient<BindDeviceSessionRequest, BindDeviceSessionResponse>>();
+        await bindClient.SendAsync(
+            new BindDeviceSessionRequest(new ApplicationUserId(Guid.Parse(login.Subject)), login.SessionId,
+                Guid.NewGuid(), "mobile-app-2", "Clone", PushToken: null),
+            CancellationToken.None);
+
+        var sessions = await ListAsync(login);
+
+        var single = Assert.Single(sessions);
+        Assert.Equal(login.SessionId, single.Id);
     }
 
     [Fact]
@@ -108,18 +132,8 @@ public class SessionsTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
         return sessions;
     }
 
-    // Seed users are shared across test classes; session-count assertions need a user nobody else touches.
-    // Registration signs the registering device in, so that session is revoked to start from zero.
-    private async Task<string> RegisterFreshUserAsync()
+    private Task<string> RegisterFreshUserAsync()
     {
-        var phone = IamTestClient.NewPhoneNumber();
-        using var response = await SelfRegisterTests.RegisterRawAsync(Factory, phone);
-        var tokens = await IamTestClient.ReadTokensAsync(response);
-
-        using var revoke = await IamTestClient.Authorized(Factory, tokens)
-            .PostAsync(new Uri("/tokens/revoke", UriKind.Relative), content: null);
-        Assert.Equal(HttpStatusCode.NoContent, revoke.StatusCode);
-
-        return phone;
+        return IamTestClient.RegisterFreshUserAsync(Factory);
     }
 }

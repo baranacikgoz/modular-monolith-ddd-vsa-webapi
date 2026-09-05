@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
+using Common.Application.Caching;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
@@ -11,13 +11,21 @@ using IAM.Domain.Errors;
 using IAM.Infrastructure.Keycloak.Representations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Infrastructure.Keycloak;
 
+/// <summary>
+///     Keycloak Admin REST API. Session revocation here (<see cref="DeleteSessionAsync" />,
+///     <see cref="LogoutUserAsync" />) also purges the cached authorization decisions tagged with that session or
+///     user, so a revoked-but-unexpired access token stops authorizing on its next request instead of when the
+///     decision cache entry expires. Every revocation path in the module goes through these two methods.
+/// </summary>
 internal sealed partial class KeycloakAdminClient(
     HttpClient httpClient,
     IServiceAccountTokenProvider tokenProvider,
     IOptions<KeycloakOptions> keycloakOptionsProvider,
+    IFusionCache cache,
     ILogger<KeycloakAdminClient> logger
 ) : IKeycloakAdminClient
 {
@@ -59,9 +67,9 @@ internal sealed partial class KeycloakAdminClient(
             case HttpStatusCode.Conflict:
                 return IdentityErrors.PhoneNumberAlreadyRegistered;
             case HttpStatusCode.BadRequest:
-                var error = await ReadErrorAsync(response, cancellationToken);
+                var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
                 LogUserRejected(logger, error?.Field, error?.ErrorMessage);
-                return IdentityErrors.IdentityProviderRejectedUser;
+                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, error?.ErrorMessage);
             default:
                 response.EnsureSuccessStatusCode();
                 throw new HttpRequestException($"Unexpected Keycloak status {(int)response.StatusCode} creating a user.");
@@ -186,12 +194,13 @@ internal sealed partial class KeycloakAdminClient(
             () => new HttpRequestMessage(HttpMethod.Delete, AdminUri($"sessions/{Uri.EscapeDataString(sessionId)}")),
             cancellationToken);
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
+        if (response.StatusCode != HttpStatusCode.NotFound)
         {
-            return;
+            response.EnsureSuccessStatusCode();
         }
 
-        response.EnsureSuccessStatusCode();
+        // 404 = already gone in Keycloak; a decision cached before that still needs to go.
+        await cache.RemoveByTagAsync(CacheKeys.For.AuthorizationDecisionSessionTag(sessionId), token: cancellationToken);
     }
 
     public async Task LogoutUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
@@ -200,6 +209,8 @@ internal sealed partial class KeycloakAdminClient(
             () => new HttpRequestMessage(HttpMethod.Post, AdminUri($"{UsersResource}/{userId}/logout")),
             cancellationToken);
         response.EnsureSuccessStatusCode();
+
+        await cache.RemoveByTagAsync(CacheKeys.For.AuthorizationDecisionUserTag(userId), token: cancellationToken);
     }
 
     /// <summary>
@@ -244,8 +255,13 @@ internal sealed partial class KeycloakAdminClient(
             ? parsed
             : null;
 
+        if (!DefaultIdType.TryParse(user.Id, out var id))
+        {
+            throw new HttpRequestException($"Keycloak returned a non-UUID user id '{user.Id}'.");
+        }
+
         return new KeycloakUser(
-            new ApplicationUserId(DefaultIdType.Parse(user.Id!)),
+            new ApplicationUserId(id),
             user.Username ?? string.Empty,
             user.Email,
             user.FirstName,
@@ -254,19 +270,6 @@ internal sealed partial class KeycloakAdminClient(
             birthDate,
             user.Enabled,
             DateTimeOffset.FromUnixTimeMilliseconds(user.CreatedTimestamp ?? 0));
-    }
-
-    private static async Task<ErrorRepresentation?> ReadErrorAsync(HttpResponseMessage response,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await response.Content.ReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
     }
 
     [LoggerMessage(Level = LogLevel.Warning,

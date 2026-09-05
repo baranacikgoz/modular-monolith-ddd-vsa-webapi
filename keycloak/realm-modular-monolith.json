@@ -23,7 +23,7 @@
   "clientSessionIdleTimeout": 0,
   "clientSessionMaxLifespan": 0,
   "revokeRefreshToken": true,
-  "refreshTokenMaxReuse": 0,
+  "refreshTokenMaxReuse": 1,
   "accessCodeLifespanUserAction": 300,
   "actionTokenGeneratedByAdminLifespan": 43200,
   "actionTokenGeneratedByUserLifespan": 300,
@@ -146,13 +146,7 @@
                 "name": "users:search"
               },
               {
-                "name": "users:manage"
-              },
-              {
                 "name": "users:view-own"
-              },
-              {
-                "name": "users:update-own"
               }
             ]
           },
@@ -210,9 +204,6 @@
                 "name": "stores:update"
               },
               {
-                "name": "stores:delete"
-              },
-              {
                 "name": "stores:create-own"
               },
               {
@@ -220,9 +211,6 @@
               },
               {
                 "name": "stores:update-own"
-              },
-              {
-                "name": "stores:delete-own"
               }
             ]
           },
@@ -287,9 +275,6 @@
               },
               {
                 "name": "product-templates:update"
-              },
-              {
-                "name": "product-templates:delete"
               }
             ]
           },
@@ -369,7 +354,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"users\"]",
-              "scopes": "[\"users:view-own\",\"users:update-own\"]",
+              "scopes": "[\"users:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
@@ -380,7 +365,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"users\"]",
-              "scopes": "[\"users:view\",\"users:search\",\"users:manage\"]",
+              "scopes": "[\"users:view\",\"users:search\"]",
               "applyPolicies": "[\"Staff Role Policy\",\"System Admin Role Policy\"]"
             }
           },
@@ -424,7 +409,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stores\"]",
-              "scopes": "[\"stores:create-own\",\"stores:view-own\",\"stores:update-own\",\"stores:delete-own\"]",
+              "scopes": "[\"stores:create-own\",\"stores:view-own\",\"stores:update-own\"]",
               "applyPolicies": "[\"Basic Role Policy\"]"
             }
           },
@@ -435,7 +420,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stores\"]",
-              "scopes": "[\"stores:create\",\"stores:update\",\"stores:delete\"]",
+              "scopes": "[\"stores:create\",\"stores:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -490,7 +475,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"product-templates\"]",
-              "scopes": "[\"product-templates:create\",\"product-templates:update\",\"product-templates:delete\"]",
+              "scopes": "[\"product-templates:create\",\"product-templates:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -525,13 +510,7 @@
             "name": "users:search"
           },
           {
-            "name": "users:manage"
-          },
-          {
             "name": "users:view-own"
-          },
-          {
-            "name": "users:update-own"
           },
           {
             "name": "sessions:view-own"
@@ -555,9 +534,6 @@
             "name": "stores:update"
           },
           {
-            "name": "stores:delete"
-          },
-          {
             "name": "stores:create-own"
           },
           {
@@ -565,9 +541,6 @@
           },
           {
             "name": "stores:update-own"
-          },
-          {
-            "name": "stores:delete-own"
           },
           {
             "name": "products:create"
@@ -610,9 +583,6 @@
           },
           {
             "name": "product-templates:update"
-          },
-          {
-            "name": "product-templates:delete"
           },
           {
             "name": "hangfire:manage"

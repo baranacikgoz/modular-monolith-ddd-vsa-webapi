@@ -39,7 +39,7 @@ internal sealed partial class KeycloakPermissionClient(
         // bearer token (session revoked or logged out). Both are a definitive "no", not an outage.
         if (response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.BadRequest)
         {
-            var error = await response.Content.ReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
+            var error = await response.Content.TryReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
             LogDenied(logger, permission, error?.Error, error?.ErrorDescription);
             return false;
         }

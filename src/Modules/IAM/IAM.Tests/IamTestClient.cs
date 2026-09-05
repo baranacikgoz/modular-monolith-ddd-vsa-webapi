@@ -7,6 +7,7 @@ using Common.Application.Caching;
 using Common.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
+using IAM.Tests.Endpoints.Users;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 using CreateByEmailRequest = IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail.Request;
@@ -59,6 +60,23 @@ internal static class IamTestClient
             CacheKeys.For.Otp(phoneNumber, purpose),
             new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
+    }
+
+    /// <summary>
+    ///     Seed users are shared across test classes; session-count and revocation assertions need a user nobody else
+    ///     touches. Registration signs the registering device in, so that session is revoked to start from zero.
+    /// </summary>
+    public static async Task<string> RegisterFreshUserAsync(IntegrationTestFactory factory)
+    {
+        var phone = NewPhoneNumber();
+        using var response = await SelfRegisterTests.RegisterRawAsync(factory, phone);
+        var tokens = await ReadTokensAsync(response);
+
+        using var revoke = await Authorized(factory, tokens)
+            .PostAsync(new Uri("/tokens/revoke", UriKind.Relative), content: null);
+        Assert.Equal(System.Net.HttpStatusCode.NoContent, revoke.StatusCode);
+
+        return phone;
     }
 
     public static async Task<HttpResponseMessage> LoginByPhoneRawAsync(IntegrationTestFactory factory,

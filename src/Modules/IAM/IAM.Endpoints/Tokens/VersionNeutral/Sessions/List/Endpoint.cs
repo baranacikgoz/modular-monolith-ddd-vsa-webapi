@@ -33,7 +33,10 @@ internal static class Endpoint
         // signed in from a tool that skipped device binding) are still listed.
         var sessions = await adminClient.GetUserSessionsAsync(currentUser.Id, cancellationToken);
         var devices = await deviceClient.SendAsync(new GetDeviceSessionsRequest(currentUser.Id), cancellationToken);
-        var devicesBySession = devices.Sessions.ToDictionary(d => d.SessionId, StringComparer.Ordinal);
+        // The registry is unique per (user, device, client), not per session, so two rows may share a session id.
+        var devicesBySession = devices.Sessions
+            .DistinctBy(d => d.SessionId, StringComparer.Ordinal)
+            .ToDictionary(d => d.SessionId, StringComparer.Ordinal);
 
         var response = sessions
             .OrderByDescending(s => s.LastAccessAt)
