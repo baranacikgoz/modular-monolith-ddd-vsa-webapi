@@ -1,11 +1,16 @@
-using Common.Application.DTOs;
 using Common.Domain.StronglyTypedIds;
 
 namespace IAM.Endpoints.Users.VersionNeutral.Get;
 
-public sealed record Response : AuditableEntityResponse<ApplicationUserId>
+public sealed record Response
 {
-    public required string FullName { get; init; }
-    public required string PhoneNumber { get; init; }
-    public required DateOnly BirthDate { get; init; }
+    public required ApplicationUserId Id { get; init; }
+    public required string Username { get; init; }
+    public string? FirstName { get; init; }
+    public string? LastName { get; init; }
+    public string? Email { get; init; }
+    public string? PhoneNumber { get; init; }
+    public DateOnly? BirthDate { get; init; }
+    public required bool Enabled { get; init; }
+    public required DateTimeOffset CreatedOn { get; init; }
 }

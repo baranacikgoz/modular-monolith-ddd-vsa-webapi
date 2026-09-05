@@ -17,7 +17,7 @@ internal static class Endpoint
         productTemplatesApiGroup
             .MapGet("{id}/activate", ActivateProductTemplateAsync)
             .WithDescription("Activate a product template.")
-            .MustHavePermission(CustomActions.Update, CustomResources.ProductTemplates)
+            .RequireScope(KeycloakScopes.ProductTemplates.Update)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

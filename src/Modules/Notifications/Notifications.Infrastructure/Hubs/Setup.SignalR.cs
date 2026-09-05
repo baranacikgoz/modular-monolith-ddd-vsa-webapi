@@ -1,6 +1,7 @@
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Hubs;
 using StackExchange.Redis;
@@ -14,6 +15,7 @@ internal static class Setup
         var options = configuration.GetSection(nameof(SignalROptions)).Get<SignalROptions>();
 
         var builder = services.AddSignalR();
+        services.AddSingleton<IUserIdProvider, SubjectUserIdProvider>();
 
         if (options?.UseRedisBackplane == true)
         {

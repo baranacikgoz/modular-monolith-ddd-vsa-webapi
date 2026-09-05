@@ -7,9 +7,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
     <PackageReference Include="FirebaseAdmin" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>none</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.Endpoints\Common.Endpoints.csproj"/>
     <ProjectReference Include="..\..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj"/>
     <ProjectReference Include="..\..\..\Common\Common.InterModuleRequests\Common.InterModuleRequests.csproj"/>
     <ProjectReference Include="..\Notifications.Application\Notifications.Application.csproj"/>

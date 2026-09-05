@@ -18,7 +18,7 @@ internal static class Endpoint
         productTemplatesApiGroup
             .MapGet("{id}", GetProductTemplateAsync)
             .WithDescription("Get a product template.")
-            .MustHavePermission(CustomActions.Read, CustomResources.ProductTemplates)
+            .RequireScope(KeycloakScopes.ProductTemplates.View)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

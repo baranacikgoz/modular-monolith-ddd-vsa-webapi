@@ -2,10 +2,15 @@ namespace IAM.Endpoints.Tokens.VersionNeutral.Sessions.List;
 
 internal sealed record Response
 {
-    public required Guid Id { get; init; }
-    public required string ClientId { get; init; }
+    /// <summary>Keycloak session id (opaque string).</summary>
+    public required string Id { get; init; }
+
+    /// <summary>Client app the device registered with, when the session was created through a device login.</summary>
+    public string? ClientId { get; init; }
+
     public string? DeviceName { get; init; }
-    public required DateTimeOffset CreatedAt { get; init; }
-    public required DateTimeOffset LastUsedAt { get; init; }
+    public string? IpAddress { get; init; }
+    public required DateTimeOffset StartedAt { get; init; }
+    public required DateTimeOffset LastAccessAt { get; init; }
     public required bool IsCurrent { get; init; }
 }

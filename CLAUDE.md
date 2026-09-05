@@ -34,10 +34,10 @@ Never reach for grep, find, or Bash search as a first instinct. The graph knows 
 
 | Module | Makefile target | Notes |
 | :--- | :--- | :--- |
-| IAM | `make test-iam` | ASP.NET Core Identity, JWT, OTP, Captcha |
+| IAM | `make test-iam` | Keycloak broker: OTP verification, token proxy (phone+OTP, email+password, refresh), Admin REST API queries, JwtBearer + Authorization Services decisions. No database. Tests boot a Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
 | Products | `make test-products` | Standard DDD aggregate module |
 | Outbox | `make test-outbox` | Transactional outbox worker |
-| Notifications | `make test-notifications` | Consumes IntegrationEvents, sends notifications |
+| Notifications | `make test-notifications` | SMS/OTP delivery, push (FCM), SignalR hub, device registry (`DeviceRegistrations`: device ↔ Keycloak session ↔ push token) |
 | BackgroundJobs | `make test-backgroundjobs` | Quartz/Hangfire scheduled jobs |
 
 ### Module Project Structure
@@ -57,7 +57,7 @@ Infrastructure/worker modules use a simplified structure:
 
 | Module | Structure | Reason |
 | :--- | :--- | :--- |
-| Notifications | Application + Domain + Infrastructure + Tests (no Endpoints) | Consumer-only: no HTTP surface |
+| Notifications | Application + Domain + Infrastructure + Tests (endpoints live in Infrastructure/Devices) | Mostly consumer/handler-driven; one small device endpoint surface |
 | Outbox | Single `Outbox/` project + `Outbox.Tests/` | Internal worker, no domain model |
 | BackgroundJobs | Single `BackgroundJobs/` project + `BackgroundJobs.Tests/` | Internal worker, no domain model |
 
@@ -82,7 +82,9 @@ Infrastructure/worker modules use a simplified structure:
 | Audit Retention | `AuditLogRetentionService` deletes old entries per `RetentionDays`. | Do not manually delete `AuditLog` entries. |
 | DomainEvent Versioning | Serialized to `AuditLog` by CLR type name (`PolymorphicEventConverter`) for the audit history. | Never edit a shipped `V{n}` event. Add `V{n+1}` instead: see §5. |
 
-Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.aspire-dashboard`.
+| Identity & authorization | Keycloak owns users, roles, sessions, refresh tokens and permissions (Authorization Services on client `backend-api`). Realm as code: `keycloak/realm-modular-monolith.json` (see `keycloak/README.md`). The API validates Keycloak JWTs (`sub`, `sid`, `roles` claims, `MapInboundClaims=false`) and asks Keycloak for `resource#scope` decisions, cached per token jti. | Protect endpoints with `.RequireScope(KeycloakScopes.X.Y)`; never hand-roll permission checks or read roles to authorize. Add a new scope in the realm JSON first (`PermissionCoverageTests` enforces it). Never call the Keycloak REST API outside `IAM.Infrastructure/Keycloak`. |
+
+Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.keycloak`, `mm.aspire-dashboard`.
 
 ---
 
@@ -367,11 +369,11 @@ make test-outbox
 make test-notifications
 make test-backgroundjobs
 
-make ef-add-IAM name=<Name>
+make ef-add-Notifications name=<Name>
 make ef-add-Products name=<Name>
 make ef-add-Outbox name=<Name>
 
-make ef-script-IAM from=<Prev> to=<TargetMigration>
+make ef-script-Notifications from=<Prev> to=<TargetMigration>
 make ef-script-Products from=<Prev> to=<TargetMigration>
 make ef-script-Outbox from=<Prev> to=<TargetMigration>
 make ef-script-all from=<Prev> to=<TargetMigration>

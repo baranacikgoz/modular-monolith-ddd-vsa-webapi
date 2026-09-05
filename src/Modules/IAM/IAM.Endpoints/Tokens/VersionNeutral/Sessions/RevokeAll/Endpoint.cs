@@ -1,15 +1,14 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Persistence.Extensions;
-using IAM.Application.Persistence;
-using IAM.Domain.Identity;
-using IAM.Domain.Identity.Sessions;
+using Common.Infrastructure.Extensions;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
+using IAM.Application.Keycloak;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Sessions.RevokeAll;
 
@@ -18,33 +17,27 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder sessionsApiGroup)
     {
         sessionsApiGroup
-            .MapDelete("", RevokeAllSessions)
-            .WithDescription("Sign out everywhere — revoke every session for the caller (e.g. lost/stolen device).")
-            .MustHavePermission(CustomActions.DeleteMy, CustomResources.ApplicationUsers)
+            .MapPost("revoke-all", RevokeAllSessions)
+            .WithDescription("Sign out everywhere: revoke every session of the caller, including the current one.")
+            .RequireScope(KeycloakScopes.Sessions.RevokeOwn)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }
 
     private static async Task<Result> RevokeAllSessions(
         ICurrentUser currentUser,
-        IIAMDbContext dbContext,
-        TimeProvider timeProvider,
+        IKeycloakAdminClient adminClient,
+        IInterModuleRequestClient<DeactivateDeviceSessionsRequest, DeactivateDeviceSessionsResponse> deviceClient,
         CancellationToken cancellationToken)
     {
-        var revokedCount = 0;
+        using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
 
-        return await dbContext
-            .Users
-            .Include(u => u.Sessions)
-            .TagWith(nameof(RevokeAllSessions), currentUser.Id)
-            .Where(u => u.Id == currentUser.Id)
-            .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
-            .TapAsync(user =>
-            {
-                revokedCount = user.Sessions.Count(s => s.RevokedAt is null);
-                user.RevokeAllSessions(SessionRevokedReason.SignedOutEverywhere, timeProvider.GetUtcNow());
-            })
-            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
-            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.SignedOutEverywhere, revokedCount));
+        return await Result<bool>.Success(true)
+            .TapAsync(_ => adminClient.LogoutUserAsync(currentUser.Id, cancellationToken))
+            .TapAsync(_ => deviceClient.SendAsync(
+                new DeactivateDeviceSessionsRequest(currentUser.Id, SessionIds: null), cancellationToken))
+            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReasons.RevokedAllByUser))
+            .TapActivityAsync(activity)
+            .MapAsync(_ => Result.Success);
     }
 }

@@ -1,167 +1,51 @@
-using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Bogus;
-using Common.Application.Pagination;
 using Common.Tests;
-using IAM.Application.Persistence;
-using IAM.Domain.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Response = IAM.Endpoints.Users.VersionNeutral.Search.Response;
 
 namespace IAM.Tests.Endpoints.Users;
 
 [Collection("IntegrationTestCollection")]
-public class SearchTests : BaseIntegrationTest
+public class SearchTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly Faker _faker = new();
+    private sealed record UserResponse(Guid Id, string Username, string? FirstName, string? LastName);
 
-    public SearchTests(IntegrationTestWebAppFactory factory) : base(factory)
-    {
-    }
-
-    private ApplicationUser CreateUser(string fullName)
-        => ApplicationUser.Create(
-            fullName,
-            "555" + _faker.Random.Number(1000000, 9999999).ToString(CultureInfo.InvariantCulture),
-            DateOnly.FromDateTime(_faker.Date.Past(30)));
+    private sealed record Page(List<UserResponse> Data, int TotalCount, int PageNumber, int PageSize);
 
     [Fact]
-    public async Task Search_WithSearchTerm_ReturnsMatchingUsers()
+    public async Task Search_AsStaff_MatchesLastNameSubstring()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var staff = await IamTestClient.LoginByEmailAsync(Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword);
 
-        var targetUser = CreateUser("Johnathan Silverstone");
-        var otherUser = CreateUser("Maria Rodriguez");
+        var page = await IamTestClient.Authorized(Factory, staff)
+            .GetFromJsonAsync<Page>(new Uri("/users/search?searchTerm=doe&pageNumber=1&pageSize=10", UriKind.Relative));
 
-        db.Users.Add(targetUser);
-        db.Users.Add(otherUser);
-        await db.SaveChangesAsync();
-
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
-
-        // Act
-        var response = await client.GetAsync(new Uri("/users/search?PageNumber=1&PageSize=10&searchTerm=Johnathan", UriKind.Relative));
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
-
-        Assert.NotNull(result);
-        Assert.True(result.TotalCount >= 1);
-        Assert.Contains(result.Data, u => u.FullName == "Johnathan Silverstone");
+        Assert.NotNull(page);
+        Assert.Contains(page.Data, u => u.Username == SeedUsers.BasicPhone && u.LastName == "Doe");
+        Assert.True(page.TotalCount >= 1);
     }
 
     [Fact]
-    public async Task Search_WithNameFilter_ReturnsFilteredUsers()
+    public async Task Search_Paginates()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var staff = await IamTestClient.LoginByEmailAsync(Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword);
 
-        var targetName = "UniqueFirstName_" + Guid.NewGuid().ToString("N")[..8];
-        var targetUser = CreateUser(targetName + " Jones");
-        var otherUser = CreateUser("DifferentName Smith");
+        var page = await IamTestClient.Authorized(Factory, staff)
+            .GetFromJsonAsync<Page>(new Uri("/users/search?searchTerm=9011111111&pageNumber=1&pageSize=2", UriKind.Relative));
 
-        db.Users.Add(targetUser);
-        db.Users.Add(otherUser);
-        await db.SaveChangesAsync();
-
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
-
-        // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&fullName={targetName}", UriKind.Relative));
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
-
-        Assert.NotNull(result);
-        Assert.Equal(1, result.TotalCount);
-        Assert.Contains(targetName, result.Data.First().FullName, StringComparison.Ordinal);
+        Assert.NotNull(page);
+        Assert.Equal(2, page.Data.Count);
+        Assert.True(page.TotalCount >= 6);
     }
 
     [Fact]
-    public async Task Search_WithFullNameFilter_ReturnsFilteredUsers()
+    public async Task Search_AsBasicUser_Returns403()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var basic = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
 
-        var targetFullName = "UniqueName_" + Guid.NewGuid().ToString("N")[..8] + " Jones";
-        var targetUser = CreateUser(targetFullName);
-        var otherUser = CreateUser("Bob DifferentName");
+        using var response = await IamTestClient.Authorized(Factory, basic)
+            .GetAsync(new Uri("/users/search?pageNumber=1&pageSize=10", UriKind.Relative));
 
-        db.Users.Add(targetUser);
-        db.Users.Add(otherUser);
-        await db.SaveChangesAsync();
-
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
-
-        // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&fullName={targetFullName}", UriKind.Relative));
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
-
-        Assert.NotNull(result);
-        Assert.Equal(1, result.TotalCount);
-        Assert.Contains(targetFullName, result.Data.First().FullName, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public async Task Search_OnPartialLastPage_ReportsRequestedPageSizeNotItemCount()
-    {
-        // Arrange — 3 users sharing a unique name, PageSize=2 so the last page holds only 1 item.
-        // PaginationResponse.PageSize must reflect the requested page size, not the returned item
-        // count, otherwise TotalPages/HasNext are computed from the wrong divisor on a partial page.
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-
-        var sharedName = "PartialPageName_" + Guid.NewGuid().ToString("N")[..8];
-        db.Users.Add(CreateUser(sharedName + " One"));
-        db.Users.Add(CreateUser(sharedName + " Two"));
-        db.Users.Add(CreateUser(sharedName + " Three"));
-        await db.SaveChangesAsync();
-
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
-
-        // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=2&PageSize=2&fullName={sharedName}", UriKind.Relative));
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
-
-        Assert.NotNull(result);
-        Assert.Equal(3, result.TotalCount);
-        Assert.Single(result.Data);
-        Assert.Equal(2, result.PageSize);
-        Assert.Equal(2, result.TotalPages);
-        Assert.False(result.HasNext);
-    }
-
-    [Fact]
-    public async Task Search_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
-    {
-        // Arrange
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
-        var longSearchTerm = new string('a', Constants.SearchTermMaxLength + 1);
-
-        // Act
-        var response = await client.GetAsync(new Uri($"/users/search?PageNumber=1&PageSize=10&searchTerm={longSearchTerm}", UriKind.Relative));
-
-        // Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

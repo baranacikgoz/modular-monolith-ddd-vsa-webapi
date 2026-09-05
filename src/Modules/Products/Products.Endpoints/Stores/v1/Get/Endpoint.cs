@@ -18,7 +18,7 @@ internal static class Endpoint
         myStoresApiGroup
             .MapGet("{id}", GetStoreAsync)
             .WithDescription("Get store.")
-            .MustHavePermission(CustomActions.Read, CustomResources.Stores)
+            .RequireScope(KeycloakScopes.Stores.View)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

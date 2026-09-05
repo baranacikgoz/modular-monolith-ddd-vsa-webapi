@@ -14,6 +14,7 @@ public static class Setup
             .WithTags("Tokens");
 
         Endpoint.MapEndpoint(tokensApiGroup);
+        CreateByEmail.Endpoint.MapEndpoint(tokensApiGroup);
         Refresh.Endpoint.MapEndpoint(tokensApiGroup);
         Revoke.Endpoint.MapEndpoint(tokensApiGroup);
 
@@ -24,6 +25,5 @@ public static class Setup
         Sessions.List.Endpoint.MapEndpoint(sessionsApiGroup);
         Sessions.Revoke.Endpoint.MapEndpoint(sessionsApiGroup);
         Sessions.RevokeAll.Endpoint.MapEndpoint(sessionsApiGroup);
-        Sessions.UpdatePushToken.Endpoint.MapEndpoint(sessionsApiGroup);
     }
 }

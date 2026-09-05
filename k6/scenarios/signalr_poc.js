@@ -1,6 +1,6 @@
 import { check, sleep } from 'k6';
 import { post } from '../lib/http.js';
-import { sendOtpForRegistration, turkishName } from '../lib/auth.js';
+import { sendOtpForRegistration, turkishFirstName, turkishLastName, device } from '../lib/auth.js';
 
 // Registers N users to generate UserRegisteredIntegrationEvent bursts.
 // Each event triggers UserRegisteredSignalRHandler → hub dispatch → real-time notification.
@@ -28,9 +28,11 @@ export default function () {
   const res = post('/users/register/self', {
     phoneNumber: p,
     otp: '123456',
-    fullName: turkishName(__VU + __ITER),
+    firstName: turkishFirstName(__VU + __ITER),
+    lastName: turkishLastName(__VU + __ITER),
     birthDate: '20-06-2001',
     captchaToken: 'dummy',
+    ...device(),
   });
 
   check(res, { 'register: 200': r => r.status === 200 });

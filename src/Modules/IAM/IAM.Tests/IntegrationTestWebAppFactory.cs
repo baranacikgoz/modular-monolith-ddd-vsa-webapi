@@ -10,25 +10,60 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Testcontainers.Keycloak;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
+/// <summary>
+///     Boots a real Keycloak (realm imported from <c>keycloak/realm-modular-monolith.json</c>) next to Postgres.
+///     Every IAM test goes through the real JwtBearer pipeline and real permission decisions; only OTP delivery
+///     and captcha are replaced with in-process fakes.
+/// </summary>
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
+    public const string KeycloakImage = "quay.io/keycloak/keycloak:26.7";
+
+    private readonly KeycloakContainer _keycloakContainer = new KeycloakBuilder(KeycloakImage)
+        .WithRealm(TestPaths.RealmFile)
+        .Build();
+
+    public string KeycloakBaseAddress => _keycloakContainer.GetBaseAddress().TrimEnd('/');
+
     protected override string[] GetActiveModules()
     {
-        return ["IAM", "Outbox"];
+        // Notifications owns the device registry every login binds to; Outbox backs its DbContext.
+        return ["IAM", "Notifications", "Outbox"];
+    }
+
+    protected override bool UseTestAuthentication => false;
+
+    public override async ValueTask InitializeAsync()
+    {
+        await _keycloakContainer.StartAsync();
+        await base.InitializeAsync();
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await _keycloakContainer.DisposeAsync();
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
 
+        // Both channels: UseSetting for registration-time reads, in-memory config for runtime IOptions
+        // (the JSON config files are added after host settings and would otherwise win).
+        builder.UseSetting("KeycloakOptions:BaseUrl", KeycloakBaseAddress);
+
         builder.ConfigureAppConfiguration((_, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                { "KeycloakOptions:BaseUrl", KeycloakBaseAddress },
                 { "FeatureManagement:IAM.Captcha", "true" }
             });
         });
@@ -51,7 +86,7 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 internal sealed class InProcessSendOtpClient(IFusionCache cache, IOptions<OtpOptions> otpOptions)
     : IInterModuleRequestClient<SendPhoneOtpRequest, SendPhoneOtpResponse>
 {
-    private const string DummyOtp = "123456";
+    public const string DummyOtp = "123456";
 
     public async Task<SendPhoneOtpResponse> SendAsync(
         SendPhoneOtpRequest request, CancellationToken cancellationToken)

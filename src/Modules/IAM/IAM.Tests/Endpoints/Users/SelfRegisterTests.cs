@@ -1,306 +1,86 @@
-using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using Bogus;
 using Common.Application.Auth;
-using Common.Application.Caching;
-using Common.Domain.StronglyTypedIds;
-using Common.Infrastructure.Persistence.Outbox;
-using Common.IntegrationEvents;
 using Common.Tests;
-using IAM.Application.Persistence;
-using IAM.Domain.Identity;
+using IAM.Application.Keycloak;
 using IAM.Endpoints.Users.VersionNeutral.SelfRegister;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using ZiggyCreatures.Caching.Fusion;
-using Constants = IAM.Domain.Constants;
 
 namespace IAM.Tests.Endpoints.Users;
 
 [Collection("IntegrationTestCollection")]
-public class SelfRegisterTests : BaseIntegrationTest
+public class SelfRegisterTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly Faker _faker = new("tr");
-
-    public SelfRegisterTests(IntegrationTestWebAppFactory factory) : base(factory)
+    internal static async Task<HttpResponseMessage> RegisterRawAsync(IntegrationTestFactory factory, string phone,
+        string firstName = "Ayşe", string lastName = "Yılmaz", string birthDate = "20-06-2001",
+        string otp = InProcessSendOtpClient.DummyOtp, string clientId = "mobile-app-1")
     {
-    }
-
-    private static async Task EnsureBasicRoleExistsAsync(IServiceScope scope)
-    {
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<ApplicationUserId>>>();
-        if (!await roleManager.RoleExistsAsync(CustomRoles.Basic))
+        await IamTestClient.SeedOtpAsync(factory, phone, "registration");
+        var client = factory.CreateClient();
+        return await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), new Request
         {
-            await roleManager.CreateAsync(new IdentityRole<ApplicationUserId>(CustomRoles.Basic)
-            {
-                NormalizedName = CustomRoles.Basic.ToUpperInvariant()
-            });
-        }
-    }
-
-    [Fact]
-    public async Task RegisterAsync_WithValidPayload_ReturnsOkAndCreatesUser()
-    {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-        await EnsureBasicRoleExistsAsync(scope);
-
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-        var otp = "123456";
-
-        // Pre-seed cache to bypass SMS OTP check
-        var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
-            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
-
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = phoneNumber,
+            PhoneNumber = phone,
             Otp = otp,
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
+            FirstName = firstName,
+            LastName = lastName,
+            BirthDate = birthDate,
             CaptchaToken = "dummyToken",
             DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
-
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert
-        if (!response.IsSuccessStatusCode)
-        {
-            var err = await response.Content.ReadAsStringAsync();
-            Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
-        }
-
-        response.EnsureSuccessStatusCode();
-
-        var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(rawJson);
-        var root = doc.RootElement;
-
-        Assert.True(root.TryGetProperty("accessToken", out var accessToken));
-        Assert.False(string.IsNullOrWhiteSpace(accessToken.GetString()));
-
-        Assert.True(root.TryGetProperty("refreshToken", out var refreshToken));
-        Assert.False(string.IsNullOrWhiteSpace(refreshToken.GetString()));
-
-        // Verify Database Side-Effect
-        var createdUser = await db.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
-
-        Assert.NotNull(createdUser);
-        Assert.Equal(request.PhoneNumber, createdUser.PhoneNumber);
-        Assert.Equal(request.FullName.Trim(), createdUser.FullName);
-
-        // Verify Outbox Message was inserted
-        using var outboxScope = Factory.Services.CreateScope();
-        var outboxDb = outboxScope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
-        var outboxMessages = await outboxDb.OutboxMessages
-            .TagWith(nameof(SelfRegisterTests))
-            .Where(m => !m.IsProcessed)
-            .ToListAsync();
-        Assert.NotEmpty(outboxMessages);
-        Assert.Contains(outboxMessages, m => m.Event is UserRegisteredIntegrationEvent);
+            ClientId = clientId,
+            DeviceName = "Test device"
+        });
     }
 
     [Fact]
-    public async Task SelfRegister_WithDuplicatePhoneNumber_ReturnsError()
+    public async Task Register_ValidRequest_CreatesKeycloakUserWithBasicRoleAndSignsIn()
     {
-        // Arrange — register a user first via userManager so NormalizedUserName is set,
-        // then try to register with the same phone via the endpoint.
-        using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        await EnsureBasicRoleExistsAsync(scope);
+        var phone = IamTestClient.NewPhoneNumber();
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
+        using var response = await RegisterRawAsync(Factory, phone, firstName: "Mehmet", lastName: "Kaya");
+        var tokens = await IamTestClient.ReadTokensAsync(response);
 
-        // Seed an existing user via Identity so NormalizedUserName is properly set
-        // — the duplicate check relies on the Identity unique index on NormalizedUserName.
-        var existingUser = ApplicationUser.Create(
-            _faker.Name.FullName(),
-            phoneNumber,
-            DateOnly.FromDateTime(_faker.Date.Past(30))
-        );
-        await userManager.CreateAsync(existingUser);
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var user = await adminClient.FindUserByUsernameAsync(phone, CancellationToken.None);
+        Assert.NotNull(user);
+        Assert.Equal("Mehmet", user.FirstName);
+        Assert.Equal("Kaya", user.LastName);
+        Assert.Equal(phone, user.PhoneNumber);
+        Assert.Equal(new DateOnly(2001, 6, 20), user.BirthDate);
+        Assert.Equal(user.Id.Value.ToString(), tokens.Subject);
 
-        const string otp = "123456";
-        var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
-            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
-
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = otp,
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken",
-            DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
-
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert — duplicate phone must be rejected with a domain-friendly error
-        Assert.False(response.IsSuccessStatusCode);
+        var me = await IamTestClient.Authorized(Factory, tokens)
+            .GetFromJsonAsync<MeGetTests.MeResponse>(new Uri("/users/me", UriKind.Relative));
+        Assert.NotNull(me);
+        Assert.Contains(KeycloakRoles.Basic, me.Roles);
+        Assert.Contains(KeycloakScopes.Stores.CreateOwn, me.Permissions);
     }
 
     [Fact]
-    public async Task SelfRegister_WithInvalidOtp_ReturnsBadRequest()
+    public async Task Register_PhoneAlreadyRegistered_Returns409()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        await EnsureBasicRoleExistsAsync(scope);
+        using var response = await RegisterRawAsync(Factory, SeedUsers.BasicPhone);
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-        const string correctOtp = "123456";
-
-        // Seed the CORRECT otp but send a WRONG one
-        var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(correctOtp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
-            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
-
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = "999999", // wrong OTP
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken",
-            DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
-
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert
-        Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
-        Assert.False(response.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 
     [Fact]
-    public async Task SelfRegister_WithEmptyCaptcha_ReturnsBadRequest()
+    public async Task Register_WrongOtp_Returns400()
     {
-        // Arrange
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture),
-            Otp = "123456",
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = string.Empty,
-            DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
+        using var response = await RegisterRawAsync(Factory, IamTestClient.NewPhoneNumber(), otp: "999999");
 
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    [Fact]
-    public async Task SelfRegister_RoleAssignmentFails_NothingPersisted()
+    [Theory]
+    [InlineData("", "Yılmaz", "20-06-2001")]
+    [InlineData("Ayşe", "", "20-06-2001")]
+    [InlineData("Ayşe", "Yılmaz", "2001-06-20")]
+    [InlineData("Ay5e", "Yılmaz", "20-06-2001")]
+    public async Task Register_InvalidNamesOrBirthDate_Returns400(string firstName, string lastName, string birthDate)
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
-        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
-        await EnsureBasicRoleExistsAsync(scope);
+        using var response = await RegisterRawAsync(Factory, IamTestClient.NewPhoneNumber(), firstName, lastName, birthDate);
 
-        // Delete the Basic role so AddToRoleAsync fails mid-sequence — CreateAsync has
-        // already run (and, pre-fix, already committed) by the time this failure occurs.
-        var basicRole = await db.Roles.SingleAsync(r => r.Name == CustomRoles.Basic);
-        db.Roles.Remove(basicRole);
-        await db.SaveChangesAsync();
-
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-        var otp = "123456";
-
-        var cacheKey = CacheKeys.For.Otp(phoneNumber, "registration");
-        await cache.SetAsync(cacheKey, new OtpCacheEntry(otp, 0, DateTimeOffset.UtcNow.AddMinutes(5)),
-            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(5) });
-
-        var sessionCountBefore = await db.Sessions.AsNoTracking().CountAsync();
-        var auditCountBefore = await db.AuditLog.AsNoTracking().CountAsync();
-        var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = phoneNumber,
-            Otp = otp,
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "dummyToken",
-            DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
-
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert — non-success response
-        Assert.False(response.IsSuccessStatusCode);
-
-        // Assert — nothing persisted: the whole user+role+session sequence rolled back atomically
-        var createdUser = await db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-        Assert.Null(createdUser);
-
-        var sessionCountAfter = await db.Sessions.AsNoTracking().CountAsync();
-        Assert.Equal(sessionCountBefore, sessionCountAfter);
-
-        var auditCountAfter = await db.AuditLog.AsNoTracking().CountAsync();
-        Assert.Equal(auditCountBefore, auditCountAfter);
-
-        var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        Assert.Equal(outboxCountBefore, outboxCountAfter);
-
-        // No manual restore of the Basic role — Respawn resets DB state (including seed data
-        // each test re-creates via EnsureBasicRoleExistsAsync) between tests in this collection.
-    }
-
-    [Fact]
-    public async Task SelfRegister_WithInvalidCaptcha_ReturnsBadRequest()
-    {
-        // Arrange
-        var client = Factory.CreateClient();
-        var request = new Request
-        {
-            PhoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture),
-            Otp = "123456",
-            FullName = _faker.Name.FullName() + " Yılmaz",
-            BirthDate = _faker.Date.Past(30).ToString(Constants.TurkishDateFormat, CultureInfo.InvariantCulture),
-            CaptchaToken = "invalid-token",
-            DeviceId = Guid.NewGuid(),
-            ClientId = "mobile-app-1"
-        };
-
-        // Act
-        var response = await client.PostAsJsonAsync(new Uri("/users/register/self", UriKind.Relative), request);
-
-        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
-        var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(rawJson);
-        Assert.Equal("NotHuman", doc.RootElement.GetProperty("errorKey").GetString());
     }
 }

@@ -1,0 +1,15 @@
+{
+  "KeycloakOptions": {
+    "BaseUrl": "http://localhost:8080",
+    "Realm": "modular-monolith",
+    "ResourceClientId": "backend-api",
+    "ResourceClientSecret": "backend-api-dev-secret-change-me",
+    "TrustedLoginClientId": "backend-trusted-login",
+    "TrustedLoginClientSecret": "backend-trusted-login-dev-secret-change-me",
+    "RequireHttpsMetadata": false,
+    "DecisionCacheMaxDurationSeconds": 300,
+    "ServiceAccountTokenRefreshSkewSeconds": 30,
+    "AttemptTimeoutSeconds": 5,
+    "TotalRequestTimeoutSeconds": 15
+  }
+}

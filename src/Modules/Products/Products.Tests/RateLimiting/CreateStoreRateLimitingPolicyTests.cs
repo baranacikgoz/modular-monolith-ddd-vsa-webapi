@@ -1,5 +1,6 @@
 using System.Net;
 using System.Security.Claims;
+using Common.Application.Auth;
 using Common.Application.Options;
 using Common.Application.Localization.Resources;
 using Common.Infrastructure.Auth;
@@ -43,7 +44,7 @@ public class CreateStoreRateLimitingPolicyTests
 
         if (userId is not null)
         {
-            var identity = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)], "Test");
+            var identity = new ClaimsIdentity([new Claim(JwtClaimNames.Subject, userId)], "Test");
             context.User = new ClaimsPrincipal(identity);
         }
 

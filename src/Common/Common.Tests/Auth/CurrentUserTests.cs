@@ -19,58 +19,60 @@ public sealed class CurrentUserTests
     }
 
     [Fact]
-    public void HasPermission_RoleGrantsIt_ReturnsTrue()
+    public void Authenticated_ReadsKeycloakClaims()
     {
-        var permission = CustomPermission.NameFor(CustomActions.Read, CustomResources.ApplicationUsers);
+        var subject = Guid.NewGuid();
         var identity = new ClaimsIdentity(
         [
-            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-            new Claim(JwtClaimNames.Roles, CustomRoles.SystemAdmin)
+            new Claim(JwtClaimNames.Subject, subject.ToString()),
+            new Claim(JwtClaimNames.SessionId, "BiSvNj4XKcfnudoJmp30KZbd"),
+            new Claim(JwtClaimNames.Roles, KeycloakRoles.SystemAdmin),
+            new Claim(JwtClaimNames.Roles, KeycloakRoles.Staff)
         ], "Test");
         var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
 
-        Assert.True(currentUser.HasPermission(CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire)));
-        Assert.True(currentUser.HasPermission(permission));
+        Assert.Equal(subject, currentUser.Id.Value);
+        Assert.Equal(subject.ToString(), currentUser.IdAsString);
+        Assert.Equal("BiSvNj4XKcfnudoJmp30KZbd", currentUser.SessionId);
+        Assert.Equal([KeycloakRoles.SystemAdmin, KeycloakRoles.Staff], currentUser.Roles);
     }
 
     [Fact]
-    public void HasPermission_DirectPermissionClaim_ReturnsTrue()
+    public void ServiceAccount_NoSidClaim_SessionIdIsNull()
     {
-        // API-key principals carry no role: permission comes straight from a "permission" claim.
-        var permission = CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire);
         var identity = new ClaimsIdentity(
         [
-            new Claim(JwtClaimNames.Permission, permission)
+            new Claim(JwtClaimNames.Subject, Guid.NewGuid().ToString())
         ], "Test");
         var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
 
-        Assert.True(currentUser.HasPermission(permission));
+        Assert.Null(currentUser.SessionId);
+        Assert.Empty(currentUser.Roles);
+        Assert.False(currentUser.Id.IsEmpty);
+    }
+
+    [Fact]
+    public void Unauthenticated_EmptyIdentity()
+    {
+        var identity = new ClaimsIdentity(
+        [
+            new Claim(JwtClaimNames.Subject, Guid.NewGuid().ToString()),
+            new Claim(JwtClaimNames.Roles, KeycloakRoles.Basic)
+        ]); // no authenticationType => IsAuthenticated == false
+        var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
+
+        Assert.True(currentUser.Id.IsEmpty);
+        Assert.Equal(string.Empty, currentUser.IdAsString);
+        Assert.Null(currentUser.SessionId);
         Assert.Empty(currentUser.Roles);
     }
 
     [Fact]
-    public void HasPermission_NeitherRoleNorDirectClaimGrantsIt_ReturnsFalse()
+    public void MalformedSubject_IdIsEmpty()
     {
-        var identity = new ClaimsIdentity(
-        [
-            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-            new Claim(JwtClaimNames.Roles, CustomRoles.Basic)
-        ], "Test");
+        var identity = new ClaimsIdentity([new Claim(JwtClaimNames.Subject, "not-a-guid")], "Test");
         var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
 
-        Assert.False(currentUser.HasPermission(CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire)));
-    }
-
-    [Fact]
-    public void HasPermission_Unauthenticated_ReturnsFalse()
-    {
-        var permission = CustomPermission.NameFor(CustomActions.Manage, CustomResources.Hangfire);
-        var identity = new ClaimsIdentity(
-        [
-            new Claim(JwtClaimNames.Permission, permission)
-        ]); // no authenticationType => IsAuthenticated == false
-        var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
-
-        Assert.False(currentUser.HasPermission(permission));
+        Assert.True(currentUser.Id.IsEmpty);
     }
 }

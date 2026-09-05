@@ -275,6 +275,27 @@ public static class SyncExtensions
 
 public static class AsyncExtensions
 {
+    /// <summary>
+    ///     Chains a non-generic <see cref="Result" /> into an async step that itself yields a non-generic
+    ///     <see cref="Result" />. Without this overload the compiler picks <c>BindAsync&lt;TNext&gt;(Func&lt;Task&lt;TNext&gt;&gt;)</c>
+    ///     with <c>TNext = Result</c>, wrapping the inner result as a value and losing its failure.
+    /// </summary>
+    public static async Task<Result> BindAsync(
+        this Task<Result> resultTask,
+        Func<Task<Result>> next)
+    {
+        var result = await resultTask.ConfigureAwait(false);
+        return result.IsFailure ? result : await next().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc cref="BindAsync(Task{Result},Func{Task{Result}})" />
+    public static async Task<Result> BindAsync(
+        this Result result,
+        Func<Task<Result>> next)
+    {
+        return result.IsFailure ? result : await next().ConfigureAwait(false);
+    }
+
     public static async Task<Result<TNext>> BindAsync<TCurrent, TNext>(
         this Result<TCurrent> result,
         Func<TCurrent, Task<Result<TNext>>> binder)

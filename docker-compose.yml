@@ -24,6 +24,8 @@ services:
         condition: service_healthy
       mm.rabbitmq:
         condition: service_healthy
+      mm.keycloak:
+        condition: service_healthy
       mm.aspire-dashboard:
         condition: service_started
     environment:
@@ -50,6 +52,7 @@ services:
       - RabbitMqOptions__Port=5672
       - RabbitMqOptions__Username=guest
       - RabbitMqOptions__Password=guest
+      - KeycloakOptions__BaseUrl=http://mm.keycloak:8080
     healthcheck:
       test: [ "CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1" ]
       interval: 10s
@@ -113,6 +116,36 @@ services:
     environment:
       - REDIS_PASSWORD=admin
     command: redis-server --requirepass admin
+
+  mm.keycloak:
+    container_name: mm.keycloak
+    image: quay.io/keycloak/keycloak:26.7
+    restart: "no"
+    # Dev only: embedded H2 under .containers/mm.keycloak. --import-realm skips a realm that already
+    # exists, so after editing keycloak/realm-modular-monolith.json wipe that directory to re-import.
+    # Production points KC_DB at Postgres (see keycloak/README.md).
+    command: start-dev --import-realm
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+      - ./.containers/mm.keycloak:/opt/keycloak/data/h2
+    networks:
+      - local_shared_network
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:9000:9000"
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_HEALTH_ENABLED=true
+      - KC_HTTP_ENABLED=true
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'exec 3<>/dev/tcp/127.0.0.1/9000; printf ''GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n'' >&3; grep -q ''"status": "UP"'' <&3'
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   mm.aspire-dashboard:
     container_name: mm.aspire-dashboard

@@ -31,6 +31,23 @@ public static class Setup
         where TClient : class
         where TImplementation : class, TClient
     {
+        return services.AddResilientHttpClient<TClient, TImplementation>(
+            (_, httpClient) => configureClient(httpClient),
+            configureResilience is null ? null : (options, _) => configureResilience(options));
+    }
+
+    /// <summary>
+    /// Same pipeline as the other overload, but both the client and the resilience options are configured with
+    /// access to the service provider, so settings such as the base address and timeouts can come from runtime
+    /// <c>IOptions</c> instead of registration-time configuration reads.
+    /// </summary>
+    public static IHttpClientBuilder AddResilientHttpClient<TClient, TImplementation>(
+        this IServiceCollection services,
+        Action<IServiceProvider, HttpClient> configureClient,
+        Action<HttpStandardResilienceOptions, IServiceProvider>? configureResilience = null)
+        where TClient : class
+        where TImplementation : class, TClient
+    {
         var builder = services
             .AddHttpClient<TClient, TImplementation>(configureClient)
             .ConfigurePrimaryHttpMessageHandler(sp => new SocketsHttpHandler
@@ -63,7 +80,7 @@ public static class Setup
             options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(resiliency.AttemptTimeoutSeconds);
 
             // Allow caller to override any/all of the above
-            configureResilience?.Invoke(options);
+            configureResilience?.Invoke(options, serviceProvider);
         });
 
         return builder;
