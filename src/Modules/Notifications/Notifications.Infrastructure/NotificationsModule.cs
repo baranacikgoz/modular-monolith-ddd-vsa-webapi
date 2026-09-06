@@ -28,6 +28,7 @@ public sealed class NotificationsModule : IModule
         services.AddNotificationsSignalR(configuration);
         services.AddOtpServices(configuration);
         services.AddPushServices(configuration);
+        services.AddDeviceRegistryReconciliation();
     }
 
     public void UseModule(IApplicationBuilder app)

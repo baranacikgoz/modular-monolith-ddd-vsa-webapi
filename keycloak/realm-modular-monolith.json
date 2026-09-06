@@ -24,6 +24,24 @@
   "clientSessionMaxLifespan": 0,
   "revokeRefreshToken": true,
   "refreshTokenMaxReuse": 1,
+  "eventsEnabled": true,
+  "eventsExpiration": 2592000,
+  "eventsListeners": ["jboss-logging"],
+  "enabledEventTypes": [
+    "LOGIN",
+    "LOGIN_ERROR",
+    "LOGOUT",
+    "LOGOUT_ERROR",
+    "REGISTER",
+    "REGISTER_ERROR",
+    "REFRESH_TOKEN",
+    "REFRESH_TOKEN_ERROR",
+    "REVOKE_GRANT",
+    "CLIENT_LOGIN",
+    "CLIENT_LOGIN_ERROR"
+  ],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": false,
   "accessCodeLifespanUserAction": 300,
   "actionTokenGeneratedByAdminLifespan": 43200,
   "actionTokenGeneratedByUserLifespan": 300,
@@ -410,7 +428,7 @@
             "config": {
               "resources": "[\"stores\"]",
               "scopes": "[\"stores:create-own\",\"stores:view-own\",\"stores:update-own\"]",
-              "applyPolicies": "[\"Basic Role Policy\"]"
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
           {
@@ -443,7 +461,7 @@
             "config": {
               "resources": "[\"products\"]",
               "scopes": "[\"products:create-own\",\"products:view-own\",\"products:update-own\",\"products:delete-own\",\"products:search-own\"]",
-              "applyPolicies": "[\"Basic Role Policy\"]"
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
           {

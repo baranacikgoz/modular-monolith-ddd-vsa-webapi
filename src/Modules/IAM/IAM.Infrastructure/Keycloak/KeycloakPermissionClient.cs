@@ -40,7 +40,19 @@ internal sealed partial class KeycloakPermissionClient(
         if (response.StatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized or HttpStatusCode.BadRequest)
         {
             var error = await response.Content.TryReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
-            LogDenied(logger, permission, error?.Error, error?.ErrorDescription);
+
+            // Anything other than the two expected denial codes (e.g. invalid_resource, invalid_scope from a
+            // typo'd resource/scope name) is a realm/config mismatch, not a normal deny: worth a Warning so it
+            // does not read as routine traffic (PR #149 #7).
+            if (error?.Error is OAuthErrors.AccessDenied or OAuthErrors.InvalidGrant)
+            {
+                LogDenied(logger, permission, error.Error, error.ErrorDescription);
+            }
+            else
+            {
+                LogUnexpectedDenial(logger, permission, error?.Error, error?.ErrorDescription);
+            }
+
             return false;
         }
 
@@ -88,4 +100,8 @@ internal sealed partial class KeycloakPermissionClient(
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Keycloak denied {Permission}: {Error} {Description}.")]
     private static partial void LogDenied(ILogger logger, string permission, string? error, string? description);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Keycloak rejected a permission check for {Permission} with an unexpected error {Error}: {Description}. This usually means the resource or scope name is misconfigured.")]
+    private static partial void LogUnexpectedDenial(ILogger logger, string permission, string? error, string? description);
 }

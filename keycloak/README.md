@@ -33,6 +33,17 @@ caller's bearer token, so a policy change in Keycloak is effective without a dep
 | `staff@modular-monolith.local` | `staff` | password `Staff-Dev-Password-1` |
 | `901111111112` … `901111111116` | `basic` | phone OTP |
 
+## Identity audit trail
+
+IAM has no database of its own (Keycloak is the sole identity store), so "which sessions did user X
+create on date Y" is answered by Keycloak's own event log, not `AuditLog`. The realm enables
+`eventsEnabled` (login/logout/register/refresh/revoke, 30-day `eventsExpiration`) and
+`adminEventsEnabled` (every Admin REST write the API itself makes: user create/delete, role
+mapping, session revoke). Both log through the default `jboss-logging` listener; query them with
+`GET /admin/realms/{realm}/events` and `GET /admin/realms/{realm}/admin-events`, or point
+`eventsListeners` at a different listener (e.g. `email`) in a shared environment. `admin-events`
+detail payloads are off (`adminEventsDetailsEnabled: false`) since they can carry request bodies.
+
 ## Secrets
 
 Client secrets in the JSON are development values. In any shared environment rotate them after

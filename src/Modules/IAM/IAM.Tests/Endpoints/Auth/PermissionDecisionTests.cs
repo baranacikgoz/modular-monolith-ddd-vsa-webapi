@@ -2,6 +2,7 @@ using System.Net;
 using Common.Application.Auth;
 using Common.Application.Caching;
 using Common.Tests;
+using IAM.Application.Keycloak;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -11,6 +12,24 @@ namespace IAM.Tests.Endpoints.Auth;
 [Collection("IntegrationTestCollection")]
 public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
+    // system-admin is a composite of staff only (no basic), so this only passes when the "-own" self-service
+    // permissions apply "Any Authenticated User Policy" rather than "Basic Role Policy" (PR #149 #2).
+    [Theory]
+    [InlineData(SeedUsers.AdminPhone)]
+    [InlineData(SeedUsers.BasicPhone)]
+    public async Task StoresCreateOwn_IsGrantedToEveryAuthenticatedRole(string phone)
+    {
+        var tokens = await IamTestClient.LoginByPhoneAsync(Factory, phone);
+        var permissionClient = Scope.ServiceProvider.GetRequiredService<IKeycloakPermissionClient>();
+
+        var granted = await permissionClient.DecideAsync(
+            tokens.AccessToken,
+            KeycloakPermission.FromScope(KeycloakScopes.Stores.CreateOwn).PolicyName(),
+            CancellationToken.None);
+
+        Assert.True(granted);
+    }
+
     [Fact]
     public async Task ProtectedEndpoint_DecisionIsCachedPerTokenAndPermission()
     {

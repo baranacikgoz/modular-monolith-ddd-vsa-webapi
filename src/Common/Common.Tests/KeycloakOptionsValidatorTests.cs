@@ -1,4 +1,7 @@
 using Common.Application.Options;
+using Common.Application.Validation;
+using FluentValidation;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 #pragma warning disable CA1515, CA1707
@@ -7,6 +10,13 @@ namespace Common.Tests;
 
 public sealed class KeycloakOptionsValidatorTests
 {
+    private static ValidationContext<KeycloakOptions> BuildContext(KeycloakOptions options, string environmentName)
+    {
+        var context = new ValidationContext<KeycloakOptions>(options);
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return context;
+    }
+
     private static KeycloakOptions Valid() => new()
     {
         BaseUrl = "http://localhost:8080",
@@ -88,5 +98,46 @@ public sealed class KeycloakOptionsValidatorTests
         var result = new KeycloakOptionsValidator().Validate(options);
 
         Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(nameof(KeycloakOptions.ResourceClientSecret))]
+    [InlineData(nameof(KeycloakOptions.TrustedLoginClientSecret))]
+    public void ChangeMeSecret_OutsideDevelopment_IsInvalid(string property)
+    {
+        var options = Valid();
+        if (property == nameof(KeycloakOptions.ResourceClientSecret))
+        {
+            options.ResourceClientSecret = "backend-api-dev-secret-change-me";
+        }
+        else
+        {
+            options.TrustedLoginClientSecret = "backend-trusted-login-dev-secret-change-me";
+        }
+
+        var result = new KeycloakOptionsValidator().Validate(BuildContext(options, Environments.Production));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == property);
+    }
+
+    [Theory]
+    [InlineData(nameof(KeycloakOptions.ResourceClientSecret))]
+    [InlineData(nameof(KeycloakOptions.TrustedLoginClientSecret))]
+    public void ChangeMeSecret_InDevelopment_IsValid(string property)
+    {
+        var options = Valid();
+        if (property == nameof(KeycloakOptions.ResourceClientSecret))
+        {
+            options.ResourceClientSecret = "backend-api-dev-secret-change-me";
+        }
+        else
+        {
+            options.TrustedLoginClientSecret = "backend-trusted-login-dev-secret-change-me";
+        }
+
+        var result = new KeycloakOptionsValidator().Validate(BuildContext(options, Environments.Development));
+
+        Assert.True(result.IsValid);
     }
 }

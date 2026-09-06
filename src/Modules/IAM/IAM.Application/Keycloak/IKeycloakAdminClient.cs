@@ -8,7 +8,10 @@ public interface IKeycloakAdminClient
 {
     Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken);
 
-    Task AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken);
+    Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken);
+
+    /// <summary>Deletes the user. A user that no longer exists is not an error.</summary>
+    Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 
     Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 

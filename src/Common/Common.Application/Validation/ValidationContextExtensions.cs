@@ -16,4 +16,9 @@ public static class ValidationContextExtensions
         => context.RootContextData.TryGetValue(HostEnvironmentKey, out var value)
            && value is IHostEnvironment environment
            && environment.IsProduction();
+
+    public static bool IsDevelopment<T>(this ValidationContext<T> context)
+        => context.RootContextData.TryGetValue(HostEnvironmentKey, out var value)
+           && value is IHostEnvironment environment
+           && environment.IsDevelopment();
 }

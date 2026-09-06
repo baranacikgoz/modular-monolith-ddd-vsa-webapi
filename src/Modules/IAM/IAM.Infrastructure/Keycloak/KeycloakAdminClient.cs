@@ -76,8 +76,10 @@ internal sealed partial class KeycloakAdminClient(
         }
     }
 
-    public async Task AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken)
+    public async Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken)
     {
+        // The role itself is a realm deployment invariant (declared in realm-modular-monolith.json), not
+        // caller input, so a missing role is a config error worth throwing on rather than a Result failure.
         using var roleResponse = await SendAsync(
             () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"roles/{Uri.EscapeDataString(roleName)}")),
             cancellationToken);
@@ -91,7 +93,26 @@ internal sealed partial class KeycloakAdminClient(
                 Content = JsonContent.Create(new[] { role })
             },
             cancellationToken);
-        mappingResponse.EnsureSuccessStatusCode();
+
+        if (mappingResponse.IsSuccessStatusCode)
+        {
+            return Result.Success;
+        }
+
+        LogRoleAssignmentFailed(logger, userId, roleName, (int)mappingResponse.StatusCode);
+        return IdentityErrors.IdentityProviderUnavailable;
+    }
+
+    public async Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        using var response = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Delete, AdminUri($"{UsersResource}/{userId}")),
+            cancellationToken);
+
+        if (response.StatusCode != HttpStatusCode.NotFound)
+        {
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     public async Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
@@ -275,6 +296,10 @@ internal sealed partial class KeycloakAdminClient(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Keycloak rejected the user representation (field {Field}): {Message}.")]
     private static partial void LogUserRejected(ILogger logger, string? field, string? message);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Keycloak rejected role mapping {RoleName} for user {UserId}: status {StatusCode}.")]
+    private static partial void LogRoleAssignmentFailed(ILogger logger, ApplicationUserId userId, string roleName, int statusCode);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Keycloak rejected the cached service-account token; refreshing and retrying once.")]

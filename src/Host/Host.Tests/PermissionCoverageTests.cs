@@ -62,6 +62,23 @@ public class PermissionCoverageTests
             $"Realm declares scopes no endpoint requires: {string.Join(", ", unused)}. Map an endpoint or drop them from the realm.");
     }
 
+    // A "-own" scope is decided against the caller's own resource ownership in the query, not the role: every
+    // role must be allowed to reach the endpoint so ownership can be checked. "System Admin Role Policy" or
+    // "Basic Role Policy" alone silently 403s the other roles before ownership is ever evaluated (PR #149 #2).
+    [Fact]
+    public void AllOwnScopePermissions_ApplyAnyAuthenticatedUserPolicy()
+    {
+        var misconfigured = LoadScopePermissions()
+            .Where(p => p.Scopes.Any(s => s.EndsWith("-own", StringComparison.Ordinal)))
+            .Where(p => !p.ApplyPolicies.Contains("Any Authenticated User Policy", StringComparer.Ordinal))
+            .Select(p => p.Name)
+            .Order(StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(misconfigured.Count == 0,
+            $"Permissions covering a '-own' scope must apply 'Any Authenticated User Policy': {string.Join(", ", misconfigured)}.");
+    }
+
     private static List<KeycloakPermission> CollectEndpointPermissions(HostTestFactory factory)
     {
         var dataSource = factory.Services.GetRequiredService<EndpointDataSource>();
@@ -95,4 +112,22 @@ public class PermissionCoverageTests
 
         return (scopesByResource, scopesWithAPermission);
     }
+
+    private static List<ScopePermission> LoadScopePermissions()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(TestPaths.RealmFile));
+        var backendApi = document.RootElement.GetProperty("clients").EnumerateArray()
+            .Single(c => c.GetProperty("clientId").GetString() == "backend-api");
+        var authorization = backendApi.GetProperty("authorizationSettings");
+
+        return authorization.GetProperty("policies").EnumerateArray()
+            .Where(p => p.GetProperty("type").GetString() == "scope")
+            .Select(p => new ScopePermission(
+                p.GetProperty("name").GetString()!,
+                JsonSerializer.Deserialize<string[]>(p.GetProperty("config").GetProperty("scopes").GetString()!)!,
+                JsonSerializer.Deserialize<string[]>(p.GetProperty("config").GetProperty("applyPolicies").GetString()!)!))
+            .ToList();
+    }
+
+    private sealed record ScopePermission(string Name, string[] Scopes, string[] ApplyPolicies);
 }

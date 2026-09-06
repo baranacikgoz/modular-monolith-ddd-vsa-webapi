@@ -2,6 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using Common.Tests;
 using IAM.Endpoints.Tokens.VersionNeutral.Refresh;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Notifications.Application.Persistence;
 using Xunit;
 
 namespace IAM.Tests.Endpoints.Tokens;
@@ -65,6 +68,13 @@ public class RefreshTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
             .GetFromJsonAsync<List<SessionView>>(new Uri("/tokens/sessions", UriKind.Relative));
         Assert.NotNull(sessions);
         Assert.DoesNotContain(sessions, s => s.Id == login.SessionId);
+
+        // PR #149 #4: reuse detection must reach the device registry too, not just Keycloak's own session store.
+        var notificationsDb = Scope.ServiceProvider.GetRequiredService<INotificationsDbContext>();
+        var registration = await notificationsDb.DeviceRegistrations
+            .AsNoTracking()
+            .SingleAsync(r => r.SessionId == login.SessionId);
+        Assert.False(registration.IsActive);
     }
 
     private sealed record SessionView(string Id);

@@ -57,6 +57,21 @@ public class SelfRegisterTests(IntegrationTestWebAppFactory factory) : BaseInteg
     }
 
     [Fact]
+    public async Task Register_RoleAssignmentFails_RollsBackTheCreatedUser()
+    {
+        var phone = IamTestClient.NewPhoneNumber();
+        FaultInjectingKeycloakAdminClient.FailNextRoleAssignmentFor(phone);
+
+        using var response = await RegisterRawAsync(Factory, phone);
+
+        Assert.False(response.IsSuccessStatusCode);
+
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var user = await adminClient.FindUserByUsernameAsync(phone, CancellationToken.None);
+        Assert.Null(user);
+    }
+
+    [Fact]
     public async Task Register_PhoneAlreadyRegistered_Returns409()
     {
         using var response = await RegisterRawAsync(Factory, SeedUsers.BasicPhone);

@@ -66,7 +66,11 @@ public class KeycloakOptionsValidator : CustomValidator<KeycloakOptions>
 
         RuleFor(o => o.ResourceClientSecret)
             .NotEmpty()
-            .WithMessage("ResourceClientSecret must not be empty.");
+            .WithMessage("ResourceClientSecret must not be empty.")
+            .Must((_, secret, context) => context.IsDevelopment() || !secret.Contains("change-me", StringComparison.Ordinal))
+            .WithMessage(
+                $"{nameof(KeycloakOptions)}.{nameof(KeycloakOptions.ResourceClientSecret)} still holds the realm file's " +
+                "development value outside Development. Rotate it in Keycloak and set KeycloakOptions__ResourceClientSecret.");
 
         RuleFor(o => o.TrustedLoginClientId)
             .NotEmpty()
@@ -76,7 +80,12 @@ public class KeycloakOptionsValidator : CustomValidator<KeycloakOptions>
 
         RuleFor(o => o.TrustedLoginClientSecret)
             .NotEmpty()
-            .WithMessage("TrustedLoginClientSecret must not be empty.");
+            .WithMessage("TrustedLoginClientSecret must not be empty.")
+            .Must((_, secret, context) => context.IsDevelopment() || !secret.Contains("change-me", StringComparison.Ordinal))
+            .WithMessage(
+                $"{nameof(KeycloakOptions)}.{nameof(KeycloakOptions.TrustedLoginClientSecret)} still holds the realm file's " +
+                "development value outside Development: this secret is equivalent to every user's password. Rotate it in " +
+                "Keycloak and set KeycloakOptions__TrustedLoginClientSecret.");
 
         RuleFor(o => o.DecisionCacheMaxDurationSeconds)
             .GreaterThan(0)

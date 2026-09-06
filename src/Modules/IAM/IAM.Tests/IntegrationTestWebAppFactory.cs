@@ -1,9 +1,14 @@
+using System.Collections.Concurrent;
 using Common.Application.Caching;
 using Common.Application.Options;
+using Common.Domain.ResultMonad;
+using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using Common.Tests;
 using IAM.Application.Captcha.Services;
+using IAM.Application.Keycloak;
+using IAM.Domain.Errors;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -79,7 +84,82 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
                 InProcessSendOtpClient>();
             services.AddSingleton<IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse>,
                 InProcessVerifyOtpClient>();
+
+            services.Decorate<IKeycloakAdminClient, FaultInjectingKeycloakAdminClient>();
         });
+    }
+}
+
+/// <summary>
+///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created phone
+///     number so its role assignment fails once, without touching real Keycloak.
+/// </summary>
+internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inner) : IKeycloakAdminClient
+{
+    private static readonly ConcurrentDictionary<string, byte> PhonesToFailRoleAssignmentFor = new();
+    private static readonly ConcurrentDictionary<ApplicationUserId, byte> UserIdsPendingRoleAssignmentFailure = new();
+
+    public static void FailNextRoleAssignmentFor(string phoneNumber)
+    {
+        PhonesToFailRoleAssignmentFor[phoneNumber] = 0;
+    }
+
+    public async Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken)
+    {
+        var result = await inner.CreateUserAsync(user, cancellationToken);
+        if (result.Value is { } createdUserId && PhonesToFailRoleAssignmentFor.TryRemove(user.Username, out _))
+        {
+            UserIdsPendingRoleAssignmentFailure[createdUserId] = 0;
+        }
+
+        return result;
+    }
+
+    public Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken)
+    {
+        return UserIdsPendingRoleAssignmentFailure.TryRemove(userId, out _)
+            ? Task.FromResult<Result>(IdentityErrors.IdentityProviderUnavailable)
+            : inner.AssignRealmRoleAsync(userId, roleName, cancellationToken);
+    }
+
+    public Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.DeleteUserAsync(userId, cancellationToken);
+    }
+
+    public Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.GetUserAsync(userId, cancellationToken);
+    }
+
+    public Task<KeycloakUser?> FindUserByUsernameAsync(string username, CancellationToken cancellationToken)
+    {
+        return inner.FindUserByUsernameAsync(username, cancellationToken);
+    }
+
+    public Task<KeycloakUserPage> SearchUsersAsync(string? searchTerm, int skip, int take, CancellationToken cancellationToken)
+    {
+        return inner.SearchUsersAsync(searchTerm, skip, take, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<ApplicationUserId>> GetUserIdsInRoleAsync(string roleName, int max, CancellationToken cancellationToken)
+    {
+        return inner.GetUserIdsInRoleAsync(roleName, max, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.GetUserSessionsAsync(userId, cancellationToken);
+    }
+
+    public Task DeleteSessionAsync(string sessionId, CancellationToken cancellationToken)
+    {
+        return inner.DeleteSessionAsync(sessionId, cancellationToken);
+    }
+
+    public Task LogoutUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.LogoutUserAsync(userId, cancellationToken);
     }
 }
 

@@ -5,10 +5,13 @@ using Common.Application.Auth;
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
 using IAM.Application.Keycloak;
 using IAM.Domain.Errors;
 using IAM.Infrastructure.Keycloak.Representations;
 using IAM.Infrastructure.Telemetry;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -20,12 +23,13 @@ namespace IAM.Infrastructure.Keycloak;
 internal sealed partial class KeycloakTokenClient(
     HttpClient httpClient,
     IKeycloakAdminClient adminClient,
+    IInterModuleRequestClient<DeactivateDeviceSessionsRequest, DeactivateDeviceSessionsResponse> deviceClient,
+    IInterModuleRequestClient<SendSecurityAlertRequest, SendSecurityAlertResponse> securityAlertClient,
     IOptions<KeycloakOptions> keycloakOptionsProvider,
     TimeProvider timeProvider,
     ILogger<KeycloakTokenClient> logger
 ) : IKeycloakTokenClient
 {
-    private const string InvalidGrant = "invalid_grant";
     private const string RefreshTokenGrant = "refresh_token";
 
     // Keycloak's exact error_description values for a replayed refresh token (TokenManager.validateTokenReuse):
@@ -127,7 +131,7 @@ internal sealed partial class KeycloakTokenClient(
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
             {
                 var error = await response.Content.TryReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
-                if (string.Equals(error?.Error, InvalidGrant, StringComparison.Ordinal))
+                if (string.Equals(error?.Error, OAuthErrors.InvalidGrant, StringComparison.Ordinal))
                 {
                     LogGrantRejected(logger, form["grant_type"], error?.ErrorDescription);
 
@@ -216,6 +220,25 @@ internal sealed partial class KeycloakTokenClient(
         {
             LogReplayedSessionRevocationFailed(logger, sessionId, ex);
         }
+
+        if (!ApplicationUserId.TryParse(jwt.Subject, out var userId))
+        {
+            return;
+        }
+
+        // Best effort, same as the revocation above: Notifications being down must not turn a refresh
+        // into a 500. The device row otherwise stays active with a stale session id until the reconcile
+        // job catches it (PR #149 #4).
+        try
+        {
+            await deviceClient.SendAsync(new DeactivateDeviceSessionsRequest(userId, [sessionId]), cancellationToken);
+            await securityAlertClient.SendAsync(
+                new SendSecurityAlertRequest(userId, SecurityAlertType.SessionRevokedTokenReuse), cancellationToken);
+        }
+        catch (MassTransitException ex)
+        {
+            LogSecurityAlertDeliveryFailed(logger, userId, sessionId, ex);
+        }
     }
 
     private static bool TryReadAuthorizedParty(string refreshToken, out string authorizedParty)
@@ -254,4 +277,8 @@ internal sealed partial class KeycloakTokenClient(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Could not revoke Keycloak session {SessionId} after refresh token reuse; it will expire on its own.")]
     private static partial void LogReplayedSessionRevocationFailed(ILogger logger, string sessionId, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Could not deactivate the device registration or notify user {UserId} of the revoked session {SessionId}.")]
+    private static partial void LogSecurityAlertDeliveryFailed(ILogger logger, ApplicationUserId userId, string sessionId, Exception ex);
 }
