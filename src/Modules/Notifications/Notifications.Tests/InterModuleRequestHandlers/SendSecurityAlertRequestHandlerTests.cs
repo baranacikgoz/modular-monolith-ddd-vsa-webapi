@@ -15,6 +15,11 @@ public sealed class SendSecurityAlertRequestHandlerTests(NotificationsTestFactor
     [Fact]
     public async Task SendSecurityAlert_UserHasAnActivePushToken_SendsOneMulticastPush()
     {
+        // IPushGateway is a singleton substitute shared by every test in this collection: clear its call
+        // log first so an earlier test's send does not leak into this assertion.
+        var pushGateway = Scope.ServiceProvider.GetRequiredService<IPushGateway>();
+        pushGateway.ClearReceivedCalls();
+
         var userId = ApplicationUserId.New();
         var bindClient = Scope.ServiceProvider
             .GetRequiredService<IInterModuleRequestClient<BindDeviceSessionRequest, BindDeviceSessionResponse>>();
@@ -27,7 +32,6 @@ public sealed class SendSecurityAlertRequestHandlerTests(NotificationsTestFactor
         await alertClient.SendAsync(
             new SendSecurityAlertRequest(userId, SecurityAlertType.SessionRevokedTokenReuse), CancellationToken.None);
 
-        var pushGateway = Scope.ServiceProvider.GetRequiredService<IPushGateway>();
         await pushGateway.Received(1).SendAsync(
             Arg.Is<PushMessage>(m => m.Tokens.Count == 1 && m.Tokens[0] == "fcm-1"),
             Arg.Any<CancellationToken>());
@@ -36,6 +40,9 @@ public sealed class SendSecurityAlertRequestHandlerTests(NotificationsTestFactor
     [Fact]
     public async Task SendSecurityAlert_UserHasNoActiveDevices_SendsNoPush()
     {
+        var pushGateway = Scope.ServiceProvider.GetRequiredService<IPushGateway>();
+        pushGateway.ClearReceivedCalls();
+
         var alertClient = Scope.ServiceProvider
             .GetRequiredService<IInterModuleRequestClient<SendSecurityAlertRequest, SendSecurityAlertResponse>>();
 
@@ -43,7 +50,6 @@ public sealed class SendSecurityAlertRequestHandlerTests(NotificationsTestFactor
             new SendSecurityAlertRequest(ApplicationUserId.New(), SecurityAlertType.SessionRevokedTokenReuse),
             CancellationToken.None);
 
-        var pushGateway = Scope.ServiceProvider.GetRequiredService<IPushGateway>();
         await pushGateway.DidNotReceive().SendAsync(Arg.Any<PushMessage>(), Arg.Any<CancellationToken>());
     }
 }
