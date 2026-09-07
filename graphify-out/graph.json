@@ -11039,6 +11039,26 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s617"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddDbContext<OutboxDbContext>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L32"
+          },
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L43"
+          },
+          {
+            "callee": "AddHostedService<OutboxProcessor>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L50"
+          }
         ]
       },
       "norm_label": ".addservices()",
@@ -11057,6 +11077,26 @@
         "namespace": "Common.Infrastructure.Resiliency",
         "scope_chain": [
           "s176"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddHttpClient<TClient, TImplementation>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L34"
+          },
+          {
+            "callee": "FromMinutes",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L38"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L48"
+          }
         ]
       },
       "norm_label": ".addresilienthttpclient()",
@@ -11093,6 +11133,20 @@
         "namespace": "Common.Infrastructure.FeatureManagement",
         "scope_chain": [
           "s126"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddFeatureManagement",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L11"
+          },
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".addcommonfeaturemanagement()",
@@ -11129,6 +11183,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s82"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartNew",
+            "receiver_type": "Stopwatch",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".onperforming()",
@@ -11147,6 +11209,20 @@
         "namespace": "BackgroundJobs.Telemetry",
         "scope_chain": [
           "s98"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L35"
+          },
+          {
+            "callee": "Record",
+            "receiver_type": "Histogram",
+            "lang": "csharp",
+            "line": "L38"
+          }
         ]
       },
       "norm_label": ".recordjobexecuted()",
@@ -11165,6 +11241,20 @@
         "namespace": "Common.Infrastructure.EventBus",
         "scope_chain": [
           "s68"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToList",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "Clear",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".drain()",
@@ -11183,6 +11273,26 @@
         "namespace": "Outbox.Persistence",
         "scope_chain": [
           "s195"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "HasKey",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -11201,6 +11311,14 @@
         "namespace": "IAM.Application.Users.DomainEventHandlers.v1",
         "scope_chain": [
           "s222"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "RemoveAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L26"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -11273,6 +11391,14 @@
         "namespace": "Common.Domain.StronglyTypedIds",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TryParse",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L7"
+          }
         ]
       },
       "norm_label": ".trydeserialize()",
@@ -11345,6 +11471,14 @@
         "namespace": "IAM.Domain.Identity.Sessions",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -11399,6 +11533,14 @@
         "namespace": "IAM.Domain.Identity.Sessions",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L70"
+          }
         ]
       },
       "norm_label": ".issuetoken()",
@@ -11417,6 +11559,14 @@
         "namespace": "IAM.Domain.Identity.Sessions",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -11471,6 +11621,26 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s248"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L33"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -11525,6 +11695,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.CheckRegistration",
         "scope_chain": [
           "s339"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -11543,6 +11721,14 @@
         "namespace": "Products.Infrastructure.Persistence",
         "scope_chain": [
           "s342"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddTransient<Seeder>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".addpersistence()",
@@ -11651,6 +11837,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ContinueJobWith",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L106"
+          }
         ]
       },
       "norm_label": ".continuejobwith()",
@@ -11669,6 +11863,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Enqueue",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".enqueue()",
@@ -11687,6 +11889,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Reschedule",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L86"
+          }
         ]
       },
       "norm_label": ".reschedule()",
@@ -11705,6 +11915,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Schedule",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".schedule()",
@@ -11723,6 +11941,20 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L28"
+          },
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L34"
+          }
         ]
       },
       "norm_label": ".executeasync()",
@@ -11795,6 +12027,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.Me.Get",
         "scope_chain": [
           "s358"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -11849,6 +12089,32 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s400"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<IBackgroundJobs, BackgroundJobsService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L47"
+          },
+          {
+            "callee": "AddHangfireServer",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L54"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L57"
+          }
         ]
       },
       "norm_label": ".addservices()",
@@ -11867,6 +12133,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Delete",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L71"
+          }
         ]
       },
       "norm_label": ".delete()",
@@ -11885,6 +12159,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Requeue",
+            "receiver_type": "IBackgroundJobClientV2",
+            "lang": "csharp",
+            "line": "L81"
+          }
         ]
       },
       "norm_label": ".requeue()",
@@ -11903,6 +12185,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s34"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteAsync",
+            "receiver_type": "IProblemDetailsService",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".trywriteasync()",
@@ -11921,6 +12211,38 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s487"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L30"
+          },
+          {
+            "callee": "NoResult",
+            "receiver_type": "AuthenticateResult",
+            "lang": "csharp",
+            "line": "L30"
+          },
+          {
+            "callee": "Fail",
+            "receiver_type": "AuthenticateResult",
+            "lang": "csharp",
+            "line": "L40"
+          },
+          {
+            "callee": "AddRange",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L46"
+          },
+          {
+            "callee": "Success",
+            "receiver_type": "AuthenticateResult",
+            "lang": "csharp",
+            "line": "L52"
+          }
         ]
       },
       "norm_label": ".handleauthenticateasync()",
@@ -12011,6 +12333,20 @@
         "namespace": "Products.Endpoints",
         "scope_chain": [
           "s651"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetApiVersionSet",
+            "receiver_type": "IEndpointRouteBuilder",
+            "lang": "csharp",
+            "line": "L41"
+          },
+          {
+            "callee": "MapGroup",
+            "receiver_type": "IEndpointRouteBuilder",
+            "lang": "csharp",
+            "line": "L42"
+          }
         ]
       },
       "norm_label": ".mapendpoints()",
@@ -12029,6 +12365,14 @@
         "namespace": "Products.Endpoints",
         "scope_chain": [
           "s651"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UsePersistence",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L36"
+          }
         ]
       },
       "norm_label": ".usemodule()",
@@ -12047,6 +12391,44 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.SelfRegister",
         "scope_chain": [
           "s825"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ParseExact",
+            "receiver_type": "DateOnly",
+            "lang": "csharp",
+            "line": "L91"
+          },
+          {
+            "callee": "CreateAsync",
+            "receiver_type": "UserManager",
+            "lang": "csharp",
+            "line": "L92"
+          },
+          {
+            "callee": "AddToRoleAsync",
+            "receiver_type": "UserManager",
+            "lang": "csharp",
+            "line": "L97"
+          },
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L102"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L111"
+          },
+          {
+            "callee": "ToBase64String",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L123"
+          }
         ]
       },
       "norm_label": ".registerandloginasync()",
@@ -12065,6 +12447,20 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.SelfRegister",
         "scope_chain": [
           "s825"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IsEnabledAsync",
+            "receiver_type": "IFeatureManager",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".registerasync()",
@@ -12101,6 +12497,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L48"
+          }
         ]
       },
       "norm_label": ".recordotpverification()",
@@ -12119,6 +12523,20 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s56"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToHexStringLower",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L9"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L9"
+          }
         ]
       },
       "norm_label": ".hash()",
@@ -12137,6 +12555,26 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s56"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FixedTimeEquals",
+            "receiver_type": "CryptographicOperations",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "FromHexString",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L15"
+          }
         ]
       },
       "norm_label": ".matches()",
@@ -12155,6 +12593,14 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s44"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>",
+            "receiver_type": "AuthenticationBuilder",
+            "lang": "csharp",
+            "line": "L8"
+          }
         ]
       },
       "norm_label": ".addapikeyscheme()",
@@ -12173,6 +12619,14 @@
         "namespace": "Common.Application.FeatureManagement",
         "scope_chain": [
           "s78"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetVariantAsync",
+            "receiver_type": "IVariantFeatureManager",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".getvariantasync()",
@@ -12191,6 +12645,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -12209,6 +12671,32 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s368"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "AddHealthChecks",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L32"
+          },
+          {
+            "callee": "Healthy",
+            "receiver_type": "HealthCheckResult",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L46"
+          }
         ]
       },
       "norm_label": ".addcustomhealthchecks()",
@@ -12245,6 +12733,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s368"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapHealthChecks",
+            "receiver_type": "WebApplication",
+            "lang": "csharp",
+            "line": "L88"
+          }
         ]
       },
       "norm_label": ".mapcustomhealthchecks()",
@@ -12263,6 +12759,20 @@
         "namespace": "Common.Application.FeatureManagement",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "IsEnabledAsync",
+            "receiver_type": "IFeatureManager",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".tapwhenfeatureenabledasync()",
@@ -12281,6 +12791,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s25"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<GlobalExceptionHandlingMiddleware>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L9"
+          }
         ]
       },
       "norm_label": ".addglobalexceptionhandlingmiddleware()",
@@ -12299,6 +12817,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s25"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseMiddleware<GlobalExceptionHandlingMiddleware>",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".useglobalexceptionhandlingmiddleware()",
@@ -12317,6 +12843,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s243"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TryWriteAsync",
+            "receiver_type": "IProblemDetailsService",
+            "lang": "csharp",
+            "line": "L132"
+          }
         ]
       },
       "norm_label": ".handleexceptionasync()",
@@ -12443,6 +12977,32 @@
         "namespace": "Common.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s180"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "HasKey",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L23"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -12461,6 +13021,32 @@
         "namespace": "IAM.Infrastructure.Persistence",
         "scope_chain": [
           "s643"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "HasDefaultSchema",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L56"
+          },
+          {
+            "callee": "ApplyConfigurationsFromAssembly",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L57"
+          },
+          {
+            "callee": "Ignore<DomainEvent>",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L59"
+          },
+          {
+            "callee": "ApplyConfiguration",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L60"
+          }
         ]
       },
       "norm_label": ".onmodelcreating()",
@@ -12479,6 +13065,32 @@
         "namespace": "Products.Infrastructure.Persistence",
         "scope_chain": [
           "s416"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "HasDefaultSchema",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L32"
+          },
+          {
+            "callee": "ApplyConfigurationsFromAssembly",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L33"
+          },
+          {
+            "callee": "Ignore<DomainEvent>",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L35"
+          },
+          {
+            "callee": "ApplyConfiguration",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L36"
+          }
         ]
       },
       "norm_label": ".onmodelcreating()",
@@ -12497,6 +13109,14 @@
         "namespace": "Products.Endpoints.Products",
         "scope_chain": [
           "s168"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".mapproductsendpoints()",
@@ -12515,6 +13135,14 @@
         "namespace": "Products.Endpoints.Products.v1.Get",
         "scope_chain": [
           "s368"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12551,6 +13179,14 @@
         "namespace": "IAM.Endpoints.Otp.VersionNeutral.SendForLogin",
         "scope_chain": [
           "s454"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12569,6 +13205,20 @@
         "namespace": "IAM.Endpoints.Otp.VersionNeutral.SendForLogin",
         "scope_chain": [
           "s454"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IsEnabledAsync",
+            "receiver_type": "IFeatureManager",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L39"
+          }
         ]
       },
       "norm_label": ".sendotp()",
@@ -12587,6 +13237,14 @@
         "namespace": "IAM.Endpoints.Otp.VersionNeutral.SendForRegistration",
         "scope_chain": [
           "s454"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12605,6 +13263,20 @@
         "namespace": "IAM.Endpoints.Otp.VersionNeutral.SendForRegistration",
         "scope_chain": [
           "s454"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IsEnabledAsync",
+            "receiver_type": "IFeatureManager",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L39"
+          }
         ]
       },
       "norm_label": ".sendotp()",
@@ -12623,6 +13295,14 @@
         "namespace": "Notifications.Infrastructure.InterModuleRequestHandlers",
         "scope_chain": [
           "s347"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromMinutes",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -12641,6 +13321,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddCommonCaching",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L173"
+          }
         ]
       },
       "norm_label": ".addcommondependencies()",
@@ -12659,6 +13347,26 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L91"
+          },
+          {
+            "callee": "AddCors",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L96"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L143"
+          }
         ]
       },
       "norm_label": ".addcustomcors()",
@@ -12677,6 +13385,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddProblemDetails",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L151"
+          }
         ]
       },
       "norm_label": ".addcustomizedproblemdetails()",
@@ -12695,6 +13411,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScoped<EnrichLogsWithUserInfoMiddleware>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L186"
+          }
         ]
       },
       "norm_label": ".addenrichlogswithuserinfomiddleware()",
@@ -12713,6 +13437,20 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetActiveModuleAssemblies",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L27"
+          },
+          {
+            "callee": "Configure<JsonOptions>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".addinfrastructure()",
@@ -12731,6 +13469,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s55"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "PushProperty",
+            "receiver_type": "LogContext",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".invokeasync()",
@@ -12767,6 +13513,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Activate",
         "scope_chain": [
           "s339"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12785,6 +13539,14 @@
         "namespace": "Products.Endpoints.Stores.v1.RemoveProduct",
         "scope_chain": [
           "s447"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapDelete",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12839,6 +13601,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.List",
         "scope_chain": [
           "s331"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -12857,6 +13627,14 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s102"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AnyAsync",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".anyasresultasync()",
@@ -12875,6 +13653,14 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s102"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FirstOrDefaultAsync",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L38"
+          }
         ]
       },
       "norm_label": ".firstasresultasync()",
@@ -12893,6 +13679,14 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s102"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SingleOrDefaultAsync",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L27"
+          }
         ]
       },
       "norm_label": ".singleasresultasync()",
@@ -12911,6 +13705,14 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s102"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TagWith",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L52"
+          }
         ]
       },
       "norm_label": ".tagwith()",
@@ -12929,6 +13731,14 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s102"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Where",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".whereif()",
@@ -12947,6 +13757,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddRateLimiter",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".addcustomratelimiting()",
@@ -12965,6 +13783,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L40"
+          }
         ]
       },
       "norm_label": ".getcustomratelimitingoptions()",
@@ -12983,6 +13809,20 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Create<HttpContext, string>",
+            "receiver_type": "PartitionedRateLimiter",
+            "lang": "csharp",
+            "line": "L48"
+          },
+          {
+            "callee": "GetNoLimiter",
+            "receiver_type": "RateLimitPartition",
+            "lang": "csharp",
+            "line": "L54"
+          }
         ]
       },
       "norm_label": ".globalratelimiter()",
@@ -13001,6 +13841,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartsWithSegments",
+            "receiver_type": "PathString",
+            "lang": "csharp",
+            "line": "L68"
+          }
         ]
       },
       "norm_label": ".isexempt()",
@@ -13019,6 +13867,20 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L102"
+          },
+          {
+            "callee": "AddErrors",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L103"
+          }
         ]
       },
       "norm_label": ".writetoomanyrequeststoresponse()",
@@ -13037,6 +13899,26 @@
         "namespace": "Common.Application.FeatureManagement",
         "scope_chain": [
           "s317"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartActivity",
+            "receiver_type": "ActivitySource",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "Problem",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L58"
+          }
         ]
       },
       "norm_label": ".invokeasync()",
@@ -13055,6 +13937,14 @@
         "namespace": "Common.Application.FeatureManagement",
         "scope_chain": [
           "s70"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddEndpointFilter",
+            "receiver_type": "RouteHandlerBuilder",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".requirefeature()",
@@ -13109,6 +13999,32 @@
         "namespace": "Products.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s248"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          },
+          {
+            "callee": "Navigation",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L38"
+          },
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L44"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -13523,6 +14439,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.SelfRegister",
         "scope_chain": [
           "s825"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -13541,6 +14465,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral",
         "scope_chain": [
           "s181"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".mapusersendpoints()",
@@ -13631,6 +14563,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.Get",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -13703,6 +14643,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.Get",
         "scope_chain": [
           "s358"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -13721,6 +14669,14 @@
         "namespace": "Products.Endpoints.Probe",
         "scope_chain": [
           "s106"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".mapprobeendpoints()",
@@ -13739,6 +14695,14 @@
         "namespace": "IAM.Endpoints.Otp.VersionNeutral",
         "scope_chain": [
           "s106"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".mapotpendpoints()",
@@ -13775,6 +14739,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s89"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddOrUpdate",
+            "receiver_type": "IRecurringJobManagerV2",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".addorupdate()",
@@ -13793,6 +14765,74 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s261"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetFiles",
+            "receiver_type": "Directory",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "Create",
+            "receiver_type": "LoggerFactory",
+            "lang": "csharp",
+            "line": "L19"
+          },
+          {
+            "callee": "GetAssemblyName",
+            "receiver_type": "AssemblyName",
+            "lang": "csharp",
+            "line": "L26"
+          },
+          {
+            "callee": "CreateInstance",
+            "receiver_type": "Activator",
+            "lang": "csharp",
+            "line": "L59"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L63"
+          },
+          {
+            "callee": "Select",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L75"
+          },
+          {
+            "callee": "OrderBy",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L89"
+          },
+          {
+            "callee": "AddSingleton",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L93"
+          },
+          {
+            "callee": "AddCustomRateLimiting",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L104"
+          },
+          {
+            "callee": "ToArray",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L104"
+          },
+          {
+            "callee": "AddFluentValidationAutoValidation",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L105"
+          }
         ]
       },
       "norm_label": ".addmodules()",
@@ -13811,6 +14851,32 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s261"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "LastOrDefault",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L159"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "HashSet",
+            "lang": "csharp",
+            "line": "L165"
+          },
+          {
+            "callee": "Select",
+            "receiver_type": "HashSet",
+            "lang": "csharp",
+            "line": "L170"
+          },
+          {
+            "callee": "Contains",
+            "receiver_type": "HashSet",
+            "lang": "csharp",
+            "line": "L181"
+          }
         ]
       },
       "norm_label": ".getactivemoduleassemblies()",
@@ -13829,6 +14895,20 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s261"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L198"
+          },
+          {
+            "callee": "Contains",
+            "receiver_type": "IReadOnlyList",
+            "lang": "csharp",
+            "line": "L201"
+          }
         ]
       },
       "norm_label": ".getenabledmodulenames()",
@@ -13847,6 +14927,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s261"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetTypes",
+            "receiver_type": "Assembly",
+            "lang": "csharp",
+            "line": "L146"
+          }
         ]
       },
       "norm_label": ".getloadabletypes()",
@@ -13865,6 +14953,14 @@
         "namespace": "Products.Endpoints.Probe.v1",
         "scope_chain": [
           "s590"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Ok",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -13883,6 +14979,14 @@
         "namespace": "Products.Endpoints.Probe.v1",
         "scope_chain": [
           "s590"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -13955,6 +15059,14 @@
         "namespace": "Common.Infrastructure.Localization",
         "scope_chain": [
           "s291"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<ISearchLanguageResolver, SearchLanguageResolver>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".addcommonresxlocalization()",
@@ -13991,6 +15103,14 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s169"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Create",
+            "receiver_type": "JsonValue",
+            "lang": "csharp",
+            "line": "L88"
+          }
         ]
       },
       "norm_label": ".maptojsonnode()",
@@ -14027,6 +15147,14 @@
         "namespace": "Common.InterModuleRequests.Contracts",
         "scope_chain": [
           "s20"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "RespondAsync",
+            "receiver_type": "ConsumeContext",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".consume()",
@@ -14171,6 +15299,20 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s250"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L20"
+          },
+          {
+            "callee": "AddOpenTelemetry",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L34"
+          }
         ]
       },
       "norm_label": ".addobservability()",
@@ -14189,6 +15331,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s250"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WithMetrics",
+            "receiver_type": "OpenTelemetryBuilder",
+            "lang": "csharp",
+            "line": "L75"
+          }
         ]
       },
       "norm_label": ".configuremetrics()",
@@ -14225,6 +15375,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s250"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WithTracing",
+            "receiver_type": "OpenTelemetryBuilder",
+            "lang": "csharp",
+            "line": "L110"
+          }
         ]
       },
       "norm_label": ".configuretracing()",
@@ -14243,6 +15401,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s250"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "LastOrDefault",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L65"
+          }
         ]
       },
       "norm_label": ".getregisteredmodules()",
@@ -14261,6 +15427,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Min",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L389"
+          }
         ]
       },
       "norm_label": ".capture()",
@@ -14279,6 +15453,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Write",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L402"
+          }
         ]
       },
       "norm_label": ".write()",
@@ -14297,6 +15479,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Min",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L282"
+          }
         ]
       },
       "norm_label": ".capture()",
@@ -14315,6 +15505,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Read",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L294"
+          }
         ]
       },
       "norm_label": ".read()",
@@ -14369,6 +15567,32 @@
         "namespace": "Notifications.Infrastructure.Sms",
         "scope_chain": [
           "s372"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddResilientHttpClient<NetGsmSmsGateway, NetGsmSmsGateway>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L33"
+          },
+          {
+            "callee": "ToBase64String",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L44"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L48"
+          },
+          {
+            "callee": "AddSingleton<ISmsGateway>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L53"
+          }
         ]
       },
       "norm_label": ".addnetgsm()",
@@ -14387,6 +15611,26 @@
         "namespace": "Notifications.Infrastructure.Sms",
         "scope_chain": [
           "s372"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L20"
+          },
+          {
+            "callee": "AddSingleton<ISmsGateway, DummySmsGateway>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "AddNetGsm",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L26"
+          }
         ]
       },
       "norm_label": ".addnotificationservices()",
@@ -14405,6 +15649,20 @@
         "namespace": "Notifications.Infrastructure.Sms",
         "scope_chain": [
           "s307"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToHexString",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L62"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L62"
+          }
         ]
       },
       "norm_label": ".hash()",
@@ -14423,6 +15681,26 @@
         "namespace": "Notifications.Infrastructure.Sms",
         "scope_chain": [
           "s307"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromHours",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L28"
+          },
+          {
+            "callee": "GetOrDefaultAsync<int>",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L33"
+          },
+          {
+            "callee": "SetAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L54"
+          }
         ]
       },
       "norm_label": ".sendasync()",
@@ -14459,6 +15737,14 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s109"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SetAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".storeasync()",
@@ -14477,6 +15763,38 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s109"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WaitAsync",
+            "receiver_type": "SemaphoreSlim",
+            "lang": "csharp",
+            "line": "L31"
+          },
+          {
+            "callee": "GetOrDefaultAsync<OtpCacheEntry>",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L36"
+          },
+          {
+            "callee": "RemoveAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L49"
+          },
+          {
+            "callee": "SetAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L59"
+          },
+          {
+            "callee": "Release",
+            "receiver_type": "SemaphoreSlim",
+            "lang": "csharp",
+            "line": "L74"
+          }
         ]
       },
       "norm_label": ".verifythenremoveasync()",
@@ -14495,6 +15813,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.Update",
         "scope_chain": [
           "s329"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPut",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -14531,6 +15857,14 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s282"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Properties<DateTimeOffset>",
+            "receiver_type": "ModelConfigurationBuilder",
+            "lang": "csharp",
+            "line": "L25"
+          }
         ]
       },
       "norm_label": ".configureconventions()",
@@ -14549,6 +15883,14 @@
         "namespace": "IAM.Infrastructure.Persistence",
         "scope_chain": [
           "s643"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Properties<DateTimeOffset>",
+            "receiver_type": "ModelConfigurationBuilder",
+            "lang": "csharp",
+            "line": "L49"
+          }
         ]
       },
       "norm_label": ".configureconventions()",
@@ -14567,6 +15909,14 @@
         "namespace": "Outbox.Persistence",
         "scope_chain": [
           "s240"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Properties<DateTimeOffset>",
+            "receiver_type": "ModelConfigurationBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".configureconventions()",
@@ -14585,6 +15935,20 @@
         "namespace": "Common.Application.Caching",
         "scope_chain": [
           "s56"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToHexString",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".otp()",
@@ -14639,6 +16003,14 @@
         "namespace": "Common.Infrastructure.Auth.Services",
         "scope_chain": [
           "s133"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Any",
+            "receiver_type": "ICollection",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".haspermission()",
@@ -14657,6 +16029,14 @@
         "namespace": "Common.Infrastructure.Auth",
         "scope_chain": [
           "s123"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScoped<ICurrentUser, CurrentUser>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".addcommonauth()",
@@ -14675,6 +16055,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Create",
         "scope_chain": [
           "s726"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L27"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -14693,6 +16081,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral",
         "scope_chain": [
           "s176"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".maptokensendpoints()",
@@ -14711,6 +16107,20 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s314"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AsNoTracking",
+            "receiver_type": "DbSet",
+            "lang": "csharp",
+            "line": "L34"
+          },
+          {
+            "callee": "SerializeToElement",
+            "receiver_type": "JsonSerializer",
+            "lang": "csharp",
+            "line": "L51"
+          }
         ]
       },
       "norm_label": ".getauditlogasync()",
@@ -14729,6 +16139,44 @@
         "namespace": "Common.Infrastructure.Persistence.Extensions",
         "scope_chain": [
           "s136"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "OrderByDescending",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L26"
+          },
+          {
+            "callee": "OrderBy",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L30"
+          },
+          {
+            "callee": "ThenByDescending",
+            "receiver_type": "IOrderedQueryable",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "ThenBy",
+            "receiver_type": "IOrderedQueryable",
+            "lang": "csharp",
+            "line": "L41"
+          },
+          {
+            "callee": "CountAsync",
+            "receiver_type": "IQueryable",
+            "lang": "csharp",
+            "line": "L49"
+          },
+          {
+            "callee": "Skip",
+            "receiver_type": "IOrderedQueryable",
+            "lang": "csharp",
+            "line": "L51"
+          }
         ]
       },
       "norm_label": ".paginateasync()",
@@ -14801,6 +16249,20 @@
         "namespace": "IAM.Infrastructure.Captcha.Services",
         "scope_chain": [
           "s181"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetOrSetAsync<Result>",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "FromMinutes",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".validateasync()",
@@ -14819,6 +16281,14 @@
         "namespace": "Products.Infrastructure.RateLimiting",
         "scope_chain": [
           "s358"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, CreateStoreRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".createstorepolicy()",
@@ -14855,6 +16325,14 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s400"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseHangfireDashboard",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L70"
+          }
         ]
       },
       "norm_label": ".usemodule()",
@@ -14873,6 +16351,20 @@
         "namespace": "BackgroundJobs",
         "scope_chain": [
           "s134"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetHttpContext",
+            "receiver_type": "DashboardContext",
+            "lang": "csharp",
+            "line": "L12"
+          },
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".authorizeasync()",
@@ -14891,6 +16383,14 @@
         "namespace": "Products.Endpoints.Stores.v1.Update",
         "scope_chain": [
           "s329"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPut",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -14927,6 +16427,14 @@
         "namespace": "Common.Infrastructure.Localization",
         "scope_chain": [
           "s291"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseRequestLocalization",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L27"
+          }
         ]
       },
       "norm_label": ".usecommonresxlocalization()",
@@ -14963,6 +16471,14 @@
         "namespace": "Products.Endpoints.Products.v1.AuditLog",
         "scope_chain": [
           "s403"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -14999,6 +16515,14 @@
         "namespace": "Products.Endpoints.Stores.v1.AuditLog",
         "scope_chain": [
           "s401"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -15035,6 +16559,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.AuditLog",
         "scope_chain": [
           "s438"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -15071,6 +16603,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FindFirst",
+            "receiver_type": "ClaimsPrincipal",
+            "lang": "csharp",
+            "line": "L22"
+          }
         ]
       },
       "norm_label": ".findfirstvalue()",
@@ -15089,6 +16629,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUserIdAsString",
+            "receiver_type": "ClaimsPrincipal",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".getuserid()",
@@ -15107,6 +16655,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FindFirstValue",
+            "receiver_type": "ClaimsPrincipal",
+            "lang": "csharp",
+            "line": "L15"
+          }
         ]
       },
       "norm_label": ".getuseridasstring()",
@@ -15125,6 +16681,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s74"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Succeed",
+            "receiver_type": "AuthorizationHandlerContext",
+            "lang": "csharp",
+            "line": "L15"
+          }
         ]
       },
       "norm_label": ".handlerequirementasync()",
@@ -15143,6 +16707,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s71"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".getdefaultpolicyasync()",
@@ -15161,6 +16733,14 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s71"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromResult<AuthorizationPolicy?>",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".getfallbackpolicyasync()",
@@ -15179,6 +16759,26 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s71"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddRequirements",
+            "receiver_type": "AuthorizationPolicyBuilder",
+            "lang": "csharp",
+            "line": "L28"
+          },
+          {
+            "callee": "FromResult<AuthorizationPolicy?>",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L29"
+          },
+          {
+            "callee": "Build",
+            "receiver_type": "AuthorizationPolicyBuilder",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".getpolicyasync()",
@@ -15215,6 +16815,20 @@
         "namespace": "IAM.Infrastructure.Auth",
         "scope_chain": [
           "s336"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "AddAuthorization",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L36"
+          }
         ]
       },
       "norm_label": ".addauthinfrastructure()",
@@ -15233,6 +16847,14 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s144"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetInt32",
+            "receiver_type": "RandomNumberGenerator",
+            "lang": "csharp",
+            "line": "L23"
+          }
         ]
       },
       "norm_label": ".generate()",
@@ -15251,6 +16873,14 @@
         "namespace": "Common.Domain.Aggregates",
         "scope_chain": [
           "s180"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L27"
+          }
         ]
       },
       "norm_label": ".addevent()",
@@ -15269,6 +16899,14 @@
         "namespace": "Common.Domain.Aggregates",
         "scope_chain": [
           "s180"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Clear",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L22"
+          }
         ]
       },
       "norm_label": ".clearevents()",
@@ -15413,6 +17051,38 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s115"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Configure<RabbitMqOptions>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "GetValue<bool>",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L21"
+          },
+          {
+            "callee": "AddMassTransit",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "FromMilliseconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L60"
+          }
         ]
       },
       "norm_label": ".addcustommasstransit()",
@@ -15431,6 +17101,14 @@
         "namespace": "IAM.Endpoints",
         "scope_chain": [
           "s760"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPersistence",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L34"
+          }
         ]
       },
       "norm_label": ".addservices()",
@@ -15449,6 +17127,14 @@
         "namespace": "IAM.Endpoints",
         "scope_chain": [
           "s760"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "IEndpointRouteBuilder",
+            "lang": "csharp",
+            "line": "L49"
+          }
         ]
       },
       "norm_label": ".mapendpoints()",
@@ -15467,6 +17153,14 @@
         "namespace": "IAM.Endpoints",
         "scope_chain": [
           "s760"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UsePersistence",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L44"
+          }
         ]
       },
       "norm_label": ".usemodule()",
@@ -15503,6 +17197,26 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s117"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "Configure<ForwardedHeadersOptions>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "Parse",
+            "receiver_type": "IPNetwork",
+            "lang": "csharp",
+            "line": "L35"
+          }
         ]
       },
       "norm_label": ".addcustomforwardedheaders()",
@@ -15539,6 +17253,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Flush",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L425"
+          }
         ]
       },
       "norm_label": ".flush()",
@@ -15611,6 +17333,14 @@
         "namespace": "Common.Infrastructure.EventBus",
         "scope_chain": [
           "s68"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L15"
+          }
         ]
       },
       "norm_label": ".collect()",
@@ -15629,6 +17359,14 @@
         "namespace": "IAM.Application.Users.DomainEventHandlers.v1",
         "scope_chain": [
           "s182"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "RemoveAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -15737,6 +17475,14 @@
         "namespace": "Notifications.Infrastructure.Hubs",
         "scope_chain": [
           "s199"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddToGroupAsync",
+            "receiver_type": "Groups",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".onconnectedasync()",
@@ -15773,6 +17519,38 @@
         "namespace": "IAM.Infrastructure.Auth.Jwt",
         "scope_chain": [
           "s820"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L31"
+          },
+          {
+            "callee": "ThrowIfNull",
+            "receiver_type": "ArgumentNullException",
+            "lang": "csharp",
+            "line": "L32"
+          },
+          {
+            "callee": "AddJwtBearer",
+            "receiver_type": "AuthenticationBuilder",
+            "lang": "csharp",
+            "line": "L34"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L80"
+          },
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L107"
+          }
         ]
       },
       "norm_label": ".addjwtbearerscheme()",
@@ -15791,6 +17569,14 @@
         "namespace": "Common.Application.EventBus",
         "scope_chain": [
           "s221"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetOrSetAsync<bool>",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L41"
+          }
         ]
       },
       "norm_label": ".consume()",
@@ -15899,6 +17685,32 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s673"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseForwardedHeaders",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L62"
+          },
+          {
+            "callee": "UseAuthentication",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L73"
+          },
+          {
+            "callee": "UseRateLimiter",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L79"
+          },
+          {
+            "callee": "UseAuthorization",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L83"
+          }
         ]
       },
       "norm_label": ".useinfrastructure()",
@@ -15935,6 +17747,26 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s323"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Min",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L213"
+          },
+          {
+            "callee": "Pow",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L213"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L217"
+          }
         ]
       },
       "norm_label": ".computebackoff()",
@@ -15953,6 +17785,14 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s323"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Delay",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".executeasync()",
@@ -16097,6 +17937,44 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s323"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L54"
+          },
+          {
+            "callee": "StartNew",
+            "receiver_type": "Stopwatch",
+            "lang": "csharp",
+            "line": "L59"
+          },
+          {
+            "callee": "CreateFromString",
+            "receiver_type": "ActivityTraceId",
+            "lang": "csharp",
+            "line": "L121"
+          },
+          {
+            "callee": "CreateFromString",
+            "receiver_type": "ActivitySpanId",
+            "lang": "csharp",
+            "line": "L122"
+          },
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L144"
+          },
+          {
+            "callee": "CreateLinkedTokenSource",
+            "receiver_type": "CancellationTokenSource",
+            "lang": "csharp",
+            "line": "L154"
+          }
         ]
       },
       "norm_label": ".processbatchasync()",
@@ -16115,6 +17993,14 @@
         "namespace": "IAM.Endpoints.Common.Validations",
         "scope_chain": [
           "s74"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "NotEmpty",
+            "receiver_type": "IRuleBuilder",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".phoneverificationtokenvalidation()",
@@ -16133,6 +18019,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L25"
+          }
         ]
       },
       "norm_label": ".recordnotificationsent()",
@@ -16151,6 +18045,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L41"
+          }
         ]
       },
       "norm_label": ".recordotpsent()",
@@ -16169,6 +18071,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L80"
+          }
         ]
       },
       "norm_label": ".recordpushsent()",
@@ -16187,6 +18097,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L32"
+          }
         ]
       },
       "norm_label": ".recordsignalrerror()",
@@ -16205,6 +18123,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L66"
+          }
         ]
       },
       "norm_label": ".recordsmsprovidererror()",
@@ -16223,6 +18149,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L57"
+          }
         ]
       },
       "norm_label": ".recordsmssent()",
@@ -16241,6 +18175,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L73"
+          }
         ]
       },
       "norm_label": ".recordsmsthrottled()",
@@ -16259,6 +18201,14 @@
         "namespace": "IAM.Infrastructure.InterModuleRequestHandlers",
         "scope_chain": [
           "s155"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -16277,6 +18227,14 @@
         "namespace": "Products.Endpoints.Products.v1.Update",
         "scope_chain": [
           "s331"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPut",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -16331,6 +18289,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Deactivate",
         "scope_chain": [
           "s339"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -16403,6 +18369,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Flush",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L315"
+          }
         ]
       },
       "norm_label": ".flush()",
@@ -16475,6 +18449,26 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s224"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SwaggerDoc",
+            "receiver_type": "SwaggerGenOptions",
+            "lang": "csharp",
+            "line": "L19"
+          },
+          {
+            "callee": "AddSecurityDefinition",
+            "receiver_type": "SwaggerGenOptions",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "AddSecurityRequirement",
+            "receiver_type": "SwaggerGenOptions",
+            "lang": "csharp",
+            "line": "L42"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -16493,6 +18487,14 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s224"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TryCreate",
+            "receiver_type": "Uri",
+            "lang": "csharp",
+            "line": "L65"
+          }
         ]
       },
       "norm_label": ".createinfoforapiversion()",
@@ -16673,6 +18675,26 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s162"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L12"
+          },
+          {
+            "callee": "AddSingleton<IOtpService, RedisOtpService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "AddSingleton<IOtpService, DummyOtpService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".addotpservices()",
@@ -16691,6 +18713,14 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s205"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetInt32",
+            "receiver_type": "RandomNumberGenerator",
+            "lang": "csharp",
+            "line": "L85"
+          }
         ]
       },
       "norm_label": ".generate()",
@@ -16709,6 +18739,14 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s205"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetDatabase",
+            "receiver_type": "IConnectionMultiplexer",
+            "lang": "csharp",
+            "line": "L54"
+          }
         ]
       },
       "norm_label": ".storeasync()",
@@ -16727,6 +18765,14 @@
         "namespace": "Notifications.Infrastructure.Otp",
         "scope_chain": [
           "s205"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetDatabase",
+            "receiver_type": "IConnectionMultiplexer",
+            "lang": "csharp",
+            "line": "L62"
+          }
         ]
       },
       "norm_label": ".verifythenremoveasync()",
@@ -16745,6 +18791,14 @@
         "namespace": "Products.Domain.ProductTemplates",
         "scope_chain": [
           "s134"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -16763,6 +18817,14 @@
         "namespace": "Products.Domain.ProductTemplates",
         "scope_chain": [
           "s134"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToString",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".tostring()",
@@ -16817,6 +18879,14 @@
         "namespace": "Products.Endpoints.Stores.v1.Get",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -16853,6 +18923,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.RevokeAll",
         "scope_chain": [
           "s430"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapDelete",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -16871,6 +18949,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.RevokeAll",
         "scope_chain": [
           "s430"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".revokeallsessions()",
@@ -16889,6 +18975,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.UpdatePushToken",
         "scope_chain": [
           "s419"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPut",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -16907,6 +19001,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.UpdatePushToken",
         "scope_chain": [
           "s419"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L53"
+          }
         ]
       },
       "norm_label": ".updatecurrentsessionpushtoken()",
@@ -16943,6 +19045,14 @@
         "namespace": "IAM.Infrastructure.Persistence.Seeding",
         "scope_chain": [
           "s87"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".seedasync()",
@@ -16961,6 +19071,14 @@
         "namespace": "IAM.Infrastructure.Persistence",
         "scope_chain": [
           "s332"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddTransient<Seeder>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".addpersistence()",
@@ -17015,6 +19133,14 @@
         "namespace": "Products.Infrastructure.Persistence.Seeding",
         "scope_chain": [
           "s140"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Next",
+            "receiver_type": "Random",
+            "lang": "csharp",
+            "line": "L30"
+          }
         ]
       },
       "norm_label": ".seedproductasync()",
@@ -17033,6 +19159,14 @@
         "namespace": "Products.Endpoints.ProductTemplates",
         "scope_chain": [
           "s179"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".mapproducttemplatesendpoints()",
@@ -17051,6 +19185,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Create",
         "scope_chain": [
           "s287"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -17087,6 +19229,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s34"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FirstOrDefault",
+            "receiver_type": "IEnumerable",
+            "lang": "csharp",
+            "line": "L37"
+          }
         ]
       },
       "norm_label": ".firstasresult()",
@@ -17123,6 +19273,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s34"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SingleOrDefault",
+            "receiver_type": "IEnumerable",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".singleasresult()",
@@ -17195,6 +19353,44 @@
         "namespace": "Common.Application.Options",
         "scope_chain": [
           "s213"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L32"
+          },
+          {
+            "callee": "FirstOrDefault",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "Contains",
+            "receiver_type": "HashSet",
+            "lang": "csharp",
+            "line": "L40"
+          },
+          {
+            "callee": "CreateInstance",
+            "receiver_type": "Activator",
+            "lang": "csharp",
+            "line": "L42"
+          },
+          {
+            "callee": "Validate",
+            "receiver_type": "IValidator",
+            "lang": "csharp",
+            "line": "L51"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "HashSet",
+            "lang": "csharp",
+            "line": "L60"
+          }
         ]
       },
       "norm_label": ".addcommonoptions()",
@@ -17213,6 +19409,14 @@
         "namespace": "Common.Application.Validation",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IsProduction",
+            "receiver_type": "IHostEnvironment",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".isproduction()",
@@ -17231,6 +19435,32 @@
         "namespace": "Notifications.Infrastructure",
         "scope_chain": [
           "s408"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddNotificationServices",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "AddNotificationsSignalR",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L24"
+          },
+          {
+            "callee": "AddOtpServices",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "AddPushServices",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L26"
+          }
         ]
       },
       "norm_label": ".addservices()",
@@ -17249,6 +19479,14 @@
         "namespace": "Notifications.Infrastructure",
         "scope_chain": [
           "s408"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapHub<NotificationsHub>",
+            "receiver_type": "IEndpointRouteBuilder",
+            "lang": "csharp",
+            "line": "L35"
+          }
         ]
       },
       "norm_label": ".mapendpoints()",
@@ -17285,6 +19523,14 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s487"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L69"
+          }
         ]
       },
       "norm_label": ".handlechallengeasync()",
@@ -17303,6 +19549,14 @@
         "namespace": "IAM.Infrastructure.Auth.ApiKey",
         "scope_chain": [
           "s487"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L87"
+          }
         ]
       },
       "norm_label": ".handleforbiddenasync()",
@@ -17321,6 +19575,56 @@
         "namespace": "Common.Infrastructure.Caching",
         "scope_chain": [
           "s189"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Configure<CachingOptions>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "AddFusionCache",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "Parse",
+            "receiver_type": "ConfigurationOptions",
+            "lang": "csharp",
+            "line": "L43"
+          },
+          {
+            "callee": "Connect",
+            "receiver_type": "ConnectionMultiplexer",
+            "lang": "csharp",
+            "line": "L52"
+          },
+          {
+            "callee": "AddSingleton<IConnectionMultiplexer>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "AddStackExchangeRedisCache",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L55"
+          },
+          {
+            "callee": "FromResult<IConnectionMultiplexer>",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L57"
+          }
         ]
       },
       "norm_label": ".addcommoncaching()",
@@ -17339,6 +19643,44 @@
         "namespace": "Notifications.Infrastructure.Hubs",
         "scope_chain": [
           "s226"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "AddSignalR",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "AddSingleton<IConfigureOptions<Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions>>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "FromResult<IConnectionMultiplexer>",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L29"
+          },
+          {
+            "callee": "ConnectAsync",
+            "receiver_type": "ConnectionMultiplexer",
+            "lang": "csharp",
+            "line": "L30"
+          },
+          {
+            "callee": "AddSingleton<INotificationDispatcher, SignalRNotificationDispatcher>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L35"
+          }
         ]
       },
       "norm_label": ".addnotificationssignalr()",
@@ -17357,6 +19699,14 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s78"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IndexOf",
+            "receiver_type": "Array",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".schemaidgenerator()",
@@ -17375,6 +19725,32 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s78"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "IsDevelopment",
+            "receiver_type": "IWebHostEnvironment",
+            "lang": "csharp",
+            "line": "L50"
+          },
+          {
+            "callee": "UseSwagger",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L52"
+          },
+          {
+            "callee": "UseSwaggerUI",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "DescribeApiVersions",
+            "receiver_type": "WebApplication",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".usecustomswagger()",
@@ -17411,6 +19787,14 @@
         "namespace": "Products.Infrastructure.Persistence.Seeding",
         "scope_chain": [
           "s87"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".seedasync()",
@@ -17429,6 +19813,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Revoke",
         "scope_chain": [
           "s495"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L22"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -17447,6 +19839,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Revoke",
         "scope_chain": [
           "s495"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".revoketoken()",
@@ -17465,6 +19865,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.Revoke",
         "scope_chain": [
           "s455"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapDelete",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -17483,6 +19891,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Sessions.Revoke",
         "scope_chain": [
           "s455"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L47"
+          }
         ]
       },
       "norm_label": ".revokesession()",
@@ -17501,6 +19917,14 @@
         "namespace": "IAM.Infrastructure.Telemetry",
         "scope_chain": [
           "s97"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L46"
+          }
         ]
       },
       "norm_label": ".recordsessionrevoked()",
@@ -17555,6 +19979,14 @@
         "namespace": "Products.Domain.Stores",
         "scope_chain": [
           "s179"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -17627,6 +20059,14 @@
         "namespace": "Products.Endpoints.Products.v1.My.Update",
         "scope_chain": [
           "s331"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPut",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -17861,6 +20301,14 @@
         "namespace": "Notifications.Infrastructure.Sms.NetGsm",
         "scope_chain": [
           "s379"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "PostAsJsonAsync",
+            "receiver_type": "HttpClient",
+            "lang": "csharp",
+            "line": "L71"
+          }
         ]
       },
       "norm_label": ".sendcoreasync()",
@@ -17879,6 +20327,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.RemoveProduct",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapDelete",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -17969,6 +20425,20 @@
         "namespace": "Common.Application.ModelBinders",
         "scope_chain": [
           "s84"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TryParse",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L26"
+          },
+          {
+            "callee": "Success",
+            "receiver_type": "ModelBindingResult",
+            "lang": "csharp",
+            "line": "L34"
+          }
         ]
       },
       "norm_label": ".bindmodelasync()",
@@ -18059,6 +20529,14 @@
         "namespace": "Common.Infrastructure.Extensions",
         "scope_chain": [
           "s113"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".getuseridoripaddress()",
@@ -18167,6 +20645,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartsWithSegments",
+            "receiver_type": "PathString",
+            "lang": "csharp",
+            "line": "L214"
+          }
         ]
       },
       "norm_label": ".isexcluded()",
@@ -18185,6 +20671,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartsWithSegments",
+            "receiver_type": "PathString",
+            "lang": "csharp",
+            "line": "L228"
+          }
         ]
       },
       "norm_label": ".issensitive()",
@@ -18275,6 +20769,14 @@
         "namespace": "Products.Infrastructure.Persistence.Seeding",
         "scope_chain": [
           "s78"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".seedproducttemplatesasync()",
@@ -18311,6 +20813,26 @@
         "namespace": "Products.Infrastructure.Persistence.Seeding",
         "scope_chain": [
           "s144"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "CreateLinkedTokenSource",
+            "receiver_type": "CancellationTokenSource",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L33"
+          }
         ]
       },
       "norm_label": ".seedstoresasync()",
@@ -18347,6 +20869,14 @@
         "namespace": "IAM.Application.Extensions",
         "scope_chain": [
           "s96"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToCustomIdentityError",
+            "receiver_type": "IdentityResult",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".toresult()",
@@ -18365,6 +20895,14 @@
         "namespace": "Host.Swagger",
         "scope_chain": [
           "s78"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddEndpointsApiExplorer",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".addcustomswagger()",
@@ -18383,6 +20921,14 @@
         "namespace": "IAM.Endpoints.Common.Validations",
         "scope_chain": [
           "s129"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Length",
+            "receiver_type": "IRuleBuilder",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".phonenumbervalidation()",
@@ -18401,6 +20947,14 @@
         "namespace": "IAM.Application.Users.DomainEventHandlers.v1",
         "scope_chain": [
           "s150"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "RemoveAsync",
+            "receiver_type": "IFusionCache",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".handleasync()",
@@ -18419,6 +20973,44 @@
         "namespace": "Common.Application.EndpointFilters",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Created",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L89"
+          },
+          {
+            "callee": "GetRequiredService<IStringLocalizer<ResxLocalizer>>",
+            "receiver_type": "IServiceProvider",
+            "lang": "csharp",
+            "line": "L92"
+          },
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L101"
+          },
+          {
+            "callee": "AddErrors",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L102"
+          },
+          {
+            "callee": "Empty<string>",
+            "receiver_type": "Array",
+            "lang": "csharp",
+            "line": "L102"
+          },
+          {
+            "callee": "Problem",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L112"
+          }
         ]
       },
       "norm_label": ".invokeasync()",
@@ -18437,6 +21029,50 @@
         "namespace": "Common.Application.EndpointFilters",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "NoContent",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L40"
+          },
+          {
+            "callee": "GetRequiredService<IStringLocalizer<ResxLocalizer>>",
+            "receiver_type": "IServiceProvider",
+            "lang": "csharp",
+            "line": "L43"
+          },
+          {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L52"
+          },
+          {
+            "callee": "AddErrors",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "Empty<string>",
+            "receiver_type": "Array",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "Problem",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L63"
+          },
+          {
+            "callee": "Ok",
+            "receiver_type": "Results",
+            "lang": "csharp",
+            "line": "L138"
+          }
         ]
       },
       "norm_label": ".invokeasync()",
@@ -18455,6 +21091,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s33"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ThrowIfNullOrWhiteSpace",
+            "receiver_type": "ArgumentException",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".adderrorkey()",
@@ -18491,6 +21135,14 @@
         "namespace": "Products.Endpoints",
         "scope_chain": [
           "s651"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPersistence",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".addservices()",
@@ -18527,6 +21179,14 @@
         "namespace": "Common.Domain.ResultMonad",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L294"
+          }
         ]
       },
       "norm_label": ".bindasync()",
@@ -18545,6 +21205,14 @@
         "namespace": "Common.Domain.ResultMonad",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L415"
+          }
         ]
       },
       "norm_label": ".combineasync()",
@@ -18563,6 +21231,14 @@
         "namespace": "Common.Domain.ResultMonad",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L688"
+          }
         ]
       },
       "norm_label": ".mapasync()",
@@ -18581,6 +21257,14 @@
         "namespace": "Common.Domain.ResultMonad",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L545"
+          }
         ]
       },
       "norm_label": ".tapasync()",
@@ -18599,6 +21283,14 @@
         "namespace": "Common.Domain.ResultMonad",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L620"
+          }
         ]
       },
       "norm_label": ".tapwhenasync()",
@@ -18743,6 +21435,14 @@
         "namespace": "IAM.Infrastructure.Captcha.Services",
         "scope_chain": [
           "s100"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Delay",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".validateasync()",
@@ -18797,6 +21497,14 @@
         "namespace": "Products.Domain.Products",
         "scope_chain": [
           "s285"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -18869,6 +21577,14 @@
         "namespace": "Products.Domain.Stores",
         "scope_chain": [
           "s179"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L107"
+          }
         ]
       },
       "norm_label": ".addproduct()",
@@ -18887,6 +21603,14 @@
         "namespace": "Products.Domain.Stores",
         "scope_chain": [
           "s179"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Remove",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L114"
+          }
         ]
       },
       "norm_label": ".removeproduct()",
@@ -18923,6 +21647,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L80"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -18941,6 +21673,38 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L38"
+          },
+          {
+            "callee": "Navigation",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L41"
+          },
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L65"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -18959,6 +21723,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L91"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -18977,6 +21749,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L113"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -18995,6 +21775,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L124"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -19013,6 +21801,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L102"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -19031,6 +21827,14 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s305"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L135"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -19067,6 +21871,20 @@
         "namespace": "Outbox.Persistence",
         "scope_chain": [
           "s240"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "HasDefaultSchema",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          },
+          {
+            "callee": "ApplyConfiguration",
+            "receiver_type": "ModelBuilder",
+            "lang": "csharp",
+            "line": "L26"
+          }
         ]
       },
       "norm_label": ".onmodelcreating()",
@@ -19121,6 +21939,14 @@
         "namespace": "Products.Endpoints.Stores",
         "scope_chain": [
           "s169"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".mapstoresendpoints()",
@@ -19157,6 +21983,14 @@
         "namespace": "Products.Endpoints.Stores.v1.Create",
         "scope_chain": [
           "s447"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -19193,6 +22027,14 @@
         "namespace": "Products.Endpoints.Stores.v1.AddProduct",
         "scope_chain": [
           "s482"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -19211,6 +22053,14 @@
         "namespace": "IAM.Infrastructure.Identity",
         "scope_chain": [
           "s189"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddIdentity<ApplicationUser, IdentityRole<ApplicationUserId>>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L13"
+          }
         ]
       },
       "norm_label": ".addidentityinfrastructure()",
@@ -19337,6 +22187,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s76"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, CheckRegistrationRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L38"
+          }
         ]
       },
       "norm_label": ".checkregistrationpolicy()",
@@ -19373,6 +22231,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s76"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, RegisterRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".registerpolicy()",
@@ -19391,6 +22257,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s76"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, SmsRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".smspolicy()",
@@ -19409,6 +22283,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s76"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, TokenCreateRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".tokencreatepolicy()",
@@ -19427,6 +22309,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s76"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddPolicy<string, TokenRefreshRateLimitingPolicy>",
+            "receiver_type": "RateLimiterOptions",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".tokenrefreshpolicy()",
@@ -19607,6 +22497,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Refresh",
         "scope_chain": [
           "s785"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -19625,6 +22523,32 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Refresh",
         "scope_chain": [
           "s785"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L96"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L130"
+          },
+          {
+            "callee": "ToBase64String",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L231"
+          }
         ]
       },
       "norm_label": ".refreshtoken()",
@@ -19643,6 +22567,14 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Refresh",
         "scope_chain": [
           "s785"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromBase64String",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L274"
+          }
         ]
       },
       "norm_label": ".trydecodebase64()",
@@ -19661,6 +22593,26 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s361"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "OverrideMinimumLevelsOf",
+            "receiver_type": "LoggerConfiguration",
+            "lang": "csharp",
+            "line": "L33"
+          },
+          {
+            "callee": "ConfigureEnrichers",
+            "receiver_type": "LoggerConfiguration",
+            "lang": "csharp",
+            "line": "L34"
+          },
+          {
+            "callee": "ConfigureWriteTos",
+            "receiver_type": "LoggerConfiguration",
+            "lang": "csharp",
+            "line": "L35"
+          }
         ]
       },
       "norm_label": ".applyconfigurations()",
@@ -19733,6 +22685,26 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s361"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Debug",
+            "receiver_type": "LoggerMinimumLevelConfiguration",
+            "lang": "csharp",
+            "line": "L42"
+          },
+          {
+            "callee": "Information",
+            "receiver_type": "LoggerMinimumLevelConfiguration",
+            "lang": "csharp",
+            "line": "L43"
+          },
+          {
+            "callee": "Warning",
+            "receiver_type": "LoggerMinimumLevelConfiguration",
+            "lang": "csharp",
+            "line": "L44"
+          }
         ]
       },
       "norm_label": ".parsefrom()",
@@ -19751,6 +22723,14 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s361"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseSerilog",
+            "receiver_type": "IHostBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".usecustomizedserilog()",
@@ -19769,6 +22749,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -19859,6 +22847,38 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s411"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L41"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L65"
+          },
+          {
+            "callee": "Set<AuditLogEntry>",
+            "receiver_type": "DbContext",
+            "lang": "csharp",
+            "line": "L72"
+          },
+          {
+            "callee": "Serialize",
+            "receiver_type": "JsonSerializer",
+            "lang": "csharp",
+            "line": "L112"
+          },
+          {
+            "callee": "Entry",
+            "receiver_type": "DbContext",
+            "lang": "csharp",
+            "line": "L187"
+          }
         ]
       },
       "norm_label": ".savewithoutboxasync()",
@@ -19877,6 +22897,26 @@
         "namespace": "Products.Infrastructure.RateLimiting",
         "scope_chain": [
           "s358"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUserIdOrIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "GetFixedWindowLimiter",
+            "receiver_type": "RateLimitPartition",
+            "lang": "csharp",
+            "line": "L55"
+          },
+          {
+            "callee": "FromMilliseconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L58"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -19913,6 +22953,14 @@
         "namespace": "Common.Domain.StronglyTypedIds",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateVersion7",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".new()",
@@ -19931,6 +22979,14 @@
         "namespace": "IAM.Domain.Identity",
         "scope_chain": [
           "s67"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".addevent()",
@@ -19949,6 +23005,14 @@
         "namespace": "IAM.Domain.Identity",
         "scope_chain": [
           "s67"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Clear",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".clearevents()",
@@ -20057,6 +23121,26 @@
         "namespace": "IAM.Endpoints.Tokens.VersionNeutral.Create",
         "scope_chain": [
           "s726"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L77"
+          },
+          {
+            "callee": "HashData",
+            "receiver_type": "SHA256",
+            "lang": "csharp",
+            "line": "L87"
+          },
+          {
+            "callee": "ToBase64String",
+            "receiver_type": "Convert",
+            "lang": "csharp",
+            "line": "L113"
+          }
         ]
       },
       "norm_label": ".createtokens()",
@@ -20075,6 +23159,26 @@
         "namespace": "IAM.Infrastructure.Tokens.Services",
         "scope_chain": [
           "s401"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "NewGuid",
+            "receiver_type": "Guid",
+            "lang": "csharp",
+            "line": "L24"
+          },
+          {
+            "callee": "Serialize",
+            "receiver_type": "JsonSerializer",
+            "lang": "csharp",
+            "line": "L28"
+          },
+          {
+            "callee": "AddMinutes",
+            "receiver_type": "DateTimeOffset",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".generateaccesstoken()",
@@ -20093,6 +23197,20 @@
         "namespace": "IAM.Infrastructure.Tokens.Services",
         "scope_chain": [
           "s401"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddDays",
+            "receiver_type": "DateTimeOffset",
+            "lang": "csharp",
+            "line": "L49"
+          },
+          {
+            "callee": "Create",
+            "receiver_type": "RandomNumberGenerator",
+            "lang": "csharp",
+            "line": "L51"
+          }
         ]
       },
       "norm_label": ".generaterefreshtoken()",
@@ -20111,6 +23229,14 @@
         "namespace": "IAM.Infrastructure.Tokens",
         "scope_chain": [
           "s130"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<ITokenService, TokenService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".addtokensinfrastructure()",
@@ -20129,6 +23255,14 @@
         "namespace": "Common.Endpoints.Versioning",
         "scope_chain": [
           "s207"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddApiVersioning",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".addversioning()",
@@ -20147,6 +23281,14 @@
         "namespace": "Common.Endpoints.Versioning",
         "scope_chain": [
           "s207"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "NewApiVersionSet",
+            "receiver_type": "IEndpointRouteBuilder",
+            "lang": "csharp",
+            "line": "L32"
+          }
         ]
       },
       "norm_label": ".getapiversionset()",
@@ -20219,6 +23361,14 @@
         "namespace": "IAM.Domain.Identity",
         "scope_chain": [
           "s312"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L77"
+          }
         ]
       },
       "norm_label": ".issuesessionandtoken()",
@@ -20237,6 +23387,14 @@
         "namespace": "IAM.Domain.Identity",
         "scope_chain": [
           "s312"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Where",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L124"
+          }
         ]
       },
       "norm_label": ".revokeallsessions()",
@@ -20363,6 +23521,14 @@
         "namespace": "IAM.Domain.Identity.Sessions",
         "scope_chain": [
           "s69"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Where",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L92"
+          }
         ]
       },
       "norm_label": ".supersedeunconsumedtokens()",
@@ -20399,6 +23565,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.Search",
         "scope_chain": [
           "s548"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -20417,6 +23591,14 @@
         "namespace": "IAM.Endpoints.Users.VersionNeutral.Search",
         "scope_chain": [
           "s548"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EF",
+            "lang": "csharp",
+            "line": "L46"
+          }
         ]
       },
       "norm_label": ".searchusersasync()",
@@ -20543,6 +23725,14 @@
         "namespace": "IAM.Infrastructure.Captcha.Services",
         "scope_chain": [
           "s296"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "PostAsync",
+            "receiver_type": "HttpClient",
+            "lang": "csharp",
+            "line": "L33"
+          }
         ]
       },
       "norm_label": ".validateasync()",
@@ -20579,6 +23769,26 @@
         "namespace": "Common.Infrastructure.RateLimiting",
         "scope_chain": [
           "s216"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetFixedWindowLimiter",
+            "receiver_type": "RateLimitPartition",
+            "lang": "csharp",
+            "line": "L24"
+          },
+          {
+            "callee": "FromMilliseconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L27"
+          },
+          {
+            "callee": "Get",
+            "receiver_type": "RateLimitPartition",
+            "lang": "csharp",
+            "line": "L40"
+          }
         ]
       },
       "norm_label": ".fixedwindow()",
@@ -20597,6 +23807,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -20615,6 +23833,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -20651,6 +23877,14 @@
         "namespace": "Notifications.Infrastructure.Sms",
         "scope_chain": [
           "s141"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".sendasync()",
@@ -20669,6 +23903,26 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromMinutes",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L21"
+          },
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".executeasync()",
@@ -20705,6 +23959,14 @@
         "namespace": "Outbox.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Exchange",
+            "receiver_type": "Interlocked",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".setlagcount()",
@@ -20723,6 +23985,14 @@
         "namespace": "Outbox.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Exchange",
+            "receiver_type": "Interlocked",
+            "lang": "csharp",
+            "line": "L28"
+          }
         ]
       },
       "norm_label": ".setstuckcount()",
@@ -20741,6 +24011,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Search",
         "scope_chain": [
           "s566"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -20759,6 +24037,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Search",
         "scope_chain": [
           "s566"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EF",
+            "lang": "csharp",
+            "line": "L46"
+          }
         ]
       },
       "norm_label": ".searchproducttemplatesasync()",
@@ -20795,6 +24081,32 @@
         "namespace": "Common.Infrastructure.RateLimiting",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Exchange",
+            "receiver_type": "Interlocked",
+            "lang": "csharp",
+            "line": "L77"
+          },
+          {
+            "callee": "GetTimestamp",
+            "receiver_type": "Stopwatch",
+            "lang": "csharp",
+            "line": "L77"
+          },
+          {
+            "callee": "GetDatabase",
+            "receiver_type": "IConnectionMultiplexer",
+            "lang": "csharp",
+            "line": "L81"
+          },
+          {
+            "callee": "FromMilliseconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L94"
+          }
         ]
       },
       "norm_label": ".acquireasynccore()",
@@ -20885,6 +24197,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.AddProduct",
         "scope_chain": [
           "s401"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -20903,6 +24223,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s112"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddEndpointFilter<ResultToResponseTransformer<T>>",
+            "receiver_type": "RouteHandlerBuilder",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".transformresultto()",
@@ -20921,6 +24249,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s112"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddEndpointFilter<ResultToCreatedResponseTransformer<T>>",
+            "receiver_type": "RouteHandlerBuilder",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".transformresulttocreatedresponse()",
@@ -20939,6 +24275,14 @@
         "namespace": "Common.Application.Extensions",
         "scope_chain": [
           "s112"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddEndpointFilter<ResultToResponseTransformer>",
+            "receiver_type": "RouteHandlerBuilder",
+            "lang": "csharp",
+            "line": "L11"
+          }
         ]
       },
       "norm_label": ".transformresulttonocontentresponse()",
@@ -20975,6 +24319,20 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s292"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton<IPostConfigureOptions<RequestLoggingOptions>, RequestLoggingPathPostConfigure>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "AddScoped<RequestResponseBodyLoggingMiddleware>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L16"
+          }
         ]
       },
       "norm_label": ".addhttprequestlogging()",
@@ -20993,6 +24351,20 @@
         "namespace": "Host.Infrastructure",
         "scope_chain": [
           "s292"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "UseSerilogRequestLogging",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "UseMiddleware<RequestResponseBodyLoggingMiddleware>",
+            "receiver_type": "IApplicationBuilder",
+            "lang": "csharp",
+            "line": "L71"
+          }
         ]
       },
       "norm_label": ".usehttprequestlogging()",
@@ -21011,6 +24383,14 @@
         "namespace": "Common.InterModuleRequests",
         "scope_chain": [
           "s93"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddTransient",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L9"
+          }
         ]
       },
       "norm_label": ".addcommonintermodulerequests()",
@@ -21029,6 +24409,14 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s617"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetType",
+            "receiver_type": "Exception",
+            "lang": "csharp",
+            "line": "L132"
+          }
         ]
       },
       "norm_label": ".islockcontention()",
@@ -21137,6 +24525,20 @@
         "namespace": "Outbox",
         "scope_chain": [
           "s617"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Sleep",
+            "receiver_type": "Thread",
+            "lang": "csharp",
+            "line": "L123"
+          },
+          {
+            "callee": "Min",
+            "receiver_type": "Math",
+            "lang": "csharp",
+            "line": "L124"
+          }
         ]
       },
       "norm_label": ".registerwithretry()",
@@ -21191,6 +24593,14 @@
         "namespace": "Products.Endpoints.ProductTemplates.v1.Get",
         "scope_chain": [
           "s376"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -21353,6 +24763,14 @@
         "namespace": "Common.Infrastructure.Persistence.Auditing",
         "scope_chain": [
           "s186"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetUtcNow",
+            "receiver_type": "TimeProvider",
+            "lang": "csharp",
+            "line": "L25"
+          }
         ]
       },
       "norm_label": ".savingchangesasync()",
@@ -21389,6 +24807,14 @@
         "namespace": "Common.Infrastructure.Persistence.Auditing",
         "scope_chain": [
           "s49"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScoped<ApplyAuditingInterceptor>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L9"
+          }
         ]
       },
       "norm_label": ".addauditinginterceptors()",
@@ -21407,6 +24833,26 @@
         "namespace": "Common.Infrastructure.Persistence.DbContext",
         "scope_chain": [
           "s243"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddDbContext<TContextImplementation>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "FirstOrDefault",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L29"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L32"
+          }
         ]
       },
       "norm_label": ".addmoduledbcontext()",
@@ -21443,6 +24889,20 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s91"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetString",
+            "receiver_type": "Utf8JsonReader",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "TryParse",
+            "receiver_type": "DateTimeOffset",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".read()",
@@ -21461,6 +24921,14 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s91"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteStringValue",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".write()",
@@ -21479,6 +24947,32 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s101"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Read",
+            "receiver_type": "Utf8JsonReader",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "GetString",
+            "receiver_type": "Utf8JsonReader",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L26"
+          },
+          {
+            "callee": "Parse",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L26"
+          }
         ]
       },
       "norm_label": ".read()",
@@ -21497,6 +24991,26 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s101"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteStartArray",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L34"
+          },
+          {
+            "callee": "WriteStringValue",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L37"
+          },
+          {
+            "callee": "WriteEndArray",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L40"
+          }
         ]
       },
       "norm_label": ".write()",
@@ -21533,6 +25047,32 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s101"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetString",
+            "receiver_type": "Utf8JsonReader",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "Parse",
+            "receiver_type": "DefaultIdType",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "GetUnderlyingType",
+            "receiver_type": "Nullable",
+            "lang": "csharp",
+            "line": "L77"
+          },
+          {
+            "callee": "CreateInstance",
+            "receiver_type": "Activator",
+            "lang": "csharp",
+            "line": "L81"
+          }
         ]
       },
       "norm_label": ".read()",
@@ -21605,6 +25145,14 @@
         "namespace": "Common.Application.JsonConverters",
         "scope_chain": [
           "s101"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteStringValue",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L22"
+          }
         ]
       },
       "norm_label": ".write()",
@@ -21641,6 +25189,20 @@
         "namespace": "Common.Infrastructure.Persistence.ValueConverters",
         "scope_chain": [
           "s91"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ParseValue",
+            "receiver_type": "JsonDocument",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "Deserialize",
+            "receiver_type": "JsonSerializer",
+            "lang": "csharp",
+            "line": "L29"
+          }
         ]
       },
       "norm_label": ".read()",
@@ -21659,6 +25221,14 @@
         "namespace": "Common.Infrastructure.Persistence.ValueConverters",
         "scope_chain": [
           "s91"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetType",
+            "receiver_type": "Type",
+            "lang": "csharp",
+            "line": "L61"
+          }
         ]
       },
       "norm_label": ".resolvetype()",
@@ -21677,6 +25247,44 @@
         "namespace": "Common.Infrastructure.Persistence.ValueConverters",
         "scope_chain": [
           "s91"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteStartObject",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L50"
+          },
+          {
+            "callee": "WriteString",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L51"
+          },
+          {
+            "callee": "WritePropertyName",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L53"
+          },
+          {
+            "callee": "Serialize",
+            "receiver_type": "JsonSerializer",
+            "lang": "csharp",
+            "line": "L54"
+          },
+          {
+            "callee": "GetType",
+            "receiver_type": "T",
+            "lang": "csharp",
+            "line": "L54"
+          },
+          {
+            "callee": "WriteEndObject",
+            "receiver_type": "Utf8JsonWriter",
+            "lang": "csharp",
+            "line": "L56"
+          }
         ]
       },
       "norm_label": ".write()",
@@ -21713,6 +25321,14 @@
         "namespace": "Products.Endpoints.Products.v1.My.Get",
         "scope_chain": [
           "s331"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -21731,6 +25347,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FlushAsync",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L430"
+          }
         ]
       },
       "norm_label": ".flushasync()",
@@ -21749,6 +25373,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "WriteAsync",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L414"
+          }
         ]
       },
       "norm_label": ".writeasync()",
@@ -21767,6 +25399,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FlushAsync",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L320"
+          }
         ]
       },
       "norm_label": ".flushasync()",
@@ -21785,6 +25425,14 @@
         "namespace": "Host.Middlewares",
         "scope_chain": [
           "s127"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ReadAsync",
+            "receiver_type": "Stream",
+            "lang": "csharp",
+            "line": "L301"
+          }
         ]
       },
       "norm_label": ".readasync()",
@@ -21821,6 +25469,14 @@
         "namespace": "Products.Endpoints.Stores.v1.My.Create",
         "scope_chain": [
           "s366"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapPost",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -21839,6 +25495,14 @@
         "namespace": "IAM.Infrastructure.RateLimiting",
         "scope_chain": [
           "s264"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetIpAddress",
+            "receiver_type": "HttpContext",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".getpartition()",
@@ -21893,6 +25557,14 @@
         "namespace": "Notifications.Infrastructure.Push",
         "scope_chain": [
           "s142"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "FromResult",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".sendasync()",
@@ -21911,6 +25583,14 @@
         "namespace": "Notifications.Infrastructure.Push.Firebase",
         "scope_chain": [
           "s397"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Skip",
+            "receiver_type": "IReadOnlyList",
+            "lang": "csharp",
+            "line": "L140"
+          }
         ]
       },
       "norm_label": ".chunk()",
@@ -21929,6 +25609,14 @@
         "namespace": "Notifications.Infrastructure.Push.Firebase",
         "scope_chain": [
           "s397"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Delete",
+            "receiver_type": "FirebaseApp",
+            "lang": "csharp",
+            "line": "L134"
+          }
         ]
       },
       "norm_label": ".dispose()",
@@ -22001,6 +25689,20 @@
         "namespace": "Notifications.Infrastructure.Push.Firebase",
         "scope_chain": [
           "s397"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateLinkedTokenSource",
+            "receiver_type": "CancellationTokenSource",
+            "lang": "csharp",
+            "line": "L89"
+          },
+          {
+            "callee": "SendEachForMulticastAsync",
+            "receiver_type": "FirebaseMessaging",
+            "lang": "csharp",
+            "line": "L95"
+          }
         ]
       },
       "norm_label": ".sendcoreasync()",
@@ -22019,6 +25721,26 @@
         "namespace": "Notifications.Infrastructure.Push",
         "scope_chain": [
           "s213"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "AddSingleton<IPushGateway, DummyPushGateway>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L18"
+          },
+          {
+            "callee": "AddSingleton<IPushGateway, FirebasePushGateway>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".addpushservices()",
@@ -22037,6 +25759,14 @@
         "namespace": "Notifications.Infrastructure.Telemetry",
         "scope_chain": [
           "s61"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Add",
+            "receiver_type": "Counter",
+            "lang": "csharp",
+            "line": "L87"
+          }
         ]
       },
       "norm_label": ".recordpushtokenrejected()",
@@ -22055,6 +25785,20 @@
         "namespace": "Common.Infrastructure.EventBus",
         "scope_chain": [
           "s174"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartActivity",
+            "receiver_type": "ActivitySource",
+            "lang": "csharp",
+            "line": "L17"
+          },
+          {
+            "callee": "GetServices",
+            "receiver_type": "IServiceProvider",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".dispatchasync()",
@@ -22109,6 +25853,20 @@
         "namespace": "Common.Infrastructure.EventBus",
         "scope_chain": [
           "s109"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScoped<EventDispatcher>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "Scan",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".addcommoneventhandling()",
@@ -22127,6 +25885,14 @@
         "namespace": "Products.Endpoints.Stores.v1.Search",
         "scope_chain": [
           "s556"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -22145,6 +25911,14 @@
         "namespace": "Products.Endpoints.Stores.v1.Search",
         "scope_chain": [
           "s556"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EF",
+            "lang": "csharp",
+            "line": "L46"
+          }
         ]
       },
       "norm_label": ".searchstoresasync()",
@@ -22217,6 +25991,14 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s182"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceProvider",
+            "lang": "csharp",
+            "line": "L20"
+          }
         ]
       },
       "norm_label": ".ensurenomigrationspending()",
@@ -22289,6 +26071,20 @@
         "namespace": "Common.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s218"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L14"
+          },
+          {
+            "callee": "HasKey",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L42"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -22307,6 +26103,44 @@
         "namespace": "IAM.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s378"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ToTable",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          },
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L20"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L41"
+          },
+          {
+            "callee": "HasOne<ApplicationUser>",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L45"
+          },
+          {
+            "callee": "HasMany",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L50"
+          },
+          {
+            "callee": "Navigation",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L55"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -22325,6 +26159,32 @@
         "namespace": "Products.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s367"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L19"
+          },
+          {
+            "callee": "HasOne",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          },
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L56"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L61"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -22343,6 +26203,32 @@
         "namespace": "Products.Infrastructure.Persistence.EntityConfigurations",
         "scope_chain": [
           "s333"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L18"
+          },
+          {
+            "callee": "HasIndex",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L23"
+          },
+          {
+            "callee": "Navigation",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L42"
+          },
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EntityTypeBuilder",
+            "lang": "csharp",
+            "line": "L56"
+          }
         ]
       },
       "norm_label": ".configure()",
@@ -22361,6 +26247,14 @@
         "namespace": "Common.Infrastructure.Extensions",
         "scope_chain": [
           "s99"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "StartActivity",
+            "receiver_type": "ActivitySource",
+            "lang": "csharp",
+            "line": "L87"
+          }
         ]
       },
       "norm_label": ".startactivityforcaller()",
@@ -22379,6 +26273,20 @@
         "namespace": "Common.Infrastructure.Extensions",
         "scope_chain": [
           "s99"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SetStatus",
+            "receiver_type": "Activity",
+            "lang": "csharp",
+            "line": "L27"
+          },
+          {
+            "callee": "SetTag",
+            "receiver_type": "Activity",
+            "lang": "csharp",
+            "line": "L28"
+          }
         ]
       },
       "norm_label": ".tapactivity()",
@@ -22397,6 +26305,14 @@
         "namespace": "Common.Infrastructure.Extensions",
         "scope_chain": [
           "s99"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "ConfigureAwait",
+            "receiver_type": "Task",
+            "lang": "csharp",
+            "line": "L43"
+          }
         ]
       },
       "norm_label": ".tapactivityasync()",
@@ -22541,6 +26457,14 @@
         "namespace": "Host.Configurations",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddJsonFile",
+            "receiver_type": "ConfigurationManager",
+            "lang": "csharp",
+            "line": "L45"
+          }
         ]
       },
       "norm_label": ".addjsonfile()",
@@ -22577,6 +26501,20 @@
         "namespace": "Common.InterModuleRequests.Contracts",
         "scope_chain": [
           "s90"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "After",
+            "receiver_type": "RequestTimeout",
+            "lang": "csharp",
+            "line": "L16"
+          },
+          {
+            "callee": "CreateRequestClient<TRequest>",
+            "receiver_type": "IClientFactory",
+            "lang": "csharp",
+            "line": "L17"
+          }
         ]
       },
       "norm_label": ".sendasync()",
@@ -22613,6 +26551,26 @@
         "namespace": "IAM.Infrastructure.Captcha",
         "scope_chain": [
           "s248"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetSection",
+            "receiver_type": "IConfiguration",
+            "lang": "csharp",
+            "line": "L15"
+          },
+          {
+            "callee": "AddSingleton<ICaptchaService, DummyCaptchaService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L20"
+          },
+          {
+            "callee": "AddReCaptcha",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L21"
+          }
         ]
       },
       "norm_label": ".addcaptchainfrastructure()",
@@ -22631,6 +26589,20 @@
         "namespace": "IAM.Infrastructure.Captcha",
         "scope_chain": [
           "s248"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddResilientHttpClient<ICaptchaService, ReCaptchaService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L28"
+          },
+          {
+            "callee": "FromSeconds",
+            "receiver_type": "TimeSpan",
+            "lang": "csharp",
+            "line": "L40"
+          }
         ]
       },
       "norm_label": ".addrecaptcha()",
@@ -22667,6 +26639,14 @@
         "namespace": "IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get",
         "scope_chain": [
           "s260"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L15"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -22685,6 +26665,14 @@
         "namespace": "IAM.Endpoints.Captcha.VersionNeutral",
         "scope_chain": [
           "s184"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGroup",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L12"
+          }
         ]
       },
       "norm_label": ".mapcaptchaendpoints()",
@@ -22703,6 +26691,14 @@
         "namespace": "Products.Endpoints.Products.v1.My.Search",
         "scope_chain": [
           "s558"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -22721,6 +26717,14 @@
         "namespace": "Products.Endpoints.Products.v1.My.Search",
         "scope_chain": [
           "s558"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EF",
+            "lang": "csharp",
+            "line": "L47"
+          }
         ]
       },
       "norm_label": ".searchmyproductsasync()",
@@ -22739,6 +26743,20 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s159"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TrySetResult",
+            "receiver_type": "TaskCompletionSource",
+            "lang": "csharp",
+            "line": "L25"
+          },
+          {
+            "callee": "CreateScope",
+            "receiver_type": "IServiceScopeFactory",
+            "lang": "csharp",
+            "line": "L31"
+          }
         ]
       },
       "norm_label": ".executeasync()",
@@ -22865,6 +26883,14 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TrySetResult",
+            "receiver_type": "TaskCompletionSource",
+            "lang": "csharp",
+            "line": "L19"
+          }
         ]
       },
       "norm_label": ".markcomplete()",
@@ -22883,6 +26909,14 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s0"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TrySetException",
+            "receiver_type": "TaskCompletionSource",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".markfaulted()",
@@ -22919,6 +26953,14 @@
         "namespace": "Common.Infrastructure.Persistence",
         "scope_chain": [
           "s233"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddSingleton",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".addcommonpersistence()",
@@ -22973,6 +27015,14 @@
         "namespace": "Common.Infrastructure.Persistence.AuditLog",
         "scope_chain": [
           "s162"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "GetService<IRecurringBackgroundJobs>",
+            "receiver_type": "IServiceProvider",
+            "lang": "csharp",
+            "line": "L22"
+          }
         ]
       },
       "norm_label": ".startasync()",
@@ -23063,6 +27113,26 @@
         "namespace": "Common.Infrastructure.Persistence.AuditLog",
         "scope_chain": [
           "s121"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "OpenConnectionAsync",
+            "receiver_type": "NpgsqlDataSource",
+            "lang": "csharp",
+            "line": "L22"
+          },
+          {
+            "callee": "Add",
+            "receiver_type": "List",
+            "lang": "csharp",
+            "line": "L39"
+          },
+          {
+            "callee": "ExecuteNonQueryAsync",
+            "receiver_type": "NpgsqlCommand",
+            "lang": "csharp",
+            "line": "L66"
+          }
         ]
       },
       "norm_label": ".purgeexpiredentriesasync()",
@@ -23081,6 +27151,20 @@
         "namespace": "Common.Infrastructure.Persistence.AuditLog",
         "scope_chain": [
           "s49"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "AddScoped<AuditLogRetentionService>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L13"
+          },
+          {
+            "callee": "AddHostedService<AuditLogRetentionJobRegistrar>",
+            "receiver_type": "IServiceCollection",
+            "lang": "csharp",
+            "line": "L14"
+          }
         ]
       },
       "norm_label": ".addauditlogservices()",
@@ -23099,6 +27183,14 @@
         "namespace": "Products.Endpoints.Products.v1.Search",
         "scope_chain": [
           "s558"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "MapGet",
+            "receiver_type": "RouteGroupBuilder",
+            "lang": "csharp",
+            "line": "L24"
+          }
         ]
       },
       "norm_label": ".mapendpoint()",
@@ -23117,6 +27209,14 @@
         "namespace": "Products.Endpoints.Products.v1.Search",
         "scope_chain": [
           "s558"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "Property<NpgsqlTsVector>",
+            "receiver_type": "EF",
+            "lang": "csharp",
+            "line": "L47"
+          }
         ]
       },
       "norm_label": ".searchstoreproductsasync()",
@@ -23153,6 +27253,14 @@
         "namespace": "Common.Application.Auth",
         "scope_chain": [
           "s34"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "TryGetValue",
+            "receiver_type": "FrozenDictionary",
+            "lang": "csharp",
+            "line": "L84"
+          }
         ]
       },
       "norm_label": ".forrole()",
@@ -23171,6 +27279,14 @@
         "namespace": "Common.Application.Auth",
         "scope_chain": [
           "s34"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "SelectMany",
+            "receiver_type": "IEnumerable",
+            "lang": "csharp",
+            "line": "L87"
+          }
         ]
       },
       "norm_label": ".forroles()",
@@ -23189,6 +27305,14 @@
         "namespace": "Common.Application.Auth",
         "scope_chain": [
           "s40"
+        ],
+        "unresolved_calls": [
+          {
+            "callee": "RequireAuthorization",
+            "receiver_type": "RouteHandlerBuilder",
+            "lang": "csharp",
+            "line": "L10"
+          }
         ]
       },
       "norm_label": ".musthavepermission()",
@@ -143780,5 +147904,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "389abbf13726fb8cccd5c13531491e1ed4a4e00a"
+  "built_at_commit": "2d1e7b4f67a26d58571a7cd829b1fffb6719aaed"
 }
