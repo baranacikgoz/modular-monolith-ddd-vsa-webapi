@@ -1,16 +1,15 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Domain.ResultMonad;
-using Common.Infrastructure.Persistence.Extensions;
-using IAM.Application.Persistence;
+using Common.Infrastructure.Extensions;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Notifications;
+using IAM.Application.Keycloak;
 using IAM.Domain.Errors;
-using IAM.Domain.Identity;
-using IAM.Domain.Identity.Sessions;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.Sessions.Revoke;
 
@@ -21,7 +20,7 @@ internal static class Endpoint
         sessionsApiGroup
             .MapDelete("{id}", RevokeSession)
             .WithDescription("Sign out one specific session (device/app).")
-            .MustHavePermission(CustomActions.DeleteMy, CustomResources.ApplicationUsers)
+            .RequireScope(KeycloakScopes.Sessions.RevokeOwn)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }
@@ -29,23 +28,25 @@ internal static class Endpoint
     private static async Task<Result> RevokeSession(
         [AsParameters] Request request,
         ICurrentUser currentUser,
-        IIAMDbContext dbContext,
-        TimeProvider timeProvider,
+        IKeycloakAdminClient adminClient,
+        IInterModuleRequestClient<DeactivateDeviceSessionsRequest, DeactivateDeviceSessionsResponse> deviceClient,
         CancellationToken cancellationToken)
     {
-        // Filtered by (Id, UserId): a session belonging to another user resolves as not-owned —
-        // never leak existence of another user's session id.
-        return await dbContext
-            .Users
-            .Include(u => u.Sessions.Where(s => s.Id == request.Id))
-            .TagWith(nameof(RevokeSession), currentUser.Id, request.Id)
-            .Where(u => u.Id == currentUser.Id)
-            .SingleAsResultAsync(nameof(ApplicationUser), cancellationToken)
-            .TapAsync(user => user.Sessions.SingleOrDefault() is not null
-                ? Result.Success
+        using var activity = IamTelemetry.ActivitySource.StartActivityForCaller();
+
+        // Ownership check against the caller's own session list: another user's session id resolves as
+        // not-found, never revealing that it exists.
+        var sessions = await adminClient.GetUserSessionsAsync(currentUser.Id, cancellationToken);
+
+        return await Result<string>.Success(request.Id)
+            .Bind(sid => sessions.Any(s => string.Equals(s.Id, sid, StringComparison.Ordinal))
+                ? Result<string>.Success(sid)
                 : TokenErrors.SessionNotFound)
-            .TapAsync(user => user.RevokeSession(user.Sessions.Single(), SessionRevokedReason.UserSignedOut, timeProvider.GetUtcNow()))
-            .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken))
-            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReason.UserSignedOut));
+            .TapAsync(sid => adminClient.DeleteSessionAsync(sid, cancellationToken))
+            .TapAsync(sid => deviceClient.SendAsync(
+                new DeactivateDeviceSessionsRequest(currentUser.Id, [sid]), cancellationToken))
+            .TapAsync(_ => IamTelemetry.RecordSessionRevoked(SessionRevokedReasons.RevokedByUser))
+            .TapActivityAsync(activity)
+            .MapAsync(_ => Result.Success);
     }
 }

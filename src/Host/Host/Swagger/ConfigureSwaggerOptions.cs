@@ -23,20 +23,11 @@ internal sealed class ConfigureSwaggerOptions(
             new OpenApiSecurityScheme
             {
                 Name = "Authorization",
-                Description = "Enter your Bearer token without 'Bearer ' prefix.",
+                Description = "Keycloak access token obtained through POST /tokens (phone + OTP) or POST /tokens/email. Enter it without the 'Bearer ' prefix.",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
                 Scheme = "Bearer"
-            });
-
-        options.AddSecurityDefinition("ApiKey",
-            new OpenApiSecurityScheme
-            {
-                Name = "X-Api-Key",
-                Description = "Machine-caller credential — see ApiKeysOptions.",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
             });
 
         options.AddSecurityRequirement(document =>

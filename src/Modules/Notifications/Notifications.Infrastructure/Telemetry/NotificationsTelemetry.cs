@@ -85,4 +85,11 @@ internal static class NotificationsTelemetry
 
     public static void RecordPushTokenRejected(string fcmCode) =>
         PushTokensRejected.Add(1, new KeyValuePair<string, object?>("fcm.code", fcmCode));
+
+    public static readonly Counter<long> DeviceRegistrationsReconciled =
+        Meter.CreateCounter<long>("notifications.devices.reconciled", "registrations",
+            "Total device registrations deactivated by the recurring reconcile against Keycloak's live sessions.");
+
+    public static void RecordDeviceRegistrationsReconciled(int deactivatedCount) =>
+        DeviceRegistrationsReconciled.Add(deactivatedCount);
 }

@@ -1,67 +1,52 @@
 using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using Bogus;
+using System.Net.Http.Json;
 using Common.Tests;
-using IAM.Application.Persistence;
-using IAM.Domain.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace IAM.Tests.Endpoints.Users;
 
 [Collection("IntegrationTestCollection")]
-public class GetTests : BaseIntegrationTest
+public class GetTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly Faker _faker = new();
+    private sealed record UserResponse(
+        Guid Id, string Username, string? FirstName, string? LastName, string? Email, string? PhoneNumber,
+        DateOnly? BirthDate, bool Enabled, DateTimeOffset CreatedOn);
 
-    public GetTests(IntegrationTestWebAppFactory factory) : base(factory)
+    [Fact]
+    public async Task GetUser_AsStaff_ReturnsUser()
     {
+        var target = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
+        var staff = await IamTestClient.LoginByEmailAsync(Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword);
+
+        var user = await IamTestClient.Authorized(Factory, staff)
+            .GetFromJsonAsync<UserResponse>(new Uri($"/users/{target.Subject}", UriKind.Relative));
+
+        Assert.NotNull(user);
+        Assert.Equal(target.Subject, user.Id.ToString());
+        Assert.Equal(SeedUsers.BasicPhone, user.Username);
+        Assert.Equal(SeedUsers.BasicFirstName, user.FirstName);
+        Assert.True(user.Enabled);
     }
 
     [Fact]
-    public async Task GetUser_WithValidId_ReturnsUserResponse()
+    public async Task GetUser_AsBasicUser_Returns403()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var basic = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
 
-        var user = ApplicationUser.Create(
-            _faker.Name.FullName(),
-            "555" + _faker.Random.Number(1000000, 9999999), // Valid looking TR phone
-            DateOnly.FromDateTime(_faker.Date.Past(30))
-        );
+        using var response = await IamTestClient.Authorized(Factory, basic)
+            .GetAsync(new Uri($"/users/{basic.Subject}", UriKind.Relative));
 
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
 
-        var client = Factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+    [Fact]
+    public async Task GetUser_UnknownId_Returns404()
+    {
+        var staff = await IamTestClient.LoginByEmailAsync(Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword);
 
-        // Simulating the auth context since we bypass it for now or assume internal/authorized
-        // We'd typically inject an admin token but since permission is required (CustomActions.Read, CustomResources.ApplicationUsers), 
-        // we might need to mock ClaimsPrincipal or use a test auth handler if the permission checks are strictly enforced in tests.
-        // For simplicity and to see if the pipeline requires it, let's just make the call first.
+        using var response = await IamTestClient.Authorized(Factory, staff)
+            .GetAsync(new Uri($"/users/{Guid.NewGuid()}", UriKind.Relative));
 
-        // Act
-        var response = await client.GetAsync(new Uri($"/users/{user.Id}", UriKind.Relative));
-
-        // Assert
-        // Let pipeline tell us if we miss auth or if it passes
-        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-        {
-            Assert.Fail($"Endpoint requires authentication/authorization. Received: {response.StatusCode}");
-        }
-
-        response.EnsureSuccessStatusCode();
-
-        var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(rawJson);
-        var root = doc.RootElement;
-
-        Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());
-        Assert.Equal(user.FullName, root.GetProperty("fullName").GetString());
-        Assert.Equal(user.PhoneNumber, root.GetProperty("phoneNumber").GetString());
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }

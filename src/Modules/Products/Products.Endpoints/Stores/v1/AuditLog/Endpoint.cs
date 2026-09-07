@@ -19,7 +19,7 @@ internal static class Endpoint
         storeProductsApiGroup
             .MapGet("{id}/audit-log", GetStoreAuditLogAsync)
             .WithDescription("Get store's audit log.")
-            .MustHavePermission(CustomActions.Read, CustomResources.Stores)
+            .RequireScope(KeycloakScopes.Stores.View)
             .Produces<PaginationResponse<AuditLogDto>>()
             .TransformResultTo<PaginationResponse<AuditLogDto>>();
     }

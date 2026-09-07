@@ -29,8 +29,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
         await using (var scope = _factory.Services.CreateAsyncScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-            var message = OutboxMessage.Create(now, new UserRegisteredIntegrationEvent(
-                ApplicationUserId.New(), "Test User", "+905550000001"));
+            var message = OutboxMessage.Create(now, new StoreCreatedIntegrationEvent(DefaultIdType.CreateVersion7(), ApplicationUserId.New()));
             message.IncrementRetryCount(now, TimeSpan.FromMinutes(10)); // NextRetryAt far in future
             db.OutboxMessages.Add(message);
             await db.SaveChangesAsync();
@@ -60,8 +59,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
         await using (var scope = _factory.Services.CreateAsyncScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
-            var message = OutboxMessage.Create(now, new UserRegisteredIntegrationEvent(
-                ApplicationUserId.New(), "Test User", "+905550000002"));
+            var message = OutboxMessage.Create(now, new StoreCreatedIntegrationEvent(DefaultIdType.CreateVersion7(), ApplicationUserId.New()));
             // NextRetryAt is null — processor must pick it up on the next poll
             db.OutboxMessages.Add(message);
             await db.SaveChangesAsync();

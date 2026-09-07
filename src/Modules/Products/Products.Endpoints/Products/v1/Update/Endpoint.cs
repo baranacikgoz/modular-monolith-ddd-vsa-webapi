@@ -17,7 +17,7 @@ internal static class Endpoint
         productsApiGroup
             .MapPut("{id}", UpdateProductAsync)
             .WithDescription("Update a product.")
-            .MustHavePermission(CustomActions.Update, CustomResources.Products)
+            .RequireScope(KeycloakScopes.Products.Update)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

@@ -61,6 +61,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol"/>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql"/>
     <PackageReference Include="AspNetCore.HealthChecks.Redis"/>
+    <PackageReference Include="AspNetCore.HealthChecks.Uris"/>
     <PackageReference Include="MassTransit.RabbitMQ"/>
     <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ"/>
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client"/>

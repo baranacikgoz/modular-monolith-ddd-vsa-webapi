@@ -1,0 +1,11 @@
+{
+  "DevicesOptions": {
+    "AllowedClientIds": [
+      "mobile-app-1",
+      "mobile-app-2",
+      "web-app-1"
+    ],
+    "ReconcileCron": "0 */6 * * *",
+    "ReconcileBatchSize": 200
+  }
+}

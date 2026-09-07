@@ -81,7 +81,7 @@ This architecture removes "extract later" from the equation entirely — because
 
 ### 6. Each module owns its own `DbContext`
 
-**Decision:** Each module defines its own `DbContext` interface (`IIAMDbContext`, `IProductsDbContext`, etc.) and implementation. No module accesses another module's `DbContext`.
+**Decision:** Each module defines its own `DbContext` interface (`IProductsDbContext`, `INotificationsDbContext`, etc.; IAM owns no database, it brokers Keycloak) and implementation. No module accesses another module's `DbContext`.
 
 **Why:** This enforces data boundary ownership at the application layer. When a module is split into its own process, its `DbContext` connection string can be pointed to a separate database with a single configuration change — no code migration required. The data isolation exists architecturally before it exists physically.
 

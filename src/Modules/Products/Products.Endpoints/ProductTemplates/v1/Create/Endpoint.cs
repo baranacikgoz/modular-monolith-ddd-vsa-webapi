@@ -16,7 +16,7 @@ internal static class Endpoint
         productTemplatesApiGroup
             .MapPost("", CreateProductTemplateAsync)
             .WithDescription("Create a product template.")
-            .MustHavePermission(CustomActions.Create, CustomResources.ProductTemplates)
+            .RequireScope(KeycloakScopes.ProductTemplates.Create)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

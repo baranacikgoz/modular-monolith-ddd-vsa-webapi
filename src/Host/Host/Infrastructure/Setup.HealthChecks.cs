@@ -60,6 +60,20 @@ internal static partial class Setup
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
+        // Readiness: Keycloak reachable. Every login and every uncached permission decision needs it, so a
+        // realm whose discovery document cannot be fetched means the instance cannot serve authenticated traffic.
+        // Only when the IAM module runs in this instance: a Products-only process never talks to Keycloak.
+        // The URL is resolved per probe from IOptions so runtime overrides (tests, env vars) apply.
+        if (services.IsModuleActive("IAM"))
+        {
+            builder.AddUrlGroup(
+                sp => new Uri(
+                    $"{sp.GetRequiredService<IOptions<KeycloakOptions>>().Value.Authority}/.well-known/openid-configuration"),
+                name: "keycloak",
+                tags: [ReadyTag],
+                timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
+        }
+
         // Readiness: RabbitMQ connectivity is owned by MassTransit's "masstransit-bus" health check
         // (tagged "ready" in AddCustomMassTransit). It probes the already-open bus connection instead
         // of dialing a brand-new AMQP connection on every probe, so there is no custom check here.

@@ -10,6 +10,18 @@
       "ClientId": "myClientId",
       "TokenUri": "https://oauth2.googleapis.com/token"
     },
-    "SendTimeoutSeconds": 8
+    "SendTimeoutSeconds": 8,
+    "Templates": {
+      "SecurityAlert": {
+        "en": {
+          "Title": "Security alert",
+          "Body": "One of your sessions was signed out because of a suspicious sign-in. If this was not you, sign in again and review your sessions."
+        },
+        "tr": {
+          "Title": "Güvenlik uyarısı",
+          "Body": "Şüpheli bir giriş nedeniyle oturumlarınızdan biri kapatıldı. Bu siz değilseniz tekrar giriş yapıp oturumlarınızı kontrol edin."
+        }
+      }
+    }
   }
 }

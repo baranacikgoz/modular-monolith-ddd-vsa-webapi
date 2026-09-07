@@ -1,17 +1,21 @@
-using Common.Application.DTOs;
 using Common.Domain.StronglyTypedIds;
 
 namespace IAM.Endpoints.Users.VersionNeutral.Me.Get;
 
-public sealed record Response : AuditableEntityResponse<ApplicationUserId>
+public sealed record Response
 {
-    public required string FullName { get; init; }
-    public required string PhoneNumber { get; init; }
-    public required DateOnly BirthDate { get; init; }
+    public required ApplicationUserId Id { get; init; }
+    public required string Username { get; init; }
+    public string? FirstName { get; init; }
+    public string? LastName { get; init; }
+    public string? Email { get; init; }
+    public string? PhoneNumber { get; init; }
+    public DateOnly? BirthDate { get; init; }
+    public required DateTimeOffset CreatedOn { get; init; }
 
-    /// <summary>Roles assigned to the user — UX hint only; the server enforces authorization independently.</summary>
+    /// <summary>Realm roles from the access token.</summary>
     public required IReadOnlyCollection<string> Roles { get; init; }
 
-    /// <summary>Effective permissions derived from the user's roles — for FE rendering/gating, not a security boundary.</summary>
+    /// <summary>Every <c>resource:action</c> scope Keycloak grants this token, e.g. <c>stores:create-own</c>.</summary>
     public required IReadOnlyCollection<string> Permissions { get; init; }
 }

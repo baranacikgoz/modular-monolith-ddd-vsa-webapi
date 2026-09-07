@@ -1,34 +1,74 @@
+using System.Collections.Concurrent;
 using Common.Application.Caching;
 using Common.Application.Options;
+using Common.Domain.ResultMonad;
+using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using Common.Tests;
 using IAM.Application.Captcha.Services;
+using IAM.Application.Keycloak;
+using IAM.Domain.Errors;
 using IAM.Infrastructure.Captcha.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Testcontainers.Keycloak;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
+/// <summary>
+///     Boots a real Keycloak (realm imported from <c>keycloak/realm-modular-monolith.json</c>) next to Postgres.
+///     Every IAM test goes through the real JwtBearer pipeline and real permission decisions; only OTP delivery
+///     and captcha are replaced with in-process fakes.
+/// </summary>
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
+    public const string KeycloakImage = "quay.io/keycloak/keycloak:26.7";
+
+    private readonly KeycloakContainer _keycloakContainer = new KeycloakBuilder(KeycloakImage)
+        .WithRealm(TestPaths.RealmFile)
+        .Build();
+
+    public string KeycloakBaseAddress => _keycloakContainer.GetBaseAddress().TrimEnd('/');
+
     protected override string[] GetActiveModules()
     {
-        return ["IAM", "Outbox"];
+        // Notifications owns the device registry every login binds to; Outbox backs its DbContext.
+        return ["IAM", "Notifications", "Outbox"];
+    }
+
+    protected override bool UseTestAuthentication => false;
+
+    public override async ValueTask InitializeAsync()
+    {
+        await _keycloakContainer.StartAsync();
+        await base.InitializeAsync();
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        await _keycloakContainer.DisposeAsync();
+        await base.DisposeAsync();
+        GC.SuppressFinalize(this);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
 
+        // Both channels: UseSetting for registration-time reads, in-memory config for runtime IOptions
+        // (the JSON config files are added after host settings and would otherwise win).
+        builder.UseSetting("KeycloakOptions:BaseUrl", KeycloakBaseAddress);
+
         builder.ConfigureAppConfiguration((_, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                { "KeycloakOptions:BaseUrl", KeycloakBaseAddress },
                 { "FeatureManagement:IAM.Captcha", "true" }
             });
         });
@@ -44,14 +84,89 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
                 InProcessSendOtpClient>();
             services.AddSingleton<IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse>,
                 InProcessVerifyOtpClient>();
+
+            services.Decorate<IKeycloakAdminClient, FaultInjectingKeycloakAdminClient>();
         });
+    }
+}
+
+/// <summary>
+///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created phone
+///     number so its role assignment fails once, without touching real Keycloak.
+/// </summary>
+internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inner) : IKeycloakAdminClient
+{
+    private static readonly ConcurrentDictionary<string, byte> PhonesToFailRoleAssignmentFor = new();
+    private static readonly ConcurrentDictionary<ApplicationUserId, byte> UserIdsPendingRoleAssignmentFailure = new();
+
+    public static void FailNextRoleAssignmentFor(string phoneNumber)
+    {
+        PhonesToFailRoleAssignmentFor[phoneNumber] = 0;
+    }
+
+    public async Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken)
+    {
+        var result = await inner.CreateUserAsync(user, cancellationToken);
+        if (result.Value is { } createdUserId && PhonesToFailRoleAssignmentFor.TryRemove(user.Username, out _))
+        {
+            UserIdsPendingRoleAssignmentFailure[createdUserId] = 0;
+        }
+
+        return result;
+    }
+
+    public Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken)
+    {
+        return UserIdsPendingRoleAssignmentFailure.TryRemove(userId, out _)
+            ? Task.FromResult<Result>(IdentityErrors.IdentityProviderUnavailable)
+            : inner.AssignRealmRoleAsync(userId, roleName, cancellationToken);
+    }
+
+    public Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.DeleteUserAsync(userId, cancellationToken);
+    }
+
+    public Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.GetUserAsync(userId, cancellationToken);
+    }
+
+    public Task<KeycloakUser?> FindUserByUsernameAsync(string username, CancellationToken cancellationToken)
+    {
+        return inner.FindUserByUsernameAsync(username, cancellationToken);
+    }
+
+    public Task<KeycloakUserPage> SearchUsersAsync(string? searchTerm, int skip, int take, CancellationToken cancellationToken)
+    {
+        return inner.SearchUsersAsync(searchTerm, skip, take, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<ApplicationUserId>> GetUserIdsInRoleAsync(string roleName, int max, CancellationToken cancellationToken)
+    {
+        return inner.GetUserIdsInRoleAsync(roleName, max, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.GetUserSessionsAsync(userId, cancellationToken);
+    }
+
+    public Task DeleteSessionAsync(string sessionId, CancellationToken cancellationToken)
+    {
+        return inner.DeleteSessionAsync(sessionId, cancellationToken);
+    }
+
+    public Task LogoutUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
+    {
+        return inner.LogoutUserAsync(userId, cancellationToken);
     }
 }
 
 internal sealed class InProcessSendOtpClient(IFusionCache cache, IOptions<OtpOptions> otpOptions)
     : IInterModuleRequestClient<SendPhoneOtpRequest, SendPhoneOtpResponse>
 {
-    private const string DummyOtp = "123456";
+    public const string DummyOtp = "123456";
 
     public async Task<SendPhoneOtpResponse> SendAsync(
         SendPhoneOtpRequest request, CancellationToken cancellationToken)

@@ -18,7 +18,7 @@ internal static class Endpoint
         v1StoresApiGroup
             .MapDelete("my/products/{id}", RemoveMyProductAsync)
             .WithDescription("Remove product from my store.")
-            .MustHavePermission(CustomActions.DeleteMy, CustomResources.Products)
+            .RequireScope(KeycloakScopes.Products.DeleteOwn)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

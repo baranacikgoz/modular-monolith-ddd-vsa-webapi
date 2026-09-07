@@ -18,6 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
+    <PackageReference Include="Testcontainers.Keycloak"/>
   </ItemGroup>
 
   <ItemGroup>

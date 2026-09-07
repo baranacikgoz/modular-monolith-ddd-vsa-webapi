@@ -65,6 +65,11 @@
       "value": "Doe"
     },
     {
+      "key": "deviceId",
+      "value": "00000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
       "key": "nationalIdentityNumber",
       "value": "12345678901"
     },
@@ -364,7 +369,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\"\n}",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\",\n    \"deviceId\": \"{{deviceId}}\",\n    \"clientId\": \"mobile-app-1\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -606,14 +611,14 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\",\n    \"name\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"nationalIdentityNumber\": \"{{nationalIdentityNumber}}\",\n    \"birthDate\": \"{{birthDate}}\",\n    \"captchaToken\": \"{{captchaToken}}\"\n}",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"otp\": \"{{otpCode}}\",\n    \"firstName\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"birthDate\": \"{{birthDate}}\",\n    \"captchaToken\": \"{{captchaToken}}\",\n    \"deviceId\": \"{{deviceId}}\",\n    \"clientId\": \"mobile-app-1\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "Register a new user.\n\n**Body:**\n- `phoneNumber` \u2014 phone that received OTP\n- `otp` \u2014 OTP from SMS\n- `name`, `lastName` \u2014 user identity\n- `nationalIdentityNumber` \u2014 11-digit TR ID\n- `birthDate` \u2014 YYYY-MM-DD\n- `captchaToken` \u2014 from Captcha step\n\nAuto-saves new user ID."
+            "description": "Register a new user.\n\n**Body:**\n- `phoneNumber` \u2014 phone that received OTP\n- `otp` \u2014 OTP from SMS\n- `firstName`, `lastName` \u2014 user identity\n- `birthDate` \u2014 dd-MM-yyyy\n- `deviceId`, `clientId` \u2014 device binding (session per device)\n- `captchaToken` \u2014 from Captcha step\n\nAuto-saves new user ID."
           },
           "response": [
             {

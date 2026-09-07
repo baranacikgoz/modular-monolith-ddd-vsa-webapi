@@ -8,10 +8,8 @@ namespace Common.Infrastructure.Auth.Services;
 // Reads HttpContext.User fresh on every property access instead of snapshotting it in the
 // constructor: this type is Scoped, and ASP.NET Core only finalizes HttpContext.User (the
 // authenticated principal) after AuthenticationMiddleware runs. Anything that resolves this
-// service earlier in the same scope (e.g. inside JwtBearerEvents.OnTokenValidated, which fires
-// mid-authentication) would otherwise permanently cache an empty/anonymous principal for the rest
-// of the request, since a Scoped service is constructed once per scope regardless of when it's
-// first resolved. Reading lazily removes that resolution-order footgun entirely.
+// service earlier in the same scope would otherwise permanently cache an empty/anonymous
+// principal for the rest of the request. Reading lazily removes that resolution-order footgun.
 internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
 {
     private ClaimsPrincipal? Principal => httpContextAccessor.HttpContext?.User;
@@ -23,13 +21,14 @@ internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : IC
         get
         {
             var idAsString = IdAsString;
-            return new ApplicationUserId(string.IsNullOrEmpty(idAsString)
-                ? DefaultIdType.Empty
-                : DefaultIdType.Parse(idAsString));
+            return new ApplicationUserId(
+                !string.IsNullOrEmpty(idAsString) && DefaultIdType.TryParse(idAsString, out var parsed)
+                    ? parsed
+                    : DefaultIdType.Empty);
         }
     }
 
-    public string? IdAsString => IsAuthenticated ? Principal?.FindFirstValue(ClaimTypes.NameIdentifier) : string.Empty;
+    public string? IdAsString => IsAuthenticated ? Principal?.FindFirstValue(JwtClaimNames.Subject) : string.Empty;
 
     // S2365: recomputing (not memoizing) on every access is deliberate, see class remark above.
 #pragma warning disable S2365
@@ -38,20 +37,5 @@ internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : IC
         : [];
 #pragma warning restore S2365
 
-    public Guid? SessionId => IsAuthenticated && Guid.TryParse(Principal?.FindFirstValue(JwtClaimNames.SessionId), out var sid)
-        ? sid
-        : null;
-
-    // Role-derived permissions cover human callers (JWT); direct permission claims cover
-    // machine callers (API keys), which have no role to derive permissions from.
-    public bool HasPermission(string permission)
-    {
-        if (!IsAuthenticated)
-        {
-            return false;
-        }
-
-        return Principal!.FindAll(JwtClaimNames.Permission).Any(c => string.Equals(c.Value, permission, StringComparison.Ordinal))
-               || Roles.Any(role => CustomPermissions.ForRole(role).Contains(permission));
-    }
+    public string? SessionId => IsAuthenticated ? Principal?.FindFirstValue(JwtClaimNames.SessionId) : null;
 }

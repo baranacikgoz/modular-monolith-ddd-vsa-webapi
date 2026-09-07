@@ -11,7 +11,7 @@ namespace Common.Tests;
 #pragma warning disable CA1707 // Remove the underscores from member name
 public class AuditLogRetentionServiceTests(IntegrationTestFactory factory) : BaseIntegrationTest(factory)
 {
-    private const string Schema = "IAM";
+    private const string Schema = "Products";
 
     [Fact]
     public async Task PurgeExpiredEntries_MoreRowsThanBatchSize_DeletesAllExpiredKeepsRecent()

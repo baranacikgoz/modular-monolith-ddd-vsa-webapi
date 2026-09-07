@@ -7,8 +7,8 @@
 SLNF_BUILD = ModularMonolith.Build.slnf
 
 .PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
-        ef-add-IAM ef-add-Products ef-add-Outbox \
-        ef-script-IAM ef-script-Products ef-script-Outbox ef-script-all \
+        ef-add-Notifications ef-add-Products ef-add-Outbox \
+        ef-script-Notifications ef-script-Products ef-script-Outbox ef-script-all \
         check-migration-drift \
         perf perf-smoke perf-down \
         perf-rider perf-rider-smoke perf-rider-down \
@@ -64,15 +64,15 @@ sonar:
 	@echo "Finished SonarQube analysis."
 
 # ── EF Migration Targets ─────────────────────────────────────────────────────
-# Usage: make ef-add-IAM name=AddUserPhoneNumber
+# Usage: make ef-add-Products name=AddProductSku
 
-ef-add-IAM:
+ef-add-Notifications:
 	dotnet ef migrations add $(name) \
-		--project src/Modules/IAM/IAM.Infrastructure \
+		--project src/Modules/Notifications/Notifications.Infrastructure \
 		--startup-project src/Host/Host \
-		--context IAMDbContext \
+		--context NotificationsDbContext \
 		--output-dir Persistence/Migrations \
-		--namespace IAM.Infrastructure.Migrations
+		--namespace Notifications.Infrastructure.Migrations
 
 ef-add-Products:
 	dotnet ef migrations add $(name) \
@@ -90,19 +90,19 @@ ef-add-Outbox:
 		--output-dir Persistence/Migrations \
 		--namespace Outbox.Migrations
 
-# Usage: make ef-script-IAM
+# Usage: make ef-script-Products
 # Generates an idempotent SQL script committed under migrations/{Module}/
 
-ef-script-IAM:
-	@mkdir -p migrations/IAM
+ef-script-Notifications:
+	@mkdir -p migrations/Notifications
 	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
 	dotnet ef migrations script $(or $(from),0) $(to) \
-		--project src/Modules/IAM/IAM.Infrastructure \
+		--project src/Modules/Notifications/Notifications.Infrastructure \
 		--startup-project src/Host/Host \
-		--context IAMDbContext \
+		--context NotificationsDbContext \
 		--idempotent \
-		--output "migrations/IAM/$$output_name.sql"
-	@echo "Script written to migrations/IAM/"
+		--output "migrations/Notifications/$$output_name.sql"
+	@echo "Script written to migrations/Notifications/"
 
 ef-script-Products:
 	@mkdir -p migrations/Products
@@ -126,7 +126,7 @@ ef-script-Outbox:
 		--output "migrations/Outbox/$$output_name.sql"
 	@echo "Script written to migrations/Outbox/"
 
-ef-script-all: ef-script-IAM ef-script-Products ef-script-Outbox
+ef-script-all: ef-script-Notifications ef-script-Products ef-script-Outbox
 	@echo "All migration scripts generated."
 
 check-migration-drift:

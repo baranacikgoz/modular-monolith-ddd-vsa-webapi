@@ -20,6 +20,17 @@ public class PushOptions
 
     /// <summary>Timeout for a single FCM multicast send call.</summary>
     public int SendTimeoutSeconds { get; set; }
+
+    public required PushTemplatesOptions Templates { get; set; }
+}
+
+public sealed record PushTemplate(string Title, string Body);
+
+/// <summary>Future push kinds (e.g. OrderReady) get added here as sibling language-code dictionaries.</summary>
+public class PushTemplatesOptions
+{
+    /// <summary>Language code (e.g. "en", "tr") -> template shown for every <see cref="Common.InterModuleRequests.Notifications.SecurityAlertType" />.</summary>
+    public Dictionary<string, PushTemplate> SecurityAlert { get; } = [];
 }
 
 /// <summary>
@@ -42,6 +53,14 @@ public class PushOptionsValidator : CustomValidator<PushOptions>
 {
     public PushOptionsValidator()
     {
+        RuleFor(o => o.Templates.SecurityAlert)
+            .NotEmpty()
+            .WithMessage("Templates.SecurityAlert must contain at least one entry.");
+
+        RuleForEach(o => o.Templates.SecurityAlert)
+            .Must(kv => !string.IsNullOrWhiteSpace(kv.Value.Title) && !string.IsNullOrWhiteSpace(kv.Value.Body))
+            .WithMessage("Each Templates.SecurityAlert entry must have a non-empty Title and Body.");
+
         // DummyPushGateway is a no-op: pushes are generated but never reach the device. In
         // Production that silently bricks every push flow, so fail fast until Provider is switched
         // to Firebase (with real credentials) below.
@@ -49,7 +68,7 @@ public class PushOptionsValidator : CustomValidator<PushOptions>
             .Must((_, provider, context) => !context.IsProduction() || provider != PushProvider.Dummy)
             .WithMessage(
                 $"{nameof(PushOptions)}.{nameof(PushOptions.Provider)} is 'Dummy' in Production. Dummy push gateway is a " +
-                "no-op — notifications would never reach devices. " +
+                "no-op: notifications would never reach devices. " +
                 $"Set {nameof(PushOptions.Provider)} to 'Firebase' (with real credentials) before deploying.");
 
         When(o => o.Provider == PushProvider.Firebase, () =>

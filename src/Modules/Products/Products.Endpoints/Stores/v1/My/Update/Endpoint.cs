@@ -17,7 +17,7 @@ internal static class Endpoint
         v1StoresApiGroup
             .MapPut("my", UpdateMyStoreAsync)
             .WithDescription("Update my store.")
-            .MustHavePermission(CustomActions.UpdateMy, CustomResources.Stores)
+            .RequireScope(KeycloakScopes.Stores.UpdateOwn)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

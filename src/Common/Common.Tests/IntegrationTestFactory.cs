@@ -118,6 +118,10 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                         .Build());
 
                 services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
+
+                // resource#scope policies are normally produced by the IAM module's Keycloak provider; slice
+                // tests of other modules run without IAM (and without Keycloak), so resolve them here.
+                services.AddSingleton<IAuthorizationPolicyProvider, TestPermissionPolicyProvider>();
             }
         });
     }

@@ -58,6 +58,7 @@ services:
       - RabbitMqOptions__Port=5672
       - RabbitMqOptions__Username=guest
       - RabbitMqOptions__Password=guest
+      - KeycloakOptions__BaseUrl=http://mm.keycloak:8080
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5001/health/live || exit 1"]
       interval: 10s
@@ -97,6 +98,7 @@ services:
       - RabbitMqOptions__Port=5672
       - RabbitMqOptions__Username=guest
       - RabbitMqOptions__Password=guest
+      - KeycloakOptions__BaseUrl=http://mm.keycloak:8080
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s -o /dev/null http://localhost:5002/health/live || exit 1"]
       interval: 10s

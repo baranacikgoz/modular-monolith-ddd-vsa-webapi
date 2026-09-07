@@ -626,4 +626,64 @@
   <data name="FeatureNotAvailableTitle" xml:space="preserve">
     <value>Özellik kullanılamıyor</value>
   </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Kimlik bilgileri geçersiz.</value>
+  </data>
+  <data name="IdentityProviderUnavailable" xml:space="preserve">
+    <value>Kimlik sağlayıcısına şu anda ulaşılamıyor. Lütfen daha sonra tekrar deneyin.</value>
+  </data>
+  <data name="IdentityProviderRejectedUser" xml:space="preserve">
+    <value>Kimlik sağlayıcısı kullanıcı bilgilerini reddetti.</value>
+  </data>
+  <data name="PhoneNumberAlreadyRegistered" xml:space="preserve">
+    <value>Bu telefon numarası zaten kayıtlı.</value>
+  </data>
+  <data name="SessionNotFound" xml:space="preserve">
+    <value>Oturum bulunamadı.</value>
+  </data>
+  <data name="RegistrationNotFound" xml:space="preserve">
+    <value>Bu oturum için cihaz kaydı bulunamadı.</value>
+  </data>
+  <data name="KeycloakUser" xml:space="preserve">
+    <value>Kullanıcı</value>
+  </data>
+  <data name="DeviceRegistration" xml:space="preserve">
+    <value>Cihaz kaydı</value>
+  </data>
+  <data name="Register_FirstName_NotEmpty" xml:space="preserve">
+    <value>Ad boş olamaz.</value>
+  </data>
+  <data name="Register_FirstName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Ad yalnızca harf içerebilir.</value>
+  </data>
+  <data name="Register_FirstName_MaxLength" xml:space="preserve">
+    <value>Ad en fazla {0} karakter olabilir.</value>
+  </data>
+  <data name="Register_LastName_NotEmpty" xml:space="preserve">
+    <value>Soyad boş olamaz.</value>
+  </data>
+  <data name="Register_LastName_ContainsOnlyTurkishCharacters" xml:space="preserve">
+    <value>Soyad yalnızca harf içerebilir.</value>
+  </data>
+  <data name="Register_LastName_MaxLength" xml:space="preserve">
+    <value>Soyad en fazla {0} karakter olabilir.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_Email_NotEmpty" xml:space="preserve">
+    <value>E-posta boş olamaz.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_Email_Invalid" xml:space="preserve">
+    <value>E-posta adresi geçersiz.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_Email_MaxLength" xml:space="preserve">
+    <value>E-posta en fazla {0} karakter olabilir.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_Password_NotEmpty" xml:space="preserve">
+    <value>Şifre boş olamaz.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_Password_MaxLength" xml:space="preserve">
+    <value>Şifre en fazla {0} karakter olabilir.</value>
+  </data>
+  <data name="Tokens_Sessions_Revoke_Id_MaxLength" xml:space="preserve">
+    <value>Oturum kimliği en fazla {0} karakter olabilir.</value>
+  </data>
 </root>

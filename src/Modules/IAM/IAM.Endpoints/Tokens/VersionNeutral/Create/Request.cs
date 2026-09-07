@@ -1,8 +1,8 @@
 using Common.Application.Localization.Resources;
 using Common.Application.Options;
 using Common.Application.Validation;
+using Common.Domain.Devices;
 using FluentValidation;
-using IAM.Domain.Identity.Sessions;
 using IAM.Endpoints.Common.Validations;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +20,7 @@ public sealed record Request
 
 public sealed class RequestValidator : CustomValidator<Request>
 {
-    public RequestValidator(IResxLocalizer localizer, IOptions<JwtOptions> jwtOptions)
+    public RequestValidator(IResxLocalizer localizer, IOptions<DevicesOptions> devicesOptions)
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
@@ -40,16 +40,16 @@ public sealed class RequestValidator : CustomValidator<Request>
         RuleFor(x => x.ClientId)
             .NotEmpty()
             .WithMessage(localizer.Users_Tokens_Create_ClientId_NotEmpty)
-            .Must(jwtOptions.Value.AllowedClientIds.Contains)
+            .Must(devicesOptions.Value.AllowedClientIds.Contains)
             .WithMessage(localizer.Users_Tokens_Create_ClientId_Invalid)
             .When(x => !string.IsNullOrWhiteSpace(x.ClientId));
 
         RuleFor(x => x.DeviceName)
-            .MaximumLength(Constants.DeviceNameMaxLength)
+            .MaximumLength(DeviceSessionConstants.DeviceNameMaxLength)
             .WithMessage(localizer.Users_Tokens_Create_DeviceName_MaxLength);
 
         RuleFor(x => x.PushToken)
-            .MaximumLength(Constants.PushTokenMaxLength)
+            .MaximumLength(DeviceSessionConstants.PushTokenMaxLength)
             .WithMessage(localizer.Users_Tokens_Create_PushToken_MaxLength);
     }
 }

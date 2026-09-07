@@ -31,7 +31,7 @@ This repository includes the following features:
 - **Dynamic Module Registration**: Configuration-driven module loading via `ModulesOptions`, enabling explicit startup priority ordering and true split-deployment isolation — run any subset of modules per process without recompilation (see [Split Deployment](#split-deployment-microservice-mode)).
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
-- **Identity and Access Management (IAM)**: Provides built-in IAM capabilities.
+- **Identity and Access Management via Keycloak**: Users, roles, sessions, refresh-token rotation and fine-grained permissions (Keycloak Authorization Services) live in Keycloak, versioned as code in `keycloak/realm-modular-monolith.json`. Clients only ever talk to this API: phone + SMS OTP login for mobile apps, email + password for staff; the backend brokers both through Keycloak and evaluates `resource#scope` decisions per request (cached per token).
 - **Audit Log & Retention**: Provides a transactional audit log (via domain events) with configurable automatic retention policies to manage database growth.
 - **OpenTelemetry Support**: Integrates with Otel-Collector, Prometheus, Jaeger, and Aspire Dashboard for observability.
 - **Result Monad for Error Management**: Utilizes result monads for error handling and flow control.
@@ -40,7 +40,7 @@ This repository includes the following features:
 - **Transactional Outbox Pattern**: Ensures reliable message delivery via a custom outbox processor with lag tracking, cleanup, and distributed trace propagation.
 - **RabbitMQ & MassTransit**: Integration events delivered over RabbitMQ via MassTransit; no application-side producers — publish via outbox only.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
-- **JWT Access-Token Revocation**: Redis-backed blacklist invalidates tokens on logout/revoke with a 15-minute ceiling enforced on expiry; Jti validated on every authenticated request.
+- **Session Revocation**: Logout, per-device sign-out and sign-out-everywhere revoke the Keycloak session; the first uncached permission decision after that is rejected by Keycloak, and access tokens are capped at 5 minutes.
 - **Consumer Idempotency**: `EventHandlerBase` checks a `processed_msg:{messageId}` key in Redis before invoking the handler and writes it with a 24h TTL, ensuring at-least-once delivery without duplicate side effects.
 - **Security Headers Middleware**: Configurable `SecurityHeadersMiddleware` injects `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, and related headers on every response.
 - **Reverse Proxy / Forwarded Headers Support**: Configurable `ForwardedHeaders` middleware trusts known proxy networks and correctly propagates client IP and scheme behind load balancers.

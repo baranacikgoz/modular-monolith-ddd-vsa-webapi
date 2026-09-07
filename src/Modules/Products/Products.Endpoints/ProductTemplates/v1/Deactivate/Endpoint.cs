@@ -17,7 +17,7 @@ internal static class Endpoint
         productTemplatesApiGroup
             .MapGet("{id}/deactivate", DeactivateProductTemplateAsync)
             .WithDescription("Deactivate a product template.")
-            .MustHavePermission(CustomActions.Update, CustomResources.ProductTemplates)
+            .RequireScope(KeycloakScopes.ProductTemplates.Update)
             .Produces(StatusCodes.Status204NoContent)
             .TransformResultToNoContentResponse();
     }

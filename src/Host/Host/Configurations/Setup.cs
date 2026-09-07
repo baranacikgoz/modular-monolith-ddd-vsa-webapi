@@ -8,8 +8,8 @@ internal static class Setup
         var configuration = builder.Configuration;
 
         AddJsonFile(configuration, $"{configurationsDirectory}/localization");
-        AddJsonFile(configuration, $"{configurationsDirectory}/jwt");
-        AddJsonFile(configuration, $"{configurationsDirectory}/apikeys");
+        AddJsonFile(configuration, $"{configurationsDirectory}/keycloak");
+        AddJsonFile(configuration, $"{configurationsDirectory}/devices");
         AddJsonFile(configuration, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, $"{configurationsDirectory}/captcha");

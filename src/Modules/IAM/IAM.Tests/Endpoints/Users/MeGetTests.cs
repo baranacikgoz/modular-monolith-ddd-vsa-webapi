@@ -1,108 +1,69 @@
-using System.Globalization;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using Bogus;
+using System.Net;
+using System.Net.Http.Json;
 using Common.Application.Auth;
 using Common.Tests;
-using IAM.Application.Persistence;
-using IAM.Domain.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace IAM.Tests.Endpoints.Users;
 
 [Collection("IntegrationTestCollection")]
-public class MeGetTests : BaseIntegrationTest
+public class MeGetTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
-    private readonly Faker _faker = new();
+    internal sealed record MeResponse(
+        Guid Id, string Username, string? FirstName, string? LastName, string? Email, string? PhoneNumber,
+        DateOnly? BirthDate, DateTimeOffset CreatedOn, List<string> Roles, List<string> Permissions);
 
-    public MeGetTests(IntegrationTestWebAppFactory factory) : base(factory)
+    [Fact]
+    public async Task GetMe_BasicUser_ReturnsProfileRolesAndEffectivePermissions()
     {
+        var tokens = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
+
+        var me = await IamTestClient.Authorized(Factory, tokens)
+            .GetFromJsonAsync<MeResponse>(new Uri("/users/me", UriKind.Relative));
+
+        Assert.NotNull(me);
+        Assert.Equal(tokens.Subject, me.Id.ToString());
+        Assert.Equal(SeedUsers.BasicPhone, me.Username);
+        Assert.Equal(SeedUsers.BasicFirstName, me.FirstName);
+        Assert.Equal(SeedUsers.BasicPhone, me.PhoneNumber);
+        Assert.Equal([KeycloakRoles.Basic], me.Roles);
+        Assert.Contains(KeycloakScopes.Stores.CreateOwn, me.Permissions);
+        Assert.Contains(KeycloakScopes.Stores.View, me.Permissions);
+        Assert.DoesNotContain(KeycloakScopes.Users.Search, me.Permissions);
+        Assert.DoesNotContain(KeycloakScopes.Stores.Create, me.Permissions);
     }
 
     [Fact]
-    public async Task MeGet_WithValidAuth_ReturnsCurrentUser()
+    public async Task GetMe_SystemAdmin_HoldsStaffRoleThroughComposite()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        var tokens = await IamTestClient.LoginByEmailAsync(Factory, SeedUsers.AdminEmail, SeedUsers.AdminPassword);
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-        var user = ApplicationUser.Create(
-            _faker.Name.FullName(),
-            phoneNumber,
-            DateOnly.FromDateTime(_faker.Date.Past(30))
-        );
+        var me = await IamTestClient.Authorized(Factory, tokens)
+            .GetFromJsonAsync<MeResponse>(new Uri("/users/me", UriKind.Relative));
 
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
-        client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
-
-        // Act
-        var response = await client.GetAsync(new Uri("/users/me", UriKind.Relative));
-
-        // Assert
-        if (!response.IsSuccessStatusCode)
-        {
-            var err = await response.Content.ReadAsStringAsync();
-            Assert.Fail($"Status: {response.StatusCode}. Error: {err}");
-        }
-
-        response.EnsureSuccessStatusCode();
-
-        var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(rawJson);
-        var root = doc.RootElement;
-
-        Assert.Equal(user.Id.Value.ToString(), root.GetProperty("id").GetString());
-        Assert.Equal(user.FullName, root.GetProperty("fullName").GetString());
-        Assert.Equal(user.PhoneNumber, root.GetProperty("phoneNumber").GetString());
+        Assert.NotNull(me);
+        Assert.Contains(KeycloakRoles.SystemAdmin, me.Roles);
+        Assert.Contains(KeycloakRoles.Staff, me.Roles);
+        Assert.Contains(KeycloakScopes.Hangfire.Manage, me.Permissions);
+        Assert.Contains(KeycloakScopes.Users.Search, me.Permissions);
     }
 
     [Fact]
-    public async Task MeGet_WithRoles_ReturnsRolesAndDerivedPermissions()
+    public async Task GetMe_Anonymous_Returns401()
     {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IIAMDbContext>();
+        using var response = await Factory.CreateClient().GetAsync(new Uri("/users/me", UriKind.Relative));
 
-        var phoneNumber = "905" + _faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
-        var user = ApplicationUser.Create(
-            _faker.Name.FullName(),
-            phoneNumber,
-            DateOnly.FromDateTime(_faker.Date.Past(30))
-        );
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+    [Fact]
+    public async Task GetMe_TamperedToken_Returns401()
+    {
+        var tokens = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
+        var tampered = tokens.AccessToken[..^4] + "AAAA";
 
-        var client = Factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(TestAuthHandler.AuthenticationScheme);
-        client.DefaultRequestHeaders.Add("X-Test-User-Id", user.Id.Value.ToString());
-        client.DefaultRequestHeaders.Add("X-Test-Roles", CustomRoles.Basic);
+        using var response = await IamTestClient.Authorized(Factory, tampered).GetAsync(new Uri("/users/me", UriKind.Relative));
 
-        // Act
-        var response = await client.GetAsync(new Uri("/users/me", UriKind.Relative));
-
-        // Assert
-        response.EnsureSuccessStatusCode();
-
-        var rawJson = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(rawJson);
-        var root = doc.RootElement;
-
-        var roles = root.GetProperty("roles").EnumerateArray().Select(x => x.GetString()!).ToList();
-        Assert.Equal([CustomRoles.Basic], roles);
-
-        var permissions = root.GetProperty("permissions").EnumerateArray().Select(x => x.GetString()!).ToHashSet();
-        // Permissions are exactly those derived from the Basic role — order-independent.
-        Assert.True(permissions.SetEquals(CustomPermissions.Basic));
-        // Basic users get no admin-only permissions.
-        Assert.DoesNotContain(CustomPermission.NameFor(CustomActions.Delete, CustomResources.ApplicationUsers), permissions);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }
