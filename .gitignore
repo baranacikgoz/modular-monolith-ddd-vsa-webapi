@@ -28,11 +28,13 @@ logs/
 # Mono auto generated files
 mono_crash.*
 
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
+# Build results (root-level only - anchored with leading "/" so a REPR feature folder named
+# Debug/Release, e.g. src/Modules/*/Endpoints/*/v1/Release/, is never silently untracked; [Bb]in/
+# and [Oo]bj/ below already ignore all real SDK-style build output regardless of nesting)
+/[Dd]ebug/
+/[Dd]ebugPublic/
+/[Rr]elease/
+/[Rr]eleases/
 x64/
 x86/
 [Ww][Ii][Nn]32/
