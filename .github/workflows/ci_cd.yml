@@ -60,6 +60,8 @@ jobs:
             csproj: src/Modules/IAM/IAM.Tests/IAM.Tests.csproj
           - module: products
             csproj: src/Modules/Products/Products.Tests/Products.Tests.csproj
+          - module: inventory
+            csproj: src/Modules/Inventory/Inventory.Tests/Inventory.Tests.csproj
           - module: outbox
             csproj: src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
           - module: notifications
