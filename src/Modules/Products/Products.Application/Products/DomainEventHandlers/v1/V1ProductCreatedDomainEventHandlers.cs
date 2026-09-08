@@ -11,7 +11,7 @@ public static class V1ProductCreatedDomainEventHandlers
     {
         public override Task HandleAsync(V1ProductCreatedDomainEvent @event, CancellationToken cancellationToken)
         {
-            outbox.Collect(new ProductCreatedIntegrationEvent(@event.ProductId.Value, @event.Name, @event.Description));
+            outbox.Collect(new ProductCreatedIntegrationEvent(@event.ProductId.Value, @event.Name, @event.Description, @event.Quantity));
             return Task.CompletedTask;
         }
     }

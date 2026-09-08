@@ -58,6 +58,13 @@ public static class KeycloakScopes
         public const string Update = "product-templates:update";
     }
 
+    public static class StockReservations
+    {
+        public const string Create = "stock-reservations:create";
+        public const string View = "stock-reservations:view";
+        public const string Update = "stock-reservations:update";
+    }
+
     public static class Hangfire
     {
         public const string Manage = "hangfire:manage";

@@ -57,7 +57,7 @@ public abstract class BaseIntegrationTest : IAsyncLifetime
                 {
                     DbAdapter = DbAdapter.Postgres,
                     SchemasToInclude =
-                        new[] { "public", "Outbox", "Products", "BackgroundJobs", "Notifications" },
+                        new[] { "public", "Outbox", "Products", "BackgroundJobs", "Notifications", "Inventory" },
                     TablesToIgnore = new[] { new Table("__EFMigrationsHistory") }
                 });
         }

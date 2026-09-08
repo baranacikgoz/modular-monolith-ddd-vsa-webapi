@@ -405,6 +405,60 @@
   <data name="ProductTemplates_Search_Color_MaximumLength" xml:space="preserve">
     <value>Color can be at most ({0}) characters long.</value>
   </data>
+  <data name="StockReservations_Reserve_ProductId_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_Reserve_Quantity_GreaterThanZero" xml:space="preserve">
+    <value>Quantity must be greater than zero.</value>
+  </data>
+  <data name="StockReservations_Reserve_ReservationDeadline_NotEmpty" xml:space="preserve">
+    <value>Reservation deadline cannot be empty.</value>
+  </data>
+  <data name="StockReservations_Commit_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
+    <value>Provider reference cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
+    <value>Provider reference cannot be empty.</value>
+  </data>
+  <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_ProductId_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_QuantityPerOccurrence_GreaterThanZero" xml:space="preserve">
+    <value>Quantity per occurrence must be greater than zero.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_OccurrenceCount_GreaterThanZero" xml:space="preserve">
+    <value>Occurrence count must be greater than zero.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_IntervalDays_GreaterThanZero" xml:space="preserve">
+    <value>Interval days must be greater than zero.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_NotEmpty" xml:space="preserve">
+    <value>At least one warehouse allocation is required.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_WarehouseId_NotEmpty" xml:space="preserve">
+    <value>Warehouse ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_Quantity_GreaterThanZero" xml:space="preserve">
+    <value>Warehouse quantity must be greater than zero.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_DuplicateWarehouseId" xml:space="preserve">
+    <value>The same warehouse cannot be listed more than once.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_QuantitySumMismatch" xml:space="preserve">
+    <value>The sum of warehouse quantities must equal the quantity per occurrence.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
   </data>
@@ -422,6 +476,9 @@
   </data>
   <data name="Stores_Update_Description_NotEmpty" xml:space="preserve">
     <value>Description cannot be empty.</value>
+  </data>
+  <data name="Stores_Deactivate_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
   </data>
   <data name="Stores_Update_Id_NotEmpty" xml:space="preserve">
     <value>Store ID cannot be empty.</value>

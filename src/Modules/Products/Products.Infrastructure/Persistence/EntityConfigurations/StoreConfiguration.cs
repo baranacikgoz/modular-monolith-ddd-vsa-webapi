@@ -40,6 +40,10 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
             .IsRequired();
 
         builder
+            .Property(s => s.Status)
+            .IsRequired();
+
+        builder
             .Navigation(s => s.Products)
             .HasField("_products")
             .UsePropertyAccessMode(PropertyAccessMode.Field);

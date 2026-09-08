@@ -464,6 +464,60 @@
   <data name="ProductTemplates_Search_Color_MaximumLength" xml:space="preserve">
     <value>Renk en fazla ({0}) karakter olabilir.</value>
   </data>
+  <data name="StockReservations_Reserve_ProductId_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_Reserve_Quantity_GreaterThanZero" xml:space="preserve">
+    <value>Miktar sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="StockReservations_Reserve_ReservationDeadline_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon son tarihi boş olamaz.</value>
+  </data>
+  <data name="StockReservations_Commit_Id_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
+    <value>Sağlayıcı referansı boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
+    <value>Sağlayıcı referansı boş olamaz.</value>
+  </data>
+  <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_ProductId_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_QuantityPerOccurrence_GreaterThanZero" xml:space="preserve">
+    <value>Tekrar başına miktar sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_OccurrenceCount_GreaterThanZero" xml:space="preserve">
+    <value>Tekrar sayısı sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_IntervalDays_GreaterThanZero" xml:space="preserve">
+    <value>Aralık gün sayısı sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_NotEmpty" xml:space="preserve">
+    <value>En az bir depo tahsisi gereklidir.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_WarehouseId_NotEmpty" xml:space="preserve">
+    <value>Depo Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_Quantity_GreaterThanZero" xml:space="preserve">
+    <value>Depo miktarı sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_DuplicateWarehouseId" xml:space="preserve">
+    <value>Aynı depo birden fazla kez listelenemez.</value>
+  </data>
+  <data name="StockReservations_ReserveSeries_Warehouses_QuantitySumMismatch" xml:space="preserve">
+    <value>Depo miktarlarının toplamı, tekrar başına miktara eşit olmalıdır.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>
   </data>
@@ -481,6 +535,9 @@
   </data>
   <data name="Stores_Update_Description_NotEmpty" xml:space="preserve">
     <value>Açıklama boş olamaz.</value>
+  </data>
+  <data name="Stores_Deactivate_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
   </data>
   <data name="Stores_Update_Id_NotEmpty" xml:space="preserve">
     <value>Mağaza Id boş olamaz.</value>

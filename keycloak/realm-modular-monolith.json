@@ -233,6 +233,26 @@
             ]
           },
           {
+            "name": "stock-reservations",
+            "displayName": "Stock Reservations",
+            "type": "urn:backend-api:resources:stock-reservations",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/stock-reservations/*"
+            ],
+            "scopes": [
+              {
+                "name": "stock-reservations:create"
+              },
+              {
+                "name": "stock-reservations:view"
+              },
+              {
+                "name": "stock-reservations:update"
+              }
+            ]
+          },
+          {
             "name": "products",
             "displayName": "Products",
             "type": "urn:backend-api:resources:products",
@@ -439,6 +459,28 @@
             "config": {
               "resources": "[\"stores\"]",
               "scopes": "[\"stores:create\",\"stores:update\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Stock Reservations Catalog Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stock-reservations\"]",
+              "scopes": "[\"stock-reservations:view\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Stock Reservations Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stock-reservations\"]",
+              "scopes": "[\"stock-reservations:create\",\"stock-reservations:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },

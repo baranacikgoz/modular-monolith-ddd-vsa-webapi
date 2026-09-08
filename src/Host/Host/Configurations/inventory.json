@@ -1,0 +1,11 @@
+{
+  "InventoryOptions": {
+    "MaxOccurrencesPerSeries": 12,
+    "SafetyBufferQuantity": 5,
+    "StockReservationExpirySweepCron": "0 */15 * * * *",
+    "StockReservationExpirySweepBatchSize": 100,
+    "WarehouseGatewayProvider": "Dummy",
+    "WarehouseGatewayBaseUrl": "https://warehouse.example-partner.local",
+    "WebhookSharedSecret": "dev-only-shared-secret-change-in-production"
+  }
+}

@@ -149,6 +149,7 @@ All developer commands are centralized in the **Makefile**. Run `make <target>` 
 |---|---|
 | `make ef-add-IAM name=<Name>` | Add migration to the IAM module |
 | `make ef-add-Products name=<Name>` | Add migration to the Products module |
+| `make ef-add-Inventory name=<Name>` | Add migration to the Inventory module |
 | `make ef-add-Outbox name=<Name>` | Add migration to the Outbox module |
 
 #### Generate idempotent SQL scripts (for DBA review)
@@ -157,6 +158,7 @@ All developer commands are centralized in the **Makefile**. Run `make <target>` 
 |---|---|
 | `make ef-script-IAM` | Generate SQL script for IAM → `migrations/IAM/` |
 | `make ef-script-Products` | Generate SQL script for Products → `migrations/Products/` |
+| `make ef-script-Inventory` | Generate SQL script for Inventory → `migrations/Inventory/` |
 | `make ef-script-Outbox` | Generate SQL script for Outbox → `migrations/Outbox/` |
 | `make ef-script-all` | Generate scripts for all modules |
 

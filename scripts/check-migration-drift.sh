@@ -26,6 +26,7 @@ MODULES="
 Notifications:src/Modules/Notifications/Notifications.Infrastructure:NotificationsDbContext
 Products:src/Modules/Products/Products.Infrastructure:ProductsDbContext
 Outbox:src/Modules/Outbox/Outbox:OutboxDbContext
+Inventory:src/Modules/Inventory/Inventory.Infrastructure:InventoryDbContext
 "
 
 # dotnet-ef is not in .config/dotnet-tools.json — install a local tool on demand (no-op if present).

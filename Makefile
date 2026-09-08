@@ -6,9 +6,9 @@
 # Temporary solution filter that excludes docker-compose.dcproj
 SLNF_BUILD = ModularMonolith.Build.slnf
 
-.PHONY: build test test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs sonar \
-        ef-add-Notifications ef-add-Products ef-add-Outbox \
-        ef-script-Notifications ef-script-Products ef-script-Outbox ef-script-all \
+.PHONY: build test test-common test-host test-iam test-products test-inventory test-outbox test-notifications test-backgroundjobs sonar \
+        ef-add-Notifications ef-add-Products ef-add-Inventory ef-add-Outbox \
+        ef-script-Notifications ef-script-Products ef-script-Inventory ef-script-Outbox ef-script-all \
         check-migration-drift \
         perf perf-smoke perf-down \
         perf-rider perf-rider-smoke perf-rider-down \
@@ -40,6 +40,10 @@ test-products:
 	@echo "▶️ Testing Products..."
 	dotnet test --project src/Modules/Products/Products.Tests/Products.Tests.csproj
 
+test-inventory:
+	@echo "▶️ Testing Inventory..."
+	dotnet test --project src/Modules/Inventory/Inventory.Tests/Inventory.Tests.csproj
+
 test-outbox:
 	@echo "▶️ Testing Outbox..."
 	dotnet test --project src/Modules/Outbox/Outbox.Tests/Outbox.Tests.csproj
@@ -52,7 +56,7 @@ test-backgroundjobs:
 	@echo "▶️ Testing BackgroundJobs..."
 	dotnet test --project src/Modules/BackgroundJobs/BackgroundJobs.Tests/BackgroundJobs.Tests.csproj
 
-test: test-common test-host test-iam test-products test-outbox test-notifications test-backgroundjobs
+test: test-common test-host test-iam test-products test-inventory test-outbox test-notifications test-backgroundjobs
 	@echo "=========================================================="
 	@echo "✅ All tests completed successfully!"
 
@@ -81,6 +85,14 @@ ef-add-Products:
 		--context ProductsDbContext \
 		--output-dir Persistence/Migrations \
 		--namespace Products.Infrastructure.Migrations
+
+ef-add-Inventory:
+	dotnet ef migrations add $(name) \
+		--project src/Modules/Inventory/Inventory.Infrastructure \
+		--startup-project src/Host/Host \
+		--context InventoryDbContext \
+		--output-dir Persistence/Migrations \
+		--namespace Inventory.Infrastructure.Migrations
 
 ef-add-Outbox:
 	dotnet ef migrations add $(name) \
@@ -115,6 +127,17 @@ ef-script-Products:
 		--output "migrations/Products/$$output_name.sql"
 	@echo "Script written to migrations/Products/"
 
+ef-script-Inventory:
+	@mkdir -p migrations/Inventory
+	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
+	dotnet ef migrations script $(or $(from),0) $(to) \
+		--project src/Modules/Inventory/Inventory.Infrastructure \
+		--startup-project src/Host/Host \
+		--context InventoryDbContext \
+		--idempotent \
+		--output "migrations/Inventory/$$output_name.sql"
+	@echo "Script written to migrations/Inventory/"
+
 ef-script-Outbox:
 	@mkdir -p migrations/Outbox
 	@output_name=$$(echo "$(to)" | sed 's/^[0-9_]*//'); \
@@ -126,7 +149,7 @@ ef-script-Outbox:
 		--output "migrations/Outbox/$$output_name.sql"
 	@echo "Script written to migrations/Outbox/"
 
-ef-script-all: ef-script-Notifications ef-script-Products ef-script-Outbox
+ef-script-all: ef-script-Notifications ef-script-Products ef-script-Inventory ef-script-Outbox
 	@echo "All migration scripts generated."
 
 check-migration-drift:

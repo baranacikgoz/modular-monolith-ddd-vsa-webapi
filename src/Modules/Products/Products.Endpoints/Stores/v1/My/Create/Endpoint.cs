@@ -38,7 +38,10 @@ internal static class Endpoint
             .TapAsync(any => any ? Error.ViolatesUniqueConstraint(nameof(Store)) : Result.Success)
             .BindAsync(_ => Store.Create(currentUser.Id, request.Name, request.Description, request.Address))
             .TapAsync(store => dbContext.Stores.Add(store))
-            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            // App-level check above narrows the common case; this DB-constraint backstop (unique index on
+            // OwnerId, see StoreConfiguration) is what's actually race-safe under two concurrent requests.
+            .BindAsync(_ => dbContext.SaveChangesDetectingUniqueViolationAsync(
+                Error.ViolatesUniqueConstraint(nameof(Store)), cancellationToken))
             .MapAsync(store => new Response { Id = store.Id });
     }
 }

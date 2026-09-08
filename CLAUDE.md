@@ -36,13 +36,14 @@ Never reach for grep, find, or Bash search as a first instinct. The graph knows 
 | :--- | :--- | :--- |
 | IAM | `make test-iam` | Keycloak broker: OTP verification, token proxy (phone+OTP, email+password, refresh), Admin REST API queries, JwtBearer + Authorization Services decisions. No database. Tests boot a Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
 | Products | `make test-products` | Standard DDD aggregate module |
+| Inventory | `make test-inventory` | Reference module for advanced patterns: saga-shaped aggregate (`StockReservation`), sweep job, provider-switch gateway with resiliency, HMAC webhook, cross-module IntegrationEvent + InterModuleRequest wiring (see `StockReservation.cs` doc comments) |
 | Outbox | `make test-outbox` | Transactional outbox worker |
 | Notifications | `make test-notifications` | SMS/OTP delivery, push (FCM), SignalR hub, device registry (`DeviceRegistrations`: device ↔ Keycloak session ↔ push token) |
 | BackgroundJobs | `make test-backgroundjobs` | Quartz/Hangfire scheduled jobs |
 
 ### Module Project Structure
 
-Full DDD modules (IAM, Products) are split into separate projects:
+Full DDD modules (IAM, Products, Inventory) are split into separate projects:
 
 ```
 src/Modules/{Module}/
@@ -365,16 +366,19 @@ make test-common
 make test-host
 make test-iam
 make test-products
+make test-inventory
 make test-outbox
 make test-notifications
 make test-backgroundjobs
 
 make ef-add-Notifications name=<Name>
 make ef-add-Products name=<Name>
+make ef-add-Inventory name=<Name>
 make ef-add-Outbox name=<Name>
 
 make ef-script-Notifications from=<Prev> to=<TargetMigration>
 make ef-script-Products from=<Prev> to=<TargetMigration>
+make ef-script-Inventory from=<Prev> to=<TargetMigration>
 make ef-script-Outbox from=<Prev> to=<TargetMigration>
 make ef-script-all from=<Prev> to=<TargetMigration>
 ```

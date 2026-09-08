@@ -124,11 +124,37 @@ public class StoreTests
         // Assert
         Assert.Empty(store.Products);
 
+        // Removing the last product cascades a second event (store now empty), on top of the
+        // primary removal event - see Store.RemoveProduct.
+        var events = store.Events;
+        Assert.Equal(2, events.Count);
+
+        var removedEvent = Assert.IsType<V1ProductRemovedFromStoreDomainEvent>(events.First());
+        Assert.Equal(product.Id, removedEvent.Product.ProductId);
+        Assert.Equal(product.Name, removedEvent.Product.Name);
+
+        Assert.IsType<V1StoreEmptiedDomainEvent>(events.Last());
+    }
+
+    [Fact]
+    public void RemoveProduct_WithOtherProductsRemaining_DoesNotRaiseStoreEmptiedEvent()
+    {
+        // Arrange
+        var store = Store.Create(_ownerId, Name, Description, Address);
+        var product1 = Product.Create(store.Id, ProductTemplateId.New(), "P1", "D", 1, 10m);
+        var product2 = Product.Create(store.Id, ProductTemplateId.New(), "P2", "D", 1, 10m);
+        store.AddProduct(product1);
+        store.AddProduct(product2);
+        store.ClearEvents();
+
+        // Act
+        store.RemoveProduct(product1);
+
+        // Assert
+        Assert.Single(store.Products);
+
         var events = store.Events;
         Assert.Single(events);
-
-        var @event = Assert.IsType<V1ProductRemovedFromStoreDomainEvent>(events.First());
-        Assert.Equal(product.Id, @event.Product.ProductId);
-        Assert.Equal(product.Name, @event.Product.Name);
+        Assert.IsType<V1ProductRemovedFromStoreDomainEvent>(events.Single());
     }
 }

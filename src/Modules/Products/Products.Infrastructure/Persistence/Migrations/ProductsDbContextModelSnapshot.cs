@@ -19,7 +19,7 @@ namespace Products.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Products")
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -241,6 +241,9 @@ namespace Products.Infrastructure.Migrations
                         .HasColumnType("tsvector")
                         .HasColumnName("SearchVector")
                         .HasComputedColumnSql("fts_store(\"Language\", \"Name\", \"Address\", \"Description\")", true);
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<long>("Version")
                         .IsConcurrencyToken()
