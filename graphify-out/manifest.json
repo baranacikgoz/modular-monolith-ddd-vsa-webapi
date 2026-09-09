@@ -1164,9 +1164,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegister/Endpoint.cs": {
-    "mtime": 1788814247.5484846,
-    "seen": 1788823272.568047,
-    "ast_hash": "0ff6f95c5ca49eca2ed6da6451a099a3",
+    "mtime": 1788987010.3348634,
+    "seen": 1788987108.745402,
+    "ast_hash": "66f489a15e45fedb0b6bf78e3b612ea3",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegister/Request.cs": {
@@ -1260,9 +1260,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Telemetry/IamTelemetry.cs": {
-    "mtime": 1788814247.5533075,
-    "seen": 1788823272.568063,
-    "ast_hash": "446869f8aee568ef40c1b0c131137c76",
+    "mtime": 1788986998.359071,
+    "seen": 1788987108.745419,
+    "ast_hash": "79eacca9ff545986996ec365cf9d0a82",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Application/Hubs/INotificationDispatcher.cs": {
@@ -2508,9 +2508,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Application/Keycloak/KeycloakUser.cs": {
-    "mtime": 1788814247.5412064,
-    "seen": 1788823272.568025,
-    "ast_hash": "90d3323467588ea6bc69266f10d45268",
+    "mtime": 1788986754.3370838,
+    "seen": 1788987108.745379,
+    "ast_hash": "782018b10c8859f825bd7f8d9619e91d",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Users/Constants.cs": {
@@ -2586,9 +2586,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs": {
-    "mtime": 1788814247.550527,
-    "seen": 1788823272.5680552,
-    "ast_hash": "c9713876bfab0985d89c241b2bda5e16",
+    "mtime": 1788986765.8595347,
+    "seen": 1788987108.7454112,
+    "ast_hash": "611bcaa7684e6ae318923a3726a1a210",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakPaths.cs": {
@@ -2616,9 +2616,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/Representations/AdminRepresentations.cs": {
-    "mtime": 1788814247.5519829,
-    "seen": 1788823272.568057,
-    "ast_hash": "5bb3c659d15621d3a5140e1da4a28fb1",
+    "mtime": 1788986759.3327363,
+    "seen": 1788987108.745413,
+    "ast_hash": "b1f89b4041b581494474a5d2f9e6294b",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/Representations/TokenEndpointRepresentations.cs": {

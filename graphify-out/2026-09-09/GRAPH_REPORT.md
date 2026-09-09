@@ -1,16 +1,16 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-08)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-09)
 
 ## Corpus Check
-- 518 files · ~77,686 words
+- 515 files · ~72,858 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4167 nodes · 7390 edges · 366 communities (262 shown, 99 thin omitted)
+- 4157 nodes · 7390 edges · 356 communities (262 shown, 89 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 249 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `eb43aa11`
+- Built from commit: `98090d67`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -325,11 +325,6 @@
 - Fix Bug Command
 - OTel Trace ID Diagnosis
 - Scientific Red/Green Bug-Fix Method
-- Implement Endpoint Command
-- CustomValidator (FluentValidation)
-- REPR Pattern
-- Setup.cs Endpoint Registration
-- SingleAsResultAsync
 - Manage Feature Flag Command
 - FeatureManagement Config
 - RequireFeature Endpoint Gate
@@ -341,8 +336,6 @@
 - Module Boundary Identification
 - Telemetry Plan (ActivitySource/Meter)
 - Plan Refactor Command
-- Run Quality Gate Command
-- NetArchTest Architecture Tests
 - Scaffold Feature Command
 - TapAsync Result Extension
 - Vertical Slice (VSA)
@@ -355,8 +348,6 @@
 - Scaffold Test Command
 - IClassFixture Test Pattern
 - OutboxMessages DB Assertion
-- Scaffold Tests (Red-Phase) Command
-- Red Baseline (TDD)
 - Update Dependencies Command
 - Central Package Management
 - Verify Feature Command
@@ -370,7 +361,6 @@
 - REPR Pattern (Minimal API Endpoints)
 - Two-Toolchain Sync Contract
 - Transactional Outbox Pattern
-- Makefile Test/Build Targets
 - Develop as Monolith, Deploy as Microservices
 - ICoreModule vs IModule Tiers
 - MassTransitInterModuleRequestClient
@@ -407,7 +397,7 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (366 total, 99 thin omitted)
+## Communities (356 total, 89 thin omitted)
 
 ### Community 0 - "Common.InterModuleRequests.Contracts"
 Cohesion: 0.09
@@ -1458,9 +1448,9 @@ Cohesion: 0.50
 Nodes (4): ModulesOptions, EnabledModules, ModulesOptionsValidator, IReadOnlyList
 
 ## Knowledge Gaps
-- **832 isolated node(s):** `Id`, `IdAsString`, `Roles`, `SessionId`, `JwtClaimNames` (+827 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1890 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **99 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **822 isolated node(s):** `Id`, `IdAsString`, `Roles`, `SessionId`, `JwtClaimNames` (+817 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1880 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **89 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -1468,11 +1458,11 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `Common.InterModuleRequests.Contracts`, `DeviceRegistryReconciliationService`, `Request`, `ApplyAuditingInterceptor`, `AuditLogOptions`, `SecurityHeadersOptions`, `Common.Domain.ResultMonad`, `Notifications.Application.Hubs`, `FixedWindow`, `EnrichLogsWithUserInfoMiddleware`, `Common.Application.FeatureManagement`, `OutboxOptions`, `.AddCommonCaching`, `OtpServiceBase`, `ModulesOptions`, `Request`, `ObservabilityOptions`, `KeycloakOptions`, `ResxLocalizationOptions`, `ProductsModule.cs`, `OtpOptions`, `CachingOptions`, `SmsOptions`, `RabbitMqOptions`, `Notifications.Application.Sms`, `Inventory.Domain.StockReservations`, `ReverseProxyOptions`, `RequestLoggingOptions`, `CorsOptions`, `InventoryOptions`, `OpenApiOptions`, `Request`, `.Configure`, `PushOptions`, `Program.cs`, `IInterModuleRequestClient`, `Setup`, `Common.Domain.StronglyTypedIds`, `NotificationsModule.cs`, `BackgroundJobsOptions`, `AuditLogRetentionJobRegistrar`, `Common.Application.Validation`, `ResiliencyOptions`, `.AddCommonOptions`, `Common.Application.BackgroundJobs`, `OutboxModule.cs`, `CaptchaOptions`, `Host.Swagger`, `IModule`, `Common.Application.EventBus`, `FullTextSearchOptions`, `.AddCustomHealthChecks`?**
   _High betweenness centrality (0.221) - this node is a cross-community bridge._
 - **Why does `Result` connect `Result` to `.SendCoreAsync`, `.SaveChangesAsync`, `.ListSessions`, `.SingleAsResult`, `Error`, `ProductTemplate`, `VerifyPhoneOtpResponse`, `.SendOtp`, `.GetMeAsync`, `Response`, `Response`, `.SendAsync`, `.ReserveStockAsync`, `ApplicationUserId`, `ThrottledSmsGateway`, `.GetAuditLogAsync`, `DeactivateDeviceSessionsRequest`, `.CommitStockReservationAsync`, `NetGsmSmsGateway`, `KeycloakTokenClient`, `.SearchStoresAsync`, `.CreateStoreAsync`, `.ReserveSeriesAsync`, `.AddProductAsync`, `StockReservation`, `.RefreshToken`, `ICaptchaService`, `.UpdateStoreAsync`, `.BindDeviceAsync`, `AuditLogDto`, `PaginationResponse`, `ReCaptchaService`, `.AddNetGsm`, `.SearchProductTemplatesAsync`, `.AddProductToMyStoreAsync`, `Response`, `DummyPushGateway`, `Response`, `IProductsDbContext`, `.CreateMyStoreAsync`, `.Failure`, `ResultTelemetryExtensions`, `.SendAsync`, `Store`, `IInterModuleRequestClient`, `.AddPushServices`, `Response`, `.CreateProductTemplateAsync`, `.SearchMyProductsAsync`, `.UpdateMyProductAsync`, `.SearchStoreProductsAsync`, `.UpdateMyStoreAsync`, `.ReleaseStockReservationAsync`, `.UpdateCurrentPushToken`, `.IsRegisteredAsync`, `.GetStoreAuditLogAsync`, `.RemoveProductAsync`, `HttpWarehouseGateway`, `Response`, `.HandleWarehouseWebhookAsync`, `ICurrentUser`, `.TapWhenFeatureEnabledAsync`?**
-  _High betweenness centrality (0.159) - this node is a cross-community bridge._
+  _High betweenness centrality (0.160) - this node is a cross-community bridge._
 - **Why does `ApplicationUserId` connect `ApplicationUserId` to `NotificationPayload`, `DeviceRegistryReconciliationService`, `KeycloakAdminClient`, `Response`, `KeycloakPermissionAuthorizationHandler`, `Response`, `AuditableEntity`, `INotificationDispatcher`, `DeviceRegistration`, `DeactivateDeviceSessionsRequest`, `KeycloakTokenClient`, `.ForUser`, `.CreateStoreAsync`, `For`, `CurrentUser`, `.BindDeviceAsync`, `INotificationsDbContext`, `AuditLogDto`, `Response`, `Request`, `V1StoreCreatedDomainEvent`, `IStronglyTypedId`, `AuditableEntityResponse`, `.Configure`, `Store`, `Response`, `Seeder`, `.HandleAsync`, `Common.Application.Validation`, `CreateStockLevelOnProductCreatedHandler`, `StockLevel`, `Response`, `Request`, `ICurrentUser`?**
   _High betweenness centrality (0.095) - this node is a cross-community bridge._
 - **What connects `Id`, `IdAsString`, `Roles` to the rest of the system?**
-  _832 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _822 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Common.InterModuleRequests.Contracts` be split into smaller, more focused modules?**
   _Cohesion score 0.09061224489795919 - nodes in this community are weakly interconnected._
 - **Should `DeviceRegistryReconciliationService` be split into smaller, more focused modules?**

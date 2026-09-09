@@ -34,6 +34,16 @@ internal sealed partial class KeycloakAdminClient(
     public async Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user,
         CancellationToken cancellationToken)
     {
+        var attributes = new Dictionary<string, List<string>>
+        {
+            [UserAttributes.PhoneNumber] = [user.PhoneNumber],
+            [UserAttributes.PhoneNumberVerified] = ["true"]
+        };
+        if (user.BirthDate is { } birthDate)
+        {
+            attributes[UserAttributes.BirthDate] = [birthDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)];
+        }
+
         var representation = new UserRepresentation
         {
             Username = user.Username,
@@ -42,12 +52,7 @@ internal sealed partial class KeycloakAdminClient(
             Email = user.Email,
             EmailVerified = user.Email is null ? null : true,
             Enabled = true,
-            Attributes = new Dictionary<string, List<string>>
-            {
-                [UserAttributes.PhoneNumber] = [user.PhoneNumber],
-                [UserAttributes.PhoneNumberVerified] = ["true"],
-                [UserAttributes.BirthDate] = [user.BirthDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)]
-            },
+            Attributes = attributes,
             Credentials = user.Password is null
                 ? null
                 : [new CredentialRepresentation { Value = user.Password, Temporary = false }]

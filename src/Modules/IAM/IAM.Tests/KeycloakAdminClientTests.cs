@@ -61,6 +61,29 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.NotNull(result.Error);
         Assert.Equal(HttpStatusCode.BadRequest, result.Error.StatusCode);
     }
+
+    [Fact]
+    public async Task CreateUserAsync_NoBirthDate_CreatesUserWithNullBirthDate()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(
+                Username: phone,
+                FirstName: "Ayşe",
+                LastName: "Yılmaz",
+                PhoneNumber: phone,
+                BirthDate: null,
+                Email: $"{Guid.NewGuid():N}@example.com"),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+
+        var user = await adminClient.FindUserByUsernameAsync(phone, CancellationToken.None);
+        Assert.NotNull(user);
+        Assert.Null(user.BirthDate);
+    }
 }
 
 #pragma warning restore CA1707
