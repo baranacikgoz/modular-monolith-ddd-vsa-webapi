@@ -1,47 +1,30 @@
 ---
-description: Audit for architectural violations: cross-module refs, outbox misuse, AsNoTracking gaps, localization drift, mapping library usage, bare EF POCOs, request validation, consumer idempotency, test fixture isolation, hardcoded tunables.
+description: Audit the codebase against CLAUDE.md rules. Reports PASS, FAIL, or WARNING per check with file:line.
 argument-hint: ""
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
 ultrathink
 
-Audit the codebase for architectural violations. Report PASS / FAIL / WARNING per check with file paths and line numbers.
+Audit the codebase. One line per check: PASS, FAIL, or WARNING, with `file:line` for every hit. Rule references point to CLAUDE.md.
 
-1. **Cross-module references**: scan all `.csproj` files in `src/Modules/`. FAIL if any module project references another module project (only `Common.*` references are permitted).
-
-2. **Outbox violations**: search for `IPublishEndpoint.Publish` or `IBus.Publish` inside `Endpoints/` or write-side handlers. FAIL if found: Write paths must use `Aggregate.RaiseEvent(...)`. PASS if found only in `IntegrationEventHandler` (relaying is allowed).
-
-3. **Controller usage**: confirm no class inherits `ControllerBase`. All HTTP handling must use Minimal APIs.
-
-4. **Localization drift**: search for `IStringLocalizer` usage or raw string keys in error messages. FAIL if found: only `IResxLocalizer` (Aigamo.ResXGenerator) is permitted.
-
-5. **Mapping library usage**: search for AutoMapper, Mapster, or `.Map<>()` calls outside LINQ `.Select(...)`. FAIL if found.
-
-6. **AsNoTracking coverage**: scan read query paths (`.Select(...)` chains) for missing `.AsNoTracking()`.
-
-7. **Module registration**: confirm no `.Add{Module}()` calls are hardcoded in `Setup.Modules.cs`. Module list must come from `src/Host/Host/Configurations/modules.json` (`ModulesOptions.EnabledModules`).
-
-8. **Functional pipeline (Golden Path)**: search Endpoint handlers for imperative `if (result.IsFailure)` / `if (result.IsSuccess)` branching. FAIL if found where `BindAsync`/`TapAsync`/`MapAsync`/`CombineAsync` chaining could apply instead.
-
-9. **Persistence patterns**: FAIL if any read uses `.Find(...)`/`.FirstOrDefault(...)` instead of `.TagWith(...).SingleAsResultAsync(...)`; FAIL if a conditional filter uses `if (condition) query = query.Where(...)` instead of `.WhereIf(...)`; FAIL if `.GroupJoin(...).SelectMany(...)` is used instead of native `.LeftJoin`/`.RightJoin`.
-
-10. **Logging**: search for interpolated/string-concatenated log calls (`logger.LogInformation($"...")` or `logger.LogInformation("..." + x)`). FAIL if found: only `[LoggerMessage]` source-generated `static partial` methods are permitted.
-
-11. **DomainEvent versioning**: for any diff touching a shipped `V{n}...DomainEvent` record, FAIL if properties were added/removed/renamed/retyped in place instead of introducing `V{n+1}...DomainEvent`. FAIL if any event property type is off the CLAUDE.md §5 allow-list (primitives/BCL, `IStronglyTypedId`, or a snapshot record/enum nested in the event). A bare domain entity, aggregate root, ValueObject, or enum referenced directly is a FAIL, even the aggregate's own EF-tracked child entity: it must be a `{Name}Snapshot` mapped via an extension method in the event's file. Run `DomainEventContractTests.cs` for the verdict.
-
-12. **DI registration safety**: search for `services.BuildServiceProvider()` inside any DI registration code path. FAIL if found: corrupts OTel `TracerProvider`/`MeterProvider` singletons on GC finalization.
-
-13. **Bare EF-mapped POCOs**: scan persisted types (referenced via `DbSet<T>` / EF `IEntityTypeConfiguration<T>`). FAIL if a persisted type is a naked `class` with hand-rolled properties instead of deriving from `AggregateRoot<TId>` (raises events), `AuditableEntity<TId>` (has `IStronglyTypedId` key, no events), non-generic `AuditableEntity` (natural/composite key), or being a `ValueObject`/owned type. `OutboxMessage` is a sanctioned exception per CLAUDE.md: PASS.
-
-14. **Typed parameters over raw strings**: search Endpoint handlers for branching on raw `string` query/route parameters (e.g. `filter == "ARCHIVED"`). FAIL if found: must use a dedicated `enum`, `bool`, or strongly-typed value bound via ASP.NET Core model binding instead.
-
-15. **Request validation coverage**: for every `Request.cs` under `Endpoints/*/Feature/`, confirm it contains an inline `RequestValidator` class implementing `CustomValidator<T>` (`src/Common/Common.Application/Validation/CustomValidator.cs`) at the bottom of the same file: not a separate `RequestValidator.cs`. FAIL if a Request has no validator.
-
-16. **Consumer idempotency**: search for classes implementing `IConsumer<T>` directly. FAIL if found: all consumers must inherit `IntegrationEventHandlerBase<T>` (`src/Common/Common.Application/EventBus/IntegrationEventHandlerBase.cs`) and override `ProcessAsync` instead, so the FusionCache `processed_event:{id}` dedup applies.
-
-17. **Test fixture isolation**: for test classes using `IClassFixture<TFactory>`, confirm `factory.CreateClient()` is called eagerly (field initializer/constructor), never lazily inside a test method body. FAIL if two or more test classes share the same factory type via separate `IClassFixture<T>` instead of `ICollectionFixture<T>` + `[Collection(...)]`: parallel boot corrupts shared static state (Serilog logger, OTel `ActivitySource`).
-
-18. **Hardcoded tunables**: search new/changed code for a literal timeout, retry count, threshold, duration, limit, interval, or repeated template string embedded directly in application code. FAIL if found: it must be a property on an `Options` class instead (see CLAUDE.md "Tunable Values: Options Pattern Only"). PASS if the literal is structural (array size tied to an enum, a protocol magic number) rather than something an operator might reasonably want to change.
-
-19. **Event-sourcing relapse**: `grep -rn 'ApplyEvent\|LoadFromHistory' --include='*.cs' src/`. FAIL if any hit: aggregates mutate state inline in the command method (CLAUDE.md §5), no `Apply`/`ApplyEvent` dispatch.
+1. Cross-module `ProjectReference` in any `src/Modules/**/*.csproj` (§1).
+2. `IPublishEndpoint.Publish` or `IBus.Publish` outside `IntegrationEventHandler`s (§1 Outbox).
+3. Any class deriving `ControllerBase` (§5).
+4. `IStringLocalizer` or raw string localization keys (§5).
+5. AutoMapper, Mapster, or `.Map<>()` outside `.Select` (§5).
+6. Read queries (`.Select` projections) missing `.AsNoTracking()` (§4).
+7. Hardcoded `.Add{Module}()` in `Setup.Modules.cs` (§1).
+8. `if (result.IsFailure)` / `IsSuccess` branching in endpoints where a pipeline extension applies (§3).
+9. `.Find(` / `.FirstOrDefault(` on entity fetches; `if (cond) query = query.Where`; `.GroupJoin(...).SelectMany(` (§4).
+10. Interpolated or concatenated log strings (§5).
+11. DomainEvent versioning: diff touching a shipped `V{n}` record in place; event property types off the allow-list; entity, aggregate, ValueObject, or domain enum used directly (§6). Run `DomainEventContractTests` for the verdict.
+12. `services.BuildServiceProvider()` inside DI registration (§5).
+13. Persisted types (`DbSet<T>`, `IEntityTypeConfiguration<T>`) that are bare classes; `OutboxMessage` is the only PASS exception (§4).
+14. Endpoint branching on raw `string` route/query values (§5).
+15. Any `Request.cs` without an inline `RequestValidator : CustomValidator<T>`; separate `RequestValidator.cs` files (§5).
+16. Classes implementing `IConsumer<T>` directly instead of `IntegrationEventHandlerBase<T>` or `InterModuleRequestHandler<,>` (§1).
+17. Test fixtures: two `IClassFixture<T>` on the same factory type; lazy `CreateClient()` under `IClassFixture` (§8).
+18. Literal tunables (timeout, retry, threshold, duration, limit, interval, cron, template) in application code instead of Options (§9). Structural constants PASS.
+19. `grep -rn 'ApplyEvent\|LoadFromHistory' --include='*.cs' src/` must be empty (§6).
+20. Endpoints without `.RequireScope(...)` on a `RequireAuthorization` group; scopes missing from `keycloak/realm-modular-monolith.json` (§1 Identity).

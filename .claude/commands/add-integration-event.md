@@ -1,69 +1,15 @@
 ---
-description: Declare an IntegrationEvent in Common, scaffold the DomainEventHandler in the source module, and scaffold the consumer in the target module.
+description: Declare an IntegrationEvent, publish it from a DomainEventHandler in the source module, and scaffold the consumer in the target module.
 argument-hint: "<SourceModule> <EventName> [TargetModule]"
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
 Add integration event: $ARGUMENTS
 
-**Step 1 — Declare the event** in `src/Common/Common.IntegrationEvents/{SourceModule}.cs`:
-```csharp
-public sealed record {EventName}IntegrationEvent(
-    // payload — use strongly-typed IDs where applicable
-) : IntegrationEvent;
-```
-Create the file if it doesn't exist yet.
+Rules in CLAUDE.md §6. Exemplars in §2 (publishing handler, consumer).
 
-**Step 2 — DomainEventHandler** in `src/Modules/{SourceModule}/{SourceModule}.Application/{Aggregate}/DomainEventHandlers/v1/V1{DomainEvent}DomainEventHandler.cs`:
-```csharp
-public class V1{DomainEvent}DomainEventHandler(IIntegrationEventOutbox outbox)
-    : DomainEventHandlerBase<V1{DomainEvent}DomainEvent>
-{
-    public override Task HandleAsync(
-        V1{DomainEvent}DomainEvent @event,
-        CancellationToken cancellationToken)
-    {
-        outbox.Collect(new {EventName}IntegrationEvent(/* map fields from @event */));
-        return Task.CompletedTask;
-    }
-}
-```
-If the payload needs fields beyond what's on `@event`, pull the aggregate from the `ChangeTracker` instead of querying the DB — it's already tracked in this same `SaveChanges` transaction:
-```csharp
-public class V1{DomainEvent}DomainEventHandler(
-    IIntegrationEventOutbox outbox,
-    I{SourceModule}DbContext db
-) : DomainEventHandlerBase<V1{DomainEvent}DomainEvent>
-{
-    public override Task HandleAsync(V1{DomainEvent}DomainEvent @event, CancellationToken cancellationToken)
-    {
-        var entity = db
-            .ChangeTracker
-            .Entries<{Aggregate}>()
-            .First(e => e.Entity.Id == @event.{Aggregate}Id)
-            .Entity;
-
-        outbox.Collect(new {EventName}IntegrationEvent(/* map fields from @event and entity */));
-        return Task.CompletedTask;
-    }
-}
-```
-
-**Step 3 — Consumer** (if target module provided). Location varies by module — check whether the target module already has an `IntegrationEventHandlers/` folder under `{TargetModule}.Application/` or `{TargetModule}.Infrastructure/` and follow that convention:
-```csharp
-public class {EventName}IntegrationEventHandler(/* deps */)
-    : IntegrationEventHandlerBase<{EventName}IntegrationEvent>
-{
-    protected override async Task ProcessAsync(
-        {EventName}IntegrationEvent @event,
-        CancellationToken cancellationToken)
-    {
-        // handle
-    }
-}
-```
-Never implement `IConsumer<T>` directly — `IntegrationEventHandlerBase<T>` provides idempotency (FusionCache `processed_event:{event.Id}` check) for free.
-
-**Step 4 — No manual registration.** Consumers auto-register via assembly scan (`x.AddConsumers(moduleAssemblies)` in `src/Host/Host/Infrastructure/Setup.MassTransit.cs`). There is no `ModuleInstaller.cs` file in this repo — skip this step entirely once the handler class exists.
-
-**Step 5** — `make build` — zero warnings.
+1. `src/Common/Common.IntegrationEvents/{SourceModule}.cs`: `public sealed record {EventName}IntegrationEvent(...) : IntegrationEvent;` with strongly-typed ids where applicable. Create the file if missing.
+2. `src/Modules/{Source}/{Source}.Application/{Aggregate}/DomainEventHandlers/v1/V1{DomainEvent}DomainEventHandlers.cs`: a `DomainEventHandlerBase<V1{DomainEvent}DomainEvent>` that calls `outbox.Collect(new {EventName}IntegrationEvent(...))`. If the payload needs fields not on the event, read the aggregate from `db.ChangeTracker.Entries<{Aggregate}>()`; it is already tracked in the same `SaveChanges`. Do not query the DB.
+3. Target module (if given): `{Target}.Application/IntegrationEventHandlers/{Verb}On{EventName}Handler.cs` inheriting `IntegrationEventHandlerBase<{EventName}IntegrationEvent>`, override `ProcessAsync`. Mutating consumers add a domain-level existence check on top of the cache dedupe.
+4. No registration step; assembly scan picks up consumers.
+5. `make build`, then a test that asserts the `OutboxMessages` row (`/scaffold-test`).

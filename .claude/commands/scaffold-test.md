@@ -1,41 +1,16 @@
 ---
-description: Generate a vertical slice integration test for a READ or WRITE feature.
-argument-hint: "<Module> <Feature> READ|WRITE"
+description: Scaffold integration and unit tests for a feature. Use before implementation for a Red baseline, or after for coverage.
+argument-hint: "<Module> <Feature> READ|WRITE [red]"
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
 Scaffold test: $ARGUMENTS
 
-1. **Load the factory**: read the module-specific test factory (or `src/Common/Common.Tests/IntegrationTestFactory.cs`) to understand the fixture pattern.
+Rules in CLAUDE.md §8. Copy the shape from `CreateTests.cs` and `StoreTests.cs` (§2 exemplars).
 
-2. **Pick the fixture pattern**: does another test class in this module already use `{Module}TestFactory`? If yes, use `ICollectionFixture` + `[Collection("Name")]` (two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared static state) — call `factory.CreateClient()` lazily inside each test body, not the constructor. Otherwise use `IClassFixture` with eager `CreateClient()`:
-   ```csharp
-   public class {Feature}Tests : IClassFixture<{Module}TestFactory>
-   {
-       private readonly HttpClient _client;
-       private readonly {Module}TestFactory _factory;
-
-       public {Feature}Tests({Module}TestFactory factory)
-       {
-           _factory = factory;
-           _client = factory.CreateClient();
-       }
-   }
-   ```
-
-   **Config gotcha**: values set via `AddInMemoryCollection` in `IntegrationTestFactory.ConfigureWebHost` only reach runtime `IOptions<T>` resolution — they do NOT affect `configuration.Get<T>()`/`GetValue<T>()` calls made during DI registration (transport selection, conditional `AddHostedService`, etc.). Anything consumed at registration time needs `builder.UseSetting(...)` instead. A test override that "has no effect" is almost always this.
-
-3. **WRITE test**:
-   - Arrange: build request DTO with Bogus.
-   - Act: `await _client.PostAsJsonAsync("/route", request)`.
-   - Assert:
-     - Status code is `200`/`201`.
-     - Entity exists in DB via `_factory.Services.CreateScope()` → `GetRequiredService<{Module}DbContext>()`.
-     - A record exists in `OutboxMessages` with the correct event type JSON.
-
-4. **READ test**:
-   - Arrange: seed an entity directly into the DB via a scoped `DbContext`.
-   - Act: `await _client.GetAsync($"/route/{id}")`.
-   - Assert: deserialized response matches seeded entity. Use `Assert.Equal`, never FluentAssertions.
-
-5. **Run**: `make test-{module}` and confirm green.
+1. Integration test in `src/Modules/{Module}/{Module}.Tests/Endpoints/{Aggregate}/{Feature}Tests.cs`: `[Collection("IntegrationTestCollection")]`, inherit `BaseIntegrationTest`, `Factory.CreateClient()` inside each test.
+   - WRITE: arrange with Bogus, `PostAsJsonAsync`/`PutAsJsonAsync`, assert status, entity via `Factory.Services.CreateScope()` + `{Module}DbContext`, and a row in `OutboxMessages` with the expected event type.
+   - READ: seed via scoped `DbContext`, `GetAsync`, assert the deserialized response matches the seed.
+2. Unit test for new aggregate methods in `{Module}.Tests/{Aggregate}/{Aggregate}Tests.cs` (inherit `AggregateTests<TAggregate, TId>` when it fits): state after the call plus the raised event.
+3. If a module has no factory yet: `IntegrationTestWebAppFactory : IntegrationTestFactory` overriding `GetActiveModules()` and an `IntegrationTestCollection` definition (Products has both).
+4. Run `make test-{module}`. With `red`: the new tests must fail, and production code stays untouched. Without `red`: they must pass.

@@ -1,5 +1,5 @@
 ---
-description: Plan a codebase refactoring — identify violations, list exact file changes, assess risk before touching any code.
+description: Plan a refactor: current violations, exact file changes, risks. No code until approved.
 argument-hint: "<target scope and goal>"
 context: fork
 allowed-tools: Read, Bash, Glob, Grep
@@ -9,17 +9,9 @@ ultrathink
 
 Plan refactor: $ARGUMENTS
 
-1. **Analyze current state**: inspect the target code. Identify specific violations:
-   - Cross-module coupling in `.csproj` references
-   - Missing `.AsNoTracking()` on read queries
-   - Imperative `if/else` blocks that should be functional pipelines
-   - AutoMapper or mapping library usage
-   - Magic string localization keys instead of `IResxLocalizer`
-   - Controllers instead of Minimal API endpoints
-   - Direct bus publishing instead of `RaiseEvent`
+Output a markdown plan. Implementation starts only after approval.
 
-2. **File inventory**: list every file to be modified, what the current code looks like (brief excerpt), and what it will look like after.
-
-3. **Risk assessment**: flag any changes that could break the Outbox flow, shipped `V{n}...DomainEvent` versioning (never edit in place — add `V{n+1}` instead), or cross-module communication (`IntegrationEvents` / `InterModuleRequests`).
-
-4. **Output**: produce a structured markdown plan. Implementation begins only after this plan is approved.
+1. Current state: run the `/audit-architecture` checks against the target scope and list each violation with `file:line`.
+2. File inventory: every file to change, a short before excerpt, and the intended after shape (point to CLAUDE.md §2 exemplars).
+3. Risks: outbox flow, shipped `V{n}` events (add `V{n+1}`, never edit), cross-module contracts, migrations, Keycloak scopes.
+4. Order of batches so `make build` stays green between them.

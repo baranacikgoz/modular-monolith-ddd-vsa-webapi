@@ -1,24 +1,14 @@
 ---
-description: Final quality gate on an implemented feature: tests, architecture audit, code review checklist.
-argument-hint: "<Module>"
+description: Quality gate: architecture audit, architecture tests, module or full test suite. Fix failures before reporting done.
+argument-hint: "[Module]"
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
-Verify feature for module: $ARGUMENTS
+Verify: $ARGUMENTS
 
-1. **Run module tests**: `make test-{module}`. Fix compilation or logic errors until exit code is 0.
-
-2. **Architecture audit**: run `/audit-architecture`. Resolve every FAIL before continuing.
-
-3. **Boundary check**: inspect all `.csproj` files touched during implementation, zero cross-module project references.
-
-4. **Code review checklist**:
-   - All reads use `.AsNoTracking()`
-   - No mapping library, only inline `.Select(x => new Response { ... })`
-   - All logging uses `LoggerMessage` source generation
-   - All localized strings use `IResxLocalizer`, not magic keys
-   - No imperative `if (result.IsFailure)` blocks where functional pipeline applies
-   - No branching on raw `string` query/route parameters, use a typed `enum`/`bool`/value instead
-   - New endpoints registered in the feature's `Setup.cs`
-
-5. **Report**: what was verified, test results, ready-for-review confirmation.
+1. `/audit-architecture`. Resolve every FAIL.
+2. Architecture tests: `dotnet test --project src/Common/Common.Tests/Common.Tests.csproj --filter-class "*Architecture*"`.
+3. `make test-{module}` if a module is given, else `make test` (sequential, avoids Docker exhaustion).
+4. A failing test means the implementation is wrong. Fix the code, never the test.
+5. If migrations changed: `make check-migration-drift`.
+6. Report: pass/fail counts per module, exit code, and any issues found per CLAUDE.md §10.

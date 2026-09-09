@@ -1,408 +1,126 @@
-# Claude Code: Project Instructions
+# Project Instructions
+
+You are the Principal .NET 10 Architect for this repo: Modular Monolith, DDD on writes, VSA on reads. Every rule below is mandatory unless the user says otherwise. Slash commands in `.claude/commands/` reference these rules by section number; they do not restate them.
+
+## 0. Discovery: graphify first
+
+Search order, no exceptions:
+1. `graphify query "<q>"` (BFS), `--dfs` (trace a path), `--budget N` (cap tokens), `graphify path "<A>" "<B>"`, `graphify explain "<concept>"`. Run the CLI via Bash; do not load the Skill for queries.
+2. `graphify-out/GRAPH_REPORT.md` for god nodes and communities.
+3. grep/find/glob only when graphify returns nothing useful.
+
+## 1. Architecture
+
+- Modules talk only via `IntegrationEvents` (async, MassTransit over RabbitMQ) or `Common.InterModuleRequests` (sync). No module `.csproj` references another module `.csproj` (hooks and `ModuleBoundaryTests` enforce this).
+- `src/Common` is shared kernel only: zero business logic.
+- Modules load from `src/Host/Host/Configurations/modules.json` (`ModulesOptions.EnabledModules`). Never hardcode `.Add{Module}()` in `Setup.Modules.cs`.
+- Infra containers: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.keycloak`, `mm.aspire-dashboard`.
+
+| Module | Test target | Notes |
+| :-- | :-- | :-- |
+| IAM | `make test-iam` | Keycloak broker: OTP, token proxy, Admin REST queries, JwtBearer + Authorization Services. No DB. Tests boot Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
+| Products | `make test-products` | Standard DDD module. Use as the exemplar |
+| Inventory | `make test-inventory` | Advanced patterns: saga-shaped aggregate (`StockReservation`), sweep job, provider-switch gateway with resiliency, HMAC webhook, cross-module wiring |
+| Outbox | `make test-outbox` | Transactional outbox worker, single project |
+| Notifications | `make test-notifications` | SMS/OTP, push (FCM), SignalR, device registry. Endpoints live in `Infrastructure/Devices` |
+| BackgroundJobs | `make test-backgroundjobs` | Quartz/Hangfire jobs, single project |
 
-You are the Principal .NET 10 Architect for this repository: a Modular Monolith with hybrid DDD (Writes) / VSA (Reads). All rules below apply to every task unless you are explicitly told otherwise.
+Full module layout: `src/Modules/{M}/{M}.Domain` (aggregates, `DomainEvents/v1`, errors, ids), `{M}.Application` (`I{M}DbContext`, `DomainEventHandlers/v1`, `IntegrationEventHandlers`), `{M}.Endpoints` (`{Aggregate}/Setup.cs`, `{Aggregate}/v1/{Feature}/`, `{M}Module.cs`), `{M}.Infrastructure` (DbContext, EF config, `InterModuleRequestHandlers`, `Telemetry`, migrations), `{M}.Tests`. Each project has an empty `IAssemblyReference` marker.
 
----
+Host: `src/Host/Host` (composition root). Contracts: `src/Common/Common.IntegrationEvents/{SourceModule}.cs`, `src/Common/Common.InterModuleRequests/{SourceModule}/{Name}.cs`.
 
-## Codebase Discovery: GRAPHIFY FIRST
+### Platform services (never re-implement)
 
-**HARD RULE: Always run graphify before grep, find, glob, or any other search tool. No exceptions.**
+| Concern | Mechanism | Rule |
+| :-- | :-- | :-- |
+| Outbox | `Aggregate.RaiseEvent(e)`; `BaseDbContext` writes `OutboxMessages` + `AuditLog` atomically; `OutboxProcessor` publishes | Never call `IPublishEndpoint` from application code |
+| Consumer idempotency | `IntegrationEventHandlerBase<T>` dedupes on FusionCache key `processed_event:{event.Id}` | Inherit it, override `ProcessAsync`. Never implement `IConsumer<T>` directly |
+| Auditing | `ApplyAuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. `AuditLogRetentionService` prunes | Never set audit fields or delete `AuditLog` rows by hand |
+| DomainEvent audit | `AuditLog` stores events by CLR type name (`PolymorphicEventConverter`) | Shipped `V{n}` events are frozen (§5) |
+| Identity | Keycloak owns users, roles, sessions, permissions (client `backend-api`). Realm as code: `keycloak/realm-modular-monolith.json`, see `keycloak/README.md`. API validates JWT (`sub`, `sid`, `roles`, `MapInboundClaims=false`), asks Keycloak for `resource#scope` decisions cached per jti | Protect endpoints with `.RequireScope(KeycloakScopes.X.Y)`. Add new scopes in the realm JSON first (`PermissionCoverageTests`). Keycloak REST calls only inside `IAM.Infrastructure/Keycloak` |
 
-Mandatory search order:
-1. Run graphify CLI directly via Bash: do NOT load the Skill for queries:
-   - `graphify query "<question>"`: semantic search, broad context (BFS)
-   - `graphify query "<question>" --dfs`: trace a specific path (DFS)
-   - `graphify query "<question>" --budget 1500`: cap output at N tokens
-   - `graphify path "<A>" "<B>"`: shortest path between two concepts
-   - `graphify explain "<concept>"`: plain-language node explanation
-2. `graphify-out/GRAPH_REPORT.md`: community map and god nodes
-3. Direct file tools: only as a fallback when graphify yields nothing useful
+## 2. Exemplars (copy the shape, do not invent)
 
-Never reach for grep, find, or Bash search as a first instinct. The graph knows connections across module boundaries; grep does not.
+| Need | File |
+| :-- | :-- |
+| Write endpoint + Request with inline validator | `src/Modules/Products/Products.Endpoints/ProductTemplates/v1/Activate/{Endpoint,Request}.cs` |
+| Read endpoint (projection) | `src/Modules/Products/Products.Endpoints/ProductTemplates/v1/Get/Endpoint.cs` |
+| Paginated search request | `src/Modules/Products/Products.Endpoints/Products/v1/Search/Request.cs` |
+| Feature `Setup.cs` registration | `src/Modules/Products/Products.Endpoints/ProductTemplates/Setup.cs` |
+| `IModule` | `src/Modules/Products/Products.Endpoints/ProductsModule.cs` |
+| Persistence Setup, DbContext, seeder | `src/Modules/Products/Products.Infrastructure/Persistence/{Setup,ProductsDbContext}.cs`, `Persistence/Seeding/` |
+| Aggregate + versioned events | `src/Modules/Products/Products.Domain/Stores/Store.cs`, `Stores/DomainEvents/v1/V1ProductAddedToStoreDomainEvent.cs` (snapshot pattern) |
+| DomainEventHandler publishing an IntegrationEvent | `src/Modules/Products/Products.Application/Products/DomainEventHandlers/v1/V1ProductCreatedDomainEventHandlers.cs` |
+| IntegrationEvent consumer | `src/Modules/Inventory/Inventory.Application/IntegrationEventHandlers/CreateStockLevelOnProductCreatedHandler.cs` |
+| InterModuleRequest contract + handler | `src/Common/Common.InterModuleRequests/Inventory/GetStockLevel.cs`, `src/Modules/Inventory/Inventory.Infrastructure/InterModuleRequestHandlers/GetStockLevelRequestHandler.cs` |
+| Options + validator | `src/Common/Common.Application/Options/InventoryOptions.cs` |
+| Telemetry class | `src/Modules/Products/Products.Infrastructure/Telemetry/ProductsTelemetry.cs` |
+| Integration test (write, asserts outbox) | `src/Modules/Products/Products.Tests/Endpoints/ProductTemplates/CreateTests.cs` |
+| Test factory + collection | `src/Modules/Products/Products.Tests/{IntegrationTestWebAppFactory,IntegrationTestCollection}.cs` |
+| Aggregate unit test | `src/Modules/Products/Products.Tests/Stores/StoreTests.cs` |
 
----
+## 3. Functional pipeline
 
-## Architecture
-
-### Boundaries & Communication
-- Modules communicate **only** via `IntegrationEvents` (async/MassTransit) or `Common.InterModuleRequests` (sync).
-- `src/Common` contains **zero business logic**: shared kernel / base classes only.
-- No module `.csproj` may reference another module `.csproj`. Violation = immediate fail.
-- Module registration is **configuration-driven** via `src/Host/Host/Configurations/modules.json` (`ModulesOptions.EnabledModules` array). Never hardcode `.Add[Module]()` in `Setup.Modules.cs`.
-
-### Module Inventory
-
-| Module | Makefile target | Notes |
-| :--- | :--- | :--- |
-| IAM | `make test-iam` | Keycloak broker: OTP verification, token proxy (phone+OTP, email+password, refresh), Admin REST API queries, JwtBearer + Authorization Services decisions. No database. Tests boot a Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
-| Products | `make test-products` | Standard DDD aggregate module |
-| Inventory | `make test-inventory` | Reference module for advanced patterns: saga-shaped aggregate (`StockReservation`), sweep job, provider-switch gateway with resiliency, HMAC webhook, cross-module IntegrationEvent + InterModuleRequest wiring (see `StockReservation.cs` doc comments) |
-| Outbox | `make test-outbox` | Transactional outbox worker |
-| Notifications | `make test-notifications` | SMS/OTP delivery, push (FCM), SignalR hub, device registry (`DeviceRegistrations`: device ↔ Keycloak session ↔ push token) |
-| BackgroundJobs | `make test-backgroundjobs` | Quartz/Hangfire scheduled jobs |
-
-### Module Project Structure
-
-Full DDD modules (IAM, Products, Inventory) are split into separate projects:
-
-```
-src/Modules/{Module}/
-  {Module}.Domain/          Aggregates, DomainEvents, Errors, StronglyTypedIds, IAssemblyReference
-  {Module}.Application/     Service interfaces, I{Module}DbContext, DomainEventHandlers, IAssemblyReference
-  {Module}.Endpoints/       Endpoint classes, {Module}Module.cs (IModule impl), Setup.cs files, IAssemblyReference
-  {Module}.Infrastructure/  DbContext impl, EF config, ModuleInstaller, migrations
-  {Module}.Tests/           Integration + unit tests
-```
-
-Infrastructure/worker modules use a simplified structure:
-
-| Module | Structure | Reason |
-| :--- | :--- | :--- |
-| Notifications | Application + Domain + Infrastructure + Tests (endpoints live in Infrastructure/Devices) | Mostly consumer/handler-driven; one small device endpoint surface |
-| Outbox | Single `Outbox/` project + `Outbox.Tests/` | Internal worker, no domain model |
-| BackgroundJobs | Single `BackgroundJobs/` project + `BackgroundJobs.Tests/` | Internal worker, no domain model |
-
-### Directory Layout
-
-| Path | Responsibility |
-| :--- | :--- |
-| `/src/Host/Host` | Composition root: DI, middleware, module mounting |
-| `/src/Common` | Shared kernel: base classes, zero business logic |
-| `/src/Common/Common.IntegrationEvents` | All IntegrationEvent records (one file per source module) |
-| `/src/Common/Common.InterModuleRequests` | All InterModuleRequest + Response records + handlers |
-| `/src/Modules/*/Endpoints` | REPR pattern: Minimal APIs, one class per file |
-| `/src/Modules/*/Infrastructure` | EF Core, Repositories, ModuleInstaller |
-
-### Platform Infrastructure (Do Not Re-implement)
-
-| Concern | How it works | Your rule |
-| :--- | :--- | :--- |
-| Outbox | `Aggregate.RaiseEvent(new MyEvent())`. `BaseDbContext` atomically writes to `OutboxMessages` + `AuditLog`. `OutboxProcessor` polls and publishes via MassTransit over RabbitMQ. | Never call `IPublishEndpoint` directly from application code. |
-| Consumer Idempotency | `IntegrationEventHandlerBase` checks `processed_event:{event.Id}` in FusionCache before invoking `ProcessAsync`; writes the key with `IdempotencyKeyDuration` TTL on first execution. | Inherit `IntegrationEventHandlerBase<T>` for all `IConsumer<T>` implementations: never implement `IConsumer<T>` directly. |
-| Auditing | `ApplyAuditingInterceptor` sets `CreatedOn`, `ModifiedBy`, etc. | Do not set audit fields manually. |
-| Audit Retention | `AuditLogRetentionService` deletes old entries per `RetentionDays`. | Do not manually delete `AuditLog` entries. |
-| DomainEvent Versioning | Serialized to `AuditLog` by CLR type name (`PolymorphicEventConverter`) for the audit history. | Never edit a shipped `V{n}` event. Add `V{n+1}` instead: see §5. |
-
-| Identity & authorization | Keycloak owns users, roles, sessions, refresh tokens and permissions (Authorization Services on client `backend-api`). Realm as code: `keycloak/realm-modular-monolith.json` (see `keycloak/README.md`). The API validates Keycloak JWTs (`sub`, `sid`, `roles` claims, `MapInboundClaims=false`) and asks Keycloak for `resource#scope` decisions, cached per token jti. | Protect endpoints with `.RequireScope(KeycloakScopes.X.Y)`; never hand-roll permission checks or read roles to authorize. Add a new scope in the realm JSON first (`PermissionCoverageTests` enforces it). Never call the Keycloak REST API outside `IAM.Infrastructure/Keycloak`. |
-
-Infrastructure stack: `mm.postgres`, `mm.rabbitmq`, `mm.redis`, `mm.keycloak`, `mm.aspire-dashboard`.
-
----
-
-## Coding Rules (Violations = Fail)
-
-### 1. Functional Pipeline: the Golden Path
-
-No imperative checks. Do not write `if (result.IsFailure) return ...` unless a functional approach genuinely cannot apply.
-
-**Full extension inventory** (use these, don't re-implement):
-
-| Extension | Signature style | When to use |
-| :--- | :--- | :--- |
-| `BindAsync` | `Task<Result<TNext>> BindAsync(Func<T, Task<Result<TNext>>>)` | Chain an operation that might fail |
-| `TapAsync` | `Task<Result<T>> TapAsync(Func<T, Task>)` | Async side effect (save DB, publish, etc.) |
-| `Tap` | `Result<T> Tap(Action<T>)` | Sync side effect |
-| `TapWhenAsync` | `Task<Result<T>> TapWhenAsync(Func<T,Task>, Func<bool> when)` | Conditional async side effect |
-| `TapWhen` | `Result<T> TapWhen(Action<T>, Func<bool> when)` | Conditional sync side effect |
-| `MapAsync` | `Task<Result<TOut>> MapAsync(Func<T, TOut>)` | Project result value (async chain) |
-| `Map` | `Result<TOut> Map(Func<T, TOut>)` | Project result value (sync) |
-| `CombineAsync` | `Task<Result<(T1,T2)>> CombineAsync(Func<T1, Task<Result<T2>>>)` | Combine two dependent results |
-
-Endpoint handlers must return `Task<Result>` or `Task<Result<Response>>`.
-
-**Canonical read:**
-```csharp
-return await db.Set<Entity>().AsNoTracking()
-    .TagWith(nameof(HandleAsync), request.Id)
-    .Where(x => x.Id == request.Id)
-    .Select(x => new Response { Prop = x.Prop })
-    .SingleAsResultAsync(nameof(Entity), cancellationToken);
-```
-
-**Canonical write:**
-```csharp
-return await db.Entities
-    .TagWith(nameof(HandleAsync), request.Id)
-    .Where(x => x.Id == request.Id)
-    .SingleAsResultAsync(nameof(Entity), cancellationToken)
-    .TapAsync(entity => entity.DoSomething(request.Body.Data))
-    .TapAsync(_ => db.SaveChangesAsync(cancellationToken));
-```
-
-### 2. Persistence Rules
-
-- Reads: **always** `.AsNoTracking()`. Project directly to DTOs via `.Select(...)`.
-- Retrieval: `query.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), cancellationToken)`: never `Find` / `FirstOrDefault`.
-- Conditional filter: `.WhereIf(predicate, condition)`: never `if (condition) query = query.Where(...)`.
-- Writes: strict DDD: `Endpoint → Aggregate.Method()` (mutate state inline, then `RaiseEvent()`) `→ SaveChangesAsync`.
-- **No bare EF-mapped POCO.** Every persisted type is one of: `AggregateRoot<TId>` (raises events), `AuditableEntity<TId>` (has `IStronglyTypedId` key, no events), non-generic `AuditableEntity` (natural/composite key, e.g. a projection upserted by an IntegrationEvent consumer), or a `ValueObject`/owned type. Never a naked `class` with hand-rolled properties and no base: you lose `CreatedOn`/`LastModifiedBy` audit wiring for free otherwise. Sanctioned exception: `OutboxMessage` (transient infra plumbing, rows inserted by raw SQL in `OutboxSaveHelper`, `OutboxDbContext` registered without `ApplyAuditingInterceptor` by design).
-- **LEFT/RIGHT JOIN**: EF Core 10+ → use native `.LeftJoin(...)` / `.RightJoin(...)`. Never the old `.GroupJoin(...).SelectMany(x => x.Group.DefaultIfEmpty(), ...)` workaround: same SQL, extra ceremony.
-
-### 3. REPR Pattern (Endpoints)
-
-- **No controllers.** Minimal APIs only.
-- Files per feature: `Endpoint.cs`, `Request.cs`, `Response.cs`, `RequestValidator.cs`.
-
-```csharp
-internal static class Endpoint
-{
-    internal static void MapEndpoint(RouteGroupBuilder group)
-    {
-        group.MapPut("{Entity}s/{id}", HandleAsync)
-             .WithDescription("...")
-             .MustHavePermission(...)
-             .TransformResultToNoContentResponse();
-    }
-
-    private static async Task<Result> HandleAsync(
-        [AsParameters] Request request,
-        [FromServices] I{Module}DbContext db,
-        CancellationToken cancellationToken) { ... }
-}
-```
-
-Register in the feature's `Setup.cs`:
-```csharp
-var v1Group = app.MapGroup("/entities").WithTags("Entities").MapToApiVersion(1);
-v1.Entity.Feature.Endpoint.MapEndpoint(v1Group);
-```
-
-### 4. C# 14 Standards
-
-- **Zero warnings**: treat warnings as errors. Nullability enabled and enforced.
-- Primary constructors. `required` properties on DTOs.
-- **Using directives, never full qualifiers.** Add `using` for the type's namespace instead of writing `List<Appointments.Domain.TimeBlock>` inline: write `List<TimeBlock>`. Fully-qualified names in code are a smell; only exception is a genuine ambiguity needing disambiguation at the exact call site.
-- **Logging**: `LoggerMessage` source generation only: `static partial` methods with `[LoggerMessage]` attributes. No interpolated log strings.
-- **Localization**: `IResxLocalizer` (Aigamo.ResXGenerator): no `IStringLocalizer`, no magic string keys.
-- **Mapping**: No AutoMapper or any mapping library. Inline `.Select(x => new Response { ... })` only.
-- **Result wrapping**: Never `(Result<T>)value` explicit cast. `Result<T>` has implicit operators for `T → Result<T>` and `Error → Result<T>`: rely on them. When compiler needs a hint inside async lambdas, use `Result<T>.Success(value)`: never cast.
-- **Typed parameters over raw strings**: Never branch on raw `string` query/route parameters (e.g. `filter == "ARCHIVED"`). Use a dedicated `enum`, `bool`, or strongly-typed value instead. ASP.NET Core model binding validates and parses these automatically: no magic strings in handler logic.
-- Prefer `struct` / `ref struct` for hot-path small objects.
-
-### 5. Cross-Module Communication
-
-#### Async: IntegrationEvents
-
-Defined in `src/Common/Common.IntegrationEvents/{SourceModule}.cs`:
-```csharp
-public sealed record UserRegisteredIntegrationEvent(
-    ApplicationUserId UserId,
-    string Name,
-    string PhoneNumber
-) : IntegrationEvent;
-```
-
-Published from a `DomainEventHandler` in `{Module}.Application/{Aggregate}/DomainEventHandlers/v1/`:
-```csharp
-public class V1UserRegisteredDomainEventHandler(IIntegrationEventOutbox outbox)
-    : DomainEventHandlerBase<V1UserRegisteredDomainEvent>
-{
-    public override Task HandleAsync(
-        V1UserRegisteredDomainEvent @event,
-        CancellationToken cancellationToken)
-    {
-        outbox.Collect(
-            new UserRegisteredIntegrationEvent(@event.UserId, @event.Name, @event.PhoneNumber));
-        return Task.CompletedTask;
-    }
-}
-```
-
-Consumer in target module: inherit `IntegrationEventHandlerBase<UserRegisteredIntegrationEvent>` and override `ProcessAsync` (never implement `IConsumer<T>` directly: see Platform Infrastructure table above). Consumers auto-register via assembly scan (`x.AddConsumers(moduleAssemblies)` in `Setup.MassTransit.cs`): no manual registration step, no `ModuleInstaller` file exists.
-
-#### Sync: InterModuleRequests
-
-Defined in `src/Common/Common.InterModuleRequests/{SourceModule}/{Name}.cs`:
-```csharp
-public sealed record GetSeedUserIdsRequest(int Count) : IInterModuleRequest<GetSeedUserIdsResponse>;
-public sealed record GetSeedUserIdsResponse(ICollection<ApplicationUserId> UserIds);
-```
-
-Handler in source module's `{Module}.Infrastructure/InterModuleRequestHandlers/`: inherits `InterModuleRequestHandler<TRequest, TResponse>`:
-```csharp
-public class GetSeedUserIdsRequestHandler : InterModuleRequestHandler<GetSeedUserIdsRequest, GetSeedUserIdsResponse>
-{
-    public override async Task<GetSeedUserIdsResponse> HandleAsync(
-        GetSeedUserIdsRequest request,
-        CancellationToken cancellationToken) { ... }
-}
-```
-
-Caller injects `IInterModuleRequestClient<GetSeedUserIdsRequest, GetSeedUserIdsResponse>` and calls `.SendAsync(request, cancellationToken)`.
-
-#### DomainEvent Versioning
-
-Shipped `V{n}...DomainEvent` records are frozen forever: no added/removed/renamed/retyped properties, even nullable-widening. `AuditLog` stores them by CLR type name (`PolymorphicEventConverter`); edit in place and old rows deserialize wrong (missing field → CLR default) or silently `null` (renamed/deleted type). To change: add a `V{n+1}...DomainEvent` and update the command method to build and raise it instead. The old `V{n}` record stays in the tree forever so historical `AuditLog` rows still deserialize; nothing else is kept, state mutation isn't dispatched off the event type. `IntegrationEvent`s are exempt: Outbox is transient, not permanent audit.
-
-Allowed event property types only:
-
-- Primitives, `string`, `decimal`, `Guid`/`DefaultIdType`, `DateOnly`, `TimeOnly`, `DateTime`, `DateTimeOffset`, `TimeSpan`, `Uri`
-- `IStronglyTypedId` implementations
-- A record or `enum` nested inside the event record itself (snapshot pattern)
-
-Never entity, aggregate root, `ValueObject`, or domain `enum` directly. Nest a private `{Name}Snapshot` type in the event's own file; map via an extension method in that same file, named per event (no shared name across events, no shared snapshot type across events):
-
-```csharp
-public sealed record V1ProductAddedToStoreDomainEvent(
-    StoreId StoreId,
-    V1ProductAddedToStoreDomainEvent.ProductSnapshot Product
-) : DomainEvent
-{
-    public sealed record ProductSnapshot(ProductId ProductId, string Name, string Description, int Quantity, decimal Price);
-}
-
-internal static class V1ProductAddedToStoreDomainEventExtensions
-{
-    public static V1ProductAddedToStoreDomainEvent.ProductSnapshot ToAddedSnapshot(this Product product)
-    {
-        return new V1ProductAddedToStoreDomainEvent.ProductSnapshot(
-            product.Id, product.Name, product.Description, product.Quantity, product.Price);
-    }
-}
-```
-
-Raise site: `RaiseEvent(new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot()));` Enforced by `DomainEventContractTests.cs` (`make test-common`).
-
-**State mutation lives in the command method.** Aggregates are not event-sourced: state loads from EF-mapped columns, never rebuilt by replaying events. A command method always builds its event(s) first, from pre-mutation state and its own parameters, then mutates its fields, then calls `RaiseEvent(@event)` purely to record the change (`AuditLog`) and trigger `DomainEventHandler`s. No `Apply`/`ApplyEvent` dispatch: do not reintroduce one. This build-first order is unconditional, not a case-by-case judgment call: apply it even when the event's payload has no dependency on the old value, so nobody has to reason about which commands need it. `Product.UpdateQuantity` picking Increased vs Decreased by comparing against the current `Quantity` is why the rule exists, not the only time it applies.
-
-### 6. Observability (OpenTelemetry)
-
-- Each module has a `static [Module]Telemetry` class in `Infrastructure/Telemetry/`.
-- Register `ActivitySource` and `Meter` in `IModule` via `ActivitySourceNames` / `MeterNames`.
-- Naming convention: `ModularMonolith.[ModuleName]`
-- Start a span only when it provides valuable insight:
-  ```csharp
-  using var activity = [Module]Telemetry.ActivitySource.StartActivityForCaller();
-  ```
-- End-of-pipeline enrichment: `.TapActivityAsync(activity)` records success/error status automatically.
-- Metrics inside `.TapAsync(...)` so they only fire on success.
-
-### 7. Zero Trust / Defensive Implementation
-
-- Every `Request` must be validated (FluentValidation via `CustomValidator<T>`) before domain or persistence.
-- Assume 3rd-party APIs will fail, timeout, or return malformed data. Use resiliency patterns (retry, circuit breaker).
-- 3rd-party failures must not cascade into core application.
-- **Never call `services.BuildServiceProvider()` inside DI registration code.** It creates a full `ServiceProvider` including OTel `TracerProvider`/`MeterProvider` singletons; GC-finalizing those temporary providers corrupts the global `ActivitySource` state and breaks subsequent factory startups in tests. Scan `IServiceCollection` directly and use `Activator.CreateInstance(implType)` instead.
-
-### 8. Testing Standards
-
-- **Framework**: xUnit. **Mocking**: NSubstitute (external APIs only). **Data**: Bogus.
-- Integration tests hit **real** Postgres via Testcontainers. `Respawn` resets DB state between tests.
-- **Assertions**: built-in xUnit `Assert.*` only - no FluentAssertions.
-- **Timestamp equality against a DB-round-tripped value**: never bare `Assert.Equal(expected, actual)` on `DateTime`/`DateTimeOffset`. Postgres `timestamptz` stores microsecond precision; .NET ticks are 100ns - the last tick digit gets silently truncated on write, so an in-memory value compared to the value read back fails nondeterministically (passes/fails depending on the captured tick's last digit). Always use the tolerance overload: `Assert.Equal(expected, actual, TimeSpan.FromSeconds(1))`. Comparing two purely in-memory values (no DB round-trip) is exact-equality-safe and doesn't need this.
-- Naming: `Method_Scenario_Expectation`.
-- For writes: assert entity in DB + record in `OutboxMessages`. Do NOT mock MassTransit in slice tests.
-- **Factory isolation rule**: use `IClassFixture<TFactory>` when only one test class needs the factory. When multiple test classes share the same factory type, use `ICollectionFixture<TFactory>` + `[Collection("Name")]`: two `IClassFixture<T>` on different classes in the same assembly boot in parallel and corrupt shared global state (Serilog static logger, OTel `ActivitySource`).
-- **With `IClassFixture`: call `factory.CreateClient()` eagerly** in a field initializer or constructor, never lazily inside a test method body. Lazy calls race with other factories' `DisposeAsync()`, which corrupts global static state before `StartServer()` runs. With `ICollectionFixture` the server is already running before any test executes, so calling `CreateClient()` lazily inside each test body is correct and preferred (gives each test a clean client with no cross-test header/cookie state).
-- Modules under test isolated via `TestModuleOverride` env var (set in `IntegrationTestFactory.GetActiveModules()`).
-- **Test config reaches runtime `IOptions`, NOT registration-time reads.** Values set via `AddInMemoryCollection` in `IntegrationTestFactory.ConfigureWebHost` are merged *after* module installers run, so they only affect runtime `IOptions<T>` resolution: they do **not** reach `configuration.Get<T>()` / `GetValue<T>()` calls executed during DI registration (transport selection, conditional `AddHostedService`, etc.). Anything consumed at registration time must travel via `builder.UseSetting(...)` (registration-visible, like `TestModuleOverride`), an environment variable, or JSON: or be re-gated to read `IOptions<T>` at runtime. A test override that "has no effect" is almost always this.
-
-**`IntegrationTestFactory` pattern**: single class (use `IClassFixture`):
-```csharp
-public class MyModuleTestFactory : IntegrationTestFactory
-{
-    protected override string[] GetActiveModules() => ["MyModule"];
-}
-
-public class MyFeatureTests : IClassFixture<MyModuleTestFactory>
-{
-    private readonly HttpClient _client;  // eager: field initializer
-    public MyFeatureTests(MyModuleTestFactory factory)
-    {
-        _client = factory.CreateClient();
-    }
-}
-```
-
-**Shared factory across multiple classes** (use `ICollectionFixture`):
-```csharp
-// CollectionDefinition.cs
-[CollectionDefinition("MyModule")]
-public class MyModuleCollection : ICollectionFixture<MyModuleTestFactory>;
-
-// Both test classes share one factory, run sequentially
-[Collection("MyModule")]
-public class FeatureATests(MyModuleTestFactory factory) { ... }
-
-[Collection("MyModule")]
-public class FeatureBTests(MyModuleTestFactory factory) { ... }
-```
-
-### 9. Bug Fixing: Scientific Method
-
-- **No guesswork.** Never fix based on description alone.
-- Write a failing test first (Red). Fix the code. Test must pass (Green).
-- Use OTel Trace IDs to locate the exact failing span when available.
-- **CI-only failures: observe the failing environment before fixing: do not reason from the stack trace and push a guess.** If a test passes locally but fails only in CI, first instrument the failing path to emit the CI environment's real state, then fix from that evidence. For a DB lock/timeout (e.g. Respawn `Timeout during reading attempt`), dump `pg_stat_activity` and `pg_blocking_pids(...)` plus the *effective* option values from inside the catch, throw it in the exception message (xUnit swallows `Console`), and read it from the CI log. Local-green/CI-red means the local box is masking the cause (a running broker, more CPU, or config that only diverges under CI), so local repro will mislead: one instrumented CI run beats three reasoned guesses.
-
-### 10. Tunable Values: Options Pattern Only
-
-Never hardcode a tunable (timeout, retry count, threshold, duration, limit, interval, template string) as a literal in application code. Route it through Options:
-
-1. `<Name>Options` class in `src/Common/Common.Application/Options/<Name>Options.cs`: `required` props, paired `<Name>OptionsValidator : CustomValidator<<Name>Options>` in the same file.
-2. Config JSON at `src/Host/Host/Configurations/<name>.json`, top-level key = bare class name (no `Module:Sub` nesting).
-3. Register the file in `src/Host/Host/Configurations/Setup.cs`'s `AddJsonFile(...)` list.
-4. Inject `IOptions<<Name>Options>`: never hand-roll `services.Configure<T>(...)`. `AddCommonOptions` (`Options/Setup.cs`) assembly-scans for every `*Options` type, auto-binds its section, and runs its validator at startup.
-
-Test: would an operator plausibly want to change this without a code change? If yes, it's a tunable. Structural constants (array size tied to an enum, a protocol magic number) are not.
-
-### 11. Proactive Issue Reporting: Never Silently Pass Over a Bug
-
-If you spot a bug, architecture violation, security hole, dead code, or footgun while working: even in a file you didn't touch and even if it's unrelated to the current task: **flag it explicitly to the user** before finishing your response. `file:line` + one-line description + severity is enough.
-
-- Never silently fix it (scope creep) and never silently ignore it.
-- Never write "this was already broken / pre-existing / unrelated to my change" as a reason to drop it: that sentence is a prompt to report, not an excuse to skip.
-- Flag it even when it blocks nothing and the current task succeeds anyway.
-- Exception: findings already produced by a dedicated review/audit skill (`/audit-architecture`, `/code-review`, etc.): report those through that skill's own output format, not as an ad hoc aside.
-
----
-
-## Makefile: Always Use These Targets
-
-```bash
-make build
-make test                        # all modules sequentially
-make test-common
-make test-host
-make test-iam
-make test-products
-make test-inventory
-make test-outbox
-make test-notifications
-make test-backgroundjobs
-
-make ef-add-Notifications name=<Name>
-make ef-add-Products name=<Name>
-make ef-add-Inventory name=<Name>
-make ef-add-Outbox name=<Name>
-
-make ef-script-Notifications from=<Prev> to=<TargetMigration>
-make ef-script-Products from=<Prev> to=<TargetMigration>
-make ef-script-Inventory from=<Prev> to=<TargetMigration>
-make ef-script-Outbox from=<Prev> to=<TargetMigration>
-make ef-script-all from=<Prev> to=<TargetMigration>
-```
-
----
-
-## Slash Commands
-
-| Command | Purpose |
-| :--- | :--- |
-| `/implement-endpoint` | Scaffold REPR files and register a new endpoint |
-| `/scaffold-feature` | Scaffold a new vertical slice (Endpoint + Domain method) |
-| `/scaffold-module` | Scaffold a new top-level module with tests |
-| `/scaffold-test` | Generate integration test for a feature |
-| `/scaffold-tests` | Scaffold failing Red-phase tests before implementation |
-| `/plan-feature` | Plan a new feature (boundaries, events, files, telemetry) |
-| `/execute-feature` | Implement a planned feature end-to-end |
-| `/plan-refactor` | Plan a refactoring against the architecture rules |
-| `/execute-refactor` | Execute a planned refactoring with zero regressions |
-| `/add-integration-event` | Add an IntegrationEvent and scaffold consumer |
-| `/add-inter-module-request` | Add an InterModuleRequest contract and handler |
-| `/manage-migration` | Add an EF migration and generate the idempotent SQL script |
-| `/run-quality-gate` | Run tests + architecture audit |
-| `/audit-architecture` | Check for boundary violations, outbox misuse, localization drift |
-| `/fix-bug` | Reproduce → diagnose → fix with Red/Green test cycle |
-| `/verify-feature` | Final quality gate after implementation |
-| `/update-dependencies` | Safely update NuGet packages via CPM |
+No imperative `if (result.IsFailure)`; chain instead. Handlers return `Task<Result>` or `Task<Result<Response>>`.
+
+`BindAsync` (chain fallible op), `TapAsync`/`Tap` (side effect), `TapWhenAsync`/`TapWhen` (conditional side effect), `MapAsync`/`Map` (project), `CombineAsync` (two dependent results), `TapActivityAsync(activity)` (record span status at pipeline end).
+
+Write shape: `db.Set.TagWith(nameof(HandleAsync), id).Where(...).SingleAsResultAsync(nameof(Entity), ct).TapAsync(e => e.Method(...)).TapAsync(_ => db.SaveChangesAsync(ct))`.
+Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Response { ... }).SingleAsResultAsync(nameof(Entity), ct)`.
+
+## 4. Persistence
+
+- Reads: `.AsNoTracking()` always, project to DTO in `.Select`.
+- Single fetch: `.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), ct)`. Never `Find`/`FirstOrDefault`.
+- Conditional filter: `.WhereIf(pred, cond)`. Joins: native `.LeftJoin`/`.RightJoin`, never `GroupJoin` + `SelectMany`.
+- Writes: Endpoint calls aggregate method, aggregate mutates and `RaiseEvent`s, endpoint saves.
+- Every persisted type derives from `AggregateRoot<TId>`, `AuditableEntity<TId>`, non-generic `AuditableEntity` (natural/composite key), or is a `ValueObject`/owned type. No bare POCO. Only exception: `OutboxMessage`.
+
+## 5. Endpoints (REPR) and C#
+
+- Minimal APIs only, no controllers. Per feature folder: `Endpoint.cs`, `Request.cs` (record + `RequestValidator : CustomValidator<Request>` in the same file, no separate validator file), `Response.cs` (omit for no-content writes).
+- Register in `{Aggregate}/Setup.cs`: `versionedApiGroup.MapGroup("/things").WithTags("Things").MapToApiVersion(1)` then `v1.Feature.Endpoint.MapEndpoint(group)`. `{M}Module.MapEndpoints` owns `/v{version:apiVersion}`, `AddFluentValidationAutoValidation()`, `RequireAuthorization()`.
+- Zero warnings, nullable enforced. Primary constructors. `required` on DTOs. `using` directives, never inline full qualifiers.
+- Logging: `[LoggerMessage]` `static partial` methods only. Localization: `IResxLocalizer` only. Mapping: inline `.Select` only, no libraries.
+- `Result<T>`: rely on implicit operators; inside async lambdas use `Result<T>.Success(v)`. Never cast.
+- Typed parameters: never branch on raw `string` route/query values; use `enum`/`bool`/typed value.
+- Tunables (timeouts, limits, intervals, cron, templates) live in Options (§9), never literals.
+- Every `Request` is validated. Assume third parties fail; use resiliency (retry, circuit breaker); failures must not cascade.
+- Never call `services.BuildServiceProvider()` in DI registration (corrupts OTel providers). Scan `IServiceCollection` and use `Activator.CreateInstance`.
+
+## 6. Cross-module and events
+
+- Async: `IntegrationEvent` record in `Common.IntegrationEvents/{Source}.cs`. Publish from a `DomainEventHandlerBase<V1X>` via `outbox.Collect(...)`. Consume via `IntegrationEventHandlerBase<T>`. Consumers auto-register by assembly scan (`Setup.MassTransit.cs`), no manual step.
+- Sync: `XRequest : IInterModuleRequest<XResponse>` + `XResponse` in `Common.InterModuleRequests/{Source}/X.cs`. Handler `InterModuleRequestHandler<Req,Res>` in `{Source}.Infrastructure/InterModuleRequestHandlers/` (also a MassTransit consumer, auto-registered). Caller injects `IInterModuleRequestClient<Req,Res>` and calls `SendAsync`.
+- DomainEvent versioning: shipped `V{n}...DomainEvent` records never change (no add/remove/rename/retype, not even nullable-widening). Add `V{n+1}` and raise it from the command method; keep `V{n}` in the tree. `IntegrationEvent`s are exempt.
+- Event property types: primitives, `string`, `decimal`, `Guid`/`DefaultIdType`, date/time types, `TimeSpan`, `Uri`, `IStronglyTypedId`, or a record/enum nested inside the event (`{Name}Snapshot` mapped by an extension method in the same file, one per event, never shared). Never an entity, aggregate, `ValueObject`, or domain enum. `DomainEventContractTests` enforces this.
+- Command methods: build event(s) from pre-mutation state, mutate fields, then `RaiseEvent`. Always in that order. No `Apply`/`ApplyEvent` dispatch; aggregates are not event-sourced.
+
+## 7. Observability
+
+`static {M}Telemetry` in `Infrastructure/Telemetry/`, names `ModularMonolith.{M}`, registered via `IModule.ActivitySourceNames`/`MeterNames`. Span only when it adds insight: `using var activity = {M}Telemetry.ActivitySource.StartActivityForCaller();` then `.TapActivityAsync(activity)`. Metrics inside `.TapAsync` so they fire on success only.
+
+## 8. Testing
+
+- xUnit, NSubstitute (external APIs only), Bogus, real Postgres via Testcontainers, Respawn resets. `Assert.*` only, no FluentAssertions. Names: `Method_Scenario_Expectation`.
+- Default fixture: `[Collection("IntegrationTestCollection")]` + `BaseIntegrationTest`, factory `IntegrationTestWebAppFactory : IntegrationTestFactory` overriding `GetActiveModules()`. Call `Factory.CreateClient()` lazily inside each test.
+- `IClassFixture<T>` only when a single class uses that factory type; then call `CreateClient()` eagerly in the constructor. Two `IClassFixture<T>` classes in one assembly boot in parallel and corrupt Serilog/OTel statics.
+- Writes: assert entity in DB and row in `OutboxMessages`. Never mock MassTransit.
+- DB-round-tripped timestamps: `Assert.Equal(expected, actual, TimeSpan.FromSeconds(1))` (Postgres microsecond precision truncates ticks).
+- Test config from `AddInMemoryCollection` reaches runtime `IOptions<T>` only, not registration-time `configuration.Get<T>()`. Registration-time values go through `builder.UseSetting(...)` (like `TestModuleOverride`) or env vars.
+- Bugs: Red test first, then fix, then Green. Never edit a test to make it pass. CI-only failure: instrument the failing path to dump real state (for DB locks: `pg_stat_activity`, `pg_blocking_pids`, effective options) into the exception message, push, read the CI log, then fix. Local repro misleads.
+
+## 9. Options pattern
+
+1. `src/Common/Common.Application/Options/{Name}Options.cs` with `required` props and `{Name}OptionsValidator : CustomValidator<{Name}Options>` in the same file.
+2. `src/Host/Host/Configurations/{name}.json`, top-level key = class name.
+3. Add the file to `AddJsonFile(...)` in `src/Host/Host/Configurations/Setup.cs`.
+4. Inject `IOptions<{Name}Options>`. `AddCommonOptions` auto-binds and validates every `*Options`; never hand-roll `services.Configure<T>`.
+
+## 10. Report every issue you see
+
+Bug, boundary violation, security hole, dead code, footgun: flag it with `file:line`, one line, severity, even if unrelated to the task. Never silently fix, never skip as "pre-existing". Review skills report through their own format instead.
+
+## 11. Make targets
+
+`make build`, `make test`, `make test-{common,host,iam,products,inventory,outbox,notifications,backgroundjobs}`, `make ef-add-{Notifications,Products,Inventory,Outbox} name=X`, `make ef-script-{Module} from=A to=B`, `make ef-script-all from=A to=B`, `make check-migration-drift`.

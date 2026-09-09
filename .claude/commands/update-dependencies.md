@@ -1,33 +1,15 @@
 ---
-description: Safely update NuGet packages via Central Package Management — check outdated, plan, update, build, test.
+description: Update NuGet packages via Central Package Management, then build and run the full suite.
 argument-hint: ""
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
 Update NuGet dependencies.
 
-1. **Analyze**: read `Directory.Packages.props` to understand the current ecosystem.
-
-2. **Find outdated**. Running against the whole solution fails (`docker-compose.dcproj` errors `NU1105: Invalid target framework ''`) — scope per project instead:
-   ```bash
-   dotnet list src/Host/Host/Host.csproj package --outdated
-   # repeat per .csproj, or loop over `find . -name '*.csproj'`
-   ```
-
-3. **Draft plan**: list each package with current → target version. Do not upgrade major versions without explicit approval.
-
-4. **Apply**: edit `<PackageVersion Include="..." Version="..." />` entries in `Directory.Packages.props`. Targeted edits only.
-
-5. **Restore and compile**:
-   ```bash
-   make build
-   ```
-   Fix any compilation errors or breaking API changes before proceeding.
-
-6. **Full quality gate**:
-   ```bash
-   make test
-   ```
-   Confirm no integration tests, Kafka consumers, or DB interactions broke.
-
-7. **Report**: each package updated (old → new), build result, test result.
+1. Read `Directory.Packages.props`.
+2. Outdated list per project (solution-wide fails on `docker-compose.dcproj` with `NU1105`): `dotnet list <path>.csproj package --outdated` for each `.csproj`.
+3. Plan: package, current, target. No major bumps without explicit approval.
+4. Edit only the `<PackageVersion>` entries in `Directory.Packages.props`.
+5. `make build`, fix breaking API changes.
+6. `make test`.
+7. Report each package (old to new), build result, test result.

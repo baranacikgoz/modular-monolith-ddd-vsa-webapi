@@ -1,25 +1,16 @@
 ---
-description: Implement a planned feature end-to-end with full architectural compliance.
+description: Implement an approved feature plan end-to-end.
 argument-hint: "<Module>"
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
-Implement planned feature for module: $ARGUMENTS
+Implement planned feature for: $ARGUMENTS
 
-1. **Review plan**: read the approved plan from the current conversation or PR description.
-
-2. **Green baseline**: run `make test-{module}` to confirm existing tests pass before touching anything.
-
-3. **Domain layer**: implement or update Aggregates/Entities. Domain methods mutate aggregate state inline, then call `RaiseEvent(new DomainEvent(...))` to record it. No `Apply`/`ApplyEvent`.
-
-4. **Application/Infrastructure layer**: implement internal services and repository logic following the functional Result pipeline throughout.
-
-5. **Cross-module integration** (if required): for async, define `IntegrationEvents` in `Common.IntegrationEvents` and implement consumers (see `/add-integration-event`): never publish to the bus directly from Write-side paths, use `RaiseEvent`. For synchronous cross-module calls, define an `InterModuleRequest` in `Common.InterModuleRequests` and implement the handler (see `/add-inter-module-request`).
-
-6. **Endpoints**: run `/implement-endpoint` for each new endpoint in the plan.
-
-7. **Tests**: write or extend integration tests covering the new behavior (see `/scaffold-test`). Do not rely solely on existing coverage.
-
-8. **Verification**: run `/verify-feature {Module}` for the full quality gate.
-
-9. **Audit**: inspect all modified `.csproj` files: zero cross-module references. Confirm `.AsNoTracking()` on all reads and no mapping library usage.
+1. Read the approved plan from the conversation or PR description.
+2. Green baseline: `make test-{module}`.
+3. Optional Red phase: `/scaffold-test {Module} {Feature} READ|WRITE red`.
+4. Domain: aggregates, events, methods per CLAUDE.md §6.
+5. Cross-module: `/add-integration-event` (async) or `/add-inter-module-request` (sync) as the plan requires.
+6. Endpoints: `/scaffold-feature` per endpoint. Migrations: `/manage-migration`.
+7. Tests: `/scaffold-test` for every new behavior.
+8. `/verify-feature {Module}`.

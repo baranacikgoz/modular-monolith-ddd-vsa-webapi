@@ -1,70 +1,19 @@
 ---
-description: Scaffold a full vertical slice: Endpoint, Request, Response, Validator, and Domain method.
+description: Scaffold a vertical slice (Endpoint, Request with inline validator, Response, domain method) and register it in Setup.cs.
 argument-hint: "<Module> <Aggregate> <Feature> READ|WRITE"
 allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
 Scaffold: $ARGUMENTS
 
-Create `src/Modules/{Module}/{Module}.Endpoints/{Aggregate}/v1/{Feature}/`.
+Copy the shape from the CLAUDE.md §2 exemplars (Activate for WRITE, Get for READ, Search for paginated). Rules in CLAUDE.md §3, §4, §5.
 
-**WRITE slice: `Endpoint.cs`:**
-```csharp
-internal static class Endpoint
-{
-    internal static void MapEndpoint(RouteGroupBuilder group)
-    {
-        group.MapPut("{Aggregate}s/{id}", HandleAsync)
-             .WithDescription("{Feature} action")
-             .Produces(StatusCodes.Status204NoContent)
-             .TransformResultToNoContentResponse();
-    }
-
-    private static async Task<Result> HandleAsync(
-        [AsParameters] Request request,
-        [FromServices] I{Module}DbContext db,
-        CancellationToken cancellationToken)
-    {
-        return await db.{Aggregate}s
-            .TagWith(nameof(HandleAsync), request.Id)
-            .Where(x => x.Id == request.Id)
-            .SingleAsResultAsync(nameof({Aggregate}), cancellationToken)
-            .TapAsync(agg => agg.{Feature}(request.Body.Data))
-            .TapAsync(_ => db.SaveChangesAsync(cancellationToken));
-    }
-}
-```
-
-**READ slice**: handler returns `Task<Result<Response>>`, uses `.AsNoTracking()`, projects inline to `Response` via `.Select(...)`.
-
-**`Request.cs`**: **always scaffold this file, no exception**, even for an Id-only request or an empty pagination-only request (empty `RequestValidator` body is fine, but the class stays). Record plus an inline validator appended at the bottom of the same file (not a separate `RequestValidator.cs`). Validation auto-fires via `AddFluentValidationAutoValidation()`, registered once at module root: no per-endpoint wiring:
-```csharp
-public sealed record Request([FromRoute] Guid Id, [FromBody] Body Body);
-public sealed record Body(string Prop /* add fields */);
-
-public sealed class RequestValidator : CustomValidator<Request>
-{
-    public RequestValidator(IResxLocalizer localizer)
-    {
-        RuleFor(x => x.Body.Prop).NotEmpty().WithMessage(localizer.Module_Feature_Prop_Required);
-    }
-}
-```
-
-Strongly-typed route/query ids use `[ModelBinder<StronglyTypedIdBinder<TId>>]` instead of raw `Guid`. Every `Request` property carries an explicit `[FromRoute]`/`[FromQuery]`/`[FromBody]` attribute: never rely on implicit name-matching against the route template, even when a property name happens to match a route segment.
-
-**`[AsParameters]` rule**: bind `Request` via `[AsParameters]` whenever it has **any** `[FromRoute]` or `[FromQuery]` property: this includes a Request bound from a single pure-route or pure-query source, not just mixed sources (route+body, route+query, as in the WRITE example above). Minimal APIs infer a bare complex-type parameter with no attribute as bound from the JSON body by default; without `[AsParameters]`, a pure-query or pure-route Request silently stops binding from the URL and instead expects: and never receives: a JSON body. A pure-body Request (Create with only `[FromBody]` fields) or an endpoint with no Request at all (`ICurrentUser`-only read) binds the parameter directly: no `[AsParameters]`.
-
-**`Response.cs`:**
-```csharp
-public sealed record Response { public required string Prop { get; init; } }
-```
-
-**Domain method (WRITE)**: ensure `{Aggregate}` has `{Feature}(...)` that mutates the state inline and then calls `RaiseEvent(new {Feature}Event(...))`.
-
-**Register** in the feature's `Setup.cs`: do not call `.MapToApiVersion(...)` here, versioning is applied once at the module root:
-```csharp
-v1.{Feature}.Endpoint.MapEndpoint(group);
-```
-
-Run `make build` to confirm zero warnings.
+1. Create `src/Modules/{Module}/{Module}.Endpoints/{Aggregate}/v1/{Feature}/`:
+   - `Endpoint.cs`: `internal static class Endpoint` with `MapEndpoint(RouteGroupBuilder)`. Chain: `.WithDescription(...)`, `.RequireScope(KeycloakScopes.{Aggregate}s.{Action})`, `.Produces(...)`, then `.TransformResultToNoContentResponse()` (write), `.TransformResultTo<Response>()` (read) or `.TransformResultToCreatedResponse<Response>()` (create).
+   - `Request.cs`: always create it when the endpoint takes any id, query, or body. Sealed record, `required` properties, every property carries `[FromRoute]`, `[FromQuery]`, or `[FromBody]` explicitly. Strongly-typed ids: `[ModelBinder<StronglyTypedIdBinder<TId>>]`. Append `public sealed class RequestValidator : CustomValidator<Request>` (or `PaginationRequestValidator<Request>`) in the same file, injecting `IResxLocalizer`. An empty validator body is fine; the class must exist. Skip `Request.cs` only for endpoints with no inputs at all (`ICurrentUser`-only reads).
+   - `Response.cs`: sealed record with `required` properties. Omit for no-content writes.
+2. Handler binding: `[AsParameters] Request request` whenever `Request` has any `[FromRoute]` or `[FromQuery]` property. A pure `[FromBody]` request binds as a plain parameter. Without `[AsParameters]`, Minimal APIs treat the record as a JSON body and route/query values never bind.
+3. WRITE: add `{Aggregate}.{Feature}(...)` to the aggregate. Build the `V1...DomainEvent` first, mutate, then `RaiseEvent` (§6).
+4. Register in `{Aggregate}/Setup.cs`: `v1.{Feature}.Endpoint.MapEndpoint({aggregate}ApiGroup);`. Create the `Map{Aggregate}sEndpoints` extension and call it from `{Module}Module.MapEndpoints` if the aggregate is new.
+5. Add the scope to `keycloak/realm-modular-monolith.json` and `KeycloakScopes` if it does not exist.
+6. `make build`, zero warnings. Then `/scaffold-test {Module} {Feature} READ|WRITE`.

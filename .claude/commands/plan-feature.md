@@ -1,5 +1,5 @@
 ---
-description: Plan a new feature end-to-end — module boundaries, integration events, file inventory, testing and telemetry strategy.
+description: Plan a feature: owning module, cross-module contracts, file inventory, data model, tests, telemetry. No code until approved.
 argument-hint: "<feature description>"
 context: fork
 allowed-tools: Read, Bash, Glob, Grep
@@ -9,18 +9,11 @@ ultrathink
 
 Plan this feature: $ARGUMENTS
 
-1. **Identify boundaries**: determine which module(s) own this feature. If it spans modules, identify the `IntegrationEvents` required for async communication and any `InterModuleRequests` for sync calls.
+Output a markdown plan usable as a PR description. Implementation starts only after approval.
 
-2. **File inventory**: list every file to be created or modified, with a one-line description of the change.
-
-3. **Data structures**: define new Aggregates, Entities, Value Objects, DomainEvents, DTOs, and DB schema changes (migrations needed?).
-
-4. **Testing strategy**: specify unit tests and integration tests required.
-   - Write assertions: entity in DB + record in `OutboxMessages`.
-   - Read assertions: response DTO shape matches seeded data.
-
-5. **Defensive strategy**: identify FluentValidation rules for inbound `Request`s. Identify any 3rd-party integrations requiring resiliency (retry, circuit breaker, response validation).
-
-6. **Telemetry plan**: list `ActivitySource` spans and `Meter` instruments that provide meaningful observability — skip if the overhead outweighs the insight.
-
-7. **Output**: produce a structured markdown plan suitable for a PR description. Implementation begins only after this plan is approved.
+1. Owning module(s). If it spans modules: which `IntegrationEvent`s (async) and `InterModuleRequest`s (sync).
+2. File inventory: every file created or modified, one line each, using the CLAUDE.md §1 layout.
+3. Data model: aggregates, entities, value objects, `V1` domain events (snapshot types per §6), DTOs, migrations.
+4. Tests: integration (write = DB row + `OutboxMessages`; read = response matches seed) and aggregate unit tests.
+5. Defense: validation rules per `Request`; third-party calls needing retry, circuit breaker, response validation; new Keycloak scopes; new Options (§9).
+6. Telemetry: spans and meters worth their overhead, or none.
