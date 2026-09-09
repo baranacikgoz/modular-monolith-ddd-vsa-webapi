@@ -24,7 +24,9 @@ public sealed record CreateKeycloakUser(
     string FirstName,
     string LastName,
     string PhoneNumber,
-    DateOnly BirthDate);
+    DateOnly BirthDate,
+    string? Email = null,
+    string? Password = null);
 
 public sealed record KeycloakUserPage(IReadOnlyList<KeycloakUser> Users, int TotalCount);
 

@@ -39,13 +39,18 @@ internal sealed partial class KeycloakAdminClient(
             Username = user.Username,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            Email = user.Email,
+            EmailVerified = user.Email is null ? null : true,
             Enabled = true,
             Attributes = new Dictionary<string, List<string>>
             {
                 [UserAttributes.PhoneNumber] = [user.PhoneNumber],
                 [UserAttributes.PhoneNumberVerified] = ["true"],
                 [UserAttributes.BirthDate] = [user.BirthDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)]
-            }
+            },
+            Credentials = user.Password is null
+                ? null
+                : [new CredentialRepresentation { Value = user.Password, Temporary = false }]
         };
 
         using var response = await SendAsync(

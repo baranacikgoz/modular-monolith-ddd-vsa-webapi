@@ -107,6 +107,7 @@ internal static partial class Endpoint
                                        or BrokenCircuitException or TimeoutRejectedException)
         {
             LogRegistrationRollbackFailed(logger, userId, ex);
+            IamTelemetry.RecordOrphanedUserLeftRoleless();
         }
 
         return Result<ApplicationUserId>.Failure(assigned.Error!);

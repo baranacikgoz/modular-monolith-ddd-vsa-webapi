@@ -36,6 +36,9 @@ public static class IamTelemetry
     public static readonly Counter<long> RefreshTokenReuseDetected =
         Meter.CreateCounter<long>("iam.refresh_token_reuse_detected.total", description: "Refresh tokens replayed beyond the realm's reuse tolerance (theft signal); the session is revoked in response");
 
+    public static readonly Counter<long> OrphanedUsersLeftRoleless =
+        Meter.CreateCounter<long>("iam.orphaned_users_left_roleless.total", description: "Newly created Keycloak users left with no role because both role assignment and the compensating delete failed; needs manual reconciliation");
+
     public static void RecordLogin(string method) =>
         Logins.Add(1, new KeyValuePair<string, object?>("login.method", method));
 
@@ -43,6 +46,8 @@ public static class IamTelemetry
         SessionsRevoked.Add(count, new KeyValuePair<string, object?>("session.revoked_reason", reason));
 
     public static void RecordRefreshTokenReuseDetected() => RefreshTokenReuseDetected.Add(1);
+
+    public static void RecordOrphanedUserLeftRoleless() => OrphanedUsersLeftRoleless.Add(1);
 
     public static void RecordAuthorizationDecision(bool granted, bool fromCache) =>
         AuthorizationDecisions.Add(1,

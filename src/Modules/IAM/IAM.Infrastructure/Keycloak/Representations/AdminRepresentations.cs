@@ -13,6 +13,14 @@ internal sealed class UserRepresentation
     [JsonPropertyName("emailVerified")] public bool? EmailVerified { get; set; }
     [JsonPropertyName("createdTimestamp")] public long? CreatedTimestamp { get; set; }
     [JsonPropertyName("attributes")] public Dictionary<string, List<string>>? Attributes { get; set; }
+    [JsonPropertyName("credentials")] public List<CredentialRepresentation>? Credentials { get; set; }
+}
+
+internal sealed class CredentialRepresentation
+{
+    [JsonPropertyName("type")] public string Type { get; set; } = "password";
+    [JsonPropertyName("value")] public string Value { get; set; } = string.Empty;
+    [JsonPropertyName("temporary")] public bool Temporary { get; set; }
 }
 
 internal sealed class RoleRepresentation
