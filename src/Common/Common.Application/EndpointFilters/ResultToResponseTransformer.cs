@@ -50,7 +50,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
                 };
 
                 problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
+                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
 
                 if (error.Value is not null)
                 {
@@ -99,7 +99,7 @@ internal sealed class ResultToCreatedResponseTransformer<T>(IServiceProvider ser
                 };
 
                 problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
+                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
 
                 if (error.Value is not null)
                 {
@@ -148,7 +148,7 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
                 };
 
                 problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.SubErrors ?? Array.Empty<string>());
+                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
 
                 if (error.Value is not null)
                 {

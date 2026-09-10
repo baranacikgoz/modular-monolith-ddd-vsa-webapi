@@ -75,8 +75,8 @@ internal static class RateLimitingMiddleware
     }
 
     // Shape matches ResultToResponseTransformer (Common.Application/EndpointFilters) so every 429 in the
-    // API — whether raised here by the ASP.NET rate limiter or from a Result-returning handler that maps
-    // its own throttling into the same "TooManyRequests" error key — looks identical on the wire.
+    // API, whether raised here by the ASP.NET rate limiter or from a Result-returning handler that maps
+    // its own throttling into the same "TooManyRequests" error key, looks identical on the wire.
     private static Func<OnRejectedContext, CancellationToken, ValueTask> WriteTooManyRequestsToResponse()
     {
         return (context, _) =>
@@ -100,7 +100,7 @@ internal static class RateLimitingMiddleware
             }
 
             problemDetails.AddErrorKey(nameof(HttpStatusCode.TooManyRequests));
-            problemDetails.AddErrors([]);
+            problemDetails.AddErrors(parameterName: null, []);
             problemDetails.Extensions.TryAdd("traceId", httpContext.TraceIdentifier);
             problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
 

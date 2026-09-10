@@ -16647,13 +16647,13 @@
             "callee": "FromUnixTimeMilliseconds",
             "receiver_type": "DateTimeOffset",
             "lang": "csharp",
-            "line": "L212"
+            "line": "L217"
           }
         ]
       },
       "norm_label": ".getusersessionsasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193"
+      "source_location": "L198"
     },
     {
       "id": "src_common_common_application_auth_keycloakpermission_common_application_auth_keycloakpermission_fromscope",
@@ -22745,25 +22745,25 @@
             "callee": "TryParseExact",
             "receiver_type": "DateOnly",
             "lang": "csharp",
-            "line": "L279"
+            "line": "L284"
           },
           {
             "callee": "TryParse",
             "receiver_type": "DefaultIdType",
             "lang": "csharp",
-            "line": "L284"
+            "line": "L289"
           },
           {
             "callee": "FromUnixTimeMilliseconds",
             "receiver_type": "DateTimeOffset",
             "lang": "csharp",
-            "line": "L298"
+            "line": "L303"
           }
         ]
       },
       "norm_label": ".touser()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L274"
+      "source_location": "L279"
     },
     {
       "id": "src_host_host_swagger_setup_host_swagger_setup_addcustomswagger",
@@ -27245,7 +27245,7 @@
       },
       "norm_label": ".adminuri()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L269"
+      "source_location": "L274"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_assignrealmroleasync",
@@ -27265,19 +27265,19 @@
             "callee": "EscapeDataString",
             "receiver_type": "Uri",
             "lang": "csharp",
-            "line": "L89"
+            "line": "L94"
           },
           {
             "callee": "Create",
             "receiver_type": "JsonContent",
             "lang": "csharp",
-            "line": "L98"
+            "line": "L103"
           }
         ]
       },
       "norm_label": ".assignrealmroleasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84"
+      "source_location": "L89"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_createuserasync",
@@ -27297,13 +27297,13 @@
             "callee": "Create",
             "receiver_type": "JsonContent",
             "lang": "csharp",
-            "line": "L59"
+            "line": "L64"
           },
           {
             "callee": "TryParse",
             "receiver_type": "DefaultIdType",
             "lang": "csharp",
-            "line": "L69"
+            "line": "L74"
           }
         ]
       },
@@ -27329,19 +27329,19 @@
             "callee": "EscapeDataString",
             "receiver_type": "Uri",
             "lang": "csharp",
-            "line": "L220"
+            "line": "L225"
           },
           {
             "callee": "RemoveByTagAsync",
             "receiver_type": "IFusionCache",
             "lang": "csharp",
-            "line": "L229"
+            "line": "L234"
           }
         ]
       },
       "norm_label": ".deletesessionasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L217"
+      "source_location": "L222"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_deleteuserasync",
@@ -27359,7 +27359,7 @@
       },
       "norm_label": ".deleteuserasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L111"
+      "source_location": "L116"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
@@ -27379,13 +27379,13 @@
             "callee": "EscapeDataString",
             "receiver_type": "Uri",
             "lang": "csharp",
-            "line": "L145"
+            "line": "L150"
           }
         ]
       },
       "norm_label": ".finduserbyusernameasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L141"
+      "source_location": "L146"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
@@ -27403,7 +27403,7 @@
       },
       "norm_label": ".getuserasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123"
+      "source_location": "L128"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuseridsinroleasync",
@@ -27423,25 +27423,25 @@
             "callee": "EscapeDataString",
             "receiver_type": "Uri",
             "lang": "csharp",
-            "line": "L181"
+            "line": "L186"
           },
           {
             "callee": "TryParse",
             "receiver_type": "DefaultIdType",
             "lang": "csharp",
-            "line": "L188"
+            "line": "L193"
           },
           {
             "callee": "Parse",
             "receiver_type": "DefaultIdType",
             "lang": "csharp",
-            "line": "L189"
+            "line": "L194"
           }
         ]
       },
       "norm_label": ".getuseridsinroleasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L176"
+      "source_location": "L181"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_logoutuserasync",
@@ -27461,13 +27461,13 @@
             "callee": "RemoveByTagAsync",
             "receiver_type": "IFusionCache",
             "lang": "csharp",
-            "line": "L239"
+            "line": "L244"
           }
         ]
       },
       "norm_label": ".logoutuserasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L232"
+      "source_location": "L237"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_logroleassignmentfailed",
@@ -27485,7 +27485,7 @@
       },
       "norm_label": ".logroleassignmentfailed()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L305"
+      "source_location": "L310"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_logserviceaccounttokenrejected",
@@ -27503,7 +27503,7 @@
       },
       "norm_label": ".logserviceaccounttokenrejected()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L309"
+      "source_location": "L314"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_loguserrejected",
@@ -27521,7 +27521,7 @@
       },
       "norm_label": ".loguserrejected()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L301"
+      "source_location": "L306"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_searchusersasync",
@@ -27541,13 +27541,13 @@
             "callee": "EscapeDataString",
             "receiver_type": "Uri",
             "lang": "csharp",
-            "line": "L158"
+            "line": "L163"
           }
         ]
       },
       "norm_label": ".searchusersasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L155"
+      "source_location": "L160"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendasync",
@@ -27565,7 +27565,7 @@
       },
       "norm_label": ".sendasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246"
+      "source_location": "L251"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendwithtokenasync",
@@ -27585,13 +27585,13 @@
             "callee": "SendAsync",
             "receiver_type": "HttpClient",
             "lang": "csharp",
-            "line": "L266"
+            "line": "L271"
           }
         ]
       },
       "norm_label": ".sendwithtokenasync()",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260"
+      "source_location": "L265"
     },
     {
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_search_endpoint_iam_endpoints_users_versionneutral_search_endpoint_mapendpoint",
@@ -66886,7 +66886,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L305",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -66901,7 +66901,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L309",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -66916,7 +66916,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L301",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -69496,7 +69496,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L271",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -69508,7 +69508,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L271",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -69520,7 +69520,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L107",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -69532,7 +69532,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L88",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -69544,7 +69544,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L89",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -69556,7 +69556,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L89",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -69568,7 +69568,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L37",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -69580,7 +69580,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L56",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -69592,7 +69592,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -69604,7 +69604,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -69616,7 +69616,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L70",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -69628,7 +69628,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L76",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -69640,7 +69640,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L77",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -69652,7 +69652,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L219",
+      "source_location": "L224",
       "weight": 1.0
     },
     {
@@ -69664,7 +69664,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L220",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -69676,7 +69676,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L220",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -69688,7 +69688,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L113",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -69700,7 +69700,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L114",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -69712,12 +69712,96 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L114",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
       "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
       "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendasync",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
+      "target": "httprequestmessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
+      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_adminuri",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
+      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_touser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
+      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendasync",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
+      "target": "httprequestmessage",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
+      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_adminuri",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
+      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_touser",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -69728,90 +69812,6 @@
       "weight": 1.0
     },
     {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
-      "target": "httprequestmessage",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L144",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
-      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_adminuri",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L145",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_finduserbyusernameasync",
-      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_touser",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L152",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
-      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendasync",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L125",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
-      "target": "httprequestmessage",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L126",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
-      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_adminuri",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L126",
-      "weight": 1.0
-    },
-    {
-      "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuserasync",
-      "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_touser",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L138",
-      "weight": 1.0
-    },
-    {
       "source": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_getuseridsinroleasync",
       "target": "src_modules_iam_iam_infrastructure_keycloak_keycloakadminclient_iam_infrastructure_keycloak_keycloakadminclient_sendasync",
       "relation": "calls",
@@ -69820,7 +69820,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L179",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -69832,7 +69832,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L180",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -69844,7 +69844,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L181",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -69856,7 +69856,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L189",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -69868,7 +69868,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L196",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -69880,7 +69880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L197",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -69892,7 +69892,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L197",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -69904,7 +69904,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L209",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -69916,7 +69916,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L234",
+      "source_location": "L239",
       "weight": 1.0
     },
     {
@@ -69928,7 +69928,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L235",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -69940,7 +69940,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L235",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -69952,7 +69952,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L160",
+      "source_location": "L165",
       "weight": 1.0
     },
     {
@@ -69964,7 +69964,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L161",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -69976,7 +69976,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L162",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -69988,7 +69988,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L173",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -70000,7 +70000,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L249",
+      "source_location": "L254",
       "weight": 1.0
     },
     {
@@ -70012,7 +70012,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L256",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -70024,7 +70024,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L289",
+      "source_location": "L294",
       "weight": 1.0
     },
     {
@@ -70036,7 +70036,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L290",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -90144,7 +90144,7 @@
         "ref_token": "ErrorRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L75",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -90939,7 +90939,7 @@
         "ref_token": "HttpRequestMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -90954,7 +90954,7 @@
         "ref_token": "HttpRequestMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -90969,7 +90969,7 @@
         "ref_token": "HttpResponseMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -90984,7 +90984,7 @@
         "ref_token": "HttpResponseMessage"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -92154,7 +92154,7 @@
         "ref_token": "IReadOnlyList"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L176",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -92169,7 +92169,7 @@
         "ref_token": "IReadOnlyList"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -93264,7 +93264,7 @@
         "ref_token": "KeycloakUser"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L141",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -93279,7 +93279,7 @@
         "ref_token": "KeycloakUser"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -93324,7 +93324,7 @@
         "ref_token": "List"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L149",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -93339,7 +93339,7 @@
         "ref_token": "List"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L185",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -93354,7 +93354,7 @@
         "ref_token": "List"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L206",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -93369,7 +93369,7 @@
         "ref_token": "List"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L165",
+      "source_location": "L170",
       "weight": 1.0
     },
     {
@@ -97554,7 +97554,7 @@
         "ref_token": "Result"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -97584,7 +97584,7 @@
         "ref_token": "Result"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -98544,7 +98544,7 @@
         "ref_token": "RoleRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L92",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -99954,7 +99954,7 @@
         "ref_token": "UserRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L149",
+      "source_location": "L154",
       "weight": 1.0
     },
     {
@@ -99969,7 +99969,7 @@
         "ref_token": "UserRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L135",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -99984,7 +99984,7 @@
         "ref_token": "UserRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L185",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -99999,7 +99999,7 @@
         "ref_token": "UserRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L165",
+      "source_location": "L170",
       "weight": 1.0
     },
     {
@@ -100029,7 +100029,7 @@
         "ref_token": "UserSessionRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L206",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -119589,7 +119589,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -119604,7 +119604,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L111",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -119619,7 +119619,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -119634,7 +119634,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -119649,7 +119649,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L232",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -119664,7 +119664,7 @@
         "ref_token": "ApplicationUserId"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L305",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -120939,7 +120939,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -120969,7 +120969,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L217",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -120984,7 +120984,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L111",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -120999,7 +120999,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L141",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -121014,7 +121014,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -121029,7 +121029,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L176",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -121044,7 +121044,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -121059,7 +121059,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L232",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -121074,7 +121074,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L155",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -121089,7 +121089,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -121104,7 +121104,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -124704,7 +124704,7 @@
         "ref_token": "Func"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -124719,7 +124719,7 @@
         "ref_token": "Func"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -127884,7 +127884,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L305",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -127899,7 +127899,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L309",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -127914,7 +127914,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L301",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -134274,7 +134274,7 @@
         "ref_token": "UserRepresentation"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L274",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -136798,7 +136798,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -136828,7 +136828,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L217",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -136843,7 +136843,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L111",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -136858,7 +136858,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L141",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -136873,7 +136873,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -136888,7 +136888,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L176",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -136903,7 +136903,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -136918,7 +136918,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L232",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -136933,7 +136933,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L155",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -136948,7 +136948,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -136963,7 +136963,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -160508,7 +160508,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L111",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -160519,7 +160519,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -160530,7 +160530,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L141",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -160541,7 +160541,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L155",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -160552,7 +160552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L176",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -160563,7 +160563,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L193",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -160574,7 +160574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L217",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -160585,7 +160585,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L232",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -160596,7 +160596,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L246",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -160607,7 +160607,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -160618,7 +160618,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L269",
+      "source_location": "L274",
       "weight": 1.0
     },
     {
@@ -160629,7 +160629,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L274",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -160640,7 +160640,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L301",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -160651,7 +160651,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L305",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -160662,7 +160662,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L309",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -160684,7 +160684,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -164933,7 +164933,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L263",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -165965,7 +165965,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs",
-      "source_location": "L53",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -167487,5 +167487,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "01c0c8d56584e331a923985997bc60ec36912e1e"
+  "built_at_commit": "3439d144c07998b423cfe0a20913707bafb646a6"
 }
