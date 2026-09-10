@@ -3,6 +3,7 @@
 # Blocks git commit if any module .csproj has cross-module ProjectReferences.
 
 set -euo pipefail
+cd "${CLAUDE_PROJECT_DIR:-.}"
 
 input=$(cat)
 cmd=$(echo "$input" | python3 -c "

@@ -166,4 +166,35 @@ public class SearchTests : BaseIntegrationTest
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Theory]
+    [InlineData("A_A", "AXA")]
+    [InlineData("50%", "500")]
+    public async Task Search_WithWildcardCharsInNameFilter_MatchesLiterally(string literal, string decoy)
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        db.Stores.AddRange(
+            Store.Create(new ApplicationUserId(Guid.NewGuid()), $"{literal} Store", "Desc", "Address"),
+            Store.Create(new ApplicationUserId(Guid.NewGuid()), $"{decoy} Store", "Desc", "Address")
+        );
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var response = await client.GetAsync(new Uri(
+            $"/v1/stores/search?PageNumber=1&PageSize=50&Name={Uri.EscapeDataString(literal)}", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal($"{literal} Store", result.Data.Single().Name);
+    }
 }

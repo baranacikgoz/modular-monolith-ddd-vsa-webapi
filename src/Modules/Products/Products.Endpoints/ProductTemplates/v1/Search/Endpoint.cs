@@ -55,9 +55,9 @@ internal static class Endpoint
                 p => EF.Property<NpgsqlTsVector>(p, FullTextSearchOptions.SearchVectorColumn)
                     .Matches(EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm)),
                 hasSearchTerm)
-            .WhereIf(p => EF.Functions.ILike(p.Brand, $"%{request.Brand}%"), !string.IsNullOrWhiteSpace(request.Brand))
-            .WhereIf(p => EF.Functions.ILike(p.Model, $"%{request.Model}%"), !string.IsNullOrWhiteSpace(request.Model))
-            .WhereIf(p => EF.Functions.ILike(p.Color, $"%{request.Color}%"), !string.IsNullOrWhiteSpace(request.Color))
+            .WhereIf(p => EF.Functions.ILike(p.Brand, LikePattern.Contains(request.Brand), LikePattern.EscapeChar), !string.IsNullOrWhiteSpace(request.Brand))
+            .WhereIf(p => EF.Functions.ILike(p.Model, LikePattern.Contains(request.Model), LikePattern.EscapeChar), !string.IsNullOrWhiteSpace(request.Model))
+            .WhereIf(p => EF.Functions.ILike(p.Color, LikePattern.Contains(request.Color), LikePattern.EscapeChar), !string.IsNullOrWhiteSpace(request.Color))
             .PaginateAsync(
                 request: request,
                 selector: p => new Response

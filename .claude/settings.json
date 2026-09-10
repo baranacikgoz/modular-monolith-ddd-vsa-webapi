@@ -33,7 +33,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/pre-commit-guard.sh"
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/pre-commit-guard.sh\""
           },
           {
             "type": "command",

@@ -59,3 +59,22 @@ public static class PersistenceQueryableExtensions
         };
     }
 }
+
+/// <summary>
+/// Builds LIKE/ILIKE patterns where the caller's term is matched literally.
+/// Use with the three-argument <c>EF.Functions.ILike(column, pattern, escapeChar)</c> overload.
+/// </summary>
+public static class LikePattern
+{
+    public const string EscapeChar = "\\";
+
+    public static string Contains(string? term)
+    {
+        var escaped = (term ?? string.Empty)
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("%", "\\%", StringComparison.Ordinal)
+            .Replace("_", "\\_", StringComparison.Ordinal);
+
+        return $"%{escaped}%";
+    }
+}
