@@ -41,11 +41,11 @@ internal static class Endpoint
         return await captchaTask
             .BindAsync(async () =>
             {
-                await otpClient.SendAsync(
+                var response = await otpClient.SendAsync(
                     new SendPhoneOtpRequest(request.PhoneNumber, OtpPurposes.Login,
                         Language: CultureInfo.CurrentUICulture.TwoLetterISOLanguageName),
                     cancellationToken);
-                return Result.Success;
+                return response.Outcome.ToResult();
             });
     }
 }

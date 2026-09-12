@@ -1,6 +1,9 @@
 {
   "OtpOptions": {
     "Length": 6,
-    "ExpirationInMinutes": 5
+    "ExpirationInMinutes": 5,
+    "ResendIntervalSeconds": 60,
+    "MaxSendsPerPhonePerWindow": 5,
+    "PhoneQuotaWindowMinutes": 60
   }
 }

@@ -19,7 +19,14 @@ public sealed class OtpServiceTests : IDisposable
     public OtpServiceTests()
     {
         _cache = new FusionCache(new FusionCacheOptions());
-        var otpOptions = Options.Create(new OtpOptions { Length = 6, ExpirationInMinutes = 5 });
+        var otpOptions = Options.Create(new OtpOptions
+        {
+            Length = 6,
+            ExpirationInMinutes = 5,
+            ResendIntervalSeconds = 60,
+            MaxSendsPerPhonePerWindow = 5,
+            PhoneQuotaWindowMinutes = 60,
+        });
         _sut = new OtpService(otpOptions, _cache);
     }
 

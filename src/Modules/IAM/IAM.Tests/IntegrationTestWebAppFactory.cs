@@ -177,7 +177,7 @@ internal sealed class InProcessSendOtpClient(IFusionCache cache, IOptions<OtpOpt
         await cache.SetAsync(key, entry,
             new FusionCacheEntryOptions { Duration = duration },
             token: cancellationToken);
-        return new SendPhoneOtpResponse();
+        return new SendPhoneOtpResponse(SmsOtpDispatchOutcome.Sent);
     }
 }
 

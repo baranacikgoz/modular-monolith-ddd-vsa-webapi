@@ -84,6 +84,9 @@
   <data name="TooManyRequests" xml:space="preserve">
     <value>Too many requests.</value>
   </data>
+  <data name="ProviderUnavailable" xml:space="preserve">
+    <value>The provider is currently unreachable.</value>
+  </data>
   <data name="RetryAfter" xml:space="preserve">
     <value>Please try again after ({0}).</value>
   </data>

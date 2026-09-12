@@ -143,6 +143,9 @@
   <data name="TooManyRequests" xml:space="preserve">
     <value>Aşırı istek.</value>
   </data>
+  <data name="ProviderUnavailable" xml:space="preserve">
+    <value>Hizmet sağlayıcısına şu anda ulaşılamıyor.</value>
+  </data>
   <data name="RetryAfter" xml:space="preserve">
     <value>({0}) sonra tekrar deneyiniz.</value>
   </data>

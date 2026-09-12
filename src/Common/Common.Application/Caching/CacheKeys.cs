@@ -15,6 +15,22 @@ public static class CacheKeys
             return $"otp:{purpose}:{hash}";
         }
 
+        public static string OtpResend(string phoneNumber, string purpose, string? contextId = null)
+        {
+            var input = string.IsNullOrEmpty(contextId) ? $"{phoneNumber}|{purpose}" : $"{phoneNumber}|{purpose}|{contextId}";
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(input)));
+            return $"otp:resend:{hash}";
+        }
+
+        // Deliberately phone-only, no purpose, no contextId. OtpResend above is keyed per-context so a
+        // caller can vary ContextId (or IP, for the rate limiter) to bypass it entirely; this is the
+        // backstop that still caps total SMS volume to one phone number regardless of context.
+        public static string OtpPhoneQuota(string phoneNumber)
+        {
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(phoneNumber)));
+            return $"otp:phonequota:{hash}";
+        }
+
         /// <summary>
         ///     Cached Keycloak authorization decision for one access token (<paramref name="jti" />) and one
         ///     <c>resource#scope</c> permission. Keyed by jti, not sid, so the entry can never outlive the token.
