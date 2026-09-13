@@ -58,7 +58,9 @@ public static class Setup
                 o.InstanceName = redis.AppName;
             });
 
-            // AddStackExchangeRedisCache registers IDistributedCache; FusionCache auto-discovers it as L2.
+            // FusionCache does NOT auto-discover a DI-registered IDistributedCache: it must be wired explicitly.
+            builder.TryWithRegisteredDistributedCache();
+
             builder.WithStackExchangeRedisBackplane(
                 o => o.ConnectionMultiplexerFactory = () => Task.FromResult<IConnectionMultiplexer>(multiplexer));
         }
