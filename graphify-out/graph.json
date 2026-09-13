@@ -91671,7 +91671,7 @@
         "ref_token": "IConnectionMultiplexer"
       },
       "source_file": "src/Common/Common.Infrastructure/Caching/Setup.cs",
-      "source_location": "L63",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -168123,5 +168123,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "79a599904f832e5037d620d2acda9ab0867e4289"
+  "built_at_commit": "7d6137bbcc6ec2b4473d675ec8b39364b1a57749"
 }

@@ -34,10 +34,9 @@ internal static class Endpoint
             .GetUserAsync(currentUser.Id, cancellationToken)
             .CombineAsync(async _ =>
             {
-                var accessToken = await AccessTokenReader.ReadAsync(httpContext);
-                var granted = accessToken is null
-                    ? []
-                    : await permissionClient.ListPermissionsAsync(accessToken, cancellationToken);
+                // RequireScope(Users.ViewOwn) already read and validated this same token before the handler ran; it cannot be null here.
+                var accessToken = (await AccessTokenReader.ReadAsync(httpContext))!;
+                var granted = await permissionClient.ListPermissionsAsync(accessToken, cancellationToken);
 
                 return Result<IReadOnlyCollection<string>>.Success(
                     granted.SelectMany(p => p.Scopes).Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToList());
