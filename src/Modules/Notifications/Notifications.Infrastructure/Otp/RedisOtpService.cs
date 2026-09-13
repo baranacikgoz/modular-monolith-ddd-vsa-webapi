@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Common.Application.Caching;
 using Common.Application.Options;
 using Microsoft.Extensions.Options;
@@ -70,21 +69,5 @@ internal sealed class RedisOtpService(
         };
     }
 
-    public string Generate()
-    {
-        var length = otpOptionsProvider.Value.Length;
-
-        if (length <= 0)
-        {
-            throw new ArgumentException("Length must be greater than zero.");
-        }
-
-        var otp = new char[length];
-        for (var i = 0; i < length; i++)
-        {
-            otp[i] = (char)('0' + RandomNumberGenerator.GetInt32(0, 10));
-        }
-
-        return new string(otp);
-    }
+    public string Generate() => OtpCodeGenerator.Generate(otpOptionsProvider.Value);
 }

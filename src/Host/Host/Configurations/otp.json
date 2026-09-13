@@ -4,6 +4,7 @@
     "ExpirationInMinutes": 5,
     "ResendIntervalSeconds": 60,
     "MaxSendsPerPhonePerWindow": 5,
-    "PhoneQuotaWindowMinutes": 60
+    "PhoneQuotaWindowMinutes": 60,
+    "DummyCode": "123456"
   }
 }

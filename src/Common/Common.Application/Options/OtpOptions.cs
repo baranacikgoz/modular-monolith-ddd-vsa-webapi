@@ -19,6 +19,13 @@ public class OtpOptions
     public required int MaxSendsPerPhonePerWindow { get; set; }
 
     public required int PhoneQuotaWindowMinutes { get; set; }
+
+    /// <summary>
+    /// When set, every generated OTP is this fixed code instead of a random one, regardless of whether
+    /// the OTP store is Redis or in-memory. Lets non-production environments be exercised without reading
+    /// SMS. Forbidden in Production.
+    /// </summary>
+    public string? DummyCode { get; set; }
 }
 
 public class OtpOptionsValidator : CustomValidator<OtpOptions>
@@ -44,5 +51,16 @@ public class OtpOptionsValidator : CustomValidator<OtpOptions>
         RuleFor(o => o.PhoneQuotaWindowMinutes)
             .GreaterThan(0)
             .WithMessage("PhoneQuotaWindowMinutes must be greater than 0.");
+
+        RuleFor(o => o.DummyCode)
+            .Must((o, code) => code is null || (code.Length == o.Length && code.All(char.IsAsciiDigit)))
+            .WithMessage("DummyCode must be exactly Length digits when set.");
+
+        // A fixed OTP is a publicly known constant: anyone can pass verification for any phone number.
+        RuleFor(o => o.DummyCode)
+            .Must((_, code, context) => !context.IsProduction() || code is null)
+            .WithMessage(
+                $"{nameof(OtpOptions)}.{nameof(OtpOptions.DummyCode)} is set in Production. Every OTP would be a fixed, " +
+                "publicly known code. Remove it before deploying.");
     }
 }

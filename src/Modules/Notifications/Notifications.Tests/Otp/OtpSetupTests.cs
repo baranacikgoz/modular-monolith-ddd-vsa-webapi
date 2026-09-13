@@ -63,7 +63,7 @@ public sealed class OtpSetupTests
     }
 
     [Fact]
-    public void AddOtpServices_WithoutRedis_RegistersDummyOtpService()
+    public void AddOtpServices_WithoutRedis_RegistersOtpService()
     {
         var services = new ServiceCollection();
         var configuration = BuildConfiguration(useRedis: false);
@@ -71,6 +71,58 @@ public sealed class OtpSetupTests
         services.AddOtpServices(configuration);
 
         Assert.Contains(services, descriptor =>
-            descriptor.ServiceType == typeof(IOtpService) && descriptor.ImplementationType == typeof(DummyOtpService));
+            descriptor.ServiceType == typeof(IOtpService) && descriptor.ImplementationType == typeof(OtpService));
+    }
+
+    private static ValidationContext<OtpOptions> BuildOtpContext(string? dummyCode, string environmentName)
+    {
+        var context = new ValidationContext<OtpOptions>(new OtpOptions
+        {
+            Length = 6,
+            ExpirationInMinutes = 5,
+            ResendIntervalSeconds = 60,
+            MaxSendsPerPhonePerWindow = 5,
+            PhoneQuotaWindowMinutes = 60,
+            DummyCode = dummyCode,
+        });
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return context;
+    }
+
+    [Fact]
+    public void Validate_DummyCodeInProduction_Invalid()
+    {
+        var result = new OtpOptionsValidator().Validate(BuildOtpContext("123456", Environments.Production));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("DummyCode", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_DummyCodeInDevelopment_Valid()
+    {
+        var result = new OtpOptionsValidator().Validate(BuildOtpContext("123456", Environments.Development));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_NoDummyCodeInProduction_Valid()
+    {
+        var result = new OtpOptionsValidator().Validate(BuildOtpContext(null, Environments.Production));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData("12345")]
+    [InlineData("1234567")]
+    [InlineData("12345a")]
+    public void Validate_DummyCodeNotLengthDigits_Invalid(string dummyCode)
+    {
+        var result = new OtpOptionsValidator().Validate(BuildOtpContext(dummyCode, Environments.Development));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("Length digits", StringComparison.Ordinal));
     }
 }

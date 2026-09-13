@@ -92,6 +92,32 @@ public sealed class OtpServiceTests : IDisposable
     }
 
     [Fact]
+    public void Generate_NoDummyCode_ReturnsLengthDigits()
+    {
+        var otp = _sut.Generate();
+
+        Assert.Equal(6, otp.Length);
+        Assert.All(otp, c => Assert.True(char.IsAsciiDigit(c)));
+    }
+
+    [Fact]
+    public void Generate_DummyCodeSet_ReturnsDummyCode()
+    {
+        var sut = new OtpService(Options.Create(new OtpOptions
+        {
+            Length = 6,
+            ExpirationInMinutes = 5,
+            ResendIntervalSeconds = 60,
+            MaxSendsPerPhonePerWindow = 5,
+            PhoneQuotaWindowMinutes = 60,
+            DummyCode = "123456",
+        }), _cache);
+
+        Assert.Equal("123456", sut.Generate());
+        Assert.Equal("123456", sut.Generate());
+    }
+
+    [Fact]
     public async Task VerifyThenRemove_CorrectOtp_SecondUseFails()
     {
         await _sut.StoreAsync(PhoneNumber, Otp, Purpose, TimeSpan.FromMinutes(5), null, CancellationToken.None);
