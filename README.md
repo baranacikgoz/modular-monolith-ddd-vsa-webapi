@@ -9,7 +9,7 @@ facilitate the development of scalable and maintainable applications.
 - [Introduction](#introduction)
 - [Features](#features)
 - [Architecture Decisions](docs/ARCHITECTURE.md)
-- [Full-Text Search](docs/FULL_TEXT_SEARCH.md)
+- [Full-Text Search](docs/full-text-search.md)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
   - [Split Deployment](#split-deployment-microservice-mode)
@@ -28,7 +28,7 @@ This repository includes the following features:
 
 - **Event-Driven Architecture**: Supports event-driven communication between components.
 - **Modular Monolithic Architecture**: Organizes code into modules for better separation of concerns.
-- **Dynamic Module Registration**: Configuration-driven module loading via `ModulesOptions`, enabling explicit startup priority ordering and true split-deployment isolation — run any subset of modules per process without recompilation (see [Split Deployment](#split-deployment-microservice-mode)).
+- **Dynamic Module Registration**: Configuration-driven module loading via `ModulesOptions`, enabling explicit startup priority ordering and true split-deployment isolation: run any subset of modules per process without recompilation (see [Split Deployment](#split-deployment-microservice-mode)).
 - **Vertical Slices, REPR, & Minimal APIs**: Implements vertical slice architecture for feature-based organization.
 - **Domain-Driven Design & Clean Architecture**: Adheres to DDD principles and clean architecture for maintainable code.
 - **Identity and Access Management via Keycloak**: Users, roles, sessions, refresh-token rotation and fine-grained permissions (Keycloak Authorization Services) live in Keycloak, versioned as code in `keycloak/realm-modular-monolith.json`. Clients only ever talk to this API: phone + SMS OTP login for mobile apps, email + password for staff; the backend brokers both through Keycloak and evaluates `resource#scope` decisions per request (cached per token).
@@ -38,13 +38,13 @@ This repository includes the following features:
 - **Unit of Work**: Ensures atomic operations across multiple repositories.
 - **Hangfire**: Supports background job processing.
 - **Transactional Outbox Pattern**: Ensures reliable message delivery via a custom outbox processor with lag tracking, cleanup, and distributed trace propagation.
-- **RabbitMQ & MassTransit**: Integration events delivered over RabbitMQ via MassTransit; no application-side producers — publish via outbox only.
+- **RabbitMQ & MassTransit**: Integration events delivered over RabbitMQ via MassTransit; no application-side producers, publish via outbox only.
 - **Redis or In-Memory Caching**: Provides caching mechanisms for performance optimization.
 - **Session Revocation**: Logout, per-device sign-out and sign-out-everywhere revoke the Keycloak session; the first uncached permission decision after that is rejected by Keycloak, and access tokens are capped at 5 minutes.
 - **Consumer Idempotency**: `EventHandlerBase` checks a `processed_msg:{messageId}` key in Redis before invoking the handler and writes it with a 24h TTL, ensuring at-least-once delivery without duplicate side effects.
 - **Security Headers Middleware**: Configurable `SecurityHeadersMiddleware` injects `X-Content-Type-Options`, `X-Frame-Options`, `Content-Security-Policy`, and related headers on every response.
 - **Reverse Proxy / Forwarded Headers Support**: Configurable `ForwardedHeaders` middleware trusts known proxy networks and correctly propagates client IP and scheme behind load balancers.
-- **Feature Management**: `Microsoft.FeatureManagement` with targeting context support and automated endpoint filtering — feature flags configurable per-environment via `appsettings.json`.
+- **Feature Management**: `Microsoft.FeatureManagement` with targeting context support and automated endpoint filtering, feature flags configurable per-environment via `appsettings.json`.
 - **Rate Limiting**: Modular per-policy rate limiting (registration, OTP/SMS, token, store creation) with override support via env vars for load testing.
 - **k6 Load Testing**: Multi-scenario k6 suite (`docker compose -f docker-compose.yml -f docker-compose.perf.yml up k6`) with Aspire Dashboard OTel traces live during runs.
 - **Readiness Health Checks**: `/health/ready` probe conditionally registers Redis and RabbitMQ checks so orchestrators only route traffic once all backing services are reachable.
@@ -52,7 +52,7 @@ This repository includes the following features:
 - **Strongly Typed IDs**: Prevents primitive obsession by using strongly typed identifiers.
 - **Strongly-Typed Localization & Multi-Language Support**: Leverages `Aigamo.ResXGenerator` to automatically generate strongly-typed `IResxLocalizer` properties for error-free resource resolution, ensuring compile-time safety and eliminating missing key errors at runtime.
 - **Pagination and Flexible Search**: Implements pagination and flexible search capabilities.
-- **MassTransit's Request Client**: Synchronous inter-module requests via `IInterModuleRequestClient<TRequest, TResponse>` — transparent whether the handler is in-process or running in a separate instance on another host. No HTTP, no shared memory; pure RabbitMQ request/response.
+- **MassTransit's Request Client**: Synchronous inter-module requests via `IInterModuleRequestClient<TRequest, TResponse>`, transparent whether the handler is in-process or running in a separate instance on another host. No HTTP, no shared memory; pure RabbitMQ request/response.
 - **Option Pattern**: Utilizes the option pattern for configuration management.
 - **Fluent Validation**: Provides fluent validation for input data.
 - **Functional Programming & Railway-Oriented Syntax**: Encourages functional programming practices and method chaining.
@@ -81,7 +81,7 @@ To use or contribute to this project, you will need:
 
 ### Split Deployment (Microservice Mode)
 
-Each module can run as its own process. The same image is used for all instances — only the `ModulesOptions__EnabledModules` environment variable differs. Inter-module communication still works transparently via MassTransit over RabbitMQ; no HTTP, no shared in-process memory.
+Each module can run as its own process. The same image is used for all instances, only the `ModulesOptions__EnabledModules` environment variable differs. Inter-module communication still works transparently via MassTransit over RabbitMQ; no HTTP, no shared in-process memory.
 
 ```bash
 # Infra must be running first (skip if already up)
@@ -91,7 +91,7 @@ docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
 docker compose -f docker-compose.split.yml up --build
 
 # Prove the cross-process round-trip:
-# Products instance has zero IAM code loaded — the request travels via RabbitMQ
+# Products instance has zero IAM code loaded, the request travels via RabbitMQ
 curl "http://localhost:5002/v1/probe/cross-module?count=3"
 ```
 
@@ -169,7 +169,7 @@ All developer commands are centralized in the **Makefile**. Run `make <target>` 
 2. make ef-script-Products                      # Generate idempotent SQL
 3. git add . && git commit                      # Commit both .cs + .sql artifacts
 4. DBA reviews & executes the .sql script       # Applied to target DB
-5. Deploy                                        # App verifies — fails fast if pending
+5. Deploy                                        # App verifies, fails fast if pending
 ```
 
 ---

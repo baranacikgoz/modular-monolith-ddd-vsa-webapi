@@ -7,7 +7,7 @@ allowed-tools: Read, Bash, Glob, Grep
 Add migration: $ARGUMENTS
 
 1. `make ef-add-{Module} name={MigrationName}`.
-2. Review the generated files: unintended drops or renames, missing indexes. A change to shared EF config (for example the `AuditLog` base configuration) needs a migration in every module that shares it, or boot fails with `PendingModelChangesWarning`.
+2. Review the generated files: unintended drops or renames, missing indexes. A change to shared EF config (for example the `AuditLog` base configuration) needs a migration in every module that shares it, or boot fails with `PendingModelChangesWarning`. A generated `STORED` tsvector column (full-text search, see `docs/full-text-search.md`) is recomputed for every existing row on creation, taking an `ACCESS EXCLUSIVE` lock; treat it as a maintenance-window operation on a large table.
 3. `make ef-script-{Module} from={PreviousMigration} to={MigrationName}` (`from=0` for a first migration). Confirm the script landed in `migrations/{Module}/` and is tracked by git.
 4. `make build`.
 5. `make check-migration-drift`. This is the gate, not `make build`: the deploy sidecar applies only what is committed under `migrations/`, and build cannot see that directory.

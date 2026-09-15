@@ -73,6 +73,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 - Reads: `.AsNoTracking()` always, project to DTO in `.Select`.
 - Single fetch: `.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), ct)`. Never `Find`/`FirstOrDefault`.
 - Conditional filter: `.WhereIf(pred, cond)`. Joins: native `.LeftJoin`/`.RightJoin`, never `GroupJoin` + `SelectMany`.
+- Text search on prose fields: generated `tsvector` + GIN, dual `WebSearchToTsQuery` (universal plus resolved prose config) via `ISearchLanguageResolver`, entity implements `ISearchLocalized`. Never a bare `ILike('%term%')` scan; see `docs/full-text-search.md`.
 - Writes: Endpoint calls aggregate method, aggregate mutates and `RaiseEvent`s, endpoint saves.
 - Every persisted type derives from `AggregateRoot<TId>`, `AuditableEntity<TId>`, non-generic `AuditableEntity` (natural/composite key), or is a `ValueObject`/owned type. No bare POCO. Only exception: `OutboxMessage`.
 

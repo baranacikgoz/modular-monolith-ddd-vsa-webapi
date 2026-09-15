@@ -6,7 +6,7 @@ allowed-tools: Read, Edit, Write, Bash, Glob, Grep
 
 Scaffold: $ARGUMENTS
 
-Copy the shape from the CLAUDE.md §2 exemplars (Activate for WRITE, Get for READ, Search for paginated). Rules in CLAUDE.md §3, §4, §5.
+Copy the shape from the CLAUDE.md §2 exemplars (Activate for WRITE, Get for READ, Search for paginated). Rules in CLAUDE.md §3, §4, §5. If the search term matches a prose field, see `docs/full-text-search.md`: the read path needs a `WebSearchToTsQuery` match, not `ILike`, and the entity implements `ISearchLocalized`.
 
 1. Create `src/Modules/{Module}/{Module}.Endpoints/{Aggregate}/v1/{Feature}/`:
    - `Endpoint.cs`: `internal static class Endpoint` with `MapEndpoint(RouteGroupBuilder)`. Chain: `.WithDescription(...)`, `.RequireScope(KeycloakScopes.{Aggregate}s.{Action})`, `.Produces(...)`, then `.TransformResultToNoContentResponse()` (write), `.TransformResultTo<Response>()` (read) or `.TransformResultToCreatedResponse<Response>()` (create).

@@ -756,9 +756,9 @@
     "semantic_hash": "66a76e7736d06c9402bdb729e29a1721"
   },
   "src/Host/Host/Configurations/Setup.cs": {
-    "mtime": 1789485766.8448737,
-    "seen": 1789485770.8680398,
-    "ast_hash": "c5f6f17115e33cd91902f18349c74299",
+    "mtime": 1789486933.0511055,
+    "seen": 1789487826.290669,
+    "ast_hash": "b76118ba8437260bdc269e06da950ad3",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.ForwardedHeaders.cs": {
@@ -996,9 +996,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/IAMModule.cs": {
-    "mtime": 1789485766.845795,
-    "seen": 1789485770.868063,
-    "ast_hash": "ec17d9e1867a9806ff334f835b3e949b",
+    "mtime": 1789486933.0528903,
+    "seen": 1789487826.290693,
+    "ast_hash": "2cfbd2d28249a5742d4912630391e304",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/IAssemblyReference.cs": {
@@ -1044,9 +1044,9 @@
     "semantic_hash": "7e9791d4f0a5072068504cfeff950fce"
   },
   "src/Modules/IAM/IAM.Endpoints/Otp/VersionNeutral/Setup.cs": {
-    "mtime": 1789485766.8464122,
-    "seen": 1789485770.868068,
-    "ast_hash": "f37abfa1d86dbbc0a3abdd6f91a66692",
+    "mtime": 1789487114.8887222,
+    "seen": 1789487826.290698,
+    "ast_hash": "94aaa466346590ba8cf8d00383343c2a",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Create/Endpoint.cs": {
@@ -1092,9 +1092,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Setup.cs": {
-    "mtime": 1789485766.8471427,
-    "seen": 1789485770.868077,
-    "ast_hash": "fa44b71d79c23c58ee4b8cf76ac307d5",
+    "mtime": 1789487114.888652,
+    "seen": 1789487826.2907069,
+    "ast_hash": "3fc7c49bff74872e3fa937161903b7ec",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/CheckRegistration/Endpoint.cs": {
@@ -1164,9 +1164,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegister/Endpoint.cs": {
-    "mtime": 1788987010.3348634,
-    "seen": 1788987108.745402,
-    "ast_hash": "66f489a15e45fedb0b6bf78e3b612ea3",
+    "mtime": 1789487484.6770744,
+    "seen": 1789487826.290713,
+    "ast_hash": "4eb083af3302126b2a9145cf0a1e6f73",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegister/Request.cs": {
@@ -1182,9 +1182,9 @@
     "semantic_hash": "5899579ccc232f65164b574c1fb5a87c"
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Setup.cs": {
-    "mtime": 1789485766.8472686,
-    "seen": 1789485770.868083,
-    "ast_hash": "23d63f4bdcd6ad5e4c4f8bdd79d188e2",
+    "mtime": 1789487114.888546,
+    "seen": 1789487826.290715,
+    "ast_hash": "ca2d2a362c845ec752bcf19579da8c14",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/AssemblyInfo.cs": {
@@ -1260,9 +1260,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Telemetry/IamTelemetry.cs": {
-    "mtime": 1788986998.359071,
-    "seen": 1788987108.745419,
-    "ast_hash": "79eacca9ff545986996ec365cf9d0a82",
+    "mtime": 1789487057.3475735,
+    "seen": 1789487826.2907321,
+    "ast_hash": "290fc98f45d9dbe4d9169c3fc8507bc8",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Application/Hubs/INotificationDispatcher.cs": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Sms/Setup.cs": {
-    "mtime": 1784990121.1409132,
-    "seen": 1788521409.3639328,
-    "ast_hash": "fa9414bb512e9457901f123c88412bfd",
+    "mtime": 1789487444.711933,
+    "seen": 1789487826.2907782,
+    "ast_hash": "8da140452364a0cc022c796fbf39d374",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Telemetry/NotificationsTelemetry.cs": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1788979396.7684772,
-    "seen": 1788979654.810462,
-    "ast_hash": "aa1ec8e28f13676c1df6476c9336b8d4",
+    "mtime": 1789486988.6701078,
+    "seen": 1789487826.2908428,
+    "ast_hash": "25eccb2901256095a49043c1690a3fba",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Application/Keycloak/KeycloakUser.cs": {
-    "mtime": 1788987335.9754663,
-    "seen": 1788987422.858384,
-    "ast_hash": "5af44c9872efbe3d534980993a991c39",
+    "mtime": 1789486988.668587,
+    "seen": 1789487826.290686,
+    "ast_hash": "0feb9bbc2072763763f623fa4622221a",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Domain/Users/Constants.cs": {
@@ -2526,9 +2526,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/CreateByEmail/Endpoint.cs": {
-    "mtime": 1789485766.8468812,
-    "seen": 1789485770.8680708,
-    "ast_hash": "d879fe105acee5e6c0c1749ec8273fe5",
+    "mtime": 1789487688.703357,
+    "seen": 1789487826.290702,
+    "ast_hash": "486ba0967b545d1086c488b08d8db232",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/CreateByEmail/Request.cs": {
@@ -2580,9 +2580,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakAdminClient.cs": {
-    "mtime": 1789485766.8475597,
-    "seen": 1789485770.8680902,
-    "ast_hash": "68dc7b089d913feed93c595b197b3635",
+    "mtime": 1789486988.6691701,
+    "seen": 1789487826.290723,
+    "ast_hash": "63c5bf5ffa216abee38bb5cc14133fab",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Infrastructure/Keycloak/KeycloakPaths.cs": {
@@ -3101,12 +3101,6 @@
     "ast_hash": "83fda83244e6b510ffd9e597b7ac9690",
     "semantic_hash": ""
   },
-  "src/Common/Common.Application/Options/UserIdentityOptions.cs": {
-    "mtime": 1789485766.8444107,
-    "seen": 1789485770.867996,
-    "ast_hash": "1ba506ec561cac01ec35ef8e40dfacdf",
-    "semantic_hash": ""
-  },
   "src/Common/Common.InterModuleRequests/Notifications/IssueVerificationToken.cs": {
     "mtime": 1789485766.844525,
     "seen": 1789485770.8680372,
@@ -3156,9 +3150,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Otp/VersionNeutral/VerifyEmail/Endpoint.cs": {
-    "mtime": 1789485766.8465662,
-    "seen": 1789485770.868068,
-    "ast_hash": "9d0fb9ce80bc4e4f6f731807a1601c86",
+    "mtime": 1789486988.6692889,
+    "seen": 1789487826.290699,
+    "ast_hash": "5aa988c26cc36d681fb4e77a7278c543",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Otp/VersionNeutral/VerifyEmail/Request.cs": {
@@ -3210,9 +3204,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Email/Setup.cs": {
-    "mtime": 1789485766.8501363,
-    "seen": 1789485770.8681312,
-    "ast_hash": "4bc8b0029c1c1699f67e4f76a010d331",
+    "mtime": 1789487444.7112322,
+    "seen": 1789487826.290763,
+    "ast_hash": "434b3ab6696156bccbe5341aa05b8f81",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Email/ThrottledEmailGateway.cs": {
@@ -3222,21 +3216,57 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/IssueVerificationTokenRequestHandler.cs": {
-    "mtime": 1789485766.850335,
-    "seen": 1789485770.868137,
-    "ast_hash": "dc3c253d1f1f94ba50640f9bd4df0cfc",
+    "mtime": 1789486988.6696928,
+    "seen": 1789487826.290768,
+    "ast_hash": "f2464d328035a0ecdbeeda5e74fd45ef",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/SendEmailOtpRequestHandler.cs": {
-    "mtime": 1789485766.8504336,
-    "seen": 1789485770.868137,
-    "ast_hash": "a4556501135fbd92e1c8d3fbaf9bf963",
+    "mtime": 1789486988.6695616,
+    "seen": 1789487826.2907689,
+    "ast_hash": "cd04583ac9e67dcc6ae1b837386b7669",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/VerifyEmailOtpRequestHandler.cs": {
     "mtime": 1789485766.8505337,
     "seen": 1789485770.868139,
     "ast_hash": "f5d1cdcf34f96785cebe267bd600fd14",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Options/IdentitySchemeOptions.cs": {
+    "mtime": 1789486933.0481787,
+    "seen": 1789487826.290617,
+    "ast_hash": "0402aa39edf21700bb0f261e86842ae4",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Endpoints/Users/RegistrationCompletion.cs": {
+    "mtime": 1789487188.7900145,
+    "seen": 1789487826.2907069,
+    "ast_hash": "2d418102b47c1bf0ee65faa86c786ca7",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegisterByEmail/Endpoint.cs": {
+    "mtime": 1789487114.8731108,
+    "seen": 1789487826.290714,
+    "ast_hash": "881592695c96b9ea26d371ef570f1c6c",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegisterByEmail/Request.cs": {
+    "mtime": 1789487114.8694563,
+    "seen": 1789487826.290714,
+    "ast_hash": "a22eb846d92bb6195e4ee40fbb249e7a",
+    "semantic_hash": ""
+  },
+  "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/SelfRegisterByEmail/Response.cs": {
+    "mtime": 1789487114.8713827,
+    "seen": 1789487826.290715,
+    "ast_hash": "87161ecc64869bb85e8d6197b3e61267",
+    "semantic_hash": ""
+  },
+  "src/Modules/Notifications/Notifications.Infrastructure/Otp/OtpTemplateConfiguration.cs": {
+    "mtime": 1789487444.7109823,
+    "seen": 1789487826.290773,
+    "ast_hash": "0ae9291044238ed00b71efa19ad39f8c",
     "semantic_hash": ""
   }
 }
