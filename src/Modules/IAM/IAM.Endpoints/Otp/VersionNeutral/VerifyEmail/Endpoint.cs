@@ -33,6 +33,13 @@ internal static class Endpoint
     {
         var email = EmailNormalization.Normalize(request.Email);
 
+        // Looked up BEFORE the code is consumed: the OTP store deletes on a correct match, so a Keycloak
+        // outage after that point would burn the user's code for nothing. Order leaks nothing: the result
+        // only reaches the caller after a correct code, i.e. to the mailbox owner.
+        var user = await adminClient.FindUserByEmailAsync(email, cancellationToken);
+        var isRegistered = user is not null;
+        var purpose = isRegistered ? OtpPurposes.EmailVerifiedLogin : OtpPurposes.EmailVerifiedRegister;
+
         var verifyResponse = await otpClient.SendAsync(
             new VerifyEmailOtpRequest(email, request.Otp, OtpPurposes.EmailVerification), cancellationToken);
 
@@ -40,12 +47,6 @@ internal static class Endpoint
             .ToResult()
             .BindAsync(async () =>
             {
-                // Only the isRegistered branch this decides on ever reaches the caller: the send endpoint
-                // never reveals it, so account existence leaks only after a correct code, to its own owner.
-                var user = await adminClient.FindUserByEmailAsync(email, cancellationToken);
-                var isRegistered = user is not null;
-                var purpose = isRegistered ? OtpPurposes.EmailVerifiedLogin : OtpPurposes.EmailVerifiedRegister;
-
                 var tokenResponse = await issueTokenClient.SendAsync(
                     new IssueVerificationTokenRequest(email, purpose), cancellationToken);
 

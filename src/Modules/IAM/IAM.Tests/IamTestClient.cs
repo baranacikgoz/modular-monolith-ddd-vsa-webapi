@@ -12,6 +12,7 @@ using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 using CreateByEmailRequest = IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail.Request;
 using CreateRequest = IAM.Endpoints.Tokens.VersionNeutral.Create.Request;
+using SelfRegisterByEmailRequest = IAM.Endpoints.Users.VersionNeutral.SelfRegisterByEmail.Request;
 
 namespace IAM.Tests;
 
@@ -50,6 +51,15 @@ internal static class IamTestClient
     {
         return "905" + Faker.Random.Number(100000000, 999999999).ToString(CultureInfo.InvariantCulture);
     }
+
+    /// <summary>Already normalized (lowercase), matching what the endpoints store and look up.</summary>
+    public static string NewEmail()
+    {
+        return $"{Guid.NewGuid():N}@modular-monolith.local";
+    }
+
+    /// <summary>Satisfies the realm password policy: length(12), notUsername, notEmail.</summary>
+    public const string ValidPassword = "Register-Test-Password-1";
 
     public static async Task SeedOtpAsync(IntegrationTestFactory factory, string phoneNumber, string purpose,
         string otp = InProcessSendOtpClient.DummyOtp)
@@ -134,6 +144,32 @@ internal static class IamTestClient
             EmailVerificationToken = token,
             DeviceId = deviceId ?? Guid.NewGuid(),
             ClientId = clientId
+        });
+    }
+
+    /// <summary>
+    ///     Only reachable when the host runs the Email identity scheme (see EmailSchemeWebAppFactory). Seeds a
+    ///     register-purpose verification token unless one is supplied.
+    /// </summary>
+    public static async Task<HttpResponseMessage> RegisterByEmailRawAsync(IntegrationTestFactory factory, string email,
+        string password = ValidPassword, string? emailVerificationToken = null, string firstName = "Ayşe",
+        string lastName = "Yılmaz", string birthDate = "20-06-2001", string clientId = DefaultClientId)
+    {
+        var token = emailVerificationToken
+                    ?? await SeedEmailVerificationTokenAsync(factory, email, "email_verified_register");
+        var client = factory.CreateClient();
+        return await client.PostAsJsonAsync(new Uri("/users/register/self/email", UriKind.Relative), new SelfRegisterByEmailRequest
+        {
+            Email = email,
+            Password = password,
+            EmailVerificationToken = token,
+            FirstName = firstName,
+            LastName = lastName,
+            BirthDate = birthDate,
+            CaptchaToken = "dummyToken",
+            DeviceId = Guid.NewGuid(),
+            ClientId = clientId,
+            DeviceName = "Test device"
         });
     }
 

@@ -69,4 +69,5 @@ public static class SessionRevokedReasons
     public const string RevokedAllByUser = "revoked_all_by_user";
     public const string SupersededByNewLogin = "superseded_by_new_login";
     public const string TokenReuseDetected = "token_reuse_detected";
+    public const string EmailVerificationFailed = "email_verification_failed";
 }

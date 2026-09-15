@@ -54,12 +54,12 @@ public sealed class IamModule : IModule
 
         // Read once at startup: which self-service identity endpoints exist is a deployment-time
         // decision, not a per-request one, so an unmapped route is the guard, not an endpoint filter.
-        var usernameSource = endpoints.ServiceProvider
-            .GetRequiredService<IOptions<UserIdentityOptions>>().Value.UsernameSource;
+        var identityScheme = endpoints.ServiceProvider
+            .GetRequiredService<IOptions<IdentitySchemeOptions>>().Value.Scheme;
 
-        versionNeutralApiGroup.MapUsersEndpoints(usernameSource);
-        versionNeutralApiGroup.MapTokensEndpoints(usernameSource);
-        versionNeutralApiGroup.MapOtpEndpoints(usernameSource);
+        versionNeutralApiGroup.MapUsersEndpoints(identityScheme);
+        versionNeutralApiGroup.MapTokensEndpoints(identityScheme);
+        versionNeutralApiGroup.MapOtpEndpoints(identityScheme);
         versionNeutralApiGroup.MapCaptchaEndpoints();
     }
 

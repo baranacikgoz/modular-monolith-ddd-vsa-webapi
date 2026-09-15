@@ -72,6 +72,14 @@ public class SelfRegisterTests(IntegrationTestWebAppFactory factory) : BaseInteg
     }
 
     [Fact]
+    public async Task RegisterByEmail_PhoneNumberScheme_RouteIsNotMapped()
+    {
+        using var response = await IamTestClient.RegisterByEmailRawAsync(Factory, IamTestClient.NewEmail());
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Register_PhoneAlreadyRegistered_Returns409()
     {
         using var response = await RegisterRawAsync(Factory, SeedUsers.BasicPhone);

@@ -5,6 +5,7 @@ using Common.Infrastructure.Resiliency;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Notifications.Infrastructure.Otp;
 using Notifications.Application.Sms;
 using Notifications.Infrastructure.Sms.NetGsm;
 using ZiggyCreatures.Caching.Fusion;
@@ -19,6 +20,7 @@ internal static class Setup
     {
         var smsOptions = configuration.GetSection(nameof(SmsOptions)).Get<SmsOptions>()
             ?? throw new InvalidOperationException($"Configuration for {nameof(SmsOptions)} is null.");
+        configuration.RequireOtpTemplateForDefaultCulture(() => smsOptions.Templates.Otp.Keys, nameof(SmsOptions));
 
         return smsOptions.Provider switch
         {
@@ -50,7 +52,8 @@ internal static class Setup
                 resilience.Retry.MaxRetryAttempts = smsOptions.MaxRetryAttempts;
             });
 
-        return services.AddSingleton<ISmsGateway>(sp => new ThrottledSmsGateway(
+        // Transient, not singleton: see Email/Setup.cs for the HttpClientFactory handler-rotation reason.
+        return services.AddTransient<ISmsGateway>(sp => new ThrottledSmsGateway(
             sp.GetRequiredService<NetGsmSmsGateway>(),
             sp.GetRequiredService<IFusionCache>(),
             sp.GetRequiredService<IOptions<SmsOptions>>()));

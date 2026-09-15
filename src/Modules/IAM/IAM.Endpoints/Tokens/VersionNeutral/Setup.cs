@@ -8,15 +8,16 @@ namespace IAM.Endpoints.Tokens.VersionNeutral;
 
 public static class Setup
 {
-    public static void MapTokensEndpoints(this RouteGroupBuilder rootGroup, UsernameSource usernameSource)
+    public static void MapTokensEndpoints(this RouteGroupBuilder rootGroup, IdentityScheme identityScheme)
     {
         var tokensApiGroup = rootGroup
             .MapGroup("/tokens")
             .WithTags("Tokens");
 
-        // CreateByEmail (email+password) stays mapped regardless of UsernameSource: staff/admin accounts
-        // always sign in by email+password, independent of which identifier sellers are provisioned under.
-        if (usernameSource == UsernameSource.PhoneNumber)
+        // CreateByEmail (email + password + email verification token) stays mapped regardless of
+        // IdentityScheme: it is the only login in the Email scheme and the staff/admin login in the
+        // PhoneNumber scheme. Same flow for every account type, no per-role branching.
+        if (identityScheme == IdentityScheme.PhoneNumber)
         {
             Endpoint.MapEndpoint(tokensApiGroup);
         }

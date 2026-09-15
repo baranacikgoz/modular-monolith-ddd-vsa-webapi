@@ -70,11 +70,10 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
             {
                 { "KeycloakOptions:BaseUrl", KeycloakBaseAddress },
                 { "FeatureManagement:IAM.Captcha", "true" },
-                // This suite covers both identity modes (phone-OTP endpoints and email-OTP endpoints are
-                // both exercised), independent of which one a given fork actually deploys. Forcing
-                // PhoneNumber here means a fork that ships UsernameSource=Email (userIdentity.json) still
-                // gets full coverage of the phone-only routes IAMModule conditionally maps.
-                { "UserIdentityOptions:UsernameSource", "PhoneNumber" },
+                // This collection covers the PhoneNumber scheme (phone-OTP routes plus the scheme-independent
+                // email-OTP routes), independent of which scheme a given fork actually deploys. The Email
+                // scheme's exclusive routes are covered by EmailSchemeWebAppFactory, which boots serially.
+                { "IdentitySchemeOptions:Scheme", "PhoneNumber" },
                 // Production values (1/15s, 5/60s) are far too tight for a test class hitting the same
                 // in-process, per-IP bucket several times back to back; every test client shares one IP
                 // here, unlike real traffic. Relaxed to the same headroom the other dedicated-policy
@@ -110,17 +109,18 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 }
 
 /// <summary>
-///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created phone
-///     number so its role assignment fails once, without touching real Keycloak.
+///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created username
+///     (phone number or email, whichever the scheme provisions) so its role assignment fails once, without
+///     touching real Keycloak.
 /// </summary>
 internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inner) : IKeycloakAdminClient
 {
     private static readonly ConcurrentDictionary<string, byte> PhonesToFailRoleAssignmentFor = new();
     private static readonly ConcurrentDictionary<ApplicationUserId, byte> UserIdsPendingRoleAssignmentFailure = new();
 
-    public static void FailNextRoleAssignmentFor(string phoneNumber)
+    public static void FailNextRoleAssignmentFor(string username)
     {
-        PhonesToFailRoleAssignmentFor[phoneNumber] = 0;
+        PhonesToFailRoleAssignmentFor[username] = 0;
     }
 
     public async Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken)

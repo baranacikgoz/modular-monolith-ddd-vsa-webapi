@@ -8,16 +8,22 @@ namespace IAM.Endpoints.Users.VersionNeutral;
 
 public static class Setup
 {
-    public static void MapUsersEndpoints(this RouteGroupBuilder rootGroup, UsernameSource usernameSource)
+    public static void MapUsersEndpoints(this RouteGroupBuilder rootGroup, IdentityScheme identityScheme)
     {
         var usersApiGroup = rootGroup
             .MapGroup("/users")
             .WithTags("Users");
 
-        if (usernameSource == UsernameSource.PhoneNumber)
+        // Self-service registration is scheme-exclusive: the phone variant (plus its "am I registered"
+        // pre-check) or the email variant, never both. Everything below is scheme-independent.
+        if (identityScheme == IdentityScheme.PhoneNumber)
         {
             Endpoint.MapEndpoint(usersApiGroup);
             CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
+        }
+        else
+        {
+            SelfRegisterByEmail.Endpoint.MapEndpoint(usersApiGroup);
         }
 
         Get.Endpoint.MapEndpoint(usersApiGroup);

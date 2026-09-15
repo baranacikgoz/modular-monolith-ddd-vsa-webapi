@@ -1,4 +1,3 @@
-using System.Globalization;
 using Common.Application.Caching;
 using Common.Application.Options;
 using Common.InterModuleRequests.Contracts;
@@ -66,11 +65,13 @@ public sealed class SendEmailOtpRequestHandler(
             request.ContextId,
             cancellationToken);
 
+        // Plain Replace, not string.Format: an HTML body legitimately contains braces (inline CSS,
+        // JSON-LD) that string.Format would choke on with a FormatException.
         var message = new EmailMessage(
             request.Email,
-            string.Format(CultureInfo.InvariantCulture, template.Subject, otp),
-            string.Format(CultureInfo.InvariantCulture, template.HtmlBody, otp),
-            template.TextBody is null ? null : string.Format(CultureInfo.InvariantCulture, template.TextBody, otp));
+            template.Subject.Replace("{0}", otp, StringComparison.Ordinal),
+            template.HtmlBody.Replace("{0}", otp, StringComparison.Ordinal),
+            template.TextBody?.Replace("{0}", otp, StringComparison.Ordinal));
         var sendResult = await emailGateway.SendAsync(message, cancellationToken);
 
         if (sendResult.IsFailure)

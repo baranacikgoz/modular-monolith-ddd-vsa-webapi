@@ -23,7 +23,7 @@ public sealed record CreateKeycloakUser(
     string Username,
     string FirstName,
     string LastName,
-    string PhoneNumber,
+    string? PhoneNumber,
     DateOnly? BirthDate = null,
     string? Email = null,
     string? Password = null);

@@ -708,7 +708,16 @@
   <data name="IAM_EmailVerificationToken_NotEmpty" xml:space="preserve">
     <value>Email verification token must not be empty.</value>
   </data>
-  <data name="Tokens_CreateByEmail_EmailVerificationToken_NotEmpty" xml:space="preserve">
-    <value>Email verification token must not be empty.</value>
+  <data name="Register_Email_NotEmpty" xml:space="preserve">
+    <value>Email must not be empty.</value>
+  </data>
+  <data name="Register_Email_Invalid" xml:space="preserve">
+    <value>Email address is invalid.</value>
+  </data>
+  <data name="Register_Password_NotEmpty" xml:space="preserve">
+    <value>Password must not be empty.</value>
+  </data>
+  <data name="Register_Password_MaxLength" xml:space="preserve">
+    <value>Password must be at most {0} characters.</value>
   </data>
 </root>

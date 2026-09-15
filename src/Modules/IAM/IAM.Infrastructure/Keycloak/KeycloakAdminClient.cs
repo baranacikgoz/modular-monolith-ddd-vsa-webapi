@@ -25,6 +25,7 @@ internal sealed partial class KeycloakAdminClient(
     HttpClient httpClient,
     IServiceAccountTokenProvider tokenProvider,
     IOptions<KeycloakOptions> keycloakOptionsProvider,
+    IOptions<IdentitySchemeOptions> identitySchemeOptionsProvider,
     IFusionCache cache,
     ILogger<KeycloakAdminClient> logger
 ) : IKeycloakAdminClient
@@ -34,11 +35,13 @@ internal sealed partial class KeycloakAdminClient(
     public async Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user,
         CancellationToken cancellationToken)
     {
-        var attributes = new Dictionary<string, List<string>>
+        var attributes = new Dictionary<string, List<string>>();
+        if (user.PhoneNumber is { } phoneNumber)
         {
-            [UserAttributes.PhoneNumber] = [user.PhoneNumber],
-            [UserAttributes.PhoneNumberVerified] = ["true"]
-        };
+            // Only ever set from a flow that verified the number by OTP first (phone self-registration).
+            attributes[UserAttributes.PhoneNumber] = [phoneNumber];
+            attributes[UserAttributes.PhoneNumberVerified] = ["true"];
+        }
         if (user.BirthDate is { } birthDate)
         {
             attributes[UserAttributes.BirthDate] = [birthDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)];
@@ -76,11 +79,7 @@ internal sealed partial class KeycloakAdminClient(
                     : throw new HttpRequestException($"Keycloak returned a non-UUID user id '{idSegment}'.");
             case HttpStatusCode.Conflict:
                 var conflict = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
-                // Keycloak's own message text is the only way to tell which unique field collided
-                // (username vs email); it does not return a machine-readable field name on 409.
-                return conflict?.ErrorMessage?.Contains("email", StringComparison.OrdinalIgnoreCase) == true
-                    ? IdentityErrors.EmailAlreadyRegistered
-                    : IdentityErrors.PhoneNumberAlreadyRegistered;
+                return MapConflict(conflict?.ErrorMessage);
             case HttpStatusCode.BadRequest:
                 var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
                 LogUserRejected(logger, error?.Field, error?.ErrorMessage);
@@ -89,6 +88,25 @@ internal sealed partial class KeycloakAdminClient(
                 response.EnsureSuccessStatusCode();
                 throw new HttpRequestException($"Unexpected Keycloak status {(int)response.StatusCode} creating a user.");
         }
+    }
+
+    /// <summary>
+    ///     Keycloak's message text is the only way to tell which unique field collided; it returns no
+    ///     machine-readable field on 409. Its messages are "User exists with same email", "User exists with
+    ///     same username" and, from the create-race path, "User exists with same username or email". A
+    ///     username collision means whatever the deployment provisions usernames from (phone or email), so
+    ///     everything that is not explicitly the email field resolves through the identity scheme.
+    /// </summary>
+    private Error MapConflict(string? keycloakMessage)
+    {
+        if (keycloakMessage?.Contains("same email", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            return IdentityErrors.EmailAlreadyRegistered;
+        }
+
+        return identitySchemeOptionsProvider.Value.Scheme == IdentityScheme.Email
+            ? IdentityErrors.EmailAlreadyRegistered
+            : IdentityErrors.PhoneNumberAlreadyRegistered;
     }
 
     public async Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken)

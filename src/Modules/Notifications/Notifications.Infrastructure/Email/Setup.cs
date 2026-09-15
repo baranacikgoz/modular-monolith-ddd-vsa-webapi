@@ -4,6 +4,7 @@ using Common.Infrastructure.Resiliency;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Notifications.Infrastructure.Otp;
 using Notifications.Application.Email;
 using Notifications.Infrastructure.Email.Brevo;
 using ZiggyCreatures.Caching.Fusion;
@@ -18,6 +19,7 @@ internal static class Setup
     {
         var emailOptions = configuration.GetSection(nameof(EmailOptions)).Get<EmailOptions>()
             ?? throw new InvalidOperationException($"Configuration for {nameof(EmailOptions)} is null.");
+        configuration.RequireOtpTemplateForDefaultCulture(() => emailOptions.Templates.Otp.Keys, nameof(EmailOptions));
 
         return emailOptions.Provider switch
         {
@@ -48,7 +50,10 @@ internal static class Setup
                 resilience.Retry.MaxRetryAttempts = emailOptions.MaxRetryAttempts;
             });
 
-        return services.AddSingleton<IEmailGateway>(sp => new ThrottledEmailGateway(
+        // Transient, not singleton: a singleton would pin one typed HttpClient for the process lifetime
+        // and defeat HttpClientFactory's handler rotation (stale DNS). The throttle itself is stateless,
+        // its counters live in FusionCache.
+        return services.AddTransient<IEmailGateway>(sp => new ThrottledEmailGateway(
             sp.GetRequiredService<BrevoEmailGateway>(),
             sp.GetRequiredService<IFusionCache>(),
             sp.GetRequiredService<IOptions<EmailOptions>>()));

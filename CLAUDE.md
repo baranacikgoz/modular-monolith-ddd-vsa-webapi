@@ -18,7 +18,7 @@ Search order, no exceptions:
 
 | Module | Test target | Notes |
 | :-- | :-- | :-- |
-| IAM | `make test-iam` | Keycloak broker: OTP, token proxy, Admin REST queries, JwtBearer + Authorization Services. No DB. Tests boot Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
+| IAM | `make test-iam` | Keycloak broker: OTP, token proxy, Admin REST queries, JwtBearer + Authorization Services. No DB. `IdentitySchemeOptions.Scheme` (`PhoneNumber` \| `Email`, `identityScheme.json`) is a one-time setup choice that decides which self-service register/login routes `IAMModule` maps. Tests boot Keycloak Testcontainer with `keycloak/realm-modular-monolith.json` |
 | Products | `make test-products` | Standard DDD module. Use as the exemplar |
 | Inventory | `make test-inventory` | Advanced patterns: saga-shaped aggregate (`StockReservation`), sweep job, provider-switch gateway with resiliency, HMAC webhook, cross-module wiring |
 | Outbox | `make test-outbox` | Transactional outbox worker, single project |

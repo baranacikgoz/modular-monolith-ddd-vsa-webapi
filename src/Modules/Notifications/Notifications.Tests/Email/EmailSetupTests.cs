@@ -86,10 +86,11 @@ public sealed class EmailSetupTests
         Assert.True(result.IsValid);
     }
 
-    private static IConfiguration BuildConfiguration(EmailProvider provider) =>
-        new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
+    private static IConfiguration BuildConfiguration(EmailProvider provider, string? defaultCulture = null,
+        params string[] templateLanguages)
+    {
+        var values = new Dictionary<string, string?>
+        {
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.Provider)}"] = provider.ToString(),
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.BaseUrl)}"] = "https://api.brevo.com",
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.ApiKey)}"] = "key",
@@ -100,8 +101,20 @@ public sealed class EmailSetupTests
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.MaxPerAddressPerDay)}"] = "10",
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.MaxPerDay)}"] = "5000",
                 [$"{nameof(EmailOptions)}:{nameof(EmailOptions.ThrottleCounterTtlHours)}"] = "25",
-            })
-            .Build();
+        };
+        if (defaultCulture is not null)
+        {
+            values[$"{nameof(ResxLocalizationOptions)}:{nameof(ResxLocalizationOptions.DefaultCulture)}"] = defaultCulture;
+        }
+
+        foreach (var language in templateLanguages)
+        {
+            values[$"{nameof(EmailOptions)}:Templates:Otp:{language}:Subject"] = "code {0}";
+            values[$"{nameof(EmailOptions)}:Templates:Otp:{language}:HtmlBody"] = "<p>{0}</p>";
+        }
+
+        return new ConfigurationBuilder().AddInMemoryCollection(values).Build();
+    }
 
     [Fact]
     public void AddEmailServices_DummyProvider_RegistersDummyGateway()
@@ -125,5 +138,42 @@ public sealed class EmailSetupTests
 
         Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(IEmailGateway));
         Assert.DoesNotContain(services, descriptor => descriptor.ImplementationType == typeof(DummyEmailGateway));
+    }
+
+    /// <summary>
+    ///     A singleton gateway would pin one typed HttpClient for the process lifetime and defeat
+    ///     HttpClientFactory's handler rotation; the throttle is stateless, so it must resolve per use.
+    /// </summary>
+    [Fact]
+    public void AddEmailServices_BrevoProvider_GatewayIsNotSingleton()
+    {
+        var services = new ServiceCollection();
+
+        services.AddEmailServices(BuildConfiguration(EmailProvider.Brevo));
+
+        var descriptor = Assert.Single(services, d => d.ServiceType == typeof(IEmailGateway));
+        Assert.Equal(ServiceLifetime.Transient, descriptor.Lifetime);
+    }
+
+    [Fact]
+    public void AddEmailServices_DefaultCultureHasNoOtpTemplate_ThrowsAtRegistration()
+    {
+        var services = new ServiceCollection();
+        var configuration = BuildConfiguration(EmailProvider.Dummy, defaultCulture: "tr", "en");
+
+        var ex = Assert.Throws<InvalidOperationException>(() => services.AddEmailServices(configuration));
+
+        Assert.Contains("'tr'", ex.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AddEmailServices_DefaultCultureHasOtpTemplate_Registers()
+    {
+        var services = new ServiceCollection();
+        var configuration = BuildConfiguration(EmailProvider.Dummy, defaultCulture: "tr", "en", "tr");
+
+        services.AddEmailServices(configuration);
+
+        Assert.Contains(services, descriptor => descriptor.ServiceType == typeof(IEmailGateway));
     }
 }

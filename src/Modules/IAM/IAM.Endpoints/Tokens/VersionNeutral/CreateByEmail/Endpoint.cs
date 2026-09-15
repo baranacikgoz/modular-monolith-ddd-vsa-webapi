@@ -11,11 +11,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
+using Polly.Timeout;
 using Constants = IAM.Infrastructure.RateLimiting.Constants;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail;
 
-internal static class Endpoint
+internal static partial class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder tokensApiGroup)
     {
@@ -46,8 +48,8 @@ internal static class Endpoint
         // InvalidCredentials error.
         return await tokenClient
             .PasswordLoginAsync(request.Email, request.Password, cancellationToken)
-            .BindAsync(_ => VerifyEmailVerificationTokenAsync(
-                request.Email, request.EmailVerificationToken, otpClient, cancellationToken))
+            .BindAsync(tokens => VerifyEmailVerificationTokenAsync(
+                tokens, request.Email, request.EmailVerificationToken, otpClient, adminClient, logger, cancellationToken))
             .BindAsync(tokens => LoginCompletion.BindDeviceAsync(
                 tokens, request.DeviceId, request.ClientId, request.DeviceName, request.PushToken,
                 deviceClient, adminClient, logger, cancellationToken))
@@ -63,10 +65,18 @@ internal static class Endpoint
             .TapActivityAsync(activity);
     }
 
-    private static async Task<Result> VerifyEmailVerificationTokenAsync(
+    /// <summary>
+    ///     The password grant above already opened a real Keycloak session. If the verification token then
+    ///     fails, that session must not outlive this request: otherwise a caller who knows the password but
+    ///     not the mailbox could pile up live (refresh-token-bearing) sessions with every attempt.
+    /// </summary>
+    private static async Task<Result<KeycloakTokens>> VerifyEmailVerificationTokenAsync(
+        KeycloakTokens tokens,
         string email,
         string emailVerificationToken,
         IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse> otpClient,
+        IKeycloakAdminClient adminClient,
+        ILogger logger,
         CancellationToken cancellationToken)
     {
         var response = await otpClient.SendAsync(
@@ -74,6 +84,26 @@ internal static class Endpoint
                 EmailNormalization.Normalize(email), emailVerificationToken, OtpPurposes.EmailVerifiedLogin),
             cancellationToken);
 
-        return response.ToResult();
+        if (response.ToResult().Error is not { } error)
+        {
+            return tokens;
+        }
+
+        try
+        {
+            await adminClient.DeleteSessionAsync(tokens.SessionId, cancellationToken);
+            IamTelemetry.RecordSessionRevoked(SessionRevokedReasons.EmailVerificationFailed);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException
+                                       or BrokenCircuitException or TimeoutRejectedException)
+        {
+            LogOrphanSessionRevocationFailed(logger, tokens.SessionId, ex);
+        }
+
+        return Result<KeycloakTokens>.Failure(error);
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Email verification token rejected but the just-opened Keycloak session {SessionId} could not be revoked; it will expire on its own.")]
+    private static partial void LogOrphanSessionRevocationFailed(ILogger logger, string sessionId, Exception ex);
 }

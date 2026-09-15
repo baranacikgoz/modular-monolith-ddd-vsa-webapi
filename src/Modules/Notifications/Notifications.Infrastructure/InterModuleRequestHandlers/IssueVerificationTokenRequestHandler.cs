@@ -1,3 +1,4 @@
+using System.Buffers.Text;
 using System.Security.Cryptography;
 using Common.Application.Options;
 using Common.InterModuleRequests.Contracts;
@@ -24,7 +25,9 @@ public sealed class IssueVerificationTokenRequestHandler(
         IssueVerificationTokenRequest request,
         CancellationToken cancellationToken)
     {
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(TokenSizeInBytes));
+        // Base64Url: the token travels in JSON bodies today, but a URL-safe alphabet costs nothing and
+        // keeps it usable in a query string or path if a future flow ever needs that.
+        var token = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(TokenSizeInBytes));
 
         await otpService.StoreAsync(
             request.Identifier,

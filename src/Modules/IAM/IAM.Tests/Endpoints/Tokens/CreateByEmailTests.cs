@@ -2,6 +2,8 @@ using System.Net;
 using System.Net.Http.Json;
 using Common.Application.Auth;
 using Common.Tests;
+using IAM.Application.Keycloak;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Xunit;
 using CreateByEmailRequest = IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail.Request;
@@ -71,6 +73,27 @@ public class CreateByEmailTests(IntegrationTestWebAppFactory factory) : BaseInte
             Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword, emailVerificationToken: token);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    /// <summary>
+    ///     The password grant runs before the token check, so Keycloak has already opened a session by the time a
+    ///     bad token is rejected. That session must be revoked in the same request, or every wrong-token attempt
+    ///     would leave a live refresh-token-bearing session behind.
+    /// </summary>
+    [Fact]
+    public async Task CreateTokensByEmail_WrongToken_Returns400AndLeavesNoKeycloakSessionBehind()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var staff = await adminClient.FindUserByEmailAsync(SeedUsers.StaffEmail, CancellationToken.None);
+        Assert.NotNull(staff);
+        var sessionsBefore = (await adminClient.GetUserSessionsAsync(staff.Id, CancellationToken.None)).Count;
+
+        using var response = await IamTestClient.LoginByEmailRawAsync(
+            Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword, emailVerificationToken: "definitely-not-a-token");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var sessionsAfter = (await adminClient.GetUserSessionsAsync(staff.Id, CancellationToken.None)).Count;
+        Assert.Equal(sessionsBefore, sessionsAfter);
     }
 
     /// <summary>
