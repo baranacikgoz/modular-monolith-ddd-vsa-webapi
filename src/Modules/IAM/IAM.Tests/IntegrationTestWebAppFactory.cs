@@ -70,6 +70,11 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
             {
                 { "KeycloakOptions:BaseUrl", KeycloakBaseAddress },
                 { "FeatureManagement:IAM.Captcha", "true" },
+                // This suite covers both identity modes (phone-OTP endpoints and email-OTP endpoints are
+                // both exercised), independent of which one a given fork actually deploys. Forcing
+                // PhoneNumber here means a fork that ships UsernameSource=Email (userIdentity.json) still
+                // gets full coverage of the phone-only routes IAMModule conditionally maps.
+                { "UserIdentityOptions:UsernameSource", "PhoneNumber" },
                 // Production values (1/15s, 5/60s) are far too tight for a test class hitting the same
                 // in-process, per-IP bucket several times back to back; every test client shares one IP
                 // here, unlike real traffic. Relaxed to the same headroom the other dedicated-policy
