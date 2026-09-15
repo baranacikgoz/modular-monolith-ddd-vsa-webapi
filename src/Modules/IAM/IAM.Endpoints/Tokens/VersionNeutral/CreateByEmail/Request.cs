@@ -5,6 +5,7 @@ using Common.Application.Validation;
 using Common.Domain.Devices;
 using FluentValidation;
 using IAM.Domain.Users;
+using IAM.Endpoints.Common.Validations;
 using Microsoft.Extensions.Options;
 
 namespace IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail;
@@ -13,6 +14,7 @@ public sealed record Request
 {
     public required string Email { get; init; }
     public required string Password { get; init; }
+    public required string EmailVerificationToken { get; init; }
     public required Guid DeviceId { get; init; }
     public required string ClientId { get; init; }
     public string? DeviceName { get; init; }
@@ -38,6 +40,9 @@ public sealed class RequestValidator : CustomValidator<Request>
             .MaximumLength(Constants.PasswordMaxLength)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Tokens_CreateByEmail_Password_MaxLength,
                 Constants.PasswordMaxLength));
+
+        RuleFor(x => x.EmailVerificationToken)
+            .EmailVerificationTokenValidation(localizer);
 
         RuleFor(x => x.DeviceId)
             .NotEmpty()

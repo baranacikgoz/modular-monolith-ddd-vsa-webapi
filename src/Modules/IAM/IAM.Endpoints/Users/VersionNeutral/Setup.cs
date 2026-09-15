@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -7,16 +8,20 @@ namespace IAM.Endpoints.Users.VersionNeutral;
 
 public static class Setup
 {
-    public static void MapUsersEndpoints(this RouteGroupBuilder rootGroup)
+    public static void MapUsersEndpoints(this RouteGroupBuilder rootGroup, UsernameSource usernameSource)
     {
         var usersApiGroup = rootGroup
             .MapGroup("/users")
             .WithTags("Users");
 
-        Endpoint.MapEndpoint(usersApiGroup);
+        if (usernameSource == UsernameSource.PhoneNumber)
+        {
+            Endpoint.MapEndpoint(usersApiGroup);
+            CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
+        }
+
         Get.Endpoint.MapEndpoint(usersApiGroup);
         Search.Endpoint.MapEndpoint(usersApiGroup);
-        CheckRegistration.Endpoint.MapEndpoint(usersApiGroup);
         Me.Get.Endpoint.MapEndpoint(usersApiGroup);
     }
 }

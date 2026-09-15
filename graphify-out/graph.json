@@ -69406,7 +69406,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Endpoint.cs",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -165401,7 +165401,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Endpoint.cs",
-      "source_location": "L40",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -168123,5 +168123,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "7d6137bbcc6ec2b4473d675ec8b39364b1a57749"
+  "built_at_commit": "aea23f1aa21d7a3e82a758786048ba40a2bc30e2"
 }

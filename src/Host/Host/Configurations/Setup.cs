@@ -32,6 +32,8 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/signalR");
         AddJsonFile(configuration, $"{configurationsDirectory}/fullTextSearch");
         AddJsonFile(configuration, $"{configurationsDirectory}/sms");
+        AddJsonFile(configuration, $"{configurationsDirectory}/email");
+        AddJsonFile(configuration, $"{configurationsDirectory}/userIdentity");
         AddJsonFile(configuration, $"{configurationsDirectory}/push");
         AddJsonFile(configuration, $"{configurationsDirectory}/resiliency");
         AddJsonFile(configuration, $"{configurationsDirectory}/inventory");

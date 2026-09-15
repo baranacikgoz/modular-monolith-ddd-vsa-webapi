@@ -32,6 +32,17 @@ public static class CacheKeys
         }
 
         /// <summary>
+        ///     Same backstop as <see cref="OtpPhoneQuota" />, for the email channel. A separate bucket from the
+        ///     phone quota so SMS and email spend never cannibalize each other's cap. Callers must pass an
+        ///     already-normalized (trimmed, lowercased) address, or the same mailbox gets one bucket per casing.
+        /// </summary>
+        public static string OtpEmailQuota(string normalizedEmail)
+        {
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalizedEmail)));
+            return $"otp:emailquota:{hash}";
+        }
+
+        /// <summary>
         ///     Cached Keycloak authorization decision for one access token (<paramref name="jti" />) and one
         ///     <c>resource#scope</c> permission. Keyed by jti, not sid, so the entry can never outlive the token.
         /// </summary>

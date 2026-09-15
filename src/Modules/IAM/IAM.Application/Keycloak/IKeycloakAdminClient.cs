@@ -17,6 +17,9 @@ public interface IKeycloakAdminClient
 
     Task<KeycloakUser?> FindUserByUsernameAsync(string username, CancellationToken cancellationToken);
 
+    /// <summary><paramref name="email" /> must already be lowercased by the caller (Keycloak stores emails lowercased).</summary>
+    Task<KeycloakUser?> FindUserByEmailAsync(string email, CancellationToken cancellationToken);
+
     /// <summary>Substring search across username, first name, last name and email; service accounts excluded by Keycloak.</summary>
     Task<KeycloakUserPage> SearchUsersAsync(string? searchTerm, int skip, int take, CancellationToken cancellationToken);
 

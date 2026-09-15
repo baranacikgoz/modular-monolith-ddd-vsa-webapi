@@ -1134,9 +1134,9 @@
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Endpoint.cs": {
-    "mtime": 1788814247.5473754,
-    "seen": 1788823272.5680451,
-    "ast_hash": "ee90fe57cabf989a67c52b08094c92c3",
+    "mtime": 1789343715.969182,
+    "seen": 1789343745.712806,
+    "ast_hash": "2c020dfffac808481aa1f61f9e07453c",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Users/VersionNeutral/Me/Get/Response.cs": {

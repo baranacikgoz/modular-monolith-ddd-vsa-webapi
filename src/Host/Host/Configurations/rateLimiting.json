@@ -35,6 +35,18 @@
       "PeriodInMs": 60000,
       "QueueLimit": 0
     },
+    "Email": {
+      "Limit": 1,
+      "PeriodInMs": 15000,
+      "QueueLimit": 0,
+      "FailOpen": false
+    },
+    "OtpVerify": {
+      "Limit": 5,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0,
+      "FailOpen": false
+    },
     "ExemptPathPrefixes": [ "/hubs" ]
   }
 }

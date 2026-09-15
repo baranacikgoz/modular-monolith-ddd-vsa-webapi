@@ -69,7 +69,15 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "KeycloakOptions:BaseUrl", KeycloakBaseAddress },
-                { "FeatureManagement:IAM.Captcha", "true" }
+                { "FeatureManagement:IAM.Captcha", "true" },
+                // Production values (1/15s, 5/60s) are far too tight for a test class hitting the same
+                // in-process, per-IP bucket several times back to back; every test client shares one IP
+                // here, unlike real traffic. Relaxed to the same headroom the other dedicated-policy
+                // *RateLimitingPolicyTests classes construct by hand for the same reason.
+                { "CustomRateLimitingOptions:Email:Limit", "1000" },
+                { "CustomRateLimitingOptions:Email:PeriodInMs", "1000" },
+                { "CustomRateLimitingOptions:OtpVerify:Limit", "1000" },
+                { "CustomRateLimitingOptions:OtpVerify:PeriodInMs", "1000" }
             });
         });
 
@@ -84,6 +92,12 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
                 InProcessSendOtpClient>();
             services.AddSingleton<IInterModuleRequestClient<VerifyPhoneOtpRequest, VerifyPhoneOtpResponse>,
                 InProcessVerifyOtpClient>();
+            services.AddSingleton<IInterModuleRequestClient<SendEmailOtpRequest, SendEmailOtpResponse>,
+                InProcessSendEmailOtpClient>();
+            services.AddSingleton<IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse>,
+                InProcessVerifyEmailOtpClient>();
+            services.AddSingleton<IInterModuleRequestClient<IssueVerificationTokenRequest, IssueVerificationTokenResponse>,
+                InProcessIssueVerificationTokenClient>();
 
             services.Decorate<IKeycloakAdminClient, FaultInjectingKeycloakAdminClient>();
         });
@@ -135,6 +149,11 @@ internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inn
     public Task<KeycloakUser?> FindUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
         return inner.FindUserByUsernameAsync(username, cancellationToken);
+    }
+
+    public Task<KeycloakUser?> FindUserByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        return inner.FindUserByEmailAsync(email, cancellationToken);
     }
 
     public Task<KeycloakUserPage> SearchUsersAsync(string? searchTerm, int skip, int take, CancellationToken cancellationToken)
@@ -215,5 +234,80 @@ internal sealed class InProcessVerifyOtpClient(IFusionCache cache)
 
         await cache.RemoveAsync(key, token: cancellationToken);
         return new VerifyPhoneOtpResponse(OtpVerificationFailureReason.None);
+    }
+}
+
+internal sealed class InProcessSendEmailOtpClient(IFusionCache cache, IOptions<OtpOptions> otpOptions)
+    : IInterModuleRequestClient<SendEmailOtpRequest, SendEmailOtpResponse>
+{
+    public const string DummyOtp = "123456";
+
+    public async Task<SendEmailOtpResponse> SendAsync(
+        SendEmailOtpRequest request, CancellationToken cancellationToken)
+    {
+        var key = CacheKeys.For.Otp(request.Email, request.Purpose, request.ContextId);
+        var duration = TimeSpan.FromMinutes(otpOptions.Value.ExpirationInMinutes);
+        var entry = new OtpCacheEntry(DummyOtp, 0, DateTimeOffset.UtcNow + duration);
+        await cache.SetAsync(key, entry,
+            new FusionCacheEntryOptions { Duration = duration },
+            token: cancellationToken);
+        return new SendEmailOtpResponse(EmailOtpDispatchOutcome.Sent);
+    }
+}
+
+internal sealed class InProcessVerifyEmailOtpClient(IFusionCache cache)
+    : IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse>
+{
+    private const int MaxFailedAttempts = 3;
+
+    public async Task<VerifyEmailOtpResponse> SendAsync(
+        VerifyEmailOtpRequest request, CancellationToken cancellationToken)
+    {
+        var key = CacheKeys.For.Otp(request.Email, request.Purpose, request.ContextId);
+        var entry = await cache.GetOrDefaultAsync<OtpCacheEntry>(key, token: cancellationToken);
+
+        if (entry is null)
+        {
+            return new VerifyEmailOtpResponse(OtpVerificationFailureReason.InvalidOtp);
+        }
+
+        if (!string.Equals(entry.Otp, request.Otp, StringComparison.Ordinal))
+        {
+            var failedAttempts = entry.FailedAttempts + 1;
+            if (failedAttempts >= MaxFailedAttempts)
+            {
+                await cache.RemoveAsync(key, token: cancellationToken);
+                return new VerifyEmailOtpResponse(OtpVerificationFailureReason.TooManyAttempts);
+            }
+
+            var remaining = entry.ExpiresAt - DateTimeOffset.UtcNow;
+            await cache.SetAsync(key, entry with { FailedAttempts = failedAttempts },
+                new FusionCacheEntryOptions { Duration = remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero },
+                token: cancellationToken);
+            return new VerifyEmailOtpResponse(OtpVerificationFailureReason.InvalidOtp);
+        }
+
+        await cache.RemoveAsync(key, token: cancellationToken);
+        return new VerifyEmailOtpResponse(OtpVerificationFailureReason.None);
+    }
+}
+
+/// <summary>
+///     Mirrors the real IssueVerificationTokenRequestHandler's shape (store under Identifier+Purpose) without
+///     going through the CSPRNG path, so tests get a predictable-enough-to-log-but-still-unique token.
+/// </summary>
+internal sealed class InProcessIssueVerificationTokenClient(IFusionCache cache, IOptions<OtpOptions> otpOptions)
+    : IInterModuleRequestClient<IssueVerificationTokenRequest, IssueVerificationTokenResponse>
+{
+    public async Task<IssueVerificationTokenResponse> SendAsync(
+        IssueVerificationTokenRequest request, CancellationToken cancellationToken)
+    {
+        var token = Guid.NewGuid().ToString("N");
+        var key = CacheKeys.For.Otp(request.Identifier, request.Purpose);
+        var duration = TimeSpan.FromMinutes(otpOptions.Value.VerificationTokenExpirationInMinutes);
+        await cache.SetAsync(key, new OtpCacheEntry(token, 0, DateTimeOffset.UtcNow + duration),
+            new FusionCacheEntryOptions { Duration = duration },
+            token: cancellationToken);
+        return new IssueVerificationTokenResponse(token);
     }
 }

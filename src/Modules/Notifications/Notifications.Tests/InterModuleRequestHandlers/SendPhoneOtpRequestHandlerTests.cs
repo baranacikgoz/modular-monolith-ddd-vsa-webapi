@@ -32,6 +32,12 @@ public sealed class SendPhoneOtpRequestHandlerTests : IDisposable
             ResendIntervalSeconds = 60,
             MaxSendsPerPhonePerWindow = MaxSendsPerPhonePerWindow,
             PhoneQuotaWindowMinutes = 60,
+
+            MaxSendsPerEmailPerWindow = 5,
+
+            EmailQuotaWindowMinutes = 60,
+
+            VerificationTokenExpirationInMinutes = 30,
         });
         var smsOptions = Options.Create(new SmsOptions
         {

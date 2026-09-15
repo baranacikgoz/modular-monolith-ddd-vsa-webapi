@@ -31,7 +31,9 @@ public class CreateStoreRateLimitingPolicyTests
         CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
         TokenCreate = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
         CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
+        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
+        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
     };
 
     // Mirrors production wiring (Common.Infrastructure/Auth/Setup.cs AddCommonAuth) so ICurrentUser is

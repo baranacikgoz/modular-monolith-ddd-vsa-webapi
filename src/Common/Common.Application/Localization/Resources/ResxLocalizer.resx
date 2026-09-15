@@ -698,6 +698,9 @@
   <data name="PhoneNumberAlreadyRegistered" xml:space="preserve">
     <value>Bu telefon numarası zaten kayıtlı.</value>
   </data>
+  <data name="EmailAlreadyRegistered" xml:space="preserve">
+    <value>Bu e-posta adresi zaten kayıtlı.</value>
+  </data>
   <data name="SessionNotFound" xml:space="preserve">
     <value>Oturum bulunamadı.</value>
   </data>
@@ -745,5 +748,26 @@
   </data>
   <data name="Tokens_Sessions_Revoke_Id_MaxLength" xml:space="preserve">
     <value>Oturum kimliği en fazla {0} karakter olabilir.</value>
+  </data>
+  <data name="Otp_SendForEmail_Email_NotEmpty" xml:space="preserve">
+    <value>E-posta boş olamaz.</value>
+  </data>
+  <data name="Otp_SendForEmail_Email_Invalid" xml:space="preserve">
+    <value>E-posta adresi geçersiz.</value>
+  </data>
+  <data name="Otp_VerifyEmail_Email_NotEmpty" xml:space="preserve">
+    <value>E-posta boş olamaz.</value>
+  </data>
+  <data name="Otp_VerifyEmail_Email_Invalid" xml:space="preserve">
+    <value>E-posta adresi geçersiz.</value>
+  </data>
+  <data name="Otp_VerifyEmail_Otp_NotEmpty" xml:space="preserve">
+    <value>Doğrulama kodu boş olamaz.</value>
+  </data>
+  <data name="IAM_EmailVerificationToken_NotEmpty" xml:space="preserve">
+    <value>E-posta doğrulama jetonu boş olamaz.</value>
+  </data>
+  <data name="Tokens_CreateByEmail_EmailVerificationToken_NotEmpty" xml:space="preserve">
+    <value>E-posta doğrulama jetonu boş olamaz.</value>
   </data>
 </root>

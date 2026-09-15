@@ -12,6 +12,8 @@ public static partial class Policies
         yield return TokenCreatePolicy;
         yield return CheckRegistrationPolicy;
         yield return TokenRefreshPolicy;
+        yield return EmailPolicy;
+        yield return OtpVerifyPolicy;
     }
 
     private static void SmsPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
@@ -27,21 +29,31 @@ public static partial class Policies
     private static void TokenCreatePolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
         // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
-        // caller, so one client exhausting it would 429 login for every user — see TokenCreateRateLimitingPolicy.
+        // caller, so one client exhausting it would 429 login for every user, see TokenCreateRateLimitingPolicy.
         rateLimiter.AddPolicy<string, TokenCreateRateLimitingPolicy>(Constants.TokenCreate);
     }
 
     private static void CheckRegistrationPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
         // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
-        // caller — see CheckRegistrationRateLimitingPolicy.
+        // caller, see CheckRegistrationRateLimitingPolicy.
         rateLimiter.AddPolicy<string, CheckRegistrationRateLimitingPolicy>(Constants.CheckRegistration);
     }
 
     private static void TokenRefreshPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
     {
         // Per-IP partitioned (not AddFixedWindowLimiter): that would be a single bucket shared by every
-        // caller, so one client exhausting it would 429 every user's refresh — see TokenRefreshRateLimitingPolicy.
+        // caller, so one client exhausting it would 429 every user's refresh, see TokenRefreshRateLimitingPolicy.
         rateLimiter.AddPolicy<string, TokenRefreshRateLimitingPolicy>(Constants.TokenRefresh);
+    }
+
+    private static void EmailPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
+    {
+        rateLimiter.AddPolicy<string, EmailRateLimitingPolicy>(Constants.Email);
+    }
+
+    private static void OtpVerifyPolicy(RateLimiterOptions rateLimiter, CustomRateLimitingOptions _)
+    {
+        rateLimiter.AddPolicy<string, OtpVerifyRateLimitingPolicy>(Constants.OtpVerify);
     }
 }

@@ -72,6 +72,20 @@ internal static class NotificationsTelemetry
     public static void RecordSmsThrottled(string reason) =>
         SmsThrottled.Add(1, new KeyValuePair<string, object?>("throttle.reason", reason));
 
+    public static readonly Counter<long> EmailSent =
+        Meter.CreateCounter<long>("notifications.email.sent", "emails",
+            "Total email send attempts via IEmailGateway, tagged by outcome.");
+
+    public static void RecordEmailSent(string outcome) =>
+        EmailSent.Add(1, new KeyValuePair<string, object?>("email.outcome", outcome));
+
+    public static readonly Counter<long> EmailThrottled =
+        Meter.CreateCounter<long>("notifications.email.throttled", "emails",
+            "Total email sends rejected by our own spend guard before reaching the provider, tagged by which cap was hit.");
+
+    public static void RecordEmailThrottled(string reason) =>
+        EmailThrottled.Add(1, new KeyValuePair<string, object?>("throttle.reason", reason));
+
     public static readonly Counter<long> PushSent =
         Meter.CreateCounter<long>("notifications.push.sent", "push",
             "Total push send attempts per device token via IPushGateway, tagged by outcome.");

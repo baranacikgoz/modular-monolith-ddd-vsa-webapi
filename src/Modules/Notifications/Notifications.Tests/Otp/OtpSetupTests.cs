@@ -83,6 +83,12 @@ public sealed class OtpSetupTests
             ResendIntervalSeconds = 60,
             MaxSendsPerPhonePerWindow = 5,
             PhoneQuotaWindowMinutes = 60,
+
+            MaxSendsPerEmailPerWindow = 5,
+
+            EmailQuotaWindowMinutes = 60,
+
+            VerificationTokenExpirationInMinutes = 30,
             DummyCode = dummyCode,
         });
         context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);

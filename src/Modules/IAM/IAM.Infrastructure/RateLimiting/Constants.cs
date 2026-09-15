@@ -7,4 +7,6 @@ public static class Constants
     public const string TokenCreate = nameof(TokenCreate);
     public const string CheckRegistration = nameof(CheckRegistration);
     public const string TokenRefresh = nameof(TokenRefresh);
+    public const string Email = nameof(Email);
+    public const string OtpVerify = nameof(OtpVerify);
 }

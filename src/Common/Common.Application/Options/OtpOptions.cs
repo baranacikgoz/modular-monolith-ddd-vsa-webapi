@@ -21,6 +21,21 @@ public class OtpOptions
     public required int PhoneQuotaWindowMinutes { get; set; }
 
     /// <summary>
+    /// Max real emails sent to one address within <see cref="EmailQuotaWindowMinutes"/>, independent
+    /// of Purpose/ContextId. Same role as <see cref="MaxSendsPerPhonePerWindow"/>, for the email channel.
+    /// </summary>
+    public required int MaxSendsPerEmailPerWindow { get; set; }
+
+    public required int EmailQuotaWindowMinutes { get; set; }
+
+    /// <summary>
+    /// TTL for a verification token issued after a correct OTP (e.g. email/phone ownership proof handed
+    /// to the caller to complete a login or registration with). Independent of <see cref="ExpirationInMinutes"/>,
+    /// which bounds the OTP code itself.
+    /// </summary>
+    public required int VerificationTokenExpirationInMinutes { get; set; }
+
+    /// <summary>
     /// When set, every generated OTP is this fixed code instead of a random one, regardless of whether
     /// the OTP store is Redis or in-memory. Lets non-production environments be exercised without reading
     /// SMS. Forbidden in Production.
@@ -51,6 +66,18 @@ public class OtpOptionsValidator : CustomValidator<OtpOptions>
         RuleFor(o => o.PhoneQuotaWindowMinutes)
             .GreaterThan(0)
             .WithMessage("PhoneQuotaWindowMinutes must be greater than 0.");
+
+        RuleFor(o => o.MaxSendsPerEmailPerWindow)
+            .GreaterThan(0)
+            .WithMessage("MaxSendsPerEmailPerWindow must be greater than 0.");
+
+        RuleFor(o => o.EmailQuotaWindowMinutes)
+            .GreaterThan(0)
+            .WithMessage("EmailQuotaWindowMinutes must be greater than 0.");
+
+        RuleFor(o => o.VerificationTokenExpirationInMinutes)
+            .GreaterThan(0)
+            .WithMessage("VerificationTokenExpirationInMinutes must be greater than 0.");
 
         RuleFor(o => o.DummyCode)
             .Must((o, code) => code is null || (code.Length == o.Length && code.All(char.IsAsciiDigit)))

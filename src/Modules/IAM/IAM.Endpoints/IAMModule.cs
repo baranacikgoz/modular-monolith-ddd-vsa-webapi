@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using SharpGrip.FluentValidation.AutoValidation.Endpoints.Extensions;
 
 namespace IAM.Endpoints;
@@ -51,9 +52,14 @@ public sealed class IamModule : IModule
             .AddFluentValidationAutoValidation()
             .RequireAuthorization();
 
-        versionNeutralApiGroup.MapUsersEndpoints();
-        versionNeutralApiGroup.MapTokensEndpoints();
-        versionNeutralApiGroup.MapOtpEndpoints();
+        // Read once at startup: which self-service identity endpoints exist is a deployment-time
+        // decision, not a per-request one, so an unmapped route is the guard, not an endpoint filter.
+        var usernameSource = endpoints.ServiceProvider
+            .GetRequiredService<IOptions<UserIdentityOptions>>().Value.UsernameSource;
+
+        versionNeutralApiGroup.MapUsersEndpoints(usernameSource);
+        versionNeutralApiGroup.MapTokensEndpoints(usernameSource);
+        versionNeutralApiGroup.MapOtpEndpoints(usernameSource);
         versionNeutralApiGroup.MapCaptchaEndpoints();
     }
 

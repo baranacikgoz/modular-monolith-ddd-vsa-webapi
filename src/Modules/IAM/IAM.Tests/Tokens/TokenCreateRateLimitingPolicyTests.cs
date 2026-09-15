@@ -21,7 +21,11 @@ public class TokenCreateRateLimitingPolicyTests
         CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
         TokenCreate = new FixedWindow { Limit = 20, PeriodInMs = 60000, QueueLimit = 0 },
         CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
+        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
+
+        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
+
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
     }));
 
     private static readonly IServiceProvider EmptyServices = new ServiceCollection().BuildServiceProvider();

@@ -26,6 +26,12 @@ public sealed class OtpServiceTests : IDisposable
             ResendIntervalSeconds = 60,
             MaxSendsPerPhonePerWindow = 5,
             PhoneQuotaWindowMinutes = 60,
+
+            MaxSendsPerEmailPerWindow = 5,
+
+            EmailQuotaWindowMinutes = 60,
+
+            VerificationTokenExpirationInMinutes = 30,
         });
         _sut = new OtpService(otpOptions, _cache);
     }
@@ -110,6 +116,12 @@ public sealed class OtpServiceTests : IDisposable
             ResendIntervalSeconds = 60,
             MaxSendsPerPhonePerWindow = 5,
             PhoneQuotaWindowMinutes = 60,
+
+            MaxSendsPerEmailPerWindow = 5,
+
+            EmailQuotaWindowMinutes = 60,
+
+            VerificationTokenExpirationInMinutes = 30,
             DummyCode = "123456",
         }), _cache);
 

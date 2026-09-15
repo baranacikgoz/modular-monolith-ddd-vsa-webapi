@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifications.Infrastructure.Devices;
+using Notifications.Infrastructure.Email;
 using Notifications.Infrastructure.Hubs;
 using Notifications.Infrastructure.Otp;
 using Notifications.Infrastructure.Persistence;
@@ -25,6 +26,7 @@ public sealed class NotificationsModule : IModule
     {
         services.AddPersistence();
         services.AddNotificationServices(configuration);
+        services.AddEmailServices(configuration);
         services.AddNotificationsSignalR(configuration);
         services.AddOtpServices(configuration);
         services.AddPushServices(configuration);

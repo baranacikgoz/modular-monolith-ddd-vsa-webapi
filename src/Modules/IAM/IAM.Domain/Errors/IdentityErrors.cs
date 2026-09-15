@@ -11,6 +11,12 @@ public static class IdentityErrors
         StatusCode = HttpStatusCode.Conflict
     };
 
+    public static readonly Error EmailAlreadyRegistered = new()
+    {
+        Key = nameof(EmailAlreadyRegistered),
+        StatusCode = HttpStatusCode.Conflict
+    };
+
     /// <summary>Wrong email/password, unknown user, disabled or temporarily locked account. One message for all: never leak which.</summary>
     public static readonly Error InvalidCredentials = new()
     {

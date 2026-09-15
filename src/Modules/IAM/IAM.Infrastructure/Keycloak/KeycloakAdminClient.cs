@@ -75,7 +75,12 @@ internal sealed partial class KeycloakAdminClient(
                     ? new ApplicationUserId(id)
                     : throw new HttpRequestException($"Keycloak returned a non-UUID user id '{idSegment}'.");
             case HttpStatusCode.Conflict:
-                return IdentityErrors.PhoneNumberAlreadyRegistered;
+                var conflict = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
+                // Keycloak's own message text is the only way to tell which unique field collided
+                // (username vs email); it does not return a machine-readable field name on 409.
+                return conflict?.ErrorMessage?.Contains("email", StringComparison.OrdinalIgnoreCase) == true
+                    ? IdentityErrors.EmailAlreadyRegistered
+                    : IdentityErrors.PhoneNumberAlreadyRegistered;
             case HttpStatusCode.BadRequest:
                 var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
                 LogUserRejected(logger, error?.Field, error?.ErrorMessage);
@@ -148,6 +153,20 @@ internal sealed partial class KeycloakAdminClient(
         using var response = await SendAsync(
             () => new HttpRequestMessage(HttpMethod.Get,
                 AdminUri($"{UsersResource}?username={Uri.EscapeDataString(username)}&exact=true&max=1")),
+            cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var users = await response.Content.ReadFromJsonAsync<List<UserRepresentation>>(cancellationToken);
+        var user = users?.FirstOrDefault();
+
+        return user is null ? null : ToUser(user);
+    }
+
+    public async Task<KeycloakUser?> FindUserByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        using var response = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get,
+                AdminUri($"{UsersResource}?email={Uri.EscapeDataString(email)}&exact=true&max=1")),
             cancellationToken);
         response.EnsureSuccessStatusCode();
 

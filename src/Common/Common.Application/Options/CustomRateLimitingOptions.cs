@@ -19,9 +19,13 @@ public class CustomRateLimitingOptions
 
     public required FixedWindow TokenRefresh { get; set; }
 
+    public required FixedWindow Email { get; set; }
+
+    public required FixedWindow OtpVerify { get; set; }
+
     /// <summary>
     /// Path prefixes the global limiter never applies to. Rate-limiting a persistent connection (e.g.
-    /// a SignalR hub) is meaningless — reconnect storms and long-polling fallback would otherwise 429.
+    /// a SignalR hub) is meaningless: reconnect storms and long-polling fallback would otherwise 429.
     /// </summary>
     public IReadOnlyList<string> ExemptPathPrefixes { get; set; } = [];
 }
@@ -37,7 +41,7 @@ public class FixedWindow
 
     /// <summary>
     /// When Redis-backed and Redis is unreachable: true lets the request through (default), false
-    /// rejects it. Sensitive flows (Sms, OtpVerify, BookingSubmit, BookingOtpVerify) set this false —
+    /// rejects it. Sensitive flows (Sms, OtpVerify, BookingSubmit, BookingOtpVerify) set this false,
     /// during a Redis outage those flows are already dead anyway, since RedisOtpService is the OTP store.
     /// </summary>
     public bool FailOpen { get; set; } = true;
@@ -67,6 +71,12 @@ public class CustomRateLimitingOptionsValidator : CustomValidator<CustomRateLimi
             .SetValidator(new FixedWindowValidator());
 
         RuleFor(o => o.TokenRefresh)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.Email)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.OtpVerify)
             .SetValidator(new FixedWindowValidator());
 #pragma warning restore CS8620
     }

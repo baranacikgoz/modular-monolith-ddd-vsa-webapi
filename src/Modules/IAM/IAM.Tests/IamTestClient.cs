@@ -103,14 +103,35 @@ internal static class IamTestClient
         return await ReadTokensAsync(response);
     }
 
-    public static async Task<HttpResponseMessage> LoginByEmailRawAsync(IntegrationTestFactory factory,
-        string email, string password, Guid? deviceId = null, string clientId = "web-app-1")
+    /// <summary>
+    ///     Seeds a verification token directly into the OTP store, the same shortcut <see cref="SeedOtpAsync" />
+    ///     takes for phone OTPs: skips the real /otp/email + /otp/email/verify round trip since the token's
+    ///     value is opaque and unconstrained, only its presence under the right purpose key matters.
+    /// </summary>
+    public static async Task<string> SeedEmailVerificationTokenAsync(IntegrationTestFactory factory, string email,
+        string purpose = "email_verified_login")
     {
+        var token = Guid.NewGuid().ToString("N");
+        using var scope = factory.Services.CreateScope();
+        var cache = scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        await cache.SetAsync(
+            CacheKeys.For.Otp(email, purpose),
+            new OtpCacheEntry(token, 0, DateTimeOffset.UtcNow.AddMinutes(30)),
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(30) });
+        return token;
+    }
+
+    public static async Task<HttpResponseMessage> LoginByEmailRawAsync(IntegrationTestFactory factory,
+        string email, string password, Guid? deviceId = null, string clientId = "web-app-1",
+        string? emailVerificationToken = null)
+    {
+        var token = emailVerificationToken ?? await SeedEmailVerificationTokenAsync(factory, email);
         var client = factory.CreateClient();
         return await client.PostAsJsonAsync(new Uri("/tokens/email", UriKind.Relative), new CreateByEmailRequest
         {
             Email = email,
             Password = password,
+            EmailVerificationToken = token,
             DeviceId = deviceId ?? Guid.NewGuid(),
             ClientId = clientId
         });

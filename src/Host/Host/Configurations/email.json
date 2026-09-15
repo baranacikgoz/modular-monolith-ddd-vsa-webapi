@@ -1,0 +1,29 @@
+{
+  "EmailOptions": {
+    "Provider": "Dummy",
+    "BaseUrl": "https://api.brevo.com",
+    "ApiKey": "myApiKey",
+    "SenderEmail": "no-reply@example.com",
+    "SenderName": "Modular Monolith",
+    "AttemptTimeoutSeconds": 4,
+    "TotalRequestTimeoutSeconds": 8,
+    "MaxRetryAttempts": 1,
+    "MaxPerAddressPerDay": 10,
+    "MaxPerDay": 5000,
+    "ThrottleCounterTtlHours": 25,
+    "Templates": {
+      "Otp": {
+        "en": {
+          "Subject": "Your verification code: {0}",
+          "HtmlBody": "<p>Your verification code is: <strong>{0}</strong>. Do not share it with anyone.</p>",
+          "TextBody": "Your verification code is: {0}. Do not share it with anyone."
+        },
+        "tr": {
+          "Subject": "Doğrulama kodunuz: {0}",
+          "HtmlBody": "<p>Doğrulama kodunuz: <strong>{0}</strong>. Kimseyle paylaşmayın.</p>",
+          "TextBody": "Doğrulama kodunuz: {0}. Kimseyle paylaşmayın."
+        }
+      }
+    }
+  }
+}
