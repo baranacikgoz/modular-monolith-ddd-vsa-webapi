@@ -70,13 +70,13 @@ internal static partial class Setup
             }
         }
 
+        var discoveredNames = modulesToLoad
+            .Select(m => m.Name)
+            .Concat(modulesToSkip)
+            .ToHashSet(StringComparer.Ordinal);
+
         if (!loadAll && activeModulesConfig != null)
         {
-            var discoveredNames = modulesToLoad
-                .Select(m => m.Name)
-                .Concat(modulesToSkip)
-                .ToHashSet(StringComparer.Ordinal);
-
             foreach (var requested in activeModulesConfig)
             {
                 if (!discoveredNames.Contains(requested))
@@ -85,6 +85,8 @@ internal static partial class Setup
                 }
             }
         }
+
+        ValidateAuditLogRetentionOverrides(configuration, discoveredNames);
 
         var orderedModules = modulesToLoad.OrderBy(m => m.StartupPriority).ToList();
         foreach (var module in orderedModules)
@@ -192,6 +194,29 @@ internal static partial class Setup
                 ModuleRegistry;
 
         return registry?.ActiveModuleNames.Contains(moduleName, StringComparer.Ordinal) == true;
+    }
+
+    /// <summary>
+    ///     Fails startup when <c>AuditLogOptions.PerSchemaRetentionDays</c> references a schema name that
+    ///     matches no discovered module, so a typo in the override key cannot silently leave that schema
+    ///     on the global default retention.
+    /// </summary>
+    internal static void ValidateAuditLogRetentionOverrides(IConfiguration configuration,
+        IReadOnlyCollection<string> discoveredModuleNames)
+    {
+        var overrides = configuration.GetSection(nameof(AuditLogOptions)).Get<AuditLogOptions>()?.PerSchemaRetentionDays;
+        if (overrides == null || overrides.Count == 0)
+        {
+            return;
+        }
+
+        var unknown = overrides.Keys.Where(k => !discoveredModuleNames.Contains(k)).ToList();
+        if (unknown.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"AuditLogOptions.PerSchemaRetentionDays references unknown schema(s): [{string.Join(", ", unknown)}]. " +
+                $"Valid module names are: [{string.Join(", ", discoveredModuleNames.OrderBy(n => n, StringComparer.Ordinal))}].");
+        }
     }
 
     private static (IReadOnlyList<string>? Names, bool LoadAll) GetEnabledModuleNames(IConfiguration configuration)

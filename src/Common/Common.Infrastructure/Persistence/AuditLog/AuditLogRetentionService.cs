@@ -12,10 +12,9 @@ public sealed partial class AuditLogRetentionService(
 {
     public async Task PurgeExpiredEntriesAsync(CancellationToken cancellationToken = default)
     {
-        var retentionDays = auditLogOptions.Value.RetentionDays;
-        var cutoffDate = DateTimeOffset.UtcNow.AddDays(-retentionDays);
+        var defaultRetentionDays = auditLogOptions.Value.RetentionDays;
 
-        LogRetentionStart(logger, retentionDays, cutoffDate);
+        LogRetentionStart(logger, defaultRetentionDays, auditLogOptions.Value.PurgeBatchSize);
 
         // Borrow a connection from the shared NpgsqlDataSource pool instead of opening a brand-new
         // unpooled connection per purge run.
@@ -40,10 +39,21 @@ public sealed partial class AuditLogRetentionService(
             }
         }
 
+        var unmatchedOverrides = auditLogOptions.Value.PerSchemaRetentionDays.Keys
+            .Where(schema => !schemas.Contains(schema))
+            .ToList();
+        if (unmatchedOverrides.Count > 0)
+        {
+            LogUnmatchedSchemaOverrides(logger, string.Join(", ", unmatchedOverrides));
+        }
+
         var batchSize = auditLogOptions.Value.PurgeBatchSize;
         var totalDeleted = 0;
         foreach (var schema in schemas)
         {
+            var retentionDays = auditLogOptions.Value.PerSchemaRetentionDays.GetValueOrDefault(schema, defaultRetentionDays);
+            var cutoffDate = DateTimeOffset.UtcNow.AddDays(-retentionDays);
+
             // Schema names are sourced from information_schema (trusted), not user input.
             // Using string interpolation for the schema identifier is safe here.
 #pragma warning disable CA2100 // Schema name is from information_schema, not user input
@@ -70,7 +80,7 @@ public sealed partial class AuditLogRetentionService(
                 }
 
                 totalDeleted += deleted;
-                LogSchemaRetention(logger, schema, deleted);
+                LogSchemaRetention(logger, schema, deleted, retentionDays);
             }
         }
 
@@ -78,14 +88,18 @@ public sealed partial class AuditLogRetentionService(
     }
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Starting audit log retention purge. RetentionDays={RetentionDays}, CutoffDate={CutoffDate}.")]
-    private static partial void LogRetentionStart(ILogger logger, int retentionDays, DateTimeOffset cutoffDate);
+        Message = "Starting audit log retention purge. DefaultRetentionDays={DefaultRetentionDays}, PurgeBatchSize={PurgeBatchSize}.")]
+    private static partial void LogRetentionStart(ILogger logger, int defaultRetentionDays, int purgeBatchSize);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Purged {Deleted} expired audit log entries from schema '{Schema}'.")]
-    private static partial void LogSchemaRetention(ILogger logger, string schema, int deleted);
+        Message = "Purged {Deleted} expired audit log entries from schema '{Schema}' (RetentionDays={RetentionDays}).")]
+    private static partial void LogSchemaRetention(ILogger logger, string schema, int deleted, int retentionDays);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Audit log retention purge complete. TotalDeleted={TotalDeleted}.")]
     private static partial void LogRetentionComplete(ILogger logger, int totalDeleted);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "AuditLogOptions.PerSchemaRetentionDays references schema(s) with no AuditLog table, so the override has no effect: [{UnmatchedSchemas}].")]
+    private static partial void LogUnmatchedSchemaOverrides(ILogger logger, string unmatchedSchemas);
 }

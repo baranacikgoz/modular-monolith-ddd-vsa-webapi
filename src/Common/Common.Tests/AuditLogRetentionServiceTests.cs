@@ -40,10 +40,41 @@ public class AuditLogRetentionServiceTests(IntegrationTestFactory factory) : Bas
         Assert.Equal(3, await CountRowsAsync());
     }
 
-    private AuditLogRetentionService CreateService(int purgeBatchSize)
+    [Fact]
+    public async Task PurgeExpiredEntries_SchemaHasLongerRetentionOverride_KeepsRowsBeyondDefaultCutoff()
+    {
+        var defaultCutoff = DateTimeOffset.UtcNow.AddDays(-90);
+        await SeedRowsAsync(count: 5, createdOn: defaultCutoff.AddDays(-1));
+
+        var service = CreateService(purgeBatchSize: 5,
+            perSchemaRetentionDays: new Dictionary<string, int> { [Schema] = 3650 });
+        await service.PurgeExpiredEntriesAsync();
+
+        Assert.Equal(5, await CountRowsAsync());
+    }
+
+    [Fact]
+    public async Task PurgeExpiredEntries_OverrideForAnotherSchema_DoesNotAffectThisSchema()
+    {
+        var defaultCutoff = DateTimeOffset.UtcNow.AddDays(-90);
+        await SeedRowsAsync(count: 5, createdOn: defaultCutoff.AddDays(-1));
+
+        var service = CreateService(purgeBatchSize: 5,
+            perSchemaRetentionDays: new Dictionary<string, int> { ["Inventory"] = 3650 });
+        await service.PurgeExpiredEntriesAsync();
+
+        Assert.Equal(0, await CountRowsAsync());
+    }
+
+    private AuditLogRetentionService CreateService(int purgeBatchSize, Dictionary<string, int>? perSchemaRetentionDays = null)
     {
         var dataSource = Scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
-        var options = Options.Create(new AuditLogOptions { RetentionDays = 90, PurgeBatchSize = purgeBatchSize });
+        var options = Options.Create(new AuditLogOptions
+        {
+            RetentionDays = 90,
+            PurgeBatchSize = purgeBatchSize,
+            PerSchemaRetentionDays = perSchemaRetentionDays ?? []
+        });
         return new AuditLogRetentionService(dataSource, options, NullLogger<AuditLogRetentionService>.Instance);
     }
 
