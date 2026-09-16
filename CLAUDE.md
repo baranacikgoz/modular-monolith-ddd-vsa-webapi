@@ -76,6 +76,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 - Text search on prose fields: generated `tsvector` + GIN, dual `WebSearchToTsQuery` (universal plus resolved prose config) via `ISearchLanguageResolver`, entity implements `ISearchLocalized`. Never a bare `ILike('%term%')` scan; see `docs/full-text-search.md`.
 - Writes: Endpoint calls aggregate method, aggregate mutates and `RaiseEvent`s, endpoint saves.
 - Every persisted type derives from `AggregateRoot<TId>`, `AuditableEntity<TId>`, non-generic `AuditableEntity` (natural/composite key), or is a `ValueObject`/owned type. No bare POCO. Only exception: `OutboxMessage`.
+- In a query lambda, compare a strongly-typed id whole (`.Where(m => m.Id == typedId)`), never through `.Value` (`.Where(m => m.Id.Value == rawGuid)`): EF translates the first, throws at runtime on the second. Wrap the raw value first: `new TId(rawGuid)`. Enforced by `Common.Tests/Architecture/StronglyTypedIdQueryTests.cs`.
 
 ## 5. Endpoints (REPR) and C#
 

@@ -14,9 +14,8 @@ public class GetProductRequestHandler(IProductsDbContext dbContext)
     {
         // Degrades gracefully instead of throwing on a missing product - mirrors GetStockLevelRequestHandler's
         // convention (Inventory's counterpart), since this base class has no Result-wrapped failure path.
-        // Compares the strongly-typed Id directly (not p.Id.Value == request.ProductId): EF's value
-        // converter translates an Id-to-Id comparison to SQL fine, but a member-access-then-compare on the
-        // converted value throws "could not be translated".
+        // Wraps the raw id before the query: see StronglyTypedIdValueConverter's remarks and
+        // Common.Tests/Architecture/StronglyTypedIdQueryTests.cs.
         var productId = new ProductId(request.ProductId);
         var result = await dbContext.Products
             .AsNoTracking()

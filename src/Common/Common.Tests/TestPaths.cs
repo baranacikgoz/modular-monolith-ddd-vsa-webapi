@@ -4,11 +4,15 @@ namespace Common.Tests;
 public static class TestPaths
 {
     public const string RealmRelativePath = "keycloak/realm-modular-monolith.json";
+    private const string SolutionRelativePath = "ModularMonolith.sln";
 
     /// <summary>Absolute path of <c>keycloak/realm-modular-monolith.json</c>, located by walking up from the test binaries.</summary>
     public static string RealmFile { get; } = Locate(RealmRelativePath);
 
-    private static string Locate(string relativePath)
+    /// <summary>Absolute path of the repository checkout root, located by walking up from the test binaries to <c>ModularMonolith.sln</c>.</summary>
+    public static string RepositoryRoot { get; } = Path.GetDirectoryName(Locate(SolutionRelativePath))!;
+
+    internal static string Locate(string relativePath)
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null)
