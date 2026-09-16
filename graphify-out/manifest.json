@@ -174,9 +174,9 @@
     "semantic_hash": "8b9f16d960eda2f1844d66b718121dc7"
   },
   "src/Common/Common.Application/Options/AuditLogOptions.cs": {
-    "mtime": 1784481847.4919145,
-    "seen": 1788521409.36381,
-    "ast_hash": "2027239173071edf3ffcbd2a1df191d6",
+    "mtime": 1789542385.3232005,
+    "seen": 1789544877.4762418,
+    "ast_hash": "3bff169cc9d6367acbce8ce5b4c46485",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/BackgroundJobsOptions.cs": {
@@ -546,9 +546,9 @@
     "semantic_hash": "ff2cd58adb0991cb91b6c0888cf0bb5f"
   },
   "src/Common/Common.Infrastructure/Persistence/AuditLog/AuditLogRetentionService.cs": {
-    "mtime": 1784481847.4955301,
-    "seen": 1788521409.363839,
-    "ast_hash": "efabced12021740cd2308688f66fbdd4",
+    "mtime": 1789544670.5592525,
+    "seen": 1789544877.4762812,
+    "ast_hash": "879337260983507203f5a0051c7caf9a",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Persistence/AuditLog/Setup.cs": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.Modules.cs": {
-    "mtime": 1788814247.5380151,
-    "seen": 1788823272.568012,
-    "ast_hash": "812ffae9a4863a19fc1bb845ace1f74d",
+    "mtime": 1789542416.8200293,
+    "seen": 1789544877.47631,
+    "ast_hash": "1a7ee6c6ab677dc5999547acc579619f",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.Observability.cs": {

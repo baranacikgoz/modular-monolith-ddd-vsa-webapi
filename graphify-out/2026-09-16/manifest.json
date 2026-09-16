@@ -2124,9 +2124,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/manage-migration.md": {
-    "mtime": 1788979528.0804782,
-    "seen": 1788979654.8104582,
-    "ast_hash": "d46bf9490b436e8ff7441b4ced421453",
+    "mtime": 1789514268.7921329,
+    "seen": 1789515065.8146272,
+    "ast_hash": "f1689bba091835222d56f7a0eda988dc",
     "semantic_hash": ""
   },
   ".claude/commands/plan-feature.md": {
@@ -2142,9 +2142,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-feature.md": {
-    "mtime": 1788979418.4006567,
-    "seen": 1788979654.8104599,
-    "ast_hash": "1173f8a3c2a2987398dd7b98cc26eb91",
+    "mtime": 1789514263.6722703,
+    "seen": 1789515065.8146281,
+    "ast_hash": "444c621c1caa26e714066a5dd8dced7c",
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-module.md": {
@@ -2172,15 +2172,15 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1789486988.6701078,
-    "seen": 1789487826.2908428,
-    "ast_hash": "25eccb2901256095a49043c1690a3fba",
+    "mtime": 1789514272.7756407,
+    "seen": 1789515065.814631,
+    "ast_hash": "ba0b8ec4c00fcc0046301da06916d527",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788826780.0510027,
-    "seen": 1788881838.0475452,
-    "ast_hash": "1f59e6183e71ee9489a6c7e100b9bb96",
+    "mtime": 1789514202.45227,
+    "seen": 1789515065.814631,
+    "ast_hash": "4d7630ebf59d0f4a61e90fdd1263d627",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -2190,9 +2190,9 @@
     "semantic_hash": ""
   },
   "docs/ARCHITECTURE.md": {
-    "mtime": 1788814247.5256376,
-    "seen": 1788823272.5681531,
-    "ast_hash": "ca71d6a63b860a777d24527bd97d0871",
+    "mtime": 1789514254.3255374,
+    "seen": 1789515065.814632,
+    "ast_hash": "843cd87047b1a132d840b0996e8d128e",
     "semantic_hash": ""
   },
   "docs/split-deployment-poc.md": {
@@ -2208,9 +2208,9 @@
     "semantic_hash": "e36795aac8faa3b20513b84049ec041c"
   },
   "docs/full-text-search.md": {
-    "mtime": 1783615723.9679525,
-    "seen": 1788521409.3639941,
-    "ast_hash": "58516e23aed6dbaeb07aa8ef6760c5cd",
+    "mtime": 1789514163.87962,
+    "seen": 1789515065.814633,
+    "ast_hash": "6dcfb97b00902cf2e800c843a6b7e81c",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Endpoints/Tokens/VersionNeutral/Sessions/List/Endpoint.cs": {
