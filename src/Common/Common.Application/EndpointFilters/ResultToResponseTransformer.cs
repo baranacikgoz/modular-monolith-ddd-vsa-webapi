@@ -24,7 +24,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
         // An inner filter or the framework itself (e.g. a disabled RequireFeature check,
         // minimal-API parameter binding) can short-circuit before a Result is produced,
         // yielding an ASP.NET IResult. Our Result implements only the domain IResult, so
-        // it never matches here — pass the short-circuit response through untouched.
+        // it never matches here : pass the short-circuit response through untouched.
         if (resultObj is AspNetResult shortCircuit)
         {
             return shortCircuit;
@@ -38,30 +38,7 @@ internal sealed class ResultToResponseTransformer(IServiceProvider serviceProvid
 
         return result.Match(
             () => Results.NoContent(),
-            error =>
-            {
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-
-                var problemDetails = new ProblemDetails
-                {
-                    Status = (int)error.StatusCode,
-                    Title = localizer.LocalizeFromError(error),
-                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
-                };
-
-                problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
-
-                if (error.Value is not null)
-                {
-                    problemDetails.Extensions.TryAdd("detail", error.Value);
-                }
-
-                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
-                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
-
-                return Results.Problem(problemDetails);
-            }
+            error => ProblemResponse.From(error, context, serviceProvider, env)
         );
     }
 }
@@ -87,30 +64,7 @@ internal sealed class ResultToCreatedResponseTransformer<T>(IServiceProvider ser
 
         return result.Match(
             value => Results.Created((Uri?)null, value),
-            error =>
-            {
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
-
-                var problemDetails = new ProblemDetails
-                {
-                    Status = (int)error.StatusCode,
-                    Title = localizer.LocalizeFromError(error),
-                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
-                };
-
-                problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
-
-                if (error.Value is not null)
-                {
-                    problemDetails.Extensions.TryAdd("detail", error.Value);
-                }
-
-                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
-                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
-
-                return Results.Problem(problemDetails);
-            }
+            error => ProblemResponse.From(error, context, serviceProvider, env)
         );
     }
 }
@@ -136,30 +90,62 @@ internal sealed class ResultToResponseTransformer<T>(IServiceProvider servicePro
 
         return result.Match(
             value => Results.Ok(value),
-            error =>
-            {
-                var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
+            error => ProblemResponse.From(error, context, serviceProvider, env)
+        );
+    }
+}
 
-                var problemDetails = new ProblemDetails
-                {
-                    Status = (int)error.StatusCode,
-                    Title = localizer.LocalizeFromError(error),
-                    Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
-                };
+internal static class ProblemResponse
+{
+    public static AspNetResult From(Error error, EndpointFilterInvocationContext context, IServiceProvider serviceProvider, IWebHostEnvironment env)
+    {
+        var localizer = serviceProvider.GetRequiredService<IStringLocalizer<ResxLocalizer>>();
 
-                problemDetails.AddErrorKey(error.Key);
-                problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
+        var problemDetails = new ProblemDetails
+        {
+            Status = (int)error.StatusCode,
+            Title = localizer.LocalizeFromError(error),
+            Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path.Value}"
+        };
 
-                if (error.Value is not null)
-                {
-                    problemDetails.Extensions.TryAdd("detail", error.Value);
-                }
+        problemDetails.AddErrorKey(error.Key);
+        problemDetails.AddErrors(error.ParameterName, error.SubErrors ?? Array.Empty<string>());
 
-                problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
-                problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+        if (error.Value is not null)
+        {
+            problemDetails.Extensions.TryAdd("detail", error.Value);
+        }
 
-                return Results.Problem(problemDetails);
-            }
+        problemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+        problemDetails.Extensions.TryAdd("environment", env.EnvironmentName);
+
+        return Results.Problem(problemDetails);
+    }
+}
+
+/// <summary>202 Accepted: the work was queued, the body carries the handle (job id + status) the caller polls.</summary>
+internal sealed class ResultToAcceptedResponseTransformer<T>(IServiceProvider serviceProvider, IWebHostEnvironment env)
+    : IEndpointFilter
+{
+    public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    {
+        var resultObj = await next(context);
+
+        // See ResultToResponseTransformer above for why this check exists.
+        if (resultObj is AspNetResult shortCircuit)
+        {
+            return shortCircuit;
+        }
+
+        if (resultObj is not Result<T> result)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(ResultToAcceptedResponseTransformer<T>)} can only be used with Result<{nameof(T)}> type.");
+        }
+
+        return result.Match(
+            value => Results.Accepted((string?)null, value),
+            error => ProblemResponse.From(error, context, serviceProvider, env)
         );
     }
 }

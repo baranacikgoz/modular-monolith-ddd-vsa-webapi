@@ -48,13 +48,17 @@ public abstract partial class IntegrationEventHandlerBase<TEvent>(
                 LogProcessingCompleted(logger, eventType, eventId);
                 return true;
             },
+            // A fresh options instance on purpose, never DefaultEntryOptions.Duplicate(): the configured defaults
+            // carry factory soft/hard timeouts, and a hard timeout on this factory would surface as a
+            // SyntheticTimeoutException while ProcessAsync keeps running in the background, so a long-running
+            // handler would be retried by the bus and silently run twice.
             options: new FusionCacheEntryOptions
             {
                 // L1 bound: duplicates cluster within minutes; keeping every key in process
                 // memory for the full IdempotencyKeyDuration grows unbounded with event volume.
                 Duration = cachingOptions.Value.IdempotencyL1Duration,
                 // L2 (Redis, when configured) holds the key for the full idempotency window.
-                // Without Redis, the effective idempotency window shrinks to IdempotencyL1Duration —
+                // Without Redis, the effective idempotency window shrinks to IdempotencyL1Duration:
                 // acceptable because no-Redis is a single-instance dev/test configuration.
                 DistributedCacheDuration = cachingOptions.Value.IdempotencyKeyDuration,
             },

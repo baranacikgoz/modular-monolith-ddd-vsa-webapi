@@ -16,7 +16,9 @@ public static class Setup
     /// <summary>
     /// Registers a typed HttpClient with production-grade resilience policies.
     /// Uses Microsoft.Extensions.Http.Resilience (Polly v8 underneath) to provide a 5-layer pipeline:
-    /// Total Request Timeout → Retry → Circuit Breaker → Attempt Timeout → Rate Limiter.
+    /// Bulkhead → Total Request Timeout → Retry → Circuit Breaker → Attempt Timeout (outermost to innermost).
+    /// The bulkhead (the options property is named <c>RateLimiter</c>) caps <b>concurrent</b> requests only: it is
+    /// not a requests-per-minute throttle. A third party with a published per-minute quota needs its own limiter.
     /// </summary>
     /// <typeparam name="TClient">The service interface (e.g., ICaptchaService).</typeparam>
     /// <typeparam name="TImplementation">The concrete implementation (e.g., ReCaptchaService).</typeparam>

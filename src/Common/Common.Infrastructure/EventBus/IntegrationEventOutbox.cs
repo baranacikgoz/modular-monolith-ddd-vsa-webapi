@@ -16,6 +16,17 @@ public sealed class IntegrationEventOutbox : IIntegrationEventOutbox
         }
     }
 
+    internal bool HasPending
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _events.Count > 0;
+            }
+        }
+    }
+
     internal IReadOnlyList<IntegrationEvent> Drain()
     {
         lock (_lock)

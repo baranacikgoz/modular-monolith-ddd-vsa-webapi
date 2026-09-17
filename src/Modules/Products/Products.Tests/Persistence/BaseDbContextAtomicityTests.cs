@@ -1,5 +1,7 @@
 using Bogus;
+using Common.Application.EventBus;
 using Common.Domain.StronglyTypedIds;
+using Common.IntegrationEvents;
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,6 +126,27 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
 
         Assert.Equal(outboxCountBefore, outboxCountAfter);
         Assert.Equal(auditLogCountBefore, auditLogCountAfter);
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_WhenIntegrationEventCollectedWithoutDomainEvents_CreatesOutboxMessage()
+    {
+        // Arrange - a job/sweep collects straight onto the outbox; no tracked aggregate carries a domain event
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ProductsDbContext>();
+        var outboxDb = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
+        var outbox = scope.ServiceProvider.GetRequiredService<IIntegrationEventOutbox>();
+
+        var outboxCountBefore = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+
+        outbox.Collect(new StoreCreatedIntegrationEvent(Guid.NewGuid(), new ApplicationUserId(Guid.NewGuid())));
+
+        // Act
+        await db.SaveChangesAsync();
+
+        // Assert
+        var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
+        Assert.Equal(outboxCountBefore + 1, outboxCountAfter);
     }
 
     [Fact]

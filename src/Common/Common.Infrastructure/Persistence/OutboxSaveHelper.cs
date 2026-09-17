@@ -32,7 +32,9 @@ public static partial class OutboxSaveHelper
             .Where(e => e.Entity.Events.Count > 0)
             .ToList();
 
-        if (aggregatesWithEvents.Count == 0)
+        // Integration events collected straight onto the outbox (a job or sweep with no aggregate of its own)
+        // still need the transactional write below, even when no tracked aggregate carries a domain event.
+        if (aggregatesWithEvents.Count == 0 && !integrationEventOutbox.HasPending)
         {
             LogNoDomainEvents(logger);
             return await baseSaveAsync(cancellationToken);
@@ -80,7 +82,7 @@ public static partial class OutboxSaveHelper
 
         // Dispatch domain events in-process BEFORE opening the transaction.
         // Handlers collect integration events into integrationEventOutbox (in-memory).
-        // If dispatch throws, nothing is saved — exception propagates before transaction opens.
+        // If dispatch throws, nothing is saved: exception propagates before transaction opens.
         foreach (var domainEvent in domainEvents)
         {
             await eventDispatcher.DispatchAsync(domainEvent, cancellationToken);
@@ -90,7 +92,7 @@ public static partial class OutboxSaveHelper
 
         // If the caller already opened a transaction (e.g. an endpoint composing multiple
         // Identity/DbContext operations into one atomic unit), participate in it instead of
-        // nesting — only the owner commits/rolls back.
+        // nesting: only the owner commits/rolls back.
         var ownsTransaction = context.Database.CurrentTransaction is null;
         await using var transaction = ownsTransaction
             ? await context.Database.BeginTransactionAsync(cancellationToken)
@@ -148,7 +150,7 @@ public static partial class OutboxSaveHelper
 
             // Clear events once this save is durably committed. When we own the transaction,
             // that's after our own CommitAsync. When an outer caller owns the transaction, our
-            // part of the work (base save + outbox insert) has still succeeded without error —
+            // part of the work (base save + outbox insert) has still succeeded without error:
             // if the outer transaction later rolls back, the DB rows disappear along with this
             // request scope's aggregate instances, so clearing in-memory events here is safe.
             foreach (var entry in aggregatesWithEvents)
@@ -162,7 +164,7 @@ public static partial class OutboxSaveHelper
         {
             if (ownsTransaction)
             {
-                // Use CancellationToken.None — cancelled request must still rollback.
+                // Use CancellationToken.None: cancelled request must still rollback.
                 // Wrap so a broken/already-aborted transaction doesn't mask the original error.
                 try
                 {
@@ -175,13 +177,13 @@ public static partial class OutboxSaveHelper
                     LogRollbackError(logger, rollbackEx);
                 }
             }
-            // When we don't own the transaction, the outer owner is responsible for rolling back —
+            // When we don't own the transaction, the outer owner is responsible for rolling back:
             // we just propagate the exception below.
 
             // Undo this attempt's bookkeeping so a retry of SaveChangesAsync on the same scope
             // rebuilds audit + outbox from the (still-present) aggregate events instead of
             // silently saving entities without them. The drained `integrationEvents` list is
-            // intentionally discarded — re-dispatch on retry regenerates them via DispatchAsync.
+            // intentionally discarded: re-dispatch on retry regenerates them via DispatchAsync.
             foreach (var auditEntry in auditLogEntries)
             {
                 context.Entry(auditEntry).State = EntityState.Detached;
