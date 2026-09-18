@@ -86,8 +86,8 @@ public class SmsOptionsValidator : CustomValidator<SmsOptions>
         RuleFor(o => o.Provider)
             .Must((_, provider, context) => !context.IsProduction() || provider != SmsProvider.Dummy)
             .WithMessage(
-                $"{nameof(SmsOptions)}.{nameof(SmsOptions.Provider)} is 'Dummy' in Production. Dummy SMS gateway is a no-op " +
-                "— OTPs and notifications would never reach users. " +
+                $"{nameof(SmsOptions)}.{nameof(SmsOptions.Provider)} is 'Dummy' in Production. Dummy SMS gateway is a no-op" +
+                ": OTPs and notifications would never reach users. " +
                 $"Set {nameof(SmsOptions.Provider)} to 'NetGsm' (with real credentials) before deploying.");
 
         When(o => o.Provider == SmsProvider.NetGsm, () =>

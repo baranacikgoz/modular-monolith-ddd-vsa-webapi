@@ -39,10 +39,10 @@ dotnet-build.log
 *.nupkg
 
 # ══════════════════════════════════════════════════════════════════
-# UNIGNORE RULES — order matters; later rules override earlier ones
+# UNIGNORE RULES: order matters; later rules override earlier ones
 # ══════════════════════════════════════════════════════════════════
 
-# C# source — aggregates, handlers, endpoints, domain, application, infra
+# C# source: aggregates, handlers, endpoints, domain, application, infra
 !**/*.cs
 # Re-ignore AFTER !**/*.cs so these are actually excluded:
 **/*.Designer.cs
@@ -50,9 +50,9 @@ dotnet-build.log
 **/obj/**/*.cs
 **/bin/**/*.cs
 **/*.g.cs
-# EF migration files are generated schema diffs — entity configs carry the same info
+# EF migration files are generated schema diffs: entity configs carry the same info
 **/Migrations/*.cs
-# Tests mirror prod structure — high node count, low architectural signal
+# Tests mirror prod structure: high node count, low architectural signal
 **/*Tests/**/*.cs
 **/*.Tests.cs
 **/*Tests.cs
@@ -66,7 +66,7 @@ dotnet-build.log
 !docs/**/*.md
 !.claude/commands/*.md
 
-# Infrastructure topology — canonical service graph & networking only.
+# Infrastructure topology: canonical service graph & networking only.
 # Variant composes (.app/.split/.perf) are deploy permutations, not architecture.
 !docker-compose.yml
 

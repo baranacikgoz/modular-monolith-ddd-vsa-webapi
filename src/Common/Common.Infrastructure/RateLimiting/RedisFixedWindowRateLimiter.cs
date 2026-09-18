@@ -13,7 +13,7 @@ namespace Common.Infrastructure.RateLimiting;
 internal sealed partial class RedisFixedWindowRateLimiter : RateLimiter
 {
     // KEYS[1] = window key, ARGV[1] = window duration in ms.
-    // PEXPIRE only fires on the first hit in the window — calling it unconditionally would re-arm the
+    // PEXPIRE only fires on the first hit in the window: calling it unconditionally would re-arm the
     // TTL on every request under sustained traffic and the key would never expire.
     private const string Script =
         """

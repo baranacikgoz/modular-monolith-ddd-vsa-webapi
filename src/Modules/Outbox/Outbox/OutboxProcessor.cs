@@ -61,14 +61,14 @@ public sealed partial class OutboxProcessor(
         try
         {
             // Lease-claim pattern: this single atomic UPDATE ... RETURNING claims up to BatchSize rows by
-            // pushing NextRetryAt into the future (the "lease") and returns them — no explicit transaction,
+            // pushing NextRetryAt into the future (the "lease") and returns them: no explicit transaction,
             // autocommit, so the FOR UPDATE SKIP LOCKED row locks release the instant this statement
             // commits. Publishing to RabbitMQ then happens with NO open transaction and NO held locks, so a
             // slow/down broker can no longer starve the connection pool. A crash between claiming and
             // publishing leaves the message leased-but-unpublished; once the lease (ClaimLeaseSeconds)
-            // expires it's picked up again by any instance. That can produce duplicate publishes — this is
+            // expires it's picked up again by any instance. That can produce duplicate publishes: this is
             // acceptable and by design, because all consumers inherit IntegrationEventHandlerBase (idempotent).
-#pragma warning disable S2077 // SQL queries should not be vulnerable to injection attacks — parameters are safe
+#pragma warning disable S2077 // SQL queries should not be vulnerable to injection attacks: parameters are safe
             var messages = await db.OutboxMessages
                 .FromSqlRaw(
                     """
@@ -100,7 +100,7 @@ public sealed partial class OutboxProcessor(
             {
                 var message = messages[i];
 
-                // MaxConsecutiveFailures publishes in a row have failed — the broker is very likely down.
+                // MaxConsecutiveFailures publishes in a row have failed: the broker is very likely down.
                 // Stop attempting the rest of this batch and release their claims immediately so they
                 // don't sit idle for the full lease before becoming eligible again.
                 if (consecutiveFailures >= opts.MaxConsecutiveFailures)
@@ -162,7 +162,7 @@ public sealed partial class OutboxProcessor(
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
-                    // Real shutdown (not just this message's PublishTimeoutMs) — propagate, don't treat
+                    // Real shutdown (not just this message's PublishTimeoutMs): propagate, don't treat
                     // it as a publish failure.
                     throw;
                 }
@@ -171,7 +171,7 @@ public sealed partial class OutboxProcessor(
 #pragma warning restore CA1031
                 {
                     // Either a genuine publish failure or the per-publish PublishTimeoutMs firing
-                    // (OperationCanceledException with ct still live) — both go through the same
+                    // (OperationCanceledException with ct still live): both go through the same
                     // retry/backoff path.
                     activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                     activity?.SetTag("exception.message", ex.Message);
@@ -194,7 +194,7 @@ public sealed partial class OutboxProcessor(
             await db.SaveChangesAsync(ct);
             OutboxTelemetry.ProcessingDuration.Record(sw.Elapsed.TotalMilliseconds);
 
-            // On abort the released rows are immediately eligible again — report 0 so ExecuteAsync
+            // On abort the released rows are immediately eligible again: report 0 so ExecuteAsync
             // waits out PollIntervalMs instead of drain-fast re-claiming them in a tight loop
             // against a broker that is almost certainly still down.
             return aborted ? 0 : messages.Count;
@@ -224,7 +224,7 @@ public sealed partial class OutboxProcessor(
         Message = "OutboxProcessor disabled (IsProcessor = false); not polling on this instance.")]
     private static partial void LogProcessorDisabled(ILogger logger);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} has null event — skipping.")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} has null event: skipping.")]
     private static partial void LogNullEvent(ILogger logger, int messageId);
 
     [LoggerMessage(Level = LogLevel.Debug,

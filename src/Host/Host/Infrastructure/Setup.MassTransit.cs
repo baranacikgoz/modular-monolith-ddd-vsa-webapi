@@ -25,7 +25,7 @@ internal static partial class Setup
             x.AddConsumers(moduleAssemblies);
 
             // MassTransit auto-registers a "masstransit-bus" health check that probes the *already-open*
-            // bus connection — no fresh TCP/AMQP handshake per call. Keep it on the "ready" tag so it,
+            // bus connection: no fresh TCP/AMQP handshake per call. Keep it on the "ready" tag so it,
             // and not a per-probe connection dial, owns broker readiness. Under the in-memory transport
             // (tests/CI, no broker) this check reports Healthy, so /health/ready passes without any skip flag.
             x.ConfigureHealthCheckOptions(options =>

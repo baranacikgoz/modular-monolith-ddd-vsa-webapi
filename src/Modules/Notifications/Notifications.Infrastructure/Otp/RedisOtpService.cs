@@ -8,9 +8,9 @@ namespace Notifications.Infrastructure.Otp;
 
 /// <summary>
 ///     Redis-backed OTP store. Verification is a single atomic Lua script so concurrent attempts
-///     cannot bypass the failed-attempt cap or consume the same OTP twice — across all instances.
+///     cannot bypass the failed-attempt cap or consume the same OTP twice: across all instances.
 ///     No automated test covers this class (no Redis container in CI); the scripts were verified manually
-///     against a local Redis instance. Do not "optimize" the scripts — keep them exactly as written.
+///     against a local Redis instance. Do not "optimize" the scripts: keep them exactly as written.
 /// </summary>
 internal sealed class RedisOtpService(
     IConnectionMultiplexer redis,
@@ -37,7 +37,7 @@ internal sealed class RedisOtpService(
         """;
 
     // KEYS[1] = otp key, ARGV[1] = otp, ARGV[2] = ttl in milliseconds
-    // Single atomic EVAL: HSET and PEXPIRE must not be separate round trips — a disconnect between
+    // Single atomic EVAL: HSET and PEXPIRE must not be separate round trips: a disconnect between
     // them would leave an OTP key with no TTL (a never-expiring OTP).
     private const string StoreScript =
         """

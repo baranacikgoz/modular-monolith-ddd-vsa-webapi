@@ -23,7 +23,7 @@ internal static class OutboxTelemetry
             () => new Measurement<long>(Interlocked.Read(ref _lagCount)),
             description: "Number of unprocessed outbox messages beyond lag threshold");
 
-    // ── Stuck gauge (FailedOn IS NOT NULL — permanent failures) ─────
+    // ── Stuck gauge (FailedOn IS NOT NULL: permanent failures) ─────
     private static long _stuckCount;
     public static void SetStuckCount(long count) => Interlocked.Exchange(ref _stuckCount, count);
 
@@ -31,7 +31,7 @@ internal static class OutboxTelemetry
         Meter.CreateObservableGauge<long>(
             "outbox.stuck.count",
             () => new Measurement<long>(Interlocked.Read(ref _stuckCount)),
-            description: "Outbox messages permanently failed (FailedOn IS NOT NULL) — never self-heal, require inspection");
+            description: "Outbox messages permanently failed (FailedOn IS NOT NULL): never self-heal, require inspection");
 
     // ── Counters ─────────────────────────────────────────────────────
     public static readonly Counter<long> MessagesPublished =

@@ -16,10 +16,10 @@ public class DynamicModuleTests
         await using var factory = new HostTestFactory().WithModules(targetModule);
         await factory.InitializeAsync();
 
-        // Act — trigger server boot
+        // Act: trigger server boot
         _ = factory.CreateClient();
 
-        // Assert — ICoreModules (BackgroundJobs, Outbox) are always loaded alongside the target module
+        // Assert: ICoreModules (BackgroundJobs, Outbox) are always loaded alongside the target module
         var modules = factory.Services.GetServices<IModule>().ToList();
         Assert.Equal(3, modules.Count);
         Assert.Contains(modules, m => m.Name == targetModule);
@@ -29,14 +29,14 @@ public class DynamicModuleTests
     [Fact]
     public async Task Boot_ModulesAreResolvedInPriorityOrder()
     {
-        // Arrange — Outbox (1) always loads as ICoreModule alongside the explicitly requested modules
+        // Arrange: Outbox (1) always loads as ICoreModule alongside the explicitly requested modules
         await using var factory = new HostTestFactory().WithModules("Notifications,IAM,BackgroundJobs");
         await factory.InitializeAsync();
 
         // Act
         _ = factory.CreateClient();
 
-        // Assert — BackgroundJobs(0), Outbox(1), IAM(2), Notifications(3)
+        // Assert: BackgroundJobs(0), Outbox(1), IAM(2), Notifications(3)
         var resolvedModules = factory.Services.GetServices<IModule>()
             .OrderBy(m => m.StartupPriority)
             .ToList();

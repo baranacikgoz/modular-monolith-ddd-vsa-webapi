@@ -13,7 +13,7 @@ public class ObservabilityOptions
     public bool WriteToFile { get; set; }
     public int ResponseTimeThresholdInMs { get; set; }
 
-    // Remote log sink: "Seq" | "Elasticsearch" — omit to use console/file only
+    // Remote log sink: "Seq" | "Elasticsearch": omit to use console/file only
     public string? LogSink { get; set; }
     public string? SeqServerUrl { get; set; }
     public string? ElasticsearchUrl { get; set; }

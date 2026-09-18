@@ -12,7 +12,7 @@ public static partial class Policies
 {
     // internal (not private): unit-tested directly from IAM.Tests via InternalsVisibleTo, since
     // AddFixedWindowLimiter's single shared bucket previously rate-limited /tokens/refresh globally
-    // across every caller — one client could exhaust it and lock out all other users' refreshes.
+    // across every caller: one client could exhaust it and lock out all other users' refreshes.
     internal sealed class TokenRefreshRateLimitingPolicy(IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider)
         : IRateLimiterPolicy<string>
     {

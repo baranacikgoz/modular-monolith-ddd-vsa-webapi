@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Common.Tests.RateLimiting;
 
-// Only the Redis-free logic paths — constructor validation and the synchronous AttemptAcquireCore, which
+// Only the Redis-free logic paths: constructor validation and the synchronous AttemptAcquireCore, which
 // never touches Redis by design (see the comment on that method). The Lua-backed AcquireAsyncCore path
 // needs a real Redis instance and, consistent with RedisOtpService (Notifications.Infrastructure), is
 // verified manually rather than via a container in CI.
@@ -43,7 +43,7 @@ public class RedisFixedWindowRateLimiterTests
     [Fact]
     public void AttemptAcquire_AlwaysFails_NeverTouchesRedis()
     {
-        // The redis mock has no configured behavior — if AttemptAcquire touched it, NSubstitute
+        // The redis mock has no configured behavior: if AttemptAcquire touched it, NSubstitute
         // would return a default/null RedisResult and this would throw or hang, not just fail cleanly.
         using var sut = CreateSut();
 

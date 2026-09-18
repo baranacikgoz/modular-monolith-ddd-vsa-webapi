@@ -28,7 +28,7 @@ export function runBuyer(data) {
 
   // Search stores (main discovery surface)
   const storesRes = get('/v1/stores/search', { PageNumber: 1, PageSize: 10 }, token);
-  check(storesRes, { 'buyer — search stores: 200': r => r.status === 200 });
+  check(storesRes, { 'buyer: search stores: 200': r => r.status === 200 });
 
   const stores = storesRes.status === 200 ? (storesRes.json('data') || []) : [];
 
@@ -39,24 +39,24 @@ export function runBuyer(data) {
   // Drill into one store
   const storeId = allStoreIds[__ITER % allStoreIds.length];
   const storeRes = get(`/v1/stores/${storeId}`, {}, token);
-  check(storeRes, { 'buyer — get store: 200': r => r.status === 200 });
+  check(storeRes, { 'buyer: get store: 200': r => r.status === 200 });
 
   // Browse products in that store
   const productsRes = get('/v1/products/search', { storeId, PageNumber: 1, PageSize: 10 }, token);
-  check(productsRes, { 'buyer — search products: 200': r => r.status === 200 });
+  check(productsRes, { 'buyer: search products: 200': r => r.status === 200 });
 
-  // Basic role has Search but not Read on Products — no individual product GET for buyers.
+  // Basic role has Search but not Read on Products: no individual product GET for buyers.
 
   // Browse the product catalog every 3rd iteration
   if (__ITER % 3 === 0) {
     const templatesRes = get('/v1/product-templates/search', { PageNumber: 1, PageSize: 10 }, token);
-    check(templatesRes, { 'buyer — search templates: 200': r => r.status === 200 });
+    check(templatesRes, { 'buyer: search templates: 200': r => r.status === 200 });
   }
 
   // Check own profile every 10th iteration
   if (__ITER % 10 === 0) {
     const meRes = get('/users/me', {}, token);
-    check(meRes, { 'buyer — get me: 200': r => r.status === 200 });
+    check(meRes, { 'buyer: get me: 200': r => r.status === 200 });
   }
 
   sleep(1 + Math.random());

@@ -62,7 +62,7 @@ public class MyCreateTests : BaseIntegrationTest
     [Fact]
     public async Task MyCreate_WhenStoreAlreadyExists_ReturnsConflict()
     {
-        // Arrange — pre-seed a store for the default test user
+        // Arrange: pre-seed a store for the default test user
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
         var ownerId = new ApplicationUserId(TestAuthHandler.DefaultUserId);
@@ -76,7 +76,7 @@ public class MyCreateTests : BaseIntegrationTest
         // Act
         var response = await client.PostAsJsonAsync(new Uri("/v1/stores/my", UriKind.Relative), request);
 
-        // Assert — unique constraint violation → 409 Conflict
+        // Assert: unique constraint violation → 409 Conflict
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 

@@ -31,7 +31,7 @@ internal sealed partial class NetGsmSmsGateway(
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    // NetGSM /sms/rest/v2/send error codes — https://www.netgsm.com.tr/dokuman/#api-dokumani
+    // NetGSM /sms/rest/v2/send error codes: https://www.netgsm.com.tr/dokuman/#api-dokumani
     private const string CodeSuccess = "00";
     private const string CodeBadMessage = "20";
     private const string CodeBadCredentialsOrIp = "30";

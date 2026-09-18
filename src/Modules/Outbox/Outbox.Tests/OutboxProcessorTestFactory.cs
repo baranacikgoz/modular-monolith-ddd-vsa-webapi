@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Outbox.Tests;
 
 // Real Postgres (via the base IntegrationTestFactory Testcontainer), fake bus. OutboxOptions:IsProcessor
-// stays false (the base default), so OutboxProcessor is never auto-registered as a BackgroundService —
+// stays false (the base default), so OutboxProcessor is never auto-registered as a BackgroundService:
 // tests call ProcessBatchAsync directly instead, for deterministic single-batch runs with no RabbitMQ
 // broker and no poll-timer races.
 public class OutboxProcessorTestFactory : IntegrationTestFactory

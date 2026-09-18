@@ -6,14 +6,14 @@ using Serilog;
 
 namespace Host.Middlewares;
 
-// Runs inside UseSerilogRequestLogging's wrapper — enriches the Serilog diagnostic context with
+// Runs inside UseSerilogRequestLogging's wrapper: enriches the Serilog diagnostic context with
 // request/response body content when body logging is enabled. Not a logger itself; Serilog owns
 // the log event. Short-circuits immediately when both body flags are off (production default) and
 // for ExcludedPathPrefixes (health/metrics/swagger/dashboard) so those never pay the capture cost.
 //
 // Both directions use a bounded pass-through tee: bytes flow straight to/from the real stream as
-// the handler reads the request or writes the response — streaming/SSE/large payloads are NEVER
-// buffered to memory or disk — while only the first N bytes are copied into a pooled buffer for
+// the handler reads the request or writes the response: streaming/SSE/large payloads are NEVER
+// buffered to memory or disk: while only the first N bytes are copied into a pooled buffer for
 // logging. The request tee replaces EnableBuffering, which would spool the entire body to disk
 // (unbounded DoS surface) just to re-read a few KB. Capture is skipped for non-text content types.
 internal sealed class RequestResponseBodyLoggingMiddleware(
@@ -23,7 +23,7 @@ internal sealed class RequestResponseBodyLoggingMiddleware(
 {
     // Marker written in place of a body/query value on sensitive paths. Explicit "[REDACTED]"
     // (vs. omitting the property) tells a log reader the value was intentionally withheld rather
-    // than empty or lost — and keeps request/response/query redaction behavior identical.
+    // than empty or lost: and keeps request/response/query redaction behavior identical.
     internal const string RedactedMarker = "[REDACTED]";
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -38,7 +38,7 @@ internal sealed class RequestResponseBodyLoggingMiddleware(
 
         var path = context.Request.Path;
 
-        // Excluded paths (health/metrics/swagger/dashboard) skip ALL body capture — not just the
+        // Excluded paths (health/metrics/swagger/dashboard) skip ALL body capture: not just the
         // Serilog level drop. Wrapping their response stream would lose SendFileAsync zero-copy and
         // burn pooled buffers on constantly-polled endpoints for logs that are never emitted.
         if (IsExcluded(path, opts.ExcludedPathPrefixes))
@@ -50,7 +50,7 @@ internal sealed class RequestResponseBodyLoggingMiddleware(
         var method = context.Request.Method;
 
         // requestLoggable: a textual request body is present and logging is on. captureRequest tees
-        // it verbatim; otherwise (sensitive path) we emit the redaction marker — but only when a body
+        // it verbatim; otherwise (sensitive path) we emit the redaction marker: but only when a body
         // was actually carried (ContentLength != 0), never for an empty sensitive POST.
         var requestLoggable = opts.LogRequestBody && IsLoggableContentType(context.Request.ContentType);
         var captureRequest = requestLoggable && !IsSensitive(path, method, opts.SensitiveRequestBodyPaths);
@@ -66,7 +66,7 @@ internal sealed class RequestResponseBodyLoggingMiddleware(
             context.Request.Body = requestCapture;
         }
 
-        // Sensitive responses are NOT wrapped — the bytes never touch a capture buffer. We still
+        // Sensitive responses are NOT wrapped: the bytes never touch a capture buffer. We still
         // emit the marker afterwards if the response carried a textual body worth noting.
         var responseSensitive = opts.LogResponseBody
                                 && IsSensitive(path, method, opts.SensitiveResponseBodyPaths);
@@ -255,7 +255,7 @@ internal sealed class RequestResponseBodyLoggingMiddleware(
     // Read-side tee: every read passes through to the inner (real) request body unchanged, so the
     // handler streams the body exactly once with no buffering to memory or disk. The first `limit`
     // bytes the handler consumes are copied into a pooled buffer for logging. Unlike EnableBuffering
-    // there is no second full copy and no disk spool — large/hostile bodies stay bounded.
+    // there is no second full copy and no disk spool: large/hostile bodies stay bounded.
     private sealed class BoundedRequestCaptureStream(Stream inner, int limit) : Stream
     {
         private byte[]? _buffer = ArrayPool<byte>.Shared.Rent(limit);

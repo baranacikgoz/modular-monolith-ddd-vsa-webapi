@@ -31,7 +31,7 @@ public sealed class StrictDateTimeOffsetJsonConverter : JsonConverter<DateTimeOf
     /// <summary>
     ///     "K" (and DateTimeOffset.TryParse in general) treats a missing offset as valid and
     ///     silently assumes UTC, which is the exact ambiguity this converter exists to reject.
-    ///     So the offset marker has to be located explicitly, in the time segment only —
+    ///     So the offset marker has to be located explicitly, in the time segment only:
     ///     the date segment's own '-' separators (e.g. "2026-07-17") must not count.
     /// </summary>
     private static bool HasExplicitOffset(string value)

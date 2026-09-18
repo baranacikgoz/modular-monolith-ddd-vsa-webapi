@@ -24,7 +24,7 @@ export function runNewSeller(data) {
     }
   }
 
-  // Step 1 — Register (auto-login: response includes tokens directly)
+  // Step 1: Register (auto-login: response includes tokens directly)
   sendOtpForRegistration(p);
   const regRes = post('/users/register/self', {
     phoneNumber: p,
@@ -35,24 +35,24 @@ export function runNewSeller(data) {
     captchaToken: 'dummy',
     ...device(),
   });
-  if (!check(regRes, { 'new_seller — register: 200': r => r.status === 200 })) {
+  if (!check(regRes, { 'new_seller: register: 200': r => r.status === 200 })) {
     sleep(2);
     return;
   }
   const token = regRes.json('accessToken');
 
-  // Step 3 — Create store
+  // Step 3: Create store
   const storeRes = post('/v1/stores/my', {
     name: `Store ${p}`,
     description: 'Freshly opened',
     address: 'Onboarding Avenue 1',
   }, token);
-  if (!check(storeRes, { 'new_seller — create store: 200': r => r.status === 200 })) {
+  if (!check(storeRes, { 'new_seller: create store: 200': r => r.status === 200 })) {
     sleep(2);
     return;
   }
 
-  // Step 4 — List first product (requires an active template from setup() or re-fetched above)
+  // Step 4: List first product (requires an active template from setup() or re-fetched above)
   if (templateIds.length > 0) {
     const templateId = templateIds[__ITER % templateIds.length];
     const productRes = post('/v1/stores/my/products', {
@@ -62,12 +62,12 @@ export function runNewSeller(data) {
       quantity: 20,
       price: 149.99,
     }, token);
-    check(productRes, { 'new_seller — list product: 200': r => r.status === 200 });
+    check(productRes, { 'new_seller: list product: 200': r => r.status === 200 });
   }
 
-  // Step 5 — Logout
+  // Step 5: Logout
   const revokeRes = post('/tokens/revoke', null, token);
-  check(revokeRes, { 'new_seller — revoke: 204': r => r.status === 204 });
+  check(revokeRes, { 'new_seller: revoke: 204': r => r.status === 204 });
 
   sleep(2);
 }

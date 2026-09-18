@@ -13,7 +13,7 @@ public class OutboxOptions
     public required int BaseBackoffSeconds { get; set; }
     public required int MaxBackoffSeconds { get; set; }
 
-    // Per-publish cancellation budget and claim-lease duration for the lease-claim pattern —
+    // Per-publish cancellation budget and claim-lease duration for the lease-claim pattern:
     // see the comment above OutboxProcessor.ProcessBatchAsync's claim query for the full rationale.
     public required int PublishTimeoutMs { get; set; }
     public required int ClaimLeaseSeconds { get; set; }

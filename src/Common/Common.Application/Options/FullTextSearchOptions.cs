@@ -23,7 +23,7 @@ public class FullTextSearchOptions
     /// <summary>Language-neutral config used for the universal layer on both index and query side.</summary>
     public const string UniversalConfig = "simple_unaccent";
 
-    /// <summary>Shadow/computed tsvector column name — single source of truth for index and query.</summary>
+    /// <summary>Shadow/computed tsvector column name: single source of truth for index and query.</summary>
     public const string SearchVectorColumn = "SearchVector";
 
     /// <summary>Per-row authored-language column name (prose entities only).</summary>

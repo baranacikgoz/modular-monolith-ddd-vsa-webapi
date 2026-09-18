@@ -39,7 +39,7 @@ public class TokenRefreshRateLimitingPolicyTests
         if (ip is not null)
         {
             // GetIpAddress() only trusts Connection.RemoteIpAddress (as rewritten by
-            // UseForwardedHeaders() for trusted proxies) — not the raw X-Forwarded-For header.
+            // UseForwardedHeaders() for trusted proxies): not the raw X-Forwarded-For header.
             context.Connection.RemoteIpAddress = IPAddress.Parse(ip);
         }
 

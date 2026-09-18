@@ -10,7 +10,7 @@ namespace Outbox.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // xmin is a Postgres system column — no DDL needed; migration exists to update the EF model snapshot only.
+            // xmin is a Postgres system column: no DDL needed; migration exists to update the EF model snapshot only.
         }
 
         /// <inheritdoc />

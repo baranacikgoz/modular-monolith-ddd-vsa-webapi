@@ -41,7 +41,7 @@ internal static class Endpoint
         var universalConfig = searchLanguageResolver.UniversalConfig;
         var rankWeights = fullTextSearchOptions.Value.RankWeights.ToArray();
 
-        // Universal layer only — proper-noun fields, single language-neutral tsquery.
+        // Universal layer only: proper-noun fields, single language-neutral tsquery.
         Expression<Func<ProductTemplate, object>>? orderByRank = hasSearchTerm
             ? p => EF.Property<NpgsqlTsVector>(p, FullTextSearchOptions.SearchVectorColumn)
                 .Rank(rankWeights, EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm))

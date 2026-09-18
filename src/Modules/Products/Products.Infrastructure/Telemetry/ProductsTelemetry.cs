@@ -6,7 +6,7 @@ namespace Products.Infrastructure.Telemetry;
 /// <summary>
 ///     Centralized telemetry definitions for the Products module.
 ///     ActivitySource and Meter are thread-safe singletons by design.
-///     Names derived from nameof() — no hardcoded magic strings.
+///     Names derived from nameof(): no hardcoded magic strings.
 /// </summary>
 public static class ProductsTelemetry
 {

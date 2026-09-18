@@ -7,13 +7,13 @@ name: mm-perf
 # This file only adds the k6 load generator.
 #
 # While the test runs, open the Aspire dashboard at http://localhost:18888 to watch
-# OTel traces, spans, and metrics in real time — no extra wiring needed.
+# OTel traces, spans, and metrics in real time: no extra wiring needed.
 
 services:
 
   # Override mm.host rate limits so k6 traffic is not throttled.
   # Global limiter is per-IP (all k6 VUs share one container IP).
-  # Named policies (Sms, Register, CreateStore) are global counters — 1/15s or 1/week kills the test.
+  # Named policies (Sms, Register, CreateStore) are global counters: 1/15s or 1/week kills the test.
   host:
     environment:
       - CustomRateLimitingOptions__Global__Limit=100000

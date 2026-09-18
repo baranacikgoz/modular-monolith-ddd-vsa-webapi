@@ -7,7 +7,7 @@ using Serilog;
 
 namespace Host.Tests;
 
-// Pure unit tests for RequestResponseBodyLoggingMiddleware — no host, no DB, no Serilog static.
+// Pure unit tests for RequestResponseBodyLoggingMiddleware: no host, no DB, no Serilog static.
 // A fake IDiagnosticContext captures exactly what the middleware would attach to the Serilog log
 // event, so we can assert the logged value (not just that the round-trip survives). Covers the
 // edge cases the integration tests can't observe: UTF-8 truncation, excluded-path skip, and
@@ -110,7 +110,7 @@ public class RequestResponseBodyLoggingMiddlewareTests
 
         await CreateMiddleware(diag, opts).InvokeAsync(context, Next);
 
-        // Client received every byte despite the 3-byte log limit — proves pass-through.
+        // Client received every byte despite the 3-byte log limit: proves pass-through.
         Assert.Equal(AbEAcuteBytes, clientSink.ToArray());
 
         var logged = Assert.IsType<string>(diag.Props["ResponseBody"]);

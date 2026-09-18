@@ -41,7 +41,7 @@ jobs:
       - name: Migration drift check (model migrations must all have committed SQL)
         run: make check-migration-drift
 
-  # One module per runner (separate VM/process) — each spins its own Testcontainers
+  # One module per runner (separate VM/process): each spins its own Testcontainers
   # Postgres on a dynamically assigned port, so no shared state/port collision across
   # legs. This is a different axis from xUnit's in-process parallelization (test classes
   # within one assembly), which IClassFixture/ICollectionFixture usage already guards.

@@ -17,7 +17,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
     public OutboxBackoffTests(OutboxTestWebAppFactory factory)
     {
         _factory = factory;
-        _ = factory.CreateClient(); // eager — IClassFixture rule
+        _ = factory.CreateClient(); // eager: IClassFixture rule
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
             messageId = message.Id;
         }
 
-        // 7 poll cycles at 100ms — processor must not touch message in backoff window
+        // 7 poll cycles at 100ms: processor must not touch message in backoff window
         await Task.Delay(700);
 
         await using (var scope = _factory.Services.CreateAsyncScope())
@@ -60,13 +60,13 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
         {
             var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
             var message = OutboxMessage.Create(now, new StoreCreatedIntegrationEvent(DefaultIdType.CreateVersion7(), ApplicationUserId.New()));
-            // NextRetryAt is null — processor must pick it up on the next poll
+            // NextRetryAt is null: processor must pick it up on the next poll
             db.OutboxMessages.Add(message);
             await db.SaveChangesAsync();
             messageId = message.Id;
         }
 
-        // Give processor 2s — at 100ms poll, it will attempt the message many times
+        // Give processor 2s: at 100ms poll, it will attempt the message many times
         await Task.Delay(2000);
 
         await using (var scope = _factory.Services.CreateAsyncScope())

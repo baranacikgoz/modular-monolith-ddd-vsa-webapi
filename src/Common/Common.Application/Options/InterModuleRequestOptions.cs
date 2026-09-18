@@ -5,7 +5,7 @@ namespace Common.Application.Options;
 
 public class InterModuleRequestOptions
 {
-    // Sync request/response inside HTTP request paths — fail fast rather than pinning
+    // Sync request/response inside HTTP request paths: fail fast rather than pinning
     // the caller for MassTransit's default 30s when the target module is down.
     public required int TimeoutSeconds { get; set; }
 }

@@ -54,7 +54,7 @@ internal static partial class Setup
             {
                 if (rlOpts.LogQueryString && ctx.Request.QueryString.HasValue)
                 {
-                    // Redact the whole query string for sensitive paths — rule granularity is
+                    // Redact the whole query string for sensitive paths: rule granularity is
                     // path+method, not per-parameter, so we never log raw query values there.
                     var queryString = RequestResponseBodyLoggingMiddleware.IsSensitive(
                         ctx.Request.Path, ctx.Request.Method, rlOpts.SensitiveQueryParamPaths)
@@ -66,7 +66,7 @@ internal static partial class Setup
             };
         });
 
-        // Body reader runs INSIDE Serilog's wrapper — RequestBody/ResponseBody properties
+        // Body reader runs INSIDE Serilog's wrapper: RequestBody/ResponseBody properties
         // land on the same Serilog log event, not as separate entries.
         return app.UseMiddleware<RequestResponseBodyLoggingMiddleware>();
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PostToolUse hook — fires after Edit or Write.
+# PostToolUse hook: fires after Edit or Write.
 # Reads hook context from stdin (JSON), checks if a module .csproj was
 # modified, and greps for illegal cross-module ProjectReferences.
 
@@ -24,7 +24,7 @@ current_base=$(echo "$fp" | grep -oE '/Modules/[^/]+/' | sed 's|/Modules/||;s|/|
 violations=$(grep -i 'ProjectReference' "$fp" 2>/dev/null | grep '/Modules/' | grep -v "/${current_base}\." || true)
 
 if [ -n "$violations" ]; then
-    echo "⚠️  CROSS-MODULE REFERENCE in $(basename "$fp") — fix before committing:"
+    echo "⚠️  CROSS-MODULE REFERENCE in $(basename "$fp"): fix before committing:"
     echo "$violations"
     exit 2
 fi

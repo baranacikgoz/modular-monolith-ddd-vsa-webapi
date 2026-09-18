@@ -4,7 +4,7 @@ import { login, register } from '../lib/auth.js';
 
 // Each seller VU gets a unique phone: 9052 + 8-digit VU number.
 // On first iteration: register + login + create store (or recover existing store).
-// Subsequent iterations: manage products — view, update prices, add new listings.
+// Subsequent iterations: manage products: view, update prices, add new listings.
 
 function phone() {
   return `9052${String(__VU).padStart(8, '0')}`;
@@ -23,7 +23,7 @@ function ensureAuth() {
 function ensureStore(templateIds) {
   if (storeId) return;
 
-  // Try to create — fails with conflict if store already exists from a previous run
+  // Try to create: fails with conflict if store already exists from a previous run
   const createRes = post('/v1/stores/my', {
     name: `Perf Store VU${__VU}`,
     description: 'Performance test store',
@@ -45,7 +45,7 @@ function ensureStore(templateIds) {
     return;
   }
 
-  // Store already exists — retrieve id
+  // Store already exists: retrieve id
   const getRes = get('/v1/stores/my', {}, token);
   if (getRes.status === 200) storeId = getRes.json('id');
 }
@@ -60,11 +60,11 @@ export function runSeller(data) {
 
   // Store overview
   const storeRes = get('/v1/stores/my', {}, token);
-  check(storeRes, { 'seller — get my store: 200': r => r.status === 200 });
+  check(storeRes, { 'seller: get my store: 200': r => r.status === 200 });
 
   // Own product list
   const productsRes = get('/v1/products/my/search', { PageNumber: 1, PageSize: 10 }, token);
-  check(productsRes, { 'seller — search my products: 200': r => r.status === 200 });
+  check(productsRes, { 'seller: search my products: 200': r => r.status === 200 });
 
   const products = productsRes.status === 200 ? (productsRes.json('data') || []) : [];
 
@@ -73,7 +73,7 @@ export function runSeller(data) {
 
     // Drill into product
     const productRes = get(`/v1/products/my/${product.id}`, {}, token);
-    check(productRes, { 'seller — get my product: 200': r => r.status === 200 });
+    check(productRes, { 'seller: get my product: 200': r => r.status === 200 });
 
     // Update price (simulates a seller adjusting to market)
     const newPrice = parseFloat((50 + Math.random() * 950).toFixed(2));
@@ -83,9 +83,9 @@ export function runSeller(data) {
       quantity: product.quantity,
       price: newPrice,
     }, token);
-    check(updateRes, { 'seller — update product: 204': r => r.status === 204 });
+    check(updateRes, { 'seller: update product: 204': r => r.status === 204 });
   } else {
-    // No products yet — add one
+    // No products yet: add one
     if (data.templateIds && data.templateIds.length > 0) {
       const templateId = data.templateIds[__ITER % data.templateIds.length];
       const addRes = post('/v1/stores/my/products', {
@@ -95,20 +95,20 @@ export function runSeller(data) {
         quantity: Math.ceil(Math.random() * 50) + 1,
         price: parseFloat((10 + Math.random() * 990).toFixed(2)),
       }, token);
-      check(addRes, { 'seller — add product: 200': r => r.status === 200 });
+      check(addRes, { 'seller: add product: 200': r => r.status === 200 });
     }
   }
 
-  // Browse catalog to find new templates to list — every 4th iteration
+  // Browse catalog to find new templates to list: every 4th iteration
   if (__ITER % 4 === 0) {
     const templatesRes = get('/v1/product-templates/search', { PageNumber: 1, PageSize: 10 }, token);
-    check(templatesRes, { 'seller — browse templates: 200': r => r.status === 200 });
+    check(templatesRes, { 'seller: browse templates: 200': r => r.status === 200 });
   }
 
   // Check store audit log every 5th iteration
   if (__ITER % 5 === 0) {
     const auditRes = get('/v1/stores/my/audit-log', { PageNumber: 1, PageSize: 10 }, token);
-    check(auditRes, { 'seller — audit log: 200': r => r.status === 200 });
+    check(auditRes, { 'seller: audit log: 200': r => r.status === 200 });
   }
 
   sleep(1 + Math.random() * 0.5);

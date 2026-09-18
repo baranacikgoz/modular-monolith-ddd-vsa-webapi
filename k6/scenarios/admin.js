@@ -1,7 +1,7 @@
 import { check, sleep } from 'k6';
 import { get, post } from '../lib/http.js';
 
-// Admin VUs use the token minted in setup() — no concurrent OTP race.
+// Admin VUs use the token minted in setup(): no concurrent OTP race.
 // Simulates a system admin managing the product catalog and monitoring the marketplace.
 
 export function runAdmin(data) {
@@ -14,27 +14,27 @@ export function runAdmin(data) {
     model: `Model ${__ITER}`,
     color: ['Black', 'White', 'Red', 'Blue', 'Green'][__ITER % 5],
   }, token);
-  check(createRes, { 'admin — create template: 200': r => r.status === 200 });
+  check(createRes, { 'admin: create template: 200': r => r.status === 200 });
 
   if (createRes.status === 200) {
     const templateId = createRes.json('id');
     const activateRes = get(`/v1/product-templates/${templateId}/activate`, {}, token);
-    check(activateRes, { 'admin — activate template: 204': r => r.status === 204 });
+    check(activateRes, { 'admin: activate template: 204': r => r.status === 204 });
   }
 
-  // Monitor the marketplace — browse all stores
+  // Monitor the marketplace: browse all stores
   const storesRes = get('/v1/stores/search', { PageNumber: 1, PageSize: 20 }, token);
-  check(storesRes, { 'admin — search stores: 200': r => r.status === 200 });
+  check(storesRes, { 'admin: search stores: 200': r => r.status === 200 });
 
-  // User management — search users
+  // User management: search users
   const usersRes = get('/users/search', { PageNumber: 1, PageSize: 20 }, token);
-  check(usersRes, { 'admin — search users: 200': r => r.status === 200 });
+  check(usersRes, { 'admin: search users: 200': r => r.status === 200 });
 
   // Audit a known store
   if (data.storeIds && data.storeIds.length > 0) {
     const storeId = data.storeIds[__ITER % data.storeIds.length];
     const auditRes = get(`/v1/stores/${storeId}/audit-log`, { PageNumber: 1, PageSize: 10 }, token);
-    check(auditRes, { 'admin — store audit log: 200': r => r.status === 200 });
+    check(auditRes, { 'admin: store audit log: 200': r => r.status === 200 });
   }
 
   // Spot-check a product's audit trail every other iteration
@@ -45,7 +45,7 @@ export function runAdmin(data) {
       if (products.length > 0) {
         const productId = products[0].id;
         const productAuditRes = get(`/v1/products/${productId}/audit-log`, { PageNumber: 1, PageSize: 10 }, token);
-        check(productAuditRes, { 'admin — product audit log: 200': r => r.status === 200 });
+        check(productAuditRes, { 'admin: product audit log: 200': r => r.status === 200 });
       }
     }
   }

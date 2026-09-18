@@ -5,8 +5,8 @@ name: mm-app-only
 # k6 can reach it inside local_shared_network without touching Rider-owned containers.
 #
 # Usage:
-#   make perf-rider        — build + run mm.host + k6 against existing infra
-#   make perf-rider-down   — tear down only mm.host and k6
+#   make perf-rider       : build + run mm.host + k6 against existing infra
+#   make perf-rider-down  : tear down only mm.host and k6
 
 services:
   host:

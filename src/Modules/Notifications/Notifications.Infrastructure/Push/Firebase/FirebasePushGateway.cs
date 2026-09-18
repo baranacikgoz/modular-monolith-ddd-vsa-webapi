@@ -16,7 +16,7 @@ namespace Notifications.Infrastructure.Push.Firebase;
 /// <summary>
 /// FCM implementation of <see cref="IPushGateway"/> via the official FirebaseAdmin SDK. Treats the
 /// provider as untrusted: never throws, never propagates its response text to callers. Owns a
-/// single named <see cref="FirebaseApp"/> instance — <b>never</b> <see cref="FirebaseApp.DefaultInstance"/>,
+/// single named <see cref="FirebaseApp"/> instance: <b>never</b> <see cref="FirebaseApp.DefaultInstance"/>,
 /// which is process-wide global state that has already corrupted parallel test factories elsewhere
 /// in this repo (see the OTel ActivitySource/TracerProvider rule in CLAUDE.md).
 /// </summary>
@@ -74,7 +74,7 @@ internal sealed partial class FirebasePushGateway : IPushGateway, IDisposable
         foreach (var chunk in Chunk(message.Tokens, MaxTokensPerMulticast))
         {
             // MulticastMessage.Tokens is marked [Obsolete] in favor of Fids (Firebase Installation
-            // IDs) — a different client-side registration mechanism entirely. Our clients register
+            // IDs): a different client-side registration mechanism entirely. Our clients register
             // FCM registration tokens (firebase_messaging's getToken()), not installation IDs, so
             // Tokens is the correct member here despite the deprecation warning.
 #pragma warning disable CS0618
@@ -117,7 +117,7 @@ internal sealed partial class FirebasePushGateway : IPushGateway, IDisposable
                 }
 
                 // ponytail: dead-token pruning deferred. Unregistered/InvalidArgument responses are
-                // only counted here, not cleared from Session.PushToken — a reinstall re-registers
+                // only counted here, not cleared from Session.PushToken: a reinstall re-registers
                 // on next login, so stale rows self-heal. Add a ClearPushTokens InterModuleRequest
                 // if the rejected-token rate ever climbs enough to matter.
                 var code = response.Exception?.MessagingErrorCode?.ToString() ?? "Unknown";

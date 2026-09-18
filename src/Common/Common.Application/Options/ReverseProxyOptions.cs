@@ -26,8 +26,8 @@ public sealed class ReverseProxyOptionsValidator : CustomValidator<ReverseProxyO
             .WithMessage("ForwardLimit must be greater than 0.");
 
         // GetIpAddress() trusts only Connection.RemoteIpAddress, which UseForwardedHeaders only rewrites
-        // for peers inside TrustedNetworks. An empty list here means every client — including behind a
-        // real reverse proxy — collapses into one partition (the proxy's own IP), so rate limiting can
+        // for peers inside TrustedNetworks. An empty list here means every client: including behind a
+        // real reverse proxy: collapses into one partition (the proxy's own IP), so rate limiting can
         // lock out all traffic behind a single bucket.
         RuleFor(o => o.TrustedNetworks)
             .NotEmpty()

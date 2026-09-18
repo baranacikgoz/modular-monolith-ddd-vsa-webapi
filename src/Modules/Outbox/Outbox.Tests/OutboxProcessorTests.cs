@@ -17,7 +17,7 @@ using Xunit;
 namespace Outbox.Tests;
 
 // Calls OutboxProcessor.ProcessBatchAsync directly (internal, via InternalsVisibleTo) instead of going
-// through the BackgroundService's poll-interval timer — deterministic, no timing races. IsProcessor stays
+// through the BackgroundService's poll-interval timer: deterministic, no timing races. IsProcessor stays
 // false (base IntegrationTestFactory default) so no auto-polling instance runs concurrently underneath.
 public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFactory>, IAsyncLifetime
 {
@@ -25,7 +25,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
     // shared IntegrationTestCollection one), so it doesn't get that base's per-test Respawn reset for free.
     // Without it, messages left behind by one test (e.g. released/retried rows) leak into a later test's
     // claim batch (ORDER BY CreatedOn LIMIT batchSize has no per-test filter) and skew its
-    // RetryCount/consecutiveFailures assertions. Scoped to the Outbox schema only — this class never
+    // RetryCount/consecutiveFailures assertions. Scoped to the Outbox schema only: this class never
     // touches any other module's tables.
     private static Respawner? _respawner;
 
@@ -35,7 +35,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
     public OutboxProcessorTests(OutboxProcessorTestFactory factory)
     {
         _factory = factory;
-        _ = factory.CreateClient(); // eager — IClassFixture rule
+        _ = factory.CreateClient(); // eager: IClassFixture rule
         _fakePublishEndpoint = factory.Services.GetRequiredService<FakePublishEndpoint>();
         _fakePublishEndpoint.OnPublish = _ => Task.CompletedTask; // reset before every test
     }
@@ -66,7 +66,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
 
     private static OutboxOptions BuildOptions(int batchSize = 10, int maxRetryCount = 3) => new()
     {
-        PollIntervalMs = 100_000, // never consulted — ProcessBatchAsync is called directly, not via the loop
+        PollIntervalMs = 100_000, // never consulted: ProcessBatchAsync is called directly, not via the loop
         BatchSize = batchSize,
         MaxRetryCount = maxRetryCount,
         IsProcessor = false,
@@ -129,7 +129,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         // full jitter (uniform in [0, cap)), so the scheduled backoff can be near-zero. Asserting against
         // a later clock read races the SaveChangesAsync + GetMessageAsync round trip and flakes on a slow
         // CI runner (see OutboxProcessorTests CI failure 2026-07-20). Assert against the timestamp taken
-        // before ProcessBatchAsync ran instead — NextRetryAt is always computed after this point.
+        // before ProcessBatchAsync ran instead: NextRetryAt is always computed after this point.
         var before = DateTimeOffset.UtcNow;
         using var processor = CreateProcessor(BuildOptions(maxRetryCount: 3));
         await processor.ProcessBatchAsync(CancellationToken.None);
@@ -155,7 +155,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
                 message.IncrementRetryCount(DateTimeOffset.UtcNow, TimeSpan.Zero);
             }
 
-            message.ReleaseClaim(); // make immediately eligible — IncrementRetryCount left NextRetryAt set
+            message.ReleaseClaim(); // make immediately eligible: IncrementRetryCount left NextRetryAt set
         });
 
         using var processor = CreateProcessor(BuildOptions(maxRetryCount: maxRetryCount));
@@ -180,7 +180,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         }
 
         // See ProcessBatch_PublishFails_SchedulesRetryWithLease: assert against the timestamp taken
-        // before ProcessBatchAsync ran, not a fresh UtcNow after the round trip below — full-jitter
+        // before ProcessBatchAsync ran, not a fresh UtcNow after the round trip below: full-jitter
         // backoff can be near-zero and a later clock read races the DB round trip.
         var before = DateTimeOffset.UtcNow;
         using var processor = CreateProcessor(BuildOptions(batchSize: 10, maxRetryCount: 5));
@@ -221,7 +221,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
 
         // BatchSize (12) < total messages (20): neither single ProcessBatchAsync call can claim everything
         // alone, so the two concurrent calls are forced to split the 20 rows between them. FOR UPDATE
-        // SKIP LOCKED guarantees the split has no overlap — this is what's under test.
+        // SKIP LOCKED guarantees the split has no overlap: this is what's under test.
         using var processor = CreateProcessor(BuildOptions(batchSize: 12));
         await Task.WhenAll(
             processor.ProcessBatchAsync(CancellationToken.None),

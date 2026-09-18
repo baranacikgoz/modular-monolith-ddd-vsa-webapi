@@ -6,7 +6,7 @@ import { runNewSeller } from './scenarios/new_seller.js';
 import { runAdmin } from './scenarios/admin.js';
 
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:5001';
-const ADMIN_PHONE = '901111111111'; // seeded SystemAdmin — Baran Açıkgöz
+const ADMIN_PHONE = '901111111111'; // seeded SystemAdmin: Baran Açıkgöz
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 // ─── Scenarios ────────────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ export const options = {
 //   3. Collect seeded store IDs for buyer/admin scenarios
 
 export function setup() {
-  // Wait for the DB seeder to finish — seeder runs async after healthcheck passes
+  // Wait for the DB seeder to finish: seeder runs async after healthcheck passes
   sleep(10);
 
   // Admin login
@@ -88,7 +88,7 @@ export function setup() {
     { headers: JSON_HEADERS });
 
   if (loginRes.status !== 200) {
-    throw new Error(`Admin login failed: ${loginRes.status} — ${loginRes.body}`);
+    throw new Error(`Admin login failed: ${loginRes.status}: ${loginRes.body}`);
   }
 
   const adminToken = loginRes.json('accessToken');

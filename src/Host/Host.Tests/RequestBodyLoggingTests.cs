@@ -10,7 +10,7 @@ namespace Host.Tests;
 // the real response while copying only the first N into a bounded log buffer. If the tee ever
 // truncated the live stream, clients would receive corrupted/short responses.
 //
-// Own factory + "Host" collection (not ICollectionFixture) — same pattern as DynamicModuleTests:
+// Own factory + "Host" collection (not ICollectionFixture): same pattern as DynamicModuleTests:
 // each test boots an isolated host with body logging forced on, and the collection serializes
 // boots so parallel factory startup can't corrupt global Serilog/OTel state.
 [Collection("Host")]

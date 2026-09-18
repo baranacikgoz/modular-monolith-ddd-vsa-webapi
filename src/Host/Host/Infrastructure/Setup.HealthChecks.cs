@@ -31,7 +31,7 @@ internal static partial class Setup
 
         var builder = services.AddHealthChecks();
 
-        // Liveness: self-check only — proves the process is alive and can handle HTTP.
+        // Liveness: self-check only: proves the process is alive and can handle HTTP.
         builder.AddCheck(
             "self",
             () => HealthCheckResult.Healthy(),
@@ -78,7 +78,7 @@ internal static partial class Setup
         // (tagged "ready" in AddCustomMassTransit). It probes the already-open bus connection instead
         // of dialing a brand-new AMQP connection on every probe, so there is no custom check here.
 
-        // Startup: PostgreSQL reachable during boot — ensures migrations have been applied.
+        // Startup: PostgreSQL reachable during boot: ensures migrations have been applied.
         builder.AddNpgSql(
             sp => sp.GetRequiredService<NpgsqlDataSource>(),
             name: "postgresql-startup",

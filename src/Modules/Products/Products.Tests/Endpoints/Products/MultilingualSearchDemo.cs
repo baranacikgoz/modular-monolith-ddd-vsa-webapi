@@ -98,7 +98,7 @@ public class MultilingualSearchDemo : BaseIntegrationTest
     {
         var db = Scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
 
-        // Two rows authored in different locales — exactly the worked example from the design doc.
+        // Two rows authored in different locales: exactly the worked example from the design doc.
         await SeedAsync(db, name: "Koşu Ayakkabısı", description: "Hafif ve dayanıklı koşu ayakkabısı", culture: "tr");
         await SeedAsync(db, name: "Running Shoes", description: "Lightweight durable running shoes", culture: "en");
         // A proper-noun brand authored in Turkish, to prove cross-locale discovery via the universal layer.

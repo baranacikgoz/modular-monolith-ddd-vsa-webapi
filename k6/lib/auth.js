@@ -1,8 +1,8 @@
 import { check } from 'k6';
 import { post } from './http.js';
 
-// DummyOtpService (always active) stores "123456" — no SMS sent.
-// Captcha feature flag is false in featureFlags.json — captchaToken is ignored.
+// DummyOtpService (always active) stores "123456": no SMS sent.
+// Captcha feature flag is false in featureFlags.json: captchaToken is ignored.
 
 // Name validators require ContainsOnlyTurkishCharacters: no digits, no ASCII-only letters.
 const TURKISH_NAMES = [
@@ -51,7 +51,7 @@ export function login(phone) {
 }
 
 // Registers user and auto-logs in. Returns accessToken, or null on failure.
-// 409 = already exists — valid for load tests (idempotent seed).
+// 409 = already exists: valid for load tests (idempotent seed).
 export function register(phone, seed) {
   sendOtpForRegistration(phone);
   const res = post('/users/register/self', {

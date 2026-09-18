@@ -125,7 +125,7 @@ public sealed partial class OutboxModule : ICoreModule
             }
         }
 
-        register(); // final attempt — propagates on failure
+        register(); // final attempt: propagates on failure
     }
 
     private static bool IsLockContention(Exception ex) =>

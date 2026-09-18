@@ -6,7 +6,7 @@ namespace BackgroundJobs;
 
 /// <summary>
 ///     Hangfire server filter recording execution count (by job name and outcome) and duration
-///     for every job — the only signal that a recurring job (OTP sweep, cleanup, ...) is silently failing.
+///     for every job: the only signal that a recurring job (OTP sweep, cleanup, ...) is silently failing.
 /// </summary>
 internal sealed class JobMetricsFilter : IServerFilter
 {

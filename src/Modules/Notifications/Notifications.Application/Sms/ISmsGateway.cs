@@ -2,16 +2,16 @@ using Common.Domain.ResultMonad;
 
 namespace Notifications.Application.Sms;
 
-/// <summary>İYS (İleti Yönetim Sistemi) content category — decides whether the message needs consent.</summary>
+/// <summary>İYS (İleti Yönetim Sistemi) content category: decides whether the message needs consent.</summary>
 public enum SmsCategory
 {
-    /// <summary>OTPs, booking confirmations — not subject to İYS consent.</summary>
+    /// <summary>OTPs, booking confirmations: not subject to İYS consent.</summary>
     Transactional,
 
-    /// <summary>Marketing content sent to an individual consumer — requires İYS consent.</summary>
+    /// <summary>Marketing content sent to an individual consumer: requires İYS consent.</summary>
     CommercialIndividual,
 
-    /// <summary>Marketing content sent to a merchant/business contact — requires İYS consent.</summary>
+    /// <summary>Marketing content sent to a merchant/business contact: requires İYS consent.</summary>
     CommercialMerchant
 }
 

@@ -49,7 +49,7 @@ public sealed class ProductsModule : IModule
         versionedApiGroup.MapProductsEndpoints();
         versionedApiGroup.MapProductTemplatesEndpoints();
 
-        // Probe group: unauthenticated by design — it is a split-deployment PoC trigger, not a real feature.
+        // Probe group: unauthenticated by design: it is a split-deployment PoC trigger, not a real feature.
         // Separate group so it does not inherit RequireAuthorization() from the group above.
         var probeGroup = endpoints
             .MapGroup("/v{version:apiVersion}")

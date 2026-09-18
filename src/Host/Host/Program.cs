@@ -66,7 +66,7 @@ catch (Exception ex) when (ex is not HostAbortedException)
     Log.Fatal(ex, "Server terminated unexpectedly.");
 
     // Rethrow: swallowing here exits 0 (K8s sees a clean exit and won't restart-loop visibly) and
-    // leaves WebApplicationFactory waiting forever for a host that never started — a silent CI hang.
+    // leaves WebApplicationFactory waiting forever for a host that never started: a silent CI hang.
     throw;
 }
 finally

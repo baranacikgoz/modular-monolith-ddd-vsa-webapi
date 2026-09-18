@@ -113,7 +113,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "artisan" only matches the first store
+        // Act: "artisan" only matches the first store
         var response = await client.GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm=artisan", UriKind.Relative));
 
         // Assert
@@ -140,7 +140,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "cobblestone" only exists in the first store's address
+        // Act: "cobblestone" only exists in the first store's address
         var response = await client.GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm=cobblestone", UriKind.Relative));
 
         // Assert

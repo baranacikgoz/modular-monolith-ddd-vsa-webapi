@@ -12661,7 +12661,7 @@
       },
       "norm_label": "stronglytypedidvalueconverter",
       "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
-      "source_location": "L6"
+      "source_location": "L14"
     },
     {
       "id": "src_modules_inventory_inventory_infrastructure_persistence_entityconfigurations_stockreservationconfiguration_inventory_infrastructure_persistence_entityconfigurations_stockreservationconfiguration",
@@ -77694,7 +77694,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Modules/Products/Products.Infrastructure/InterModuleRequestHandlers/GetProductRequestHandler.cs",
-      "source_location": "L28",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -96509,7 +96509,7 @@
         "ref_token": "DefaultIdType"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
-      "source_location": "L6",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -154079,7 +154079,7 @@
         "ref_token": "ValueConverter"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
-      "source_location": "L6",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -158498,6 +158498,17 @@
     },
     {
       "source": "src_common_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter",
+      "target": "src_common_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_common_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter",
       "target": "csharp_namespace:e4b69260ce262ab6",
       "relation": "contains",
       "_origin": "ast",
@@ -158505,17 +158516,6 @@
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
       "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "src_common_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter",
-      "target": "src_common_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter_common_infrastructure_persistence_valueconverters_stronglytypedidvalueconverter",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs",
-      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -180644,5 +180644,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "ad5299e331df902951b25dc0bb73d2df576fb4e3"
+  "built_at_commit": "f218c5ebcd7cb0f27059c0f28791b2d253cb52e3"
 }

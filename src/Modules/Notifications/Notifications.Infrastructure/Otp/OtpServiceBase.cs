@@ -8,7 +8,7 @@ internal abstract class OtpServiceBase(IFusionCache cache) : IOtpService
 {
     private const int MaxFailedAttempts = 3;
 
-    // Only registered when CachingOptions.UseRedis = false, i.e. single-instance dev/test — a global lock
+    // Only registered when CachingOptions.UseRedis = false, i.e. single-instance dev/test: a global lock
     // is correct there. Multi-instance atomicity in production is provided by RedisOtpService's Lua script.
     private static readonly SemaphoreSlim VerifyLock = new(1, 1);
 

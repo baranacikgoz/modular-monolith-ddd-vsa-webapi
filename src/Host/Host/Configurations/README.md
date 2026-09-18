@@ -1,4 +1,4 @@
-# Configurations — deploy-time materialized config
+# Configurations: deploy-time materialized config
 
 These `*.json` files are **placeholders / local-dev defaults**. They are intentionally
 **excluded from the published Docker image** (`CopyToPublishDirectory=Never` in `Host.csproj`).
@@ -22,7 +22,7 @@ The real, environment-specific values are materialized at **deploy time** by dev
 
 ```
 configuration.AddJsonFile($"{filePath}.json", optional: false, reloadOnChange: true);
-// per-environment overrides are intentionally disabled — see Setup.cs
+// per-environment overrides are intentionally disabled: see Setup.cs
 configuration.AddEnvironmentVariables();   // env vars win over JSON
 ```
 

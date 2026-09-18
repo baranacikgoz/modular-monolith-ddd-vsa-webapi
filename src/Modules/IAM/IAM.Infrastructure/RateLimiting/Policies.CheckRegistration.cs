@@ -11,7 +11,7 @@ namespace IAM.Infrastructure.RateLimiting;
 public static partial class Policies
 {
     // internal (not private): unit-tested directly from IAM.Tests via InternalsVisibleTo, mirroring the
-    // TokenRefresh fix — AddFixedWindowLimiter is a single bucket shared by every caller, so one client
+    // TokenRefresh fix: AddFixedWindowLimiter is a single bucket shared by every caller, so one client
     // exhausting it 429s registration-check for every user.
     internal sealed class CheckRegistrationRateLimitingPolicy(
         IOptions<CustomRateLimitingOptions> rateLimitingOptionsProvider) : IRateLimiterPolicy<string>

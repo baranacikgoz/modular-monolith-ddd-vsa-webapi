@@ -64,7 +64,7 @@ public class MyGetTests : BaseIntegrationTest
     [Fact]
     public async Task MyGet_WithAnotherUserProduct_ReturnsNotFound()
     {
-        // Arrange — product belongs to a different user's store
+        // Arrange: product belongs to a different user's store
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
 
@@ -80,7 +80,7 @@ public class MyGetTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — authenticated as test user, but the product belongs to another user
+        // Act: authenticated as test user, but the product belongs to another user
         var response = await client.GetAsync(new Uri($"/v1/products/my/{otherProduct.Id}", UriKind.Relative));
 
         // Assert

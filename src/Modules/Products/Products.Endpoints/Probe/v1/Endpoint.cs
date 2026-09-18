@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-// Split-deployment PoC probe — see docs/split-deployment-poc.md for full context.
+// Split-deployment PoC probe: see docs/split-deployment-poc.md for full context.
 // This endpoint exists only to make the cross-process MassTransit round-trip observable via a single curl.
 // It intentionally lives in the Products module to prove that Products can call IAM without IAM being
 // co-located in the same process. Remove if the PoC is no longer needed.

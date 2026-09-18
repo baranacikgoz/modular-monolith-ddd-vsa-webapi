@@ -1,4 +1,4 @@
-# PoC: Decoupled module deployment — same image, two instances, different EnabledModules.
+# PoC: Decoupled module deployment: same image, two instances, different EnabledModules.
 #
 # Prerequisites: infra must already be running from the base docker-compose.yml:
 #   docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
@@ -13,14 +13,14 @@
 #
 # Instance B (mm.products-instance, port 5002)
 #   Loads: Products + Outbox + BackgroundJobs (core modules always auto-load)
-#   Has NO IAM consumers — calls IAM cross-process via MassTransit request/response
+#   Has NO IAM consumers: calls IAM cross-process via MassTransit request/response
 #
 # Prove it:
 #   1. docker compose up -d mm.postgres mm.rabbitmq mm.aspire-dashboard
 #   2. docker compose -f docker-compose.split.yml up --build
 #   3. curl "http://localhost:5002/v1/probe/cross-module?count=3"
 #   4. Observe: Products instance sends GetSeedUserIdsRequest via RabbitMQ,
-#      IAM instance handles it and responds — no HTTP between them.
+#      IAM instance handles it and responds: no HTTP between them.
 
 name: mm-split-poc
 

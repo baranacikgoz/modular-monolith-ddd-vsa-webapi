@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse hook — intercepts Bash tool calls.
+# PreToolUse hook: intercepts Bash tool calls.
 # Blocks git commit if any module .csproj has cross-module ProjectReferences.
 
 set -euo pipefail
@@ -27,7 +27,7 @@ while IFS= read -r csproj; do
 done < <(find src/Modules -name "*.csproj" 2>/dev/null)
 
 if [ -n "$violations" ]; then
-    echo "⛔ COMMIT BLOCKED — cross-module references detected:"
+    echo "⛔ COMMIT BLOCKED: cross-module references detected:"
     echo "$violations"
     echo ""
     echo "Remove illegal ProjectReferences before committing."

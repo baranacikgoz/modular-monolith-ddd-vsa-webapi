@@ -678,10 +678,10 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Persistence/ValueConverters/StronglyTypedIdValueConverter.cs": {
-    "mtime": 1779899541.6767912,
-    "seen": 1788521409.363848,
-    "ast_hash": "5793974c2d1b4f233cc0244a4e9169f9",
-    "semantic_hash": "5793974c2d1b4f233cc0244a4e9169f9"
+    "mtime": 1789591418.9410713,
+    "seen": 1789594420.876781,
+    "ast_hash": "fc20b774c8858aa4cf21c094a499c3be",
+    "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Resiliency/Setup.cs": {
     "mtime": 1788814247.5312295,
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1789514272.7756407,
-    "seen": 1789515065.814631,
-    "ast_hash": "ba0b8ec4c00fcc0046301da06916d527",
+    "mtime": 1789591436.3543246,
+    "seen": 1789594420.876966,
+    "ast_hash": "d59e0e2160cf716de9605687fa752edf",
     "semantic_hash": ""
   },
   "README.md": {
@@ -3084,9 +3084,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Products/Products.Infrastructure/InterModuleRequestHandlers/GetProductRequestHandler.cs": {
-    "mtime": 1788827639.741335,
-    "seen": 1788881838.047528,
-    "ast_hash": "275b5b473963d07d8b79cfe64e2f35ec",
+    "mtime": 1789591746.7783785,
+    "seen": 1789594420.8769522,
+    "ast_hash": "cb5ec0b10c2511d69c35aaa224a69fb9",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/Otp/OtpCodeGenerator.cs": {

@@ -18,7 +18,7 @@ internal static class BackgroundJobsTelemetry
 
     public static readonly Counter<long> JobsExecuted =
         Meter.CreateCounter<long>("backgroundjobs.executions.total",
-            description: "Total Hangfire job executions, tagged by job name and outcome — a recurring job that stops appearing or flips to failure is broken silently");
+            description: "Total Hangfire job executions, tagged by job name and outcome: a recurring job that stops appearing or flips to failure is broken silently");
 
     public static readonly Histogram<double> JobDuration =
         Meter.CreateHistogram<double>("backgroundjobs.execution.duration", "ms",
@@ -28,7 +28,7 @@ internal static class BackgroundJobsTelemetry
         Meter.CreateObservableGauge("backgroundjobs.last_success.timestamp_seconds",
             () => LastSuccessUnixSeconds.Select(kvp =>
                 new Measurement<long>(kvp.Value, new KeyValuePair<string, object?>("job.name", kvp.Key))),
-            description: "Unix timestamp of each job's last successful execution — an absolute value survives pod restarts, unlike a counter delta which goes blind when Hangfire's misfire catch-up runs a job before Prometheus's first scrape of the new instance's series");
+            description: "Unix timestamp of each job's last successful execution: an absolute value survives pod restarts, unlike a counter delta which goes blind when Hangfire's misfire catch-up runs a job before Prometheus's first scrape of the new instance's series");
 
     public static void RecordJobExecuted(string jobName, bool succeeded, double durationMs)
     {

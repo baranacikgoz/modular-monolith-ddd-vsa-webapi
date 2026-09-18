@@ -114,7 +114,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "patagonia" only matches the first template's brand
+        // Act: "patagonia" only matches the first template's brand
         var response = await client.GetAsync(new Uri("/v1/product-templates/search?PageNumber=1&PageSize=10&SearchTerm=patagonia", UriKind.Relative));
 
         // Assert
@@ -141,7 +141,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "turquoise" only exists in the first template's color
+        // Act: "turquoise" only exists in the first template's color
         var response = await client.GetAsync(new Uri("/v1/product-templates/search?PageNumber=1&PageSize=10&SearchTerm=turquoise", UriKind.Relative));
 
         // Assert

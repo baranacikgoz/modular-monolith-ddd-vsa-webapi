@@ -51,7 +51,7 @@ public static partial class MigrationGuard
     private static partial void LogMigrationsUpToDate(ILogger logger, string moduleName);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Module '{ModuleName}': test environment detected — auto-applying {Count} pending migration(s).")]
+        Message = "Module '{ModuleName}': test environment detected: auto-applying {Count} pending migration(s).")]
     private static partial void LogAutoMigrating(ILogger logger, string moduleName, int count);
 
     [LoggerMessage(Level = LogLevel.Critical,

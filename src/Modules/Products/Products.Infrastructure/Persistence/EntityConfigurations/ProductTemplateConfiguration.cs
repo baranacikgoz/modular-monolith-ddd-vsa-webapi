@@ -40,7 +40,7 @@ internal sealed class ProductTemplateConfiguration : AuditableEntityConfiguratio
             .HasField("_products")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        // Universal layer only — proper-noun fields indexed language-neutral so brands are findable by every locale.
+        // Universal layer only: proper-noun fields indexed language-neutral so brands are findable by every locale.
         builder
             .Property<NpgsqlTsVector>(FullTextSearchOptions.SearchVectorColumn)
             .HasComputedColumnSql(

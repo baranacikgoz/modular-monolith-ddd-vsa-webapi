@@ -129,7 +129,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "titanium boots" targets only the first product via FTS
+        // Act: "titanium boots" targets only the first product via FTS
         var response = await client.GetAsync(new Uri("/v1/products/search?PageNumber=1&PageSize=10&SearchTerm=titanium+boots", UriKind.Relative));
 
         // Assert
@@ -155,7 +155,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — "bamboo" only exists in the first product's description
+        // Act: "bamboo" only exists in the first product's description
         var response = await client.GetAsync(new Uri("/v1/products/search?PageNumber=1&PageSize=10&SearchTerm=bamboo", UriKind.Relative));
 
         // Assert
@@ -191,7 +191,7 @@ public class SearchTests : BaseIntegrationTest
 
         // Matches FTS but not the Name filter
         await SeedStoreWithProductAsync(db, productName: "Wireless Keyboard", productDescription: "ergonomic bluetooth device");
-        // Matches both FTS and Name filter — only this one should appear
+        // Matches both FTS and Name filter: only this one should appear
         await SeedStoreWithProductAsync(db, productName: "Wireless Mouse", productDescription: "ergonomic bluetooth device");
         // Matches Name filter but not FTS
         await SeedStoreWithProductAsync(db, productName: "Wireless Charger", productDescription: "fast inductive power supply");
@@ -199,7 +199,7 @@ public class SearchTests : BaseIntegrationTest
         var client = Factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
-        // Act — FTS matches "bluetooth" (first two); Name filter matches "Mouse" (only second)
+        // Act: FTS matches "bluetooth" (first two); Name filter matches "Mouse" (only second)
         var response = await client.GetAsync(new Uri("/v1/products/search?PageNumber=1&PageSize=10&SearchTerm=bluetooth&Name=Wireless+Mouse", UriKind.Relative));
 
         // Assert

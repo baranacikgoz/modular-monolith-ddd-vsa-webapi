@@ -26,7 +26,7 @@ public class UpdateTests : BaseIntegrationTest
     [Fact]
     public async Task Update_WithValidPayload_ReturnsNoContentAndUpdatesProduct()
     {
-        // Arrange — admin endpoint: no owner filtering
+        // Arrange: admin endpoint: no owner filtering
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
 

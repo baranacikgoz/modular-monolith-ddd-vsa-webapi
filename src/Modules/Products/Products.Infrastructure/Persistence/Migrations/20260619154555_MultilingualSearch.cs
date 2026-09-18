@@ -9,7 +9,7 @@ namespace Products.Infrastructure.Migrations
     {
         // Database-global, idempotent: unaccent extension + accent-folding text-search configs.
         // Text-search configs have no IF NOT EXISTS, and a duplicate CREATE raises unique_violation (23505)
-        // on pg_ts_config — NOT duplicate_object — so each is guarded by an explicit catalog existence check.
+        // on pg_ts_config: NOT duplicate_object: so each is guarded by an explicit catalog existence check.
         // Repeated per module migration because cross-module apply order is not guaranteed and every
         // module's vector depends on simple_unaccent existing first.
         private const string CreateSearchInfraSql = """
@@ -41,7 +41,7 @@ namespace Products.Infrastructure.Migrations
             """;
 
         // IMMUTABLE wrappers: the per-row lang::regconfig cast is only STABLE, so a generated column
-        // cannot use it directly — it must go through a function declared IMMUTABLE.
+        // cannot use it directly: it must go through a function declared IMMUTABLE.
         private const string CreateWrapperFunctionsSql = """
             CREATE OR REPLACE FUNCTION fts_product(lang text, name text, descr text)
             RETURNS tsvector LANGUAGE sql IMMUTABLE AS $$
@@ -60,11 +60,11 @@ namespace Products.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // 1. Extension, accent-folding configs, immutable wrapper functions — before any generated column.
+            // 1. Extension, accent-folding configs, immutable wrapper functions: before any generated column.
             migrationBuilder.Sql(CreateSearchInfraSql);
             migrationBuilder.Sql(CreateWrapperFunctionsSql);
 
-            // 2. Per-row authored-language columns — must exist before the computed columns that reference them.
+            // 2. Per-row authored-language columns: must exist before the computed columns that reference them.
             migrationBuilder.AddColumn<string>(
                 name: "Language",
                 schema: "Products",
@@ -129,7 +129,7 @@ namespace Products.Infrastructure.Migrations
 
             migrationBuilder.Sql("DROP FUNCTION IF EXISTS fts_product(text, text, text);");
             migrationBuilder.Sql("DROP FUNCTION IF EXISTS fts_store(text, text, text, text);");
-            // Configs / extension are database-global infrastructure shared with other modules — leave them.
+            // Configs / extension are database-global infrastructure shared with other modules: leave them.
         }
 
         // Drops the GIN index and SearchVector column, re-adds SearchVector as a STORED generated column with the

@@ -6,7 +6,7 @@ namespace Common.Application.Search;
 
 /// <summary>
 /// Resolves the Postgres text-search config for the current request from <see cref="CultureInfo.CurrentUICulture"/>
-/// — the same Accept-Language mechanism that drives <c>IResxLocalizer</c>. Used on the write side (what to stamp
+///: the same Accept-Language mechanism that drives <c>IResxLocalizer</c>. Used on the write side (what to stamp
 /// into the <c>Language</c> column) and the read side (the prose-layer query config). No query parameter.
 /// </summary>
 public interface ISearchLanguageResolver

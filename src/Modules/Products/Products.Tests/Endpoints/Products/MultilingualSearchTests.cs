@@ -132,7 +132,7 @@ public class MultilingualSearchTests : BaseIntegrationTest
 
         var client = CreateClient("en");
 
-        // "runs" stems to "run" only through english_unaccent — the prose layer, not the simple universal layer.
+        // "runs" stems to "run" only through english_unaccent: the prose layer, not the simple universal layer.
         var result = await SearchAsync(client, "runs");
 
         Assert.Equal(1, result.TotalCount);
