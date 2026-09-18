@@ -123,7 +123,7 @@
     </value>
   </resheader>
   <data name="NotFound" xml:space="preserve">
-    <value>({0}) bulunamadı.</value>
+    <value>bulunamadı.</value>
   </data>
   <data name="NotUnqiue" xml:space="preserve">
     <value>({0}), başka bir kayıtta mevcut.</value>

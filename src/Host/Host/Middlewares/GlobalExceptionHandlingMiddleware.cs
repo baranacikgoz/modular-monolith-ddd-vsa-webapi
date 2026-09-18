@@ -26,6 +26,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.Conflict,
+                nameof(localizer.DbUpdateConcurrencyException),
                 localizer.DbUpdateConcurrencyException);
         }
         catch (UniqueConstraintException ex)
@@ -34,6 +35,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.Conflict,
+                nameof(localizer.UniqueConstraintException),
                 localizer.UniqueConstraintException);
         }
         catch (CannotInsertNullException ex)
@@ -42,6 +44,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
+                nameof(localizer.CannotInsertNullException),
                 localizer.CannotInsertNullException);
         }
         catch (MaxLengthExceededException ex)
@@ -50,6 +53,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
+                nameof(localizer.MaxLengthExceededException),
                 localizer.MaxLengthExceededException);
         }
         catch (NumericOverflowException ex)
@@ -58,6 +62,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
+                nameof(localizer.NumericOverflowException),
                 localizer.NumericOverflowException);
         }
         catch (ReferenceConstraintException ex)
@@ -66,6 +71,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
+                nameof(localizer.ReferenceConstraintException),
                 localizer.ReferenceConstraintException);
         }
         catch (DbUpdateException
@@ -75,6 +81,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.InternalServerError,
+                nameof(localizer.InternalServerError),
                 localizer.InternalServerError);
         }
         catch (BadHttpRequestException ex)
@@ -83,6 +90,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.BadRequest,
+                nameof(localizer.BadHttpRequestException),
                 localizer.BadHttpRequestException);
         }
         catch (OperationCanceledException ex)
@@ -101,6 +109,7 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 StatusCodes.Status499ClientClosedRequest, // Client Closed Request
+                nameof(localizer.ClientClosedRequest),
                 localizer.ClientClosedRequest);
         }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -110,12 +119,13 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 context,
                 ex,
                 (int)HttpStatusCode.InternalServerError,
+                nameof(localizer.InternalServerError),
                 localizer.InternalServerError);
         }
 #pragma warning restore CA1031 // Do not catch general exception types
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode, string title)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode, string errorKey, string title)
     {
         LogError(logger, exception);
 
@@ -127,6 +137,9 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
 
         var formattedTitle = string.Format(CultureInfo.CurrentCulture, title, context.TraceIdentifier);
         var details = new ProblemDetails { Status = statusCode, Title = formattedTitle };
+
+        // Same envelope as a failed Result (ResultToResponseTransformer): a client never branches on error source.
+        details.AddErrorKey(errorKey).AddErrors(null, []);
 
         context.Response.StatusCode = statusCode;
         await problemDetailsService.TryWriteAsync(new ProblemDetailsContext

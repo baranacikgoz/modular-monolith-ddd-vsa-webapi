@@ -22,7 +22,8 @@ public static class StringLocalizerExtensions
 
         // Assume parameter is "Store" and key is "NotFound" and value is "123".
         // Then it will generate a string like "Store (123) is not found."
-        // '({0}) is not found.' will come from the localization resource file as the value of NotFound key.
-        return $"{localizer[error.ParameterName]} {localizer[error.Key, error.Value]}";
+        // The value is composed here, not through a "{0}" in the resource text: the branch above uses the same
+        // resource without a value, and a placeholder there would reach the client unformatted.
+        return $"{localizer[error.ParameterName]} ({error.Value}) {localizer[error.Key]}";
     }
 }

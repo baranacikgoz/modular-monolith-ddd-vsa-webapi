@@ -64,7 +64,7 @@
     </value>
   </resheader>
   <data name="NotFound" xml:space="preserve">
-    <value>({0}) not found.</value>
+    <value>not found.</value>
   </data>
   <data name="NotUnqiue" xml:space="preserve">
     <value>({0}) already exists in another record.</value>

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Bogus;
 using Common.Tests;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,28 @@ public class GetTests : BaseIntegrationTest
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        // A NotFound raised without a value (every SingleAsResultAsync miss) must not leak the resource
+        // string's unformatted placeholder into the title.
+        var body = await response.Content.ReadFromJsonAsync<JsonDocument>(JsonSerializerOptions);
+        Assert.DoesNotContain("{0}", body!.RootElement.GetProperty("title").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Search_WithUnbindableQueryParameter_ReturnsBadRequestInTheCommonErrorEnvelope()
+    {
+        // Arrange
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act: model binding fails before FluentValidation runs, so the body comes from the exception middleware.
+        var response = await client.GetAsync(new Uri("/v1/product-templates/search?PageNumber=abc&PageSize=10", UriKind.Relative));
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonDocument>(JsonSerializerOptions);
+        Assert.Equal("BadHttpRequestException", body!.RootElement.GetProperty("errorKey").GetString());
+        Assert.True(body.RootElement.GetProperty("errors").TryGetProperty(string.Empty, out _));
     }
 
     [Fact]

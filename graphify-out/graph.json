@@ -6614,7 +6614,7 @@
       "metadata": {
         "namespace": "Products.Endpoints.Probe.v1",
         "scope_chain": [
-          "s590"
+          "s587"
         ]
       },
       "norm_label": "endpoint",
@@ -12865,7 +12865,7 @@
       "metadata": {
         "namespace": "Host",
         "scope_chain": [
-          "s2372"
+          "s2369"
         ]
       },
       "norm_label": "program",
@@ -22177,7 +22177,7 @@
       "metadata": {
         "namespace": "Products.Endpoints.Probe.v1",
         "scope_chain": [
-          "s590"
+          "s587"
         ],
         "unresolved_calls": [
           {
@@ -22203,7 +22203,7 @@
       "metadata": {
         "namespace": "Products.Endpoints.Probe.v1",
         "scope_chain": [
-          "s590"
+          "s587"
         ],
         "unresolved_calls": [
           {
@@ -181007,5 +181007,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "d2fdab7d7b34914a0aa7264869a9ab9f176c5ad8"
+  "built_at_commit": "d2529563c2783f0f94a5784b4c246c49e9fa542e"
 }
