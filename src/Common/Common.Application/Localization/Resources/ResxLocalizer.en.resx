@@ -66,9 +66,6 @@
   <data name="NotFound" xml:space="preserve">
     <value>not found.</value>
   </data>
-  <data name="NotUnqiue" xml:space="preserve">
-    <value>({0}) already exists in another record.</value>
-  </data>
   <data name="UniqueViolation" xml:space="preserve">
     <value>A value that must be unique already exists in another record.</value>
   </data>

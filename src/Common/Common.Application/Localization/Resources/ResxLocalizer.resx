@@ -125,9 +125,6 @@
   <data name="NotFound" xml:space="preserve">
     <value>bulunamadı.</value>
   </data>
-  <data name="NotUnqiue" xml:space="preserve">
-    <value>({0}), başka bir kayıtta mevcut.</value>
-  </data>
   <data name="UniqueViolation" xml:space="preserve">
     <value>Eşsiz olması gereken bir değer, başka bir kayıtta mevcut.</value>
   </data>

@@ -114,10 +114,10 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Extensions/StringLocalizerExtensions.cs": {
-    "mtime": 1779899541.6702006,
-    "seen": 1788521409.3638048,
-    "ast_hash": "c344095b88623b56acc6f754d8727f6e",
-    "semantic_hash": "c344095b88623b56acc6f754d8727f6e"
+    "mtime": 1789765304.158587,
+    "seen": 1789765491.7943192,
+    "ast_hash": "4b87429aa033bc16fec82c1cc299716f",
+    "semantic_hash": ""
   },
   "src/Common/Common.Application/FeatureManagement/FeatureFlagResultExtensions.cs": {
     "mtime": 1779899541.6702797,
@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs": {
-    "mtime": 1786898254.8000298,
-    "seen": 1788521409.363861,
-    "ast_hash": "7ac6f366695cd021911dd75e28f70551",
+    "mtime": 1789765311.4498308,
+    "seen": 1789765491.794398,
+    "ast_hash": "c86351b0d20630ba78641b794c43507c",
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/RateLimitingMiddleware.cs": {

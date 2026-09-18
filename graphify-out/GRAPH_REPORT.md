@@ -1,7 +1,7 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-18)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-19)
 
 ## Corpus Check
-- 544 files · ~79,947 words
+- 544 files · ~79,992 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d2529563`
+- Built from commit: `08f1ad79`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

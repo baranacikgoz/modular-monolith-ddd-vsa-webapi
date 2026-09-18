@@ -127,7 +127,15 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode, string errorKey, string title)
     {
-        LogError(logger, exception);
+        // A 4xx is the client's mistake, not a server fault: Error level would pollute error logs and alerts.
+        if (statusCode >= StatusCodes.Status500InternalServerError)
+        {
+            LogError(logger, exception);
+        }
+        else
+        {
+            LogClientError(logger, exception, statusCode);
+        }
 
         if (context.Response.HasStarted)
         {
@@ -150,8 +158,13 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
 
     [LoggerMessage(
         Level = LogLevel.Error,
-        Message = "Unhandled exception occured.")]
+        Message = "Unhandled exception occurred.")]
     private static partial void LogError(ILogger logger, Exception exception);
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Request failed with a client error, status code {StatusCode}.")]
+    private static partial void LogClientError(ILogger logger, Exception exception, int statusCode);
 
     [LoggerMessage(
         Level = LogLevel.Error,
