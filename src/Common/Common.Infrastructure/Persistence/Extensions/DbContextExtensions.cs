@@ -77,7 +77,7 @@ public static class DbContextExtensions
                 e.EventType,
                 e.Version,
                 JsonSerializer.SerializeToElement(e.Event, e.Event.GetType(), _serializerOptions),
-                e.CreatedBy ?? default))
+                e.CreatedBy))
             .ToList();
 
         return new PaginationResponse<AuditLogDto>(items, totalCount, request.PageNumber, request.PageSize);

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Bogus;
 using Common.Application.AuditLog;
 using Common.Application.Pagination;
@@ -55,6 +56,36 @@ public class AuditLogTests : BaseIntegrationTest
 
         var result = await response.Content.ReadFromJsonAsync<PaginationResponse<AuditLogDto>>(JsonSerializerOptions);
         Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task AuditLog_WhenEventWasWrittenWithoutUser_ReturnsNullCreatedBy()
+    {
+        // Arrange: written outside an HTTP request, so there is no current user and the row's CreatedBy is null.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        var store = Store.Create(new ApplicationUserId(Guid.NewGuid()),
+            _faker.Company.CompanyName(), _faker.Lorem.Sentence(), _faker.Address.FullAddress());
+        var template = ProductTemplate.Create(_faker.Company.CompanyName(), _faker.Commerce.ProductName(), _faker.Commerce.Color());
+        var product = Product.Create(store.Id, template.Id, "Product", "Desc", 10, 10m);
+        store.AddProduct(product);
+        db.Stores.Add(store);
+        db.ProductTemplates.Add(template);
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var response = await client.GetAsync(new Uri($"/v1/products/{product.Id}/audit-log?PageNumber=1&PageSize=10", UriKind.Relative));
+
+        // Assert: a system-written row must read as null, not as the empty uuid.
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var items = json.RootElement.GetProperty("data").EnumerateArray().ToList();
+        Assert.NotEmpty(items);
+        Assert.All(items, item => Assert.Equal(JsonValueKind.Null, item.GetProperty("createdBy").ValueKind));
     }
 
     [Fact]

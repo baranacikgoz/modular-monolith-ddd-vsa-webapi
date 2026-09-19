@@ -8,4 +8,4 @@ public sealed record AuditLogDto(
     string EventType,
     long Version,
     JsonElement Payload,
-    ApplicationUserId CreatedBy);
+    ApplicationUserId? CreatedBy);

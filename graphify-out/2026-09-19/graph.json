@@ -16221,16 +16221,22 @@
         ],
         "unresolved_calls": [
           {
+            "callee": "AddErrorKey",
+            "receiver_type": "ProblemDetails",
+            "lang": "csharp",
+            "line": "L142"
+          },
+          {
             "callee": "TryWriteAsync",
             "receiver_type": "IProblemDetailsService",
             "lang": "csharp",
-            "line": "L132"
+            "line": "L145"
           }
         ]
       },
       "norm_label": ".handleexceptionasync()",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118"
+      "source_location": "L128"
     },
     {
       "id": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_invokeasync",
@@ -16266,7 +16272,7 @@
       },
       "norm_label": ".logcantwriteresponse()",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L143"
+      "source_location": "L156"
     },
     {
       "id": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_logerror",
@@ -16284,7 +16290,7 @@
       },
       "norm_label": ".logerror()",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L138"
+      "source_location": "L151"
     },
     {
       "id": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_logrequestaborted",
@@ -16302,7 +16308,7 @@
       },
       "norm_label": ".logrequestaborted()",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L148"
+      "source_location": "L161"
     },
     {
       "id": "src_common_common_infrastructure_persistence_basedbcontext_common_infrastructure_persistence_basedbcontext_savechangesasync",
@@ -71577,7 +71583,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L143",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -71592,7 +71598,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L138",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -71607,7 +71613,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L148",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -73602,7 +73608,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L120",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -73614,7 +73620,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L124",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_invokeasync",
+      "target": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_logrequestaborted",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -73627,18 +73645,6 @@
       "context": "call",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
       "source_location": "L25",
-      "weight": 1.0
-    },
-    {
-      "source": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_invokeasync",
-      "target": "src_host_host_middlewares_globalexceptionhandlingmiddleware_host_middlewares_globalexceptionhandlingmiddleware_logrequestaborted",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -134115,7 +134121,7 @@
         "ref_token": "Exception"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -134130,7 +134136,7 @@
         "ref_token": "Exception"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L138",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -135105,7 +135111,7 @@
         "ref_token": "HttpContext"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -138135,7 +138141,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L143",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -138150,7 +138156,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L138",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -138165,7 +138171,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L148",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -147124,7 +147130,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -171573,7 +171579,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L118",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -171584,7 +171590,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L138",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -171595,7 +171601,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L143",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -171606,7 +171612,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L148",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -179209,7 +179215,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L129",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -179221,7 +179227,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs",
-      "source_location": "L132",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -181007,5 +181013,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "d2529563c2783f0f94a5784b4c246c49e9fa542e"
+  "built_at_commit": "08f1ad79857a67737746eee890869e5e8e6ded1c"
 }
