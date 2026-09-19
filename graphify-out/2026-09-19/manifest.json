@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/GlobalExceptionHandlingMiddleware.cs": {
-    "mtime": 1789765311.4498308,
-    "seen": 1789765491.794398,
-    "ast_hash": "c86351b0d20630ba78641b794c43507c",
+    "mtime": 1789767829.3470733,
+    "seen": 1789767920.685823,
+    "ast_hash": "18a40bd6b1486b98a90ab65eff6da0ac",
     "semantic_hash": ""
   },
   "src/Host/Host/Middlewares/RateLimitingMiddleware.cs": {

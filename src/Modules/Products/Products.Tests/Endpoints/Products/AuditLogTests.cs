@@ -5,12 +5,14 @@ using System.Text.Json;
 using Bogus;
 using Common.Application.AuditLog;
 using Common.Application.Pagination;
+using Common.Domain.Entities;
 using Common.Domain.StronglyTypedIds;
 using Common.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Products.Application.Persistence;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Products;
+using Products.Domain.Products.DomainEvents.v1;
 using Products.Domain.Stores;
 using Xunit;
 
@@ -86,6 +88,41 @@ public class AuditLogTests : BaseIntegrationTest
         var items = json.RootElement.GetProperty("data").EnumerateArray().ToList();
         Assert.NotEmpty(items);
         Assert.All(items, item => Assert.Equal(JsonValueKind.Null, item.GetProperty("createdBy").ValueKind));
+    }
+
+    [Fact]
+    public async Task AuditLog_WhenRowsShareCreatedOn_OrdersByVersionDescendingAcrossPages()
+    {
+        // Arrange: one SaveChanges stamps every row with the same CreatedOn, like one command that raises several events.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+        var productId = ProductId.New();
+        for (var version = 1; version <= 5; version++)
+        {
+            db.AuditLog.Add(AuditLogEntry.Create(nameof(Product), productId.Value, version,
+                new V1ProductNameUpdatedDomainEvent(productId, $"name-{version}")));
+        }
+
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act: two pages, so an unstable tie order would show up as a repeated or skipped row.
+        var first = await GetVersionsAsync(client, productId, pageNumber: 1);
+        var second = await GetVersionsAsync(client, productId, pageNumber: 2);
+
+        // Assert
+        Assert.Equal([5L, 4L, 3L], first);
+        Assert.Equal([2L, 1L], second);
+    }
+
+    private static async Task<List<long>> GetVersionsAsync(HttpClient client, ProductId productId, int pageNumber)
+    {
+        var response = await client.GetAsync(new Uri($"/v1/products/{productId}/audit-log?PageNumber={pageNumber}&PageSize=3", UriKind.Relative));
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return json.RootElement.GetProperty("data").EnumerateArray().Select(item => item.GetProperty("version").GetInt64()).ToList();
     }
 
     [Fact]

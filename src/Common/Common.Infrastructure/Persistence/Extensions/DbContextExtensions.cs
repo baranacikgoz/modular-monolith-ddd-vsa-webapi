@@ -67,6 +67,7 @@ public static class DbContextExtensions
 
         var entries = await query
             .OrderByDescending(e => e.CreatedOn)
+            .ThenByDescending(e => e.Version) // one command can raise several events at the same instant: keep page boundaries stable
             .Skip(request.Skip)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
