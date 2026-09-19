@@ -15,6 +15,7 @@ public static class PaginationQueryableExtensions
         Expression<Func<TEntity, object>>? orderByDescending = null,
         Expression<Func<TEntity, object>>? thenBy = null,
         Expression<Func<TEntity, object>>? thenByDescending = null,
+        Expression<Func<TEntity, object>>? tiebreaker = null,
         CancellationToken cancellationToken = default)
         where TEntity : IAuditableEntity
     {
@@ -44,6 +45,13 @@ public static class PaginationQueryableExtensions
         else
         {
             orderedQueryable = queryable.OrderByDescending(e => e.CreatedOn); // Fallback to a default ordering
+        }
+
+        // Rows that tie on every key above still need one fixed order, or a page boundary can repeat or skip a row.
+        // The caller supplies a unique key: IAuditableEntity has no id (composite-key entities exist).
+        if (tiebreaker is not null)
+        {
+            orderedQueryable = orderedQueryable.ThenBy(tiebreaker);
         }
 
         var totalCount = await queryable.CountAsync(cancellationToken);

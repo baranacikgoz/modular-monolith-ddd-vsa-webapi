@@ -29370,7 +29370,7 @@
             "callee": "SerializeToElement",
             "receiver_type": "JsonSerializer",
             "lang": "csharp",
-            "line": "L79"
+            "line": "L80"
           }
         ]
       },
@@ -71125,6 +71125,7 @@
     {
       "id": "system_buffers",
       "label": "system_buffers",
+      "_origin": "semantic",
       "community": 10,
       "community_name": "Error",
       "external": true,
@@ -71136,6 +71137,7 @@
     {
       "id": "entityframework_exceptions_postgresql",
       "label": "entityframework_exceptions_postgresql",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71147,6 +71149,7 @@
     {
       "id": "microsoft_entityframeworkcore_dbcontext",
       "label": "microsoft_entityframeworkcore_dbcontext",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71158,6 +71161,7 @@
     {
       "id": "microsoft_entityframeworkcore_infrastructure",
       "label": "microsoft_entityframeworkcore_infrastructure",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71169,6 +71173,7 @@
     {
       "id": "microsoft_entityframeworkcore_migrations",
       "label": "microsoft_entityframeworkcore_migrations",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71180,6 +71185,7 @@
     {
       "id": "microsoft_extensions_dependencyinjection",
       "label": "microsoft_extensions_dependencyinjection",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71191,6 +71197,7 @@
     {
       "id": "microsoft_extensions_hosting",
       "label": "microsoft_extensions_hosting",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71202,6 +71209,7 @@
     {
       "id": "microsoft_extensions_logging",
       "label": "microsoft_extensions_logging",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71213,6 +71221,7 @@
     {
       "id": "npgsql",
       "label": "npgsql",
+      "_origin": "semantic",
       "community": 106,
       "community_name": "microsoft_extensions_dependencyinjection",
       "external": true,
@@ -71224,6 +71233,7 @@
     {
       "id": "microsoft_aspnetcore_builder",
       "label": "microsoft_aspnetcore_builder",
+      "_origin": "semantic",
       "community": 11,
       "community_name": "Common.Domain.ResultMonad",
       "external": true,
@@ -71235,6 +71245,7 @@
     {
       "id": "microsoft_aspnetcore_http",
       "label": "microsoft_aspnetcore_http",
+      "_origin": "semantic",
       "community": 11,
       "community_name": "Common.Domain.ResultMonad",
       "external": true,
@@ -71246,6 +71257,7 @@
     {
       "id": "microsoft_aspnetcore_routing",
       "label": "microsoft_aspnetcore_routing",
+      "_origin": "semantic",
       "community": 11,
       "community_name": "Common.Domain.ResultMonad",
       "external": true,
@@ -71257,6 +71269,7 @@
     {
       "id": "microsoft_featuremanagement_featurefilters",
       "label": "microsoft_featuremanagement_featurefilters",
+      "_origin": "semantic",
       "community": 11,
       "community_name": "Common.Domain.ResultMonad",
       "external": true,
@@ -71268,6 +71281,7 @@
     {
       "id": "system_linq_expressions",
       "label": "system_linq_expressions",
+      "_origin": "semantic",
       "community": 11,
       "community_name": "Common.Domain.ResultMonad",
       "external": true,
@@ -71279,6 +71293,7 @@
     {
       "id": "microsoft_aspnetcore_hosting",
       "label": "microsoft_aspnetcore_hosting",
+      "_origin": "semantic",
       "community": 138,
       "community_name": "ResultToResponseTransformer.cs",
       "external": true,
@@ -71290,6 +71305,7 @@
     {
       "id": "microsoft_aspnetcore_http_iresult",
       "label": "microsoft_aspnetcore_http_iresult",
+      "_origin": "semantic",
       "community": 138,
       "community_name": "ResultToResponseTransformer.cs",
       "external": true,
@@ -71301,6 +71317,7 @@
     {
       "id": "microsoft_extensions_localization",
       "label": "microsoft_extensions_localization",
+      "_origin": "semantic",
       "community": 138,
       "community_name": "ResultToResponseTransformer.cs",
       "external": true,
@@ -71312,6 +71329,7 @@
     {
       "id": "serilog_context",
       "label": "serilog_context",
+      "_origin": "semantic",
       "community": 145,
       "community_name": "EnrichLogsWithUserInfoMiddleware",
       "external": true,
@@ -71323,6 +71341,7 @@
     {
       "id": "firebaseadmin",
       "label": "firebaseadmin",
+      "_origin": "semantic",
       "community": 162,
       "community_name": "FirebasePushGateway.cs",
       "external": true,
@@ -71334,6 +71353,7 @@
     {
       "id": "firebaseadmin_messaging",
       "label": "firebaseadmin_messaging",
+      "_origin": "semantic",
       "community": 162,
       "community_name": "FirebasePushGateway.cs",
       "external": true,
@@ -71345,6 +71365,7 @@
     {
       "id": "google_apis_auth_oauth2",
       "label": "google_apis_auth_oauth2",
+      "_origin": "semantic",
       "community": 162,
       "community_name": "FirebasePushGateway.cs",
       "external": true,
@@ -71356,6 +71377,7 @@
     {
       "id": "common_application_localization_resources",
       "label": "common_application_localization_resources",
+      "_origin": "semantic",
       "community": 202,
       "community_name": "fluentvalidation",
       "external": true,
@@ -71367,6 +71389,7 @@
     {
       "id": "entityframework_exceptions_common",
       "label": "entityframework_exceptions_common",
+      "_origin": "semantic",
       "community": 202,
       "community_name": "fluentvalidation",
       "external": true,
@@ -71378,6 +71401,7 @@
     {
       "id": "fluentvalidation",
       "label": "fluentvalidation",
+      "_origin": "semantic",
       "community": 202,
       "community_name": "fluentvalidation",
       "external": true,
@@ -71389,6 +71413,7 @@
     {
       "id": "system_globalization",
       "label": "system_globalization",
+      "_origin": "semantic",
       "community": 202,
       "community_name": "fluentvalidation",
       "external": true,
@@ -71400,6 +71425,7 @@
     {
       "id": "hangfire",
       "label": "hangfire",
+      "_origin": "semantic",
       "community": 211,
       "community_name": "BackgroundJobsModule.cs",
       "external": true,
@@ -71411,6 +71437,7 @@
     {
       "id": "hangfire_annotations",
       "label": "hangfire_annotations",
+      "_origin": "semantic",
       "community": 211,
       "community_name": "BackgroundJobsModule.cs",
       "external": true,
@@ -71422,6 +71449,7 @@
     {
       "id": "hangfire_dashboard",
       "label": "hangfire_dashboard",
+      "_origin": "semantic",
       "community": 211,
       "community_name": "BackgroundJobsModule.cs",
       "external": true,
@@ -71433,6 +71461,7 @@
     {
       "id": "hangfire_postgresql",
       "label": "hangfire_postgresql",
+      "_origin": "semantic",
       "community": 211,
       "community_name": "BackgroundJobsModule.cs",
       "external": true,
@@ -71444,6 +71473,7 @@
     {
       "id": "hangfire_server",
       "label": "hangfire_server",
+      "_origin": "semantic",
       "community": 211,
       "community_name": "BackgroundJobsModule.cs",
       "external": true,
@@ -71455,6 +71485,7 @@
     {
       "id": "asp_versioning",
       "label": "asp_versioning",
+      "_origin": "semantic",
       "community": 212,
       "community_name": "Versioning/Setup.cs",
       "external": true,
@@ -71466,6 +71497,7 @@
     {
       "id": "asp_versioning_builder",
       "label": "asp_versioning_builder",
+      "_origin": "semantic",
       "community": 212,
       "community_name": "Versioning/Setup.cs",
       "external": true,
@@ -71477,6 +71509,7 @@
     {
       "id": "asp_versioning_conventions",
       "label": "asp_versioning_conventions",
+      "_origin": "semantic",
       "community": 212,
       "community_name": "Versioning/Setup.cs",
       "external": true,
@@ -71488,6 +71521,7 @@
     {
       "id": "system_diagnostics",
       "label": "system_diagnostics",
+      "_origin": "semantic",
       "community": 213,
       "community_name": "system_diagnostics",
       "external": true,
@@ -71499,6 +71533,7 @@
     {
       "id": "system_diagnostics_metrics",
       "label": "system_diagnostics_metrics",
+      "_origin": "semantic",
       "community": 213,
       "community_name": "system_diagnostics",
       "external": true,
@@ -71510,6 +71545,7 @@
     {
       "id": "system_runtime_compilerservices",
       "label": "system_runtime_compilerservices",
+      "_origin": "semantic",
       "community": 213,
       "community_name": "system_diagnostics",
       "external": true,
@@ -71521,6 +71557,7 @@
     {
       "id": "microsoft_aspnetcore_mvc",
       "label": "microsoft_aspnetcore_mvc",
+      "_origin": "semantic",
       "community": 216,
       "community_name": "microsoft_aspnetcore_mvc",
       "external": true,
@@ -71532,6 +71569,7 @@
     {
       "id": "microsoft_aspnetcore_mvc_modelbinding",
       "label": "microsoft_aspnetcore_mvc_modelbinding",
+      "_origin": "semantic",
       "community": 228,
       "community_name": "StronglyTypedIdBinder.cs",
       "external": true,
@@ -71543,6 +71581,7 @@
     {
       "id": "microsoft_aspnetcore_ratelimiting",
       "label": "microsoft_aspnetcore_ratelimiting",
+      "_origin": "semantic",
       "community": 232,
       "community_name": "microsoft_extensions_options",
       "external": true,
@@ -71554,6 +71593,7 @@
     {
       "id": "microsoft_extensions_options",
       "label": "microsoft_extensions_options",
+      "_origin": "semantic",
       "community": 232,
       "community_name": "microsoft_extensions_options",
       "external": true,
@@ -71565,6 +71605,7 @@
     {
       "id": "stackexchange_redis",
       "label": "stackexchange_redis",
+      "_origin": "semantic",
       "community": 232,
       "community_name": "microsoft_extensions_options",
       "external": true,
@@ -71576,6 +71617,7 @@
     {
       "id": "system_threading_ratelimiting",
       "label": "system_threading_ratelimiting",
+      "_origin": "semantic",
       "community": 232,
       "community_name": "microsoft_extensions_options",
       "external": true,
@@ -71587,6 +71629,7 @@
     {
       "id": "microsoft_entityframeworkcore",
       "label": "microsoft_entityframeworkcore",
+      "_origin": "semantic",
       "community": 238,
       "community_name": "microsoft_entityframeworkcore",
       "external": true,
@@ -71598,6 +71641,7 @@
     {
       "id": "microsoft_entityframeworkcore_changetracking",
       "label": "microsoft_entityframeworkcore_changetracking",
+      "_origin": "semantic",
       "community": 238,
       "community_name": "microsoft_entityframeworkcore",
       "external": true,
@@ -71609,6 +71653,7 @@
     {
       "id": "microsoft_entityframeworkcore_metadata_builders",
       "label": "microsoft_entityframeworkcore_metadata_builders",
+      "_origin": "semantic",
       "community": 238,
       "community_name": "microsoft_entityframeworkcore",
       "external": true,
@@ -71620,6 +71665,7 @@
     {
       "id": "microsoft_entityframeworkcore_storage_valueconversion",
       "label": "microsoft_entityframeworkcore_storage_valueconversion",
+      "_origin": "semantic",
       "community": 238,
       "community_name": "microsoft_entityframeworkcore",
       "external": true,
@@ -71631,6 +71677,7 @@
     {
       "id": "npgsqltypes",
       "label": "npgsqltypes",
+      "_origin": "semantic",
       "community": 238,
       "community_name": "microsoft_entityframeworkcore",
       "external": true,
@@ -71642,6 +71689,7 @@
     {
       "id": "system_net",
       "label": "system_net",
+      "_origin": "semantic",
       "community": 239,
       "community_name": "system_net",
       "external": true,
@@ -71653,6 +71701,7 @@
     {
       "id": "system_net_http_headers",
       "label": "system_net_http_headers",
+      "_origin": "semantic",
       "community": 239,
       "community_name": "system_net",
       "external": true,
@@ -71664,6 +71713,7 @@
     {
       "id": "system_net_http_json",
       "label": "system_net_http_json",
+      "_origin": "semantic",
       "community": 239,
       "community_name": "system_net",
       "external": true,
@@ -71675,6 +71725,7 @@
     {
       "id": "system_text_json",
       "label": "system_text_json",
+      "_origin": "semantic",
       "community": 239,
       "community_name": "system_net",
       "external": true,
@@ -71686,6 +71737,7 @@
     {
       "id": "microsoft_aspnetcore_authentication",
       "label": "microsoft_aspnetcore_authentication",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71697,6 +71749,7 @@
     {
       "id": "microsoft_aspnetcore_authentication_jwtbearer",
       "label": "microsoft_aspnetcore_authentication_jwtbearer",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71708,6 +71761,7 @@
     {
       "id": "microsoft_aspnetcore_authorization",
       "label": "microsoft_aspnetcore_authorization",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71719,6 +71773,7 @@
     {
       "id": "microsoft_identitymodel_tokens",
       "label": "microsoft_identitymodel_tokens",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71730,6 +71785,7 @@
     {
       "id": "system_collections_concurrent",
       "label": "system_collections_concurrent",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71741,6 +71797,7 @@
     {
       "id": "system_security_claims",
       "label": "system_security_claims",
+      "_origin": "semantic",
       "community": 246,
       "community_name": "KeycloakPermissionAuthorizationHandler.cs",
       "external": true,
@@ -71752,6 +71809,7 @@
     {
       "id": "microsoft_aspnetcore_http_json",
       "label": "microsoft_aspnetcore_http_json",
+      "_origin": "semantic",
       "community": 249,
       "community_name": "Infrastructure/Setup.cs",
       "external": true,
@@ -71763,6 +71821,7 @@
     {
       "id": "microsoft_aspnetcore_localization",
       "label": "microsoft_aspnetcore_localization",
+      "_origin": "semantic",
       "community": 249,
       "community_name": "Infrastructure/Setup.cs",
       "external": true,
@@ -71774,6 +71833,7 @@
     {
       "id": "resxgenerator_registration",
       "label": "resxgenerator_registration",
+      "_origin": "semantic",
       "community": 249,
       "community_name": "Infrastructure/Setup.cs",
       "external": true,
@@ -71785,6 +71845,7 @@
     {
       "id": "system_reflection",
       "label": "system_reflection",
+      "_origin": "semantic",
       "community": 249,
       "community_name": "Infrastructure/Setup.cs",
       "external": true,
@@ -71796,6 +71857,7 @@
     {
       "id": "system_text_json_serialization",
       "label": "system_text_json_serialization",
+      "_origin": "semantic",
       "community": 271,
       "community_name": "system_text_json_serialization",
       "external": true,
@@ -71807,6 +71869,7 @@
     {
       "id": "microsoft_featuremanagement",
       "label": "microsoft_featuremanagement",
+      "_origin": "semantic",
       "community": 272,
       "community_name": "Common.InterModuleRequests.Contracts",
       "external": true,
@@ -71818,6 +71881,7 @@
     {
       "id": "microsoft_identitymodel_jsonwebtokens",
       "label": "microsoft_identitymodel_jsonwebtokens",
+      "_origin": "semantic",
       "community": 272,
       "community_name": "Common.InterModuleRequests.Contracts",
       "external": true,
@@ -71829,6 +71893,7 @@
     {
       "id": "polly_circuitbreaker",
       "label": "polly_circuitbreaker",
+      "_origin": "semantic",
       "community": 272,
       "community_name": "Common.InterModuleRequests.Contracts",
       "external": true,
@@ -71840,6 +71905,7 @@
     {
       "id": "polly_timeout",
       "label": "polly_timeout",
+      "_origin": "semantic",
       "community": 272,
       "community_name": "Common.InterModuleRequests.Contracts",
       "external": true,
@@ -71851,6 +71917,7 @@
     {
       "id": "elastic_serilog_sinks",
       "label": "elastic_serilog_sinks",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71862,6 +71929,7 @@
     {
       "id": "healthchecks_ui_client",
       "label": "healthchecks_ui_client",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71873,6 +71941,7 @@
     {
       "id": "masstransit",
       "label": "masstransit",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71884,6 +71953,7 @@
     {
       "id": "microsoft_aspnetcore_diagnostics_healthchecks_healthcheckoptions",
       "label": "microsoft_aspnetcore_diagnostics_healthchecks_healthcheckoptions",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71895,6 +71965,7 @@
     {
       "id": "microsoft_aspnetcore_httpoverrides",
       "label": "microsoft_aspnetcore_httpoverrides",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71906,6 +71977,7 @@
     {
       "id": "microsoft_extensions_diagnostics_healthchecks",
       "label": "microsoft_extensions_diagnostics_healthchecks",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71917,6 +71989,7 @@
     {
       "id": "opentelemetry_metrics",
       "label": "opentelemetry_metrics",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71928,6 +72001,7 @@
     {
       "id": "opentelemetry_opentelemetrybuilder",
       "label": "opentelemetry_opentelemetrybuilder",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71939,6 +72013,7 @@
     {
       "id": "opentelemetry_resources",
       "label": "opentelemetry_resources",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71950,6 +72025,7 @@
     {
       "id": "opentelemetry_trace",
       "label": "opentelemetry_trace",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71961,6 +72037,7 @@
     {
       "id": "serilog",
       "label": "serilog",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71972,6 +72049,7 @@
     {
       "id": "serilog_configuration",
       "label": "serilog_configuration",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71983,6 +72061,7 @@
     {
       "id": "serilog_enrichers_span",
       "label": "serilog_enrichers_span",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -71994,6 +72073,7 @@
     {
       "id": "serilog_events",
       "label": "serilog_events",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72005,6 +72085,7 @@
     {
       "id": "serilog_exceptions",
       "label": "serilog_exceptions",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72016,6 +72097,7 @@
     {
       "id": "serilog_formatting_compact",
       "label": "serilog_formatting_compact",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72027,6 +72109,7 @@
     {
       "id": "serilog_sinks_opentelemetry",
       "label": "serilog_sinks_opentelemetry",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72038,6 +72121,7 @@
     {
       "id": "serilog_sinks_systemconsole_themes",
       "label": "serilog_sinks_systemconsole_themes",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72049,6 +72133,7 @@
     {
       "id": "system_net_ipnetwork",
       "label": "system_net_ipnetwork",
+      "_origin": "semantic",
       "community": 282,
       "community_name": "Common.Application.Options",
       "external": true,
@@ -72060,6 +72145,7 @@
     {
       "id": "opentelemetry_exporter",
       "label": "opentelemetry_exporter",
+      "_origin": "semantic",
       "community": 295,
       "community_name": "Infrastructure/StringExtensions.cs",
       "external": true,
@@ -72071,6 +72157,7 @@
     {
       "id": "microsoft_aspnetcore_signalr",
       "label": "microsoft_aspnetcore_signalr",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72082,6 +72169,7 @@
     {
       "id": "microsoft_extensions_configuration",
       "label": "microsoft_extensions_configuration",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72093,6 +72181,7 @@
     {
       "id": "system_buffers_text",
       "label": "system_buffers_text",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72104,6 +72193,7 @@
     {
       "id": "system_security_cryptography",
       "label": "system_security_cryptography",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72115,6 +72205,7 @@
     {
       "id": "system_text",
       "label": "system_text",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72126,6 +72217,7 @@
     {
       "id": "ziggycreatures_caching_fusion",
       "label": "ziggycreatures_caching_fusion",
+      "_origin": "semantic",
       "community": 3,
       "community_name": "microsoft_extensions_configuration",
       "external": true,
@@ -72137,6 +72229,7 @@
     {
       "id": "asp_versioning_apiexplorer",
       "label": "asp_versioning_apiexplorer",
+      "_origin": "semantic",
       "community": 40,
       "community_name": "ConfigureSwaggerOptions.cs",
       "external": true,
@@ -72148,6 +72241,7 @@
     {
       "id": "microsoft_aspnetcore_mvc_apiexplorer",
       "label": "microsoft_aspnetcore_mvc_apiexplorer",
+      "_origin": "semantic",
       "community": 40,
       "community_name": "ConfigureSwaggerOptions.cs",
       "external": true,
@@ -72159,6 +72253,7 @@
     {
       "id": "microsoft_openapi",
       "label": "microsoft_openapi",
+      "_origin": "semantic",
       "community": 40,
       "community_name": "ConfigureSwaggerOptions.cs",
       "external": true,
@@ -72170,6 +72265,7 @@
     {
       "id": "swashbuckle_aspnetcore_swaggergen",
       "label": "swashbuckle_aspnetcore_swaggergen",
+      "_origin": "semantic",
       "community": 40,
       "community_name": "ConfigureSwaggerOptions.cs",
       "external": true,
@@ -72181,6 +72277,7 @@
     {
       "id": "system_text_json_nodes",
       "label": "system_text_json_nodes",
+      "_origin": "semantic",
       "community": 40,
       "community_name": "ConfigureSwaggerOptions.cs",
       "external": true,
@@ -72192,6 +72289,7 @@
     {
       "id": "system_guid",
       "label": "system_guid",
+      "_origin": "semantic",
       "community": 439,
       "community_name": "GlobalUsings.cs",
       "external": true,
@@ -72203,6 +72301,7 @@
     {
       "id": "microsoft_extensions_http_resilience",
       "label": "microsoft_extensions_http_resilience",
+      "_origin": "semantic",
       "community": 53,
       "community_name": "Captcha/Setup.cs",
       "external": true,
@@ -72214,6 +72313,7 @@
     {
       "id": "polly",
       "label": "polly",
+      "_origin": "semantic",
       "community": 53,
       "community_name": "Captcha/Setup.cs",
       "external": true,
@@ -72225,6 +72325,7 @@
     {
       "id": "sharpgrip_fluentvalidation_autovalidation_endpoints_extensions",
       "label": "sharpgrip_fluentvalidation_autovalidation_endpoints_extensions",
+      "_origin": "semantic",
       "community": 9,
       "community_name": "IAMModule.cs",
       "external": true,
@@ -72236,6 +72337,7 @@
     {
       "id": "system_runtime_loader",
       "label": "system_runtime_loader",
+      "_origin": "semantic",
       "community": 9,
       "community_name": "IAMModule.cs",
       "external": true,
@@ -72247,6 +72349,7 @@
     {
       "id": "microsoft_entityframeworkcore_diagnostics",
       "label": "microsoft_entityframeworkcore_diagnostics",
+      "_origin": "semantic",
       "community": 92,
       "community_name": "Common.Domain.StronglyTypedIds",
       "external": true,
@@ -72258,6 +72361,7 @@
     {
       "id": "system_componentmodel_dataannotations",
       "label": "system_componentmodel_dataannotations",
+      "_origin": "semantic",
       "community": 92,
       "community_name": "Common.Domain.StronglyTypedIds",
       "external": true,
@@ -199356,5 +199460,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "ee9ebb0993420bccacd6bb3be56314ba6253ef85"
+  "built_at_commit": "afa0ed2f7c4e8c0ff017f973ea65d354ef487bd1"
 }
