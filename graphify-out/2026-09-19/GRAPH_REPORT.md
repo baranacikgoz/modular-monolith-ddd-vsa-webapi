@@ -1,7 +1,7 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-19)
 
 ## Corpus Check
-- 544 files · ~80,046 words
+- 544 files · ~80,064 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ee9ebb09`
+- Built from commit: `afa0ed2f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1507,7 +1507,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Result` connect `Result` to `StockReservation`, `.AddProductToMyStoreAsync`, `.ListSessions`, `FirebasePushGateway`, `.AddProductAsync`, `Error`, `ProductTemplate`, `ApplicationUserId`, `.GetMeAsync`, `Response`, `.RegisterAsync`, `.SendOtp`, `IEmailGateway`, `.RevokeSession`, `.SendAsync`, `DummyEmailGateway`, `KeycloakTokenClient`, `.UpdateCurrentPushToken`, `IInventoryDbContext`, `.SingleAsResult`, `.ReserveSeriesAsync`, `DummySmsGateway`, `ICurrentUser`, `.ActivateProductTemplateAsync`, `.RefreshToken`, `ISmsGateway`, `.RegisterAsync`, `PaginationResponse`, `Response`, `PushMessage`, `ReCaptchaService`, `.SendOtp`, `BrevoEmailGateway`, `.SearchProductTemplatesAsync`, `IDbContext`, `ICaptchaService`, `.SendCoreAsync`, `AuditableEntityResponse`, `Response`, `.SaveChangesAsync`, `.SearchStoresAsync`, `ResultTelemetryExtensions`, `DomainEvent`, `IProductsDbContext`, `.GetProductAsync`, `Response`, `.SearchMyProductsAsync`, `NetGsmSmsGateway`, `.SearchStoreProductsAsync`, `.ReleaseStockReservationAsync`, `.IsRegisteredAsync`, `Response`, `.HandleWarehouseWebhookAsync`, `.DeactivateStoreAsync`, `.TapWhenFeatureEnabledAsync`?**
   _High betweenness centrality (0.138) - this node is a cross-community bridge._
 - **Why does `Common.Domain.ResultMonad` connect `Common.Domain.ResultMonad` to `FirebasePushGateway.cs`, `microsoft_extensions_configuration`, `ISmsGateway`, `ResultToResponseTransformer.cs`, `Error`, `microsoft_entityframeworkcore`, `system_net`, `Common.InterModuleRequests.Contracts`, `PushMessage`, `.SendOtp`, `system_diagnostics`, `.SendOtp`, `DummyCaptchaService.cs`, `Captcha/Setup.cs`, `IEmailGateway`, `Common.Domain.StronglyTypedIds`, `Result`?**
-  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **What connects `Id`, `IdAsString`, `Roles` to the rest of the system?**
   _892 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `StockReservation` be split into smaller, more focused modules?**

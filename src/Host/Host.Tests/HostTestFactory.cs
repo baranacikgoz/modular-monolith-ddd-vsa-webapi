@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Tests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,10 +9,20 @@ public class HostTestFactory : IntegrationTestFactory
 {
     private string[]? _moduleOverride;
     private string? _keycloakBaseAddress;
+    private (int Limit, int PeriodInMs)? _globalRateLimit;
 
     public HostTestFactory WithModules(string modules)
     {
         _moduleOverride = modules.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        return this;
+    }
+
+    /// <summary>Tightens the global fixed-window limiter for one booted host. AddRateLimiter's configure lambda
+    /// runs when RateLimiterOptions is first resolved (runtime), so the values go through the in-memory
+    /// collection, added after IntegrationTestFactory's own generous defaults so they win.</summary>
+    public HostTestFactory WithGlobalRateLimit(int limit, int periodInMs)
+    {
+        _globalRateLimit = (limit, periodInMs);
         return this;
     }
 
@@ -33,6 +44,17 @@ public class HostTestFactory : IntegrationTestFactory
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
+
+        if (_globalRateLimit is { } rateLimit)
+        {
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    { "CustomRateLimitingOptions:Global:Limit", rateLimit.Limit.ToString(CultureInfo.InvariantCulture) },
+                    { "CustomRateLimitingOptions:Global:PeriodInMs", rateLimit.PeriodInMs.ToString(CultureInfo.InvariantCulture) },
+                    { "CustomRateLimitingOptions:Global:QueueLimit", "0" }
+                }));
+        }
 
         if (_keycloakBaseAddress is not null)
         {

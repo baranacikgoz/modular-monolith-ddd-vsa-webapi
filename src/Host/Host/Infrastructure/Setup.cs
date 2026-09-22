@@ -74,8 +74,8 @@ internal static partial class Setup
                 .UseMiddleware<EnrichLogsWithUserInfoMiddleware>();
         }
 
-        // After UseAuthentication so policies can partition by the authenticated caller; before
-        // UseAuthorization so 401/403 traffic still counts against the global per-IP limiter.
+        // After UseAuthentication so the global limiter and policies can partition by the authenticated
+        // caller; before UseAuthorization so 401/403 traffic still counts against the caller's (or IP's) bucket.
         app.UseRateLimiter();
 
         if (hasAuth)

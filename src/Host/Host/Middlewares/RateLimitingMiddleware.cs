@@ -47,7 +47,9 @@ internal static class RateLimitingMiddleware
     {
         return PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
         {
-            var partitionKey = httpContext.GetIpAddress() ?? "N/A";
+            // Authenticated callers get their own bucket (JWT sub), anonymous traffic shares the IP's. Partitioning
+            // by IP alone put every user of a server-rendered frontend (one egress IP) into a single bucket.
+            var partitionKey = httpContext.GetUserIdOrIpAddress();
 
             if (IsExempt(httpContext.Request.Path, rateLimitingOptions.ExemptPathPrefixes))
             {
