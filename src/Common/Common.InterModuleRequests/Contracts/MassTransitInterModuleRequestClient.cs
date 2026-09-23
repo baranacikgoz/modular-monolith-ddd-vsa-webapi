@@ -13,7 +13,7 @@ public class MassTransitInterModuleRequestClient<TRequest, TResponse>(
 {
     public async Task<TResponse> SendAsync(TRequest request, CancellationToken cancellationToken)
     {
-        var timeout = RequestTimeout.After(s: options.Value.TimeoutSeconds);
+        var timeout = RequestTimeout.After(s: options.Value.TimeoutSecondsFor(typeof(TRequest)));
         var requestClient = clientFactory.CreateRequestClient<TRequest>(timeout);
         var response = await requestClient.GetResponse<TResponse>(request, cancellationToken);
         return response.Message;
