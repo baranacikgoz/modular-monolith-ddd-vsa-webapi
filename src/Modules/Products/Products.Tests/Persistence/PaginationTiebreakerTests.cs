@@ -48,8 +48,8 @@ public class PaginationTiebreakerTests : BaseIntegrationTest
             p => p.Name, new PageRequest { PageNumber = 2, PageSize = 3 }, orderBy: p => p.Price, tiebreaker: p => p.Name);
 
         // Assert: each row exactly once, in tiebreaker order.
-        Assert.Equal(["P1", "P2", "P3"], first.Data);
-        Assert.Equal(["P4", "P5"], second.Data);
+        Assert.Equal(["P1", "P2", "P3"], first.Value!.Data);
+        Assert.Equal(["P4", "P5"], second.Value!.Data);
     }
 
     private sealed record PageRequest : PaginationRequest;

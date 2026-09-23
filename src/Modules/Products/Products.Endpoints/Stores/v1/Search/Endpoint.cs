@@ -81,6 +81,7 @@ internal static class Endpoint
                     LastModifiedOn = s.LastModifiedOn
                 },
                 orderByDescending: orderByRank,
+                tiebreaker: s => s.Id,
                 cancellationToken: cancellationToken);
     }
 }

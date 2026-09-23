@@ -25,5 +25,10 @@ public class PaginationRequestValidator<T> : CustomValidator<T>
             .WithMessage(string.Format(CultureInfo.CurrentCulture,
                 localizer.PaginationRequest_PageSize_InclusiveBetween, PageSizeInclusiveMin,
                 PageSizeInclusiveMax));
+
+        RuleFor(x => x.After)
+            .Must(after => PaginationCursor.TryDecode(after, out _))
+            .WithMessage(localizer.PaginationRequest_After_Invalid)
+            .When(x => x.After is not null);
     }
 }

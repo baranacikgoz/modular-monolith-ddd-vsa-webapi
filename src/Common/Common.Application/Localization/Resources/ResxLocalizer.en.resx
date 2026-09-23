@@ -198,6 +198,9 @@
   <data name="PaginationRequest_PageSize_InclusiveBetween" xml:space="preserve">
     <value>Page size must be between ({0}) and ({1}).</value>
   </data>
+  <data name="PaginationRequest_After_Invalid" xml:space="preserve">
+    <value>The pagination cursor (after) is invalid.</value>
+  </data>
   <data name="IAM_PhoneNumber_Length" xml:space="preserve">
     <value>Phone number must be ({0}) characters long including the area code.</value>
   </data>
