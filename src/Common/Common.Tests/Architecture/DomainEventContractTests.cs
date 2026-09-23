@@ -28,7 +28,7 @@ public sealed class DomainEventContractTests
     public void DomainEvents_MustOnlyCarryFrozenPayloadTypes()
     {
         var eventTypes = SolutionAssemblies.All
-            .SelectMany(GetLoadableTypes)
+            .SelectMany(SolutionAssemblies.LoadableTypes)
             .Where(t => t is { IsClass: true, IsAbstract: false } && typeof(DomainEvent).IsAssignableFrom(t))
             .ToList();
 
@@ -106,18 +106,6 @@ public sealed class DomainEventContractTests
         }
 
         return false;
-    }
-
-    private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
-    {
-        try
-        {
-            return assembly.GetTypes();
-        }
-        catch (ReflectionTypeLoadException ex)
-        {
-            return ex.Types.Where(t => t is not null)!;
-        }
     }
 }
 

@@ -258,9 +258,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/RabbitMqOptions.cs": {
-    "mtime": 1784481847.4939678,
-    "seen": 1788521409.363817,
-    "ast_hash": "a04008f77a8f4d0dd6ad15651f8d0ea0",
+    "mtime": 1790163184.9609566,
+    "seen": 1790163320.016644,
+    "ast_hash": "0904091988a1e310845f080b68eec637",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/RequestLoggingOptions.cs": {
@@ -786,9 +786,9 @@
     "semantic_hash": "9623cf7e4c6db9c7ed184871fa603b7e"
   },
   "src/Host/Host/Infrastructure/Setup.MassTransit.cs": {
-    "mtime": 1789748042.6016643,
-    "seen": 1789748270.4205482,
-    "ast_hash": "5579b99e12d5358ef25be50d52b955b8",
+    "mtime": 1790163210.5115123,
+    "seen": 1790163320.0166972,
+    "ast_hash": "c68b077397fe154c3d8190d410cd36fa",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.Modules.cs": {
@@ -3273,6 +3273,12 @@
     "mtime": 1790145410.961159,
     "seen": 1790145575.827011,
     "ast_hash": "bf219425cb4b9448a0e4b46ce56c3398",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/EventBus/ConcurrencyConfiguratorExtensions.cs": {
+    "mtime": 1790163197.6682923,
+    "seen": 1790163320.016622,
+    "ast_hash": "b5cd1ef03f309e91768aef1eba39f0d2",
     "semantic_hash": ""
   }
 }

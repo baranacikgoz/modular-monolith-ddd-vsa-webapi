@@ -32,6 +32,19 @@ internal static class SolutionAssemblies
         .OrderBy(m => m, StringComparer.Ordinal)
         .ToList();
 
+    /// <summary>Every type an assembly can hand back, tolerating the partial failure a stale transitive dependency causes.</summary>
+    public static IEnumerable<Type> LoadableTypes(Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t is not null)!;
+        }
+    }
+
     private static List<Assembly> Discover()
     {
         var assemblies = new List<Assembly>();

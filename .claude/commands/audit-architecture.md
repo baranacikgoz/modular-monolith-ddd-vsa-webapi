@@ -28,3 +28,4 @@ Audit the codebase. One line per check: PASS, FAIL, or WARNING, with `file:line`
 18. Literal tunables (timeout, retry, threshold, duration, limit, interval, cron, template) in application code instead of Options (§9). Structural constants PASS.
 19. `grep -rn 'ApplyEvent\|LoadFromHistory' --include='*.cs' src/` must be empty (§6).
 20. Endpoints without `.RequireScope(...)` on a `RequireAuthorization` group; scopes missing from `keycloak/realm-modular-monolith.json` (§1 Identity).
+21. Aggregate methods or constructors taking one of their own child entities' ids (bare, nullable, or inside a collection) instead of the child entity (§4). Run `AggregateChildEntityParameterTests` for the verdict.
