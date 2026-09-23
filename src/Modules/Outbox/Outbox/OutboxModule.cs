@@ -85,6 +85,17 @@ public sealed partial class OutboxModule : ICoreModule
 
                     LogCleanupJobRegistered(logger, cleanupOptions.CronSchedule, cleanupOptions.RetentionDays);
                 });
+
+                // The consumer inbox (ProcessedMessages in every module schema) ages out on the same schedule.
+                RegisterWithRetry(logger, "inbox-cleanup", () =>
+                {
+                    recurringJobManager.AddOrUpdate(
+                        "inbox-cleanup",
+                        (InboxCleanupJob job) => job.ExecuteAsync(CancellationToken.None),
+                        () => cleanupOptions.CronSchedule);
+
+                    LogInboxCleanupJobRegistered(logger, cleanupOptions.CronSchedule);
+                });
             }
 
             recurringJobManager.RemoveIfExists("outbox-lag");
@@ -135,6 +146,10 @@ public sealed partial class OutboxModule : ICoreModule
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Outbox cleanup recurring job registered with schedule '{CronSchedule}', retention {RetentionDays} days.")]
     private static partial void LogCleanupJobRegistered(ILogger logger, string cronSchedule, int retentionDays);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Inbox cleanup recurring job registered with schedule '{CronSchedule}', retention CachingOptions.IdempotencyKeyDuration.")]
+    private static partial void LogInboxCleanupJobRegistered(ILogger logger, string cronSchedule);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Outbox cleanup enabled but Hangfire is not available. Recurring job not registered.")]

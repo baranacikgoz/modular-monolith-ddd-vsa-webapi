@@ -1,6 +1,7 @@
 using Common.Application.Auth;
 using Common.Domain.Entities;
 using Common.Infrastructure.EventBus;
+using Common.Infrastructure.Persistence.Inbox;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -23,6 +24,15 @@ public abstract partial class BaseDbContext(
     {
         base.ConfigureConventions(configurationBuilder);
         configurationBuilder.Properties<DateTimeOffset>().HaveConversion<UtcDateTimeOffsetConverter>();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Every module DbContext carries the consumer inbox; the table resolves to the schema the module
+        // sets with HasDefaultSchema in its own OnModelCreating.
+        modelBuilder.ApplyConfiguration(new ProcessedMessageConfiguration());
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

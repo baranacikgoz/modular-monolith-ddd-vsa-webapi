@@ -23,6 +23,44 @@ namespace Inventory.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Common.Application.Persistence.Inbox.ProcessedMessage", b =>
+                {
+                    b.Property<string>("ConsumerName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ProcessedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("ConsumerName", "MessageId")
+                        .HasName("PK_ProcessedMessages");
+
+                    b.HasIndex("ProcessedOn");
+
+                    b.ToTable("ProcessedMessages", "Inventory");
+                });
+
             modelBuilder.Entity("Common.Domain.Entities.AuditLogEntry", b =>
                 {
                     b.Property<Guid>("AggregateId")

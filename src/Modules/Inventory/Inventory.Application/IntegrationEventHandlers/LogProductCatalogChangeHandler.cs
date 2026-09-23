@@ -1,6 +1,8 @@
 using Common.Application.EventBus;
 using Common.Application.Options;
+using Common.Application.Persistence.Inbox;
 using Common.IntegrationEvents;
+using Inventory.Application.Persistence;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
@@ -15,8 +17,9 @@ namespace Inventory.Application.IntegrationEventHandlers;
 public sealed partial class LogProductCatalogChangeHandler(
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
+    IInboxStore<IInventoryDbContext> inbox,
     ILogger<LogProductCatalogChangeHandler> logger
-) : IntegrationEventHandlerBase<ProductCreatedIntegrationEvent>(cache, cachingOptions, logger)
+) : IntegrationEventHandlerBase<ProductCreatedIntegrationEvent>(cache, cachingOptions, inbox, logger)
 {
     protected override Task ProcessAsync(ProductCreatedIntegrationEvent @event, CancellationToken cancellationToken)
     {
