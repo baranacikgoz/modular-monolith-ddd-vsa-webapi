@@ -1,0 +1,7 @@
+{
+  "JobHousekeepingOptions": {
+    "StaleAfterMinutes": 60,
+    "RetentionHours": 168,
+    "PageSize": 500
+  }
+}
