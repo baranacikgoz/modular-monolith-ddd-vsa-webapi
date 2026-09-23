@@ -25,17 +25,24 @@ public static class Setup
     /// <param name="services">The service collection.</param>
     /// <param name="configureClient">Action to configure the HttpClient (e.g., BaseAddress).</param>
     /// <param name="configureResilience">Optional action to override default resilience options.</param>
+    /// <param name="useStandardPipeline">
+    /// False registers only the primary handler and connection lifetime, no standard resilience handler: for clients
+    /// that apply a per-key pipeline per request instead (<see cref="KeyedResiliencePipelines" />,
+    /// <see cref="HttpClientKeyedExtensions.SendWithPipelineAsync" />).
+    /// </param>
     /// <returns>The IHttpClientBuilder for further chaining.</returns>
     public static IHttpClientBuilder AddResilientHttpClient<TClient, TImplementation>(
         this IServiceCollection services,
         Action<HttpClient> configureClient,
-        Action<HttpStandardResilienceOptions>? configureResilience = null)
+        Action<HttpStandardResilienceOptions>? configureResilience = null,
+        bool useStandardPipeline = true)
         where TClient : class
         where TImplementation : class, TClient
     {
         return services.AddResilientHttpClient<TClient, TImplementation>(
             (_, httpClient) => configureClient(httpClient),
-            configureResilience is null ? null : (options, _) => configureResilience(options));
+            configureResilience is null ? null : (options, _) => configureResilience(options),
+            useStandardPipeline);
     }
 
     /// <summary>
@@ -46,7 +53,8 @@ public static class Setup
     public static IHttpClientBuilder AddResilientHttpClient<TClient, TImplementation>(
         this IServiceCollection services,
         Action<IServiceProvider, HttpClient> configureClient,
-        Action<HttpStandardResilienceOptions, IServiceProvider>? configureResilience = null)
+        Action<HttpStandardResilienceOptions, IServiceProvider>? configureResilience = null,
+        bool useStandardPipeline = true)
         where TClient : class
         where TImplementation : class, TClient
     {
@@ -58,6 +66,11 @@ public static class Setup
                     sp.GetRequiredService<IOptions<ResiliencyOptions>>().Value.PooledConnectionLifetimeMinutes),
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+
+        if (!useStandardPipeline)
+        {
+            return builder;
+        }
 
         builder.AddStandardResilienceHandler().Configure((options, serviceProvider) =>
         {
@@ -86,5 +99,12 @@ public static class Setup
         });
 
         return builder;
+    }
+
+    /// <summary>Registers <see cref="KeyedResiliencePipelines" /> (one singleton registry of per-key pipelines).</summary>
+    public static IServiceCollection AddKeyedResiliencePipelines(this IServiceCollection services)
+    {
+        services.AddSingleton<KeyedResiliencePipelines>();
+        return services;
     }
 }

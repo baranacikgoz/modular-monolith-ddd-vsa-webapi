@@ -9,6 +9,7 @@ using Common.Infrastructure.EventBus;
 using Common.Infrastructure.FeatureManagement;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Persistence;
+using Common.Infrastructure.Resiliency;
 using Common.InterModuleRequests;
 using Common.Application.Localization.Resources;
 using FluentValidation;
@@ -178,6 +179,7 @@ internal static partial class Setup
             .AddCommonOptions(config, env)
             .AddCommonPersistence()
             .AddCommonFeatureManagement(config)
+            .AddKeyedResiliencePipelines()
             .AddCommonAuth();
     }
 

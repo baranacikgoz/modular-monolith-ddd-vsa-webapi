@@ -14,6 +14,32 @@ public class ResiliencyOptions
     public required int CircuitBreakerMinimumThroughput { get; set; }
     public required int CircuitBreakerBreakDurationSeconds { get; set; }
     public required int AttemptTimeoutSeconds { get; set; }
+
+    /// <summary>
+    ///     Named profiles for <c>KeyedResiliencePipelines</c>: one rate limiter, circuit breaker and attempt timeout per
+    ///     key (a third party's per-tenant quota, one partner among many behind the same client). Plain default rather
+    ///     than <c>required</c>: this class is already deployed, an environment whose config predates the field must
+    ///     keep booting.
+    /// </summary>
+    public Dictionary<string, KeyedResilienceProfile> Keyed { get; init; } = new(StringComparer.Ordinal);
+}
+
+/// <summary>Per-key resilience settings; see <see cref="ResiliencyOptions.Keyed" />.</summary>
+public class KeyedResilienceProfile
+{
+    /// <summary>Calls admitted per <see cref="RateLimitWindowMs" /> window.</summary>
+    public required int RateLimitPermits { get; set; }
+
+    public required int RateLimitWindowMs { get; set; }
+
+    /// <summary>Calls allowed to wait for the next window instead of being rejected right away.</summary>
+    public required int RateLimitQueueLimit { get; set; }
+
+    public required double CircuitBreakerFailureRatio { get; set; }
+    public required int CircuitBreakerMinimumThroughput { get; set; }
+    public required int CircuitBreakerSamplingDurationSeconds { get; set; }
+    public required int CircuitBreakerBreakDurationSeconds { get; set; }
+    public required int AttemptTimeoutSeconds { get; set; }
 }
 
 public class ResiliencyOptionsValidator : CustomValidator<ResiliencyOptions>
@@ -62,5 +88,49 @@ public class ResiliencyOptionsValidator : CustomValidator<ResiliencyOptions>
         RuleFor(o => o.CircuitBreakerSamplingDurationSeconds)
             .GreaterThanOrEqualTo(o => 2 * o.AttemptTimeoutSeconds)
             .WithMessage("CircuitBreakerSamplingDurationSeconds must be at least 2x AttemptTimeoutSeconds.");
+
+        RuleForEach(o => o.Keyed)
+            .Must(pair => !string.IsNullOrWhiteSpace(pair.Key))
+            .WithMessage("Keyed profile names must not be empty.")
+            .SetValidator((_, pair) => new KeyedResilienceProfileValidator(pair.Key));
+    }
+}
+
+public class KeyedResilienceProfileValidator : AbstractValidator<KeyValuePair<string, KeyedResilienceProfile>>
+{
+    public KeyedResilienceProfileValidator(string key)
+    {
+        RuleFor(p => p.Value.RateLimitPermits)
+            .GreaterThan(0)
+            .WithMessage($"Keyed[{key}].RateLimitPermits must be greater than 0.");
+
+        RuleFor(p => p.Value.RateLimitWindowMs)
+            .GreaterThan(0)
+            .WithMessage($"Keyed[{key}].RateLimitWindowMs must be greater than 0.");
+
+        RuleFor(p => p.Value.RateLimitQueueLimit)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage($"Keyed[{key}].RateLimitQueueLimit must be greater than or equal to 0.");
+
+        RuleFor(p => p.Value.CircuitBreakerFailureRatio)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(1)
+            .WithMessage($"Keyed[{key}].CircuitBreakerFailureRatio must be between 0 (exclusive) and 1 (inclusive).");
+
+        RuleFor(p => p.Value.CircuitBreakerMinimumThroughput)
+            .GreaterThanOrEqualTo(2)
+            .WithMessage($"Keyed[{key}].CircuitBreakerMinimumThroughput must be at least 2.");
+
+        RuleFor(p => p.Value.CircuitBreakerSamplingDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage($"Keyed[{key}].CircuitBreakerSamplingDurationSeconds must be greater than 0.");
+
+        RuleFor(p => p.Value.CircuitBreakerBreakDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage($"Keyed[{key}].CircuitBreakerBreakDurationSeconds must be greater than 0.");
+
+        RuleFor(p => p.Value.AttemptTimeoutSeconds)
+            .GreaterThan(0)
+            .WithMessage($"Keyed[{key}].AttemptTimeoutSeconds must be greater than 0.");
     }
 }
