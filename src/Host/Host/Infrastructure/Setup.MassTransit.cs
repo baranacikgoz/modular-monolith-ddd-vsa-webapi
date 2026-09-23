@@ -1,4 +1,5 @@
 using System.Reflection;
+using Common.Application.EventBus;
 using Common.Application.Options;
 using MassTransit;
 using Microsoft.Extensions.Options;
@@ -60,6 +61,8 @@ internal static partial class Setup
                     minInterval: TimeSpan.FromMilliseconds(opts.RetryMinIntervalMs),
                     maxInterval: TimeSpan.FromMilliseconds(opts.RetryMaxIntervalMs),
                     intervalDelta: TimeSpan.FromMilliseconds(opts.RetryIntervalDeltaMs)));
+
+                cfg.SetConcurrency(opts.DefaultPrefetchCount, opts.DefaultConcurrentMessageLimit);
 
                 cfg.ConfigureEndpoints(ctx);
             });

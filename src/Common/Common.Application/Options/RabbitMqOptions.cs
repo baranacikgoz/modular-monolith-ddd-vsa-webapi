@@ -18,6 +18,13 @@ public class RabbitMqOptions
     public required int RetryMinIntervalMs { get; set; }
     public required int RetryMaxIntervalMs { get; set; }
     public required int RetryIntervalDeltaMs { get; set; }
+
+    // Default for any receive endpoint without its own ConsumerDefinition override (see
+    // Common.Application.EventBus.ConcurrencyConfiguratorExtensions). Not required, with a C# default matching
+    // MassTransit's own baseline (max(CPU count x 2, 16)): a deploy whose eventBus.json doesn't have these keys
+    // yet still boots with sane behavior instead of a required-property validation failure.
+    public int DefaultPrefetchCount { get; set; } = 16;
+    public int DefaultConcurrentMessageLimit { get; set; } = 16;
 }
 
 public class RabbitMqOptionsValidator : CustomValidator<RabbitMqOptions>
@@ -59,5 +66,13 @@ public class RabbitMqOptionsValidator : CustomValidator<RabbitMqOptions>
         RuleFor(o => o.RetryIntervalDeltaMs)
             .GreaterThanOrEqualTo(0)
             .WithMessage("RetryIntervalDeltaMs must be at least 0.");
+
+        RuleFor(o => o.DefaultPrefetchCount)
+            .GreaterThan(0)
+            .WithMessage("DefaultPrefetchCount must be greater than 0.");
+
+        RuleFor(o => o.DefaultConcurrentMessageLimit)
+            .GreaterThan(0)
+            .WithMessage("DefaultConcurrentMessageLimit must be greater than 0.");
     }
 }

@@ -3,6 +3,8 @@
     "Host": "localhost",
     "Port": 5672,
     "VirtualHost": "/",
+    "DefaultPrefetchCount": 16,
+    "DefaultConcurrentMessageLimit": 16,
     "Username": "guest",
     "Password": "guest",
     "RetryLimit": 5,
