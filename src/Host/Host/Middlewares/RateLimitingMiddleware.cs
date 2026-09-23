@@ -95,7 +95,7 @@ internal static class RateLimitingMiddleware
                 Instance = $"{httpContext.Request.Method} {httpContext.Request.Path.Value}"
             };
 
-            if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+            if (httpContext.Response.SetRetryAfterHeader(context.Lease) is { } retryAfter)
             {
                 problemDetails.Detail = string.Format(System.Globalization.CultureInfo.CurrentCulture,
                     localizer.RetryAfter, retryAfter);

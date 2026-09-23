@@ -4,6 +4,7 @@ using Common.Application.Extensions;
 using Common.Application.Options;
 using Common.Application.Localization.Resources;
 using Common.Infrastructure.Extensions;
+using Common.Infrastructure.RateLimiting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -28,9 +29,9 @@ public static partial class Policies
     {
         public Func<OnRejectedContext, CancellationToken, ValueTask>? OnRejected => (context, cancellationToken) =>
         {
-            var localizedMessage = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter)
-                ? LocalizedMessage(retryAfter)
-                : LocalizedMessage(TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs));
+            var retryAfter = context.HttpContext.Response.SetRetryAfterHeader(context.Lease)
+                             ?? TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs);
+            var localizedMessage = LocalizedMessage(retryAfter);
 
             var problemDetails = new ProblemDetails
             {

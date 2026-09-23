@@ -21,7 +21,14 @@ public class GlobalRateLimiterPartitionTests
         // Both clients share the test server's single "IP": only a per-user partition keeps B unaffected by A.
         Assert.Equal(HttpStatusCode.OK, (await userA.GetAsync(probe)).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await userA.GetAsync(probe)).StatusCode);
-        Assert.Equal(HttpStatusCode.TooManyRequests, (await userA.GetAsync(probe)).StatusCode);
+        using var rejected = await userA.GetAsync(probe);
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejected.StatusCode);
+
+        // Machine-readable wait for clients (a server-rendered frontend retries a GET after exactly this), not only
+        // the localized ProblemDetails text. The in-process FixedWindowRateLimiter reports the remaining window.
+        var retryAfter = rejected.Headers.RetryAfter?.Delta;
+        Assert.NotNull(retryAfter);
+        Assert.InRange(retryAfter.Value, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(60));
 
         Assert.Equal(HttpStatusCode.OK, (await userB.GetAsync(probe)).StatusCode);
     }

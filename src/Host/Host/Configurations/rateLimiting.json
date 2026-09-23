@@ -1,7 +1,7 @@
 {
   "CustomRateLimitingOptions": {
     "Global": {
-      "Limit": 5,
+      "Limit": 30,
       "PeriodInMs": 1000,
       "QueueLimit": 0
     },
