@@ -14,6 +14,7 @@ internal static partial class Setup
     private const string LiveTag = "live";
     private const string ReadyTag = "ready";
     private const string StartupTag = "startup";
+    private const string DependencyTag = "dependency";
 
     public static IServiceCollection AddCustomHealthChecks(
         this IServiceCollection services,
@@ -60,8 +61,9 @@ internal static partial class Setup
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
-        // Readiness: Keycloak reachable. Every login and every uncached permission decision needs it, so a
-        // realm whose discovery document cannot be fetched means the instance cannot serve authenticated traffic.
+        // Dependency: Keycloak reachable. Deliberately NOT on "ready": readiness gates traffic, and a Keycloak
+        // blip would take every instance out of rotation at once (cached permission decisions and anonymous
+        // routes keep working meanwhile). /health/dependencies is for dashboards and alerts, not the load balancer.
         // Only when the IAM module runs in this instance: a Products-only process never talks to Keycloak.
         // The URL is resolved per probe from IOptions so runtime overrides (tests, env vars) apply.
         if (services.IsModuleActive("IAM"))
@@ -70,7 +72,7 @@ internal static partial class Setup
                 sp => new Uri(
                     $"{sp.GetRequiredService<IOptions<KeycloakOptions>>().Value.Authority}/.well-known/openid-configuration"),
                 name: "keycloak",
-                tags: [ReadyTag],
+                tags: [DependencyTag],
                 timeout: TimeSpan.FromSeconds(options.ReadinessTimeoutInSeconds));
         }
 
@@ -120,12 +122,19 @@ internal static partial class Setup
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             }).ExcludeFromDescription();
 
+        app.MapHealthChecks("/health/dependencies",
+            new AspNetHealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains(DependencyTag),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            }).ExcludeFromDescription();
+
         LogHealthChecksRegistered(app.Logger);
 
         return app;
     }
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup")]
+        Message = "Health check endpoints registered: /health/live, /health/ready, /health/startup, /health/dependencies")]
     private static partial void LogHealthChecksRegistered(ILogger logger);
 }

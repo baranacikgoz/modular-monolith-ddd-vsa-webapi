@@ -22,12 +22,14 @@ public sealed class SignalRSetupTests
             })
             .Build();
 
-    private static ValidationContext<SignalROptions> BuildContext(bool useRedisBackplane, string environmentName)
+    private static ValidationContext<SignalROptions> BuildContext(
+        bool useRedisBackplane, string environmentName, bool requireRedisBackplaneInProduction = true)
     {
         var options = new SignalROptions
         {
             UseRedisBackplane = useRedisBackplane,
             RedisConnectionString = useRedisBackplane ? "localhost:6379" : "",
+            RequireRedisBackplaneInProduction = requireRedisBackplaneInProduction,
         };
         var context = new ValidationContext<SignalROptions>(options);
         context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
@@ -41,6 +43,15 @@ public sealed class SignalRSetupTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("UseRedisBackplane", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_ProductionWithoutRedisBackplane_GuardSwitchedOff_Valid()
+    {
+        var result = new SignalROptionsValidator().Validate(
+            BuildContext(useRedisBackplane: false, Environments.Production, requireRedisBackplaneInProduction: false));
+
+        Assert.True(result.IsValid);
     }
 
     [Fact]

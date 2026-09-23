@@ -20,6 +20,10 @@ public class InterModuleRequestOptions
     public int HandlerPrefetchCount { get; set; } = 32;
     public int HandlerConcurrentMessageLimit { get; set; } = 32;
 
+    // Retry-After hint on the 503 the Host returns when a request to another module faults or times out.
+    // Plain default for the same already-deployed-file reason as above.
+    public int DependencyUnavailableRetryAfterSeconds { get; set; } = 2;
+
     public int TimeoutSecondsFor(Type requestType)
         => Timeouts.TryGetValue(requestType.Name, out var perRequest) ? perRequest : TimeoutSeconds;
 }
@@ -47,5 +51,9 @@ public class InterModuleRequestOptionsValidator : CustomValidator<InterModuleReq
         RuleFor(o => o.HandlerConcurrentMessageLimit)
             .GreaterThan(0)
             .WithMessage("HandlerConcurrentMessageLimit must be greater than 0.");
+
+        RuleFor(o => o.DependencyUnavailableRetryAfterSeconds)
+            .GreaterThan(0)
+            .WithMessage("DependencyUnavailableRetryAfterSeconds must be greater than 0.");
     }
 }

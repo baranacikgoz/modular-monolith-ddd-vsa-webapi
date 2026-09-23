@@ -3,6 +3,7 @@
     "TimeoutSeconds": 10,
     "Timeouts": {},
     "HandlerPrefetchCount": 32,
-    "HandlerConcurrentMessageLimit": 32
+    "HandlerConcurrentMessageLimit": 32,
+    "DependencyUnavailableRetryAfterSeconds": 2
   }
 }
