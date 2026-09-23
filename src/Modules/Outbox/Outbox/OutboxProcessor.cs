@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Common.Application.Options;
+using Common.Application.Persistence.Outbox;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,12 +74,12 @@ public sealed partial class OutboxProcessor(
                 .FromSqlRaw(
                     """
                     UPDATE "Outbox"."OutboxMessages" o
-                    SET "NextRetryAt" = (NOW() AT TIME ZONE 'UTC') + make_interval(secs => {1})
+                    SET "NextRetryAt" = NOW() + make_interval(secs => {1})
                     FROM (
                         SELECT "Id" FROM "Outbox"."OutboxMessages"
                         WHERE "IsProcessed" = false
                           AND "FailedOn" IS NULL
-                          AND ("NextRetryAt" IS NULL OR "NextRetryAt" <= (NOW() AT TIME ZONE 'UTC'))
+                          AND ("NextRetryAt" IS NULL OR "NextRetryAt" <= NOW())
                         ORDER BY "CreatedOn"
                         LIMIT {0}
                         FOR UPDATE SKIP LOCKED
@@ -93,103 +94,36 @@ public sealed partial class OutboxProcessor(
 
             OutboxTelemetry.PollBatchSize.Record(messages.Count);
 
-            var consecutiveFailures = 0;
+            // Publishes run in parallel, PublishConcurrency at a time. Each task owns exactly one OutboxMessage
+            // entity (mutations never cross tasks) and the one SaveChangesAsync below runs after the loop on the
+            // calling thread, so the DbContext is never used concurrently. Ordering inside a batch is no longer
+            // guaranteed; consumers are idempotent and must not depend on delivery order.
+            //
+            // Semantic change with parallel publishing: the old "MaxConsecutiveFailures failures in a row" abort
+            // is now "MaxConsecutiveFailures failures in this batch": once that many publishes have failed, every
+            // message not yet attempted releases its claim immediately (eligible again on the next poll) instead
+            // of being tried against a broker that is very likely down. A message that already started publishing
+            // when the threshold was crossed still completes and records its own outcome.
+            var failures = 0;
             var aborted = false;
 
-            for (var i = 0; i < messages.Count; i++)
-            {
-                var message = messages[i];
-
-                // MaxConsecutiveFailures publishes in a row have failed: the broker is very likely down.
-                // Stop attempting the rest of this batch and release their claims immediately so they
-                // don't sit idle for the full lease before becoming eligible again.
-                if (consecutiveFailures >= opts.MaxConsecutiveFailures)
+            await Parallel.ForEachAsync(
+                messages,
+                new ParallelOptions { MaxDegreeOfParallelism = opts.PublishConcurrency, CancellationToken = ct },
+                async (message, token) =>
                 {
-                    for (var j = i; j < messages.Count; j++)
+                    if (Volatile.Read(ref failures) >= opts.MaxConsecutiveFailures)
                     {
-                        messages[j].ReleaseClaim();
+                        message.ReleaseClaim();
+                        Volatile.Write(ref aborted, true);
+                        return;
                     }
 
-                    aborted = true;
-                    break;
-                }
-
-                Activity? activity;
-                if (message.TraceId is not null && message.ParentSpanId is not null)
-                {
-                    var parentContext = new ActivityContext(
-                        ActivityTraceId.CreateFromString(message.TraceId),
-                        ActivitySpanId.CreateFromString(message.ParentSpanId),
-                        ActivityTraceFlags.Recorded);
-                    activity = OutboxTelemetry.ActivitySource.StartActivity(
-                        "outbox.publish", ActivityKind.Producer, parentContext);
-                }
-                else
-                {
-                    activity = OutboxTelemetry.ActivitySource.StartActivity(
-                        "outbox.publish", ActivityKind.Producer);
-                }
-
-                using var _ = activity;
-                activity?.SetTag("outbox.message_id", message.Id);
-                activity?.SetTag("outbox.retry_count", message.RetryCount);
-                activity?.SetTag("event.type", message.Event?.GetType().Name);
-
-                try
-                {
-                    var integrationEvent = message.Event;
-                    if (integrationEvent is null)
+                    if (await PublishOneAsync(message, publishEndpoint, opts, token) == PublishOutcome.Failed)
                     {
-                        LogNullEvent(logger, message.Id);
-                        message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
-                        if (message.RetryCount >= opts.MaxRetryCount)
-                        {
-                            message.MarkAsFailed(timeProvider.GetUtcNow());
-                            OutboxTelemetry.MessagesPermanentlyFailed.Add(1);
-                        }
-
-                        continue;
+                        Interlocked.Increment(ref failures);
                     }
-
-                    using var publishCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    publishCts.CancelAfter(opts.PublishTimeoutMs);
-                    await publishEndpoint.Publish(integrationEvent, integrationEvent.GetType(), publishCts.Token);
-                    message.MarkAsProcessed(timeProvider.GetUtcNow());
-                    OutboxTelemetry.MessagesPublished.Add(1);
-                    activity?.SetStatus(ActivityStatusCode.Ok);
-                    LogPublished(logger, message.Id, integrationEvent.GetType().Name);
-                    consecutiveFailures = 0;
-                }
-                catch (OperationCanceledException) when (ct.IsCancellationRequested)
-                {
-                    // Real shutdown (not just this message's PublishTimeoutMs): propagate, don't treat
-                    // it as a publish failure.
-                    throw;
-                }
-#pragma warning disable CA1031
-                catch (Exception ex)
-#pragma warning restore CA1031
-                {
-                    // Either a genuine publish failure or the per-publish PublishTimeoutMs firing
-                    // (OperationCanceledException with ct still live): both go through the same
-                    // retry/backoff path.
-                    activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-                    activity?.SetTag("exception.message", ex.Message);
-                    activity?.SetTag("exception.type", ex.GetType().Name);
-                    message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
-                    consecutiveFailures++;
-                    if (message.RetryCount >= opts.MaxRetryCount)
-                    {
-                        message.MarkAsFailed(timeProvider.GetUtcNow());
-                        OutboxTelemetry.MessagesPermanentlyFailed.Add(1);
-                        LogPermanentlyFailed(logger, message.Id, ex);
-                    }
-                    else
-                    {
-                        LogRetryScheduled(logger, message.Id, message.RetryCount, opts.MaxRetryCount, ex);
-                    }
-                }
-            }
+                });
 
             await db.SaveChangesAsync(ct);
             OutboxTelemetry.ProcessingDuration.Record(sw.Elapsed.TotalMilliseconds);
@@ -205,6 +139,97 @@ public sealed partial class OutboxProcessor(
         {
             LogBatchError(logger, ex);
             return 0;
+        }
+    }
+
+    private enum PublishOutcome
+    {
+        Published,
+        Failed,
+        Skipped
+    }
+
+    private async Task<PublishOutcome> PublishOneAsync(
+        OutboxMessage message,
+        IPublishEndpoint publishEndpoint,
+        OutboxOptions opts,
+        CancellationToken ct)
+    {
+        Activity? activity;
+        if (message.TraceId is not null && message.ParentSpanId is not null)
+        {
+            var parentContext = new ActivityContext(
+                ActivityTraceId.CreateFromString(message.TraceId),
+                ActivitySpanId.CreateFromString(message.ParentSpanId),
+                ActivityTraceFlags.Recorded);
+            activity = OutboxTelemetry.ActivitySource.StartActivity(
+                "outbox.publish", ActivityKind.Producer, parentContext);
+        }
+        else
+        {
+            activity = OutboxTelemetry.ActivitySource.StartActivity(
+                "outbox.publish", ActivityKind.Producer);
+        }
+
+        using var _ = activity;
+        activity?.SetTag("outbox.message_id", message.Id);
+        activity?.SetTag("outbox.retry_count", message.RetryCount);
+        activity?.SetTag("event.type", message.Event?.GetType().Name);
+
+        try
+        {
+            var integrationEvent = message.Event;
+            if (integrationEvent is null)
+            {
+                LogNullEvent(logger, message.Id);
+                message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
+                if (message.RetryCount >= opts.MaxRetryCount)
+                {
+                    message.MarkAsFailed(timeProvider.GetUtcNow());
+                    OutboxTelemetry.MessagesPermanentlyFailed.Add(1);
+                }
+
+                return PublishOutcome.Skipped;
+            }
+
+            using var publishCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            publishCts.CancelAfter(opts.PublishTimeoutMs);
+            await publishEndpoint.Publish(integrationEvent, integrationEvent.GetType(), publishCts.Token);
+            message.MarkAsProcessed(timeProvider.GetUtcNow());
+            OutboxTelemetry.MessagesPublished.Add(1);
+            activity?.SetStatus(ActivityStatusCode.Ok);
+            LogPublished(logger, message.Id, integrationEvent.GetType().Name);
+            return PublishOutcome.Published;
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            // Real shutdown (not just this message's PublishTimeoutMs): propagate, don't treat
+            // it as a publish failure.
+            throw;
+        }
+#pragma warning disable CA1031
+        catch (Exception ex)
+#pragma warning restore CA1031
+        {
+            // Either a genuine publish failure or the per-publish PublishTimeoutMs firing
+            // (OperationCanceledException with ct still live): both go through the same
+            // retry/backoff path.
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            activity?.SetTag("exception.message", ex.Message);
+            activity?.SetTag("exception.type", ex.GetType().Name);
+            message.IncrementRetryCount(timeProvider.GetUtcNow(), ComputeBackoff(message.RetryCount, opts));
+            if (message.RetryCount >= opts.MaxRetryCount)
+            {
+                message.MarkAsFailed(timeProvider.GetUtcNow());
+                OutboxTelemetry.MessagesPermanentlyFailed.Add(1);
+                LogPermanentlyFailed(logger, message.Id, ex);
+            }
+            else
+            {
+                LogRetryScheduled(logger, message.Id, message.RetryCount, opts.MaxRetryCount, ex);
+            }
+
+            return PublishOutcome.Failed;
         }
     }
 
@@ -225,19 +250,19 @@ public sealed partial class OutboxProcessor(
     private static partial void LogProcessorDisabled(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Outbox message {MessageId} has null event: skipping.")]
-    private static partial void LogNullEvent(ILogger logger, int messageId);
+    private static partial void LogNullEvent(ILogger logger, long messageId);
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Outbox message {MessageId} ({EventType}) published to RabbitMQ.")]
-    private static partial void LogPublished(ILogger logger, int messageId, string eventType);
+    private static partial void LogPublished(ILogger logger, long messageId, string eventType);
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Outbox message {MessageId} permanently failed after exhausting retries.")]
-    private static partial void LogPermanentlyFailed(ILogger logger, int messageId, Exception ex);
+    private static partial void LogPermanentlyFailed(ILogger logger, long messageId, Exception ex);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Outbox message {MessageId} publish failed (retry {RetryCount}/{MaxRetryCount}).")]
-    private static partial void LogRetryScheduled(ILogger logger, int messageId, int retryCount, int maxRetryCount,
+    private static partial void LogRetryScheduled(ILogger logger, long messageId, int retryCount, int maxRetryCount,
         Exception ex);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "OutboxProcessor batch failed; will retry on next poll.")]

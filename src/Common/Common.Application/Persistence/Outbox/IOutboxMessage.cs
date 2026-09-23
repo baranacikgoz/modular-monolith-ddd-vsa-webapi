@@ -4,7 +4,7 @@ namespace Common.Application.Persistence.Outbox;
 
 public interface IOutboxMessage
 {
-    int Id { get; }
+    long Id { get; }
     DateTimeOffset CreatedOn { get; }
     IEvent? Event { get; }
     bool IsProcessed { get; }

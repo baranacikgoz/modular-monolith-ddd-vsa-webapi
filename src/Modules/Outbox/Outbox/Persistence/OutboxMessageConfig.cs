@@ -11,7 +11,12 @@ public class OutboxMessageConfig : IEntityTypeConfiguration<OutboxMessage>
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasIndex(x => new { x.IsProcessed, x.FailedOn, x.NextRetryAt, x.CreatedOn });
+        // Partial index for the claim query only: it always filters IsProcessed = false AND FailedOn IS NULL,
+        // then ranges on NextRetryAt and orders by CreatedOn. Processed and failed rows (the bulk of the table)
+        // never enter the index.
+        builder
+            .HasIndex(x => new { x.NextRetryAt, x.CreatedOn })
+            .HasFilter("\"IsProcessed\" = false AND \"FailedOn\" IS NULL");
 
         builder
             .Property(x => x.CreatedOn)

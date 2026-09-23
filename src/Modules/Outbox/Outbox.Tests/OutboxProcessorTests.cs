@@ -64,7 +64,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
-    private static OutboxOptions BuildOptions(int batchSize = 10, int maxRetryCount = 3) => new()
+    private static OutboxOptions BuildOptions(int batchSize = 10, int maxRetryCount = 3, int publishConcurrency = 8) => new()
     {
         PollIntervalMs = 100_000, // never consulted: ProcessBatchAsync is called directly, not via the loop
         BatchSize = batchSize,
@@ -75,6 +75,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         PublishTimeoutMs = 2000,
         ClaimLeaseSeconds = 120,
         MaxConsecutiveFailures = 3,
+        PublishConcurrency = publishConcurrency,
         LagThresholdMinutes = 5,
         MetricsCronSchedule = "*/5 * * * *"
     };
@@ -85,7 +86,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         _factory.Services.GetRequiredService<TimeProvider>(),
         _factory.Services.GetRequiredService<ILogger<OutboxProcessor>>());
 
-    private async Task<int> SeedMessageAsync(DateTimeOffset createdOn, Action<OutboxMessage>? configure = null)
+    private async Task<long> SeedMessageAsync(DateTimeOffset createdOn, Action<OutboxMessage>? configure = null)
     {
         await using var scope = _factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -96,7 +97,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         return message.Id;
     }
 
-    private async Task<OutboxMessage> GetMessageAsync(int id)
+    private async Task<OutboxMessage> GetMessageAsync(long id)
     {
         await using var scope = _factory.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
@@ -173,7 +174,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         _fakePublishEndpoint.OnPublish = _ => throw new InvalidOperationException("simulated broker failure");
 
         var now = DateTimeOffset.UtcNow;
-        var ids = new List<int>();
+        var ids = new List<long>();
         for (var i = 0; i < 5; i++)
         {
             ids.Add(await SeedMessageAsync(now.AddMilliseconds(i)));
@@ -182,8 +183,11 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         // See ProcessBatch_PublishFails_SchedulesRetryWithLease: assert against the timestamp taken
         // before ProcessBatchAsync ran, not a fresh UtcNow after the round trip below: full-jitter
         // backoff can be near-zero and a later clock read races the DB round trip.
+        // PublishConcurrency 1 keeps the batch sequential in CreatedOn order, so exactly the first three
+        // messages are attempted before the threshold releases the rest. With parallel publishing the
+        // threshold is "failures in this batch", and which messages were already in flight is timing-dependent.
         var before = DateTimeOffset.UtcNow;
-        using var processor = CreateProcessor(BuildOptions(batchSize: 10, maxRetryCount: 5));
+        using var processor = CreateProcessor(BuildOptions(batchSize: 10, maxRetryCount: 5, publishConcurrency: 1));
         await processor.ProcessBatchAsync(CancellationToken.None);
 
         for (var i = 0; i < 3; i++)
@@ -203,6 +207,52 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
     }
 
     [Fact]
+    public async Task ProcessBatch_PublishConcurrency_RunsPublishesInParallelUpToTheLimit()
+    {
+        const int publishConcurrency = 4;
+        const int messageCount = 12;
+        var inFlight = 0;
+        var maxInFlight = 0;
+        var published = 0;
+
+        _fakePublishEndpoint.OnPublish = async _ =>
+        {
+            var current = Interlocked.Increment(ref inFlight);
+            // Record the high-water mark of simultaneous publishes.
+            int observed;
+            do
+            {
+                observed = Volatile.Read(ref maxInFlight);
+            }
+            while (current > observed && Interlocked.CompareExchange(ref maxInFlight, current, observed) != observed);
+
+            await Task.Delay(50, CancellationToken.None); // long enough for the other slots to fill
+            Interlocked.Decrement(ref inFlight);
+            Interlocked.Increment(ref published);
+        };
+
+        var now = DateTimeOffset.UtcNow;
+        var ids = new List<long>();
+        for (var i = 0; i < messageCount; i++)
+        {
+            ids.Add(await SeedMessageAsync(now.AddMilliseconds(i)));
+        }
+
+        using var processor = CreateProcessor(BuildOptions(batchSize: messageCount, publishConcurrency: publishConcurrency));
+        var processed = await processor.ProcessBatchAsync(CancellationToken.None);
+
+        Assert.Equal(messageCount, processed);
+        Assert.Equal(messageCount, published);
+        Assert.True(maxInFlight > 1, $"expected parallel publishes, max in flight was {maxInFlight}");
+        Assert.True(maxInFlight <= publishConcurrency, $"max in flight {maxInFlight} exceeded PublishConcurrency {publishConcurrency}");
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var processedCount = await db.OutboxMessages.AsNoTracking().CountAsync(m => ids.Contains(m.Id) && m.IsProcessed);
+        Assert.Equal(messageCount, processedCount);
+    }
+
+    [Fact]
     public async Task ProcessBatch_ConcurrentRuns_EachMessagePublishedOnce()
     {
         var publishCount = 0;
@@ -213,7 +263,7 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         };
 
         var now = DateTimeOffset.UtcNow;
-        var ids = new List<int>();
+        var ids = new List<long>();
         for (var i = 0; i < 20; i++)
         {
             ids.Add(await SeedMessageAsync(now.AddMilliseconds(i)));
