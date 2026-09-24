@@ -49,6 +49,26 @@ public sealed class AggregateChildEntityParameterTests
         Assert.Equal(aggregate.LookupId, aggregate.Lookup!.Id);
     }
 
+    /// <summary>
+    /// Two child entity types keyed by one shared id type are legal EF; the detector must report a parameter of that id
+    /// once per child it could address instead of crashing on the duplicate key.
+    /// </summary>
+    [Fact]
+    public void Detector_ChildrenSharingOneIdType_ReportsEachChildWithoutThrowing()
+    {
+        var violations = AggregateChildEntityParameterDetector.FindViolations([typeof(SharedIdAggregate)]);
+
+        Assert.Equal(
+            [nameof(SharedIdChildA), nameof(SharedIdChildB)],
+            violations.Select(v => v.ChildType.Name).Order(StringComparer.Ordinal).ToArray());
+        Assert.All(violations, v => Assert.Equal(nameof(SharedIdAggregate.RemoveEither), v.MemberName));
+
+        var aggregate = new SharedIdAggregate();
+        aggregate.RemoveEither(new FixtureChildId(DefaultIdType.NewGuid()));
+        Assert.Empty(aggregate.ChildrenA);
+        Assert.Empty(aggregate.ChildrenB);
+    }
+
     /// <summary>The real scan: no aggregate in the solution may take one of its own child entities' ids.</summary>
     [Fact]
     public void AggregateMethods_MustTakeChildEntities_NotChildIds()
@@ -83,6 +103,26 @@ public sealed class AggregateChildEntityParameterTests
     private sealed class FixtureChild(FixtureChildId id) : AuditableEntity<FixtureChildId>(id);
 
     private sealed class FixtureLookup(FixtureLookupId id) : AuditableEntity<FixtureLookupId>(id);
+
+    private sealed class SharedIdChildA(FixtureChildId id) : AuditableEntity<FixtureChildId>(id);
+
+    private sealed class SharedIdChildB(FixtureChildId id) : AuditableEntity<FixtureChildId>(id);
+
+    private sealed class SharedIdAggregate() : AggregateRoot<FixtureAggregateId>(new FixtureAggregateId(DefaultIdType.NewGuid()))
+    {
+        private readonly List<SharedIdChildA> _childrenA = [];
+        private readonly List<SharedIdChildB> _childrenB = [];
+
+        public IReadOnlyCollection<SharedIdChildA> ChildrenA => _childrenA.AsReadOnly();
+
+        public IReadOnlyCollection<SharedIdChildB> ChildrenB => _childrenB.AsReadOnly();
+
+        public void RemoveEither(FixtureChildId childId) // VIOLATION, for both children
+        {
+            _childrenA.RemoveAll(c => c.Id == childId);
+            _childrenB.RemoveAll(c => c.Id == childId);
+        }
+    }
 
     private sealed class FixtureAggregate() : AggregateRoot<FixtureAggregateId>(new FixtureAggregateId(DefaultIdType.NewGuid()))
     {
@@ -182,7 +222,10 @@ internal static class AggregateChildEntityParameterDetector
 
         foreach (var aggregate in aggregates)
         {
-            var childrenByIdType = ChildEntityTypes(aggregate).ToDictionary(IdTypeOf, child => child);
+            // Several child types may share one id type: a parameter of it addresses each of them.
+            var childrenByIdType = ChildEntityTypes(aggregate)
+                .GroupBy(IdTypeOf)
+                .ToDictionary(g => g.Key, g => g.ToList());
             if (childrenByIdType.Count == 0)
             {
                 continue;
@@ -194,7 +237,12 @@ internal static class AggregateChildEntityParameterDetector
                 {
                     foreach (var leaf in Leaves(parameter.ParameterType).Distinct())
                     {
-                        if (childrenByIdType.TryGetValue(leaf, out var child))
+                        if (!childrenByIdType.TryGetValue(leaf, out var children))
+                        {
+                            continue;
+                        }
+
+                        foreach (var child in children)
                         {
                             violations.Add(new AggregateChildEntityParameterViolation(
                                 aggregate, member.Name, parameter.Name ?? "?", leaf, child));
