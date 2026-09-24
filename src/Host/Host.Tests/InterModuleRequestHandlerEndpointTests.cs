@@ -40,6 +40,23 @@ public class InterModuleRequestHandlerEndpointTests(HostTestFactory factory)
     }
 
     [Fact]
+    public async Task RequestHandlerEndpoint_PerRequestTimeoutOverride_IsTheHandlerTimeout()
+    {
+        // Own host: the override must reach the handler's receive endpoint, not only the caller's request client,
+        // or a handler would be cancelled at TimeoutSeconds while its caller still waits for the longer override.
+        await using var overridden = new HostTestFactory()
+            .WithModules("IAM,Products")
+            .WithInterModuleRequestTimeout("GetProductRequest", 3);
+        await overridden.InitializeAsync();
+
+        using var probe = Probe(overridden.Services);
+        var timeout = FindFilter(FindReceiveEndpoint(probe, RequestHandlerEndpoint), "timeout");
+
+        Assert.NotNull(timeout);
+        Assert.Equal(TimeSpan.FromSeconds(3), TimeSpan.Parse(timeout.Value.GetProperty("timeout").GetString()!, System.Globalization.CultureInfo.InvariantCulture));
+    }
+
+    [Fact]
     public void EventConsumerEndpoint_DoesNotCarryRequestHandlerPolicy()
     {
         Assert.NotNull(_client);
@@ -51,9 +68,11 @@ public class InterModuleRequestHandlerEndpointTests(HostTestFactory factory)
         Assert.Null(FindFilter(endpoint, "retry"));
     }
 
-    private JsonDocument Probe()
+    private JsonDocument Probe() => Probe(factory.Services);
+
+    private static JsonDocument Probe(IServiceProvider services)
     {
-        var bus = factory.Services.GetRequiredService<IBus>();
+        var bus = services.GetRequiredService<IBus>();
         return JsonDocument.Parse(JsonSerializer.Serialize(bus.GetProbeResult().Results));
     }
 

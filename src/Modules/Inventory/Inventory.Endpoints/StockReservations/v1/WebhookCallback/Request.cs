@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Common.Application.Localization.Resources;
@@ -31,5 +32,10 @@ public sealed class RequestValidator : CustomValidator<Request>
         RuleFor(x => x.ProviderReference)
             .NotEmpty()
             .WithMessage(localizer.StockReservations_WebhookCallback_ProviderReference_NotEmpty);
+
+        RuleFor(x => x.ProviderReference)
+            .MaximumLength(Constants.ProviderReferenceMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.StockReservations_WebhookCallback_ProviderReference_MaximumLength, Constants.ProviderReferenceMaxLength));
     }
 }

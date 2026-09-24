@@ -1,4 +1,5 @@
 using Common.Application.Persistence.Projections;
+using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -82,6 +83,22 @@ public class ProjectionUpsertTests(IntegrationTestFactory factory) : BaseIntegra
         var row = await rival.Projections.AsNoTracking().SingleAsync(p => p.SourceId == key);
         Assert.Equal(expectedName, row.Name);
         Assert.Equal(Math.Max(incoming, 5), row.SourceVersion);
+    }
+
+    [Fact]
+    public async Task UpsertIfNewerAsync_OtherUniqueIndexViolated_RethrowsInsteadOfTreatingItAsARace()
+    {
+        await using var db = await HelpersTestDbContext.CreateAsync(Factory.ConnectionString);
+        var code = NewKey();
+        var first = NewKey();
+        await db.Projections.UpsertIfNewerAsync(first, 1,
+            () => new SampleProjection { SourceId = first }, p => p.ExternalCode = code, CancellationToken.None);
+        var second = NewKey();
+
+        // Only a lost race on the projection's own primary key is resolved by re-reading; any other unique violation
+        // (a secondary index, the consumer inbox key) is not this helper's to swallow.
+        await Assert.ThrowsAsync<UniqueConstraintException>(() => db.Projections.UpsertIfNewerAsync(second, 1,
+            () => new SampleProjection { SourceId = second }, p => p.ExternalCode = code, CancellationToken.None));
     }
 
     private static string NewKey()

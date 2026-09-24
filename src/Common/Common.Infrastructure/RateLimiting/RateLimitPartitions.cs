@@ -21,6 +21,12 @@ public static class RateLimitPartitions
     ///     webhook's account id, a per-tenant callback path) so each caller identified by the URL gets its own bucket.
     ///     Falls back to the client IP when the route value is missing, and the key is prefixed with the route key so a
     ///     route-value bucket can never collide with an IP bucket of the same policy.
+    ///     <para>
+    ///         The route value is caller-supplied, so this is fairness between legitimate callers, not abuse protection: a
+    ///         client that sprays random values gets a fresh bucket per value. The ceiling for that is the global limiter,
+    ///         which buckets anonymous traffic per IP, so never list a route using this policy in
+    ///         <c>CustomRateLimitingOptions.ExemptPathPrefixes</c>.
+    ///     </para>
     /// </summary>
     public static RateLimitPartition<string> FixedWindowByRouteValue(
         HttpContext httpContext, string policyName, string routeKey, FixedWindow options)

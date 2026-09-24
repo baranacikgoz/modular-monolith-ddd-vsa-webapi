@@ -17,11 +17,10 @@ public class ResiliencyOptions
 
     /// <summary>
     ///     Named profiles for <c>KeyedResiliencePipelines</c>: one rate limiter, circuit breaker and attempt timeout per
-    ///     key (a third party's per-tenant quota, one partner among many behind the same client). Plain default rather
-    ///     than <c>required</c>: this class is already deployed, an environment whose config predates the field must
-    ///     keep booting.
+    ///     key (a third party's per-tenant quota, one partner among many behind the same client). The initializer stays
+    ///     although the property is required: an empty JSON object (<c>"Keyed": {}</c>) binds to nothing.
     /// </summary>
-    public Dictionary<string, KeyedResilienceProfile> Keyed { get; init; } = new(StringComparer.Ordinal);
+    public required Dictionary<string, KeyedResilienceProfile> Keyed { get; init; } = new(StringComparer.Ordinal);
 }
 
 /// <summary>Per-key resilience settings; see <see cref="ResiliencyOptions.Keyed" />.</summary>
@@ -88,6 +87,10 @@ public class ResiliencyOptionsValidator : CustomValidator<ResiliencyOptions>
         RuleFor(o => o.CircuitBreakerSamplingDurationSeconds)
             .GreaterThanOrEqualTo(o => 2 * o.AttemptTimeoutSeconds)
             .WithMessage("CircuitBreakerSamplingDurationSeconds must be at least 2x AttemptTimeoutSeconds.");
+
+        RuleFor(o => o.Keyed)
+            .NotNull()
+            .WithMessage("Keyed must not be null.");
 
         RuleForEach(o => o.Keyed)
             .Must(pair => !string.IsNullOrWhiteSpace(pair.Key))

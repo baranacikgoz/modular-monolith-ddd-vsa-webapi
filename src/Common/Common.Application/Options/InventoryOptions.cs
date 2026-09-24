@@ -28,6 +28,9 @@ public class InventoryOptions
 
     /// <summary>Shared secret used to verify the HMAC-SHA256 signature on inbound warehouse webhook callbacks.</summary>
     public required string WebhookSharedSecret { get; set; }
+
+    /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
+    public required int WebhookMaxBodyBytes { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -64,5 +67,9 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.WebhookSharedSecret)
             .NotEmpty()
             .WithMessage("WebhookSharedSecret must not be empty.");
+
+        RuleFor(x => x.WebhookMaxBodyBytes)
+            .GreaterThan(0)
+            .WithMessage("WebhookMaxBodyBytes must be greater than 0.");
     }
 }

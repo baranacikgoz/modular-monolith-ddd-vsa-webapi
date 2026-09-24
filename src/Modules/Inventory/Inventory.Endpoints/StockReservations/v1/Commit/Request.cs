@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Application.Localization.Resources;
 using Common.Application.ModelBinders;
 using Common.Application.Validation;
@@ -42,5 +43,10 @@ public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
         RuleFor(x => x.ProviderReference)
             .NotEmpty()
             .WithMessage(localizer.StockReservations_Commit_ProviderReference_NotEmpty);
+
+        RuleFor(x => x.ProviderReference)
+            .MaximumLength(Constants.ProviderReferenceMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture,
+                localizer.StockReservations_Commit_ProviderReference_MaximumLength, Constants.ProviderReferenceMaxLength));
     }
 }

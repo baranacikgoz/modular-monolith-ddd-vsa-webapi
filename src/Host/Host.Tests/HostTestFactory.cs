@@ -10,6 +10,7 @@ public class HostTestFactory : IntegrationTestFactory
     private string[]? _moduleOverride;
     private string? _keycloakBaseAddress;
     private (int Limit, int PeriodInMs)? _globalRateLimit;
+    private (string RequestName, int Seconds)? _interModuleRequestTimeout;
 
     public HostTestFactory WithModules(string modules)
     {
@@ -23,6 +24,15 @@ public class HostTestFactory : IntegrationTestFactory
     public HostTestFactory WithGlobalRateLimit(int limit, int periodInMs)
     {
         _globalRateLimit = (limit, periodInMs);
+        return this;
+    }
+
+    /// <summary>Sets InterModuleRequestOptions.Timeouts[requestName] for one booted host. The bus (and every
+    /// InterModuleRequestHandlerDefinition) is configured when the host starts, reading runtime IOptions, so the
+    /// in-memory collection reaches it.</summary>
+    public HostTestFactory WithInterModuleRequestTimeout(string requestName, int seconds)
+    {
+        _interModuleRequestTimeout = (requestName, seconds);
         return this;
     }
 
@@ -53,6 +63,15 @@ public class HostTestFactory : IntegrationTestFactory
                     { "CustomRateLimitingOptions:Global:Limit", rateLimit.Limit.ToString(CultureInfo.InvariantCulture) },
                     { "CustomRateLimitingOptions:Global:PeriodInMs", rateLimit.PeriodInMs.ToString(CultureInfo.InvariantCulture) },
                     { "CustomRateLimitingOptions:Global:QueueLimit", "0" }
+                }));
+        }
+
+        if (_interModuleRequestTimeout is { } timeout)
+        {
+            builder.ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    { $"InterModuleRequestOptions:Timeouts:{timeout.RequestName}", timeout.Seconds.ToString(CultureInfo.InvariantCulture) }
                 }));
         }
 

@@ -24,10 +24,9 @@ public class ObservabilityOptions
     public string? OtlpEndpoint { get; set; }
     public string? OtlpProtocol { get; set; }
 
-    // Fraction of new traces recorded (ParentBased: a sampled parent always wins). Plain default equal to
-    // observability.json on purpose: added after the file was deployed, a required property would
-    // crash-loop a Vault value that predates it (CLAUDE.md, options pattern).
-    public double TraceSamplingRatio { get; set; } = 1.0;
+    // Fraction of new traces recorded (ParentBased: a sampled parent always wins). Nullable so a missing
+    // key fails NotNull at boot instead of binding to 0 (tracing silently off).
+    public required double? TraceSamplingRatio { get; set; }
 }
 
 public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOptions>
@@ -83,7 +82,12 @@ public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOption
             .When(o => o.EnableTracing || o.EnableMetrics);
 
         RuleFor(o => o.TraceSamplingRatio)
+            .NotNull()
+            .WithMessage("TraceSamplingRatio is required.");
+
+        RuleFor(o => o.TraceSamplingRatio)
             .InclusiveBetween(0.0, 1.0)
-            .WithMessage("TraceSamplingRatio must be between 0 and 1 inclusive.");
+            .WithMessage("TraceSamplingRatio must be between 0 and 1 inclusive.")
+            .When(o => o.TraceSamplingRatio is not null);
     }
 }

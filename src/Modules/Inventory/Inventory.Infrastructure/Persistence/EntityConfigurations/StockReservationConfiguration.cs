@@ -29,10 +29,12 @@ internal sealed class StockReservationConfiguration : AuditableEntityConfigurati
 
         builder
             .Property(r => r.ProviderReference)
+            .HasMaxLength(Constants.ProviderReferenceMaxLength)
             .IsRequired(false);
 
         builder
             .Property(r => r.LastReleaseAttemptReference)
+            .HasMaxLength(Constants.ReleaseAttemptReferenceMaxLength)
             .IsRequired(false);
 
         // Available-quantity aggregation (GetStockLevelRequestHandler) filters by ProductId + Status.

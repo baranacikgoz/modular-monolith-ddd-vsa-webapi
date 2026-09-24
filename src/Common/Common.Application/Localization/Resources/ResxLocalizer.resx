@@ -326,9 +326,6 @@
   <data name="ProductTemplates_Get_Id_NotEmpty" xml:space="preserve">
     <value>Ürün şablonu Id boş olamaz.</value>
   </data>
-  <data name="Products_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
-  </data>
   <data name="Products_Search_MaxPrice_GreaterThanOrEqualTo" xml:space="preserve">
     <value>Maksimum fiyat ({0})'dan büyük veya eşit olmalıdır.</value>
   </data>
@@ -446,9 +443,6 @@
   <data name="Stores_Search_Address_MaximumLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>
   </data>
-  <data name="Stores_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
-  </data>
   <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
     <value>İsim en fazla ({0}) karakter olabilir.</value>
   </data>
@@ -482,11 +476,17 @@
   <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Sağlayıcı referansı boş olamaz.</value>
   </data>
+  <data name="StockReservations_Commit_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>
   </data>
   <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Sağlayıcı referansı boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>
@@ -682,6 +682,9 @@
   </data>
   <data name="DependencyUnavailable" xml:space="preserve">
     <value>Bağımlı bir servis şu anda yanıt vermiyor. Lütfen kısa bir süre sonra tekrar deneyiniz.</value>
+  </data>
+  <data name="DependencyFaulted" xml:space="preserve">
+    <value>Bağımlı bir servis isteği işlerken hata verdi.</value>
   </data>
   <data name="FeatureNotAvailable" xml:space="preserve">
     <value>({0}) özelliği şu anda kullanılamıyor.</value>

@@ -97,6 +97,26 @@ public class KeysetPaginationTests(IntegrationTestWebAppFactory factory) : BaseI
     }
 
     [Fact]
+    public async Task PaginateAsync_CursorFromDifferentSortKey_FailsValidationOnAfter()
+    {
+        var (db, storeId) = await SeedAsync(count: 4, price: i => i);
+        var query = db.Products.AsNoTracking().Where(p => p.StoreId == storeId);
+
+        // A well-formed cursor minted by a Price (decimal) sort, replayed against a Name (string) sort: the client
+        // changed the sort between pages. User input, so a Validation failure, never a 500.
+        var byPrice = await query.PaginateAsync(p => p.Name, new PageRequest { PageNumber = 1, PageSize = 2 },
+            orderBy: p => p.Price, tiebreaker: p => p.Name);
+
+        var result = await query.PaginateAsync(p => p.Name,
+            new PageRequest { PageNumber = 1, PageSize = 2, After = byPrice.Value!.NextCursor },
+            orderBy: p => p.Name, tiebreaker: p => p.Name);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Validation", result.Error!.Key);
+        Assert.Contains(PaginationCursor.ParameterName, result.Error.SubErrors!);
+    }
+
+    [Fact]
     public async Task PaginateAsync_AfterWithoutTiebreaker_ThrowsArgumentException()
     {
         var (db, storeId) = await SeedAsync(count: 1, price: _ => 1m);

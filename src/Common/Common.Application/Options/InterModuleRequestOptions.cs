@@ -10,19 +10,17 @@ public class InterModuleRequestOptions
     public required int TimeoutSeconds { get; set; }
 
     // Per request type override, keyed by the request record's type name (e.g. "GetProductRequest"),
-    // in seconds. Absent key: TimeoutSeconds.
-    public Dictionary<string, int> Timeouts { get; } = [];
+    // in seconds, applied to the caller and the handler alike. Absent key: TimeoutSeconds. The initializer
+    // stays although the property is required: an empty JSON object ("Timeouts": {}) binds to nothing.
+    public required Dictionary<string, int> Timeouts { get; init; } = [];
 
     // Receive endpoint concurrency for request handlers (InterModuleRequestHandlerDefinition), separate
-    // from the bus-level event consumer defaults. Plain C# defaults equal to interModuleRequest.json on
-    // purpose: added after the file was deployed, a required property would crash-loop a Vault value that
-    // predates it (CLAUDE.md, options pattern).
-    public int HandlerPrefetchCount { get; set; } = 32;
-    public int HandlerConcurrentMessageLimit { get; set; } = 32;
+    // from the bus-level event consumer defaults.
+    public required int HandlerPrefetchCount { get; set; }
+    public required int HandlerConcurrentMessageLimit { get; set; }
 
-    // Retry-After hint on the 503 the Host returns when a request to another module faults or times out.
-    // Plain default for the same already-deployed-file reason as above.
-    public int DependencyUnavailableRetryAfterSeconds { get; set; } = 2;
+    // Retry-After hint on the 503 the Host returns when a request to another module times out.
+    public required int DependencyUnavailableRetryAfterSeconds { get; set; }
 
     public int TimeoutSecondsFor(Type requestType)
         => Timeouts.TryGetValue(requestType.Name, out var perRequest) ? perRequest : TimeoutSeconds;

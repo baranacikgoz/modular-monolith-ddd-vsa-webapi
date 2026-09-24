@@ -1,4 +1,5 @@
 using Common.Application.Options;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 #pragma warning disable CA1515, CA1707
@@ -14,7 +15,8 @@ public sealed class ObservabilityOptionsValidatorTests
             AppName = "app",
             AppVersion = "1.0.0",
             MinimumLevel = "Information",
-            ResponseTimeThresholdInMs = 1000
+            ResponseTimeThresholdInMs = 1000,
+            TraceSamplingRatio = 1.0
         };
         options.MinimumLevelOverrides["Microsoft"] = "Warning";
         return options;
@@ -29,9 +31,36 @@ public sealed class ObservabilityOptionsValidatorTests
     }
 
     [Fact]
-    public void TraceSamplingRatio_DefaultsToRecordEverything()
+    public void TraceSamplingRatio_Missing_Fails()
     {
-        Assert.Equal(1.0, ValidOptions().TraceSamplingRatio);
+        var options = ValidOptions();
+        options.TraceSamplingRatio = null;
+
+        var result = new ObservabilityOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObservabilityOptions.TraceSamplingRatio));
+    }
+
+    // AddCommonOptions binds with the configuration binder, which leaves an absent key at the CLR default: a
+    // non-nullable double would silently become 0 (tracing off) and pass the range rule.
+    [Fact]
+    public void TraceSamplingRatio_AbsentFromConfiguration_FailsInsteadOfBindingToZero()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ObservabilityOptions:AppName"] = "app",
+                ["ObservabilityOptions:AppVersion"] = "1.0.0",
+                ["ObservabilityOptions:MinimumLevel"] = "Information",
+                ["ObservabilityOptions:ResponseTimeThresholdInMs"] = "1000"
+            })
+            .Build();
+        var options = configuration.GetSection(nameof(ObservabilityOptions)).Get<ObservabilityOptions>()!;
+
+        var result = new ObservabilityOptionsValidator().Validate(options);
+
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObservabilityOptions.TraceSamplingRatio));
     }
 
     [Theory]

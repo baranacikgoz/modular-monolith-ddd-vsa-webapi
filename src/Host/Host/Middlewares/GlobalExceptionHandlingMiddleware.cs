@@ -90,8 +90,14 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         }
         catch (RequestFaultException ex)
         {
-            // Another module's request handler faulted: the caller's own work is intact, the dependency is not.
-            await HandleDependencyUnavailableAsync(context, ex);
+            // Another module's request handler answered with a fault: the dependency is up but failed, and a retry
+            // most likely fails the same way, so 502 without a Retry-After invitation.
+            await HandleExceptionAsync(
+                context,
+                ex,
+                (int)HttpStatusCode.BadGateway,
+                nameof(localizer.DependencyFaulted),
+                localizer.DependencyFaulted);
         }
         catch (RequestTimeoutException ex)
         {

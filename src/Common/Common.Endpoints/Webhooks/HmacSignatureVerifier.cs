@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -40,13 +41,17 @@ public static class HmacSignatureVerifier
 
     private static bool TryDecode(string candidate, out byte[] bytes)
     {
-        if (candidate.Length == HMACSHA256.HashSizeInBytes * 2 && Convert.FromHexString(candidate) is { } hex)
+        var buffer = new byte[HMACSHA256.HashSizeInBytes + 2];
+
+        // The span overload reports a non-hex character as a status instead of throwing FormatException.
+        if (candidate.Length == HMACSHA256.HashSizeInBytes * 2
+            && Convert.FromHexString(candidate.AsSpan(), buffer, out _, out var hexWritten) == OperationStatus.Done
+            && hexWritten == HMACSHA256.HashSizeInBytes)
         {
-            bytes = hex;
+            bytes = buffer[..hexWritten];
             return true;
         }
 
-        var buffer = new byte[HMACSHA256.HashSizeInBytes + 2];
         if (Convert.TryFromBase64String(candidate, buffer, out var written) && written == HMACSHA256.HashSizeInBytes)
         {
             bytes = buffer[..written];

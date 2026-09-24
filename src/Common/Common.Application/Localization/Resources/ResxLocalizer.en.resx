@@ -267,9 +267,6 @@
   <data name="ProductTemplates_Get_Id_NotEmpty" xml:space="preserve">
     <value>Product template ID cannot be empty.</value>
   </data>
-  <data name="Products_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Description can be at most ({0}) characters long.</value>
-  </data>
   <data name="Products_Search_MaxPrice_GreaterThanOrEqualTo" xml:space="preserve">
     <value>Maximum price must be greater than or equal to ({0}).</value>
   </data>
@@ -387,9 +384,6 @@
   <data name="Stores_Search_Address_MaximumLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
   </data>
-  <data name="Stores_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Description can be at most ({0}) characters long.</value>
-  </data>
   <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
     <value>Name can be at most ({0}) characters long.</value>
   </data>
@@ -423,11 +417,17 @@
   <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Provider reference cannot be empty.</value>
   </data>
+  <data name="StockReservations_Commit_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Provider reference must be at most ({0}) characters.</value>
+  </data>
   <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
   </data>
   <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Provider reference cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Provider reference must be at most ({0}) characters.</value>
   </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
@@ -623,6 +623,9 @@
   </data>
   <data name="DependencyUnavailable" xml:space="preserve">
     <value>A dependent service is currently unavailable. Please retry shortly.</value>
+  </data>
+  <data name="DependencyFaulted" xml:space="preserve">
+    <value>A dependent service failed while handling the request.</value>
   </data>
   <data name="FeatureNotAvailable" xml:space="preserve">
     <value>The feature '({0})' is not available.</value>

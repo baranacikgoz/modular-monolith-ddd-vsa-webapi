@@ -8,6 +8,7 @@
     "CircuitBreakerFailureRatio": 0.1,
     "CircuitBreakerMinimumThroughput": 10,
     "CircuitBreakerBreakDurationSeconds": 15,
-    "AttemptTimeoutSeconds": 10
+    "AttemptTimeoutSeconds": 10,
+    "Keyed": {}
   }
 }
