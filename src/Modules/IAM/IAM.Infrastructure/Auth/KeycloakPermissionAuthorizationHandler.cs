@@ -16,10 +16,12 @@ using ZiggyCreatures.Caching.Fusion;
 namespace IAM.Infrastructure.Auth;
 
 /// <summary>
-///     Asks Keycloak whether the caller's token is granted <c>resource#scope</c> and caches the answer per
-///     (token jti, permission) for at most the token's remaining lifetime. Entries are tagged with the session and
-///     the user so <see cref="IKeycloakAdminClient" /> can purge them when either is revoked. A transport failure
-///     propagates, so an unreachable Keycloak fails closed (500) instead of silently denying or allowing.
+///     Fetches every <c>resource#scope</c> permission Keycloak grants the caller's token once per token jti
+///     (<c>response_mode=permissions</c>, one round trip instead of one per protected endpoint), caches the set for
+///     at most the token's remaining lifetime and answers every later decision locally. Entries are tagged with the
+///     session and the user so <see cref="IKeycloakAdminClient" /> can purge them when either is revoked. A
+///     transport failure propagates, so an unreachable Keycloak fails closed (500) instead of silently denying or
+///     allowing.
 /// </summary>
 internal sealed class KeycloakPermissionAuthorizationHandler(
     IKeycloakPermissionClient permissionClient,
@@ -70,19 +72,19 @@ internal sealed class KeycloakPermissionAuthorizationHandler(
 
         if (jti is null || duration <= TimeSpan.Zero)
         {
-            // No stable key or an already-expired token: ask Keycloak, never cache.
+            // No stable key or an already-expired token: ask Keycloak for this one permission, never cache.
             var decision = await permissionClient.DecideAsync(accessToken, permission, cancellationToken);
             IamTelemetry.RecordAuthorizationDecision(decision, fromCache: false);
             return decision;
         }
 
         var fromCache = true;
-        var granted = await cache.GetOrSetAsync(
-            CacheKeys.For.AuthorizationDecision(jti, permission),
+        var grantedPermissions = await cache.GetOrSetAsync(
+            CacheKeys.For.AuthorizationPermissions(jti),
             async ct =>
             {
                 fromCache = false;
-                return await permissionClient.DecideAsync(accessToken, permission, ct);
+                return await ListGrantedPolicyNamesAsync(accessToken, ct);
             },
             // IsFailSafeEnabled = false: a Keycloak outage must surface as an error, not as a stale decision
             // served for up to FailSafeMaxDuration.
@@ -90,8 +92,25 @@ internal sealed class KeycloakPermissionAuthorizationHandler(
             RevocationTags(user),
             cancellationToken);
 
+        var granted = grantedPermissions.Contains(permission, StringComparer.Ordinal);
         IamTelemetry.RecordAuthorizationDecision(granted, fromCache);
         return granted;
+    }
+
+    /// <summary>
+    ///     Flattens Keycloak's granted (resource, scopes) pairs to the policy-name shape
+    ///     (<c>{resource}#{scope}</c>) so the cached set is compared with the same string the endpoint requires.
+    ///     A sorted array, not a set: it round-trips through the distributed cache serializer unchanged.
+    /// </summary>
+    private async Task<string[]> ListGrantedPolicyNamesAsync(string accessToken, CancellationToken cancellationToken)
+    {
+        var permissions = await permissionClient.ListPermissionsAsync(accessToken, cancellationToken);
+
+        return permissions
+            .SelectMany(p => p.Scopes.Select(scope => KeycloakPermission.PolicyName(p.Resource, scope)))
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
     }
 
     /// <summary>Session tag is absent for service accounts (no <c>sid</c>); they are only purged per user.</summary>

@@ -72,10 +72,24 @@ internal sealed partial class KeycloakPermissionClient(
             },
             cancellationToken);
 
-        // A user with no permission at all gets 403, which is a valid empty answer here.
+        // A user with no permission at all gets 403, which is a valid empty answer here. 400/401 invalid_grant:
+        // Keycloak no longer accepts the bearer token (session revoked or logged out), the same definitive "no"
+        // DecideAsync maps to false; anything else is an outage and must propagate so the caller fails closed.
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
             return [];
+        }
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.BadRequest)
+        {
+            var error = await response.Content.TryReadFromJsonAsync<TokenErrorRepresentation>(cancellationToken);
+            if (error?.Error is OAuthErrors.AccessDenied or OAuthErrors.InvalidGrant)
+            {
+                LogDenied(logger, "*", error.Error, error.ErrorDescription);
+                return [];
+            }
+
+            LogUnexpectedDenial(logger, "*", error?.Error, error?.ErrorDescription);
         }
 
         response.EnsureSuccessStatusCode();

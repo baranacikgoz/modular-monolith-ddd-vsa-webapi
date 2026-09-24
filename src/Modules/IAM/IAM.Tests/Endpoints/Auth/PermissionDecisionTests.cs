@@ -31,38 +31,39 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
     }
 
     [Fact]
-    public async Task ProtectedEndpoint_DecisionIsCachedPerTokenAndPermission()
+    public async Task ProtectedEndpoint_GrantedPermissionSetIsCachedPerToken()
     {
         var tokens = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
         var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var key = CacheKeys.For.AuthorizationDecision(tokens.Jti,
-            KeycloakPermission.FromScope(KeycloakScopes.Users.ViewOwn).PolicyName());
+        var key = CacheKeys.For.AuthorizationPermissions(tokens.Jti);
 
-        Assert.False((await cache.TryGetAsync<bool>(key)).HasValue);
+        Assert.False((await cache.TryGetAsync<string[]>(key)).HasValue);
 
         using var response = await IamTestClient.Authorized(Factory, tokens).GetAsync(new Uri("/users/me", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var cached = await cache.TryGetAsync<bool>(key);
+        var cached = await cache.TryGetAsync<string[]>(key);
         Assert.True(cached.HasValue);
-        Assert.True(cached.Value);
+        Assert.Contains(KeycloakPermission.FromScope(KeycloakScopes.Users.ViewOwn).PolicyName(), cached.Value);
     }
 
     [Fact]
-    public async Task ProtectedEndpoint_DeniedDecisionIsAlsoCached()
+    public async Task ProtectedEndpoint_DeniedPermissionIsAbsentFromTheCachedSet_NoSecondKeycloakCall()
     {
         var tokens = await IamTestClient.LoginByPhoneAsync(Factory, SeedUsers.BasicPhone);
         var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var key = CacheKeys.For.AuthorizationDecision(tokens.Jti,
-            KeycloakPermission.FromScope(KeycloakScopes.Users.Search).PolicyName());
+        var key = CacheKeys.For.AuthorizationPermissions(tokens.Jti);
 
         using var response = await IamTestClient.Authorized(Factory, tokens)
             .GetAsync(new Uri("/users/search?pageNumber=1&pageSize=10", UriKind.Relative));
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
 
-        var cached = await cache.TryGetAsync<bool>(key);
+        var cached = await cache.TryGetAsync<string[]>(key);
         Assert.True(cached.HasValue);
-        Assert.False(cached.Value);
+        Assert.DoesNotContain(KeycloakPermission.FromScope(KeycloakScopes.Users.Search).PolicyName(), cached.Value);
+        // The same token keeps answering from the cached set: a granted scope still passes without a new fetch.
+        using var granted = await IamTestClient.Authorized(Factory, tokens).GetAsync(new Uri("/users/me", UriKind.Relative));
+        Assert.Equal(HttpStatusCode.OK, granted.StatusCode);
     }
 
     [Fact]
@@ -72,19 +73,18 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
         var victim = await IamTestClient.LoginByPhoneAsync(Factory, phone);
         var other = await IamTestClient.LoginByPhoneAsync(Factory, phone, clientId: "mobile-app-2");
         var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var key = CacheKeys.For.AuthorizationDecision(victim.Jti,
-            KeycloakPermission.FromScope(KeycloakScopes.Users.ViewOwn).PolicyName());
+        var key = CacheKeys.For.AuthorizationPermissions(victim.Jti);
 
         using var before = await IamTestClient.Authorized(Factory, victim).GetAsync(new Uri("/users/me", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, before.StatusCode);
-        Assert.True((await cache.TryGetAsync<bool>(key)).HasValue);
+        Assert.True((await cache.TryGetAsync<string[]>(key)).HasValue);
 
         using var revoke = await IamTestClient.Authorized(Factory, other)
             .DeleteAsync(new Uri($"/tokens/sessions/{victim.SessionId}", UriKind.Relative));
         Assert.Equal(HttpStatusCode.NoContent, revoke.StatusCode);
 
         // The JWT is still signed and unexpired, so authentication passes; authorization must re-ask Keycloak.
-        Assert.False((await cache.TryGetAsync<bool>(key)).HasValue);
+        Assert.False((await cache.TryGetAsync<string[]>(key)).HasValue);
         using var after = await IamTestClient.Authorized(Factory, victim).GetAsync(new Uri("/users/me", UriKind.Relative));
         Assert.Equal(HttpStatusCode.Forbidden, after.StatusCode);
     }
@@ -96,8 +96,6 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
         var phoneLogin = await IamTestClient.LoginByPhoneAsync(Factory, phone);
         var tabletLogin = await IamTestClient.LoginByPhoneAsync(Factory, phone, clientId: "mobile-app-2");
         var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
-        var policy = KeycloakPermission.FromScope(KeycloakScopes.Users.ViewOwn).PolicyName();
-
         foreach (var login in new[] { phoneLogin, tabletLogin })
         {
             using var warm = await IamTestClient.Authorized(Factory, login).GetAsync(new Uri("/users/me", UriKind.Relative));
@@ -110,7 +108,7 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
 
         foreach (var login in new[] { phoneLogin, tabletLogin })
         {
-            Assert.False((await cache.TryGetAsync<bool>(CacheKeys.For.AuthorizationDecision(login.Jti, policy))).HasValue);
+            Assert.False((await cache.TryGetAsync<string[]>(CacheKeys.For.AuthorizationPermissions(login.Jti))).HasValue);
             using var after = await IamTestClient.Authorized(Factory, login).GetAsync(new Uri("/users/me", UriKind.Relative));
             Assert.Equal(HttpStatusCode.Forbidden, after.StatusCode);
         }

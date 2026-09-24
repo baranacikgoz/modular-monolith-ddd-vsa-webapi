@@ -43,12 +43,13 @@ public static class CacheKeys
         }
 
         /// <summary>
-        ///     Cached Keycloak authorization decision for one access token (<paramref name="jti" />) and one
-        ///     <c>resource#scope</c> permission. Keyed by jti, not sid, so the entry can never outlive the token.
+        ///     The full set of <c>resource#scope</c> permissions Keycloak granted one access token
+        ///     (<paramref name="jti" />), fetched once per token and answered locally for every later decision.
+        ///     Keyed by jti, not sid, so the entry can never outlive the token.
         /// </summary>
-        public static string AuthorizationDecision(string jti, string permission)
+        public static string AuthorizationPermissions(string jti)
         {
-            return $"authz_decision:{jti}:{permission}";
+            return $"authz_permissions:{jti}";
         }
 
         /// <summary>
