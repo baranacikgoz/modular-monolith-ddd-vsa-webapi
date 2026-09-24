@@ -45,5 +45,9 @@ internal sealed class DeviceRegistrationConfiguration : AuditableEntityConfigura
         // Session-scoped lookups: push-token update for the current session, deactivation on revoke.
         builder
             .HasIndex(r => new { r.UserId, r.SessionId });
+
+        // Reconcile cursor: least recently checked active rows first.
+        builder
+            .HasIndex(r => new { r.IsActive, r.LastReconciledOn });
     }
 }

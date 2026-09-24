@@ -46,6 +46,12 @@ public sealed class DeviceRegistration : AuditableEntity<DeviceRegistrationId>
     /// <summary>False once the session was revoked; the row stays so a re-login on the same device reuses it.</summary>
     public bool IsActive { get; private set; }
 
+    /// <summary>
+    ///     When the recurring reconcile last checked this row's session against Keycloak. Null until the first
+    ///     run; the reconcile picks the least recently checked users first, so no row starves behind a batch cap.
+    /// </summary>
+    public DateTimeOffset? LastReconciledOn { get; private set; }
+
     public static DeviceRegistration Create(
         ApplicationUserId userId, Guid deviceId, string clientId, string sessionId,
         string? deviceName, string? pushToken, DateTimeOffset now)
@@ -105,5 +111,10 @@ public sealed class DeviceRegistration : AuditableEntity<DeviceRegistrationId>
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void MarkReconciled(DateTimeOffset now)
+    {
+        LastReconciledOn = now;
     }
 }
