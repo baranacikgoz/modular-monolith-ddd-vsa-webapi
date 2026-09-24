@@ -267,9 +267,6 @@
   <data name="ProductTemplates_Get_Id_NotEmpty" xml:space="preserve">
     <value>Product template ID cannot be empty.</value>
   </data>
-  <data name="Products_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Description can be at most ({0}) characters long.</value>
-  </data>
   <data name="Products_Search_MaxPrice_GreaterThanOrEqualTo" xml:space="preserve">
     <value>Maximum price must be greater than or equal to ({0}).</value>
   </data>
@@ -386,9 +383,6 @@
   </data>
   <data name="Stores_Search_Address_MaximumLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
-  </data>
-  <data name="Stores_Search_Description_MaximumLength" xml:space="preserve">
-    <value>Description can be at most ({0}) characters long.</value>
   </data>
   <data name="Stores_Search_Name_MaximumLength" xml:space="preserve">
     <value>Name can be at most ({0}) characters long.</value>

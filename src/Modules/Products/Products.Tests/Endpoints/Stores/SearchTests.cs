@@ -153,6 +153,33 @@ public class SearchTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task Search_WithFtsSearchTermMatchingDescription_ReturnsMatchingStores()
+    {
+        // Arrange
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+
+        // Description is searched only through the indexed FTS vector (there is no ILIKE Description filter).
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "Corner Store", "handmade porcelain teapots", "1 Main Street"));
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "Hardware Hub", "screws and hammers", "2 Main Street"));
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act: "porcelain" only exists in the first store's description
+        var response = await client.GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=10&SearchTerm=porcelain", UriKind.Relative));
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<PaginationResponse<Response>>(JsonSerializerOptions);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal("Corner Store", result.Data.First().Name);
+    }
+
+    [Fact]
     public async Task Search_WithSearchTermExceedingMaxLength_ReturnsBadRequest()
     {
         // Arrange

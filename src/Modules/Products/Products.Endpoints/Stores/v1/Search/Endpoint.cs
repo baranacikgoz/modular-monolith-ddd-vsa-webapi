@@ -61,8 +61,6 @@ internal static class Endpoint
                          .Matches(EF.Functions.WebSearchToTsQuery(proseConfig, searchTerm)),
                 hasSearchTerm)
             .WhereIf(s => EF.Functions.ILike(s.Name, LikePattern.Contains(request.Name), LikePattern.EscapeChar), !string.IsNullOrWhiteSpace(request.Name))
-            .WhereIf(s => EF.Functions.ILike(s.Description, LikePattern.Contains(request.Description), LikePattern.EscapeChar),
-                !string.IsNullOrWhiteSpace(request.Description))
             .WhereIf(s => EF.Functions.ILike(s.Address, LikePattern.Contains(request.Address), LikePattern.EscapeChar),
                 !string.IsNullOrWhiteSpace(request.Address))
             .PaginateAsync(

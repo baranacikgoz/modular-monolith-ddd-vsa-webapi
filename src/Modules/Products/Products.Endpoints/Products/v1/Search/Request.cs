@@ -24,8 +24,6 @@ public sealed record Request : PaginationRequest
 
     [FromQuery] public string? Name { get; init; }
 
-    [FromQuery] public string? Description { get; init; }
-
     [FromQuery] public int? MinQuantity { get; init; }
 
     [FromQuery] public int? MaxQuantity { get; init; }
@@ -60,12 +58,6 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Search_Name_MaximumLength,
                 Constants.NameMaxLength))
             .When(x => x.Name is not null);
-
-        RuleFor(x => x.Description)
-            .MaximumLength(Constants.DescriptionMaxLength)
-            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Search_Description_MaximumLength,
-                Constants.DescriptionMaxLength))
-            .When(x => x.Description is not null);
 
         RuleFor(x => x.MinQuantity)
             .GreaterThanOrEqualTo(Constants.QuantityGreaterThanOrEqualTo)

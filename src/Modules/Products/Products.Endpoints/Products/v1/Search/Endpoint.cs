@@ -64,8 +64,6 @@ internal static class Endpoint
                          .Matches(EF.Functions.WebSearchToTsQuery(proseConfig, searchTerm)),
                 hasSearchTerm)
             .WhereIf(p => EF.Functions.ILike(p.Name, LikePattern.Contains(request.Name), LikePattern.EscapeChar), !string.IsNullOrWhiteSpace(request.Name))
-            .WhereIf(p => EF.Functions.ILike(p.Description, LikePattern.Contains(request.Description), LikePattern.EscapeChar),
-                !string.IsNullOrWhiteSpace(request.Description))
             .WhereIf(p => p.Quantity >= request.MinQuantity!, request.MinQuantity is not null)
             .WhereIf(p => p.Quantity <= request.MaxQuantity!, request.MaxQuantity is not null)
             .WhereIf(p => p.Price >= request.MinPrice!, request.MinPrice is not null)
