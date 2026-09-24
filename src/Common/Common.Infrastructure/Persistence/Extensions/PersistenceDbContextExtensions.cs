@@ -70,11 +70,24 @@ public static class LikePattern
 
     public static string Contains(string? term)
     {
-        var escaped = (term ?? string.Empty)
+        return $"%{Escape(term)}%";
+    }
+
+    /// <summary>
+    ///     Anchored pattern (<c>term%</c>) for code-like columns a user types from the beginning (a barcode, a model
+    ///     code). Served by a <c>text_pattern_ops</c> index (<c>HasPatternIndex</c>) with plain, case-sensitive
+    ///     <c>EF.Functions.Like</c>; the term is trimmed because such codes never carry meaningful outer whitespace.
+    /// </summary>
+    public static string StartsWith(string? term)
+    {
+        return $"{Escape(term?.Trim())}%";
+    }
+
+    private static string Escape(string? term)
+    {
+        return (term ?? string.Empty)
             .Replace("\\", "\\\\", StringComparison.Ordinal)
             .Replace("%", "\\%", StringComparison.Ordinal)
             .Replace("_", "\\_", StringComparison.Ordinal);
-
-        return $"%{escaped}%";
     }
 }
