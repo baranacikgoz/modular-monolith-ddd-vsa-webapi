@@ -50,6 +50,13 @@
       "automerge": false
     },
     {
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["mcr.microsoft.com/dotnet/**"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false,
+      "description": "The dotnet image major must match TargetFramework and the global.json SDK. Bump all three together by hand."
+    },
+    {
       "matchUpdateTypes": ["patch"],
       "automerge": true,
       "automergeType": "pr",
