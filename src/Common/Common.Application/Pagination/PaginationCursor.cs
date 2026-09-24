@@ -73,23 +73,35 @@ public sealed record PaginationCursor(object SortValue, object Tiebreaker)
     /// <summary>Rebuilds the value as <paramref name="targetType" /> (a strongly-typed id from its Guid, otherwise as is).</summary>
     public static object Materialize(object value, Type targetType)
     {
+        return TryMaterialize(value, targetType, out var materialized)
+            ? materialized
+            : throw new ArgumentException($"Cursor value of type {value.GetType().Name} does not match {targetType.Name}.", nameof(value));
+    }
+
+    /// <summary>
+    ///     <see cref="Materialize" /> without the throw: false when the cursor was minted for a different sort key type
+    ///     (the client changed the sort between pages). That is user input, so callers turn it into a Validation error.
+    /// </summary>
+    public static bool TryMaterialize(object value, Type targetType, out object materialized)
+    {
         if (typeof(IStronglyTypedId).IsAssignableFrom(targetType))
         {
             if (value is not Guid guid)
             {
-                throw new ArgumentException($"A {targetType.Name} cursor value must be a Guid.", nameof(value));
+                materialized = null!;
+                return false;
             }
 
             var id = Activator.CreateInstance(targetType)
                      ?? throw new InvalidOperationException($"Cannot instantiate {targetType.Name}.");
             targetType.GetProperty(nameof(IStronglyTypedId.Value))!.SetValue(id, guid);
-            return id;
+            materialized = id;
+            return true;
         }
 
         var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-        return underlying.IsInstanceOfType(value)
-            ? value
-            : throw new ArgumentException($"Cursor value of type {value.GetType().Name} does not match {targetType.Name}.", nameof(value));
+        materialized = value;
+        return underlying.IsInstanceOfType(value);
     }
 
     private sealed record Payload(TaggedValue Sort, TaggedValue Tie);

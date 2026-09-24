@@ -67,7 +67,14 @@ public static class PaginationQueryableExtensions
                 return decoded.Error!;
             }
 
-            filtered = filtered.Where(KeysetPredicate(sortKey, tiebreaker!, decoded.Value!, descending));
+            // A well-formed cursor minted for another sort key type (the client changed the sort between pages)
+            // is user input too: the same Validation failure as a malformed one, never an exception.
+            if (KeysetPredicate(sortKey, tiebreaker!, decoded.Value!, descending) is not { } keyset)
+            {
+                return Error.Validation([PaginationCursor.ParameterName]);
+            }
+
+            filtered = filtered.Where(keyset);
         }
 
         var ordered = descending ? filtered.OrderByDescending(sortKey) : filtered.OrderBy(sortKey);
@@ -109,8 +116,11 @@ public static class PaginationQueryableExtensions
         return new PaginationResponse<TDto>(items, totalCount, pageNumber, request.PageSize, nextCursor);
     }
 
-    /// <summary>Row-value comparison spelled out as <c>sort &lt; s || (sort == s &amp;&amp; tie &gt; t)</c> so every provider translates it.</summary>
-    private static Expression<Func<TEntity, bool>> KeysetPredicate<TEntity>(
+    /// <summary>
+    ///     Row-value comparison spelled out as <c>sort &lt; s || (sort == s &amp;&amp; tie &gt; t)</c> so every provider
+    ///     translates it. Null when the cursor's values do not fit the key types.
+    /// </summary>
+    private static Expression<Func<TEntity, bool>>? KeysetPredicate<TEntity>(
         Expression<Func<TEntity, object>> sortKey,
         Expression<Func<TEntity, object>> tiebreaker,
         PaginationCursor cursor,
@@ -120,8 +130,14 @@ public static class PaginationQueryableExtensions
         var sort = Unbox(ReplaceParameter(sortKey.Body, sortKey.Parameters[0], parameter));
         var tie = Unbox(ReplaceParameter(tiebreaker.Body, tiebreaker.Parameters[0], parameter));
 
-        var sortBound = Bound(PaginationCursor.Materialize(cursor.SortValue, sort.Type), sort.Type);
-        var tieBound = Bound(PaginationCursor.Materialize(cursor.Tiebreaker, tie.Type), tie.Type);
+        if (!PaginationCursor.TryMaterialize(cursor.SortValue, sort.Type, out var sortValue)
+            || !PaginationCursor.TryMaterialize(cursor.Tiebreaker, tie.Type, out var tieValue))
+        {
+            return null;
+        }
+
+        var sortBound = Bound(sortValue, sort.Type);
+        var tieBound = Bound(tieValue, tie.Type);
 
         var sortMoved = descending ? LessThan(sort, sortBound) : GreaterThan(sort, sortBound);
         var sortEqual = Expression.Equal(sort, sortBound);
