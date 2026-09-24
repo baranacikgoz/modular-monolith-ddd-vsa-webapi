@@ -257,6 +257,9 @@
   <data name="PaginationRequest_PageSize_InclusiveBetween" xml:space="preserve">
     <value>Sayfa boyutu ({0}) ile ({1}) arasında olmalıdır.</value>
   </data>
+  <data name="PaginationRequest_After_Invalid" xml:space="preserve">
+    <value>Sayfalama imleci (after) geçersiz.</value>
+  </data>
   <data name="IAM_PhoneNumber_Length" xml:space="preserve">
     <value>Telefon numarası, alan kodu dahil ({0}) karakter olmalıdır.</value>
   </data>
