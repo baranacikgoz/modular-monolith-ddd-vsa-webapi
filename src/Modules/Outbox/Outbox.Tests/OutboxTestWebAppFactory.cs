@@ -48,9 +48,15 @@ public class OutboxTestWebAppFactory : IntegrationTestFactory, IAsyncLifetime
 
     public override async ValueTask DisposeAsync()
     {
-        await _rabbitMqContainer.StopAsync();
-        await _rabbitMqContainer.DisposeAsync();
-        await base.DisposeAsync();
+        try
+        {
+            await base.DisposeAsync();
+        }
+        finally
+        {
+            await _rabbitMqContainer.DisposeAsync();
+        }
+
         GC.SuppressFinalize(this);
     }
 }

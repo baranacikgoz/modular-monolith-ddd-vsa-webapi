@@ -1,4 +1,5 @@
 using Common.Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -18,6 +20,8 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithUsername("postgres")
         .WithPassword("postgres")
         .Build();
+
+    private IServiceProvider? _hostServices;
 
     public string ConnectionString => _dbContainer.GetConnectionString();
 
@@ -126,10 +130,52 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         });
     }
 
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+        _hostServices = host.Services;
+        return host;
+    }
+
+    // The host stops before the database goes away, so shutdown work (bus, jobs, outbox) never talks to a dead
+    // Postgres. MassTransit's ReceiveEndpoint.Stop intermittently throws NullReferenceException on CI; the bus
+    // endpoint snapshot taken just before the stop is attached so the failing run shows which endpoints were
+    // still starting or faulted.
     public override async ValueTask DisposeAsync()
     {
-        await _dbContainer.DisposeAsync();
-        await base.DisposeAsync();
+        var busSnapshot = DescribeBusEndpoints();
+        try
+        {
+            await base.DisposeAsync();
+        }
+        catch (NullReferenceException ex) when (ex.StackTrace?.Contains("MassTransit.Transports.ReceiveEndpoint.Stop", StringComparison.Ordinal) == true)
+        {
+            throw new InvalidOperationException($"MassTransit ReceiveEndpoint.Stop failed during host shutdown. Bus before stop: {busSnapshot}", ex);
+        }
+        finally
+        {
+            await _dbContainer.DisposeAsync();
+        }
+
         GC.SuppressFinalize(this);
+    }
+
+    private string DescribeBusEndpoints()
+    {
+        try
+        {
+            if (_hostServices?.GetService<IBusControl>() is not { } bus)
+            {
+                return "host not started";
+            }
+
+            var health = bus.CheckHealth();
+            var endpoints = health.Endpoints.Select(e => $"{e.Key}={e.Value.Status} ({e.Value.Description})");
+            return $"{health.Status} [{string.Join("; ", endpoints)}]";
+        }
+        catch (ObjectDisposedException)
+        {
+            return "host already disposed";
+        }
     }
 }
