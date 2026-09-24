@@ -6,6 +6,7 @@
     "StockReservationExpirySweepBatchSize": 100,
     "WarehouseGatewayProvider": "Dummy",
     "WarehouseGatewayBaseUrl": "https://warehouse.example-partner.local",
-    "WebhookSharedSecret": "dev-only-shared-secret-change-in-production"
+    "WebhookSharedSecret": "dev-only-shared-secret-change-in-production",
+    "WebhookMaxBodyBytes": 65536
   }
 }

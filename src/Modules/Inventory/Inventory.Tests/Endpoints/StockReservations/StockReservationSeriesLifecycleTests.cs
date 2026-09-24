@@ -349,6 +349,26 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task Webhook_BodyOverTheLimit_Returns413BeforeTheEndpointReadsIt()
+    {
+        var client = AuthedClient(Factory);
+        var productId = await SeedProductAsync(client);
+        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
+        int maxBodyBytes;
+        using (var scope = Factory.Services.CreateScope())
+        {
+            maxBodyBytes = scope.ServiceProvider.GetRequiredService<IOptions<InventoryOptions>>().Value.WebhookMaxBodyBytes;
+        }
+
+        // Correctly signed, so only the size can reject it.
+        var response = await SendWebhookAsync(client, reservation.Id, new string('x', maxBodyBytes));
+
+        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
+        var reloaded = await FindReservationAsync(reservation.Id);
+        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
+    }
+
+    [Fact]
     public async Task Webhook_MalformedBody_ReturnsBadRequest()
     {
         var client = AuthedClient(Factory);
