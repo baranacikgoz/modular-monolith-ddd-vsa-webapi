@@ -51,8 +51,15 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 
     public override async ValueTask DisposeAsync()
     {
-        await _keycloakContainer.DisposeAsync();
-        await base.DisposeAsync();
+        try
+        {
+            await base.DisposeAsync();
+        }
+        finally
+        {
+            await _keycloakContainer.DisposeAsync();
+        }
+
         GC.SuppressFinalize(this);
     }
 
