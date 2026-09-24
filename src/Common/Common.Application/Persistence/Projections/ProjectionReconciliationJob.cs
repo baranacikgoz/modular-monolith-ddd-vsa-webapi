@@ -21,15 +21,19 @@ public abstract partial class ProjectionReconciliationJob<TItem, TCursor>(
     protected abstract Task<(IReadOnlyList<TItem> Items, TCursor? Next)> FetchPageAsync(
         TCursor? cursor, int pageSize, CancellationToken cancellationToken);
 
-    /// <summary>Applies one page to the projection; the base saves after it returns.</summary>
-    protected abstract Task ApplyPageAsync(IReadOnlyList<TItem> items, CancellationToken cancellationToken);
+    /// <summary>
+    ///     Applies one page to the projection; the base saves after it returns. Returns how many rows it actually created or
+    ///     changed: a healed row means the normal event flow missed it, so the base warns when the total is above zero.
+    /// </summary>
+    protected abstract Task<int> ApplyPageAsync(IReadOnlyList<TItem> items, CancellationToken cancellationToken);
 
-    /// <summary>Runs one full reconciliation and returns the number of items applied.</summary>
+    /// <summary>Runs one reconciliation and returns the number of source items read and applied (healed or not).</summary>
     public async Task<int> RunAsync(CancellationToken cancellationToken = default)
     {
         var options = optionsProvider.Value;
         var jobName = GetType().Name;
         var applied = 0;
+        var healed = 0;
         var pages = 0;
         TCursor? cursor = null;
 
@@ -42,7 +46,7 @@ public abstract partial class ProjectionReconciliationJob<TItem, TCursor>(
 
             if (items.Count > 0)
             {
-                await ApplyPageAsync(items, cancellationToken);
+                healed += await ApplyPageAsync(items, cancellationToken);
                 await dbContext.SaveChangesAsync(cancellationToken);
                 dbContext.ChangeTracker.Clear();
                 applied += items.Count;
@@ -52,7 +56,7 @@ public abstract partial class ProjectionReconciliationJob<TItem, TCursor>(
 
             if (next is null || items.Count == 0)
             {
-                LogComplete(logger, jobName, pages, applied);
+                LogFinished(logger, jobName, pages, applied, healed);
                 return applied;
             }
 
@@ -60,7 +64,19 @@ public abstract partial class ProjectionReconciliationJob<TItem, TCursor>(
         }
 
         LogMaxPagesReached(logger, jobName, options.MaxPages, applied);
+        LogFinished(logger, jobName, pages, applied, healed);
         return applied;
+    }
+
+    private static void LogFinished(ILogger logger, string jobName, int pages, int applied, int healed)
+    {
+        if (healed > 0)
+        {
+            LogHealed(logger, jobName, healed, applied);
+            return;
+        }
+
+        LogComplete(logger, jobName, pages, applied);
     }
 
     [LoggerMessage(Level = LogLevel.Information,
@@ -76,6 +92,10 @@ public abstract partial class ProjectionReconciliationJob<TItem, TCursor>(
     private static partial void LogComplete(ILogger logger, string jobName, int pages, int appliedCount);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Projection reconciliation {JobName} stopped at the {MaxPages} page cap with {AppliedCount} items applied; the rest waits for the next run.")]
+        Message = "Projection reconciliation {JobName} healed {HealedCount} of {AppliedCount} items: the normal event flow missed them, look for a lost or failed event.")]
+    private static partial void LogHealed(ILogger logger, string jobName, int healedCount, int appliedCount);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Projection reconciliation {JobName} stopped at the {MaxPages} page cap with {AppliedCount} items applied; the rest is NOT reconciled, the cursor is not kept and the next run starts again from the first page.")]
     private static partial void LogMaxPagesReached(ILogger logger, string jobName, int maxPages, int appliedCount);
 }
