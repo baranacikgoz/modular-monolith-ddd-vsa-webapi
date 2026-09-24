@@ -25,6 +25,9 @@ public interface IKeycloakAdminClient
 
     Task<IReadOnlyList<ApplicationUserId>> GetUserIdsInRoleAsync(string roleName, int max, CancellationToken cancellationToken);
 
+    /// <summary>One page of a realm role's members (<paramref name="skip" />, <paramref name="take" />), enabled or not. An unknown role is an empty page.</summary>
+    Task<IReadOnlyList<KeycloakUser>> GetUsersInRoleAsync(string roleName, int skip, int take, CancellationToken cancellationToken);
+
     Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 
     /// <summary>Revokes one session. A session that no longer exists is not an error.</summary>

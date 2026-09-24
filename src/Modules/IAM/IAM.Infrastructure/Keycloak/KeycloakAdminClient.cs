@@ -232,6 +232,25 @@ internal sealed partial class KeycloakAdminClient(
             .ToList();
     }
 
+    public async Task<IReadOnlyList<KeycloakUser>> GetUsersInRoleAsync(string roleName, int skip, int take,
+        CancellationToken cancellationToken)
+    {
+        using var response = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get,
+                AdminUri($"roles/{Uri.EscapeDataString(roleName)}/users?first={skip}&max={take}&briefRepresentation=true")),
+            cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return [];
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var users = await response.Content.ReadFromJsonAsync<List<UserRepresentation>>(cancellationToken) ?? [];
+        return users.Select(ToUser).ToList();
+    }
+
     public async Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId,
         CancellationToken cancellationToken)
     {
