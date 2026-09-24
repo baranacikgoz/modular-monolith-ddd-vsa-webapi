@@ -624,6 +624,9 @@
   <data name="DependencyUnavailable" xml:space="preserve">
     <value>A dependent service is currently unavailable. Please retry shortly.</value>
   </data>
+  <data name="DependencyFaulted" xml:space="preserve">
+    <value>A dependent service failed while handling the request.</value>
+  </data>
   <data name="FeatureNotAvailable" xml:space="preserve">
     <value>The feature '({0})' is not available.</value>
   </data>

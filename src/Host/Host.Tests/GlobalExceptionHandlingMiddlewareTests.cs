@@ -81,8 +81,8 @@ public class GlobalExceptionHandlingMiddlewareTests
         Assert.Equal([LogLevel.Warning], logger.Levels);
     }
 
-    // Endpoint awaiting another module's answer (IInterModuleRequestClient) and the request times out or the
-    // handler faults: the caller did nothing wrong and the dependency may recover, so 503 with a Retry-After hint.
+    // Endpoint awaiting another module's answer (IInterModuleRequestClient) and the request times out: the caller
+    // did nothing wrong and the dependency may recover, so 503 with a Retry-After hint.
     [Fact]
     public async Task InvokeAsync_InterModuleRequestTimeout_Returns503WithRetryAfter()
     {
@@ -90,6 +90,19 @@ public class GlobalExceptionHandlingMiddlewareTests
 
         Assert.Equal(StatusCodes.Status503ServiceUnavailable, statusCode);
         Assert.Equal(RetryAfterSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture), response.Headers.RetryAfter.ToString());
+        Assert.Equal([LogLevel.Error], logger.Levels);
+    }
+
+    // The other module answered with a fault (its handler threw): the dependency is up but failed, and a retry most
+    // likely fails the same way (a deterministic bug), so 502 and no Retry-After invitation.
+    [Fact]
+    public async Task InvokeAsync_InterModuleRequestFault_Returns502WithoutRetryAfter()
+    {
+        var (logger, statusCode, response) = await InvokeAsync(
+            new RequestFaultException("GetProductRequest", Substitute.For<Fault>()));
+
+        Assert.Equal(StatusCodes.Status502BadGateway, statusCode);
+        Assert.False(response.Headers.ContainsKey("Retry-After"));
         Assert.Equal([LogLevel.Error], logger.Levels);
     }
 
