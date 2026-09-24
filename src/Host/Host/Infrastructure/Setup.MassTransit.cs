@@ -1,6 +1,7 @@
 using System.Reflection;
 using Common.Application.EventBus;
 using Common.Application.Options;
+using Common.InterModuleRequests.Contracts;
 using MassTransit;
 using Microsoft.Extensions.Options;
 
@@ -21,9 +22,23 @@ internal static partial class Setup
         // keeping publish/consume real (no mocking) while removing the broker dependency entirely.
         var useInMemoryTransport = configuration.GetValue<bool>("MassTransitOptions:UseInMemoryTransport");
 
+        // Request/response handlers get their own receive endpoint policy (no retry, own concurrency, handler
+        // timeout) through InterModuleRequestHandlerDefinition. AddConsumers would register them without a
+        // definition and a later AddConsumer for the same type is ignored, so they are excluded from the scan
+        // and registered one by one with the closed definition type.
+        var requestHandlerTypes = moduleAssemblies
+            .SelectMany(GetLoadableTypes)
+            .Where(IsInterModuleRequestHandler)
+            .ToArray();
+
         services.AddMassTransit(x =>
         {
-            x.AddConsumers(moduleAssemblies);
+            x.AddConsumers(type => !IsInterModuleRequestHandler(type), moduleAssemblies);
+
+            foreach (var handlerType in requestHandlerTypes)
+            {
+                x.AddConsumer(handlerType, typeof(InterModuleRequestHandlerDefinition<>).MakeGenericType(handlerType));
+            }
 
             // MassTransit auto-registers a "masstransit-bus" health check that probes the *already-open*
             // bus connection: no fresh TCP/AMQP handshake per call. Keep it on the "ready" tag so it,
@@ -69,5 +84,23 @@ internal static partial class Setup
         });
 
         return services;
+    }
+
+    private static bool IsInterModuleRequestHandler(Type type)
+    {
+        if (type.IsAbstract || type.IsInterface || type.IsGenericTypeDefinition)
+        {
+            return false;
+        }
+
+        for (var current = type.BaseType; current is not null; current = current.BaseType)
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == typeof(InterModuleRequestHandler<,>))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

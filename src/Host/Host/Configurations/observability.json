@@ -19,6 +19,7 @@
     "EnableMetrics": true,
     "EnableTracing": true,
     "OtlpEndpoint": "http://localhost:18889",
-    "OtlpProtocol": "Grpc"
+    "OtlpProtocol": "Grpc",
+    "TraceSamplingRatio": 1.0
   }
 }

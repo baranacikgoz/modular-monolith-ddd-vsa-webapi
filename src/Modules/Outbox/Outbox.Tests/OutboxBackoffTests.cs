@@ -23,7 +23,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
     [Fact]
     public async Task Message_WithFutureNextRetryAt_IsSkippedByProcessor()
     {
-        int messageId;
+        long messageId;
         var now = DateTimeOffset.UtcNow;
 
         await using (var scope = _factory.Services.CreateAsyncScope())
@@ -53,7 +53,7 @@ public sealed class OutboxBackoffTests : IClassFixture<OutboxTestWebAppFactory>
     [Fact]
     public async Task Message_WithNullNextRetryAt_IsPickedUpByProcessor()
     {
-        int messageId;
+        long messageId;
         var now = DateTimeOffset.UtcNow;
 
         await using (var scope = _factory.Services.CreateAsyncScope())

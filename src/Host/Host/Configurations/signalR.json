@@ -1,6 +1,7 @@
 {
   "SignalROptions": {
     "UseRedisBackplane": false,
-    "RedisConnectionString": "localhost:6379,abortConnect=false"
+    "RedisConnectionString": "localhost:6379,abortConnect=false",
+    "RequireRedisBackplaneInProduction": true
   }
 }

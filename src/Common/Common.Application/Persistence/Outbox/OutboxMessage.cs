@@ -17,7 +17,7 @@ public class OutboxMessage : IOutboxMessage
     }
 #pragma warning restore CS8618
 
-    public int Id { get; set; }
+    public long Id { get; set; }
     public DateTimeOffset CreatedOn { get; set; }
     public IntegrationEvent Event { get; private set; }
     public bool IsProcessed { get; protected set; }

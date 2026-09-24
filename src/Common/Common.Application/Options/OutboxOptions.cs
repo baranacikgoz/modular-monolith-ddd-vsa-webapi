@@ -19,6 +19,11 @@ public class OutboxOptions
     public required int ClaimLeaseSeconds { get; set; }
     public required int MaxConsecutiveFailures { get; set; }
 
+    // Publishes of one claimed batch run in parallel up to this many at once. Plain C# default equal to
+    // outbox.json on purpose: added after the file was deployed, a required property would crash-loop a
+    // Vault value that predates it (CLAUDE.md, options pattern).
+    public int PublishConcurrency { get; set; } = 8;
+
     public required int LagThresholdMinutes { get; set; }
     public required string MetricsCronSchedule { get; set; }
 
@@ -88,6 +93,10 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
         RuleFor(o => o.MaxConsecutiveFailures)
             .GreaterThanOrEqualTo(1)
             .WithMessage("MaxConsecutiveFailures must be at least 1.");
+
+        RuleFor(o => o.PublishConcurrency)
+            .GreaterThan(0)
+            .WithMessage("PublishConcurrency must be greater than 0.");
 
         RuleFor(o => o.LagThresholdMinutes)
             .GreaterThanOrEqualTo(1)

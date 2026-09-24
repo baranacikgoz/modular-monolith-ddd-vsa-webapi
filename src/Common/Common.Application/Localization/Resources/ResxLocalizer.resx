@@ -677,6 +677,9 @@
   <data name="ClientClosedRequest" xml:space="preserve">
     <value>İstek kullanıcı tarafından sonlandırıldı.</value>
   </data>
+  <data name="DependencyUnavailable" xml:space="preserve">
+    <value>Bağımlı bir servis şu anda yanıt vermiyor. Lütfen kısa bir süre sonra tekrar deneyiniz.</value>
+  </data>
   <data name="FeatureNotAvailable" xml:space="preserve">
     <value>({0}) özelliği şu anda kullanılamıyor.</value>
   </data>

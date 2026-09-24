@@ -2,16 +2,20 @@ using System.Globalization;
 using System.Net;
 using Common.Application.Extensions;
 using Common.Application.Localization.Resources;
+using Common.Application.Options;
 using EntityFramework.Exceptions.Common;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Host.Middlewares;
 
 internal sealed partial class GlobalExceptionHandlingMiddleware(
     IProblemDetailsService problemDetailsService,
     ILogger<GlobalExceptionHandlingMiddleware> logger,
-    IResxLocalizer localizer
+    IResxLocalizer localizer,
+    IOptions<InterModuleRequestOptions> interModuleRequestOptions
 ) : IMiddleware
 {
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -84,6 +88,16 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
                 nameof(localizer.InternalServerError),
                 localizer.InternalServerError);
         }
+        catch (RequestFaultException ex)
+        {
+            // Another module's request handler faulted: the caller's own work is intact, the dependency is not.
+            await HandleDependencyUnavailableAsync(context, ex);
+        }
+        catch (RequestTimeoutException ex)
+        {
+            // No module answered within InterModuleRequestOptions.TimeoutSeconds: same client-facing outcome.
+            await HandleDependencyUnavailableAsync(context, ex);
+        }
         catch (BadHttpRequestException ex)
         {
             await HandleExceptionAsync(
@@ -125,7 +139,24 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
 #pragma warning restore CA1031 // Do not catch general exception types
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode, string errorKey, string title)
+    private Task HandleDependencyUnavailableAsync(HttpContext context, Exception exception)
+    {
+        return HandleExceptionAsync(
+            context,
+            exception,
+            (int)HttpStatusCode.ServiceUnavailable,
+            nameof(localizer.DependencyUnavailable),
+            localizer.DependencyUnavailable,
+            retryAfterSeconds: interModuleRequestOptions.Value.DependencyUnavailableRetryAfterSeconds);
+    }
+
+    private async Task HandleExceptionAsync(
+        HttpContext context,
+        Exception exception,
+        int statusCode,
+        string errorKey,
+        string title,
+        int? retryAfterSeconds = null)
     {
         // A 4xx is the client's mistake, not a server fault: Error level would pollute error logs and alerts.
         if (statusCode >= StatusCodes.Status500InternalServerError)
@@ -150,6 +181,11 @@ internal sealed partial class GlobalExceptionHandlingMiddleware(
         details.AddErrorKey(errorKey).AddErrors(null, []);
 
         context.Response.StatusCode = statusCode;
+        if (retryAfterSeconds is { } seconds)
+        {
+            context.Response.Headers.RetryAfter = seconds.ToString(CultureInfo.InvariantCulture);
+        }
+
         await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = context, Exception = exception, ProblemDetails = details

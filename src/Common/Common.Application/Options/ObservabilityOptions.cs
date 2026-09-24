@@ -23,6 +23,11 @@ public class ObservabilityOptions
     public bool EnableTracing { get; set; }
     public string? OtlpEndpoint { get; set; }
     public string? OtlpProtocol { get; set; }
+
+    // Fraction of new traces recorded (ParentBased: a sampled parent always wins). Plain default equal to
+    // observability.json on purpose: added after the file was deployed, a required property would
+    // crash-loop a Vault value that predates it (CLAUDE.md, options pattern).
+    public double TraceSamplingRatio { get; set; } = 1.0;
 }
 
 public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOptions>
@@ -76,5 +81,9 @@ public class ObservabilityOptionsValidator : CustomValidator<ObservabilityOption
             .Matches("HttpProtobuf|Grpc")
             .WithMessage("OtlpProtocol must be 'HttpProtobuf' or 'Grpc'.")
             .When(o => o.EnableTracing || o.EnableMetrics);
+
+        RuleFor(o => o.TraceSamplingRatio)
+            .InclusiveBetween(0.0, 1.0)
+            .WithMessage("TraceSamplingRatio must be between 0 and 1 inclusive.");
     }
 }

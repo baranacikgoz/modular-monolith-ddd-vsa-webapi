@@ -1,5 +1,6 @@
 using Common.Application.EventBus;
 using Common.Application.Options;
+using Common.Application.Persistence.Inbox;
 using Common.IntegrationEvents;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
@@ -11,18 +12,19 @@ using ZiggyCreatures.Caching.Fusion;
 namespace Inventory.Application.IntegrationEventHandlers;
 
 /// <summary>
-///     The base class's cache-based dedupe (see IntegrationEventHandlerBase) already covers normal MassTransit
-///     redelivery. This handler adds a second, domain-level idempotency check on top - a belt-and-suspenders
-///     guard against the rarer case of a cache eviction or bug bypassing the first layer, mirroring IAM's
-///     BusinessOwnerPromotionHandler pattern: never assume a single dedupe layer is enough for a mutation that
+///     The base class's cache pre-filter plus transactional inbox (see IntegrationEventHandlerBase) already
+///     cover MassTransit redelivery of the same message. This handler adds a domain-level idempotency check on
+///     top for a different case: two distinct messages (different Ids) announcing the same product, which no
+///     per-message inbox can tell apart. Never assume a single dedupe layer is enough for a mutation that
 ///     would otherwise create a duplicate row.
 /// </summary>
 public sealed partial class CreateStockLevelOnProductCreatedHandler(
     IInventoryDbContext dbContext,
     IFusionCache cache,
     IOptions<CachingOptions> cachingOptions,
+    IInboxStore<IInventoryDbContext> inbox,
     ILogger<CreateStockLevelOnProductCreatedHandler> logger
-) : IntegrationEventHandlerBase<ProductCreatedIntegrationEvent>(cache, cachingOptions, logger)
+) : IntegrationEventHandlerBase<ProductCreatedIntegrationEvent>(cache, cachingOptions, inbox, logger)
 {
     protected override async Task ProcessAsync(ProductCreatedIntegrationEvent @event, CancellationToken cancellationToken)
     {
