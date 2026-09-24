@@ -52,6 +52,9 @@ public class GlobalExceptionHandlingMiddlewareTests
             Options.Create(new InterModuleRequestOptions
             {
                 TimeoutSeconds = 10,
+                Timeouts = [],
+                HandlerPrefetchCount = 32,
+                HandlerConcurrentMessageLimit = 32,
                 DependencyUnavailableRetryAfterSeconds = RetryAfterSeconds
             }));
         var context = new DefaultHttpContext();

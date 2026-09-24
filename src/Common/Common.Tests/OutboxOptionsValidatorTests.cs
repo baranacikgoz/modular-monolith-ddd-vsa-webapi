@@ -18,6 +18,7 @@ public sealed class OutboxOptionsValidatorTests
         PublishTimeoutMs = 5000,
         ClaimLeaseSeconds = 120,
         MaxConsecutiveFailures = 3,
+        PublishConcurrency = 8,
         LagThresholdMinutes = 5,
         MetricsCronSchedule = "*/5 * * * *"
     };

@@ -111,7 +111,7 @@ internal static partial class Setup
         {
             x
                 // ParentBased: honour the caller's sampling decision on incoming traces, apply the ratio to roots.
-                .SetSampler(new ParentBasedSampler(new TraceIdRatioBasedSampler(options.TraceSamplingRatio)))
+                .SetSampler(new ParentBasedSampler(new TraceIdRatioBasedSampler(options.TraceSamplingRatio!.Value)))
                 .AddAspNetCoreInstrumentation(cfg =>
                 {
                     cfg.Filter = httpContext =>

@@ -20,11 +20,10 @@ public class RabbitMqOptions
     public required int RetryIntervalDeltaMs { get; set; }
 
     // Default for any receive endpoint without its own ConsumerDefinition override (see
-    // Common.Application.EventBus.ConcurrencyConfiguratorExtensions). Not required, with a C# default matching
-    // MassTransit's own baseline (max(CPU count x 2, 16)): a deploy whose eventBus.json doesn't have these keys
-    // yet still boots with sane behavior instead of a required-property validation failure.
-    public int DefaultPrefetchCount { get; set; } = 16;
-    public int DefaultConcurrentMessageLimit { get; set; } = 16;
+    // Common.Application.EventBus.ConcurrencyConfiguratorExtensions). A missing key binds to 0 and fails the
+    // "> 0" rule at boot.
+    public required int DefaultPrefetchCount { get; set; }
+    public required int DefaultConcurrentMessageLimit { get; set; }
 }
 
 public class RabbitMqOptionsValidator : CustomValidator<RabbitMqOptions>

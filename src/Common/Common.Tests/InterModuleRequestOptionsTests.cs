@@ -9,7 +9,14 @@ public sealed class InterModuleRequestOptionsTests
 {
     private sealed record SampleRequest;
 
-    private static InterModuleRequestOptions ValidOptions() => new() { TimeoutSeconds = 10 };
+    private static InterModuleRequestOptions ValidOptions() => new()
+    {
+        TimeoutSeconds = 10,
+        Timeouts = [],
+        HandlerPrefetchCount = 32,
+        HandlerConcurrentMessageLimit = 32,
+        DependencyUnavailableRetryAfterSeconds = 2
+    };
 
     [Fact]
     public void ValidOptions_PassesValidation()
@@ -20,13 +27,21 @@ public sealed class InterModuleRequestOptionsTests
     }
 
     [Fact]
-    public void Defaults_HandlerConcurrency_MatchCheckedInJson()
+    public void Timeouts_Null_Fails()
     {
-        var options = ValidOptions();
+        var options = new InterModuleRequestOptions
+        {
+            TimeoutSeconds = 10,
+            Timeouts = null!,
+            HandlerPrefetchCount = 32,
+            HandlerConcurrentMessageLimit = 32,
+            DependencyUnavailableRetryAfterSeconds = 2
+        };
 
-        Assert.Equal(32, options.HandlerPrefetchCount);
-        Assert.Equal(32, options.HandlerConcurrentMessageLimit);
-        Assert.Empty(options.Timeouts);
+        var result = new InterModuleRequestOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(InterModuleRequestOptions.Timeouts));
     }
 
     [Theory]

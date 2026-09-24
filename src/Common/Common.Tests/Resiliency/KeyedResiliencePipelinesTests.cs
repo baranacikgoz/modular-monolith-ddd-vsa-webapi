@@ -100,6 +100,29 @@ public class KeyedResiliencePipelinesTests
     }
 
     [Fact]
+    public void Validator_KeyedNull_Fails()
+    {
+        var options = new ResiliencyOptions
+        {
+            PooledConnectionLifetimeMinutes = 15,
+            TotalRequestTimeoutSeconds = 30,
+            MaxRetryAttempts = 3,
+            RetryDelaySeconds = 1,
+            CircuitBreakerSamplingDurationSeconds = 30,
+            CircuitBreakerFailureRatio = 0.1,
+            CircuitBreakerMinimumThroughput = 10,
+            CircuitBreakerBreakDurationSeconds = 15,
+            AttemptTimeoutSeconds = 10,
+            Keyed = null!
+        };
+
+        var result = new ResiliencyOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ResiliencyOptions.Keyed));
+    }
+
+    [Fact]
     public void Validator_KeyedProfileOutOfRange_Fails()
     {
         var validator = new ResiliencyOptionsValidator();

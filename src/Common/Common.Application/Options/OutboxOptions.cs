@@ -19,10 +19,8 @@ public class OutboxOptions
     public required int ClaimLeaseSeconds { get; set; }
     public required int MaxConsecutiveFailures { get; set; }
 
-    // Publishes of one claimed batch run in parallel up to this many at once. Plain C# default equal to
-    // outbox.json on purpose: added after the file was deployed, a required property would crash-loop a
-    // Vault value that predates it (CLAUDE.md, options pattern).
-    public int PublishConcurrency { get; set; } = 8;
+    // Publishes of one claimed batch run in parallel up to this many at once.
+    public required int PublishConcurrency { get; set; }
 
     public required int LagThresholdMinutes { get; set; }
     public required string MetricsCronSchedule { get; set; }

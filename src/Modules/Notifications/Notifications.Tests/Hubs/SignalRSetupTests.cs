@@ -23,7 +23,7 @@ public sealed class SignalRSetupTests
             .Build();
 
     private static ValidationContext<SignalROptions> BuildContext(
-        bool useRedisBackplane, string environmentName, bool requireRedisBackplaneInProduction = true)
+        bool useRedisBackplane, string environmentName, bool? requireRedisBackplaneInProduction = true)
     {
         var options = new SignalROptions
         {
@@ -52,6 +52,17 @@ public sealed class SignalRSetupTests
             BuildContext(useRedisBackplane: false, Environments.Production, requireRedisBackplaneInProduction: false));
 
         Assert.True(result.IsValid);
+    }
+
+    // A missing key must fail at boot: a plain bool would bind to false and silently switch the guard off.
+    [Fact]
+    public void Validate_RequireRedisBackplaneInProductionMissing_Invalid()
+    {
+        var result = new SignalROptionsValidator().Validate(
+            BuildContext(useRedisBackplane: true, Environments.Development, requireRedisBackplaneInProduction: null));
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(SignalROptions.RequireRedisBackplaneInProduction));
     }
 
     [Fact]
