@@ -3,6 +3,7 @@ using Common.Domain.Events;
 using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Products.Application.Persistence;
@@ -30,6 +31,7 @@ public sealed class ProductsDbContext(
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasDefaultSchema(nameof(Products));
+        modelBuilder.HasTrigramExtension();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductsDbContext).Assembly);
 
         modelBuilder.Ignore<DomainEvent>();

@@ -1,6 +1,7 @@
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.Extensions;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -65,5 +66,9 @@ internal sealed class StoreConfiguration : AuditableEntityConfiguration<Store, S
         builder
             .HasIndex(FullTextSearchOptions.SearchVectorColumn)
             .HasMethod(FullTextSearchOptions.IndexMethod);
+
+        // Stores/v1/Search filters Name and Address with ILIKE '%term%'.
+        builder.HasTrigramIndex(s => s.Name);
+        builder.HasTrigramIndex(s => s.Address);
     }
 }

@@ -1,5 +1,6 @@
 using Common.Application.Options;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NpgsqlTypes;
@@ -51,5 +52,10 @@ internal sealed class ProductTemplateConfiguration : AuditableEntityConfiguratio
         builder
             .HasIndex(FullTextSearchOptions.SearchVectorColumn)
             .HasMethod(FullTextSearchOptions.IndexMethod);
+
+        // ProductTemplates/v1/Search filters each of these with ILIKE '%term%'.
+        builder.HasTrigramIndex(pt => pt.Brand);
+        builder.HasTrigramIndex(pt => pt.Model);
+        builder.HasTrigramIndex(pt => pt.Color);
     }
 }

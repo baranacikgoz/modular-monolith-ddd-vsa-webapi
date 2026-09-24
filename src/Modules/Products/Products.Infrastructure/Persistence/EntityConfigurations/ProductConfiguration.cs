@@ -1,5 +1,6 @@
 using Common.Application.Options;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Common.Infrastructure.Persistence.Extensions;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -61,5 +62,8 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
         builder
             .HasIndex(FullTextSearchOptions.SearchVectorColumn)
             .HasMethod(FullTextSearchOptions.IndexMethod);
+
+        // Products/v1/Search filters Name with ILIKE '%term%'.
+        builder.HasTrigramIndex(sp => sp.Name);
     }
 }
