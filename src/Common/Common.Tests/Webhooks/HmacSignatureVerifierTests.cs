@@ -52,6 +52,9 @@ public class HmacSignatureVerifierTests
     [InlineData("   ")]
     [InlineData("not-a-digest")]
     [InlineData("zz")]
+    // Digest-length (64 chars) but not hex: must not reach a throwing hex decoder.
+    [InlineData("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")]
+    [InlineData("sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdeg")]
     public void VerifySha256_MalformedHeader_IsInvalidWithoutThrowing(string? header)
     {
         Assert.False(HmacSignatureVerifier.VerifySha256(Secret, Body, header));
