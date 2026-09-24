@@ -167,4 +167,51 @@ public sealed class InboxIdempotencyTests(IntegrationTestWebAppFactory factory) 
 
         Assert.Equal(1, await InboxRowsAsync(nameof(LogProductCatalogChangeHandler), @event.Id));
     }
+
+    [Fact]
+    public async Task CleanupAsync_DeletesOnlyRowsOlderThanTheCutoff_InBatches()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var consumer = $"CleanupProbe{Guid.NewGuid():N}";
+        await using (var seed = Factory.Services.CreateAsyncScope())
+        {
+            var db = (DbContext)seed.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+            for (var i = 0; i < 5; i++)
+            {
+                await InsertProcessedMessageAsync(db, consumer, now.AddDays(-2));
+            }
+
+            await InsertProcessedMessageAsync(db, consumer, now);
+        }
+
+        // Batch size 2 over 5 old rows: 2 + 2 + 1, then 0 ends the loop. Exercises Take + ExecuteDeleteAsync on the
+        // composite (ConsumerName, MessageId) key.
+        var batches = new List<int>();
+        await using (var scope = Factory.Services.CreateAsyncScope())
+        {
+            var inbox = scope.ServiceProvider.GetRequiredService<IInboxStore<IInventoryDbContext>>();
+            int deleted;
+            do
+            {
+                deleted = await inbox.CleanupAsync(now.AddDays(-1), batchSize: 2, CancellationToken.None);
+                batches.Add(deleted);
+            } while (deleted > 0);
+        }
+
+        Assert.Equal([2, 2, 1, 0], batches);
+        await using var verify = Factory.Services.CreateAsyncScope();
+        var remaining = await verify.ServiceProvider.GetRequiredService<IInventoryDbContext>()
+            .Set<ProcessedMessage>().AsNoTracking()
+            .Where(m => m.ConsumerName == consumer)
+            .Select(m => m.ProcessedOn)
+            .ToListAsync();
+        var fresh = Assert.Single(remaining);
+        Assert.Equal(now, fresh, TimeSpan.FromSeconds(1));
+    }
+
+    private static Task<int> InsertProcessedMessageAsync(DbContext db, string consumer, DateTimeOffset processedOn)
+        => db.Database.ExecuteSqlAsync($"""
+            INSERT INTO "Inventory"."ProcessedMessages" ("ConsumerName", "MessageId", "ProcessedOn", "CreatedOn")
+            VALUES ({consumer}, {DefaultIdType.CreateVersion7()}, {processedOn}, {processedOn})
+            """);
 }
