@@ -476,11 +476,17 @@
   <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Sağlayıcı referansı boş olamaz.</value>
   </data>
+  <data name="StockReservations_Commit_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>
   </data>
   <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Sağlayıcı referansı boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
   </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>

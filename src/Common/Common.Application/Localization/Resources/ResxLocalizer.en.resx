@@ -417,11 +417,17 @@
   <data name="StockReservations_Commit_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Provider reference cannot be empty.</value>
   </data>
+  <data name="StockReservations_Commit_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Provider reference must be at most ({0}) characters.</value>
+  </data>
   <data name="StockReservations_WebhookCallback_ReservationId_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
   </data>
   <data name="StockReservations_WebhookCallback_ProviderReference_NotEmpty" xml:space="preserve">
     <value>Provider reference cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Provider reference must be at most ({0}) characters.</value>
   </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>

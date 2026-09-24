@@ -349,6 +349,54 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
     }
 
     [Fact]
+    public async Task Webhook_ProviderReferenceOverMaxLength_ReturnsBadRequest()
+    {
+        var client = AuthedClient(Factory);
+        var productId = await SeedProductAsync(client);
+        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
+
+        var response = await SendWebhookAsync(client, reservation.Id, new string('r', Constants.ProviderReferenceMaxLength + 1));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var reloaded = await FindReservationAsync(reservation.Id);
+        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
+    }
+
+    [Fact]
+    public async Task Commit_ProviderReferenceOverMaxLength_ReturnsBadRequest()
+    {
+        var client = AuthedClient(Factory);
+        var productId = await SeedProductAsync(client);
+        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
+
+        var response = await client.PostAsJsonAsync(
+            new Uri($"/v1/stock-reservations/{reservation.Id.Value}/commit", UriKind.Relative),
+            new { ProviderReference = new string('r', Constants.ProviderReferenceMaxLength + 1) });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var reloaded = await FindReservationAsync(reservation.Id);
+        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
+    }
+
+    [Fact]
+    public async Task Commit_ProviderReferenceAtMaxLength_CommitsReservation()
+    {
+        var client = AuthedClient(Factory);
+        var productId = await SeedProductAsync(client);
+        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
+        var reference = new string('r', Constants.ProviderReferenceMaxLength);
+
+        var response = await client.PostAsJsonAsync(
+            new Uri($"/v1/stock-reservations/{reservation.Id.Value}/commit", UriKind.Relative),
+            new { ProviderReference = reference });
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var reloaded = await FindReservationAsync(reservation.Id);
+        Assert.Equal(ReservationStatus.Committed, reloaded!.Status);
+        Assert.Equal(reference, reloaded.ProviderReference);
+    }
+
+    [Fact]
     public async Task Webhook_BodyOverTheLimit_Returns413BeforeTheEndpointReadsIt()
     {
         var client = AuthedClient(Factory);
