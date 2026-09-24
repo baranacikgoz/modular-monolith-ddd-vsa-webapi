@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Common.Application.Options;
 using Common.Endpoints.Versioning;
+using Common.Endpoints.Webhooks;
 using Common.Infrastructure.Auth;
 using Common.Infrastructure.Caching;
 using Common.Infrastructure.EventBus;
@@ -67,6 +68,9 @@ internal static partial class Setup
             .UseCommonResxLocalization()
             .UseCors()
             .UseGlobalExceptionHandlingMiddleware();
+
+        // Endpoints marked with LimitRequestBody: the cap must land before parameter binding reads the body.
+        app.UseMiddleware<RequestBodyLimitMiddleware>();
 
         var hasAuth = app.ApplicationServices.GetService<IAuthenticationSchemeProvider>() != null;
         if (hasAuth)

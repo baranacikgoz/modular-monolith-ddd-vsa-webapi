@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Http.Features;
 namespace Common.Endpoints.Webhooks;
 
 /// <summary>
-///     Caps the request body of an anonymous, internet-facing receiver (a partner webhook) before the first
-///     byte is read. A declared <c>Content-Length</c> over the cap is refused with 413 outright; a chunked body is
-///     cut off by the server at the cap. The limit is resolved per request so it can come from options.
+///     Endpoint-filter form of the body cap. An endpoint filter runs after minimal API parameter binding, so this only
+///     protects an endpoint that reads the raw body itself (<c>HttpContext</c> parameter, no bound body): for a
+///     DTO-bound body the bytes are already read and the server limit is read-only by the time it runs. Prefer
+///     <see cref="RequestBodyLimitEndpointExtensions.LimitRequestBody{TBuilder}" />, which enforces the cap in
+///     <see cref="RequestBodyLimitMiddleware" /> before binding.
 /// </summary>
 public sealed class RequestBodyLimitFilter(Func<HttpContext, long> maxBodyBytes) : IEndpointFilter
 {
@@ -33,10 +35,13 @@ public sealed class RequestBodyLimitFilter(Func<HttpContext, long> maxBodyBytes)
 
 public static class RequestBodyLimitEndpointExtensions
 {
-    /// <summary>Applies <see cref="RequestBodyLimitFilter" /> to every endpoint of the builder (a group or a single route).</summary>
+    /// <summary>
+    ///     Caps the request body of every endpoint of the builder (a group or a single route) before binding:
+    ///     adds <see cref="RequestBodyLimitMetadata" />, enforced by <see cref="RequestBodyLimitMiddleware" />.
+    /// </summary>
     public static TBuilder LimitRequestBody<TBuilder>(this TBuilder builder, Func<HttpContext, long> maxBodyBytes)
         where TBuilder : IEndpointConventionBuilder
     {
-        return builder.AddEndpointFilter(new RequestBodyLimitFilter(maxBodyBytes));
+        return builder.WithMetadata(new RequestBodyLimitMetadata(maxBodyBytes));
     }
 }
