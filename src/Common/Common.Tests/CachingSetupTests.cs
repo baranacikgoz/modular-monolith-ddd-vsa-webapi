@@ -2,9 +2,11 @@
 
 using Common.Application.Options;
 using Common.Application.Validation;
+using CachingSetup = Common.Infrastructure.Caching.Setup;
 using FluentValidation;
 using Microsoft.Extensions.Hosting;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
 
 namespace Common.Tests;
 
@@ -31,6 +33,17 @@ public sealed class CachingSetupTests
         var context = new ValidationContext<CachingOptions>(options);
         context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
         return context;
+    }
+
+    [Fact]
+    public void CreateSerializerOptions_ValueTuple_RoundTripsThroughFusionCacheSerializer()
+    {
+        var serializer = new FusionCacheSystemTextJsonSerializer(CachingSetup.CreateSerializerOptions());
+
+        var bytes = serializer.Serialize((7, "seven"));
+        var roundTripped = serializer.Deserialize<(int Number, string Name)>(bytes);
+
+        Assert.Equal((7, "seven"), roundTripped);
     }
 
     [Fact]

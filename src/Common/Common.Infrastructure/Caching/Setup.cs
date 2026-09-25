@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Common.Application.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,7 @@ public static class Setup
                 FactorySoftTimeout = defaults.FactorySoftTimeout,
                 FactoryHardTimeout = defaults.FactoryHardTimeout,
             })
-            .WithSystemTextJsonSerializer();
+            .WithSystemTextJsonSerializer(CreateSerializerOptions());
 
         if (cachingOptions.UseRedis)
         {
@@ -66,5 +67,11 @@ public static class Setup
         }
 
         return services;
+    }
+
+    // Value tuples expose their items as fields; without IncludeFields they serialize to {} and read back as defaults.
+    internal static JsonSerializerOptions CreateSerializerOptions()
+    {
+        return new JsonSerializerOptions { IncludeFields = true };
     }
 }
