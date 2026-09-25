@@ -123,6 +123,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 2. `src/Host/Host/Configurations/{name}.json`, top-level key = class name.
 3. Add the file to `AddJsonFile(...)` in `src/Host/Host/Configurations/Setup.cs`.
 4. Inject `IOptions<{Name}Options>`. `AddCommonOptions` auto-binds and validates every `*Options`; never hand-roll `services.Configure<T>`.
+5. Adding a field to an Options class that is already deployed: the field stays `required` (item 1). At the end of the task, tell the user in plain sentences which `{Name}Options` class got which field, its value in `Configurations/{name}.json`, and that the live configuration of every deployed environment needs the same field before the next deploy, because a config value that predates the field fails validation at startup. Never leave this out, even when the task is otherwise unrelated to deployment.
 
 ## 10. Report every issue you see
 
