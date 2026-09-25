@@ -73,6 +73,7 @@ public class AuditLogRetentionServiceTests(IntegrationTestFactory factory) : Bas
         {
             RetentionDays = 90,
             PurgeBatchSize = purgeBatchSize,
+            RetentionCron = "0 2 * * *",
             PerSchemaRetentionDays = perSchemaRetentionDays ?? []
         });
         return new AuditLogRetentionService(dataSource, options, NullLogger<AuditLogRetentionService>.Instance);

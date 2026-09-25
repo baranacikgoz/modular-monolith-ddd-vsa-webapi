@@ -2,6 +2,7 @@
   "AuditLogOptions": {
     "RetentionDays": 90,
     "PurgeBatchSize": 5000,
+    "RetentionCron": "0 2 * * *",
     "PerSchemaRetentionDays": {}
   }
 }
