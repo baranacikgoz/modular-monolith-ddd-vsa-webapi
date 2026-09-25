@@ -5,6 +5,7 @@
     "CaptchaEndpoint": "siteverify",
     "ClientKey": "myClientKey",
     "SecretKey": "mySecretKey",
+    "ScoreThreshold": 0.5,
     "AttemptTimeoutSeconds": 5,
     "TotalRequestTimeoutSeconds": 15
   }

@@ -37,6 +37,7 @@ public class CaptchaSetupTests
         CaptchaEndpoint = "siteverify",
         ClientKey = "clientKey",
         SecretKey = "secretKey",
+        ScoreThreshold = 0.5,
         AttemptTimeoutSeconds = 5,
         TotalRequestTimeoutSeconds = 15,
     };

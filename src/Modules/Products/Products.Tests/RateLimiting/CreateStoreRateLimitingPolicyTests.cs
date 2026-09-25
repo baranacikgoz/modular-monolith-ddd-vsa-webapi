@@ -25,15 +25,15 @@ public class CreateStoreRateLimitingPolicyTests
 
     private static CustomRateLimitingOptions Build() => new()
     {
-        Global = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        Sms = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        Register = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenCreate = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
+        Global = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        Sms = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        Register = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        TokenCreate = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     };
 
     // Mirrors production wiring (Common.Infrastructure/Auth/Setup.cs AddCommonAuth) so ICurrentUser is

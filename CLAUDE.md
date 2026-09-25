@@ -119,7 +119,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 
 ## 9. Options pattern
 
-1. `src/Common/Common.Application/Options/{Name}Options.cs` with `required` props and `{Name}OptionsValidator : CustomValidator<{Name}Options>` in the same file. `required` is compile-time only: the binder leaves a missing JSON key at the CLR default. So a numeric prop needs a rule the default fails (`> 0`), a `bool`/`double` whose default is not a safe value is `required bool?`/`double?` with `NotNull`, and a dictionary keeps a `= []` initializer (an empty JSON `{}` binds to nothing) plus `NotNull`. Never a plain C# default to tolerate a missing key.
+1. `src/Common/Common.Application/Options/{Name}Options.cs` with `required` props and `{Name}OptionsValidator : CustomValidator<{Name}Options>` in the same file. `required` is compile-time only: the binder leaves a missing JSON key at the CLR default. So a numeric prop needs a rule the default fails (`> 0`), a numeric, `bool` or `double` prop whose default is a valid value (`0`, or `true` that a missing key would flip to `false`) is `required int?`/`bool?`/`double?` with `NotNull` (read as `options.X!.Value`), a `bool` whose `false` is the safe reading is a plain `required bool`, and a dictionary keeps a `= []` initializer (an empty JSON `{}` binds to nothing) plus `NotNull`. Never a plain C# default to tolerate a missing key.
 2. `src/Host/Host/Configurations/{name}.json`, top-level key = class name.
 3. Add the file to `AddJsonFile(...)` in `src/Host/Host/Configurations/Setup.cs`.
 4. Inject `IOptions<{Name}Options>`. `AddCommonOptions` auto-binds and validates every `*Options`; never hand-roll `services.Configure<T>`.

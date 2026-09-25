@@ -19,7 +19,7 @@ public class PushOptions
     public FirebaseServiceAccountOptions? ServiceAccount { get; set; }
 
     /// <summary>Timeout for a single FCM multicast send call.</summary>
-    public int SendTimeoutSeconds { get; set; }
+    public required int SendTimeoutSeconds { get; set; }
 
     public required PushTemplatesOptions Templates { get; set; }
 }

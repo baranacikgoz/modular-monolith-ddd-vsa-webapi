@@ -15,6 +15,10 @@ public sealed class ObservabilityOptionsValidatorTests
             AppName = "app",
             AppVersion = "1.0.0",
             MinimumLevel = "Information",
+            WriteToConsole = false,
+            WriteToFile = false,
+            EnableMetrics = false,
+            EnableTracing = false,
             ResponseTimeThresholdInMs = 1000,
             TraceSamplingRatio = 1.0
         };

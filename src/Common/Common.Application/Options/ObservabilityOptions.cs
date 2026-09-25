@@ -9,9 +9,9 @@ public class ObservabilityOptions
     public required string AppVersion { get; set; }
     public required string MinimumLevel { get; set; }
     public Dictionary<string, string> MinimumLevelOverrides { get; } = [];
-    public bool WriteToConsole { get; set; }
-    public bool WriteToFile { get; set; }
-    public int ResponseTimeThresholdInMs { get; set; }
+    public required bool WriteToConsole { get; set; }
+    public required bool WriteToFile { get; set; }
+    public required int ResponseTimeThresholdInMs { get; set; }
 
     // Remote log sink: "Seq" | "Elasticsearch": omit to use console/file only
     public string? LogSink { get; set; }
@@ -19,8 +19,8 @@ public class ObservabilityOptions
     public string? ElasticsearchUrl { get; set; }
 
     // OTEL traces + metrics → single collector endpoint
-    public bool EnableMetrics { get; set; }
-    public bool EnableTracing { get; set; }
+    public required bool EnableMetrics { get; set; }
+    public required bool EnableTracing { get; set; }
     public string? OtlpEndpoint { get; set; }
     public string? OtlpProtocol { get; set; }
 

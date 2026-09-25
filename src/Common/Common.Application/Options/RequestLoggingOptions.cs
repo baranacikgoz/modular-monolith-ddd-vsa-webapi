@@ -5,7 +5,7 @@ namespace Common.Application.Options;
 
 public class SensitivePathRule
 {
-    public string Path { get; set; } = string.Empty;
+    public required string Path { get; set; }
     public IList<string> Methods { get; } = [];
 }
 

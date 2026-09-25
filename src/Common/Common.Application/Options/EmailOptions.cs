@@ -28,22 +28,22 @@ public class EmailOptions
     public string? SenderName { get; set; }
 
     /// <summary>Per-attempt timeout for the resilient HTTP client calling the email provider.</summary>
-    public int AttemptTimeoutSeconds { get; set; }
+    public required int AttemptTimeoutSeconds { get; set; }
 
     /// <summary>Total timeout across all retry attempts for a single send call.</summary>
-    public int TotalRequestTimeoutSeconds { get; set; }
+    public required int TotalRequestTimeoutSeconds { get; set; }
 
     /// <summary>
     /// Max retry attempts for the resilient HTTP client. Kept low (ideally 0-1): an email send is
     /// non-idempotent, so a retried request that actually delivered means a duplicate email.
     /// </summary>
-    public int MaxRetryAttempts { get; set; }
+    public required int? MaxRetryAttempts { get; set; }
 
     /// <summary>Max emails sent to one address per day, enforced by ThrottledEmailGateway.</summary>
-    public int MaxPerAddressPerDay { get; set; }
+    public required int MaxPerAddressPerDay { get; set; }
 
     /// <summary>Max emails sent across all addresses per day, enforced by ThrottledEmailGateway.</summary>
-    public int MaxPerDay { get; set; }
+    public required int MaxPerDay { get; set; }
 
     /// <summary>
     /// TTL for ThrottledEmailGateway's per-day counters. The counter key buckets by UTC day, so this must
@@ -122,6 +122,8 @@ public class EmailOptionsValidator : CustomValidator<EmailOptions>
                 .WithMessage("TotalRequestTimeoutSeconds must be greater than or equal to AttemptTimeoutSeconds.");
 
             RuleFor(o => o.MaxRetryAttempts)
+                .NotNull()
+                .WithMessage("MaxRetryAttempts is required when Provider is Brevo.")
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("MaxRetryAttempts must be greater than or equal to 0.");
 

@@ -5,7 +5,7 @@ namespace Common.Application.Options;
 
 public sealed class ReverseProxyOptions
 {
-    public bool IsEnabled { get; init; } = true;
+    public required bool? IsEnabled { get; init; }
 
     /// <summary>
     /// CIDR ranges of trusted upstream proxy networks (e.g., "10.0.0.0/8" for a K8s pod network).
@@ -14,13 +14,17 @@ public sealed class ReverseProxyOptions
     /// </summary>
     public IReadOnlyList<string> TrustedNetworks { get; init; } = [];
 
-    public int ForwardLimit { get; init; } = 1;
+    public required int ForwardLimit { get; init; }
 }
 
 public sealed class ReverseProxyOptionsValidator : CustomValidator<ReverseProxyOptions>
 {
     public ReverseProxyOptionsValidator()
     {
+        RuleFor(o => o.IsEnabled)
+            .NotNull()
+            .WithMessage("IsEnabled is required.");
+
         RuleFor(o => o.ForwardLimit)
             .GreaterThan(0)
             .WithMessage("ForwardLimit must be greater than 0.");
@@ -31,7 +35,7 @@ public sealed class ReverseProxyOptionsValidator : CustomValidator<ReverseProxyO
         // lock out all traffic behind a single bucket.
         RuleFor(o => o.TrustedNetworks)
             .NotEmpty()
-            .When(o => o.IsEnabled)
+            .When(o => o.IsEnabled == true)
             .WithMessage("TrustedNetworks must not be empty when IsEnabled is true.");
 
         RuleForEach(o => o.TrustedNetworks)

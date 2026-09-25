@@ -339,6 +339,11 @@ public sealed class NetGsmSmsGatewayTests
             var smsOptions = new SmsOptions
             {
                 Provider = SmsProvider.NetGsm,
+                AttemptTimeoutSeconds = 0,
+                TotalRequestTimeoutSeconds = 0,
+                MaxRetryAttempts = 0,
+                MaxPerPhoneNumberPerDay = 0,
+                MaxPerDay = 0,
                 MsgHeader = "TESTHEADER",
                 ThrottleCounterTtlHours = 25,
                 Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },

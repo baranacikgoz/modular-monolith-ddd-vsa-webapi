@@ -58,7 +58,7 @@ public static partial class Policies
                 {
                     Window = TimeSpan.FromMilliseconds(rateLimitingOptionsProvider.Value.CreateStore.PeriodInMs),
                     PermitLimit = rateLimitingOptionsProvider.Value.CreateStore.Limit,
-                    QueueLimit = rateLimitingOptionsProvider.Value.CreateStore.QueueLimit
+                    QueueLimit = rateLimitingOptionsProvider.Value.CreateStore.QueueLimit!.Value
                 });
         }
 

@@ -74,7 +74,7 @@ public sealed partial class OutboxModule : ICoreModule
             }
 
             var cleanupOptions = outboxOptions.Cleanup;
-            if (cleanupOptions.Enabled)
+            if (cleanupOptions.Enabled!.Value)
             {
                 RegisterWithRetry(logger, "outbox-cleanup", () =>
                 {

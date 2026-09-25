@@ -25,7 +25,7 @@ public sealed partial class InboxCleanupJob(
         using var activity = OutboxTelemetry.ActivitySource.StartActivity(nameof(ExecuteAsync));
 
         var cleanupOptions = outboxOptions.Value.Cleanup;
-        if (!cleanupOptions.Enabled)
+        if (!cleanupOptions.Enabled!.Value)
         {
             return;
         }

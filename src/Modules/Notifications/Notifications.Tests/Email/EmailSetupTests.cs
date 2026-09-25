@@ -64,6 +64,11 @@ public sealed class EmailSetupTests
         var options = new EmailOptions
         {
             Provider = EmailProvider.Brevo,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
+            MaxPerAddressPerDay = 0,
+            MaxPerDay = 0,
             ThrottleCounterTtlHours = 25,
             Templates = new EmailTemplatesOptions
             {

@@ -32,19 +32,19 @@ public class CustomRateLimitingOptions
 
 public class FixedWindow
 {
-    public int Limit { get; set; }
+    public required int Limit { get; set; }
 
-    public double PeriodInMs { get; set; }
+    public required double PeriodInMs { get; set; }
 
     /// <summary>Only honored by the in-process (non-Redis) limiter; inert once Redis-backed.</summary>
-    public int QueueLimit { get; set; }
+    public required int? QueueLimit { get; set; }
 
     /// <summary>
-    /// When Redis-backed and Redis is unreachable: true lets the request through (default), false
+    /// When Redis-backed and Redis is unreachable: true lets the request through, false
     /// rejects it. Sensitive flows (Sms, OtpVerify, BookingSubmit, BookingOtpVerify) set this false,
     /// during a Redis outage those flows are already dead anyway, since RedisOtpService is the OTP store.
     /// </summary>
-    public bool FailOpen { get; set; } = true;
+    public required bool? FailOpen { get; set; }
 }
 
 public class CustomRateLimitingOptionsValidator : CustomValidator<CustomRateLimitingOptions>
@@ -95,7 +95,13 @@ public class FixedWindowValidator : CustomValidator<FixedWindow>
             .WithMessage("PeriodInMs must not be empty.");
 
         RuleFor(o => o.QueueLimit)
+            .NotNull()
+            .WithMessage("QueueLimit is required.")
             .GreaterThanOrEqualTo(0)
             .WithMessage("QueueLimit must be greater than or equal to 0.");
+
+        RuleFor(o => o.FailOpen)
+            .NotNull()
+            .WithMessage("FailOpen is required.");
     }
 }

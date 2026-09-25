@@ -47,7 +47,7 @@ internal static class Setup
             {
                 resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(emailOptions.AttemptTimeoutSeconds);
                 resilience.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(emailOptions.TotalRequestTimeoutSeconds);
-                resilience.Retry.MaxRetryAttempts = emailOptions.MaxRetryAttempts;
+                resilience.Retry.MaxRetryAttempts = emailOptions.MaxRetryAttempts!.Value;
             });
 
         // Transient, not singleton: a singleton would pin one typed HttpClient for the process lifetime

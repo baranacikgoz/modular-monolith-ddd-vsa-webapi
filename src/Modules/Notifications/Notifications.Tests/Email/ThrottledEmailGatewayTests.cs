@@ -22,6 +22,9 @@ public sealed class ThrottledEmailGatewayTests : IDisposable
         Options.Create(new EmailOptions
         {
             Provider = EmailProvider.Brevo,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
             MaxPerAddressPerDay = maxPerAddressPerDay,
             MaxPerDay = maxPerDay,
             ThrottleCounterTtlHours = 25,

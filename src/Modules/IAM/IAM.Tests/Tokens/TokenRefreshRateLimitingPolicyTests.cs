@@ -15,17 +15,17 @@ public class TokenRefreshRateLimitingPolicyTests
 {
     private static readonly Policies.TokenRefreshRateLimitingPolicy _sut = new(Options.Create(new CustomRateLimitingOptions
     {
-        Global = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        Sms = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        Register = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenCreate = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
-        TokenRefresh = new FixedWindow { Limit = 20, PeriodInMs = 60000, QueueLimit = 0 },
+        Global = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        Sms = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        Register = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        CreateStore = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        TokenCreate = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        TokenRefresh = new FixedWindow { Limit = 20, PeriodInMs = 60000, QueueLimit = 0, FailOpen = true },
 
-        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 },
+        Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
 
-        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0 }
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     }));
 
     // RateLimitPartitions.FixedWindow resolves IConnectionMultiplexer from RequestServices to decide

@@ -77,7 +77,8 @@ public sealed class OutboxProcessorTests : IClassFixture<OutboxProcessorTestFact
         MaxConsecutiveFailures = 3,
         PublishConcurrency = publishConcurrency,
         LagThresholdMinutes = 5,
-        MetricsCronSchedule = "*/5 * * * *"
+        MetricsCronSchedule = "*/5 * * * *",
+        Cleanup = new OutboxCleanupSettings { Enabled = true, RetentionDays = 7, BatchSize = 1000, CronSchedule = "0 3 * * *" }
     };
 
     private OutboxProcessor CreateProcessor(OutboxOptions options) => new(

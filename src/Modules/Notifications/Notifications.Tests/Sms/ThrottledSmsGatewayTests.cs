@@ -27,6 +27,9 @@ public sealed class ThrottledSmsGatewayTests : IDisposable
         Options.Create(new SmsOptions
         {
             Provider = SmsProvider.NetGsm,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
             MaxPerPhoneNumberPerDay = maxPerPhoneNumberPerDay,
             MaxPerDay = maxPerDay,
             ThrottleCounterTtlHours = 25,

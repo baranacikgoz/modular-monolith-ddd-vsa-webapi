@@ -49,7 +49,7 @@ internal static class Setup
             {
                 resilience.AttemptTimeout.Timeout = TimeSpan.FromSeconds(smsOptions.AttemptTimeoutSeconds);
                 resilience.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(smsOptions.TotalRequestTimeoutSeconds);
-                resilience.Retry.MaxRetryAttempts = smsOptions.MaxRetryAttempts;
+                resilience.Retry.MaxRetryAttempts = smsOptions.MaxRetryAttempts!.Value;
             });
 
         // Transient, not singleton: see Email/Setup.cs for the HttpClientFactory handler-rotation reason.

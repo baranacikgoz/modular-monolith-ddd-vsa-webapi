@@ -242,6 +242,11 @@ public sealed class BrevoEmailGatewayTests
             var emailOptions = new EmailOptions
             {
                 Provider = EmailProvider.Brevo,
+                AttemptTimeoutSeconds = 0,
+                TotalRequestTimeoutSeconds = 0,
+                MaxRetryAttempts = 0,
+                MaxPerAddressPerDay = 0,
+                MaxPerDay = 0,
                 SenderEmail = "no-reply@example.com",
                 SenderName = "Sender",
                 ThrottleCounterTtlHours = 25,

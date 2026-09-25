@@ -31,22 +31,22 @@ public class SmsOptions
     public string? AppName { get; set; }
 
     /// <summary>Per-attempt timeout for the resilient HTTP client calling the SMS provider.</summary>
-    public int AttemptTimeoutSeconds { get; set; }
+    public required int AttemptTimeoutSeconds { get; set; }
 
     /// <summary>Total timeout across all retry attempts for a single send call.</summary>
-    public int TotalRequestTimeoutSeconds { get; set; }
+    public required int TotalRequestTimeoutSeconds { get; set; }
 
     /// <summary>
     /// Max retry attempts for the resilient HTTP client. Kept low (ideally 0-1): an SMS send is
     /// non-idempotent, so a retried request that actually delivered means a duplicate SMS.
     /// </summary>
-    public int MaxRetryAttempts { get; set; }
+    public required int? MaxRetryAttempts { get; set; }
 
     /// <summary>Max SMS sends per phone number per day, enforced by ThrottledSmsGateway.</summary>
-    public int MaxPerPhoneNumberPerDay { get; set; }
+    public required int MaxPerPhoneNumberPerDay { get; set; }
 
     /// <summary>Max SMS sends across all phone numbers per day, enforced by ThrottledSmsGateway.</summary>
-    public int MaxPerDay { get; set; }
+    public required int MaxPerDay { get; set; }
 
     /// <summary>
     /// TTL for ThrottledSmsGateway's per-day counters. The counter key buckets by UTC day, so this must
@@ -119,6 +119,8 @@ public class SmsOptionsValidator : CustomValidator<SmsOptions>
                 .WithMessage("TotalRequestTimeoutSeconds must be greater than or equal to AttemptTimeoutSeconds.");
 
             RuleFor(o => o.MaxRetryAttempts)
+                .NotNull()
+                .WithMessage("MaxRetryAttempts is required when Provider is NetGsm.")
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("MaxRetryAttempts must be greater than or equal to 0.");
 

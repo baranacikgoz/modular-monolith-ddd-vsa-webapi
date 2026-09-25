@@ -13,9 +13,10 @@ internal static partial class Setup
         var proxyOptions = configuration
                                .GetSection(nameof(ReverseProxyOptions))
                                .Get<ReverseProxyOptions>()
-                           ?? new ReverseProxyOptions();
+                           ?? throw new InvalidOperationException(
+                               $"Configuration section {nameof(ReverseProxyOptions)} is missing.");
 
-        if (!proxyOptions.IsEnabled)
+        if (proxyOptions.IsEnabled is not true)
         {
             return services;
         }

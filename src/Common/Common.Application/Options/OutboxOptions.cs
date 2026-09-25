@@ -25,21 +25,25 @@ public class OutboxOptions
     public required int LagThresholdMinutes { get; set; }
     public required string MetricsCronSchedule { get; set; }
 
-    public OutboxCleanupSettings Cleanup { get; set; } = new();
+    public required OutboxCleanupSettings Cleanup { get; set; }
 }
 
 public class OutboxCleanupSettings
 {
-    public bool Enabled { get; set; } = true;
-    public int RetentionDays { get; set; } = 7;
-    public int BatchSize { get; set; } = 1000;
-    public string CronSchedule { get; set; } = "0 3 * * *";
+    public required bool? Enabled { get; set; }
+    public required int RetentionDays { get; set; }
+    public required int BatchSize { get; set; }
+    public required string CronSchedule { get; set; }
 }
 
 public class OutboxCleanupSettingsValidator : CustomValidator<OutboxCleanupSettings>
 {
     public OutboxCleanupSettingsValidator()
     {
+        RuleFor(x => x.Enabled)
+            .NotNull()
+            .WithMessage("Enabled is required.");
+
         RuleFor(x => x.RetentionDays)
             .GreaterThanOrEqualTo(1)
             .WithMessage("RetentionDays must be at least 1.");
@@ -103,5 +107,10 @@ public class OutboxOptionsValidator : CustomValidator<OutboxOptions>
         RuleFor(o => o.MetricsCronSchedule)
             .NotEmpty()
             .WithMessage("MetricsCronSchedule is required.");
+
+        RuleFor(o => o.Cleanup)
+            .NotNull()
+            .WithMessage("Cleanup is required.")
+            .SetValidator(new OutboxCleanupSettingsValidator());
     }
 }

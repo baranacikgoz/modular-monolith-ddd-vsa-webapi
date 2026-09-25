@@ -10,7 +10,7 @@ namespace Common.Tests.RateLimiting;
 
 public class RateLimitPartitionsTests
 {
-    private static readonly FixedWindow Window = new() { Limit = 5, PeriodInMs = 60_000, QueueLimit = 0 };
+    private static readonly FixedWindow Window = new() { Limit = 5, PeriodInMs = 60_000, QueueLimit = 0, FailOpen = true };
 
     [Fact]
     public void FixedWindowByRouteValue_RouteValuePresent_PartitionsByIt()
@@ -51,7 +51,7 @@ public class RateLimitPartitionsTests
         httpContext.Request.RouteValues["accountId"] = "acct-1";
 
         var partition = RateLimitPartitions.FixedWindowByRouteValue(httpContext, "Webhook", "accountId",
-            new FixedWindow { Limit = 1, PeriodInMs = 60_000, QueueLimit = 0 });
+            new FixedWindow { Limit = 1, PeriodInMs = 60_000, QueueLimit = 0, FailOpen = true });
         using var limiter = partition.Factory(partition.PartitionKey);
 
         using var first = limiter.AttemptAcquire();

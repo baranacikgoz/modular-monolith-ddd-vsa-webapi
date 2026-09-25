@@ -5,7 +5,7 @@ namespace Common.Application.Options;
 
 public class CachingOptions
 {
-    public bool UseRedis { get; set; }
+    public required bool UseRedis { get; set; }
     public Redis? Redis { get; set; }
     public required CachingEntryDefaults EntryDefaults { get; set; }
     public required TimeSpan IdempotencyKeyDuration { get; set; }
@@ -22,7 +22,7 @@ public class CachingOptions
     ///     Explicit opt-out for single-instance production deployments. With more than one instance,
     ///     in-memory-only caching breaks OTP verification, consumer idempotency, and SignalR fan-out.
     /// </summary>
-    public bool AllowInMemoryOnlyInProduction { get; set; }
+    public required bool AllowInMemoryOnlyInProduction { get; set; }
 }
 
 public class CachingEntryDefaults
@@ -38,7 +38,7 @@ public class Redis
 {
     public required string Host { get; set; }
 
-    public int Port { get; set; }
+    public required int Port { get; set; }
 
     public required string Password { get; set; }
 

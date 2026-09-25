@@ -20,7 +20,16 @@ public sealed class OutboxOptionsValidatorTests
         MaxConsecutiveFailures = 3,
         PublishConcurrency = 8,
         LagThresholdMinutes = 5,
-        MetricsCronSchedule = "*/5 * * * *"
+        MetricsCronSchedule = "*/5 * * * *",
+        Cleanup = ValidCleanup()
+    };
+
+    private static OutboxCleanupSettings ValidCleanup() => new()
+    {
+        Enabled = true,
+        RetentionDays = 7,
+        BatchSize = 1000,
+        CronSchedule = "0 3 * * *"
     };
 
     [Fact]
@@ -166,24 +175,55 @@ public sealed class OutboxOptionsValidatorTests
     }
 
     [Fact]
-    public void CleanupOptions_Default_IsValid()
+    public void CleanupOptions_Valid_PassesValidation()
     {
-        var options = ValidOptions();
-        var validator = new OutboxOptionsValidator();
-        var result = validator.Validate(options);
+        var result = new OutboxOptionsValidator().Validate(ValidOptions());
 
         Assert.True(result.IsValid);
-        Assert.True(options.Cleanup.Enabled);
-        Assert.Equal(7, options.Cleanup.RetentionDays);
-        Assert.Equal(1000, options.Cleanup.BatchSize);
     }
 
     [Fact]
     public void CleanupOptions_NegativeRetentionDays_Fails()
     {
-        var options = new OutboxCleanupSettings { RetentionDays = 0 };
+        var options = ValidCleanup();
+        options.RetentionDays = 0;
         var validator = new OutboxCleanupSettingsValidator();
         var result = validator.Validate(options);
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void CleanupOptions_EnabledMissing_Fails()
+    {
+        var options = ValidCleanup();
+        options.Enabled = null;
+
+        var result = new OutboxCleanupSettingsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxCleanupSettings.Enabled));
+    }
+
+    [Fact]
+    public void Cleanup_SectionMissing_Fails()
+    {
+        var options = ValidOptions();
+        options.Cleanup = null!;
+
+        var result = new OutboxOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(OutboxOptions.Cleanup));
+    }
+
+    [Fact]
+    public void Cleanup_InvalidNestedValue_FailsThroughParentValidator()
+    {
+        var options = ValidOptions();
+        options.Cleanup.BatchSize = 1;
+
+        var result = new OutboxOptionsValidator().Validate(options);
 
         Assert.False(result.IsValid);
     }

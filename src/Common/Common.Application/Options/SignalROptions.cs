@@ -5,7 +5,7 @@ namespace Common.Application.Options;
 
 public class SignalROptions
 {
-    public bool UseRedisBackplane { get; set; }
+    public required bool UseRedisBackplane { get; set; }
     public required string RedisConnectionString { get; set; }
 
     /// <summary>

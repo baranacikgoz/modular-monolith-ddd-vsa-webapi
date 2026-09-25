@@ -16,8 +16,6 @@ internal partial class ReCaptchaService(
     ILogger<ReCaptchaService> logger
 ) : ICaptchaService
 {
-    private const double DefaultScoreThreshold = 0.5;
-
     public string GetClientKey()
     {
         return captchaOptionsProvider.Value.ClientKey;
@@ -64,9 +62,7 @@ internal partial class ReCaptchaService(
         }
 
         // reCAPTCHA v3 score validation: 1.0 = very likely human, 0.0 = very likely bot
-        var scoreThreshold = captchaOptionsProvider.Value.ScoreThreshold > 0
-            ? captchaOptionsProvider.Value.ScoreThreshold
-            : DefaultScoreThreshold;
+        var scoreThreshold = captchaOptionsProvider.Value.ScoreThreshold!.Value;
 
         if (reCaptchaResponse.Score < scoreThreshold)
         {

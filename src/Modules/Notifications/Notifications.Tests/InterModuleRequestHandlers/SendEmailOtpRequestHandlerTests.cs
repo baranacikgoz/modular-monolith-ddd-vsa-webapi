@@ -39,6 +39,11 @@ public sealed class SendEmailOtpRequestHandlerTests : IDisposable
         var emailOptions = Options.Create(new EmailOptions
         {
             Provider = EmailProvider.Dummy,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
+            MaxPerAddressPerDay = 0,
+            MaxPerDay = 0,
             ThrottleCounterTtlHours = 25,
             Templates = new EmailTemplatesOptions
             {

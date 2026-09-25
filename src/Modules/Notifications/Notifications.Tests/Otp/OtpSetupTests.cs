@@ -26,6 +26,11 @@ public sealed class OtpSetupTests
         var context = new ValidationContext<SmsOptions>(new SmsOptions
         {
             Provider = provider,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
+            MaxPerPhoneNumberPerDay = 0,
+            MaxPerDay = 0,
             ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         });

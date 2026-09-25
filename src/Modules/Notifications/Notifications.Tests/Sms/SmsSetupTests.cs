@@ -26,6 +26,11 @@ public sealed class SmsSetupTests
         var options = new SmsOptions
         {
             Provider = SmsProvider.NetGsm,
+            AttemptTimeoutSeconds = 0,
+            TotalRequestTimeoutSeconds = 0,
+            MaxRetryAttempts = 0,
+            MaxPerPhoneNumberPerDay = 0,
+            MaxPerDay = 0,
             ThrottleCounterTtlHours = 25,
             Templates = new SmsTemplatesOptions { Otp = { ["en"] = "code {0}" } },
         };

@@ -22,9 +22,9 @@ public class CaptchaOptions
 
     /// <summary>
     ///     reCAPTCHA v3 score threshold. Requests with a score below this value are rejected.
-    ///     Valid range: 0.0 to 1.0. Defaults to 0.5 if not set or zero.
+    ///     Valid range: greater than 0.0 up to 1.0.
     /// </summary>
-    public double ScoreThreshold { get; init; }
+    public required double? ScoreThreshold { get; init; }
 
     public required CaptchaProvider Provider { get; init; }
 
@@ -62,6 +62,13 @@ public class CaptchaOptionsValidator : CustomValidator<CaptchaOptions>
             .Must((_, provider, context) => !context.IsProduction() || provider != CaptchaProvider.Dummy)
             .WithMessage("CaptchaOptions.Provider is 'Dummy' in Production. Dummy captcha always passes; " +
                          "set Provider to 'ReCaptcha' (with real keys) before deploying.");
+
+        RuleFor(o => o.ScoreThreshold)
+            .NotNull()
+            .WithMessage("ScoreThreshold is required.")
+            .GreaterThan(0.0)
+            .LessThanOrEqualTo(1.0)
+            .WithMessage("ScoreThreshold must be greater than 0 and at most 1.");
 
         RuleFor(o => o.AttemptTimeoutSeconds)
             .GreaterThan(0)

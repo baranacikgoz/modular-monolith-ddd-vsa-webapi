@@ -20,7 +20,7 @@ public sealed partial class OutboxCleanupJob(
 
         var cleanupOptions = outboxOptions.Value.Cleanup;
 
-        if (!cleanupOptions.Enabled)
+        if (!cleanupOptions.Enabled!.Value)
         {
             return;
         }

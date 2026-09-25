@@ -8,7 +8,7 @@ public class CorsOptions
     public IReadOnlyList<string> AllowedOrigins { get; init; } = [];
     public IReadOnlyList<string> AllowedMethods { get; init; } = [];
     public IReadOnlyList<string> AllowedHeaders { get; init; } = [];
-    public bool AllowCredentials { get; init; }
+    public required bool AllowCredentials { get; init; }
     public required int MaxAgeInSeconds { get; init; }
 }
 

@@ -50,7 +50,7 @@ public static class RateLimitPartitions
             {
                 PermitLimit = options.Limit,
                 Window = TimeSpan.FromMilliseconds(options.PeriodInMs),
-                QueueLimit = options.QueueLimit,
+                QueueLimit = options.QueueLimit!.Value,
             });
         }
 
@@ -67,7 +67,7 @@ public static class RateLimitPartitions
             redisKey,
             options.Limit,
             TimeSpan.FromMilliseconds(options.PeriodInMs),
-            options.FailOpen,
+            options.FailOpen!.Value,
             logger));
     }
 }

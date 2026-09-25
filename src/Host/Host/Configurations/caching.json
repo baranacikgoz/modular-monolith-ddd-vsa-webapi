@@ -1,6 +1,7 @@
 {
   "CachingOptions": {
     "UseRedis": false,
+    "AllowInMemoryOnlyInProduction": false,
     "Redis": {
       "Host": "localhost",
       "Port": 6379,
