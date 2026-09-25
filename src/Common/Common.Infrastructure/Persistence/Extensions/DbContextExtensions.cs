@@ -51,6 +51,20 @@ public static class DbContextExtensions
         }
     };
 
+    /// <summary>
+    ///     One aggregate's history, newest first: <c>CreatedOn</c> descending, then <c>Version</c> descending. The order is
+    ///     total (<c>Version</c> is unique per aggregate) and is a published contract: rows one command wrote at the same
+    ///     instant come back in a fixed order across pages.
+    ///     <para>
+    ///         Offset paging (<see cref="PaginationRequest.PageNumber" />) stays the default. A full page also carries
+    ///         <see cref="PaginationResponse{T}.NextCursor" />; passing it back as <see cref="PaginationRequest.After" />
+    ///         continues right after that row with <c>LIMIT</c> only, so a deep page costs the same as the first one
+    ///         (a history that keeps growing, like a wallet's, otherwise pays <c>OFFSET</c> and a <c>COUNT</c> per page).
+    ///         <see cref="PaginationRequest.IncludeTotal" /> false skips the count. A malformed cursor is user input and
+    ///         fails as a <c>Validation</c> error. <see cref="PaginateAsync" /> cannot serve this order: it sorts on one
+    ///         key plus an ascending tiebreaker.
+    ///     </para>
+    /// </summary>
     public static async Task<Result<PaginationResponse<AuditLogDto>>> GetAuditLogAsync<TAggregate, TId>(
         this DbSet<AuditLogEntry> auditLog,
         TId id,
@@ -63,13 +77,26 @@ public static class DbContextExtensions
             .AsNoTracking()
             .Where(e => e.AggregateId == id.Value && e.AggregateType == aggregateType);
 
-        var totalCount = await query.CountAsync(cancellationToken);
+        var totalCount = request.ShouldIncludeTotal ? await query.CountAsync(cancellationToken) : -1;
 
-        var entries = await query
+        var useCursor = request.After is not null;
+        if (useCursor)
+        {
+            var bound = DecodeAuditLogCursor(request.After!);
+            if (bound.IsFailure)
+            {
+                return bound.Error!;
+            }
+
+            var (createdOn, version) = bound.Value;
+            query = query.Where(e => e.CreatedOn < createdOn || (e.CreatedOn == createdOn && e.Version < version));
+        }
+
+        var ordered = query
             .OrderByDescending(e => e.CreatedOn)
-            .ThenByDescending(e => e.Version) // one command can raise several events at the same instant: keep page boundaries stable
-            .Skip(request.Skip)
-            .Take(request.PageSize)
+            .ThenByDescending(e => e.Version); // one command can raise several events at the same instant: keep page boundaries stable
+
+        var entries = await (useCursor ? ordered.Take(request.Take) : ordered.Skip(request.Skip).Take(request.Take))
             .ToListAsync(cancellationToken);
 
         var items = entries
@@ -81,6 +108,24 @@ public static class DbContextExtensions
                 e.CreatedBy))
             .ToList();
 
-        return new PaginationResponse<AuditLogDto>(items, totalCount, request.PageNumber, request.PageSize);
+        var nextCursor = entries.Count == request.PageSize
+            ? PaginationCursor.Encode(entries[^1].CreatedOn, entries[^1].Version)
+            : null;
+
+        return new PaginationResponse<AuditLogDto>(items, totalCount, useCursor ? 1 : request.PageNumber, request.PageSize, nextCursor);
+    }
+
+    /// <summary>The (CreatedOn, Version) of the last row of the previous page; a cursor minted for another sort is invalid.</summary>
+    private static Result<(DateTimeOffset CreatedOn, long Version)> DecodeAuditLogCursor(string cursor)
+    {
+        var decoded = PaginationCursor.Decode(cursor);
+        if (decoded.IsFailure)
+        {
+            return decoded.Error!;
+        }
+
+        return decoded.Value is { SortValue: DateTimeOffset createdOn, Tiebreaker: long version }
+            ? (createdOn, version)
+            : Error.Validation([PaginationCursor.ParameterName]);
     }
 }

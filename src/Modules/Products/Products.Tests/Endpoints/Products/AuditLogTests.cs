@@ -117,6 +117,59 @@ public class AuditLogTests : BaseIntegrationTest
         Assert.Equal([2L, 1L], second);
     }
 
+    [Fact]
+    public async Task AuditLog_FullPageCarriesACursorThatContinuesInTheSameOrder()
+    {
+        // Arrange: same instant for every row, the case where the order inside a tie matters most.
+        using var scope = Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
+        var productId = ProductId.New();
+        for (var version = 1; version <= 5; version++)
+        {
+            db.AuditLog.Add(AuditLogEntry.Create(nameof(Product), productId.Value, version,
+                new V1ProductNameUpdatedDomainEvent(productId, $"name-{version}")));
+        }
+
+        await db.SaveChangesAsync();
+
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        // Act
+        var first = await GetPageAsync(client, productId, "PageNumber=1&PageSize=3");
+        var second = await GetPageAsync(client, productId, $"PageNumber=1&PageSize=3&IncludeTotal=false&After={Uri.EscapeDataString(first.NextCursor!)}");
+
+        // Assert: the cursor page picks up exactly where the offset page ended, and skips the count.
+        Assert.Equal([5L, 4L, 3L], first.Versions);
+        Assert.NotNull(first.NextCursor);
+        Assert.Equal(5, first.TotalCount);
+        Assert.Equal([2L, 1L], second.Versions);
+        Assert.Null(second.NextCursor);
+        Assert.Equal(-1, second.TotalCount);
+    }
+
+    [Fact]
+    public async Task AuditLog_MalformedCursor_ReturnsBadRequest()
+    {
+        var client = Factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
+
+        var response = await client.GetAsync(new Uri($"/v1/products/{ProductId.New()}/audit-log?PageNumber=1&PageSize=3&After=not-a-cursor", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    private static async Task<(List<long> Versions, string? NextCursor, int TotalCount)> GetPageAsync(HttpClient client, ProductId productId, string query)
+    {
+        var response = await client.GetAsync(new Uri($"/v1/products/{productId}/audit-log?{query}", UriKind.Relative));
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var root = json.RootElement;
+        var versions = root.GetProperty("data").EnumerateArray().Select(item => item.GetProperty("version").GetInt64()).ToList();
+        var cursor = root.TryGetProperty("nextCursor", out var next) && next.ValueKind == JsonValueKind.String ? next.GetString() : null;
+        return (versions, cursor, root.GetProperty("totalCount").GetInt32());
+    }
+
     private static async Task<List<long>> GetVersionsAsync(HttpClient client, ProductId productId, int pageNumber)
     {
         var response = await client.GetAsync(new Uri($"/v1/products/{productId}/audit-log?PageNumber={pageNumber}&PageSize=3", UriKind.Relative));
