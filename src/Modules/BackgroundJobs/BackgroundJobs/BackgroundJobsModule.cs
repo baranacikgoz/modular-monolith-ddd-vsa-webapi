@@ -9,6 +9,7 @@ using Npgsql;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BackgroundJobs;
@@ -39,6 +40,7 @@ public sealed class BackgroundJobsModule : ICoreModule
 
                 cfg.UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
+                    .UseFilter(new SkipOverlappingRecurringJobFilter(sp.GetRequiredService<ILogger<SkipOverlappingRecurringJobFilter>>()))
                     .UseFilter(new JobMetricsFilter())
                     .UsePostgreSqlStorage(pgs => pgs.UseNpgsqlConnection(connectionString),
                         new PostgreSqlStorageOptions { SchemaName = nameof(BackgroundJobs) });

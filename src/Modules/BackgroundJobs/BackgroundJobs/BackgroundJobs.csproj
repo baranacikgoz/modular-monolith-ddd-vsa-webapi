@@ -7,6 +7,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="BackgroundJobs.Tests"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="BackgroundJobs.Tests\**"/>
     <EmbeddedResource Remove="BackgroundJobs.Tests\**"/>
     <None Remove="BackgroundJobs.Tests\**"/>

@@ -17,6 +17,12 @@ internal sealed class JobMetricsFilter : IServerFilter
 
     public void OnPerformed(PerformedContext context)
     {
+        if (context.Items.ContainsKey(SkipOverlappingRecurringJobFilter.SkippedItemKey))
+        {
+            BackgroundJobsTelemetry.RecordJobSkipped(context.BackgroundJob.Job.Type.Name);
+            return;
+        }
+
         var durationMs = context.Items.TryGetValue(StopwatchKey, out var value) && value is Stopwatch stopwatch
             ? stopwatch.Elapsed.TotalMilliseconds
             : 0d;

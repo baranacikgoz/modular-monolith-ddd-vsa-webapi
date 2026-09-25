@@ -30,6 +30,14 @@ internal static class BackgroundJobsTelemetry
                 new Measurement<long>(kvp.Value, new KeyValuePair<string, object?>("job.name", kvp.Key))),
             description: "Unix timestamp of each job's last successful execution: an absolute value survives pod restarts, unlike a counter delta which goes blind when Hangfire's misfire catch-up runs a job before Prometheus's first scrape of the new instance's series");
 
+    /// <summary>A run the overlap filter cancelled because the previous run was still going: neither a success nor a failure.</summary>
+    public static void RecordJobSkipped(string jobName)
+    {
+        JobsExecuted.Add(1,
+            new KeyValuePair<string, object?>("job.name", jobName),
+            new KeyValuePair<string, object?>("job.outcome", "skipped"));
+    }
+
     public static void RecordJobExecuted(string jobName, bool succeeded, double durationMs)
     {
         JobsExecuted.Add(1,

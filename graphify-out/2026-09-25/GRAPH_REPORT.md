@@ -1,7 +1,7 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-25)
 
 ## Corpus Check
-- 574 files · ~89,846 words
+- 574 files · ~90,032 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `083d5b11`
+- Built from commit: `8caa32c1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1604,7 +1604,7 @@ Nodes (3): IResxLocalizer, IRuleBuilder, IRuleBuilderOptions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `microsoft_extensions_dependencyinjection`, `microsoft_aspnetcore_http`, `KeycloakAdminClient.cs`, `EmailOptions`, `microsoft_extensions_options`, `Infrastructure/Setup.cs`, `ConfigureSwaggerOptions.cs`, `system_diagnostics`, `Common.Application.EventBus`, `CachingOptions`, `Tokens/VersionNeutral/Setup.cs`, `Users/VersionNeutral/Setup.cs`, `Inventory.Domain.StockReservations`, `microsoft_entityframeworkcore`, `PushOptions`, `Common.Domain.StronglyTypedIds`, `FirebasePushGateway.cs`, `JwtBearerConfigureOptions.cs`, `Common.Domain.ResultMonad`, `system_net`?**
-  _High betweenness centrality (0.165) - this node is a cross-community bridge._
+  _High betweenness centrality (0.170) - this node is a cross-community bridge._
 - **Why does `Result` connect `Result` to `InventoryOptions`, `Request`, `.ListSessions`, `.GetMeAsync`, `FirebasePushGateway`, `Error`, `ProductTemplate`, `ApplicationUserId`, `.SaveChangesAsync`, `.DeactivateProductTemplateAsync`, `Response`, `Product`, `.RegisterAsync`, `StockReservation`, `.CreateTokensByEmail`, `DummyEmailGateway`, `.RevokeToken`, `ISmsGateway`, `EmailOtpDispatchOutcome`, `.SingleAsResult`, `.RefreshToken`, `IInventoryDbContext`, `IEmailGateway`, `DummySmsGateway`, `.SendOtp`, `SmsOtpDispatchOutcome`, `SendSecurityAlertRequestHandler`, `CachedCaptchaService`, `ResultTelemetryExtensions`, `PaginationQueryableExtensions`, `PaginationResponse`, `Response`, `.AddPushServices`, `ReCaptchaService`, `.SendOtp`, `BrevoEmailGateway`, `.SearchProductTemplatesAsync`, `.RequestTokensAsync`, `.AddProductToMyStoreAsync`, `.SendCoreAsync`, `.UpdateMyStoreAsync`, `Response`, `Response`, `.RemoveMyProductAsync`, `DomainEvent`, `.SearchStoresAsync`, `ICaptchaService`, `IProductsDbContext`, `.SendOtp`, `IInterModuleRequestClient`, `.ActivateProductTemplateAsync`, `.UpdateCurrentPushToken`, `.SearchMyProductsAsync`, `NetGsmSmsGateway`, `.SearchStoreProductsAsync`, `HttpWarehouseGateway`, `.IsRegisteredAsync`, `.RemoveProductAsync`, `.ReleaseStockReservationAsync`, `Response`, `.HandleWarehouseWebhookAsync`, `Response`, `.UpdateMyProductAsync`, `.TapWhenFeatureEnabledAsync`, `Response`?**
   _High betweenness centrality (0.147) - this node is a cross-community bridge._
 - **Why does `ApplicationUserId` connect `ApplicationUserId` to `KeycloakTokenClient`, `NotificationPayload`, `KeycloakAdminClient`, `.ListSessions`, `KeycloakPermissionAuthorizationHandler`, `Response`, `.RegisterAsync`, `DeviceRegistration`, `.RevokeToken`, `AuditableEntity`, `IStronglyTypedId`, `JobRow`, `IntegrationEventOutbox`, `IInterModuleRequest`, `For`, `DeviceRegistrationId`, `ICurrentUser`, `SendSecurityAlertRequestHandler`, `PaginationResponse`, `Response`, `.RequestTokensAsync`, `StoreId`, `.HandleAsync`, `Response`, `IAuditableEntity`, `.SearchStoresAsync`, `.Configure`, `Store`, `IProductsDbContext`, `Request`, `AuditableEntityResponse`, `StockLevel`, `Response`, `DeviceRegistryReconciliationService`, `Response`?**
