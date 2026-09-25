@@ -11,12 +11,12 @@ Audit the codebase. One line per check: PASS, FAIL, or WARNING, with `file:line`
 1. Cross-module `ProjectReference` in any `src/Modules/**/*.csproj` (§1).
 2. `IPublishEndpoint.Publish` or `IBus.Publish` outside `IntegrationEventHandler`s (§1 Outbox).
 3. Any class deriving `ControllerBase` (§5).
-4. `IStringLocalizer` or raw string localization keys (§5).
+4. `IStringLocalizer` or raw string localization keys (§5). PASS exception: `StringLocalizerExtensions.LocalizeFromError` and its caller `ResultToResponseTransformer` (a runtime `Error.Key` lookup).
 5. AutoMapper, Mapster, or `.Map<>()` outside `.Select` (§5).
 6. Read queries (`.Select` projections) missing `.AsNoTracking()` (§4).
 7. Hardcoded `.Add{Module}()` in `Setup.Modules.cs` (§1).
-8. `if (result.IsFailure)` / `IsSuccess` branching in endpoints where a pipeline extension applies (§3).
-9. `.Find(` / `.FirstOrDefault(` on entity fetches; `if (cond) query = query.Where`; `.GroupJoin(...).SelectMany(` (§4).
+8. `if (result.IsFailure)` / `IsSuccess` branching in endpoints where a pipeline extension applies (§3). PASS exception: a compensation after a failed external call, or a save before and after one, when the endpoint's doc says so.
+9. `.Find(` / `.FirstOrDefault(` on entity fetches; `if (cond) query = query.Where`; `.GroupJoin(...).SelectMany(` (§4). PASS exception: `FindAsync` in the keyed projection upsert helpers, and a commented `FirstOrDefaultAsync` that is not an id lookup.
 10. Interpolated or concatenated log strings (§5).
 11. DomainEvent versioning: diff touching a shipped `V{n}` record in place; event property types off the allow-list; entity, aggregate, ValueObject, or domain enum used directly (§6). Run `DomainEventContractTests` for the verdict.
 12. `services.BuildServiceProvider()` inside DI registration (§5).

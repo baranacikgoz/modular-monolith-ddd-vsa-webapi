@@ -462,15 +462,15 @@
     "semantic_hash": "f7ee87cadf70ef79714a8d86135f68e7"
   },
   "src/Common/Common.Infrastructure/Auth/Services/CurrentUser.cs": {
-    "mtime": 1788814247.5309796,
-    "seen": 1788823272.5679832,
-    "ast_hash": "ebf1ebd437e6364a9679010b1ea1d055",
+    "mtime": 1790342804.7358694,
+    "seen": 1790342823.57707,
+    "ast_hash": "fd2e6635ab7438c6732ed159c73ca3de",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Auth/Setup.cs": {
-    "mtime": 1786279790.323963,
-    "seen": 1788521409.3638341,
-    "ast_hash": "309bfb006ab3b898f2e28f9bd5f254ad",
+    "mtime": 1790342796.2606564,
+    "seen": 1790342823.5770712,
+    "ast_hash": "353a8c013649fc984ea09bee9b3f732d",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Caching/Setup.cs": {
@@ -3453,6 +3453,18 @@
     "mtime": 1790342119.607271,
     "seen": 1790342313.054539,
     "ast_hash": "5433b7f87f4ccdd2cf5caa1ecaaab0c6",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Auth/IBackgroundUserContext.cs": {
+    "mtime": 1790342796.2439609,
+    "seen": 1790342823.5770009,
+    "ast_hash": "f9255fa448d1e7453c387dff0145bc7a",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Infrastructure/Auth/Services/BackgroundUserContext.cs": {
+    "mtime": 1790342796.2459462,
+    "seen": 1790342823.577069,
+    "ast_hash": "aa840ed2c903470ca662aa996081acb0",
     "semantic_hash": ""
   }
 }

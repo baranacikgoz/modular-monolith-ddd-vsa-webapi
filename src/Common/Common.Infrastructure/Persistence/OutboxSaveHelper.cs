@@ -69,6 +69,8 @@ public static partial class OutboxSaveHelper
             }
         }
 
+        // One tracker Add per audit row, at most one per raised event of the batch: fine at today's batch sizes. If a profile
+        // ever shows this loop, write the rows in one UNNEST insert the way the outbox rows below are written.
         foreach (var entry in auditLogEntries)
         {
             context.Set<AuditLogEntry>().Add(entry);

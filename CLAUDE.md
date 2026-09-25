@@ -62,7 +62,7 @@ Host: `src/Host/Host` (composition root). Contracts: `src/Common/Common.Integrat
 
 ## 3. Functional pipeline
 
-No imperative `if (result.IsFailure)`; chain instead. Handlers return `Task<Result>` or `Task<Result<Response>>`.
+No imperative `if (result.IsFailure)`; chain instead. Handlers return `Task<Result>` or `Task<Result<Response>>`. Two accepted exceptions, each explained in the endpoint's own doc: a compensation after a failed external call, and one save before an external call and another after it (the attempt marker is persisted first, the outcome second; see `Inventory.Endpoints/StockReservations/v1/Release`).
 
 `BindAsync` (chain fallible op), `TapAsync`/`Tap` (side effect), `TapWhenAsync`/`TapWhen` (conditional side effect), `MapAsync`/`Map` (project), `CombineAsync` (two dependent results), `TapActivityAsync(activity)` (record span status at pipeline end).
 
@@ -72,7 +72,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 ## 4. Persistence
 
 - Reads: `.AsNoTracking()` always, project to DTO in `.Select`.
-- Single fetch: `.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), ct)`. Never `Find`/`FirstOrDefault`.
+- Single fetch: `.TagWith(nameof(HandleAsync), id).SingleAsResultAsync(nameof(Entity), ct)`. Never `Find`/`FirstOrDefault`. Two exceptions: `FindAsync` in the keyed projection upsert helpers (`Common.Application/Persistence/Projections`), where it must also see rows added earlier in the same unsaved batch because it consults the change tracker; and `FirstOrDefaultAsync` for a lookup that is not by id (the newest of several), with a comment saying so.
 - Conditional filter: `.WhereIf(pred, cond)`. Joins: native `.LeftJoin`/`.RightJoin`, never `GroupJoin` + `SelectMany`.
 - Text search on prose fields: generated `tsvector` + GIN, dual `WebSearchToTsQuery` (universal plus resolved prose config) via `ISearchLanguageResolver`, entity implements `ISearchLocalized`. Never a bare `ILike('%term%')` scan; see `docs/full-text-search.md`. Short identifier-like columns a user types a fragment of (a name, a code, a barcode) get `HasTrigramIndex` (GIN `gin_trgm_ops`, serves `ILIKE '%term%'`) or `HasPatternIndex` (`text_pattern_ops`, serves `LIKE 'term%'`) from `Common.Infrastructure.Persistence.Extensions.TrigramIndexExtensions`, with `modelBuilder.HasTrigramExtension()` in the DbContext so the migration creates `pg_trgm`. Query them with `LikePattern.Contains` (`ILike`) or `LikePattern.StartsWith` (`Like`, case-sensitive), never a hand-rolled pattern.
 - Writes: Endpoint calls aggregate method, aggregate mutates and `RaiseEvent`s, endpoint saves.
@@ -86,7 +86,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 - Minimal APIs only, no controllers. Per feature folder: `Endpoint.cs`, `Request.cs` (record + `RequestValidator : CustomValidator<Request>` in the same file, no separate validator file), `Response.cs` (omit for no-content writes).
 - Register in `{Aggregate}/Setup.cs`: `versionedApiGroup.MapGroup("/things").WithTags("Things").MapToApiVersion(1)` then `v1.Feature.Endpoint.MapEndpoint(group)`. `{M}Module.MapEndpoints` owns `/v{version:apiVersion}`, `AddFluentValidationAutoValidation()`, `RequireAuthorization()`.
 - Zero warnings, nullable enforced. Primary constructors. `required` on DTOs. `using` directives, never inline full qualifiers.
-- Logging: `[LoggerMessage]` `static partial` methods only. Localization: `IResxLocalizer` only. Mapping: inline `.Select` only, no libraries.
+- Logging: `[LoggerMessage]` `static partial` methods only. Localization: `IResxLocalizer` only (the one exception is `LocalizeFromError`, which looks up a runtime `Error.Key` by name, something the typed members cannot do). Mapping: inline `.Select` only, no libraries.
 - `Result<T>`: rely on implicit operators; inside async lambdas use `Result<T>.Success(v)`. Never cast.
 - Typed parameters: never branch on raw `string` route/query values; use `enum`/`bool`/typed value.
 - Tunables (timeouts, limits, intervals, cron, templates) live in Options (§9), never literals.
