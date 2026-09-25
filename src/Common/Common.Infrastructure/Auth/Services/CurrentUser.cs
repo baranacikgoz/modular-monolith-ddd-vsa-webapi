@@ -10,7 +10,10 @@ namespace Common.Infrastructure.Auth.Services;
 // authenticated principal) after AuthenticationMiddleware runs. Anything that resolves this
 // service earlier in the same scope would otherwise permanently cache an empty/anonymous
 // principal for the rest of the request. Reading lazily removes that resolution-order footgun.
-internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
+//
+// Without an authenticated request (a queue consumer, a recurring job) the identity falls back to the user the job runner
+// set on IBackgroundUserContext, so the rows a job writes still say who it acted for. An authenticated request always wins.
+internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor, IBackgroundUserContext? backgroundUser = null) : ICurrentUser
 {
     private ClaimsPrincipal? Principal => httpContextAccessor.HttpContext?.User;
 
@@ -28,7 +31,9 @@ internal sealed class CurrentUser(IHttpContextAccessor httpContextAccessor) : IC
         }
     }
 
-    public string? IdAsString => IsAuthenticated ? Principal?.FindFirstValue(JwtClaimNames.Subject) : string.Empty;
+    public string? IdAsString => IsAuthenticated ? Principal?.FindFirstValue(JwtClaimNames.Subject) : BackgroundUserIdAsString;
+
+    private string BackgroundUserIdAsString => backgroundUser?.UserId is { IsEmpty: false } acting ? acting.Value.ToString() : string.Empty;
 
     // S2365: recomputing (not memoizing) on every access is deliberate, see class remark above.
 #pragma warning disable S2365

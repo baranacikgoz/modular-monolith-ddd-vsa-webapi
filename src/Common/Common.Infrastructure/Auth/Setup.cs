@@ -9,6 +9,7 @@ public static class Setup
     public static IServiceCollection AddCommonAuth(this IServiceCollection services)
     {
         return services
+            .AddScoped<IBackgroundUserContext, BackgroundUserContext>()
             .AddScoped<ICurrentUser, CurrentUser>();
     }
 }

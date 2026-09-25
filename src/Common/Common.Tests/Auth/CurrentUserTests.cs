@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Common.Application.Auth;
+using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Auth.Services;
 using Microsoft.AspNetCore.Http;
 using Xunit;
@@ -74,5 +75,47 @@ public sealed class CurrentUserTests
         var currentUser = CreateCurrentUser(new ClaimsPrincipal(identity));
 
         Assert.True(currentUser.Id.IsEmpty);
+    }
+
+    [Fact]
+    public void BackgroundUser_WithoutAnAuthenticatedRequest_IsTheCurrentUser()
+    {
+        var acting = new ApplicationUserId(Guid.NewGuid());
+        var background = new BackgroundUserContext();
+        background.Set(acting);
+        var currentUser = new CurrentUser(new HttpContextAccessor(), background);
+
+        Assert.Equal(acting, currentUser.Id);
+        Assert.Equal(acting.Value.ToString(), currentUser.IdAsString);
+        Assert.Empty(currentUser.Roles);
+        Assert.Null(currentUser.SessionId);
+    }
+
+    [Fact]
+    public void AuthenticatedRequest_WinsOverTheBackgroundUser()
+    {
+        var subject = Guid.NewGuid();
+        var background = new BackgroundUserContext();
+        background.Set(new ApplicationUserId(Guid.NewGuid()));
+        var accessor = new HttpContextAccessor
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(JwtClaimNames.Subject, subject.ToString())], "Test"))
+            }
+        };
+
+        var currentUser = new CurrentUser(accessor, background);
+
+        Assert.Equal(subject, currentUser.Id.Value);
+    }
+
+    [Fact]
+    public void BackgroundUserNeverSet_StaysEmpty()
+    {
+        var currentUser = new CurrentUser(new HttpContextAccessor(), new BackgroundUserContext());
+
+        Assert.True(currentUser.Id.IsEmpty);
+        Assert.Equal(string.Empty, currentUser.IdAsString);
     }
 }
