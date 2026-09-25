@@ -15,6 +15,7 @@
       "FactorySoftTimeout": "00:00:00.1",
       "FactoryHardTimeout": "00:00:30"
     },
+    "MemoryCacheSizeLimit": 100000,
     "IdempotencyKeyDuration": "1.00:00:00",
     "IdempotencyL1Duration": "01:00:00"
   }

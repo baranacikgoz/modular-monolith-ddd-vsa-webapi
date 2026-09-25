@@ -894,9 +894,9 @@
     "semantic_hash": "034911a400412d6038954ca2d5ec7e68"
   },
   "src/Modules/BackgroundJobs/BackgroundJobs/BackgroundJobsModule.cs": {
-    "mtime": 1784194611.007685,
-    "seen": 1788521409.363866,
-    "ast_hash": "8cc233376e97f5250e0d0e7311eed888",
+    "mtime": 1790342119.6222541,
+    "seen": 1790342313.0545359,
+    "ast_hash": "d9f39cf49bdc22cbe856b0b5089acaaf",
     "semantic_hash": ""
   },
   "src/Modules/BackgroundJobs/BackgroundJobs/BackgroundJobsService.cs": {
@@ -918,9 +918,9 @@
     "semantic_hash": "01115e22f446e5c551e1c4ab29b11a28"
   },
   "src/Modules/BackgroundJobs/BackgroundJobs/Telemetry/BackgroundJobsTelemetry.cs": {
-    "mtime": 1789748042.604187,
-    "seen": 1789748270.4205592,
-    "ast_hash": "9fd1e89c233ef2dde67a46164fd9a16a",
+    "mtime": 1790342119.6219063,
+    "seen": 1790342313.05454,
+    "ast_hash": "e440c88ba7fa8e727bfdec72f99f5c44",
     "semantic_hash": ""
   },
   "src/Modules/IAM/IAM.Application/Captcha/Services/ICaptchaService.cs": {
@@ -2250,9 +2250,9 @@
     "semantic_hash": ""
   },
   "src/Modules/BackgroundJobs/BackgroundJobs/JobMetricsFilter.cs": {
-    "mtime": 1789748042.6038823,
-    "seen": 1789748270.420558,
-    "ast_hash": "72bc7573d745f6491b43e2cba251f131",
+    "mtime": 1790342119.6219938,
+    "seen": 1790342313.054538,
+    "ast_hash": "06d1204199b8ee78a6346c0ceff60499",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/JsonConverters/StrictDateTimeOffsetJsonConverter.cs": {
@@ -3447,6 +3447,12 @@
     "mtime": 1790250931.7006547,
     "seen": 1790251027.0246289,
     "ast_hash": "d7082da2559b55f74bf3d4701a9e0bb7",
+    "semantic_hash": ""
+  },
+  "src/Modules/BackgroundJobs/BackgroundJobs/SkipOverlappingRecurringJobFilter.cs": {
+    "mtime": 1790342119.607271,
+    "seen": 1790342313.054539,
+    "ast_hash": "5433b7f87f4ccdd2cf5caa1ecaaab0c6",
     "semantic_hash": ""
   }
 }

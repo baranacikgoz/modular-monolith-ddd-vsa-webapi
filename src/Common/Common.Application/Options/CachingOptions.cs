@@ -11,6 +11,13 @@ public class CachingOptions
     public required TimeSpan IdempotencyKeyDuration { get; set; }
 
     /// <summary>
+    ///     Upper bound of the L1 (in-process memory) cache in entries: every entry counts as size 1. Past the bound a new
+    ///     entry is not kept (it is simply recomputed on the next read), so a key space that grows without limit (for
+    ///     example one key per marketplace connection and payload hash) cannot grow the heap without limit.
+    /// </summary>
+    public required long MemoryCacheSizeLimit { get; set; }
+
+    /// <summary>
     ///     L1 (in-process memory) bound for consumer idempotency keys. Duplicate deliveries cluster
     ///     within minutes (outbox retries, broker redelivery), so this is kept far shorter than
     ///     <see cref="IdempotencyKeyDuration"/> (the L2/Redis window) to avoid unbounded memory growth
@@ -66,6 +73,7 @@ public class CachingOptionsValidator : CustomValidator<CachingOptions>
             RuleFor(x => x.EntryDefaults.FactoryHardTimeout).GreaterThan(TimeSpan.Zero);
         });
 
+        RuleFor(x => x.MemoryCacheSizeLimit).GreaterThan(0);
         RuleFor(x => x.IdempotencyKeyDuration).GreaterThan(TimeSpan.Zero);
         RuleFor(x => x.IdempotencyL1Duration).GreaterThan(TimeSpan.Zero);
 

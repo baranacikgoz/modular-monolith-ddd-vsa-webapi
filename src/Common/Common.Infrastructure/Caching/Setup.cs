@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Common.Application.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -9,6 +10,10 @@ namespace Common.Infrastructure.Caching;
 
 public static class Setup
 {
+    /// <summary>Service key of the size-limited memory cache FusionCache uses as its L1 (kept off the shared
+    /// <see cref="IMemoryCache" />: with a size limit every entry must carry a size, which other users of the shared cache do not set).</summary>
+    internal const string L1MemoryCacheServiceKey = "fusioncache-l1";
+
     public static IServiceCollection AddCommonCaching(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<CachingOptions>(configuration.GetSection(nameof(CachingOptions)));
@@ -19,9 +24,19 @@ public static class Setup
                              ?? throw new InvalidOperationException(
                                  $"Configuration for {nameof(CachingOptions)} is null.");
 
+        // The L1 limit is an entry count: every entry is size 1. A fresh FusionCacheEntryOptions starts from this global
+        // default, so the many call sites that build their own options (and the tag entries FusionCache itself creates)
+        // need no Size, and a memory cache with a size limit does not reject an entry that lacks one. Set before the
+        // first FusionCacheEntryOptions below is created.
+        FusionCacheGlobalDefaults.EntryOptionsSize = 1;
+        services.AddKeyedSingleton<IMemoryCache>(
+            L1MemoryCacheServiceKey,
+            (_, _) => new MemoryCache(new MemoryCacheOptions { SizeLimit = cachingOptions.MemoryCacheSizeLimit }));
+
         var defaults = cachingOptions.EntryDefaults;
         var builder = services
             .AddFusionCache()
+            .WithRegisteredKeyedMemoryCache(L1MemoryCacheServiceKey)
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
                 Duration = defaults.Duration,
