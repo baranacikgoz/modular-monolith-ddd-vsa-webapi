@@ -1,12 +1,16 @@
 using System.Net;
 using System.Threading.RateLimiting;
 using Common.Application.Options;
+using Common.Infrastructure.RateLimiting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.RateLimiting;
 using Polly.Registry;
 using Polly.Timeout;
+using StackExchange.Redis;
 
 namespace Common.Infrastructure.Resiliency;
 
@@ -18,8 +22,14 @@ namespace Common.Infrastructure.Resiliency;
 ///     <see cref="HttpClientKeyedExtensions.SendWithPipelineAsync" /> on a client registered with
 ///     <c>useStandardPipeline: false</c>; a rejected call surfaces as <see cref="RateLimiterRejectedException" />,
 ///     <see cref="BrokenCircuitException" /> or <see cref="TimeoutRejectedException" />.
+///     With Redis configured (<paramref name="redis" /> registered) a queue-less profile counts its quota in Redis, so
+///     every replica draws from one shared budget instead of each pod spending the full quota on its own; without Redis,
+///     or with a waiting queue, the quota is per process.
 /// </summary>
-public sealed class KeyedResiliencePipelines(IOptions<ResiliencyOptions> resiliencyOptionsProvider) : IDisposable
+public sealed class KeyedResiliencePipelines(
+    IOptions<ResiliencyOptions> resiliencyOptionsProvider,
+    IConnectionMultiplexer? redis = null,
+    ILoggerFactory? loggerFactory = null) : IDisposable
 {
     private readonly ResiliencePipelineRegistry<string> _registry = new();
     private readonly List<RateLimiter> _limiters = [];
@@ -42,19 +52,12 @@ public sealed class KeyedResiliencePipelines(IOptions<ResiliencyOptions> resilie
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
         ArgumentNullException.ThrowIfNull(profile);
 
-        return _registry.GetOrAddPipeline<HttpResponseMessage>(key, builder => Configure(builder, profile));
+        return _registry.GetOrAddPipeline<HttpResponseMessage>(key, builder => Configure(builder, key, profile));
     }
 
-    private void Configure(ResiliencePipelineBuilder<HttpResponseMessage> builder, KeyedResilienceProfile profile)
+    private void Configure(ResiliencePipelineBuilder<HttpResponseMessage> builder, string key, KeyedResilienceProfile profile)
     {
-        var limiter = new FixedWindowRateLimiter(new FixedWindowRateLimiterOptions
-        {
-            PermitLimit = profile.RateLimitPermits,
-            Window = TimeSpan.FromMilliseconds(profile.RateLimitWindowMs),
-            QueueLimit = profile.RateLimitQueueLimit,
-            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-            AutoReplenishment = true
-        });
+        var limiter = CreateLimiter(key, profile);
 
         lock (_limitersLock)
         {
@@ -80,6 +83,29 @@ public sealed class KeyedResiliencePipelines(IOptions<ResiliencyOptions> resilie
                     .HandleResult(IsTransientFailure)
             })
             .AddTimeout(TimeSpan.FromSeconds(profile.AttemptTimeoutSeconds));
+    }
+
+    private RateLimiter CreateLimiter(string key, KeyedResilienceProfile profile)
+    {
+        var window = TimeSpan.FromMilliseconds(profile.RateLimitWindowMs);
+
+        // The shared counter is a plain fixed window in Redis, it cannot hold callers back for the next window: a
+        // profile that asks for a queue keeps its in-process limiter.
+        if (redis is not null && profile.RateLimitQueueLimit == 0)
+        {
+            var logger = (loggerFactory ?? NullLoggerFactory.Instance).CreateLogger(typeof(KeyedResiliencePipelines).FullName!);
+            return new RedisFixedWindowRateLimiter(
+                redis, $"ratelimit:outbound:{key}", profile.RateLimitPermits, window, profile.RateLimitFailOpen!.Value, logger);
+        }
+
+        return new FixedWindowRateLimiter(new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = profile.RateLimitPermits,
+            Window = window,
+            QueueLimit = profile.RateLimitQueueLimit,
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            AutoReplenishment = true
+        });
     }
 
     /// <summary>Same classification as the standard handler: server errors, timeouts and throttling trip the breaker.</summary>

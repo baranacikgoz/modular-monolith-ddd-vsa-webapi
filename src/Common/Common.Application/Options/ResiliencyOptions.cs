@@ -31,8 +31,14 @@ public class KeyedResilienceProfile
 
     public required int RateLimitWindowMs { get; set; }
 
-    /// <summary>Calls allowed to wait for the next window instead of being rejected right away.</summary>
+    /// <summary>Calls allowed to wait for the next window instead of being rejected right away. Only a profile with 0
+    /// shares its counter across replicas through Redis (the shared counter has no waiting queue).</summary>
     public required int RateLimitQueueLimit { get; set; }
+
+    /// <summary>What the shared (Redis) quota does while Redis is unreachable: true admits the call (the third party's
+    /// own throttling response is still handled by the caller), false rejects it. Not used without Redis or with a
+    /// waiting queue, where the in-process limiter has no such failure.</summary>
+    public required bool? RateLimitFailOpen { get; set; }
 
     public required double CircuitBreakerFailureRatio { get; set; }
     public required int CircuitBreakerMinimumThroughput { get; set; }
@@ -118,6 +124,10 @@ public class KeyedResilienceProfileValidator : AbstractValidator<KeyValuePair<st
         RuleFor(p => p.Value.RateLimitQueueLimit)
             .GreaterThanOrEqualTo(0)
             .WithMessage(p => $"Keyed[{p.Key}].RateLimitQueueLimit must be greater than or equal to 0.");
+
+        RuleFor(p => p.Value.RateLimitFailOpen)
+            .NotNull()
+            .WithMessage(p => $"Keyed[{p.Key}].RateLimitFailOpen must be set.");
 
         RuleFor(p => p.Value.CircuitBreakerFailureRatio)
             .GreaterThan(0)

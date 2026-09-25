@@ -474,9 +474,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Caching/Setup.cs": {
-    "mtime": 1789340126.1369567,
-    "seen": 1789340208.715344,
-    "ast_hash": "e77abaa38c53e896eb6a068806d8390c",
+    "mtime": 1790335544.4916596,
+    "seen": 1790335574.125157,
+    "ast_hash": "96ae6f731b35a38e817786830bc805c5",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/EventBus/EventDispatcher.cs": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790247653.4638443,
-    "seen": 1790247657.741812,
-    "ast_hash": "28cc928364596696939b7ca420e69ff7",
+    "mtime": 1790338044.4660077,
+    "seen": 1790338058.642838,
+    "ast_hash": "7b026b314cda954705ab9827126f1b1a",
     "semantic_hash": ""
   },
   "README.md": {
