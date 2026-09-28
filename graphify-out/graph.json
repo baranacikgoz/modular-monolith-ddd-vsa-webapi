@@ -30470,7 +30470,7 @@
       },
       "norm_label": ".logfounddomainevents()",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L200"
+      "source_location": "L202"
     },
     {
       "id": "src_common_common_infrastructure_persistence_outboxsavehelper_common_infrastructure_persistence_outboxsavehelper_lognodomainevents",
@@ -30488,7 +30488,7 @@
       },
       "norm_label": ".lognodomainevents()",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L197"
+      "source_location": "L199"
     },
     {
       "id": "src_common_common_infrastructure_persistence_outboxsavehelper_common_infrastructure_persistence_outboxsavehelper_logrollbackerror",
@@ -30506,7 +30506,7 @@
       },
       "norm_label": ".logrollbackerror()",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L204"
+      "source_location": "L206"
     },
     {
       "id": "src_common_common_infrastructure_persistence_outboxsavehelper_common_infrastructure_persistence_outboxsavehelper_logsavingerror",
@@ -30524,7 +30524,7 @@
       },
       "norm_label": ".logsavingerror()",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L207"
+      "source_location": "L209"
     },
     {
       "id": "src_common_common_infrastructure_persistence_outboxsavehelper_common_infrastructure_persistence_outboxsavehelper_savewithoutboxasync",
@@ -30556,19 +30556,19 @@
             "callee": "Set",
             "receiver_type": "DbContext",
             "lang": "csharp",
-            "line": "L74"
+            "line": "L76"
           },
           {
             "callee": "Serialize",
             "receiver_type": "JsonSerializer",
             "lang": "csharp",
-            "line": "L114"
+            "line": "L116"
           },
           {
             "callee": "Entry",
             "receiver_type": "DbContext",
             "lang": "csharp",
-            "line": "L189"
+            "line": "L191"
           }
         ]
       },
@@ -79294,7 +79294,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L200",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -79309,7 +79309,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L197",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -79324,7 +79324,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L204",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -79339,7 +79339,7 @@
         "ref_token": "LoggerMessage"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L207",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -81748,7 +81748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L177",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -81760,7 +81760,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L192",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -81796,7 +81796,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L77",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -104727,7 +104727,7 @@
         "ref_token": "AuditLogEntry"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L74",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -165683,7 +165683,7 @@
         "ref_token": "Exception"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L204",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -165698,7 +165698,7 @@
         "ref_token": "Exception"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L207",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -170063,7 +170063,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L200",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -170078,7 +170078,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L197",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -170093,7 +170093,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L204",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -170108,7 +170108,7 @@
         "ref_token": "ILogger"
       },
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L207",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -206238,7 +206238,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L197",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -206249,7 +206249,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L200",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -206260,7 +206260,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L204",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -206271,7 +206271,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L207",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -213498,7 +213498,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L88",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -213510,7 +213510,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs",
-      "source_location": "L91",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -216616,5 +216616,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "4c0f232356778e69dcf12c93c6580b797c3b9dbb"
+  "built_at_commit": "bf50ec1e79252ec3831c4d3cf7374849908dfe18"
 }

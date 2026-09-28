@@ -642,9 +642,9 @@
     "semantic_hash": "bbb084d651737855d33fdbfbcbf06724"
   },
   "src/Common/Common.Infrastructure/Persistence/OutboxSaveHelper.cs": {
-    "mtime": 1789668714.5013316,
-    "seen": 1789668983.5188942,
-    "ast_hash": "6b2cd171feda4a285d884cb91d13a020",
+    "mtime": 1790342955.978917,
+    "seen": 1790342975.090353,
+    "ast_hash": "ff5135c91eb1be9ae0e9a977b5ef92ee",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Persistence/SeedingCompletionTracker.cs": {
@@ -2094,9 +2094,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/audit-architecture.md": {
-    "mtime": 1790194842.9338377,
-    "seen": 1790195025.002097,
-    "ast_hash": "db3c1a447e7cec0ac405c8e2aeced38c",
+    "mtime": 1790342955.9779005,
+    "seen": 1790342975.090561,
+    "ast_hash": "97f2699131334e87e806b726f53bc33b",
     "semantic_hash": ""
   },
   ".claude/commands/execute-feature.md": {
@@ -2124,9 +2124,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/manage-migration.md": {
-    "mtime": 1789514268.7921329,
-    "seen": 1789515065.8146272,
-    "ast_hash": "f1689bba091835222d56f7a0eda988dc",
+    "mtime": 1790342955.978523,
+    "seen": 1790342975.090564,
+    "ast_hash": "09bb7082aaaa5fc926310a9bd1f2cabf",
     "semantic_hash": ""
   },
   ".claude/commands/plan-feature.md": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790339196.5460777,
-    "seen": 1790339366.368541,
-    "ast_hash": "9080b45e718b12f256593f80cfb9bca5",
+    "mtime": 1790342955.9765587,
+    "seen": 1790342975.0905678,
+    "ast_hash": "986c02d6bb0d3ff8aeb84ce5a0f1b743",
     "semantic_hash": ""
   },
   "README.md": {

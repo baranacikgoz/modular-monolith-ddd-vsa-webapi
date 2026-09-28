@@ -1,7 +1,7 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-25)
 
 ## Corpus Check
-- 577 files · ~91,296 words
+- 577 files · ~91,561 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4c0f2323`
+- Built from commit: `bf50ec1e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1602,9 +1602,9 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `Infrastructure/Setup.cs`, `InventoryOptions`, `AuditLogOptions`, `DevicesOptions`, `Common.Domain.ResultMonad`, `Setup`, `EmailOptions`, `ResxLocalizationOptions`, `OutboxOptions`, `Common.Infrastructure.Extensions`, `JobHousekeepingOptions`, `Setup.Logger.cs`, `fluentvalidation`, `OtpOptions`, `ObservabilityOptions`, `SecurityHeadersOptions.cs`, `ConfigureSwaggerOptions.cs`, `KeycloakOptions`, `ModulesOptions.cs`, `system_diagnostics`, `microsoft_entityframeworkcore`, `CorsOptions`, `CachingOptions`, `SignalROptions`, `RabbitMqOptions`, `SmsOptions`, `IdentityScheme`, `RequestLoggingOptions`, `FullTextSearchOptions`, `BackgroundJobsOptions`, `Common.Application.Validation`, `PushOptions`, `ResiliencyOptions`, `CaptchaOptions`, `IAMModule.cs`, `InterModuleRequestOptions`, `Common.InterModuleRequests.Contracts`, `KeycloakTokenClient.cs`, `CustomValidator`, `OpenApiOptions`, `.AddCustomHealthChecks`?**
   _High betweenness centrality (0.162) - this node is a cross-community bridge._
 - **Why does `Result` connect `Result` to `.ReserveSeriesAsync`, `.GetAuditLogAsync`, `FirebasePushGateway`, `.AddProductToMyStoreAsync`, `Error`, `ProductTemplate`, `IKeycloakAdminClient`, `IProductsDbContext`, `Response`, `DomainEvent`, `IInterModuleRequest`, `.BindDeviceAsync`, `.CreateTokensByEmail`, `.CommitStockReservationAsync`, `.TapWhenFeatureEnabledAsync`, `IEmailGateway`, `ICurrentUser`, `Product`, `ISmsGateway`, `.SingleAsResult`, `IKeycloakTokenClient`, `ThrottledEmailGateway`, `DummySmsGateway`, `ApplicationUserId`, `.RegisterAsync`, `ResultTelemetryExtensions`, `PaginationQueryableExtensions`, `PaginationResponse`, `Response`, `.AddPushServices`, `ReCaptchaService`, `SendEmailOtpRequestHandler`, `BrevoEmailGateway`, `.SearchProductTemplatesAsync`, `Request`, `.SendAsync`, `.GetMeAsync`, `.ReserveStockAsync`, `.UpdateMyProductAsync`, `StockReservation`, `Response`, `Response`, `.UpdateCurrentPushToken`, `.SearchStoresAsync`, `ICaptchaService`, `.CreateMyStoreAsync`, `.ListSessions`, `.SendOtp`, `IInterModuleRequestClient`, `HttpWarehouseGateway`, `.SearchMyProductsAsync`, `NetGsmSmsGateway`, `.SearchStoreProductsAsync`, `.RegisterAsync`, `.IsRegisteredAsync`, `.ReleaseStockReservationAsync`, `Response`, `.HandleWarehouseWebhookAsync`, `Response`, `Response`?**
-  _High betweenness centrality (0.132) - this node is a cross-community bridge._
+  _High betweenness centrality (0.133) - this node is a cross-community bridge._
 - **Why does `ApplicationUserId` connect `ApplicationUserId` to `NotificationPayload`, `Seeder`, `KeycloakAdminClient`, `.HandleAsync`, `IKeycloakAdminClient`, `IStronglyTypedId`, `KeycloakPermissionAuthorizationHandler`, `Response`, `.BindDeviceAsync`, `VersionNeutral/Get/Request.cs`, `IntegrationEvent`, `DeviceRegistration`, `ICurrentUser`, `AuditableEntity`, `For`, `SendSecurityAlertRequestHandler`, `.RegisterAsync`, `Request`, `PaginationResponse`, `Response`, `KeycloakTokenClient`, `Notifications.Application.Hubs`, `Response`, `IAggregateRoot`, `.SearchStoresAsync`, `.Configure`, `.CreateMyStoreAsync`, `Store`, `GetDeviceSessionsRequest`, `Request`, `.RegisterAsync`, `StockLevel`, `V1StoreCreatedDomainEvent`, `GetActiveSessionIdsRequest`, `Response`, `.HandleAsync`, `AuditableEntityResponse`, `Response`?**
-  _High betweenness centrality (0.065) - this node is a cross-community bridge._
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
 - **What connects `UserId`, `Id`, `IdAsString` to the rest of the system?**
   _954 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `.ReserveSeriesAsync` be split into smaller, more focused modules?**

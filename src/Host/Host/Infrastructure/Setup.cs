@@ -11,6 +11,7 @@ using Common.Infrastructure.FeatureManagement;
 using Common.Infrastructure.Localization;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Resiliency;
+using Common.Infrastructure.Storage;
 using Common.InterModuleRequests;
 using Common.Application.Localization.Resources;
 using FluentValidation;
@@ -184,6 +185,7 @@ internal static partial class Setup
             .AddCommonPersistence()
             .AddCommonFeatureManagement(config)
             .AddKeyedResiliencePipelines()
+            .AddCommonObjectStorage()
             .AddCommonAuth();
     }
 

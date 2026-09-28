@@ -39,6 +39,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/inventory");
         AddJsonFile(configuration, $"{configurationsDirectory}/projectionReconciliation");
         AddJsonFile(configuration, $"{configurationsDirectory}/jobHousekeeping");
+        AddJsonFile(configuration, $"{configurationsDirectory}/objectStorage");
 
         configuration.AddEnvironmentVariables();
 

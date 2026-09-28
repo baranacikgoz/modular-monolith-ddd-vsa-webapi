@@ -1,0 +1,21 @@
+{
+  "ObjectStorageOptions": {
+    "ServiceUrl": "https://CHANGE_ME-object-storage-endpoint",
+    "Region": "CHANGE_ME-region",
+    "AccessKey": "CHANGE_ME_OBJECT_STORAGE_ACCESS_KEY",
+    "SecretKey": "CHANGE_ME_OBJECT_STORAGE_SECRET_KEY",
+    "ForcePathStyle": true,
+    "PublicBucketName": "CHANGE_ME-public-bucket",
+    "PublicBaseUrl": "https://CHANGE_ME-public-object-storage-base-url",
+    "PrivateBucketName": "CHANGE_ME-private-bucket",
+    "PresignedUploadExpirationMinutes": 15,
+    "PresignedDownloadExpirationMinutes": 15,
+    "MaxErrorRetry": 3,
+    "AttemptTimeoutSeconds": 30,
+    "MultipartThresholdMB": 16,
+    "CircuitBreakerFailureRatio": 0.5,
+    "CircuitBreakerMinimumThroughput": 5,
+    "CircuitBreakerSamplingDurationSeconds": 30,
+    "CircuitBreakerBreakDurationSeconds": 30
+  }
+}
