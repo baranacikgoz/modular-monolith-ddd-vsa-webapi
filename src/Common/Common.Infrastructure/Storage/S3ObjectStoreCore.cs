@@ -16,17 +16,20 @@ namespace Common.Infrastructure.Storage;
 ///     objects are never served unsigned), but the underlying object operations are identical. Composition over a
 ///     shared base class because the two public interfaces intentionally do not share a common supertype: that
 ///     would let a caller request a presigned URL for the public bucket by accident.
-///     Every call runs through one circuit breaker per store instance: a sustained storage outage fails fast
-///     instead of every caller separately exhausting its own timeout (Zero Trust: 3rd-party failures must not
-///     cascade). Retries are left to the AWS SDK's own <see cref="ObjectStorageOptions.MaxErrorRetry" />, which
-///     already understands S3-specific transient errors (throttling, 5xx); layering a second, generic retry on
-///     top would double the backoff without adding correctness.
+///     Each store constructs its own instance of this class (never shared between the two): the circuit breaker
+///     built in the constructor is therefore one per store, so a sustained outage on one bucket's calls fails
+///     fast without also failing fast the other bucket's calls (Zero Trust: 3rd-party failures must not cascade).
+///     Retries are left to the AWS SDK's own <see cref="ObjectStorageOptions.MaxErrorRetry" />, which already
+///     understands S3-specific transient errors (throttling, 5xx); layering a second, generic retry on top would
+///     double the backoff without adding correctness.
 ///     Callbacks take an explicit state tuple (the <c>(state, ct) =&gt;</c> shape already used by
-///     <see cref="Common.Infrastructure.Resiliency.HttpClientKeyedExtensions" />), not a closure: Polly's
-///     <see cref="ResiliencePipeline" /> overloads for a plain <c>Func&lt;CancellationToken, ValueTask&gt;</c> and
-///     for a <c>Func&lt;ResilienceContext, ValueTask&gt;</c> are both a two-argument match for a bare closure,
-///     and the compiler is not guaranteed to pick the CancellationToken one; the three-argument, explicit-state
-///     overload has no such ambiguous sibling.
+///     <see cref="Common.Infrastructure.Resiliency.HttpClientKeyedExtensions" />) instead of a closure over
+///     instance/local fields. During development, closures passed directly to <see cref="ResiliencePipeline" />
+///     intermittently resolved against Polly's <c>ResilienceContext</c>-based sibling overload instead of the
+///     intended <c>CancellationToken</c>-based one (surfacing as a body-level type error inside the lambda, not a
+///     resolution-time ambiguity diagnostic), and this did not reproduce consistently across otherwise-similar
+///     call sites in this file. The explicit-state shape resolved every case actually hit; treat it as the house
+///     style for this file rather than a fully understood, restateable compiler rule.
 /// </summary>
 internal sealed class S3ObjectStoreCore
 {
@@ -67,9 +70,9 @@ internal sealed class S3ObjectStoreCore
 
     public async Task UploadAsync(string bucket, UploadObjectRequest request, CancellationToken cancellationToken)
     {
-        // A value-returning callback, not the void ExecuteAsync overload: an async lambda targeting
-        // Func<TState, CancellationToken, ValueTask> is ambiguous against Polly's ResilienceContext-based sibling
-        // overload of the same arity, so every callback here returns a (discarded) result instead.
+        // A value-returning callback, not the void ExecuteAsync overload: a void async lambda here reproducibly
+        // hit the ResilienceContext/CancellationToken mismatch described on this class's own doc comment, so every
+        // callback in this file returns a (discarded, where irrelevant) result instead.
         await _pipeline.ExecuteAsync(
             static async (state, ct) =>
             {
@@ -149,14 +152,18 @@ internal sealed class S3ObjectStoreCore
             cancellationToken).AsTask();
     }
 
-    /// <summary>Batches into groups of 1000, the S3 DeleteObjects limit per call.</summary>
+    /// <summary>Batches into groups of 1000, the S3 DeleteObjects limit per call. S3 answers a batch delete with
+    /// HTTP 200 even when individual keys within it failed (e.g. a lock/policy on one object), so each batch's
+    /// <see cref="DeleteObjectsResponse.DeleteErrors" /> is checked explicitly rather than trusting a successful
+    /// call to mean every key was removed.</summary>
+    /// <exception cref="AmazonS3Exception">One or more keys in a batch failed to delete.</exception>
     public async Task DeleteManyAsync(string bucket, IReadOnlyCollection<string> keys, CancellationToken cancellationToken)
     {
         const int maxKeysPerBatch = 1000;
 
         foreach (var batch in keys.Chunk(maxKeysPerBatch))
         {
-            await _pipeline.ExecuteAsync(
+            var response = await _pipeline.ExecuteAsync(
                 static (state, ct) =>
                 {
                     var request = new DeleteObjectsRequest
@@ -164,10 +171,18 @@ internal sealed class S3ObjectStoreCore
                         BucketName = state.Bucket,
                         Objects = state.Batch.Select(k => new KeyVersion { Key = k }).ToList()
                     };
-                    return new ValueTask(state.Client.DeleteObjectsAsync(request, ct));
+                    return new ValueTask<DeleteObjectsResponse>(state.Client.DeleteObjectsAsync(request, ct));
                 },
                 (Client: _s3Client, Bucket: bucket, Batch: batch),
                 cancellationToken);
+
+            // The SDK leaves DeleteErrors null, not an empty list, when nothing failed (no <Error> elements in the
+            // response XML to deserialize into the collection).
+            if (response.DeleteErrors is { Count: > 0 } deleteErrors)
+            {
+                var failures = string.Join("; ", deleteErrors.Select(e => $"{e.Key} ({e.Code}: {e.Message})"));
+                throw new AmazonS3Exception($"Batch delete partially failed for bucket '{bucket}': {failures}");
+            }
         }
     }
 

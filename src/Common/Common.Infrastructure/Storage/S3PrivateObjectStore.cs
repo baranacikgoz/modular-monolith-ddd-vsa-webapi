@@ -13,9 +13,11 @@ internal sealed class S3PrivateObjectStore : IPrivateObjectStore
     private readonly TimeSpan _downloadExpiration;
     private readonly TimeProvider _timeProvider;
 
-    public S3PrivateObjectStore(S3ObjectStoreCore core, IOptions<ObjectStorageOptions> options, TimeProvider timeProvider)
+    /// <summary>Owns its own <see cref="S3ObjectStoreCore" /> (and so its own circuit breaker); see
+    /// <see cref="S3PublicObjectStore" />'s constructor doc for why this isn't shared.</summary>
+    public S3PrivateObjectStore(IAmazonS3 s3Client, IOptions<ObjectStorageOptions> options, TimeProvider timeProvider)
     {
-        _core = core;
+        _core = new S3ObjectStoreCore(s3Client, options.Value);
         _bucket = options.Value.PrivateBucketName;
         _uploadExpiration = TimeSpan.FromMinutes(options.Value.PresignedUploadExpirationMinutes);
         _downloadExpiration = TimeSpan.FromMinutes(options.Value.PresignedDownloadExpirationMinutes);

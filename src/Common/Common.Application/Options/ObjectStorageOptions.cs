@@ -24,8 +24,8 @@ public class ObjectStorageOptions
     public required string SecretKey { get; set; }
 
     /// <summary>True for virtual-hosted-style-incapable self-hosted engines (bucket in the path, not the host):
-    /// almost always true outside real AWS.</summary>
-    public required bool ForcePathStyle { get; set; }
+    /// almost always true outside real AWS, so a missing key must not silently bind to the opposite (false).</summary>
+    public required bool? ForcePathStyle { get; set; }
 
     /// <summary>Unsigned, stable, content-hash-keyed reads meant to sit behind a CDN cache. Never presigned.</summary>
     public required string PublicBucketName { get; set; }
@@ -46,8 +46,9 @@ public class ObjectStorageOptions
 
     /// <summary>AWS SDK's own retry count for transient S3 errors (throttling, 5xx, network faults); the SDK
     /// already understands S3-specific retry semantics (e.g. SlowDown), so this is not layered under the generic
-    /// HTTP resilience pipeline used for other third-party integrations (<see cref="ResiliencyOptions" />).</summary>
-    public required int MaxErrorRetry { get; set; }
+    /// HTTP resilience pipeline used for other third-party integrations (<see cref="ResiliencyOptions" />).
+    /// Nullable: 0 is a valid value (no SDK-level retries), so a missing key must not silently bind to it too.</summary>
+    public required int? MaxErrorRetry { get; set; }
 
     public required int AttemptTimeoutSeconds { get; set; }
 
@@ -87,6 +88,10 @@ public class ObjectStorageOptionsValidator : CustomValidator<ObjectStorageOption
             .NotEmpty()
             .WithMessage("SecretKey must not be empty.");
 
+        RuleFor(o => o.ForcePathStyle)
+            .NotNull()
+            .WithMessage("ForcePathStyle must be set.");
+
         RuleFor(o => o.PublicBucketName)
             .NotEmpty()
             .WithMessage("PublicBucketName must not be empty.");
@@ -112,6 +117,8 @@ public class ObjectStorageOptionsValidator : CustomValidator<ObjectStorageOption
             .WithMessage("PresignedDownloadExpirationMinutes must be greater than 0.");
 
         RuleFor(o => o.MaxErrorRetry)
+            .NotNull()
+            .WithMessage("MaxErrorRetry must be set.")
             .GreaterThanOrEqualTo(0)
             .WithMessage("MaxErrorRetry must be greater than or equal to 0.");
 

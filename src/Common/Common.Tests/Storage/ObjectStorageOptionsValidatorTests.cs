@@ -77,6 +77,30 @@ public sealed class ObjectStorageOptionsValidatorTests
         Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.PrivateBucketName));
     }
 
+    [Fact]
+    public void ForcePathStyle_MustBeSet()
+    {
+        var options = Valid();
+        options.ForcePathStyle = null;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.ForcePathStyle));
+    }
+
+    [Fact]
+    public void MaxErrorRetry_MustBeSet()
+    {
+        var options = Valid();
+        options.MaxErrorRetry = null;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.MaxErrorRetry));
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]

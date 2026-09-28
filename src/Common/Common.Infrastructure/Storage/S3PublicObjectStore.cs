@@ -1,3 +1,4 @@
+using Amazon.S3;
 using Common.Application.Options;
 using Common.Application.Storage;
 using Microsoft.Extensions.Options;
@@ -10,9 +11,13 @@ internal sealed class S3PublicObjectStore : IPublicObjectStore
     private readonly string _bucket;
     private readonly string _publicBaseUrl;
 
-    public S3PublicObjectStore(S3ObjectStoreCore core, IOptions<ObjectStorageOptions> options)
+    /// <summary>Owns its own <see cref="S3ObjectStoreCore" /> (and so its own circuit breaker), not shared with
+    /// <see cref="S3PrivateObjectStore" />: a sustained outage on one bucket's calls must not fail-fast the
+    /// other's. The underlying <see cref="Amazon.S3.IAmazonS3" /> client (and its connection pool) is still
+    /// shared, only the breaker state is per store.</summary>
+    public S3PublicObjectStore(IAmazonS3 s3Client, IOptions<ObjectStorageOptions> options)
     {
-        _core = core;
+        _core = new S3ObjectStoreCore(s3Client, options.Value);
         _bucket = options.Value.PublicBucketName;
         _publicBaseUrl = options.Value.PublicBaseUrl.TrimEnd('/');
     }

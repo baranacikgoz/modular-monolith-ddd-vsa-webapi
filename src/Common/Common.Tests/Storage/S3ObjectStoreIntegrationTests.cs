@@ -59,16 +59,15 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
         _s3Client = new AmazonS3Client(new BasicAWSCredentials(options.AccessKey, options.SecretKey), new AmazonS3Config
         {
             ServiceURL = options.ServiceUrl,
-            ForcePathStyle = options.ForcePathStyle,
+            ForcePathStyle = options.ForcePathStyle.Value,
             AuthenticationRegion = options.Region
         });
 
         await _s3Client.PutBucketAsync(PublicBucket);
         await _s3Client.PutBucketAsync(PrivateBucket);
 
-        var core = new S3ObjectStoreCore(_s3Client, options);
-        _publicStore = new S3PublicObjectStore(core, Options.Create(options));
-        _privateStore = new S3PrivateObjectStore(core, Options.Create(options), TimeProvider.System);
+        _publicStore = new S3PublicObjectStore(_s3Client, Options.Create(options));
+        _privateStore = new S3PrivateObjectStore(_s3Client, Options.Create(options), TimeProvider.System);
     }
 
     public async ValueTask DisposeAsync()

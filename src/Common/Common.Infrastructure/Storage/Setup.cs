@@ -25,10 +25,10 @@ public static class Setup
             var config = new AmazonS3Config
             {
                 ServiceURL = options.ServiceUrl,
-                ForcePathStyle = options.ForcePathStyle,
+                ForcePathStyle = options.ForcePathStyle!.Value,
                 AuthenticationRegion = options.Region,
                 RetryMode = RequestRetryMode.Standard,
-                MaxErrorRetry = options.MaxErrorRetry,
+                MaxErrorRetry = options.MaxErrorRetry!.Value,
                 Timeout = TimeSpan.FromSeconds(options.AttemptTimeoutSeconds)
             };
 
@@ -36,10 +36,8 @@ public static class Setup
             return new AmazonS3Client(credentials, config);
         });
 
-        services.AddSingleton(sp => new S3ObjectStoreCore(
-            sp.GetRequiredService<IAmazonS3>(),
-            sp.GetRequiredService<IOptions<ObjectStorageOptions>>().Value));
-
+        // Not a shared S3ObjectStoreCore: each store builds its own internally, so the public and private buckets
+        // get independent circuit breakers over the one shared IAmazonS3 client (see each store's constructor doc).
         services.AddSingleton<IPublicObjectStore, S3PublicObjectStore>();
         services.AddSingleton<IPrivateObjectStore, S3PrivateObjectStore>();
 
