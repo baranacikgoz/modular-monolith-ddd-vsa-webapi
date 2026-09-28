@@ -1,16 +1,16 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-09-28)
 
 ## Corpus Check
-- 585 files · ~94,061 words
+- 585 files · ~94,395 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 - 5051 nodes · 10048 edges · 404 communities (303 shown, 101 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 295 edges (avg confidence: 0.84)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 294 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bafe0333`
+- Built from commit: `3d7f0bd0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1097,7 +1097,7 @@ Cohesion: 0.16
 Nodes (15): SecurityAlertType, SessionRevokedTokenReuse, SendSecurityAlertRequest, SendSecurityAlertResponse, CancellationToken, IReadOnlyDictionary, IReadOnlyList, Task (+7 more)
 
 ### Community 171 - "S3ObjectStoreCore.cs"
-Cohesion: 0.26
+Cohesion: 0.27
 Nodes (7): amazon_runtime, amazon_s3, amazon_s3_model, amazon_s3_transfer, Common.Infrastructure.Storage, Common.Application.Storage, polly
 
 ### Community 172 - "system_globalization"
@@ -1673,7 +1673,7 @@ Nodes (3): DatabaseOptions, ConnectionString, DatabaseOptionsValidator
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `ObjectStorageOptions`, `AuditLogOptions`, `DevicesOptions`, `Common.Domain.ResultMonad`, `Setup`, `EmailOptions`, `ResxLocalizationOptions`, `OutboxOptions`, `Common.Infrastructure.Extensions`, `JobHousekeepingOptions`, `Setup.Logger.cs`, `fluentvalidation`, `FirebasePushGateway.cs`, `OtpOptions`, `ObservabilityOptions`, `SecurityHeadersOptions.cs`, `ConfigureSwaggerOptions.cs`, `S3ObjectStoreCore.cs`, `KeycloakOptions`, `Common.Domain.StronglyTypedIds`, `CorsOptions`, `CachingOptions`, `SignalROptions`, `RabbitMqOptions`, `SmsOptions`, `IdentityScheme`, `RequestLoggingOptions`, `FullTextSearchOptions`, `Setup.Observability.cs`, `DatabaseOptions.cs`, `BackgroundJobsOptions`, `ProjectionReconciliationOptions.cs`, `PushOptions`, `ResiliencyOptions`, `CaptchaOptions`, `KeycloakPermissionAuthorizationHandler.cs`, `InterModuleRequestOptions`, `Common.InterModuleRequests.Contracts`, `KeycloakTokenClient.cs`, `CustomValidator`, `OpenApiOptions`, `InventoryOptions`, `.AddCustomHealthChecks`?**
-  _High betweenness centrality (0.203) - this node is a cross-community bridge._
+  _High betweenness centrality (0.198) - this node is a cross-community bridge._
 - **Why does `Result` connect `Result` to `.ReserveSeriesAsync`, `KeycloakAdminClient`, `.AssignBasicRoleOrRollbackAsync`, `FirebasePushGateway`, `Error`, `ProductTemplateId`, `IKeycloakAdminClient`, `IProductsDbContext`, `.AddProductToMyStoreAsync`, `Response`, `.RegisterAsync`, `IInterModuleRequestClient`, `.TapWhenFeatureEnabledAsync`, `DummyEmailGateway`, `.RevokeToken`, `ISmsGateway`, `.NotFound`, `.RefreshToken`, `IEmailGateway`, `DummySmsGateway`, `.SendOtp`, `SendSecurityAlertRequestHandler`, `ResultTelemetryExtensions`, `CachedCaptchaService`, `PaginationQueryableExtensions`, `PaginationResponse`, `.AddPushServices`, `ReCaptchaService`, `SendEmailOtpRequestHandler`, `BrevoEmailGateway`, `.SearchProductTemplatesAsync`, `KeycloakTokenClient`, `.SendCoreAsync`, `.GetMeAsync`, `IInventoryDbContext`, `Common.Domain.Events`, `.ActivateProductTemplateAsync`, `Response`, `.UpdateMyStoreAsync`, `.RemoveProductAsync`, `Response`, `.UpdateCurrentPushToken`, `.SearchStoresAsync`, `StockReservation`, `.SendOtp`, `.GetProductAsync`, `HttpWarehouseGateway`, `.GetClientKey`, `.ListSessions`, `.SearchMyProductsAsync`, `NetGsmSmsGateway`, `.SearchStoreProductsAsync`, `.SendAsync`, `.IsRegisteredAsync`, `.ReleaseStockReservationAsync`, `Response`, `.AddProductAsync`, `InventoryOptions`, `Response`, `Response`?**
   _High betweenness centrality (0.113) - this node is a cross-community bridge._
 - **Why does `ApplicationUserId` connect `ApplicationUserId` to `NotificationPayload`, `StoreId`, `AuditableEntity`, `KeycloakAdminClient`, `.HandleAsync`, `.AssignBasicRoleOrRollbackAsync`, `IKeycloakAdminClient`, `IStronglyTypedId`, `KeycloakPermissionAuthorizationHandler`, `Response`, `JobRow`, `.RegisterAsync`, `DeviceRegistration`, `.RevokeToken`, `V1StoreCreatedDomainEvent`, `CreateStockLevelOnProductCreatedHandler`, `AuditableEntityResponse`, `For`, `IAuditableEntity`, `SendSecurityAlertRequestHandler`, `system_globalization`, `PaginationResponse`, `Common.Domain.StronglyTypedIds`, `Response`, `microsoft_aspnetcore_mvc`, `DeviceRegistrationId`, `KeycloakTokenClient`, `Response`, `.SearchStoresAsync`, `.Configure`, `Store`, `.ListSessions`, `Request`, `InterModuleRequestHandler`, `StockLevel`, `Response`, `Response`?**

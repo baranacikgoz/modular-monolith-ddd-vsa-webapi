@@ -1870,7 +1870,7 @@
       },
       "norm_label": "objectstorageoptionsvalidator",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L68"
+      "source_location": "L69"
     },
     {
       "id": "src_modules_notifications_notifications_infrastructure_email_brevo_brevoemailgateway_notifications_infrastructure_email_brevo_sendrequestbody",
@@ -4733,7 +4733,7 @@
       },
       "norm_label": "s3objectstorecore",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L31"
+      "source_location": "L34"
     },
     {
       "id": "src_modules_iam_iam_infrastructure_telemetry_iamtelemetry_iam_infrastructure_telemetry_loginmethods",
@@ -7305,12 +7305,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": "s3publicobjectstore",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "src_common_common_infrastructure_persistence_extensions_trigramindexextensions_common_infrastructure_persistence_extensions_trigramindexextensions",
@@ -16118,7 +16118,7 @@
       },
       "norm_label": ".existsasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L113"
+      "source_location": "L116"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_deleteasync",
@@ -16136,7 +16136,7 @@
       },
       "norm_label": ".deleteasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L45"
+      "source_location": "L47"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_deletemanyasync",
@@ -16154,7 +16154,7 @@
       },
       "norm_label": ".deletemanyasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L50"
+      "source_location": "L52"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_downloadasync",
@@ -16172,7 +16172,7 @@
       },
       "norm_label": ".downloadasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L30"
+      "source_location": "L32"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_existsasync",
@@ -16190,7 +16190,7 @@
       },
       "norm_label": ".existsasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L35"
+      "source_location": "L37"
     },
     {
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_me_get_endpoint_iam_endpoints_users_versionneutral_me_get_endpoint_mapendpoint",
@@ -18460,13 +18460,13 @@
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L120"
+            "line": "L123"
           }
         ]
       },
       "norm_label": ".getmetadataasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L118"
+      "source_location": "L121"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_getmetadataasync",
@@ -18484,7 +18484,7 @@
       },
       "norm_label": ".getmetadataasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L40"
+      "source_location": "L42"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_getmetadataasync",
@@ -18497,12 +18497,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".getmetadataasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L36"
+      "source_location": "L41"
     },
     {
       "id": "src_modules_products_products_domain_producttemplates_producttemplate_products_domain_producttemplates_producttemplate_activate",
@@ -21974,19 +21974,19 @@
             "callee": "Chunk",
             "receiver_type": "IReadOnlyCollection",
             "lang": "csharp",
-            "line": "L157"
+            "line": "L164"
           },
           {
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L159"
+            "line": "L166"
           }
         ]
       },
       "norm_label": ".deletemanyasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L153"
+      "source_location": "L160"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3objectstorecore_common_infrastructure_storage_s3objectstorecore_downloadasync",
@@ -22006,13 +22006,13 @@
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L102"
+            "line": "L105"
           }
         ]
       },
       "norm_label": ".downloadasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L100"
+      "source_location": "L103"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3objectstorecore_common_infrastructure_storage_s3objectstorecore_istransients3failure",
@@ -22030,7 +22030,7 @@
       },
       "norm_label": ".istransients3failure()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L63"
+      "source_location": "L66"
     },
     {
       "id": "src_modules_iam_iam_endpoints_users_versionneutral_search_endpoint_iam_endpoints_users_versionneutral_search_endpoint_mapendpoint",
@@ -25906,13 +25906,13 @@
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L145"
+            "line": "L148"
           }
         ]
       },
       "norm_label": ".deleteasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L143"
+      "source_location": "L146"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_deleteasync",
@@ -25925,12 +25925,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".deleteasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L41"
+      "source_location": "L46"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_deletemanyasync",
@@ -25943,12 +25943,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".deletemanyasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L46"
+      "source_location": "L51"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_existsasync",
@@ -25961,12 +25961,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".existsasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L31"
+      "source_location": "L36"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_getpublicurl",
@@ -25979,12 +25979,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".getpublicurl()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L25"
+      "source_location": "L30"
     },
     {
       "id": "src_common_common_infrastructure_persistence_extensions_trigramindexextensions_common_infrastructure_persistence_extensions_trigramindexextensions_haspatternindex",
@@ -27260,13 +27260,13 @@
             "callee": "GetPreSignedURL",
             "receiver_type": "IAmazonS3",
             "lang": "csharp",
-            "line": "L210"
+            "line": "L225"
           }
         ]
       },
       "norm_label": ".createpresignedurl()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L198"
+      "source_location": "L213"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_createpresigneddownloadurl",
@@ -27286,13 +27286,13 @@
             "callee": "GetUtcNow",
             "receiver_type": "TimeProvider",
             "lang": "csharp",
-            "line": "L67"
+            "line": "L69"
           }
         ]
       },
       "norm_label": ".createpresigneddownloadurl()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L65"
+      "source_location": "L67"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_createpresigneduploadurl",
@@ -27312,13 +27312,13 @@
             "callee": "GetUtcNow",
             "receiver_type": "TimeProvider",
             "lang": "csharp",
-            "line": "L62"
+            "line": "L64"
           }
         ]
       },
       "norm_label": ".createpresigneduploadurl()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L60"
+      "source_location": "L62"
     },
     {
       "id": "src_modules_products_products_endpoints_stores_v1_my_addproduct_endpoint_products_endpoints_stores_v1_my_addproduct_endpoint_addproducttomystoreasync",
@@ -28010,13 +28010,13 @@
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L177"
+            "line": "L192"
           }
         ]
       },
       "norm_label": ".listasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L174"
+      "source_location": "L189"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_listasync",
@@ -28034,7 +28034,7 @@
       },
       "norm_label": ".listasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L55"
+      "source_location": "L57"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_listasync",
@@ -28047,12 +28047,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".listasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L51"
+      "source_location": "L56"
     },
     {
       "id": "src_common_common_infrastructure_resiliency_setup_common_infrastructure_resiliency_setup_addkeyedresiliencepipelines",
@@ -28970,19 +28970,19 @@
             "callee": "ExecuteAsync",
             "receiver_type": "ResiliencePipeline",
             "lang": "csharp",
-            "line": "L73"
+            "line": "L76"
           },
           {
             "callee": "UploadAsync",
             "receiver_type": "TransferUtility",
             "lang": "csharp",
-            "line": "L92"
+            "line": "L95"
           }
         ]
       },
       "norm_label": ".uploadasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L68"
+      "source_location": "L71"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3privateobjectstore_common_infrastructure_storage_s3privateobjectstore_uploadasync",
@@ -29000,7 +29000,7 @@
       },
       "norm_label": ".uploadasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L25"
+      "source_location": "L27"
     },
     {
       "id": "src_common_common_infrastructure_storage_s3publicobjectstore_common_infrastructure_storage_s3publicobjectstore_uploadasync",
@@ -29013,12 +29013,12 @@
       "metadata": {
         "namespace": "Common.Infrastructure.Storage",
         "scope_chain": [
-          "s105"
+          "s122"
         ]
       },
       "norm_label": ".uploadasync()",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L20"
+      "source_location": "L25"
     },
     {
       "id": "src_common_common_application_modelbinders_stronglytypedidbinder_common_application_modelbinders_stronglytypedidbinder_bindmodelasync",
@@ -44136,7 +44136,7 @@
       },
       "norm_label": "attempttimeoutseconds",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L52"
+      "source_location": "L53"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_circuitbreakerbreakdurationseconds",
@@ -44153,7 +44153,7 @@
       },
       "norm_label": "circuitbreakerbreakdurationseconds",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L65"
+      "source_location": "L66"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_circuitbreakerfailureratio",
@@ -44170,7 +44170,7 @@
       },
       "norm_label": "circuitbreakerfailureratio",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L59"
+      "source_location": "L60"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_circuitbreakerminimumthroughput",
@@ -44187,7 +44187,7 @@
       },
       "norm_label": "circuitbreakerminimumthroughput",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L61"
+      "source_location": "L62"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_circuitbreakersamplingdurationseconds",
@@ -44204,7 +44204,7 @@
       },
       "norm_label": "circuitbreakersamplingdurationseconds",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L63"
+      "source_location": "L64"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_forcepathstyle",
@@ -44238,7 +44238,7 @@
       },
       "norm_label": "maxerrorretry",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L50"
+      "source_location": "L51"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_multipartthresholdmb",
@@ -44255,7 +44255,7 @@
       },
       "norm_label": "multipartthresholdmb",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L55"
+      "source_location": "L56"
     },
     {
       "id": "src_common_common_application_options_objectstorageoptions_common_application_options_objectstorageoptions_presigneddownloadexpirationminutes",
@@ -79773,6 +79773,54 @@
       "type": "external"
     },
     {
+      "id": "amazon_runtime",
+      "label": "amazon_runtime",
+      "_origin": "semantic",
+      "community": 171,
+      "community_name": "S3ObjectStoreCore.cs",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "amazon_runtime",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "amazon_s3",
+      "label": "amazon_s3",
+      "_origin": "semantic",
+      "community": 171,
+      "community_name": "S3ObjectStoreCore.cs",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "amazon_s3",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "amazon_s3_model",
+      "label": "amazon_s3_model",
+      "_origin": "semantic",
+      "community": 171,
+      "community_name": "S3ObjectStoreCore.cs",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "amazon_s3_model",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "amazon_s3_transfer",
+      "label": "amazon_s3_transfer",
+      "_origin": "semantic",
+      "community": 171,
+      "community_name": "S3ObjectStoreCore.cs",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "amazon_s3_transfer",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "polly",
       "label": "polly",
       "_origin": "semantic",
@@ -80525,50 +80573,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "microsoft_extensions_localization",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "amazon_runtime",
-      "label": "amazon_runtime",
-      "community": 171,
-      "community_name": "S3ObjectStoreCore.cs",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "amazon_runtime",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "amazon_s3",
-      "label": "amazon_s3",
-      "community": 171,
-      "community_name": "S3ObjectStoreCore.cs",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "amazon_s3",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "amazon_s3_model",
-      "label": "amazon_s3_model",
-      "community": 171,
-      "community_name": "S3ObjectStoreCore.cs",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "amazon_s3_model",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "amazon_s3_transfer",
-      "label": "amazon_s3_transfer",
-      "community": 171,
-      "community_name": "S3ObjectStoreCore.cs",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "amazon_s3_transfer",
       "source_file": "",
       "type": "external"
     }
@@ -83601,7 +83605,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L115",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -90820,7 +90824,7 @@
         "ref_token": "IAmazonS3"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L33",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -95485,7 +95489,7 @@
         "ref_token": "ResiliencePipeline"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L35",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -95530,7 +95534,7 @@
         "ref_token": "S3ObjectStoreCore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -96670,7 +96674,7 @@
         "ref_token": "TransferUtilityConfig"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L34",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -98383,7 +98387,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -98395,7 +98399,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L52",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -98407,7 +98411,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L55",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -98419,7 +98423,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L59",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -98431,7 +98435,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L61",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -98443,7 +98447,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L63",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -98455,7 +98459,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -110306,7 +110310,7 @@
         "ref_token": "IAmazonS3"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L40",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -111251,7 +111255,7 @@
         "ref_token": "IOptions"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L41",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -111536,7 +111540,7 @@
         "ref_token": "IPrivateObjectStore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L44",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -111596,7 +111600,7 @@
         "ref_token": "IPublicObjectStore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L43",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -113816,7 +113820,7 @@
         "ref_token": "ObjectListPage"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L174",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -113831,7 +113835,7 @@
         "ref_token": "ObjectListPage"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L55",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -113846,7 +113850,7 @@
         "ref_token": "ObjectListPage"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -113891,7 +113895,7 @@
         "ref_token": "ObjectMetadata"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -113906,7 +113910,7 @@
         "ref_token": "ObjectMetadata"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -113921,7 +113925,7 @@
         "ref_token": "ObjectMetadata"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -113936,7 +113940,7 @@
         "ref_token": "ObjectStorageOptions"
       },
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -113951,7 +113955,7 @@
         "ref_token": "ObjectStorageOptions"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L41",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -119441,7 +119445,7 @@
         "ref_token": "S3PrivateObjectStore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L44",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -119456,7 +119460,7 @@
         "ref_token": "S3PublicObjectStore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L43",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -120731,7 +120735,7 @@
         "ref_token": "Stream"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L100",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -120746,7 +120750,7 @@
         "ref_token": "Stream"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -122344,6 +122348,23 @@
         "scope_kind": "file"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_common_common_infrastructure_storage_s3publicobjectstore",
+      "target": "amazon_s3",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "metadata": {
+        "using_kind": "namespace",
+        "target_fqn": "Amazon.S3",
+        "scope_kind": "file"
+      },
+      "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
       "source_location": "L1",
       "weight": 1.0
     },
@@ -126934,7 +126955,7 @@
         "scope_kind": "file"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L1",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -129263,7 +129284,7 @@
         "scope_kind": "file"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -152774,7 +152795,7 @@
         "scope_kind": "file"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -162867,7 +162888,7 @@
         "ref_token": "AmazonServiceException"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L63",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -164127,7 +164148,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L143",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -164142,7 +164163,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L153",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -164157,7 +164178,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L100",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -164172,7 +164193,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L113",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -164187,7 +164208,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -164202,7 +164223,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L174",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -164217,7 +164238,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L68",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -164232,7 +164253,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L45",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -164247,7 +164268,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -164262,7 +164283,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -164277,7 +164298,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -164292,7 +164313,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -164307,7 +164328,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L55",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -164322,7 +164343,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -164337,7 +164358,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L41",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -164352,7 +164373,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -164367,7 +164388,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L31",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -164382,7 +164403,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -164397,7 +164418,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -164412,7 +164433,7 @@
         "ref_token": "CancellationToken"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L20",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -167517,7 +167538,7 @@
         "ref_token": "DateTime"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L198",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -170697,7 +170718,7 @@
         "ref_token": "HttpVerb"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L198",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -175407,7 +175428,7 @@
         "ref_token": "IReadOnlyCollection"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L153",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -175422,7 +175443,7 @@
         "ref_token": "IReadOnlyCollection"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -175437,7 +175458,7 @@
         "ref_token": "IReadOnlyCollection"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -181362,7 +181383,7 @@
         "ref_token": "UploadObjectRequest"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L68",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -181377,7 +181398,7 @@
         "ref_token": "UploadObjectRequest"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -181392,7 +181413,7 @@
         "ref_token": "UploadObjectRequest"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L20",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -183841,7 +183862,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L143",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -183856,7 +183877,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L153",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -183871,7 +183892,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L100",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -183886,7 +183907,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L113",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -183901,7 +183922,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -183916,7 +183937,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L174",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -183931,7 +183952,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L68",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -183946,7 +183967,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L45",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -183961,7 +183982,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -183976,7 +183997,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -183991,7 +184012,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -184006,7 +184027,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -184021,7 +184042,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L55",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -184036,7 +184057,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -184051,7 +184072,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L41",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -184066,7 +184087,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -184081,7 +184102,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L31",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -184096,7 +184117,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -184111,7 +184132,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -184126,7 +184147,7 @@
         "ref_token": "Task"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L20",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -187336,7 +187357,7 @@
         "ref_token": "Uri"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L198",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -187351,7 +187372,7 @@
         "ref_token": "Uri"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L65",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -187366,7 +187387,7 @@
         "ref_token": "Uri"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L60",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -187381,7 +187402,7 @@
         "ref_token": "Uri"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -188389,7 +188410,7 @@
         "ref_token": "CustomValidator"
       },
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -190951,7 +190972,7 @@
         "ref_token": "IPublicObjectStore"
       },
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -194797,7 +194818,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Application/Options/ObjectStorageOptions.cs",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -197657,7 +197678,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L31",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -197690,7 +197711,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -197701,7 +197722,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -210978,7 +210999,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L100",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -210989,7 +211010,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L113",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -211000,7 +211021,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L118",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -211011,7 +211032,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L143",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -211022,7 +211043,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L153",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -211033,7 +211054,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L174",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -211044,7 +211065,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L198",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -211055,7 +211076,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L63",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -211066,7 +211087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L68",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -211077,7 +211098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -211088,7 +211109,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -211099,7 +211120,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L35",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -211110,7 +211131,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -211121,7 +211142,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L45",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -211132,7 +211153,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L50",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -211143,7 +211164,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L55",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -211154,7 +211175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L60",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -211165,7 +211186,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L65",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -211176,7 +211197,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L20",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -211187,7 +211208,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L25",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -211198,7 +211219,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L31",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -211209,7 +211230,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L36",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -211220,7 +211241,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L41",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -211231,7 +211252,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L46",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -211242,7 +211263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L51",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -218240,7 +218261,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L67",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -218252,7 +218273,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -218264,7 +218285,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L47",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -218276,7 +218297,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L52",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -218288,7 +218309,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -218300,7 +218321,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L37",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -218312,7 +218333,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L42",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -218324,7 +218345,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -218336,7 +218357,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -218348,7 +218369,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L43",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -218360,7 +218381,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L48",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -218372,7 +218393,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L33",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -218384,7 +218405,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L38",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -218396,7 +218417,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L53",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -218408,7 +218429,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L22",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -219896,19 +219917,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs",
-      "source_location": "L189",
-      "weight": 1.0
-    },
-    {
-      "source": "src_common_common_infrastructure_storage_setup_common_infrastructure_storage_setup_addcommonobjectstorage",
-      "target": "src_common_common_infrastructure_storage_s3objectstorecore_common_infrastructure_storage_s3objectstorecore",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "context": "call",
-      "source_file": "src/Common/Common.Infrastructure/Storage/Setup.cs",
-      "source_location": "L39",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -221036,7 +221045,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221048,7 +221057,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221060,7 +221069,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221072,7 +221081,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221084,7 +221093,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221096,7 +221105,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221108,7 +221117,7 @@
       "confidence_score": 0.9,
       "context": "call",
       "source_file": "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -221742,5 +221751,5 @@
       "source_file": "docker-compose.yml"
     }
   ],
-  "built_at_commit": "bafe03330cd306f3266ed7d7b775c47fba0787ac"
+  "built_at_commit": "3d7f0bd048e86955fde6068a19826eaa0a27b127"
 }

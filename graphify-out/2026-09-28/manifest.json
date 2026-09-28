@@ -756,9 +756,9 @@
     "semantic_hash": "66a76e7736d06c9402bdb729e29a1721"
   },
   "src/Host/Host/Configurations/Setup.cs": {
-    "mtime": 1790231906.007031,
-    "seen": 1790231910.105788,
-    "ast_hash": "a97e1257bf34ae3279e734209d0671f6",
+    "mtime": 1790594956.5316901,
+    "seen": 1790595373.748259,
+    "ast_hash": "fbdf7eb5a1afcf95b895157962c1d39a",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.ForwardedHeaders.cs": {
@@ -810,9 +810,9 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.cs": {
-    "mtime": 1790247653.4762099,
-    "seen": 1790247657.741617,
-    "ast_hash": "2ac6caba894cb51242c0c15d4eb95833",
+    "mtime": 1790595002.8775952,
+    "seen": 1790595373.748263,
+    "ast_hash": "3dc4115d0a66639b59042946d3d68f1e",
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/StringExtensions.cs": {
@@ -3465,6 +3465,54 @@
     "mtime": 1790342796.2459462,
     "seen": 1790342823.577069,
     "ast_hash": "aa840ed2c903470ca662aa996081acb0",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Options/ObjectStorageOptions.cs": {
+    "mtime": 1790595025.764882,
+    "seen": 1790595373.748188,
+    "ast_hash": "ea8cf574c86c8a443fbcd631fd5efc92",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Storage/IPrivateObjectStore.cs": {
+    "mtime": 1790595072.6120944,
+    "seen": 1790595373.748205,
+    "ast_hash": "2bc5f71bf62dd227c9634137dd0610f7",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Storage/IPublicObjectStore.cs": {
+    "mtime": 1790595061.9495835,
+    "seen": 1790595373.7482061,
+    "ast_hash": "4fd78cb69d0ba547b422550f2138d9a3",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Application/Storage/ObjectStorageModels.cs": {
+    "mtime": 1790595034.978369,
+    "seen": 1790595373.7482061,
+    "ast_hash": "ed364e70745f6bcb791996ebeb2f88c7",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs": {
+    "mtime": 1790595121.8218338,
+    "seen": 1790595373.748244,
+    "ast_hash": "91bbe74dcd7c7b229908b016f13dbabb",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs": {
+    "mtime": 1790595156.249682,
+    "seen": 1790595373.748245,
+    "ast_hash": "32680120aff3401708ef4628efc55f5e",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Infrastructure/Storage/S3PublicObjectStore.cs": {
+    "mtime": 1790595132.4857488,
+    "seen": 1790595373.748245,
+    "ast_hash": "f62830a628023757f0fd48f97ad24507",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.Infrastructure/Storage/Setup.cs": {
+    "mtime": 1790595179.6313133,
+    "seen": 1790595373.748246,
+    "ast_hash": "0c60432d5fe7d2bd52a64792e26adae9",
     "semantic_hash": ""
   }
 }
