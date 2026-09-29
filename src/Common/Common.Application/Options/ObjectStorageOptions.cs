@@ -77,6 +77,19 @@ public class ObjectStorageOptions
     public required int CircuitBreakerSamplingDurationSeconds { get; set; }
 
     public required int CircuitBreakerBreakDurationSeconds { get; set; }
+
+    /// <summary>Caps how many keys go in one S3 DeleteObjects call. S3 itself rejects more than 1000 per call, so
+    /// this can only ever be lowered (e.g. for tighter per-request latency), never raised past that.</summary>
+    public required int DeleteBatchSize { get; set; }
+
+    /// <summary>Circuit breaker transient-failure classification: an S3 response status code at or above this
+    /// threshold trips the breaker (typically 500, "any server error").</summary>
+    public required int TransientErrorStatusCodeThreshold { get; set; }
+
+    /// <summary>Specific status codes below <see cref="TransientErrorStatusCodeThreshold" /> also treated as
+    /// transient (typically just 429, throttling). The initializer stays although the property is required: an
+    /// empty JSON array (<c>"AdditionalTransientStatusCodes": []</c>) binds to nothing.</summary>
+    public required IReadOnlyList<int> AdditionalTransientStatusCodes { get; set; } = [];
 }
 
 public class ObjectStorageOptionsValidator : CustomValidator<ObjectStorageOptions>
@@ -159,5 +172,18 @@ public class ObjectStorageOptionsValidator : CustomValidator<ObjectStorageOption
         RuleFor(o => o.CircuitBreakerBreakDurationSeconds)
             .GreaterThan(0)
             .WithMessage("CircuitBreakerBreakDurationSeconds must be greater than 0.");
+
+        RuleFor(o => o.DeleteBatchSize)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(1000)
+            .WithMessage("DeleteBatchSize must be between 1 and 1000 (S3's own DeleteObjects limit).");
+
+        RuleFor(o => o.TransientErrorStatusCodeThreshold)
+            .InclusiveBetween(400, 599)
+            .WithMessage("TransientErrorStatusCodeThreshold must be a valid HTTP status code between 400 and 599.");
+
+        RuleFor(o => o.AdditionalTransientStatusCodes)
+            .NotNull()
+            .WithMessage("AdditionalTransientStatusCodes must not be null.");
     }
 }

@@ -26,7 +26,10 @@ public sealed class ObjectStorageOptionsValidatorTests
         CircuitBreakerFailureRatio = 0.5,
         CircuitBreakerMinimumThroughput = 5,
         CircuitBreakerSamplingDurationSeconds = 30,
-        CircuitBreakerBreakDurationSeconds = 30
+        CircuitBreakerBreakDurationSeconds = 30,
+        DeleteBatchSize = 1000,
+        TransientErrorStatusCodeThreshold = 500,
+        AdditionalTransientStatusCodes = [429]
     };
 
     [Fact]
@@ -150,5 +153,45 @@ public sealed class ObjectStorageOptionsValidatorTests
         var result = new ObjectStorageOptionsValidator().Validate(options);
 
         Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1001)]
+    public void DeleteBatchSize_MustBeBetweenOneAndOneThousand(int value)
+    {
+        var options = Valid();
+        options.DeleteBatchSize = value;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.DeleteBatchSize));
+    }
+
+    [Theory]
+    [InlineData(399)]
+    [InlineData(600)]
+    public void TransientErrorStatusCodeThreshold_MustBeAValidHttpStatusCodeRange(int value)
+    {
+        var options = Valid();
+        options.TransientErrorStatusCodeThreshold = value;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.TransientErrorStatusCodeThreshold));
+    }
+
+    [Fact]
+    public void AdditionalTransientStatusCodes_MustNotBeNull()
+    {
+        var options = Valid();
+        options.AdditionalTransientStatusCodes = null!;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(ObjectStorageOptions.AdditionalTransientStatusCodes));
     }
 }

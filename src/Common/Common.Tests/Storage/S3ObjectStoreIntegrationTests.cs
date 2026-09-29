@@ -54,7 +54,10 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
             CircuitBreakerFailureRatio = 0.9,
             CircuitBreakerMinimumThroughput = 100,
             CircuitBreakerSamplingDurationSeconds = 30,
-            CircuitBreakerBreakDurationSeconds = 5
+            CircuitBreakerBreakDurationSeconds = 5,
+            DeleteBatchSize = 1000,
+            TransientErrorStatusCodeThreshold = 500,
+            AdditionalTransientStatusCodes = [429]
         };
 
         _s3Client = new AmazonS3Client(new BasicAWSCredentials(options.AccessKey, options.SecretKey), new AmazonS3Config

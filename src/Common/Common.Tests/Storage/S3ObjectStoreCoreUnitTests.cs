@@ -1,3 +1,5 @@
+using System.Net;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Application.Options;
@@ -33,7 +35,10 @@ public sealed class S3ObjectStoreCoreUnitTests
         CircuitBreakerFailureRatio = 0.5,
         CircuitBreakerMinimumThroughput = 5,
         CircuitBreakerSamplingDurationSeconds = 30,
-        CircuitBreakerBreakDurationSeconds = 30
+        CircuitBreakerBreakDurationSeconds = 30,
+        DeleteBatchSize = 1000,
+        TransientErrorStatusCodeThreshold = 500,
+        AdditionalTransientStatusCodes = [429]
     };
 
     [Fact]
@@ -66,5 +71,60 @@ public sealed class S3ObjectStoreCoreUnitTests
         var core = new S3ObjectStoreCore(s3Client, ValidOptions());
 
         await core.DeleteManyAsync("public-bucket", ["key-one", "key-two"], CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task DeleteManyAsync_ChunksAccordingToConfiguredDeleteBatchSize()
+    {
+        var capturedBatchSizes = new List<int>();
+        var s3Client = Substitute.For<IAmazonS3>();
+        s3Client.DeleteObjectsAsync(Arg.Do<DeleteObjectsRequest>(r => capturedBatchSizes.Add(r.Objects.Count)), Arg.Any<CancellationToken>())
+            .Returns(new DeleteObjectsResponse { DeleteErrors = null! });
+
+        var options = ValidOptions();
+        options.DeleteBatchSize = 2; // not the 1000 default: proves the batch size is read from Options, not hardcoded
+
+        var core = new S3ObjectStoreCore(s3Client, options);
+
+        await core.DeleteManyAsync("public-bucket", ["k1", "k2", "k3", "k4", "k5"], CancellationToken.None);
+
+        Assert.Equal([2, 2, 1], capturedBatchSizes);
+    }
+
+    [Fact]
+    public void IsTransientS3Failure_StatusAtOrAboveDefaultThreshold_IsTransient()
+    {
+        var core = new S3ObjectStoreCore(Substitute.For<IAmazonS3>(), ValidOptions());
+
+        Assert.True(core.IsTransientS3Failure(new AmazonServiceException("boom") { StatusCode = HttpStatusCode.InternalServerError }));
+    }
+
+    [Fact]
+    public void IsTransientS3Failure_StatusBelowConfiguredThreshold_IsNotTransient()
+    {
+        var options = ValidOptions();
+        options.TransientErrorStatusCodeThreshold = 599; // raised past 500: proves the threshold is read from Options
+        options.AdditionalTransientStatusCodes = [];
+        var core = new S3ObjectStoreCore(Substitute.For<IAmazonS3>(), options);
+
+        Assert.False(core.IsTransientS3Failure(new AmazonServiceException("boom") { StatusCode = HttpStatusCode.InternalServerError }));
+    }
+
+    [Fact]
+    public void IsTransientS3Failure_ConfiguredAdditionalStatusCodeBelowThreshold_IsTransient()
+    {
+        var options = ValidOptions();
+        options.AdditionalTransientStatusCodes = [418]; // arbitrary code below the threshold, added via config only
+        var core = new S3ObjectStoreCore(Substitute.For<IAmazonS3>(), options);
+
+        Assert.True(core.IsTransientS3Failure(new AmazonServiceException("boom") { StatusCode = (HttpStatusCode)418 }));
+    }
+
+    [Fact]
+    public void IsTransientS3Failure_UnconfiguredClientError_IsNotTransient()
+    {
+        var core = new S3ObjectStoreCore(Substitute.For<IAmazonS3>(), ValidOptions());
+
+        Assert.False(core.IsTransientS3Failure(new AmazonServiceException("boom") { StatusCode = HttpStatusCode.NotFound }));
     }
 }

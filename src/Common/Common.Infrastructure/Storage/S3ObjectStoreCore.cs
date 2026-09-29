@@ -37,11 +37,17 @@ internal sealed class S3ObjectStoreCore
     private readonly TransferUtilityConfig _transferConfig;
     private readonly ResiliencePipeline _pipeline;
     private readonly string _serviceUrlScheme;
+    private readonly int _deleteBatchSize;
+    private readonly int _transientErrorStatusCodeThreshold;
+    private readonly HashSet<int> _additionalTransientStatusCodes;
 
     public S3ObjectStoreCore(IAmazonS3 s3Client, ObjectStorageOptions options)
     {
         _s3Client = s3Client;
         _serviceUrlScheme = new Uri(options.ServiceUrl).Scheme;
+        _deleteBatchSize = options.DeleteBatchSize;
+        _transientErrorStatusCodeThreshold = options.TransientErrorStatusCodeThreshold;
+        _additionalTransientStatusCodes = [.. options.AdditionalTransientStatusCodes];
         _transferConfig = new TransferUtilityConfig
         {
             MinSizeBeforePartUpload = options.MultipartThresholdMB * 1024L * 1024L
@@ -62,10 +68,12 @@ internal sealed class S3ObjectStoreCore
     }
 
     /// <summary>Server errors and throttling trip the breaker; client errors (404, 403, bad request) do not, since
-    /// those are legitimate responses, not signs the dependency is unhealthy.</summary>
-    private static bool IsTransientS3Failure(AmazonServiceException exception)
+    /// those are legitimate responses, not signs the dependency is unhealthy. Internal, not private: unit-tested
+    /// directly (<c>Common.Tests</c>) rather than only indirectly through circuit-breaker behavior.</summary>
+    internal bool IsTransientS3Failure(AmazonServiceException exception)
     {
-        return (int)exception.StatusCode >= 500 || exception.StatusCode == HttpStatusCode.TooManyRequests;
+        var statusCode = (int)exception.StatusCode;
+        return statusCode >= _transientErrorStatusCodeThreshold || _additionalTransientStatusCodes.Contains(statusCode);
     }
 
     public async Task UploadAsync(string bucket, UploadObjectRequest request, CancellationToken cancellationToken)
@@ -152,16 +160,15 @@ internal sealed class S3ObjectStoreCore
             cancellationToken).AsTask();
     }
 
-    /// <summary>Batches into groups of 1000, the S3 DeleteObjects limit per call. S3 answers a batch delete with
-    /// HTTP 200 even when individual keys within it failed (e.g. a lock/policy on one object), so each batch's
+    /// <summary>Batches into groups of <see cref="ObjectStorageOptions.DeleteBatchSize" /> (validated to never
+    /// exceed 1000, the hard S3 DeleteObjects limit per call). S3 answers a batch delete with HTTP 200 even when
+    /// individual keys within it failed (e.g. a lock/policy on one object), so each batch's
     /// <see cref="DeleteObjectsResponse.DeleteErrors" /> is checked explicitly rather than trusting a successful
     /// call to mean every key was removed.</summary>
     /// <exception cref="AmazonS3Exception">One or more keys in a batch failed to delete.</exception>
     public async Task DeleteManyAsync(string bucket, IReadOnlyCollection<string> keys, CancellationToken cancellationToken)
     {
-        const int maxKeysPerBatch = 1000;
-
-        foreach (var batch in keys.Chunk(maxKeysPerBatch))
+        foreach (var batch in keys.Chunk(_deleteBatchSize))
         {
             var response = await _pipeline.ExecuteAsync(
                 static (state, ct) =>

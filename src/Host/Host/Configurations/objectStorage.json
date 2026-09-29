@@ -17,6 +17,9 @@
     "CircuitBreakerFailureRatio": 0.5,
     "CircuitBreakerMinimumThroughput": 5,
     "CircuitBreakerSamplingDurationSeconds": 30,
-    "CircuitBreakerBreakDurationSeconds": 30
+    "CircuitBreakerBreakDurationSeconds": 30,
+    "DeleteBatchSize": 1000,
+    "TransientErrorStatusCodeThreshold": 500,
+    "AdditionalTransientStatusCodes": [429]
   }
 }
