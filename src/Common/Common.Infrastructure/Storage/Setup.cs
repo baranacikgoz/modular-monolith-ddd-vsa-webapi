@@ -27,7 +27,11 @@ public static class Setup
                 ServiceURL = options.ServiceUrl,
                 ForcePathStyle = options.ForcePathStyle!.Value,
                 AuthenticationRegion = options.Region,
-                RetryMode = RequestRetryMode.Standard,
+                RetryMode = options.RetryMode switch
+                {
+                    ObjectStorageRetryMode.Adaptive => RequestRetryMode.Adaptive,
+                    _ => RequestRetryMode.Standard
+                },
                 MaxErrorRetry = options.MaxErrorRetry!.Value,
                 Timeout = TimeSpan.FromSeconds(options.AttemptTimeoutSeconds)
             };

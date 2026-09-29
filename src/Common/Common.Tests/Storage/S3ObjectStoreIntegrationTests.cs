@@ -48,6 +48,7 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
             PresignedUploadExpirationMinutes = 15,
             PresignedDownloadExpirationMinutes = 15,
             MaxErrorRetry = 1,
+            RetryMode = ObjectStorageRetryMode.Standard,
             AttemptTimeoutSeconds = 30,
             MultipartThresholdMB = 1,
             CircuitBreakerFailureRatio = 0.9,

@@ -11,6 +11,7 @@
     "PresignedUploadExpirationMinutes": 15,
     "PresignedDownloadExpirationMinutes": 15,
     "MaxErrorRetry": 3,
+    "RetryMode": "Standard",
     "AttemptTimeoutSeconds": 30,
     "MultipartThresholdMB": 16,
     "CircuitBreakerFailureRatio": 0.5,

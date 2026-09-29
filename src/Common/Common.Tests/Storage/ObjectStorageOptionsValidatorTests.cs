@@ -20,6 +20,7 @@ public sealed class ObjectStorageOptionsValidatorTests
         PresignedUploadExpirationMinutes = 15,
         PresignedDownloadExpirationMinutes = 15,
         MaxErrorRetry = 3,
+        RetryMode = ObjectStorageRetryMode.Standard,
         AttemptTimeoutSeconds = 30,
         MultipartThresholdMB = 16,
         CircuitBreakerFailureRatio = 0.5,
@@ -32,6 +33,17 @@ public sealed class ObjectStorageOptionsValidatorTests
     public void ValidOptions_PassesValidation()
     {
         var result = new ObjectStorageOptionsValidator().Validate(Valid());
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void RetryMode_AdaptiveIsAlsoValid()
+    {
+        var options = Valid();
+        options.RetryMode = ObjectStorageRetryMode.Adaptive;
+
+        var result = new ObjectStorageOptionsValidator().Validate(options);
 
         Assert.True(result.IsValid);
     }

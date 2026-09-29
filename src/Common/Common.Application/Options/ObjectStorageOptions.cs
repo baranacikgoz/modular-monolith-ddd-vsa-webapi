@@ -3,6 +3,14 @@ using FluentValidation;
 
 namespace Common.Application.Options;
 
+/// <summary>Mirrors AWS SDK's <c>Amazon.Runtime.RequestRetryMode</c> without giving this Application-layer Options
+/// class a dependency on the AWS SDK: the Infrastructure-layer S3 client setup maps this to the real SDK enum.</summary>
+public enum ObjectStorageRetryMode
+{
+    Standard,
+    Adaptive
+}
+
 /// <summary>
 ///     S3-compatible object storage, provider-agnostic by design (any S3-compatible engine, self-hosted or not;
 ///     backend only needs an S3 API endpoint). See <see cref="PublicBucketName" />/<see cref="PrivateBucketName" />
@@ -49,6 +57,11 @@ public class ObjectStorageOptions
     /// HTTP resilience pipeline used for other third-party integrations (<see cref="ResiliencyOptions" />).
     /// Nullable: 0 is a valid value (no SDK-level retries), so a missing key must not silently bind to it too.</summary>
     public required int? MaxErrorRetry { get; set; }
+
+    /// <summary>Standard is AWS's own recommended default (consistent backoff across SDKs); Adaptive adds
+    /// client-side rate limiting on top, worth switching to under sustained throttling without a redeploy.
+    /// Not nullable: Standard is both the CLR default and the intended one, so a missing key binds safely.</summary>
+    public required ObjectStorageRetryMode RetryMode { get; set; }
 
     public required int AttemptTimeoutSeconds { get; set; }
 

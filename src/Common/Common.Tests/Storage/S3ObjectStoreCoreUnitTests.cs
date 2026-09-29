@@ -27,6 +27,7 @@ public sealed class S3ObjectStoreCoreUnitTests
         PresignedUploadExpirationMinutes = 15,
         PresignedDownloadExpirationMinutes = 15,
         MaxErrorRetry = 3,
+        RetryMode = ObjectStorageRetryMode.Standard,
         AttemptTimeoutSeconds = 30,
         MultipartThresholdMB = 16,
         CircuitBreakerFailureRatio = 0.5,
