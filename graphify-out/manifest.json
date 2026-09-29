@@ -3468,9 +3468,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/ObjectStorageOptions.cs": {
-    "mtime": 1790683526.5604575,
-    "seen": 1790683726.3868868,
-    "ast_hash": "9e17a558c2012bbf63367da84e18e29e",
+    "mtime": 1790684426.9091833,
+    "seen": 1790684692.277919,
+    "ast_hash": "d0f459ff5459d3cf4e408145330762a1",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Storage/IPrivateObjectStore.cs": {
@@ -3492,9 +3492,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Storage/S3ObjectStoreCore.cs": {
-    "mtime": 1790600637.1488502,
-    "seen": 1790600760.730079,
-    "ast_hash": "e884851fd58244219cc6d7b21e04e419",
+    "mtime": 1790684456.9922752,
+    "seen": 1790684692.277975,
+    "ast_hash": "58acf5438255496d21d95a0cf43e215e",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/Storage/S3PrivateObjectStore.cs": {
