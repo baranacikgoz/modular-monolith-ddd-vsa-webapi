@@ -19,26 +19,7 @@ public static class Setup
     public static IServiceCollection AddCommonObjectStorage(this IServiceCollection services)
     {
         services.AddSingleton<IAmazonS3>(sp =>
-        {
-            var options = sp.GetRequiredService<IOptions<ObjectStorageOptions>>().Value;
-
-            var config = new AmazonS3Config
-            {
-                ServiceURL = options.ServiceUrl,
-                ForcePathStyle = options.ForcePathStyle!.Value,
-                AuthenticationRegion = options.Region,
-                RetryMode = options.RetryMode switch
-                {
-                    ObjectStorageRetryMode.Adaptive => RequestRetryMode.Adaptive,
-                    _ => RequestRetryMode.Standard
-                },
-                MaxErrorRetry = options.MaxErrorRetry!.Value,
-                Timeout = TimeSpan.FromSeconds(options.AttemptTimeoutSeconds)
-            };
-
-            var credentials = new BasicAWSCredentials(options.AccessKey, options.SecretKey);
-            return new AmazonS3Client(credentials, config);
-        });
+            CreateS3Client(sp.GetRequiredService<IOptions<ObjectStorageOptions>>().Value));
 
         // Not a shared S3ObjectStoreCore: each store builds its own internally, so the public and private buckets
         // get independent circuit breakers over the one shared IAmazonS3 client (see each store's constructor doc).
@@ -46,5 +27,24 @@ public static class Setup
         services.AddSingleton<IPrivateObjectStore, S3PrivateObjectStore>();
 
         return services;
+    }
+
+    internal static AmazonS3Client CreateS3Client(ObjectStorageOptions options)
+    {
+        var config = new AmazonS3Config
+        {
+            ServiceURL = options.ServiceUrl,
+            ForcePathStyle = options.ForcePathStyle!.Value,
+            AuthenticationRegion = options.Region,
+            RetryMode = options.RetryMode switch
+            {
+                ObjectStorageRetryMode.Adaptive => RequestRetryMode.Adaptive,
+                _ => RequestRetryMode.Standard
+            },
+            MaxErrorRetry = options.MaxErrorRetry!.Value,
+            Timeout = TimeSpan.FromSeconds(options.AttemptTimeoutSeconds)
+        };
+
+        return new ChunkEncodingFreeS3Client(new BasicAWSCredentials(options.AccessKey, options.SecretKey), config);
     }
 }

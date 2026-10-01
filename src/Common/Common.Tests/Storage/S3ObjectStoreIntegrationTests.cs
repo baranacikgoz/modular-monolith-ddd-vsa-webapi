@@ -60,12 +60,7 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
             AdditionalTransientStatusCodes = [429]
         };
 
-        _s3Client = new AmazonS3Client(new BasicAWSCredentials(options.AccessKey, options.SecretKey), new AmazonS3Config
-        {
-            ServiceURL = options.ServiceUrl,
-            ForcePathStyle = options.ForcePathStyle.Value,
-            AuthenticationRegion = options.Region
-        });
+        _s3Client = Common.Infrastructure.Storage.Setup.CreateS3Client(options);
 
         await _s3Client.PutBucketAsync(PublicBucket);
         await _s3Client.PutBucketAsync(PrivateBucket);
