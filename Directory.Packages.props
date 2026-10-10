@@ -112,7 +112,7 @@
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.15.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.1" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.104.2" />
     <!-- Test-only: AWS's own S3-compatible emulator, used to exercise ObjectStorage against a real wire protocol.
          Not the production engine (self-hosted, deployment-chosen, endpoint-swappable via ObjectStorageOptions). -->
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.15.0" />
