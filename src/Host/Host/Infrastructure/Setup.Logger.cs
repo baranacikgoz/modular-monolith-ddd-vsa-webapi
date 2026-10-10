@@ -7,6 +7,7 @@ using Serilog.Configuration;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.OpenTelemetry;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -66,7 +67,13 @@ internal static partial class Setup
             .Enrich.WithProperty("Environment", env.EnvironmentName)
             .Enrich.WithProperty("AppVersion", options.AppVersion)
             .Enrich.FromLogContext()
-            .Enrich.WithExceptionDetails()
+            // Reflection-based destructuring walks every property of an exception. A DbUpdateException reaches each tracked
+            // entity and through them the whole DbContext: hundreds of KB per record, a log record the collector refuses
+            // above its entry limit, and over 100 ms of the request thread per log call. The type, message, stack trace
+            // (which holds a database error's detail) and inner exceptions are kept.
+            .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
+                .WithDefaultDestructurers()
+                .WithoutReflectionBasedDestructurer())
             .Enrich.WithMachineName()
             .Enrich.WithProcessId()
             .Enrich.WithThreadId()
