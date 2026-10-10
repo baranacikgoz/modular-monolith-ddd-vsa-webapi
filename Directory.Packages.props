@@ -36,16 +36,16 @@
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
     <PackageVersion Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="2.0.0" />
-    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
     <!-- Transitive pin: SSH.NET <=2025.1.0 has GHSA-q939-rpr3-3284 (high). Pulled via Testcontainers. -->
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.15.0" />
-    <PackageVersion Include="Testcontainers.Kafka" Version="4.15.0" />
-    <PackageVersion Include="Testcontainers.Redis" Version="4.15.0" />
-    <PackageVersion Include="Testcontainers.Keycloak" Version="4.15.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.16.0" />
+    <PackageVersion Include="Testcontainers.Kafka" Version="4.16.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.16.0" />
+    <PackageVersion Include="Testcontainers.Keycloak" Version="4.16.0" />
     <PackageVersion Include="Respawn" Version="7.0.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0">
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
@@ -109,12 +109,12 @@
     <PackageVersion Include="MassTransit" Version="8.5.11" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.11" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.12" />
-    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.15.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.16.0" />
     <PackageVersion Include="AspNetCore.HealthChecks.RabbitMQ" Version="9.0.0" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.2" />
     <!-- Test-only: AWS's own S3-compatible emulator, used to exercise ObjectStorage against a real wire protocol.
          Not the production engine (self-hosted, deployment-chosen, endpoint-swappable via ObjectStorageOptions). -->
-    <PackageVersion Include="Testcontainers.LocalStack" Version="4.15.0" />
+    <PackageVersion Include="Testcontainers.LocalStack" Version="4.16.0" />
   </ItemGroup>
 </Project>
