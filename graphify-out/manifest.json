@@ -780,10 +780,10 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.Logger.cs": {
-    "mtime": 1781871238.8622751,
-    "seen": 1788521409.363858,
-    "ast_hash": "9623cf7e4c6db9c7ed184871fa603b7e",
-    "semantic_hash": "9623cf7e4c6db9c7ed184871fa603b7e"
+    "mtime": 1791657249.788184,
+    "seen": 1791657334.1909041,
+    "ast_hash": "5f38c14c6e8c599a211312618529fe0b",
+    "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.MassTransit.cs": {
     "mtime": 1790231892.3596735,

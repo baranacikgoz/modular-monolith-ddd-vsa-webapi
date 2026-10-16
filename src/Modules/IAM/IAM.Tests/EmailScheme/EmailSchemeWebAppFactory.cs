@@ -27,9 +27,9 @@ public class EmailSchemeWebAppFactory : IntegrationTestWebAppFactory
 }
 
 /// <summary>
-///     DisableParallelization: this collection runs after the parallel ones finish, so the second host (and its
-///     Keycloak container) never boots concurrently with the main IntegrationTestCollection. Two hosts booting in
-///     parallel in one assembly corrupt the Serilog/OTel statics (CLAUDE.md §8).
+///     DisableParallelization: this collection runs after the parallel ones finish, so the second host never boots
+///     concurrently with the main IntegrationTestCollection. Two hosts booting in parallel in one assembly corrupt
+///     the Serilog/OTel statics (CLAUDE.md §8).
 /// </summary>
 [CollectionDefinition("EmailSchemeCollection", DisableParallelization = true)]
 public class EmailSchemeCollection : ICollectionFixture<EmailSchemeWebAppFactory>

@@ -13,4 +13,5 @@ Rules in CLAUDE.md §8. Copy the shape from `CreateTests.cs` and `StoreTests.cs`
    - READ: seed via scoped `DbContext`, `GetAsync`, assert the deserialized response matches the seed.
 2. Unit test for new aggregate methods in `{Module}.Tests/{Aggregate}/{Aggregate}Tests.cs` (inherit `AggregateTests<TAggregate, TId>` when it fits): state after the call plus the raised event.
 3. If a module has no factory yet: `IntegrationTestWebAppFactory : IntegrationTestFactory` overriding `GetActiveModules()` and an `IntegrationTestCollection` definition (Products has both).
-4. Run `make test-{module}`. With `red`: the new tests must fail, and production code stays untouched. Without `red`: they must pass.
+4. Scope (CLAUDE.md §8): one happy-path test plus at most one test per error key. When step 2's unit test already asserts the state change, the endpoint test in step 1 asserts only status, authorization, validation and the `OutboxMessages` row. A test never waits out a production interval or timeout: set the option to 0 on a private copy of the options.
+5. Run `make test-{module}`. With `red`: the new tests must fail, and production code stays untouched. Without `red`: they must pass.

@@ -12,7 +12,7 @@ namespace Host.Tests;
 // resource#scope the realm does not declare (or no permission covers) 403s every caller silently, and a realm
 // scope no endpoint requires is a dropped endpoint or dead configuration nobody notices.
 [Collection("Host")]
-public class PermissionCoverageTests
+public class PermissionCoverageTests(HostTestFactory factory)
 {
     // Enforced outside endpoint metadata (HangfireCustomAuthorizationFilter asks IAuthorizationService directly).
     private static readonly HashSet<string> ScopesEnforcedOutsideEndpoints = new(StringComparer.Ordinal)
@@ -21,12 +21,8 @@ public class PermissionCoverageTests
     };
 
     [Fact]
-    public async Task AllEndpointScopes_AreDeclaredAndCoveredByAPermissionInTheRealm()
+    public void AllEndpointScopes_AreDeclaredAndCoveredByAPermissionInTheRealm()
     {
-        await using var factory = new HostTestFactory();
-        await factory.InitializeAsync();
-        _ = factory.CreateClient();
-
         var realm = LoadRealmAuthorization();
         var required = CollectEndpointPermissions(factory);
 
@@ -41,12 +37,8 @@ public class PermissionCoverageTests
     }
 
     [Fact]
-    public async Task AllRealmScopes_AreRequiredBySomeEndpoint()
+    public void AllRealmScopes_AreRequiredBySomeEndpoint()
     {
-        await using var factory = new HostTestFactory();
-        await factory.InitializeAsync();
-        _ = factory.CreateClient();
-
         var realm = LoadRealmAuthorization();
         var requiredScopes = CollectEndpointPermissions(factory)
             .Select(p => p.Scope)

@@ -113,6 +113,8 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 - Default fixture: `[Collection("IntegrationTestCollection")]` + `BaseIntegrationTest`, factory `IntegrationTestWebAppFactory : IntegrationTestFactory` overriding `GetActiveModules()`. Call `Factory.CreateClient()` lazily inside each test.
 - `IClassFixture<T>` only when a single class uses that factory type; then call `CreateClient()` eagerly in the constructor. Two `IClassFixture<T>` classes in one assembly boot in parallel and corrupt Serilog/OTel statics.
 - Writes: assert entity in DB and row in `OutboxMessages`. Never mock MassTransit.
+- Scope per endpoint: one happy-path test plus at most one per error key. When the aggregate's own unit test already asserts a state change, the endpoint test asserts only status, authorization, validation and the `OutboxMessages` row.
+- No real waiting: a test never waits out a production interval or timeout; set the option to 0 on a private copy of the options.
 - DB-round-tripped timestamps: `Assert.Equal(expected, actual, TimeSpan.FromSeconds(1))` (Postgres microsecond precision truncates ticks).
 - Test config from `AddInMemoryCollection` reaches runtime `IOptions<T>` only, not registration-time `configuration.Get<T>()`. Registration-time values go through `builder.UseSetting(...)` (like `TestModuleOverride`) or env vars.
 - Bugs: Red test first, then fix, then Green. Never edit a test to make it pass. CI-only failure: instrument the failing path to dump real state (for DB locks: `pg_stat_activity`, `pg_blocking_pids`, effective options) into the exception message, push, read the CI log, then fix. Local repro misleads.

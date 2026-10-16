@@ -15,25 +15,22 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Testcontainers.Keycloak;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
 /// <summary>
-///     Boots a real Keycloak (realm imported from <c>keycloak/realm-modular-monolith.json</c>) next to Postgres.
+///     Runs against a real Keycloak (realm imported from <c>keycloak/realm-modular-monolith.json</c>, one container
+///     per test process, see <see cref="SharedKeycloak" />) next to Postgres.
 ///     Every IAM test goes through the real JwtBearer pipeline and real permission decisions; only OTP delivery
 ///     and captcha are replaced with in-process fakes.
 /// </summary>
 public class IntegrationTestWebAppFactory : IntegrationTestFactory
 {
-    public const string KeycloakImage = "quay.io/keycloak/keycloak:26.7";
+    private string? _keycloakBaseAddress;
 
-    private readonly KeycloakContainer _keycloakContainer = new KeycloakBuilder(KeycloakImage)
-        .WithRealm(TestPaths.RealmFile)
-        .Build();
-
-    public string KeycloakBaseAddress => _keycloakContainer.GetBaseAddress().TrimEnd('/');
+    public string KeycloakBaseAddress => _keycloakBaseAddress
+        ?? throw new InvalidOperationException("Keycloak is not started: initialize the factory first.");
 
     protected override string[] GetActiveModules()
     {
@@ -45,22 +42,9 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 
     public override async ValueTask InitializeAsync()
     {
-        await _keycloakContainer.StartAsync();
+        var keycloak = await SharedKeycloak.GetAsync();
+        _keycloakBaseAddress = keycloak.GetBaseAddress().TrimEnd('/');
         await base.InitializeAsync();
-    }
-
-    public override async ValueTask DisposeAsync()
-    {
-        try
-        {
-            await base.DisposeAsync();
-        }
-        finally
-        {
-            await _keycloakContainer.DisposeAsync();
-        }
-
-        GC.SuppressFinalize(this);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

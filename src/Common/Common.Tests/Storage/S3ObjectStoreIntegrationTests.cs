@@ -15,21 +15,19 @@ using Xunit;
 namespace Common.Tests.Storage;
 
 /// <summary>
-///     Exercises the real S3 wire protocol against LocalStack (AWS's own emulator), not a specific production
-///     engine (deployment-chosen, endpoint-swappable): this proves ObjectStorage's client wiring (custom
-///     ServiceURL, ForcePathStyle, multipart threshold, presigned URLs, batch delete, pagination) actually works
-///     over HTTP, not just that it compiles. LocalStack images from 4.15 onward require a paid auth token (see
-///     LocalStackBuilder.Validate), so this is pinned below that line.
+///     One LocalStack container for the whole test class: every test works on keys of its own (a fresh Guid), so
+///     none needs a container to itself.
 /// </summary>
-public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
+public sealed class LocalStackS3Fixture : IAsyncLifetime
 {
     private const string PublicBucket = "test-public-bucket";
     private const string PrivateBucket = "test-private-bucket";
 
     private readonly LocalStackContainer _container = new LocalStackBuilder("localstack/localstack:4.10").Build();
     private AmazonS3Client _s3Client = null!;
-    private S3PublicObjectStore _publicStore = null!;
-    private S3PrivateObjectStore _privateStore = null!;
+
+    internal S3PublicObjectStore PublicStore { get; private set; } = null!;
+    internal S3PrivateObjectStore PrivateStore { get; private set; } = null!;
 
     public async ValueTask InitializeAsync()
     {
@@ -65,8 +63,8 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
         await _s3Client.PutBucketAsync(PublicBucket);
         await _s3Client.PutBucketAsync(PrivateBucket);
 
-        _publicStore = new S3PublicObjectStore(_s3Client, Options.Create(options));
-        _privateStore = new S3PrivateObjectStore(_s3Client, Options.Create(options), TimeProvider.System);
+        PublicStore = new S3PublicObjectStore(_s3Client, Options.Create(options));
+        PrivateStore = new S3PrivateObjectStore(_s3Client, Options.Create(options), TimeProvider.System);
     }
 
     public async ValueTask DisposeAsync()
@@ -74,6 +72,19 @@ public sealed class S3ObjectStoreIntegrationTests : IAsyncLifetime
         _s3Client.Dispose();
         await _container.DisposeAsync();
     }
+}
+
+/// <summary>
+///     Exercises the real S3 wire protocol against LocalStack (AWS's own emulator), not a specific production
+///     engine (deployment-chosen, endpoint-swappable): this proves ObjectStorage's client wiring (custom
+///     ServiceURL, ForcePathStyle, multipart threshold, presigned URLs, batch delete, pagination) actually works
+///     over HTTP, not just that it compiles. LocalStack images from 4.15 onward require a paid auth token (see
+///     LocalStackBuilder.Validate), so this is pinned below that line.
+/// </summary>
+public sealed class S3ObjectStoreIntegrationTests(LocalStackS3Fixture fixture) : IClassFixture<LocalStackS3Fixture>
+{
+    private readonly S3PublicObjectStore _publicStore = fixture.PublicStore;
+    private readonly S3PrivateObjectStore _privateStore = fixture.PrivateStore;
 
     [Fact]
     public async Task PublicStore_UploadThenGetMetadataThenDelete_RoundTrips()

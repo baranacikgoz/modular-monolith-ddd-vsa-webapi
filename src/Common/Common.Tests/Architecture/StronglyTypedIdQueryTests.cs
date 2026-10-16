@@ -80,6 +80,8 @@ public sealed class StronglyTypedIdQueryTests
         Assert.Equal(expectedLines, violations.Select(v => v.Line).Order().ToArray());
     }
 
+    private const int MinimumExpressionLambdas = 25;
+
     /// <summary>
     /// The real scan: no query in the repository may reach past a strongly-typed id's converted
     /// column and read the raw .Value underneath it.
@@ -101,12 +103,12 @@ public sealed class StronglyTypedIdQueryTests
         Assert.True(stronglyTypedId is not null, "IStronglyTypedId did not resolve in the scan compilation: reference discovery is broken.");
         Assert.True(expressionOfT is not null, "Expression<T> did not resolve in the scan compilation: reference discovery is broken.");
 
-        var expressionLambdaCount = CountExpressionLambdas(compilation, expressionOfT);
+        var expressionLambdaCount = CountExpressionLambdas(compilation, expressionOfT, stopAt: MinimumExpressionLambdas);
         Assert.True(
-            expressionLambdaCount >= 25,
+            expressionLambdaCount >= MinimumExpressionLambdas,
             $"Only found {expressionLambdaCount} Expression<> query lambdas across src/**/*.cs; expected at least "
-            + "25. The scan's source/reference discovery likely regressed and is silently under-reporting instead "
-            + "of actually finding a clean repository.");
+            + $"{MinimumExpressionLambdas}. The scan's source/reference discovery likely regressed and is silently "
+            + "under-reporting instead of actually finding a clean repository.");
 
         var violations = StronglyTypedIdQueryDetector.FindViolations(compilation);
 
@@ -127,7 +129,9 @@ public sealed class StronglyTypedIdQueryTests
                && !normalized.Contains("/Migrations/", StringComparison.Ordinal);
     }
 
-    private static int CountExpressionLambdas(CSharpCompilation compilation, INamedTypeSymbol expressionOfT)
+    /// <summary>Counts Expression&lt;&gt;-converted lambdas, stopping once <paramref name="stopAt" /> is reached: the caller only
+    /// needs a lower bound, and binding every lambda of the repository is the scan's most expensive step.</summary>
+    private static int CountExpressionLambdas(CSharpCompilation compilation, INamedTypeSymbol expressionOfT, int stopAt)
     {
         var count = 0;
 
@@ -136,9 +140,9 @@ public sealed class StronglyTypedIdQueryTests
             var model = compilation.GetSemanticModel(tree);
             foreach (var lambda in tree.GetRoot().DescendantNodes().OfType<LambdaExpressionSyntax>())
             {
-                if (ConvertsTo(lambda, model, expressionOfT))
+                if (ConvertsTo(lambda, model, expressionOfT) && ++count >= stopAt)
                 {
-                    count++;
+                    return count;
                 }
             }
         }
