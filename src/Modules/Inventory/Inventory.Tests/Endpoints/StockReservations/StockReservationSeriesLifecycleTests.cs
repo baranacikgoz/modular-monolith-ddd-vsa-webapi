@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
+using ReserveRequest = Inventory.Endpoints.StockReservations.v1.Reserve.Request;
+using ReserveResponse = Inventory.Endpoints.StockReservations.v1.Reserve.Response;
 using ReserveSeriesRequest = Inventory.Endpoints.StockReservations.v1.ReserveSeries.Request;
 using ReserveSeriesResponse = Inventory.Endpoints.StockReservations.v1.ReserveSeries.Response;
 
@@ -140,6 +142,24 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
         return await db.StockReservations.AsNoTracking().SingleOrDefaultAsync(r => r.Id == id);
+    }
+
+    [Fact]
+    public async Task Reserve_HappyPath_PersistsTheReservationFromTheFlatBody()
+    {
+        var client = AuthedClient(Factory);
+        var productId = await SeedProductAsync(client);
+        var deadline = DateTimeOffset.UtcNow.AddDays(1);
+        var body = new ReserveRequest.RequestBody { ProductId = productId, Quantity = 5, ReservationDeadline = deadline };
+
+        var response = await client.PostAsJsonAsync(new Uri("/v1/stock-reservations", UriKind.Relative), body);
+
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        var result = await response.Content.ReadFromJsonAsync<ReserveResponse>(JsonSerializerOptions);
+        var reservation = await FindReservationAsync(result!.Id);
+        Assert.NotNull(reservation);
+        Assert.Equal(5, reservation.Quantity);
+        Assert.Equal(deadline, reservation.ReservationDeadline, TimeSpan.FromSeconds(1));
     }
 
     // ── Happy path / recurrence generation (technique 8) + sequence-dependent field (technique 9) ──
@@ -607,10 +627,8 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         Assert.Contains(messages, m => m.Event is ProductCreatedIntegrationEvent e && e.Quantity == 42);
     }
 
-    // Request wraps the actual payload in a "Body" property (no [AsParameters] on this endpoint, so the
-    // whole Request is bound from JSON as-is - the wire shape needs the "body" wrapper key, not the flat
-    // fields directly).
-    private static ReserveSeriesRequest BuildBody(
+    // The wire body is the RequestBody itself (flat fields), not the Request wrapper that carries it.
+    private static ReserveSeriesRequest.RequestBody BuildBody(
         DefaultIdType productId,
         int quantityPerOccurrence = 10,
         DateTimeOffset? firstDeadline = null,
@@ -620,20 +638,17 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
     {
         var deadline = firstDeadline ?? DateTimeOffset.UtcNow.AddDays(10);
 
-        return new ReserveSeriesRequest
+        return new ReserveSeriesRequest.RequestBody
         {
-            Body = new ReserveSeriesRequest.RequestBody
-            {
-                ProductId = productId,
-                QuantityPerOccurrence = quantityPerOccurrence,
-                FirstDeadline = deadline,
-                IntervalDays = intervalDays,
-                OccurrenceCount = occurrenceCount,
-                Warehouses = warehouses ??
-                [
-                    new ReserveSeriesRequest.RequestBody.WarehouseAllocation { WarehouseId = Guid.NewGuid(), Quantity = quantityPerOccurrence }
-                ]
-            }
+            ProductId = productId,
+            QuantityPerOccurrence = quantityPerOccurrence,
+            FirstDeadline = deadline,
+            IntervalDays = intervalDays,
+            OccurrenceCount = occurrenceCount,
+            Warehouses = warehouses ??
+            [
+                new ReserveSeriesRequest.RequestBody.WarehouseAllocation { WarehouseId = Guid.NewGuid(), Quantity = quantityPerOccurrence }
+            ]
         };
     }
 }

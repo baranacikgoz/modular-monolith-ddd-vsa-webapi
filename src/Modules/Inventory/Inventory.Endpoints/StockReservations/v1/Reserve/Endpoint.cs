@@ -24,7 +24,7 @@ internal static class Endpoint
     }
 
     private static async Task<Result<Response>> ReserveStockAsync(
-        Request request,
+        [AsParameters] Request request,
         IInventoryDbContext dbContext,
         CancellationToken cancellationToken)
     {

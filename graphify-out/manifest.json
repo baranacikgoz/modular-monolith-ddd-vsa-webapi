@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "src/Host/Host/Infrastructure/Setup.Logger.cs": {
-    "mtime": 1791657249.788184,
-    "seen": 1791657334.1909041,
+    "mtime": 1791657374.1831398,
+    "seen": 1792174697.588147,
     "ast_hash": "5f38c14c6e8c599a211312618529fe0b",
     "semantic_hash": ""
   },
@@ -2154,9 +2154,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/scaffold-test.md": {
-    "mtime": 1788979432.5711098,
-    "seen": 1788979654.810461,
-    "ast_hash": "588f181e0320e82d3b1ac164661dbd40",
+    "mtime": 1792174577.9272332,
+    "seen": 1792174697.588371,
+    "ast_hash": "f1051bbe4cb88b0b4f9f5b53c4e56845",
     "semantic_hash": ""
   },
   ".claude/commands/update-dependencies.md": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790342955.9765587,
-    "seen": 1790342975.0905678,
-    "ast_hash": "986c02d6bb0d3ff8aeb84ce5a0f1b743",
+    "mtime": 1792174585.0824218,
+    "seen": 1792174697.588373,
+    "ast_hash": "ed196e258670339c4b22a7e9d35a3444",
     "semantic_hash": ""
   },
   "README.md": {
