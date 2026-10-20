@@ -2922,9 +2922,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Inventory/Inventory.Endpoints/StockReservations/v1/Reserve/Endpoint.cs": {
-    "mtime": 1788824845.7170498,
-    "seen": 1788881838.047432,
-    "ast_hash": "159d3d1a389c928a81e4776ee3873f65",
+    "mtime": 1792498351.2299352,
+    "seen": 1792498433.7418098,
+    "ast_hash": "312f5ba91651b4121b47fcb239d0845a",
     "semantic_hash": ""
   },
   "src/Modules/Inventory/Inventory.Endpoints/StockReservations/v1/Reserve/Request.cs": {
@@ -2940,9 +2940,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Inventory/Inventory.Endpoints/StockReservations/v1/ReserveSeries/Endpoint.cs": {
-    "mtime": 1788825794.6080344,
-    "seen": 1788881838.047433,
-    "ast_hash": "8385b3e247c844c30fe8911146b741c6",
+    "mtime": 1792498204.2311208,
+    "seen": 1792498433.741812,
+    "ast_hash": "2441f5cfac27b3f80cdbfa8f16a8ba89",
     "semantic_hash": ""
   },
   "src/Modules/Inventory/Inventory.Endpoints/StockReservations/v1/ReserveSeries/Request.cs": {
