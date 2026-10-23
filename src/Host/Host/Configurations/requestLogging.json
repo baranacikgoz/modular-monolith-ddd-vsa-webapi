@@ -31,6 +31,12 @@
         ]
       },
       {
+        "Path": "/otp/email",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
         "Path": "/users/register/self",
         "Methods": [
           "POST"
@@ -40,6 +46,12 @@
     "SensitiveResponseBodyPaths": [
       {
         "Path": "/tokens",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/otp/email/verify",
         "Methods": [
           "POST"
         ]
