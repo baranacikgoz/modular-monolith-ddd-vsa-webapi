@@ -8,8 +8,8 @@ Add integration event: $ARGUMENTS
 
 Rules in CLAUDE.md §6. Exemplars in §2 (publishing handler, consumer).
 
-1. `src/Common/Common.IntegrationEvents/{SourceModule}.cs`: `public sealed record {EventName}IntegrationEvent(...) : IntegrationEvent;` with strongly-typed ids where applicable. Create the file if missing.
+1. `src/Common/Common.IntegrationEvents/{SourceModule}.cs`: `public sealed record {EventName}IntegrationEvent(...) : IntegrationEvent;` with strongly-typed ids where applicable. Create the file if missing. Decide whether one `SaveChanges` can collect it many times for the same target (a bulk operation raising N domain events for one parent): if the consumer recomputes from current state, also implement `ICoalescableIntegrationEvent` (see Coalescing in CLAUDE.md) with an explicit member, `string? ICoalescableIntegrationEvent.CoalesceKey => {TargetId}.ToString();`, so the key is not serialized. Skip it when every instance carries distinct information.
 2. `src/Modules/{Source}/{Source}.Application/{Aggregate}/DomainEventHandlers/v1/V1{DomainEvent}DomainEventHandlers.cs`: a `DomainEventHandlerBase<V1{DomainEvent}DomainEvent>` that calls `outbox.Collect(new {EventName}IntegrationEvent(...))`. If the payload needs fields not on the event, read the aggregate from `db.ChangeTracker.Entries<{Aggregate}>()`; it is already tracked in the same `SaveChanges`. Do not query the DB.
 3. Target module (if given): `{Target}.Application/IntegrationEventHandlers/{Verb}On{EventName}Handler.cs` inheriting `IntegrationEventHandlerBase<{EventName}IntegrationEvent>`, override `ProcessAsync`. Mutating consumers add a domain-level existence check on top of the cache dedupe.
 4. No registration step; assembly scan picks up consumers.
-5. `make build`, then a test that asserts the `OutboxMessages` row (`/scaffold-test`).
+5. `make build`, then a test that asserts the `OutboxMessages` row (`/scaffold-test`). For a coalescing event the test drives the bulk path and asserts one row per target.

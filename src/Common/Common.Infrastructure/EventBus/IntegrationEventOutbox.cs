@@ -31,9 +31,27 @@ public sealed class IntegrationEventOutbox : IIntegrationEventOutbox
     {
         lock (_lock)
         {
-            var snapshot = _events.ToList();
+            var snapshot = Coalesce(_events);
             _events.Clear();
             return snapshot;
         }
+    }
+
+    private static List<IntegrationEvent> Coalesce(List<IntegrationEvent> events)
+    {
+        var seen = new HashSet<(Type EventType, string Key)>();
+        var result = new List<IntegrationEvent>(events.Count);
+
+        foreach (var @event in events)
+        {
+            if (@event is ICoalescableIntegrationEvent { CoalesceKey: { } key } && !seen.Add((@event.GetType(), key)))
+            {
+                continue;
+            }
+
+            result.Add(@event);
+        }
+
+        return result;
     }
 }
