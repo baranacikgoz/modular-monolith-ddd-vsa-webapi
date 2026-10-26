@@ -57,7 +57,7 @@ public static class PaginationQueryableExtensions
         var descending = orderByDescending is not null || orderBy is null;
         Expression<Func<TEntity, object>> sortKey = orderByDescending ?? orderBy ?? (e => e.CreatedOn);
 
-        var filtered = queryable;
+        Expression<Func<TEntity, bool>>? keyset = null;
 
         if (useCursor)
         {
@@ -69,13 +69,14 @@ public static class PaginationQueryableExtensions
 
             // A well-formed cursor minted for another sort key type (the client changed the sort between pages)
             // is user input too: the same Validation failure as a malformed one, never an exception.
-            if (KeysetPredicate(sortKey, tiebreaker!, decoded.Value!, descending) is not { } keyset)
+            keyset = KeysetPredicate(sortKey, tiebreaker!, decoded.Value!, descending);
+            if (keyset is null)
             {
                 return Error.Validation([PaginationCursor.ParameterName]);
             }
-
-            filtered = filtered.Where(keyset);
         }
+
+        var filtered = queryable.WhereIf(keyset!, keyset is not null);
 
         var ordered = descending ? filtered.OrderByDescending(sortKey) : filtered.OrderBy(sortKey);
 

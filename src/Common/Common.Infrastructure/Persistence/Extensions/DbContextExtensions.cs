@@ -80,17 +80,20 @@ public static class DbContextExtensions
         var totalCount = request.ShouldIncludeTotal ? await query.CountAsync(cancellationToken) : -1;
 
         var useCursor = request.After is not null;
+        (DateTimeOffset CreatedOn, long Version) bound = default;
         if (useCursor)
         {
-            var bound = DecodeAuditLogCursor(request.After!);
-            if (bound.IsFailure)
+            var decoded = DecodeAuditLogCursor(request.After!);
+            if (decoded.IsFailure)
             {
-                return bound.Error!;
+                return decoded.Error!;
             }
 
-            var (createdOn, version) = bound.Value;
-            query = query.Where(e => e.CreatedOn < createdOn || (e.CreatedOn == createdOn && e.Version < version));
+            bound = decoded.Value;
         }
+
+        var (createdOn, version) = bound;
+        query = query.WhereIf(e => e.CreatedOn < createdOn || (e.CreatedOn == createdOn && e.Version < version), useCursor);
 
         var ordered = query
             .OrderByDescending(e => e.CreatedOn)

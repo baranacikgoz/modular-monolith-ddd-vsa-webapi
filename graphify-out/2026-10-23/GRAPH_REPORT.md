@@ -1,16 +1,16 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-16)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-23)
 
 ## Corpus Check
-- 586 files · ~95,088 words
+- 586 files · ~95,090 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3842 nodes · 10187 edges · 277 communities (165 shown, 112 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 333 edges (avg confidence: 0.84)
+- 3842 nodes · 10186 edges · 277 communities (165 shown, 112 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3b6aaeb0`
+- Built from commit: `63ef7a67`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -969,23 +969,23 @@ Nodes (11): Products.Endpoints.Products.v1.My.Update, Request, Body, Id, Request
 
 ## Knowledge Gaps
 - **901 isolated node(s):** `UserId`, `Id`, `IdAsString`, `Roles`, `SessionId` (+896 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1204 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1205 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **112 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `ObjectStorageOptions`, `Common.Infrastructure.Extensions`, `Common.Domain.ResultMonad`, `ISearchLanguageResolver`, `SelfRegisterByEmail/Endpoint.cs`, `Setup`, `EmailOptions`, `FullTextSearchOptions`, `Response`, `OutboxOptions.cs`, `Setup.Logger.cs`, `fluentvalidation`, `OtpOptions`, `ObservabilityOptions`, `AuditLogOptions`, `ConfigureSwaggerOptions`, `S3ObjectStoreCore.cs`, `ProjectionReconciliationOptions.cs`, `KeycloakOptions`, `system_diagnostics`, `FixedWindow`, `CorsOptions`, `CachingOptions`, `CaptchaOptions`, `RabbitMqOptions`, `SignalROptions`, `SmsOptions`, `JobHousekeepingOptions`, `RequestLoggingOptions`, `v1/Request.cs`, `DevicesOptions`, `PushOptions`, `InterModuleRequestOptions`, `KeyedResilienceProfile`, `KeycloakPermissionAuthorizationHandler.cs`, `InventoryOptions`, `Common.InterModuleRequests.Contracts`, `ResxLocalizationOptions`, `OpenApiOptions`, `microsoft_entityframeworkcore`, `HealthCheckOptions`?**
-  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+  _High betweenness centrality (0.084) - this node is a cross-community bridge._
 - **What connects `UserId`, `Id`, `IdAsString` to the rest of the system?**
   _901 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Result` be split into smaller, more focused modules?**
   _Cohesion score 0.04468845760980592 - nodes in this community are weakly interconnected._
-- **Why does `Result` connect `Result` to `ProductTemplateId`, `ApplicationUserId`, `InterModuleRequestHandler`, `Error`, `EmailOtpDispatchOutcome`, `StoreId`, `.RegisterAsync`, `Func`, `ResultTelemetryExtensions`, `Task`, `PaginationQueryableExtensions`, `PaginationResponse`, `BrevoEmailGateway`, `KeycloakTokenClient`, `IReadOnlyList`, `.PaginateAsync`, `VerifyPhoneOtpResponse`, `DomainEvent`, `.GetProductAsync`, `ILogger`, `NetGsmSmsGateway`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Why does `ApplicationUserId` connect `ApplicationUserId` to `Result`, `AuditableEntityResponse`, `DomainEvent`, `Seeder`, `InterModuleRequestHandler`, `DefaultIdType`, `Type`, `KeycloakPermissionAuthorizationHandler`, `Response`, `StoreId`, `DeviceRegistration`, `.RegisterAsync`, `For`, `CurrentUser`, `ICollection`, `PaginationRequest`, `Task`, `PaginationResponse`, `Response`, `Request`, `microsoft_aspnetcore_mvc`, `KeycloakTokenClient`, `IReadOnlyList`, `Response`, `Response`, `EntityTypeBuilder`, `DomainEvent`, `AuditableEntity`, `StockLevel`, `Response`, `Response`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Should `OutboxOptions` be split into smaller, more focused modules?**
   _Cohesion score 0.08522727272727272 - nodes in this community are weakly interconnected._
-- **Why does `ApplicationUserId` connect `ApplicationUserId` to `Result`, `AuditableEntityResponse`, `DomainEvent`, `Seeder`, `InterModuleRequestHandler`, `DefaultIdType`, `Type`, `KeycloakPermissionAuthorizationHandler`, `Response`, `StoreId`, `DeviceRegistration`, `.RegisterAsync`, `For`, `CurrentUser`, `ICollection`, `PaginationRequest`, `Task`, `PaginationResponse`, `Response`, `Request`, `microsoft_aspnetcore_mvc`, `KeycloakTokenClient`, `IReadOnlyList`, `Response`, `Response`, `EntityTypeBuilder`, `DomainEvent`, `AuditableEntity`, `StockLevel`, `Response`, `Response`?**
+- **Why does `Result` connect `Result` to `ProductTemplateId`, `ApplicationUserId`, `InterModuleRequestHandler`, `Error`, `EmailOtpDispatchOutcome`, `StoreId`, `.RegisterAsync`, `Func`, `ResultTelemetryExtensions`, `Task`, `PaginationQueryableExtensions`, `PaginationResponse`, `BrevoEmailGateway`, `KeycloakTokenClient`, `IReadOnlyList`, `.PaginateAsync`, `VerifyPhoneOtpResponse`, `DomainEvent`, `.GetProductAsync`, `ILogger`, `NetGsmSmsGateway`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Should `AuditableEntityResponse` be split into smaller, more focused modules?**
   _Cohesion score 0.06218487394957983 - nodes in this community are weakly interconnected._

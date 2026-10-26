@@ -486,9 +486,9 @@
     "semantic_hash": "0efe4b1c768fb44b7d1bdf7fcecfc0a7"
   },
   "src/Common/Common.Infrastructure/EventBus/IntegrationEventOutbox.cs": {
-    "mtime": 1789668690.6225092,
-    "seen": 1789668983.518882,
-    "ast_hash": "752cc974ec485217b74241701b4d7160",
+    "mtime": 1792769849.0226274,
+    "seen": 1792770013.041089,
+    "ast_hash": "1d90d2e71cd3f50c26a80a91ba9bfe12",
     "semantic_hash": ""
   },
   "src/Common/Common.Infrastructure/EventBus/Setup.cs": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": ""
   },
   ".claude/commands/add-integration-event.md": {
-    "mtime": 1788979452.2749043,
-    "seen": 1788979654.810441,
-    "ast_hash": "8e1ccdb4eeab535a56600b39d2fd6baa",
+    "mtime": 1792769959.0483718,
+    "seen": 1792770013.0413702,
+    "ast_hash": "775d908521d08a75d2fb224494e61d3b",
     "semantic_hash": ""
   },
   ".claude/commands/add-inter-module-request.md": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792174585.0824218,
-    "seen": 1792174697.588373,
-    "ast_hash": "ed196e258670339c4b22a7e9d35a3444",
+    "mtime": 1792769942.7037942,
+    "seen": 1792770013.0413802,
+    "ast_hash": "742ed7aa6641aada5a09380b464308e3",
     "semantic_hash": ""
   },
   "README.md": {
@@ -3519,6 +3519,12 @@
     "mtime": 1790845806.996011,
     "seen": 1790845853.8434172,
     "ast_hash": "91af8b21094ef36831689ee2f191ac65",
+    "semantic_hash": ""
+  },
+  "src/Common/Common.IntegrationEvents/ICoalescableIntegrationEvent.cs": {
+    "mtime": 1792769827.5476902,
+    "seen": 1792770013.0411189,
+    "ast_hash": "3f5e2094ddfe0ac5d93d28e20cb6302f",
     "semantic_hash": ""
   }
 }
