@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modular Monolith · DDD · Vertical Slices</title>
+<meta name="description" content="Build it as a monolith. Ship it as microservices. Change one environment variable. A .NET 10 modular monolith template with DDD on writes, vertical slices on reads, a transactional outbox and Keycloak.">
+<meta name="theme-color" content="#09090a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2309090a'/%3E%3Crect x='11' y='4' width='10' height='24' fill='%23ece7db'/%3E%3Cpath d='M16 4v24' stroke='%23ff6a1f' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Modular Monolith">
+    <span class="brand-slab" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="brand-name">Modular Monolith</span>
+  </a>
+  <nav class="nav-links" aria-label="Sections">
+    <a href="#deploy" data-i18n="nav.deploy">Deploy</a>
+    <a href="#flight" data-i18n="nav.flight">Flight</a>
+    <a href="#walls" data-i18n="nav.walls">Walls</a>
+    <a href="#atlas" data-i18n="nav.atlas">Atlas</a>
+    <a href="#rails" data-i18n="nav.rails">Rails</a>
+    <a href="#agents" data-i18n="nav.agents">Agents</a>
+    <a href="#start" data-i18n="nav.start">Start</a>
+  </nav>
+  <div class="nav-right">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+    </div>
+    <a class="gh" href="https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+
+<nav class="dots" id="dots" aria-label="Page progress"></nav>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="scene" aria-hidden="false">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="slab-wrap" id="slabWrap">
+      <button class="slab" id="slab" type="button" aria-label="Split the slab" data-i18n-aria="slab.aria">
+        <span class="shard" style="--i:0;--c:var(--iam)"><b>IAM</b></span>
+        <span class="shard" style="--i:1;--c:var(--products)"><b>Products</b></span>
+        <span class="shard" style="--i:2;--c:var(--inventory)"><b>Inventory</b></span>
+        <span class="shard" style="--i:3;--c:var(--notifications)"><b>Notifications</b></span>
+      </button>
+      <div class="plinth" aria-hidden="true"><i style="--c:var(--outbox)"></i><i style="--c:var(--jobs)"></i></div>
+      <p class="slab-hint" data-i18n="slab.hint">click the slab</p>
+    </div>
+    <div class="horizon" aria-hidden="true"></div>
+  </div>
+
+  <div class="hero-copy">
+    <p class="eyebrow">.NET 10 · DDD · Vertical Slices · MassTransit · Keycloak</p>
+    <h1>
+      <span class="h1-a" data-i18n="h1.a">Build it as a monolith.</span>
+      <span class="h1-b" data-i18n="h1.b">Ship it as <em>microservices.</em></span>
+    </h1>
+    <p class="lede" data-i18n="hero.lede">One image. One environment variable. The modules never knew the difference.</p>
+    <div class="cta">
+      <a class="btn primary" href="#deploy" data-i18n="hero.cta1">Split the slab</a>
+      <a class="btn" href="#start" data-i18n="hero.cta2">Run it in four steps</a>
+    </div>
+    <p class="envline"><code>ModulesOptions__EnabledModules__0=<b id="envval">*</b></code></p>
+  </div>
+
+  <div class="scrollhint" aria-hidden="true"><span></span></div>
+</section>
+
+<section class="sec" id="deploy" data-title="Deploy">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">01</span><span data-i18n="deploy.eyebrow">Deploy</span></p>
+      <h2 data-i18n="deploy.h">Same image. <em>Different topology.</em></h2>
+    </header>
+
+    <div class="stage-wrap reveal">
+      <div class="stage-bar">
+        <div class="seg" role="radiogroup" aria-label="Topology" id="topoSeg">
+          <button type="button" role="radio" aria-checked="true" data-topo="mono"><span data-i18n="topo.mono">Monolith</span><small>1</small></button>
+          <button type="button" role="radio" aria-checked="false" data-topo="duo"><span data-i18n="topo.duo">Two processes</span><small>2</small></button>
+          <button type="button" role="radio" aria-checked="false" data-topo="quad"><span data-i18n="topo.quad">Four processes</span><small>4</small></button>
+        </div>
+        <p class="stage-hint"><span class="kbd">S</span> <span data-i18n="stage.cycle">cycles the shape</span> · <span data-i18n="stage.click">click a module to make it talk</span></p>
+        <p class="zero"><b>0</b> <span data-i18n="stage.zero">call sites changed</span></p>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="procs" id="procs"></div>
+        <canvas class="flow" id="flow" aria-hidden="true"></canvas>
+        <div class="bus-label" id="busLabel"><i></i>RabbitMQ</div>
+      </div>
+
+      <div class="stage-foot">
+        <ul class="legend">
+          <li><span class="lg lg-event"></span><span data-i18n="leg.event">integration event (async)</span></li>
+          <li><span class="lg lg-req"></span><span data-i18n="leg.req">inter-module request (sync)</span></li>
+          <li><span class="lg lg-core"></span><span data-i18n="leg.core">core module, loads on every instance</span></li>
+        </ul>
+        <p class="counters"><span data-i18n="cnt.all">messages</span> <b id="cntAll">0</b> · <span data-i18n="cnt.cross">crossed a process boundary</span> <b id="cntCross">0</b></p>
+        <ol class="ticker" id="ticker" aria-label="Message log"></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="flight" data-title="Flight">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">02</span><span data-i18n="fl.eyebrow">Flight recorder</span></p>
+      <h2 data-i18n="fl.h">Follow one request. <em>Then break it.</em></h2>
+      <p class="sec-lede" data-i18n="fl.p">A seller adds a product to their store. Ten hops later Inventory holds a stock level. Inject a failure, press play and watch which guarantee catches it.</p>
+    </header>
+
+    <div class="flight reveal">
+      <div class="flight-controls">
+        <div class="chaos" role="group" aria-label="Failure injection">
+          <span class="chaos-title" data-i18n="fl.chaos">Inject a failure</span>
+          <label class="tog"><input type="checkbox" id="chA"><span data-i18n="fl.a">Crash before commit</span></label>
+          <label class="tog"><input type="checkbox" id="chB"><span data-i18n="fl.b">Crash right after commit</span></label>
+          <label class="tog"><input type="checkbox" id="chC"><span data-i18n="fl.c">Deliver the event twice</span></label>
+        </div>
+        <div class="transport">
+          <button type="button" class="btn primary" id="flPlay" data-i18n="fl.play">Play</button>
+          <button type="button" class="btn" id="flStep" data-i18n="fl.step">Step</button>
+          <button type="button" class="btn" id="flReset" data-i18n="fl.reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="ledger" id="ledger" aria-label="Database state"></div>
+      <div class="narr" id="narr" aria-live="polite"></div>
+      <div class="seq-scroll"><svg id="seq" role="img" aria-label="Sequence diagram of one request"></svg></div>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+    </div>
+
+    <div class="lab reveal" id="orderLab">
+      <div class="lab-copy">
+        <h3 data-i18n="ord.h">Order is not guaranteed</h3>
+        <p data-i18n="ord.p">The processor publishes a batch in parallel and consumers run concurrently, so events can arrive in any order. A read model fed by events carries the source version and applies it with UpsertIfNewerAsync, which drops a stale or duplicate event.</p>
+        <div class="lab-ctl">
+          <div class="seg" role="radiogroup" aria-label="Consumer" id="ordSeg">
+            <button type="button" role="radio" aria-checked="false" data-mode="naive"><span data-i18n="ord.naive">Assumes order</span></button>
+            <button type="button" role="radio" aria-checked="true" data-mode="smart"><span>UpsertIfNewerAsync</span></button>
+          </div>
+          <button type="button" class="btn primary" id="ordGo" data-i18n="ord.go">Shuffle and deliver</button>
+        </div>
+      </div>
+      <div class="lab-stage" id="ordStage"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="walls" data-title="Walls">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">03</span><span data-i18n="walls.eyebrow">Guardrails</span></p>
+      <h2 data-i18n="walls.h">Conventions rot. <em>Walls don't.</em></h2>
+      <p class="sec-lede" data-i18n="walls.p">Eleven rules, each checked by a test, a startup validator, a hook or CI. Pick a rule and try to break it.</p>
+    </header>
+    <div class="walls-bar reveal">
+      <p class="walls-count"><b id="wallCount">0</b> / 11 <span data-i18n="walls.count">attempts blocked</span></p>
+      <button type="button" class="btn" id="wallAll" data-i18n="walls.all">Try to break all of them</button>
+    </div>
+    <div class="tablets reveal" id="tablets"></div>
+    <p class="walls-done" id="wallDone" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="sec" id="atlas" data-title="Atlas">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">04</span><span data-i18n="atlas.eyebrow">Modules</span></p>
+      <h2 data-i18n="atlas.h">Six modules. <em>Zero references.</em></h2>
+      <p class="sec-lede" data-i18n="atlas.p">They know each other only through contracts. Dashed lines are integration events, solid lines are inter-module requests, and every one of them travels through RabbitMQ. Select a module.</p>
+    </header>
+    <div class="atlas reveal">
+      <div class="atlas-map"><svg id="atlasSvg" viewBox="60 0 440 470" role="group" aria-label="Module relationships"></svg></div>
+      <aside class="dossier" id="dossier" aria-live="polite"></aside>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="rails" data-title="Rails">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">05</span><span data-i18n="rails.eyebrow">Railway</span></p>
+      <h2 data-i18n="rails.h">The happy path <em>is the code.</em></h2>
+      <p class="sec-lede" data-i18n="rails.p">An endpoint is one chain. A failure at any station switches the train onto the error track and ends as a localized ProblemDetails. Flip a switch and send the train.</p>
+    </header>
+    <div class="rails reveal">
+      <div class="codeblock" id="codeblock"></div>
+      <div class="rail-side">
+        <div class="rail-actions">
+          <button type="button" class="btn primary" id="railRun" data-i18n="rails.run">Send the train</button>
+          <button type="button" class="btn" id="railClear" data-i18n="rails.clear">Clear switches</button>
+        </div>
+        <div class="rail-result" id="railResult" aria-live="polite"></div>
+        <p class="rail-stat"><b>0</b> <span data-i18n="rails.stat">hand-written</span> <code>if (result.IsFailure)</code></p>
+        <p class="rail-note" data-i18n="rails.note">Failures are injected for the demo. Activate itself always succeeds. The pipeline and the error mapping are the real ones.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="agents" data-title="Agents">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">06</span><span data-i18n="ag.eyebrow">Built for agents</span></p>
+      <h2 data-i18n="ag.h">Written for humans <em>and their agents.</em></h2>
+      <p class="sec-lede" data-i18n="ag.p">Strict architecture is exactly what makes an AI agent useful. The repository ships the rulebook, the workflow and the guards, and none of it is required to use the code.</p>
+    </header>
+
+    <div class="agents reveal">
+      <div class="panel palette">
+        <h3 data-i18n="ag.cmds">Fifteen slash commands</h3>
+        <label class="pal-input"><span aria-hidden="true">/</span><input id="palQ" type="text" autocomplete="off" spellcheck="false" placeholder="scaffold, plan, fix…" aria-label="Filter commands"></label>
+        <ul class="pal-list" id="palList"></ul>
+        <div class="pal-detail" id="palDetail" aria-live="polite"></div>
+      </div>
+      <div class="panel hooks">
+        <h3 data-i18n="ag.hooks">Two hooks that say no</h3>
+        <div class="seg" role="radiogroup" aria-label="Hook" id="hookSeg">
+          <button type="button" role="radio" aria-checked="true" data-hook="edit"><span data-i18n="ag.h1">Edit a .csproj</span></button>
+          <button type="button" role="radio" aria-checked="false" data-hook="commit"><span data-i18n="ag.h2">git commit</span></button>
+        </div>
+        <pre class="term hook-term" id="hookTerm" aria-live="polite"></pre>
+        <p class="hook-note" id="hookNote"></p>
+      </div>
+    </div>
+
+    <div class="rulebook reveal">
+      <h3 data-i18n="ag.rules">The rulebook: CLAUDE.md</h3>
+      <ol class="rule-chips" id="ruleChips"></ol>
+    </div>
+
+    <div class="graph reveal">
+      <canvas id="graphCv" aria-hidden="true"></canvas>
+      <div class="graph-copy">
+        <h3 data-i18n="ag.graph">A graph instead of grep</h3>
+        <p data-i18n="ag.graphp">A generated knowledge graph answers where something lives without searching the tree. The picture is decorative, the numbers are from the repository's own report.</p>
+        <dl class="graph-stats">
+          <div><dt data-i18n="ag.nodes">nodes</dt><dd data-count="4067">0</dd></div>
+          <div><dt data-i18n="ag.edges">edges</dt><dd data-count="10747">0</dd></div>
+          <div><dt data-i18n="ag.comm">communities</dt><dd data-count="296">0</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="numbers" aria-label="Numbers">
+  <div class="wrap">
+    <ul class="nums reveal">
+      <li><b data-count="6">0</b><span data-i18n="n.modules">modules</span></li>
+      <li><b data-count="32">0</b><span data-i18n="n.projects">projects</span></li>
+      <li><b data-count="777">0</b><span data-i18n="n.cs">C# files</span></li>
+      <li><b data-count="653">0</b><span data-i18n="n.tests">test methods</span></li>
+      <li><b data-count="834">0</b><span data-i18n="n.commits">commits</span></li>
+      <li class="hot"><b data-count="0">0</b><span data-i18n="n.refs">cross-module references</span></li>
+    </ul>
+    <p class="nums-note reveal" data-i18n="n.note">Counted from the repository with git ls-files, the test attributes, git rev-list and the same check the commit hook runs.</p>
+  </div>
+</section>
+
+<section class="sec" id="start" data-title="Start">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow"><span class="num">07</span><span data-i18n="st.eyebrow">Start</span></p>
+      <h2 data-i18n="st.h">Run it. <em>Then split it.</em></h2>
+      <p class="sec-lede" data-i18n="st.p">You need the .NET 10 SDK, Docker, GNU Make and the EF Core CLI. Keycloak imports the realm from a file on first start, and in development the one-time code is always 123456.</p>
+    </header>
+
+    <div class="termwin reveal">
+      <div class="termbar">
+        <div class="seg" role="tablist" aria-label="Command sets" id="termTabs">
+          <button type="button" role="tab" aria-selected="true" data-tab="run"><span data-i18n="st.t1">Run</span></button>
+          <button type="button" role="tab" aria-selected="false" data-tab="signin"><span data-i18n="st.t2">Sign in</span></button>
+          <button type="button" role="tab" aria-selected="false" data-tab="split"><span data-i18n="st.t3">Split</span></button>
+          <button type="button" role="tab" aria-selected="false" data-tab="test"><span data-i18n="st.t4">Test</span></button>
+        </div>
+        <button type="button" class="btn" id="termCopy" data-i18n="st.copy">Copy</button>
+      </div>
+      <pre class="term" id="term" tabindex="0"></pre>
+    </div>
+
+    <h3 class="docs-h reveal" data-i18n="docs.h">Read the docs</h3>
+    <ul class="docs reveal" id="docs"></ul>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div class="foot-brand"><span class="brand-slab" aria-hidden="true"><i></i><i></i><i></i><i></i></span> <span>Modular Monolith</span></div>
+    <p><span data-i18n="ft.license">Apache License 2.0</span> · <a href="https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi" target="_blank" rel="noopener">GitHub ↗</a></p>
+    <p class="foot-note" data-i18n="ft.built">Built from the repository's README, docs and source.</p>
+  </div>
+</footer>
+
+<script src="core.js" defer></script>
+<script src="i18n.js" defer></script>
+<script src="bg.js" defer></script>
+<script src="stage.js" defer></script>
+<script src="flight.js" defer></script>
+<script src="walls.js" defer></script>
+<script src="atlas.js" defer></script>
+<script src="rails.js" defer></script>
+<script src="agents.js" defer></script>
+<script src="start.js" defer></script>
+</body>
+</html>
