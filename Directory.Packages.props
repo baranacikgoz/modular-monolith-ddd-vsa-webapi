@@ -41,7 +41,6 @@
     <!-- Transitive pin: SSH.NET <=2025.1.0 has GHSA-q939-rpr3-3284 (high). Pulled via Testcontainers. -->
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.16.0" />
-    <PackageVersion Include="Testcontainers.Kafka" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.Keycloak" Version="4.16.0" />
     <PackageVersion Include="Respawn" Version="7.0.0" />

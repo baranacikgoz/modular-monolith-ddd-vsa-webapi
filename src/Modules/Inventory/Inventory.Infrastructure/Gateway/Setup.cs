@@ -37,8 +37,7 @@ public static class Setup
             resilience =>
             {
                 // A release call is not safely retryable blind: a timeout doesn't tell you whether the
-                // warehouse already processed the release, so a naive retry risks a double-release. Same
-                // reasoning as disabling retry on Payments' Iyzico gateway for its mutating capture call -
+                // warehouse already processed the release, so a naive retry risks a double-release.
                 // ReconcileReleaseAsync exists precisely to resolve this ambiguity instead of retrying blind.
                 resilience.Retry.MaxRetryAttempts = 0;
             });

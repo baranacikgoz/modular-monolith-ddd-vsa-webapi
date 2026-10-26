@@ -24,7 +24,7 @@ Search order, no exceptions:
 | Inventory | `make test-inventory` | Advanced patterns: saga-shaped aggregate (`StockReservation`), sweep job, provider-switch gateway with resiliency, HMAC webhook, cross-module wiring |
 | Outbox | `make test-outbox` | Transactional outbox worker, single project |
 | Notifications | `make test-notifications` | SMS/OTP, push (FCM), SignalR, device registry. Endpoints live in `Infrastructure/Devices` |
-| BackgroundJobs | `make test-backgroundjobs` | Quartz/Hangfire jobs, single project |
+| BackgroundJobs | `make test-backgroundjobs` | Hangfire jobs, single project |
 
 Full module layout: `src/Modules/{M}/{M}.Domain` (aggregates, `DomainEvents/v1`, errors, ids), `{M}.Application` (`I{M}DbContext`, `DomainEventHandlers/v1`, `IntegrationEventHandlers`), `{M}.Endpoints` (`{Aggregate}/Setup.cs`, `{Aggregate}/v1/{Feature}/`, `{M}Module.cs`), `{M}.Infrastructure` (DbContext, EF config, `InterModuleRequestHandlers`, `Telemetry`, migrations), `{M}.Tests`. Each project has an empty `IAssemblyReference` marker.
 
@@ -134,4 +134,4 @@ Bug, boundary violation, security hole, dead code, footgun: flag it with `file:l
 
 ## 11. Make targets
 
-`make build`, `make test`, `make test-{common,host,iam,products,inventory,outbox,notifications,backgroundjobs}`, `make ef-add-{Notifications,Products,Inventory,Outbox} name=X`, `make ef-script-{Module} from=A to=B`, `make ef-script-all from=A to=B`, `make check-migration-drift`.
+`make build`, `make test`, `make test-{common,host,iam,products,inventory,outbox,notifications,backgroundjobs}`, `make ef-add-{Notifications,Products,Inventory,Outbox} name=X`, `make ef-script-{Module} from=A to=B`, `make ef-script-all from=A to=B`, `make ef-update-all` (local development database only), `make check-migration-drift`.

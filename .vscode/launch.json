@@ -6,9 +6,9 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/Host/bin/Debug/net8.0/Host.dll",
+      "program": "${workspaceFolder}/src/Host/Host/bin/Debug/net10.0/Host.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/Host",
+      "cwd": "${workspaceFolder}/src/Host/Host",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",

@@ -1,34 +1,33 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-23)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-26)
 
 ## Corpus Check
-- 587 files · ~95,426 words
+- 588 files · ~95,443 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3846 nodes · 10193 edges · 273 communities (157 shown, 116 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.84)
+- 4011 nodes · 10608 edges · 309 communities (186 shown, 123 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 350 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `39b8557a`
+- Built from commit: `47c0990d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- Result
+- IProductsDbContext
 - NotificationPayload
-- OutboxOptions
+- HttpContext
 - AuditableEntityResponse
 - ApplicationUserId
 - StoreId
 - ApplySearchLanguageInterceptor
 - IDbContext
-- Common.Infrastructure.Extensions
-- Error
+- Result
 - Common.Domain.ResultMonad
-- DomainEvent
+- IStronglyTypedId
 - ISearchLanguageResolver
-- DummyCaptchaService.cs
+- Response
 - KeycloakPermissionAuthorizationHandler
 - EmailOptions
 - Product
@@ -37,49 +36,50 @@
 - FullTextSearchOptions
 - BoundedRequestCaptureStream
 - DeviceRegistration
-- DateTimeOffset
+- IReadOnlyList
 - .RegisterAsync
 - Stores/v1/My/Update/Request.cs
 - Response
 - RequestResponseBodyLoggingMiddleware
-- fluentvalidation
+- SendForLogin/Request.cs
 - Func
 - ProjectionUpsertOutcome
 - IModule
 - ILogger
 - Response
-- Products.Domain.Stores
+- fluentvalidation
 - OutboxMessage
 - CustomRateLimitingOptions
 - AdminRepresentations.cs
 - ProblemDetailsExtensions.cs
 - ObservabilityOptions
-- ConfigureSwaggerOptions
-- OtpOptions
+- DefaultResponsesOperationFilter
+- IOtpService
 - S3ObjectStoreCore.cs
 - ICaptchaService
 - KeycloakOptions
-- StockReservationExpirySweepJobRegistrar
+- ConfigureSwaggerOptions.cs
 - PaginationQueryableExtensions
 - Outbox Misuse Check
-- InventoryModule.cs
+- OtpOptions
 - Add Integration Event Command
-- system_text_json
+- host
 - BackgroundJobsOptions
 - CaptchaOptions
-- AuditLogRetentionService
-- V1StoreCreatedDomainEvent
+- HttpResponseMessage
+- RedisFixedWindowRateLimiter
 - BrevoEmailGateway
 - Infrastructure/StringExtensions.cs
 - Cross-Module Reference Violation
-- ProductsDbContext
+- TimeProvider
 - Request
 - Bogus Test Data
-- SendSecurityAlertRequestHandler
+- KeycloakTokenClient
 - StronglyTypedIdBinder
 - RequestLoggingOptions
-- Func
-- OutboxOptions
+- Request
+- Task
+- OutboxModule
 - .AddNotificationsSignalR
 - ValueObject
 - Request
@@ -90,23 +90,23 @@
 - AsNoTracking Coverage Check
 - Request
 - Response
-- IBackgroundUserContext
-- IntegrationEventOutbox
+- OpenApiOptions
+- KeyedResilienceProfile
 - DeviceRegistryReconciliationService
-- FirebaseServiceAccountOptions
+- SendEmailOtpRequestHandler
 - Response
 - Split-Deployment PoC
 - IOptions
-- EntityTypeBuilder
-- StockReservation
-- BaseDbContext
+- ProductTemplate
+- DateTimeOffset
+- .SaveWithOutboxAsync
 - PushOptions
 - Configuration-Driven Module Registration
 - KeycloakPermission
 - Setup
 - SendRequestBody
-- Common.Domain.Entities
-- .MapEndpoint
+- .TryDeserialize
+- .GetClientKey
 - SendRequestBody
 - Response
 - LoggerMessage
@@ -115,61 +115,101 @@
 - InterModuleRequestOptions
 - ReCaptchaService
 - ResiliencyOptions
-- ReCaptchaResponse
+- .GetMeAsync
 - Response
 - ResultToResponseTransformer.cs
 - Response
 - Common.InterModuleRequests.Contracts
 - InventoryOptions
-- StockLevel
+- ChunkEncodingFreeS3Client
 - Response
 - KeycloakPermissionPolicyProvider
 - VerifyEmail/Request.cs
-- Setup
-- Localization/Setup.cs
+- InventoryModule
+- ConfigureSwaggerOptions
 - Response
 - SkipOverlappingRecurringJobFilter
 - IResxLocalizer
 - Response
 - DatabaseOptions.cs
-- .ForUser
-- ICoalescableIntegrationEvent.cs
-- HealthCheckOptions
+- depends_on
+- healthcheck
+- mm.keycloak
+- mm.redis
+- IdentityScheme
+- IApplicationBuilder
 - InterModuleRequestHandlerDefinition
 - NotificationsHub
 - Response
+- PaginationRequestValidator
 - Response
 - docker-compose.yml (Base Stack)
 - IServiceCollection
 - ObjectStorageOptions
-- Seeder
+- Response
+- Request
 - InterModuleRequestHandler
-- IWebHostEnvironment
+- .WriteTooManyRequestsToResponse
+- services
+- mm.postgres
 - DefaultIdType
 - Type
-- Setup
-- ActivitySource
-- OutboxOptions.cs
-- .EnsureNoMigrationsPending
-- For
-- CurrentUser
+- mm.rabbitmq
+- Type
+- KeyedResiliencePipelines
+- FixedWindow
+- BackgroundJobsTelemetry
 - PaginationRequest
+- HttpWarehouseGateway
+- DisableChunkEncodingHandler
+- IamTelemetry
+- OutboxOptions
+- Request
+- SendForRegistration/Request.cs
+- IResxLocalizer
+- GetDeviceSessionsRequest
+- .Generate
+- Request
+- Request
+- HttpContextTargetingContextAccessor
+- ObjectStorageOptions.cs
+- PolymorphicEventConverter
+- For
+- IssueVerificationTokenRequestHandler
+- ApplicationUserId
+- Request
+- Request
+- Request
+- My/AuditLog/Request.cs
 - Notifications.Application/IAssemblyReference.cs
+- StringExtensions
 - Common.Domain.Events
 - Task
-- system_diagnostics
-- PaginationResponse
+- KeycloakTokenClient.cs
+- IInterModuleRequest
+- KeyedRow
 - CorsOptions
+- Swagger/Setup.cs
 - CachingOptions
 - SmsOptions
 - RabbitMqOptions
 - IAM.Domain
 - Response
+- Response
+- Response
+- .SetRetryAfterHeader
 - ReverseProxyOptions
 - BoundedCaptureStream
-- .GetMeAsync
-- JobRow
+- KeycloakPermissionClient
+- Request
+- Request
+- Request
+- Request
 - Response
+- Request
+- Request
+- Request
+- Request
 - NotificationsTelemetry
 - KeycloakScopes
 - DevicesOptions
@@ -184,11 +224,9 @@
 - KeycloakPermissionAuthorizationHandler.cs
 - NetGsmSmsGateway
 - RequestBodyLimitFilter.cs
-- WebhookCallback/Request.cs
 - ResxLocalizationOptions
 - Response
 - RequestBody
-- microsoft_entityframeworkcore
 - Response
 - Products.Domain/IAssemblyReference.cs
 - IAM.Application/IAssemblyReference.cs
@@ -198,8 +236,8 @@
 - Notifications.Domain/IAssemblyReference.cs
 - IAM.Infrastructure/IAssemblyReference.cs
 - Response
-- S3ObjectStoreCore
-- IEnumerable
+- ReCaptchaResponse
+- BackgroundJobsModule
 - RouteGroupBuilder
 - CustomValidator
 - Response
@@ -209,13 +247,11 @@
 - AuditLogOptions
 - ProjectionReconciliationOptions.cs
 - ResultTelemetryExtensions
-- SignalROptions
-- microsoft_aspnetcore_mvc
+- Request
 - JobHousekeepingOptions
 - Products.Endpoints
 - Products/v1/Update/Request.cs
 - Notifications.Infrastructure
-- .Capture
 - v1/Request.cs
 - Products/v1/My/Update/Request.cs
 - IAM.Endpoints
@@ -272,7 +308,7 @@
 - REPR Pattern (Minimal API Endpoints)
 
 ## God Nodes (most connected - your core abstractions)
-1. `Result` - 147 edges
+1. `Result` - 189 edges
 2. `Common.Application.Options` - 139 edges
 3. `Common.Domain.ResultMonad` - 105 edges
 4. `CustomValidator` - 83 edges
@@ -288,12 +324,12 @@
   docs/split-deployment-poc.md → src/Modules/Outbox/Outbox/OutboxProcessor.cs
 - `Add search to a new entity _(Build checklist)_` --references--> `FullTextSearchOptions`  [INFERRED]
   docs/full-text-search.md → src/Common/Common.Application/Options/FullTextSearchOptions.cs
-- `Configuration` --references--> `FullTextSearchOptions`  [INFERRED]
-  docs/full-text-search.md → src/Common/Common.Application/Options/FullTextSearchOptions.cs
 - `Full-Text Search` --references--> `FullTextSearchOptions`  [INFERRED]
   docs/full-text-search.md → src/Common/Common.Application/Options/FullTextSearchOptions.cs
 - `Gotchas` --references--> `FullTextSearchOptions`  [INFERRED]
   docs/full-text-search.md → src/Common/Common.Application/Options/FullTextSearchOptions.cs
+- `Configuration` --references--> `ISearchLanguageResolver`  [INFERRED]
+  docs/full-text-search.md → src/Common/Common.Application/Search/ISearchLanguageResolver.cs
 
 ## Import Cycles
 - None detected.
@@ -301,223 +337,223 @@
 ## Hyperedges (group relationships)
 - **Local Infrastructure Stack** — docker_compose_postgres, docker_compose_rabbitmq, docker_compose_redis, docker_compose_aspire_dashboard [EXTRACTED 1.00]
 
-## Communities (273 total, 116 thin omitted)
+## Communities (309 total, 123 thin omitted)
 
-### Community 0 - "Result"
+### Community 0 - "IProductsDbContext"
 Cohesion: 0.06
-Nodes (20): ICurrentUser, Id, IdAsString, Roles, SessionId, Result, Error, IsFailure (+12 more)
+Nodes (23): AuditLogDto, ICurrentUser, Id, IdAsString, Roles, SessionId, PaginationResponse, HasNext (+15 more)
 
 ### Community 1 - "NotificationPayload"
-Cohesion: 0.20
-Nodes (5): Notifications.Application.Hubs, INotificationDispatcher, INotificationsClient, NotificationPayload, SignalRNotificationDispatcher
-
-### Community 2 - "OutboxOptions"
-Cohesion: 0.17
-Nodes (5): OutboxProcessor, PublishOutcome, Failed, Published, Skipped
+Cohesion: 0.19
+Nodes (5): INotificationDispatcher, INotificationsClient, NotificationPayload, PushMessage, SignalRNotificationDispatcher
 
 ### Community 3 - "AuditableEntityResponse"
-Cohesion: 0.08
-Nodes (22): AuditableEntityResponse, CreatedBy, CreatedOn, Id, LastModifiedBy, LastModifiedOn, Response, AvailableQuantity (+14 more)
+Cohesion: 0.11
+Nodes (16): AuditableEntityResponse, CreatedBy, CreatedOn, Id, LastModifiedBy, LastModifiedOn, Endpoint, Response (+8 more)
 
 ### Community 5 - "ApplicationUserId"
-Cohesion: 0.08
-Nodes (24): ApplicationUserId, IsEmpty, Value, HttpClientKeyedExtensions, GetActiveSessionIdsRequest, GetActiveSessionIdsResponse, UserSessionIds, GrantedPermission (+16 more)
+Cohesion: 0.15
+Nodes (13): KeycloakUser, KeycloakAdminClient, UserRepresentation, Attributes, CreatedTimestamp, Credentials, Email, EmailVerified (+5 more)
 
 ### Community 6 - "StoreId"
-Cohesion: 0.07
-Nodes (18): StronglyTypedIdHelper, ProductCreatedIntegrationEventPublishingHandler, V1ProductCreatedDomainEventHandlers, V1ProductCreatedDomainEvent, ProductTemplateId, ProductSnapshot, V1ProductAddedToStoreDomainEvent, V1ProductAddedToStoreDomainEventExtensions (+10 more)
+Cohesion: 0.13
+Nodes (11): GetSeedUserIdsRequest, GetSeedUserIdsResponse, GetSeedUserIdsRequestHandler, V1ProductCreatedDomainEvent, ProductTemplateId, StoreId, Request, Id (+3 more)
 
 ### Community 7 - "ApplySearchLanguageInterceptor"
-Cohesion: 0.25
-Nodes (6): Add a new language/culture, Add search to a new entity _(Build checklist)_, Change the vector (weights, fields, or config), Extending and maintaining, ApplySearchLanguageInterceptor, Setup
+Cohesion: 0.19
+Nodes (7): Add a new language/culture, Add search to a new entity _(Build checklist)_, Change the vector (weights, fields, or config), Extending and maintaining, ApplyAuditingInterceptor, ApplySearchLanguageInterceptor, Setup
 
 ### Community 8 - "IDbContext"
-Cohesion: 0.20
-Nodes (5): JobHousekeepingJob, IDbContext, AuditLog, ChangeTracker, Database
+Cohesion: 0.11
+Nodes (8): JobHousekeepingJob, IDbContext, AuditLog, ChangeTracker, Database, Setup, StockReservationExpirySweepJobRegistrar, StockReservationExpirySweepService
 
-### Community 9 - "Common.Infrastructure.Extensions"
-Cohesion: 0.07
-Nodes (17): Common.Infrastructure.Modules, Products.Endpoints.Probe, Host, Common.Infrastructure.RateLimiting, Products.Infrastructure.RateLimiting, Products.Endpoints.Products, Common.Infrastructure.Extensions, IAM.Endpoints.Otp.VersionNeutral (+9 more)
-
-### Community 10 - "Error"
-Cohesion: 0.07
-Nodes (22): StringLocalizerExtensions, StringExtensions, Error, Key, ParameterName, StatusCode, SubErrors, Value (+14 more)
+### Community 10 - "Result"
+Cohesion: 0.04
+Nodes (31): CollectionExtensions, Error, Key, ParameterName, StatusCode, SubErrors, Value, IResult (+23 more)
 
 ### Community 11 - "Common.Domain.ResultMonad"
 Cohesion: 0.10
-Nodes (22): IAM.Endpoints.Captcha.VersionNeutral, Common.Application.Search, Inventory.Infrastructure.InterModuleRequestHandlers, Inventory.Application.Persistence, Common.Infrastructure.Persistence.Extensions, Common.Application.Extensions, Products.Endpoints.ProductTemplates, Common.Application.EndpointFilters (+14 more)
+Nodes (18): IAM.Endpoints.Captcha.VersionNeutral, Common.Application.Search, Inventory.Application.Persistence, Common.Infrastructure.Persistence.Extensions, Common.Application.Extensions, Common.Application.EndpointFilters, Inventory.Domain.StockReservations.Errors, Products.Infrastructure.Telemetry (+10 more)
 
-### Community 12 - "DomainEvent"
-Cohesion: 0.10
-Nodes (19): AggregateRoot, Events, Id, Version, IAggregateRoot, Events, Id, Version (+11 more)
+### Community 12 - "IStronglyTypedId"
+Cohesion: 0.12
+Nodes (15): AggregateRoot, Events, Id, Version, IAggregateRoot, Events, Id, Version (+7 more)
 
 ### Community 13 - "ISearchLanguageResolver"
-Cohesion: 0.24
-Nodes (6): Configuration, ISearchLanguageResolver, UniversalConfig, SearchLanguageResolver, UniversalConfig, Setup
+Cohesion: 0.33
+Nodes (3): SearchLanguageResolver, UniversalConfig, Setup
+
+### Community 14 - "Response"
+Cohesion: 0.13
+Nodes (13): IAM.Endpoints.Users.VersionNeutral.Me.Get, Endpoint, Response, BirthDate, CreatedOn, Email, FirstName, Id (+5 more)
+
+### Community 15 - "KeycloakPermissionAuthorizationHandler"
+Cohesion: 0.29
+Nodes (3): KeycloakPermissionAuthorizationHandler, KeycloakPermissionRequirement, Permission
 
 ### Community 16 - "EmailOptions"
 Cohesion: 0.10
 Nodes (23): EmailOptions, ApiKey, AttemptTimeoutSeconds, BaseUrl, MaxPerAddressPerDay, MaxPerDay, MaxRetryAttempts, Provider (+15 more)
 
 ### Community 17 - "Product"
-Cohesion: 0.06
-Nodes (31): Products.Domain.Stores.DomainEvents.v1, File map _(Build)_, ISearchLocalized, Language, Product, Description, Language, Name (+23 more)
+Cohesion: 0.07
+Nodes (27): File map _(Build)_, ISearchLocalized, Language, Product, Description, Language, Name, Price (+19 more)
 
 ### Community 18 - "Common.Application.Options"
-Cohesion: 0.05
-Nodes (31): Notifications.Application.Otp, Notifications.Application.Sms, Notifications.Infrastructure.Devices, Common.Application.Persistence.Inbox, IAM.Infrastructure.Keycloak.Representations, Notifications.Infrastructure.Email, Inventory.Application.IntegrationEventHandlers, Common.IntegrationEvents (+23 more)
+Cohesion: 0.03
+Nodes (41): Common.Infrastructure.Modules, Notifications.Infrastructure.Devices, Common.Application.Persistence.Inbox, Notifications.Application.Push, Inventory.Endpoints, Products.Endpoints.Stores, Common.Endpoints.Versioning, Products.Endpoints.Probe (+33 more)
 
 ### Community 19 - "Common.Domain.StronglyTypedIds"
-Cohesion: 0.08
-Nodes (18): Common.Domain.StronglyTypedIds, Inventory.Infrastructure.Persistence.EntityConfigurations, Common.Application.Jobs, Common.Application.JsonConverters, Common.Infrastructure.Persistence.EntityConfigurations, Common.Infrastructure.Persistence.ValueConverters, Notifications.Infrastructure.Persistence.EntityConfigurations, Products.Infrastructure.Persistence.EntityConfigurations (+10 more)
+Cohesion: 0.04
+Nodes (29): Common.Infrastructure.Persistence.Inbox, Common.Infrastructure.Persistence, Products.Infrastructure.Persistence, IAM.Endpoints.Users.VersionNeutral.Search, Products.Infrastructure.Persistence.Seeding, Inventory.Infrastructure.InterModuleRequestHandlers, Common.Domain.StronglyTypedIds, Common.Application.Persistence (+21 more)
 
 ### Community 20 - "FullTextSearchOptions"
-Cohesion: 0.29
-Nodes (7): Gotchas, FullTextSearchOptions, CultureToConfig, DefaultConfig, RankWeights, UseUnaccent, FullTextSearchOptionsValidator
+Cohesion: 0.25
+Nodes (8): Configuration, Gotchas, FullTextSearchOptions, CultureToConfig, DefaultConfig, RankWeights, UseUnaccent, FullTextSearchOptionsValidator
 
 ### Community 21 - "BoundedRequestCaptureStream"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (6): BoundedRequestCaptureStream, CanRead, CanSeek, CanWrite, Length, Position
 
 ### Community 22 - "DeviceRegistration"
 Cohesion: 0.15
 Nodes (10): DeviceRegistration, ClientId, DeviceId, DeviceName, IsActive, LastReconciledOn, PushToken, PushTokenUpdatedOn (+2 more)
 
-### Community 23 - "DateTimeOffset"
-Cohesion: 0.12
-Nodes (8): UtcDateTimeOffsetConverter, ServiceAccountTokenCache, AccessToken, ExpiresAt, RequestBody, ProductId, Quantity, ReservationDeadline
+### Community 23 - "IReadOnlyList"
+Cohesion: 0.29
+Nodes (7): GetActiveSessionIdsRequest, GetActiveSessionIdsResponse, UserSessionIds, GrantedPermission, KeycloakUserPage, KeycloakUserSession, GetActiveSessionIdsRequestHandler
 
 ### Community 24 - ".RegisterAsync"
-Cohesion: 0.10
-Nodes (18): IInterModuleRequestClient, MassTransitInterModuleRequestClient, BindDeviceSessionRequest, BindDeviceSessionResponse, DeactivateDeviceSessionsRequest, DeactivateDeviceSessionsResponse, VerifyEmailOtpRequest, VerifyEmailOtpResponse (+10 more)
+Cohesion: 0.11
+Nodes (16): IInterModuleRequestClient, BindDeviceSessionRequest, BindDeviceSessionResponse, DeactivateDeviceSessionsRequest, DeactivateDeviceSessionsResponse, VerifyEmailOtpRequest, VerifyEmailOtpResponse, IKeycloakAdminClient (+8 more)
 
 ### Community 25 - "Stores/v1/My/Update/Request.cs"
-Cohesion: 0.33
-Nodes (6): Products.Endpoints.Stores.v1.My.Update, Request, Address, Description, Name, RequestValidator
+Cohesion: 0.40
+Nodes (5): Request, Address, Description, Name, RequestValidator
 
 ### Community 26 - "Response"
-Cohesion: 0.29
-Nodes (5): IAM.Endpoints.Otp.VersionNeutral.VerifyEmail, Endpoint, Response, EmailVerificationToken, IsRegistered
+Cohesion: 0.33
+Nodes (4): Endpoint, Response, EmailVerificationToken, IsRegistered
 
-### Community 28 - "fluentvalidation"
-Cohesion: 0.10
-Nodes (24): IAM.Domain.Users, IAM.Endpoints.Otp.VersionNeutral.SendForLogin, Common.Domain.Extensions, Notifications.Infrastructure.Devices.UpdateCurrentPushToken, Common.Application.Validation, IAM.Endpoints.Tokens.VersionNeutral.Sessions.Revoke, Common.Domain.Devices, IAM.Endpoints.Otp.VersionNeutral.SendForRegistration (+16 more)
+### Community 28 - "SendForLogin/Request.cs"
+Cohesion: 0.40
+Nodes (5): IAM.Endpoints.Otp.VersionNeutral.SendForLogin, Request, CaptchaToken, PhoneNumber, RequestValidator
 
 ### Community 29 - "Func"
-Cohesion: 0.11
-Nodes (18): HttpContextExtensions, RateLimitPartitions, CheckRegistrationRateLimitingPolicy, OnRejected, EmailRateLimitingPolicy, OnRejected, OtpVerifyRateLimitingPolicy, OnRejected (+10 more)
+Cohesion: 0.15
+Nodes (16): CheckRegistrationRateLimitingPolicy, OnRejected, EmailRateLimitingPolicy, OnRejected, OtpVerifyRateLimitingPolicy, OnRejected, RegisterRateLimitingPolicy, OnRejected (+8 more)
 
 ### Community 30 - "ProjectionUpsertOutcome"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (7): Common.Application.Persistence.Projections, ProjectionEntity, SourceVersion, ProjectionUpsertOutcome, Inserted, Stale, Updated
 
 ### Community 31 - "IModule"
-Cohesion: 0.06
-Nodes (29): IModule, ActivitySourceNames, MeterNames, Name, RateLimitingPolicies, StartupPriority, Setup, IamModule (+21 more)
+Cohesion: 0.07
+Nodes (24): IModule, ActivitySourceNames, MeterNames, Name, RateLimitingPolicies, StartupPriority, IamModule, ActivitySourceNames (+16 more)
 
 ### Community 32 - "ILogger"
-Cohesion: 0.13
-Nodes (6): ProjectionReconciliationJob, OutboxSaveHelper, IPushGateway, DummyPushGateway, FirebasePushGateway, DummySmsGateway
+Cohesion: 0.12
+Nodes (7): ProjectionReconciliationJob, AuditLogRetentionJobRegistrar, AuditLogRetentionService, Setup, IPushGateway, DummyPushGateway, FirebasePushGateway
 
 ### Community 33 - "Response"
-Cohesion: 0.22
-Nodes (7): IAM.Endpoints.Tokens.VersionNeutral.Refresh, Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt
+Cohesion: 0.25
+Nodes (6): Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt
 
-### Community 34 - "Products.Domain.Stores"
-Cohesion: 0.05
-Nodes (34): Products.Endpoints.Stores.v1.Create, Products.Endpoints.Stores.v1.Search, Products.Endpoints.Stores.v1.My.AddProduct, Products.Endpoints.Products.v1.My.Get, Products.Endpoints.ProductTemplates.v1.Search, Products.Endpoints.Products.v1.Search, Products.Domain.Products, Common.Application.DTOs (+26 more)
+### Community 34 - "fluentvalidation"
+Cohesion: 0.04
+Nodes (52): Products.Endpoints.Stores.v1.AuditLog, Products.Endpoints.Stores.v1.My.Update, Inventory.Endpoints.StockReservations.v1.Commit, Products.Infrastructure.InterModuleRequestHandlers, Products.Endpoints.Stores.v1.Update, IAM.Domain.Users, Products.Endpoints.Stores.v1.Create, IAM.Endpoints.Otp.VersionNeutral.VerifyEmail (+44 more)
 
 ### Community 35 - "OutboxMessage"
-Cohesion: 0.09
-Nodes (20): IOutboxMessage, CreatedOn, Event, Id, IsProcessed, ProcessedOn, OutboxMessage, CreatedOn (+12 more)
+Cohesion: 0.04
+Nodes (34): Common.IntegrationEvents, Outbox.Persistence, Products.Application.Products.DomainEventHandlers.v1, IOutboxMessage, CreatedOn, Event, Id, IsProcessed (+26 more)
 
 ### Community 36 - "CustomRateLimitingOptions"
-Cohesion: 0.07
-Nodes (19): CustomRateLimitingOptions, CheckRegistration, CreateStore, Email, ExemptPathPrefixes, Global, OtpVerify, Register (+11 more)
+Cohesion: 0.09
+Nodes (12): CustomRateLimitingOptions, CheckRegistration, CreateStore, Email, ExemptPathPrefixes, Global, OtpVerify, Register (+4 more)
 
 ### Community 37 - "AdminRepresentations.cs"
 Cohesion: 0.12
 Nodes (16): CredentialRepresentation, Temporary, Type, Value, ErrorRepresentation, Error, ErrorMessage, Field (+8 more)
 
 ### Community 39 - "ObservabilityOptions"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (17): ObservabilityOptions, AppName, AppVersion, ElasticsearchUrl, EnableMetrics, EnableTracing, LogSink, MinimumLevel (+9 more)
 
-### Community 40 - "ConfigureSwaggerOptions"
-Cohesion: 0.07
-Nodes (15): Host.Swagger, OpenApiOptions, ContactEmail, ContactName, Description, EnableSwagger, LicenseName, LicenseUrl (+7 more)
+### Community 40 - "DefaultResponsesOperationFilter"
+Cohesion: 0.26
+Nodes (3): DefaultResponsesOperationFilter, RemoveDefaultResponseSchemaFilter, SwaggerDefaultValues
 
-### Community 41 - "OtpOptions"
-Cohesion: 0.06
-Nodes (31): OtpCacheEntry, OtpOptions, DummyCode, EmailQuotaWindowMinutes, ExpirationInMinutes, Length, MaxSendsPerEmailPerWindow, MaxSendsPerPhonePerWindow (+23 more)
+### Community 41 - "IOtpService"
+Cohesion: 0.20
+Nodes (8): OtpCacheEntry, IOtpService, OtpVerificationOutcome, InvalidOtp, Success, TooManyAttempts, RedisOtpService, Setup
 
 ### Community 43 - "ICaptchaService"
-Cohesion: 0.20
-Nodes (5): SendPhoneOtpRequest, SendPhoneOtpResponse, ICaptchaService, CachedCaptchaService, DummyCaptchaService
+Cohesion: 0.17
+Nodes (10): FeatureFlagResultExtensions, OtpDispatchErrors, SendPhoneOtpRequest, SendPhoneOtpResponse, SmsOtpDispatchOutcome, ProviderUnavailable, Sent, Throttled (+2 more)
 
 ### Community 44 - "KeycloakOptions"
-Cohesion: 0.12
-Nodes (15): KeycloakOptions, AttemptTimeoutSeconds, Authority, BaseUrl, DecisionCacheMaxDurationSeconds, Realm, RequireHttpsMetadata, ResourceClientId (+7 more)
-
-### Community 45 - "StockReservationExpirySweepJobRegistrar"
-Cohesion: 0.31
-Nodes (3): Setup, StockReservationExpirySweepJobRegistrar, StockReservationExpirySweepService
+Cohesion: 0.06
+Nodes (21): KeycloakOptions, AttemptTimeoutSeconds, Authority, BaseUrl, DecisionCacheMaxDurationSeconds, Realm, RequireHttpsMetadata, ResourceClientId (+13 more)
 
 ### Community 46 - "PaginationQueryableExtensions"
-Cohesion: 0.08
-Nodes (13): PaginationCursor, Payload, TaggedValue, CursorBound, Value, KeyedRow, Item, Sort (+5 more)
-
-### Community 48 - "InventoryModule.cs"
 Cohesion: 0.17
-Nodes (5): Inventory.Endpoints, Common.Endpoints.Versioning, Inventory.Infrastructure.Gateway, Inventory.Endpoints.StockReservations, Inventory.Application.Gateway
+Nodes (4): CursorBound, Value, PaginationQueryableExtensions, ParameterReplacer
 
-### Community 50 - "system_text_json"
-Cohesion: 0.15
-Nodes (3): Notifications.Application.Push, Common.Application.AuditLog, Notifications.Infrastructure.Push.Firebase
+### Community 48 - "OtpOptions"
+Cohesion: 0.18
+Nodes (11): OtpOptions, DummyCode, EmailQuotaWindowMinutes, ExpirationInMinutes, Length, MaxSendsPerEmailPerWindow, MaxSendsPerPhonePerWindow, PhoneQuotaWindowMinutes (+3 more)
+
+### Community 50 - "host"
+Cohesion: 0.18
+Nodes (11): context, dockerfile, build, container_name, environment, image, networks, ports (+3 more)
 
 ### Community 51 - "BackgroundJobsOptions"
 Cohesion: 0.15
 Nodes (8): BackgroundJobsOptions, DashboardPath, IsServer, MaxPoolSize, PollingFrequencyInSeconds, WorkerCount, BackgroundJobsOptionsValidator, HangfireCustomAuthorizationFilter
 
 ### Community 52 - "CaptchaOptions"
-Cohesion: 0.16
-Nodes (13): CaptchaOptions, AttemptTimeoutSeconds, BaseUrl, CaptchaEndpoint, ClientKey, Provider, ScoreThreshold, SecretKey (+5 more)
+Cohesion: 0.14
+Nodes (14): CaptchaOptions, AttemptTimeoutSeconds, BaseUrl, CaptchaEndpoint, ClientKey, Provider, ScoreThreshold, SecretKey (+6 more)
 
-### Community 53 - "AuditLogRetentionService"
-Cohesion: 0.24
-Nodes (3): AuditLogRetentionJobRegistrar, AuditLogRetentionService, Setup
-
-### Community 54 - "V1StoreCreatedDomainEvent"
-Cohesion: 0.15
-Nodes (9): Products.Application.Stores.DomainEventHandlers.v1, DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper, IIntegrationEventOutbox, SimulateSomeBusinessHandler, StoreCreatedIntegrationEventPublishingHandler, V1StoreCreatedDomainEventHandlers (+1 more)
+### Community 54 - "RedisFixedWindowRateLimiter"
+Cohesion: 0.27
+Nodes (5): FixedWindowLease, IsAcquired, MetadataNames, RedisFixedWindowRateLimiter, IdleDuration
 
 ### Community 55 - "BrevoEmailGateway"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (9): BrevoEmailGateway, SendContact, Email, Name, SendErrorBody, Code, Message, SendResponseBody (+1 more)
 
-### Community 58 - "ProductsDbContext"
+### Community 58 - "TimeProvider"
 Cohesion: 0.10
-Nodes (15): IDatabaseSeeder, Priority, EventDispatcher, Setup, InventoryDbContext, StockLevels, StockReservations, Setup (+7 more)
+Nodes (15): IDatabaseSeeder, Priority, IInboxCleanupTarget, ModuleName, IInboxStore, Setup, InboxStore, ModuleName (+7 more)
 
 ### Community 59 - "Request"
 Cohesion: 0.15
 Nodes (13): Request, BirthDate, CaptchaToken, ClientId, DeviceId, DeviceName, Email, EmailVerificationToken (+5 more)
 
-### Community 61 - "SendSecurityAlertRequestHandler"
-Cohesion: 0.52
-Nodes (5): SecurityAlertType, SessionRevokedTokenReuse, SendSecurityAlertRequest, SendSecurityAlertResponse, SendSecurityAlertRequestHandler
+### Community 61 - "KeycloakTokenClient"
+Cohesion: 0.12
+Nodes (12): SecurityAlertType, SessionRevokedTokenReuse, SendSecurityAlertRequest, SendSecurityAlertResponse, KeycloakTokenClient, TokenResponseRepresentation, AccessToken, ExpiresIn (+4 more)
 
 ### Community 63 - "RequestLoggingOptions"
 Cohesion: 0.13
 Nodes (15): RequestLoggingOptions, ExcludedPathPrefixes, LogQueryString, LogRequestBody, LogResponseBody, RequestBodyLogLimitBytes, ResponseBodyLogLimitBytes, SensitiveQueryParamPaths (+7 more)
 
-### Community 65 - "Func"
-Cohesion: 0.10
-Nodes (7): IBackgroundJobs, IRecurringBackgroundJobs, FeatureFlagResultExtensions, AsyncExtensions, SyncExtensions, BackgroundJobsService, RecurringBackgroundJobsService
+### Community 64 - "Request"
+Cohesion: 0.18
+Nodes (11): Request, Body, Id, RequestBody, Description, Name, Price, ProductTemplateId (+3 more)
 
-### Community 66 - "OutboxOptions"
-Cohesion: 0.07
-Nodes (22): OutboxOptions, BaseBackoffSeconds, BatchSize, ClaimLeaseSeconds, Cleanup, IsProcessor, LagThresholdMinutes, MaxBackoffSeconds (+14 more)
+### Community 65 - "Task"
+Cohesion: 0.06
+Nodes (5): IBackgroundJobs, IRecurringBackgroundJobs, AsyncExtensions, BackgroundJobsService, RecurringBackgroundJobsService
+
+### Community 66 - "OutboxModule"
+Cohesion: 0.10
+Nodes (10): AutoMigrateMarker, IAutoMigrateMarker, MigrationGuard, Setup, OutboxModule, ActivitySourceNames, MeterNames, Name (+2 more)
+
+### Community 67 - ".AddNotificationsSignalR"
+Cohesion: 0.13
+Nodes (8): SignalROptions, RedisConnectionString, RequireRedisBackplaneInProduction, UseRedisBackplane, SignalROptionsValidator, Setup, Setup, SubjectUserIdProvider
 
 ### Community 69 - "Request"
 Cohesion: 0.17
@@ -536,28 +572,28 @@ Cohesion: 0.24
 Nodes (8): OtpVerificationFailureReason, InvalidOtp, None, TooManyAttempts, VerifyPhoneOtpRequest, VerifyPhoneOtpResponse, VerifyPhoneOtpResponseExtensions, VerifyPhoneOtpRequestHandler
 
 ### Community 75 - "Request"
-Cohesion: 0.22
-Nodes (9): Products.Endpoints.Products.v1.My.Search, Request, MaxPrice, MaxQuantity, MinPrice, MinQuantity, Name, SearchTerm (+1 more)
+Cohesion: 0.29
+Nodes (7): Request, MaxPrice, MaxQuantity, MinPrice, MinQuantity, Name, SearchTerm
 
 ### Community 76 - "Response"
 Cohesion: 0.25
 Nodes (7): Endpoint, Response, Address, Description, Name, OwnerId, ProductCount
 
-### Community 77 - "IBackgroundUserContext"
-Cohesion: 0.28
-Nodes (5): IBackgroundUserContext, UserId, BackgroundUserContext, UserId, Setup
+### Community 77 - "OpenApiOptions"
+Cohesion: 0.22
+Nodes (9): OpenApiOptions, ContactEmail, ContactName, Description, EnableSwagger, LicenseName, LicenseUrl, Title (+1 more)
 
-### Community 78 - "IntegrationEventOutbox"
-Cohesion: 0.31
-Nodes (5): IntegrationEventOutbox, HasPending, IntegrationEvent, CreatedOn, Id
+### Community 78 - "KeyedResilienceProfile"
+Cohesion: 0.20
+Nodes (10): KeyedResilienceProfile, AttemptTimeoutSeconds, CircuitBreakerBreakDurationSeconds, CircuitBreakerFailureRatio, CircuitBreakerMinimumThroughput, CircuitBreakerSamplingDurationSeconds, RateLimitFailOpen, RateLimitPermits (+2 more)
 
 ### Community 79 - "DeviceRegistryReconciliationService"
-Cohesion: 0.31
+Cohesion: 0.25
 Nodes (3): DeviceRegistryReconcileJobRegistrar, DeviceRegistryReconciliationService, Setup
 
-### Community 80 - "FirebaseServiceAccountOptions"
-Cohesion: 0.25
-Nodes (8): FirebaseServiceAccountOptions, ClientEmail, ClientId, PrivateKey, PrivateKeyId, ProjectId, TokenUri, Type
+### Community 80 - "SendEmailOtpRequestHandler"
+Cohesion: 0.29
+Nodes (8): EmailOtpDispatchErrors, EmailOtpDispatchOutcome, ProviderUnavailable, Sent, Throttled, SendEmailOtpRequest, SendEmailOtpResponse, SendEmailOtpRequestHandler
 
 ### Community 81 - "Response"
 Cohesion: 0.25
@@ -568,40 +604,36 @@ Cohesion: 0.25
 Nodes (6): Concurrent safety, Files added by this PoC, How to run, Split-Deployment PoC, What this proves, README (Boilerplate Overview)
 
 ### Community 83 - "IOptions"
-Cohesion: 0.20
-Nodes (10): CreateStockLevelOnProductCreatedHandler, IEmailGateway, ISmsGateway, DummyEmailGateway, Setup, ThrottledEmailGateway, SendPhoneOtpRequestHandler, OtpService (+2 more)
+Cohesion: 0.10
+Nodes (17): ProductCreatedIntegrationEvent, CachedCaptchaService, CreateStockLevelOnProductCreatedHandler, LogProductCatalogChangeHandler, IInventoryDbContext, StockLevels, StockReservations, IEmailGateway (+9 more)
 
-### Community 84 - "EntityTypeBuilder"
-Cohesion: 0.18
-Nodes (4): TrigramIndexExtensions, DomainEventConverter, IntegrationEventConverter, StronglyTypedIdValueConverter
-
-### Community 85 - "StockReservation"
+### Community 84 - "ProductTemplate"
 Cohesion: 0.07
-Nodes (22): Inventory.Endpoints.StockReservations.v1.ReserveSeries, Inventory.Domain.StockReservations.DomainEvents.v1, Inventory.Domain.StockReservations.Errors, V1StockReservationCommitConflictDetectedDomainEvent, V1StockReservationCommittedDomainEvent, V1StockReservationExpiredDomainEvent, V1StockReservationReleaseAttemptAbandonedDomainEvent, V1StockReservationReleaseAttemptStartedDomainEvent (+14 more)
+Nodes (20): ProcessedMessage, ConsumerName, MessageId, ProcessedOn, AuditableEntityConfiguration, AuditLogEntryConfiguration, JobRowConfiguration, TrigramIndexExtensions (+12 more)
 
-### Community 86 - "BaseDbContext"
-Cohesion: 0.12
-Nodes (15): IdBound, Value, JobClaimExtensions, ProjectionUpsertExtensions, BaseDbContext, AuditLog, IOutboxDbContext, OutboxMessages (+7 more)
+### Community 85 - "DateTimeOffset"
+Cohesion: 0.05
+Nodes (34): Inventory.Domain.StockReservations.DomainEvents.v1, JobRow, FailureKey, FinishedOn, Progress, QueuedOn, RequestedBy, StartedOn (+26 more)
+
+### Community 86 - ".SaveWithOutboxAsync"
+Cohesion: 0.07
+Nodes (26): IIntegrationEventOutbox, IdBound, Value, JobClaimExtensions, ProjectionUpsertExtensions, EventDispatcher, IntegrationEventOutbox, HasPending (+18 more)
 
 ### Community 87 - "PushOptions"
-Cohesion: 0.21
-Nodes (12): PushOptions, Provider, SendTimeoutSeconds, ServiceAccount, Templates, PushOptionsValidator, PushProvider, Dummy (+4 more)
+Cohesion: 0.12
+Nodes (20): FirebaseServiceAccountOptions, ClientEmail, ClientId, PrivateKey, PrivateKeyId, ProjectId, TokenUri, Type (+12 more)
 
-### Community 89 - "KeycloakPermission"
-Cohesion: 0.22
-Nodes (4): KeycloakPermission, RouteHandlerBuilderExtensions, KeycloakPermissionRequirement, Permission
+### Community 90 - "Setup"
+Cohesion: 0.20
+Nodes (4): Host, Host.Configurations, Setup, Program
 
 ### Community 91 - "SendRequestBody"
 Cohesion: 0.29
 Nodes (6): SendRequestBody, HtmlContent, Sender, Subject, TextContent, To
 
-### Community 92 - "Common.Domain.Entities"
-Cohesion: 0.07
-Nodes (22): Common.Domain.Entities, Common.Domain.Aggregates, AuditableEntity, AuditableEntity, Id, CreatedBy, CreatedOn, LastModifiedBy (+14 more)
-
-### Community 93 - ".MapEndpoint"
-Cohesion: 0.29
-Nodes (4): IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get, Response, ClientKey, Setup
+### Community 93 - ".GetClientKey"
+Cohesion: 0.18
+Nodes (5): IAM.Endpoints.Captcha.VersionNeutral.ClientKey.Get, Endpoint, Response, ClientKey, DummyCaptchaService
 
 ### Community 94 - "SendRequestBody"
 Cohesion: 0.29
@@ -612,8 +644,8 @@ Cohesion: 0.29
 Nodes (6): Endpoint, Response, Description, Name, Price, Quantity
 
 ### Community 96 - "LoggerMessage"
-Cohesion: 0.11
-Nodes (6): DatabaseSeederOrchestrator, SeedingCompletionTracker, Setup, GlobalExceptionHandlingMiddleware, LoginCompletion, RegistrationCompletion
+Cohesion: 0.07
+Nodes (11): DatabaseSeederOrchestrator, SeedingCompletionTracker, Setup, GlobalExceptionHandlingMiddleware, LoginCompletion, RegistrationCompletion, OutboxProcessor, PublishOutcome (+3 more)
 
 ### Community 97 - "How it works"
 Cohesion: 0.40
@@ -624,144 +656,236 @@ Cohesion: 0.29
 Nodes (6): Endpoint, Response, Description, Name, Price, Quantity
 
 ### Community 99 - "InterModuleRequestOptions"
-Cohesion: 0.25
-Nodes (7): InterModuleRequestOptions, DependencyUnavailableRetryAfterSeconds, HandlerConcurrentMessageLimit, HandlerPrefetchCount, Timeouts, TimeoutSeconds, InterModuleRequestOptionsValidator
+Cohesion: 0.20
+Nodes (8): InterModuleRequestOptions, DependencyUnavailableRetryAfterSeconds, HandlerConcurrentMessageLimit, HandlerPrefetchCount, Timeouts, TimeoutSeconds, InterModuleRequestOptionsValidator, MassTransitInterModuleRequestClient
 
 ### Community 101 - "ResiliencyOptions"
-Cohesion: 0.05
-Nodes (30): KeyedResilienceProfile, AttemptTimeoutSeconds, CircuitBreakerBreakDurationSeconds, CircuitBreakerFailureRatio, CircuitBreakerMinimumThroughput, CircuitBreakerSamplingDurationSeconds, RateLimitFailOpen, RateLimitPermits (+22 more)
-
-### Community 102 - "ReCaptchaResponse"
-Cohesion: 0.29
-Nodes (6): ReCaptchaResponse, ChallengeTs, ErrorCodes, Hostname, Score, Success
+Cohesion: 0.15
+Nodes (13): KeyedResilienceProfileValidator, ResiliencyOptions, AttemptTimeoutSeconds, CircuitBreakerBreakDurationSeconds, CircuitBreakerFailureRatio, CircuitBreakerMinimumThroughput, CircuitBreakerSamplingDurationSeconds, Keyed (+5 more)
 
 ### Community 103 - "Response"
 Cohesion: 0.29
 Nodes (6): Endpoint, Response, Description, Name, Price, Quantity
 
 ### Community 104 - "ResultToResponseTransformer.cs"
-Cohesion: 0.14
-Nodes (6): ProblemResponse, ResultToAcceptedResponseTransformer, ResultToCreatedResponseTransformer, ResultToResponseTransformer, ResultToResponseTransformer, RouteHandlerBuilderExtensions
+Cohesion: 0.13
+Nodes (8): ProblemResponse, ResultToAcceptedResponseTransformer, ResultToCreatedResponseTransformer, ResultToResponseTransformer, ResultToResponseTransformer, RouteHandlerBuilderExtensions, StringLocalizerExtensions, RequestBodyLimitFilter
 
 ### Community 105 - "Response"
-Cohesion: 0.22
-Nodes (7): IAM.Endpoints.Users.VersionNeutral.SelfRegisterByEmail, Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt
+Cohesion: 0.25
+Nodes (6): Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt
 
 ### Community 106 - "Common.InterModuleRequests.Contracts"
-Cohesion: 0.08
-Nodes (17): IAM.Endpoints.Users, Common.Application.FeatureManagement, IAM.Endpoints.Otp, Common.InterModuleRequests.IAM, Common.InterModuleRequests.Contracts, IAM.Application.Captcha.Services, IAM.Infrastructure.Telemetry, IAM.Infrastructure.InterModuleRequestHandlers (+9 more)
+Cohesion: 0.06
+Nodes (27): Notifications.Application.Otp, IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail, Common.InterModuleRequests, IAM.Endpoints.Tokens.VersionNeutral.Create, IAM.Endpoints.Users, IAM.Endpoints.Users.VersionNeutral.SelfRegister, Common.Application.FeatureManagement, IAM.Endpoints.Otp (+19 more)
 
 ### Community 107 - "InventoryOptions"
-Cohesion: 0.12
-Nodes (19): InventoryOptions, MaxOccurrencesPerSeries, SafetyBufferQuantity, StockReservationExpirySweepBatchSize, StockReservationExpirySweepCron, WarehouseGatewayBaseUrl, WarehouseGatewayProvider, WebhookMaxBodyBytes (+11 more)
-
-### Community 108 - "StockLevel"
-Cohesion: 0.21
-Nodes (7): Inventory.Domain.StockLevels.DomainEvents.v1, V1StockLevelCreatedDomainEvent, StockLevel, ProductId, QuantityOnHand, StockLevelId, StockLevelConfiguration
+Cohesion: 0.07
+Nodes (26): Inventory.Endpoints.StockReservations.v1.ReserveSeries, InventoryOptions, MaxOccurrencesPerSeries, SafetyBufferQuantity, StockReservationExpirySweepBatchSize, StockReservationExpirySweepCron, WarehouseGatewayBaseUrl, WarehouseGatewayProvider (+18 more)
 
 ### Community 109 - "Response"
-Cohesion: 0.33
-Nodes (4): IAM.Endpoints.Users.VersionNeutral.CheckRegistration, Endpoint, Response, IsRegistered
+Cohesion: 0.40
+Nodes (3): Endpoint, Response, IsRegistered
 
 ### Community 111 - "VerifyEmail/Request.cs"
 Cohesion: 0.50
 Nodes (4): Request, Email, Otp, RequestValidator
 
-### Community 114 - "Response"
-Cohesion: 0.05
-Nodes (37): IAM.Endpoints.Users.VersionNeutral.Search, IAM.Endpoints.Users.VersionNeutral.Get, IAM.Endpoints.Users.VersionNeutral.Me.Get, Endpoint, Response, BirthDate, CreatedOn, Email (+29 more)
+### Community 112 - "InventoryModule"
+Cohesion: 0.16
+Nodes (6): Setup, InventoryModule, ActivitySourceNames, MeterNames, Name, StartupPriority
 
-### Community 116 - "IResxLocalizer"
-Cohesion: 0.18
-Nodes (3): ProblemDetailsServiceExtensions, JwtBearerConfigureOptions, Setup
+### Community 114 - "Response"
+Cohesion: 0.10
+Nodes (20): Response, BirthDate, CreatedOn, Email, Enabled, FirstName, Id, LastName (+12 more)
+
+### Community 115 - "SkipOverlappingRecurringJobFilter"
+Cohesion: 0.15
+Nodes (3): BackgroundJobs.Telemetry, JobMetricsFilter, SkipOverlappingRecurringJobFilter
 
 ### Community 117 - "Response"
-Cohesion: 0.11
-Nodes (15): Inventory.Endpoints.StockReservations.v1.Get, ReservationStatus, Active, Committed, Expired, Released, RequiresReconciliation, Endpoint (+7 more)
+Cohesion: 0.12
+Nodes (14): ReservationStatus, Active, Committed, Expired, Released, RequiresReconciliation, Endpoint, Response (+6 more)
 
 ### Community 118 - "DatabaseOptions.cs"
 Cohesion: 0.67
 Nodes (3): DatabaseOptions, ConnectionString, DatabaseOptionsValidator
 
-### Community 124 - "HealthCheckOptions"
-Cohesion: 0.40
+### Community 119 - "depends_on"
+Cohesion: 0.22
+Nodes (9): mm.aspire-dashboard, mm.keycloak, mm.postgres, mm.rabbitmq, depends_on, condition, condition, condition (+1 more)
+
+### Community 120 - "healthcheck"
+Cohesion: 0.56
+Nodes (9): interval, retries, start_period, test, timeout, healthcheck, healthcheck, healthcheck (+1 more)
+
+### Community 121 - "mm.keycloak"
+Cohesion: 0.22
+Nodes (9): command, container_name, environment, image, networks, ports, restart, volumes (+1 more)
+
+### Community 122 - "mm.redis"
+Cohesion: 0.22
+Nodes (9): command, container_name, environment, image, networks, ports, restart, volumes (+1 more)
+
+### Community 123 - "IdentityScheme"
+Cohesion: 0.28
+Nodes (7): IdentityScheme, Email, PhoneNumber, IdentitySchemeOptions, Scheme, IdentitySchemeOptionsValidator, Setup
+
+### Community 124 - "IApplicationBuilder"
+Cohesion: 0.16
 Nodes (5): HealthCheckOptions, EnableHealthChecks, ReadinessTimeoutInSeconds, StartupTimeoutInSeconds, HealthCheckOptionsValidator
 
 ### Community 125 - "InterModuleRequestHandlerDefinition"
-Cohesion: 0.14
-Nodes (6): ConcurrencyConfiguratorExtensions, OtpDispatchErrors, SmsOtpDispatchOutcome, ProviderUnavailable, Sent, Throttled
+Cohesion: 0.16
+Nodes (3): ConcurrencyConfiguratorExtensions, InterModuleRequestHandlerDefinition, RequestType
 
 ### Community 127 - "Response"
 Cohesion: 0.25
 Nodes (7): Endpoint, Response, Address, Description, Name, OwnerId, ProductCount
 
+### Community 128 - "PaginationRequestValidator"
+Cohesion: 0.22
+Nodes (9): PaginationRequestValidator, Request, Id, RequestValidator, RequestValidator, RequestValidator, Request, Id (+1 more)
+
 ### Community 129 - "Response"
-Cohesion: 0.29
-Nodes (4): Products.Endpoints.ProductTemplates.v1.Create, Setup, Response, Id
+Cohesion: 0.33
+Nodes (4): Setup, Endpoint, Response, Id
 
 ### Community 130 - "docker-compose.yml (Base Stack)"
-Cohesion: 0.48
-Nodes (7): Observability (OpenTelemetry), docker-compose.yml (Base Stack), Aspire Dashboard Service (mm.aspire-dashboard), Host Service (mm.host), Postgres Service (mm.postgres), RabbitMQ Service (mm.rabbitmq), Redis Service (mm.redis)
+Cohesion: 0.25
+Nodes (10): Observability (OpenTelemetry), Aspire Dashboard Service (mm.aspire-dashboard), Host Service (mm.host), external, name, networks, local_shared_network, Postgres Service (mm.postgres) (+2 more)
 
 ### Community 131 - "IServiceCollection"
-Cohesion: 0.10
-Nodes (7): Setup, Setup, Setup, Setup, Setup, Setup, Setup
+Cohesion: 0.09
+Nodes (6): Setup, Setup, Setup, Setup, ModuleRegistry, Setup
 
 ### Community 132 - "ObjectStorageOptions"
-Cohesion: 0.06
-Nodes (28): ObjectStorageOptions, AccessKey, AdditionalTransientStatusCodes, AttemptTimeoutSeconds, CircuitBreakerBreakDurationSeconds, CircuitBreakerFailureRatio, CircuitBreakerMinimumThroughput, CircuitBreakerSamplingDurationSeconds (+20 more)
+Cohesion: 0.09
+Nodes (22): ObjectStorageOptions, AccessKey, AdditionalTransientStatusCodes, AttemptTimeoutSeconds, CircuitBreakerBreakDurationSeconds, CircuitBreakerFailureRatio, CircuitBreakerMinimumThroughput, CircuitBreakerSamplingDurationSeconds (+14 more)
 
-### Community 135 - "Seeder"
-Cohesion: 0.32
-Nodes (4): GetSeedUserIdsRequest, GetSeedUserIdsResponse, GetSeedUserIdsRequestHandler, Seeder
+### Community 134 - "Response"
+Cohesion: 0.22
+Nodes (7): Setup, Response, AvailableQuantity, Description, Name, Price, Quantity
+
+### Community 135 - "Request"
+Cohesion: 0.22
+Nodes (9): Request, Body, Id, RequestBody, Address, Description, Name, RequestBodyValidator (+1 more)
 
 ### Community 136 - "InterModuleRequestHandler"
-Cohesion: 0.12
-Nodes (14): IInterModuleRequest, IInterModuleRequestHandler, InterModuleRequestHandler, GetStockLevelRequest, GetStockLevelResponse, DeviceSession, GetDeviceSessionsRequest, GetDeviceSessionsResponse (+6 more)
+Cohesion: 0.23
+Nodes (6): IInterModuleRequestHandler, InterModuleRequestHandler, GetStockLevelRequest, GetStockLevelResponse, GetStockLevelRequestHandler, Endpoint
+
+### Community 138 - "services"
+Cohesion: 0.25
+Nodes (8): container_name, environment, image, networks, ports, restart, services, mm.aspire-dashboard
+
+### Community 139 - "mm.postgres"
+Cohesion: 0.25
+Nodes (8): container_name, environment, image, networks, ports, restart, volumes, mm.postgres
 
 ### Community 140 - "DefaultIdType"
-Cohesion: 0.09
-Nodes (17): IntegrationEventHandlerBase, MaxEventAge, IInboxCleanupTarget, ModuleName, IInboxStore, ProcessedMessage, ConsumerName, MessageId (+9 more)
+Cohesion: 0.07
+Nodes (21): Inventory.Domain.StockLevels.DomainEvents.v1, IntegrationEventHandlerBase, MaxEventAge, StatelessInboxStore, Instance, AuditLogEntry, AggregateId, AggregateType (+13 more)
 
 ### Community 141 - "Type"
-Cohesion: 0.13
-Nodes (8): StrictDateTimeOffsetJsonConverter, StronglyTypedIdListReadOnlyJsonConverter, StronglyTypedIdReadOnlyJsonConverter, StronglyTypedIdReadOnlyJsonConverter, StronglyTypedIdWriteOnlyJsonConverter, IStronglyTypedId, Value, PolymorphicEventConverter
-
-### Community 146 - "ActivitySource"
-Cohesion: 0.18
-Nodes (7): RequireFeatureFilter, RouteHandlerBuilderExtensions, BackgroundJobsTelemetry, IamTelemetry, InventoryTelemetry, OutboxTelemetry, ProductsTelemetry
-
-### Community 151 - "OutboxOptions.cs"
-Cohesion: 0.32
-Nodes (7): OutboxCleanupSettings, BatchSize, CronSchedule, Enabled, RetentionDays, OutboxCleanupSettingsValidator, OutboxOptionsValidator
-
-### Community 152 - ".EnsureNoMigrationsPending"
-Cohesion: 0.39
-Nodes (3): AutoMigrateMarker, IAutoMigrateMarker, MigrationGuard
-
-### Community 165 - "CurrentUser"
 Cohesion: 0.15
-Nodes (9): CurrentUser, BackgroundUserIdAsString, Id, IdAsString, IsAuthenticated, Principal, Roles, SessionId (+1 more)
+Nodes (5): StrictDateTimeOffsetJsonConverter, StronglyTypedIdListReadOnlyJsonConverter, StronglyTypedIdReadOnlyJsonConverter, StronglyTypedIdReadOnlyJsonConverter, StronglyTypedIdWriteOnlyJsonConverter
 
-### Community 167 - "PaginationRequest"
-Cohesion: 0.05
-Nodes (46): Products.Endpoints.Stores.v1.AuditLog, Products.Endpoints.Stores.v1.My.AuditLog, Common.Application.Pagination, Products.Endpoints.Products.v1.AuditLog, PaginationRequest, After, IncludeTotal, PageNumber (+38 more)
+### Community 142 - "mm.rabbitmq"
+Cohesion: 0.25
+Nodes (8): container_name, environment, image, networks, ports, restart, volumes, mm.rabbitmq
+
+### Community 143 - "Type"
+Cohesion: 0.21
+Nodes (3): PaginationCursor, Payload, TaggedValue
+
+### Community 145 - "FixedWindow"
+Cohesion: 0.32
+Nodes (7): CustomRateLimitingOptionsValidator, FixedWindow, FailOpen, Limit, PeriodInMs, QueueLimit, FixedWindowValidator
+
+### Community 147 - "PaginationRequest"
+Cohesion: 0.25
+Nodes (8): PaginationRequest, After, IncludeTotal, PageNumber, PageSize, ShouldIncludeTotal, Skip, Take
+
+### Community 148 - "HttpWarehouseGateway"
+Cohesion: 0.36
+Nodes (6): IWarehouseGateway, DummyWarehouseGateway, HttpWarehouseGateway, ReleaseRequestBody, ReleaseResponseBody, Setup
+
+### Community 150 - "IamTelemetry"
+Cohesion: 0.29
+Nodes (3): IamTelemetry, LoginMethods, SessionRevokedReasons
+
+### Community 151 - "OutboxOptions"
+Cohesion: 0.11
+Nodes (21): OutboxCleanupSettings, BatchSize, CronSchedule, Enabled, RetentionDays, OutboxCleanupSettingsValidator, OutboxOptions, BaseBackoffSeconds (+13 more)
+
+### Community 152 - "Request"
+Cohesion: 0.29
+Nodes (7): Request, Description, Name, Price, ProductTemplateId, Quantity, RequestValidator
+
+### Community 153 - "SendForRegistration/Request.cs"
+Cohesion: 0.40
+Nodes (5): IAM.Endpoints.Otp.VersionNeutral.SendForRegistration, Request, CaptchaToken, PhoneNumber, RequestValidator
+
+### Community 156 - "GetDeviceSessionsRequest"
+Cohesion: 0.73
+Nodes (4): DeviceSession, GetDeviceSessionsRequest, GetDeviceSessionsResponse, GetDeviceSessionsRequestHandler
+
+### Community 158 - "Request"
+Cohesion: 0.33
+Nodes (6): Request, Brand, Color, Model, SearchTerm, RequestValidator
+
+### Community 159 - "Request"
+Cohesion: 0.33
+Nodes (6): Request, Address, Description, Name, OwnerId, RequestValidator
+
+### Community 161 - "ObjectStorageOptions.cs"
+Cohesion: 0.40
+Nodes (4): ObjectStorageOptionsValidator, ObjectStorageRetryMode, Adaptive, Standard
+
+### Community 164 - "IssueVerificationTokenRequestHandler"
+Cohesion: 0.80
+Nodes (3): IssueVerificationTokenRequest, IssueVerificationTokenResponse, IssueVerificationTokenRequestHandler
+
+### Community 165 - "ApplicationUserId"
+Cohesion: 0.11
+Nodes (16): IBackgroundUserContext, UserId, ApplicationUserId, IsEmpty, Value, BackgroundUserContext, UserId, CurrentUser (+8 more)
+
+### Community 166 - "Request"
+Cohesion: 0.40
+Nodes (5): Request, Brand, Color, Model, RequestValidator
+
+### Community 167 - "Request"
+Cohesion: 0.22
+Nodes (9): Request, MaxPrice, MaxQuantity, MinPrice, MinQuantity, Name, OwnerId, SearchTerm (+1 more)
+
+### Community 168 - "Request"
+Cohesion: 0.40
+Nodes (5): Request, Address, Name, SearchTerm, RequestValidator
+
+### Community 169 - "My/AuditLog/Request.cs"
+Cohesion: 0.67
+Nodes (3): Products.Endpoints.Stores.v1.My.AuditLog, Request, RequestValidator
 
 ### Community 172 - "Common.Domain.Events"
-Cohesion: 0.09
-Nodes (18): Products.Domain.Products.DomainEvents.v1, Common.Domain.Events, Common.Application.Persistence.Outbox, Products.Application.Products.DomainEventHandlers.v1, UnknownDomainEvent, V1ProductDescriptionUpdatedDomainEvent, V1ProductNameUpdatedDomainEvent, V1ProductPriceDecreasedDomainEvent (+10 more)
+Cohesion: 0.05
+Nodes (32): Products.Domain.Products.DomainEvents.v1, Common.Domain.Events, Products.Application.Stores.DomainEventHandlers.v1, Products.Domain.Stores.DomainEvents.v1, DomainEventHandlerBase, IEventHandler, IEventHandlerWrapper, DomainEvent (+24 more)
 
 ### Community 173 - "Task"
-Cohesion: 0.07
-Nodes (5): IVariantFeatureManagerExtensions, IInboxStore, HttpContentJsonExtensions, EmailMessage, SmsMessage
+Cohesion: 0.04
+Nodes (13): IVariantFeatureManagerExtensions, IInboxStore, IPrivateObjectStore, IPublicObjectStore, ObjectListItem, ObjectListPage, ObjectMetadata, UploadObjectRequest (+5 more)
 
-### Community 174 - "system_diagnostics"
-Cohesion: 0.11
-Nodes (5): Common.Application.BackgroundJobs, BackgroundJobs.Telemetry, BackgroundJobs, LoginMethods, SessionRevokedReasons
+### Community 174 - "KeycloakTokenClient.cs"
+Cohesion: 0.06
+Nodes (15): Notifications.Application.Sms, IAM.Infrastructure.Keycloak.Representations, Notifications.Infrastructure.Email, Common.Application.Caching, Notifications.Infrastructure.Sms, Notifications.Infrastructure.Email.Brevo, Inventory.Infrastructure.Gateway, Notifications.Infrastructure.Telemetry (+7 more)
 
-### Community 175 - "PaginationResponse"
-Cohesion: 0.08
-Nodes (17): AuditLogDto, PaginationResponse, HasNext, HasPrevious, HasTotal, NextPageNumber, PreviousPageNumber, TotalPages (+9 more)
+### Community 175 - "IInterModuleRequest"
+Cohesion: 0.46
+Nodes (5): IInterModuleRequest, GetUsersInRolePageRequest, GetUsersInRolePageResponse, RoleUserSummary, GetUsersInRolePageRequestHandler
+
+### Community 176 - "KeyedRow"
+Cohesion: 0.50
+Nodes (4): KeyedRow, Item, Sort, Tie
 
 ### Community 177 - "CorsOptions"
 Cohesion: 0.29
@@ -772,36 +896,76 @@ Cohesion: 0.11
 Nodes (21): CachingEntryDefaults, Duration, FactoryHardTimeout, FactorySoftTimeout, FailSafeMaxDuration, FailSafeThrottleDuration, CachingOptions, AllowInMemoryOnlyInProduction (+13 more)
 
 ### Community 180 - "SmsOptions"
-Cohesion: 0.12
-Nodes (18): SmsOptions, AppName, AttemptTimeoutSeconds, BaseUrl, MaxPerDay, MaxPerPhoneNumberPerDay, MaxRetryAttempts, MsgHeader (+10 more)
+Cohesion: 0.11
+Nodes (20): SmsOptions, AppName, AttemptTimeoutSeconds, BaseUrl, MaxPerDay, MaxPerPhoneNumberPerDay, MaxRetryAttempts, MsgHeader (+12 more)
 
 ### Community 181 - "RabbitMqOptions"
 Cohesion: 0.15
 Nodes (13): RabbitMqOptions, DefaultConcurrentMessageLimit, DefaultPrefetchCount, Host, Password, Port, RetryIntervalDeltaMs, RetryLimit (+5 more)
 
+### Community 183 - "Response"
+Cohesion: 0.50
+Nodes (3): Endpoint, Response, Id
+
+### Community 184 - "Response"
+Cohesion: 0.50
+Nodes (3): Endpoint, Response, Id
+
 ### Community 185 - "Response"
 Cohesion: 0.20
-Nodes (7): IAM.Endpoints.Users.VersionNeutral.SelfRegister, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt, Setup
+Nodes (7): Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt, Setup
 
 ### Community 187 - "ReverseProxyOptions"
 Cohesion: 0.33
 Nodes (5): ReverseProxyOptions, ForwardLimit, IsEnabled, TrustedNetworks, ReverseProxyOptionsValidator
 
 ### Community 188 - "BoundedCaptureStream"
-Cohesion: 0.15
-Nodes (7): RetryAfterHeaderExtensions, BoundedCaptureStream, CanRead, CanSeek, CanWrite, Length, Position
+Cohesion: 0.16
+Nodes (6): BoundedCaptureStream, CanRead, CanSeek, CanWrite, Length, Position
 
-### Community 190 - ".GetMeAsync"
-Cohesion: 0.07
-Nodes (20): IKeycloakPermissionClient, IServiceAccountTokenProvider, AccessTokenReader, KeycloakPaths, KeycloakPermissionClient, DecisionRepresentation, Result, PermissionRepresentation (+12 more)
+### Community 190 - "KeycloakPermissionClient"
+Cohesion: 0.22
+Nodes (9): KeycloakPermissionClient, DecisionRepresentation, Result, PermissionRepresentation, ResourceName, Scopes, TokenErrorRepresentation, Error (+1 more)
 
-### Community 194 - "JobRow"
-Cohesion: 0.11
-Nodes (13): JobRow, FailureKey, FinishedOn, Progress, QueuedOn, RequestedBy, StartedOn, Status (+5 more)
+### Community 191 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, PhoneNumber, RequestValidator
+
+### Community 192 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, SearchTerm, RequestValidator
+
+### Community 193 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
+
+### Community 194 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
 
 ### Community 195 - "Response"
 Cohesion: 0.33
 Nodes (4): Inventory.Endpoints.StockReservations.v1.Reserve, Endpoint, Response, Id
+
+### Community 196 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
+
+### Community 197 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
+
+### Community 198 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
+
+### Community 199 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
+
+### Community 200 - "NotificationsTelemetry"
+Cohesion: 0.14
+Nodes (5): RequireFeatureFilter, RouteHandlerBuilderExtensions, InventoryTelemetry, NotificationsTelemetry, ProductsTelemetry
 
 ### Community 201 - "KeycloakScopes"
 Cohesion: 0.20
@@ -828,64 +992,56 @@ Cohesion: 0.25
 Nodes (7): Editing the realm, Identity audit trail, Keycloak realm as code, Model, Production, Secrets, Seed users (dev / test only)
 
 ### Community 234 - "KeycloakPermissionAuthorizationHandler.cs"
-Cohesion: 0.13
-Nodes (3): Common.Infrastructure.Auth.Services, IAM.Infrastructure.Auth, Common.Infrastructure.Auth
+Cohesion: 0.10
+Nodes (6): Common.Infrastructure.Auth.Services, IAM.Infrastructure.Auth, Notifications.Infrastructure.Hubs, Notifications.Application.Hubs, Common.Infrastructure.Auth, Setup
 
 ### Community 236 - "NetGsmSmsGateway"
 Cohesion: 0.10
 Nodes (12): SmsCategory, CommercialIndividual, CommercialMerchant, Transactional, NetGsmSmsGateway, SendMessageBody, Msg, No (+4 more)
 
 ### Community 238 - "RequestBodyLimitFilter.cs"
-Cohesion: 0.13
-Nodes (7): RequestBodyLimitEndpointExtensions, RequestBodyLimitFilter, RequestBodyLimitMetadata, MaxBodyBytes, RequestBodyLimitMiddleware, EnrichLogsWithUserInfoMiddleware, SecurityHeadersMiddleware
-
-### Community 240 - "WebhookCallback/Request.cs"
-Cohesion: 0.40
-Nodes (5): Inventory.Endpoints.StockReservations.v1.WebhookCallback, Request, ProviderReference, ReservationId, RequestValidator
+Cohesion: 0.11
+Nodes (10): Common.Endpoints.Webhooks, SecurityHeadersOptions, Headers, SecurityHeadersOptionsValidator, RequestBodyLimitEndpointExtensions, RequestBodyLimitMetadata, MaxBodyBytes, RequestBodyLimitMiddleware (+2 more)
 
 ### Community 241 - "ResxLocalizationOptions"
 Cohesion: 0.50
 Nodes (4): ResxLocalizationOptions, DefaultCulture, SupportedCultures, ResxLocalizationOptionsValidator
 
 ### Community 242 - "Response"
-Cohesion: 0.25
-Nodes (6): IAM.Endpoints.Tokens.VersionNeutral.CreateByEmail, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt
+Cohesion: 0.15
+Nodes (10): JobStatus, Failed, Queued, Running, Succeeded, Response, AccessToken, AccessTokenExpiresAt (+2 more)
 
 ### Community 243 - "RequestBody"
-Cohesion: 0.08
-Nodes (29): Inventory.Endpoints.StockReservations.v1.Commit, Products.Endpoints.Stores.v1.Update, Request, Body, Id, RequestBody, ProviderReference, RequestBodyValidator (+21 more)
-
-### Community 250 - "microsoft_entityframeworkcore"
-Cohesion: 0.05
-Nodes (21): Common.Infrastructure.Persistence.Inbox, Common.Infrastructure.Persistence, Products.Infrastructure.Persistence, Common.Endpoints.Webhooks, Common.InterModuleRequests, Products.Infrastructure.InterModuleRequestHandlers, Products.Infrastructure.Persistence.Seeding, Common.Application.Persistence (+13 more)
+Cohesion: 0.16
+Nodes (15): Request, Body, Id, RequestBody, ProviderReference, RequestBodyValidator, RequestValidator, Request (+7 more)
 
 ### Community 251 - "Response"
-Cohesion: 0.33
-Nodes (4): Products.Endpoints.Stores.v1.My.Create, Endpoint, Response, Id
+Cohesion: 0.50
+Nodes (3): Endpoint, Response, Id
 
 ### Community 261 - "Response"
-Cohesion: 0.29
-Nodes (5): Products.Endpoints.Stores, Setup, Endpoint, Response, Id
+Cohesion: 0.33
+Nodes (4): Setup, Endpoint, Response, Id
 
-### Community 264 - "S3ObjectStoreCore"
-Cohesion: 0.08
-Nodes (10): IPrivateObjectStore, IPublicObjectStore, ObjectListItem, ObjectListPage, ObjectMetadata, UploadObjectRequest, S3ObjectStoreCore, S3PrivateObjectStore (+2 more)
+### Community 264 - "ReCaptchaResponse"
+Cohesion: 0.15
+Nodes (6): ReCaptchaResponse, ChallengeTs, ErrorCodes, Hostname, Score, Success
 
-### Community 265 - "IEnumerable"
-Cohesion: 0.12
-Nodes (11): Cross-process call path, How it works, CollectionExtensions, ICoreModule, PersistenceQueryableExtensions, BackgroundJobsModule, ActivitySourceNames, MeterNames (+3 more)
+### Community 265 - "BackgroundJobsModule"
+Cohesion: 0.22
+Nodes (8): Cross-process call path, How it works, ICoreModule, BackgroundJobsModule, ActivitySourceNames, MeterNames, Name, StartupPriority
 
 ### Community 269 - "RouteGroupBuilder"
 Cohesion: 0.04
-Nodes (22): Endpoint, Endpoint, Endpoint, Endpoint, Endpoint, Endpoint, Setup, Endpoint (+14 more)
+Nodes (23): Endpoint, Endpoint, Endpoint, Endpoint, Endpoint, Endpoint, Endpoint, Endpoint (+15 more)
 
 ### Community 276 - "CustomValidator"
-Cohesion: 0.06
-Nodes (36): ModulesOptions, EnabledModules, ModulesOptionsValidator, SecurityHeadersOptions, Headers, SecurityHeadersOptionsValidator, CustomValidator, Request (+28 more)
+Cohesion: 0.07
+Nodes (29): ModulesOptions, EnabledModules, ModulesOptionsValidator, CustomValidator, Request, RefreshToken, RequestValidator, Request (+21 more)
 
 ### Community 279 - "Response"
-Cohesion: 0.12
-Nodes (14): IAM.Endpoints.Tokens.VersionNeutral.Create, IdentityScheme, Email, PhoneNumber, IdentitySchemeOptions, Scheme, IdentitySchemeOptionsValidator, Setup (+6 more)
+Cohesion: 0.20
+Nodes (7): Endpoint, Response, AccessToken, AccessTokenExpiresAt, RefreshToken, RefreshTokenExpiresAt, Setup
 
 ### Community 280 - "SendForEmail/Request.cs"
 Cohesion: 0.40
@@ -900,20 +1056,16 @@ Cohesion: 0.22
 Nodes (9): Request, ClientId, DeviceId, DeviceName, Email, EmailVerificationToken, Password, PushToken (+1 more)
 
 ### Community 296 - "AuditLogOptions"
-Cohesion: 0.22
-Nodes (8): AuditLogOptions, PerSchemaRetentionDays, PurgeBatchSize, RetentionCron, RetentionDays, AuditLogOptionsValidator, SmsTemplatesOptions, Otp
+Cohesion: 0.33
+Nodes (6): AuditLogOptions, PerSchemaRetentionDays, PurgeBatchSize, RetentionCron, RetentionDays, AuditLogOptionsValidator
 
 ### Community 299 - "ProjectionReconciliationOptions.cs"
 Cohesion: 0.50
 Nodes (4): ProjectionReconciliationOptions, MaxPages, PageSize, ProjectionReconciliationOptionsValidator
 
-### Community 307 - "SignalROptions"
-Cohesion: 0.40
-Nodes (5): SignalROptions, RedisConnectionString, RequireRedisBackplaneInProduction, UseRedisBackplane, SignalROptionsValidator
-
-### Community 311 - "microsoft_aspnetcore_mvc"
-Cohesion: 0.08
-Nodes (27): Products.Endpoints.Stores.v1.Deactivate, Products.Endpoints.ProductTemplates.v1.Deactivate, Products.Endpoints.Stores.v1.My.RemoveProduct, Inventory.Endpoints.StockReservations.v1.Release, Common.Application.ModelBinders, Products.Endpoints.ProductTemplates.v1.Activate, Request, Id (+19 more)
+### Community 311 - "Request"
+Cohesion: 0.67
+Nodes (3): Request, Id, RequestValidator
 
 ### Community 314 - "JobHousekeepingOptions"
 Cohesion: 0.40
@@ -921,35 +1073,35 @@ Nodes (5): JobHousekeepingOptions, PageSize, RetentionHours, StaleAfterMinutes, 
 
 ### Community 319 - "Products/v1/Update/Request.cs"
 Cohesion: 0.20
-Nodes (11): Products.Endpoints.Products.v1.Update, Request, Body, Id, RequestBody, Description, Name, Price (+3 more)
+Nodes (10): Request, Body, Id, RequestBody, Description, Name, Price, Quantity (+2 more)
 
 ### Community 323 - "v1/Request.cs"
-Cohesion: 0.50
-Nodes (4): Products.Endpoints.Probe.v1, Request, Count, RequestValidator
+Cohesion: 0.67
+Nodes (3): Request, Count, RequestValidator
 
 ### Community 324 - "Products/v1/My/Update/Request.cs"
-Cohesion: 0.20
-Nodes (11): Products.Endpoints.Products.v1.My.Update, Request, Body, Id, RequestBody, Description, Name, Price (+3 more)
+Cohesion: 0.25
+Nodes (8): Request, Body, Id, RequestBody, Description, Name, Price, Quantity
 
 ## Knowledge Gaps
 - **902 isolated node(s):** `UserId`, `Id`, `IdAsString`, `Roles`, `SessionId` (+897 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1206 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **116 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1254 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **123 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Common.Application.Options` connect `Common.Application.Options` to `ObjectStorageOptions`, `Common.Infrastructure.Extensions`, `Common.Domain.ResultMonad`, `ISearchLanguageResolver`, `Setup`, `EmailOptions`, `Common.Domain.StronglyTypedIds`, `FullTextSearchOptions`, `CustomValidator`, `Response`, `OutboxOptions.cs`, `Setup.Logger.cs`, `fluentvalidation`, `CustomRateLimitingOptions`, `ObservabilityOptions`, `AuditLogOptions`, `ConfigureSwaggerOptions`, `OtpOptions`, `ProjectionReconciliationOptions.cs`, `KeycloakOptions`, `S3ObjectStoreCore.cs`, `system_diagnostics`, `CorsOptions`, `system_text_json`, `BackgroundJobsOptions`, `CaptchaOptions`, `CachingOptions`, `RabbitMqOptions`, `SignalROptions`, `SmsOptions`, `JobHousekeepingOptions`, `RequestLoggingOptions`, `DevicesOptions`, `PushOptions`, `InterModuleRequestOptions`, `ResiliencyOptions`, `KeycloakPermissionAuthorizationHandler.cs`, `InventoryOptions`, `Common.InterModuleRequests.Contracts`, `ResxLocalizationOptions`, `Localization/Setup.cs`, `DatabaseOptions.cs`, `microsoft_entityframeworkcore`, `HealthCheckOptions`?**
-  _High betweenness centrality (0.091) - this node is a cross-community bridge._
+- **Why does `Common.Application.Options` connect `Common.Application.Options` to `Setup.Observability.cs`, `Common.Domain.ResultMonad`, `EmailOptions`, `FixedWindow`, `Common.Domain.StronglyTypedIds`, `FullTextSearchOptions`, `CustomValidator`, `OutboxOptions`, `Setup.Logger.cs`, `ObjectStorageOptions.cs`, `fluentvalidation`, `ObservabilityOptions`, `AuditLogOptions`, `S3ObjectStoreCore.cs`, `ProjectionReconciliationOptions.cs`, `KeycloakOptions`, `ConfigureSwaggerOptions.cs`, `KeycloakTokenClient.cs`, `OtpOptions`, `CorsOptions`, `BackgroundJobsOptions`, `CaptchaOptions`, `CachingOptions`, `RabbitMqOptions`, `SmsOptions`, `JobHousekeepingOptions`, `ReverseProxyOptions`, `RequestLoggingOptions`, `.AddNotificationsSignalR`, `DevicesOptions`, `OpenApiOptions`, `PushOptions`, `Setup`, `InterModuleRequestOptions`, `ResiliencyOptions`, `KeycloakPermissionAuthorizationHandler.cs`, `InventoryOptions`, `Common.InterModuleRequests.Contracts`, `RequestBodyLimitFilter.cs`, `ResxLocalizationOptions`, `DatabaseOptions.cs`, `IdentityScheme`, `IApplicationBuilder`?**
+  _High betweenness centrality (0.099) - this node is a cross-community bridge._
 - **What connects `UserId`, `Id`, `IdAsString` to the rest of the system?**
   _902 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Result` be split into smaller, more focused modules?**
-  _Cohesion score 0.059673659673659674 - nodes in this community are weakly interconnected._
-- **Why does `ApplicationUserId` connect `ApplicationUserId` to `Result`, `NotificationPayload`, `AuditableEntityResponse`, `StoreId`, `Seeder`, `InterModuleRequestHandler`, `DefaultIdType`, `Type`, `KeycloakPermissionAuthorizationHandler`, `Product`, `Common.Domain.StronglyTypedIds`, `CustomValidator`, `DeviceRegistration`, `.RegisterAsync`, `For`, `CurrentUser`, `PaginationRequest`, `PaginationResponse`, `V1StoreCreatedDomainEvent`, `microsoft_aspnetcore_mvc`, `SendSecurityAlertRequestHandler`, `JobRow`, `Response`, `IBackgroundUserContext`, `Response`, `EntityTypeBuilder`, `Common.Domain.Entities`, `LoggerMessage`, `Response`, `.ForUser`, `Response`?**
-  _High betweenness centrality (0.067) - this node is a cross-community bridge._
+- **Should `IProductsDbContext` be split into smaller, more focused modules?**
+  _Cohesion score 0.055299539170506916 - nodes in this community are weakly interconnected._
+- **Why does `Result` connect `Result` to `IProductsDbContext`, `NotificationPayload`, `ApplicationUserId`, `InterModuleRequestHandler`, `.RegisterAsync`, `ICaptchaService`, `ResultTelemetryExtensions`, `Task`, `Common.Domain.Events`, `BrevoEmailGateway`, `KeycloakTokenClient`, `Task`, `VerifyPhoneOtpResponse`, `SendEmailOtpRequestHandler`, `ProductTemplate`, `DateTimeOffset`, `.GetClientKey`, `ReCaptchaService`, `.GetMeAsync`, `InventoryOptions`, `NetGsmSmsGateway`?**
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Should `AuditableEntityResponse` be split into smaller, more focused modules?**
-  _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._
-- **Why does `Result` connect `Result` to `ApplicationUserId`, `InterModuleRequestHandler`, `IEnumerable`, `Error`, `Product`, `.RegisterAsync`, `OtpOptions`, `ICaptchaService`, `ResultTelemetryExtensions`, `Task`, `PaginationQueryableExtensions`, `PaginationResponse`, `BrevoEmailGateway`, `.GetMeAsync`, `Func`, `VerifyPhoneOtpResponse`, `StockReservation`, `Common.Domain.Entities`, `ReCaptchaService`, `NetGsmSmsGateway`, `InterModuleRequestHandlerDefinition`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
+  _Cohesion score 0.1111111111111111 - nodes in this community are weakly interconnected._
+- **Why does `ApplicationUserId` connect `ApplicationUserId` to `IProductsDbContext`, `NotificationPayload`, `AuditableEntityResponse`, `ApplicationUserId`, `StoreId`, `IStronglyTypedId`, `DefaultIdType`, `Response`, `KeycloakPermissionAuthorizationHandler`, `Product`, `DeviceRegistration`, `IReadOnlyList`, `.RegisterAsync`, `GetDeviceSessionsRequest`, `Request`, `For`, `OutboxMessage`, `Request`, `Common.Domain.Events`, `IInterModuleRequest`, `Request`, `KeycloakTokenClient`, `Response`, `Response`, `ProductTemplate`, `DateTimeOffset`, `.TryDeserialize`, `LoggerMessage`, `.GetMeAsync`, `Response`, `Response`?**
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `ApplicationUserId` be split into smaller, more focused modules?**
-  _Cohesion score 0.07738095238095238 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14772727272727273 - nodes in this community are weakly interconnected._

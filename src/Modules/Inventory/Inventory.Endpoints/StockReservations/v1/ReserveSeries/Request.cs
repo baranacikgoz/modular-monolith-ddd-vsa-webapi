@@ -73,8 +73,7 @@ public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
         });
 
         // Whole-object cross-collection checks: uniqueness within the list, then referential consistency
-        // against the header quantity - mirrors Appointments' SubmitOnboarding's TempId-distinct +
-        // sibling-collection-referential-integrity rules.
+        // against the header quantity.
         RuleFor(x => x)
             .Must(body => body.Warehouses.Select(w => w.WarehouseId).Distinct().Count() == body.Warehouses.Count)
             .WithMessage(localizer.StockReservations_ReserveSeries_Warehouses_DuplicateWarehouseId)

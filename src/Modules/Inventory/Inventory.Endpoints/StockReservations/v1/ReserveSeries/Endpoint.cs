@@ -81,8 +81,7 @@ internal static class Endpoint
     /// <summary>
     ///     Recurrence-style generation: builds one <see cref="StockReservation"/> per occurrence, spaced
     ///     <see cref="Request.RequestBody.IntervalDays"/> apart from <see cref="Request.RequestBody.FirstDeadline"/>.
-    ///     Only the first occurrence carries the safety-buffer quantity - a sequence-dependent field assignment,
-    ///     mirroring CreateManualBooking's "only the first item in a batch gets a special value" shape. The
+    ///     Only the first occurrence carries the safety-buffer quantity (a sequence-dependent field assignment). The
     ///     per-warehouse <see cref="Request.RequestBody.Warehouses"/> allocation is request-shape validation only
     ///     in this phase (see RequestValidator's cross-collection sum check) - it doesn't yet have its own
     ///     domain representation; each generated reservation covers the whole product/quantity.

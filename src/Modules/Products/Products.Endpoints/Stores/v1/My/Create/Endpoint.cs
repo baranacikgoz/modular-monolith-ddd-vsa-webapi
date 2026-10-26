@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
+using Products.Infrastructure.RateLimiting;
 
 namespace Products.Endpoints.Stores.v1.My.Create;
 
@@ -19,6 +20,7 @@ internal static class Endpoint
             .MapPost("my", CreateMyStoreAsync)
             .WithDescription("Create my store.")
             .RequireScope(KeycloakScopes.Stores.CreateOwn)
+            .RequireRateLimiting(RateLimitingConstants.CreateStore)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }

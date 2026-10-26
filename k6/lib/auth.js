@@ -1,7 +1,7 @@
 import { check } from 'k6';
 import { post } from './http.js';
 
-// DummyOtpService (always active) stores "123456": no SMS sent.
+// In development the SMS provider is Dummy and OtpOptions.DummyCode is "123456": no SMS sent.
 // Captcha feature flag is false in featureFlags.json: captchaToken is ignored.
 
 // Name validators require ContainsOnlyTurkishCharacters: no digits, no ASCII-only letters.

@@ -148,6 +148,30 @@
     {
       "key": "myProductQuantity",
       "value": "50"
+    },
+    {
+      "key": "stockReservationId",
+      "value": ""
+    },
+    {
+      "key": "reservationDeadline",
+      "value": ""
+    },
+    {
+      "key": "providerReference",
+      "value": "PROVIDER-REF-1"
+    },
+    {
+      "key": "warehouseId",
+      "value": "00000000-0000-4000-8000-000000000001"
+    },
+    {
+      "key": "warehouseWebhookSecret",
+      "value": "dev-only-shared-secret-change-in-production"
+    },
+    {
+      "key": "pushToken",
+      "value": "dev-fcm-device-token"
     }
   ],
   "item": [
@@ -1979,7 +2003,7 @@
             }
           ],
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
@@ -2066,7 +2090,7 @@
             }
           ],
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
@@ -3232,6 +3256,468 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "Reserve Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"stockReservationId\", body.id);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"stockReservationId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Reservation deadlines must lie in the future: one day from now.",
+                  "pm.collectionVariables.set(\"reservationDeadline\", new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());",
+                  "// A product is needed. Run Add Product to Store first.",
+                  "if (!pm.collectionVariables.get(\"productId\")) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations"
+              ]
+            },
+            "description": "Reserve stock for a pending order. Auto-saves the reservation ID.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productId\": \"{{productId}}\",\n    \"quantity\": 1,\n    \"reservationDeadline\": \"{{reservationDeadline}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reserve Stock Series",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"stockReservationId\", body.ids[0]);",
+                  "",
+                  "pm.test(\"Variables saved\", () => {",
+                  "    pm.expect(pm.collectionVariables.get(\"stockReservationId\")).to.not.be.empty;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Reservation deadlines must lie in the future: one day from now.",
+                  "pm.collectionVariables.set(\"reservationDeadline\", new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());",
+                  "// A product is needed. Run Add Product to Store first.",
+                  "if (!pm.collectionVariables.get(\"productId\")) {",
+                  "    console.warn(\"productId not set. Run Add Product to Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/series",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                "series"
+              ]
+            },
+            "description": "Reserve a recurring series: one reservation per occurrence, spaced intervalDays apart from firstDeadline. The warehouse quantities must add up to quantityPerOccurrence. Saves the first reservation ID.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productId\": \"{{productId}}\",\n    \"quantityPerOccurrence\": 2,\n    \"firstDeadline\": \"{{reservationDeadline}}\",\n    \"intervalDays\": 7,\n    \"occurrenceCount\": 3,\n    \"warehouses\": [\n        {\n            \"warehouseId\": \"{{warehouseId}}\",\n            \"quantity\": 2\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "Get a stock reservation and its status."
+          },
+          "response": []
+        },
+        {
+          "name": "Commit Stock Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/:id/commit",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                ":id",
+                "commit"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "Commit a reservation with the external provider reference. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Release Stock Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/:id/release",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                ":id",
+                "release"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "Release a reservation's hold. Calls the warehouse gateway. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Warehouse Webhook (HMAC signed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Sign the exact body that will be sent (variables resolved) with the shared secret.",
+                  "const secret = pm.collectionVariables.get(\"warehouseWebhookSecret\");",
+                  "const body = pm.variables.replaceIn(pm.request.body.raw);",
+                  "const signature = CryptoJS.HmacSHA256(body, secret).toString(CryptoJS.enc.Hex);",
+                  "pm.request.headers.upsert({ key: \"X-Warehouse-Signature\", value: signature });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/webhooks/warehouse",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                "webhooks",
+                "warehouse"
+              ]
+            },
+            "description": "Anonymous callback from the warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header. The pre-request script signs the body with warehouseWebhookSecret. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Update Current Push Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/notifications/devices/current/push-token",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "notifications",
+                "devices",
+                "current",
+                "push-token"
+              ]
+            },
+            "description": "Set the FCM push token of the current device session. A null pushToken clears it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pushToken\": \"{{pushToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
         }
       ]
     }

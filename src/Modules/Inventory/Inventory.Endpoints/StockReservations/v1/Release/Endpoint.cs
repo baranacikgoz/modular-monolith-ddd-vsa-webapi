@@ -27,8 +27,7 @@ internal static class Endpoint
     /// <summary>
     ///     Deliberately imperative, not a fluent Result pipeline: the attempt marker must be persisted
     ///     BEFORE the external warehouse call (crash-safety) and the outcome persisted in a separate save
-    ///     AFTER it, with a real network call in between - mirrors Payments' DepositOutcomeService for the
-    ///     same reason. Wires <see cref="StockReservation.BeginReleaseAttempt"/> /
+    ///     AFTER it, with a real network call in between. Wires <see cref="StockReservation.BeginReleaseAttempt"/> /
     ///     <see cref="StockReservation.AbandonReleaseAttempt"/> to <see cref="IWarehouseGateway"/>: without
     ///     this the two-phase attempt-marker pattern and the gateway abstraction would exist only as unused
     ///     demo code.
@@ -53,8 +52,8 @@ internal static class Endpoint
 
         var reservation = loadResult.Value!;
 
-        // Already resolved: idempotent no-op, no external call needed - mirrors DepositOutcomeService's
-        // FindHeldItem-based skip, never re-attempt an outcome that already landed at the provider.
+        // Already resolved: idempotent no-op, no external call needed. Never re-attempt an outcome that
+        // already landed at the provider.
         if (reservation.Status == ReservationStatus.Released)
         {
             return Result.Success;

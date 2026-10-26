@@ -25,7 +25,7 @@ namespace Inventory.Tests.Endpoints.StockReservations;
 
 /// <summary>
 ///     Scenario-builder integration suite for the full StockReservation saga (ReserveSeries → webhook
-///     Commit → Release/Expire), mirroring Appointments' CreateManualBookingTests.cs shape: private seed
+///     Commit → Release/Expire): private seed
 ///     helpers building a real multi-aggregate scenario (via the real Products HTTP endpoints, since
 ///     Inventory.Tests deliberately does not reference Products.Domain - see module-boundary rule), then
 ///     exercising the endpoint under test, then asserting domain-invariant outcomes.
@@ -483,7 +483,7 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         var second = await SendWebhookAsync(client, reservation.Id, "provider-ref-B");
 
         // The aggregate never surfaces a conflicting webhook as a client-facing error - it's flagged for
-        // manual reconciliation instead (mirrors DepositPayment's double-charge-detection contract), so the
+        // manual reconciliation instead, so the
         // webhook always 204s; the conflict is only visible in the persisted Status.
         Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, second.StatusCode);

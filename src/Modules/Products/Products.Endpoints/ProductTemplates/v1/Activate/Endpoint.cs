@@ -15,7 +15,7 @@ internal static class Endpoint
     internal static void MapEndpoint(RouteGroupBuilder productTemplatesApiGroup)
     {
         productTemplatesApiGroup
-            .MapGet("{id}/activate", ActivateProductTemplateAsync)
+            .MapPost("{id}/activate", ActivateProductTemplateAsync)
             .WithDescription("Activate a product template.")
             .RequireScope(KeycloakScopes.ProductTemplates.Update)
             .Produces(StatusCodes.Status204NoContent)

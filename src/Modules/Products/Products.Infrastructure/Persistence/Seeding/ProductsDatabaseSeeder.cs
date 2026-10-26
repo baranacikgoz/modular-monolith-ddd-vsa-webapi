@@ -5,7 +5,7 @@ namespace Products.Infrastructure.Persistence.Seeding;
 
 internal sealed class ProductsDatabaseSeeder(IServiceScopeFactory serviceScopeFactory) : IDatabaseSeeder
 {
-    // Matches ProductsModule.StartupPriority = 4, runs after IamDatabaseSeeder (priority 2)
+    // Matches ProductsModule.StartupPriority = 4
     public int Priority => 4;
 
     public async Task SeedAsync(CancellationToken cancellationToken)

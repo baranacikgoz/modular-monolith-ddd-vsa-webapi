@@ -37,6 +37,10 @@ COPY ["src/Modules/Products/Products.Endpoints/Products.Endpoints.csproj", "src/
 COPY ["src/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj", "src/Modules/Notifications/Notifications.Infrastructure/"]
 COPY ["src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj", "src/Modules/Notifications/Notifications.Application/"]
 COPY ["src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj", "src/Modules/Notifications/Notifications.Domain/"]
+COPY ["src/Modules/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj", "src/Modules/Inventory/Inventory.Infrastructure/"]
+COPY ["src/Modules/Inventory/Inventory.Application/Inventory.Application.csproj", "src/Modules/Inventory/Inventory.Application/"]
+COPY ["src/Modules/Inventory/Inventory.Domain/Inventory.Domain.csproj", "src/Modules/Inventory/Inventory.Domain/"]
+COPY ["src/Modules/Inventory/Inventory.Endpoints/Inventory.Endpoints.csproj", "src/Modules/Inventory/Inventory.Endpoints/"]
 COPY ["src/Modules/Outbox/Outbox/Outbox.csproj", "src/Modules/Outbox/Outbox/"]
 RUN dotnet restore "./src/Host/Host/Host.csproj"
 COPY . .

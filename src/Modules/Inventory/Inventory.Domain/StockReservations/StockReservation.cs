@@ -25,8 +25,7 @@ public readonly record struct StockReservationId(DefaultIdType Value) : IStrongl
 }
 
 /// <summary>
-///     A saga-shaped hold against stock for a pending order, structurally ported from Payments'
-///     DepositPayment escrow lifecycle onto a generic "reserve stock" domain: a header-level state machine
+///     A saga-shaped hold against stock for a pending order: a header-level state machine
 ///     driven by different callers over time (the creating endpoint, a warehouse-system webhook, a sweep
 ///     job), with idempotent no-ops for retry safety and a duplicate-vs-conflicting-webhook distinction.
 /// </summary>
@@ -65,8 +64,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// <summary>
     ///     Records the warehouse system's confirmation. A second Commit with the SAME reference is a benign
     ///     duplicate webhook delivery (no-op). A second Commit with a DIFFERENT reference is a genuine
-    ///     conflict - never silently swallowed - flagged for manual reconciliation instead of rejected,
-    ///     mirroring DepositPayment.MarkCaptured's duplicate-delivery vs double-charge branches.
+    ///     conflict - never silently swallowed - flagged for manual reconciliation instead of rejected.
     /// </summary>
     public Result Commit(string providerReference, DateTimeOffset utcNow)
     {
@@ -126,8 +124,8 @@ public class StockReservation : AggregateRoot<StockReservationId>
 
     /// <summary>
     ///     Idempotent/retry-safe: if the reservation already resolved one way or another (Committed,
-    ///     Released, already Expired), there is nothing left to expire. Mirrors DepositPayment.Expire
-    ///     exactly - callable safely by a sweep job hitting a row that already moved on.
+    ///     Released, already Expired), there is nothing left to expire, so a sweep job can safely hit a row
+    ///     that already moved on.
     /// </summary>
     public Result Expire(DateTimeOffset utcNow)
     {
@@ -148,8 +146,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
     ///     If a marker already exists, an earlier attempt was interrupted between the call and recording its
     ///     outcome; its true state at the provider is unknown, so this refuses a new attempt rather than risk
     ///     a blind double-release. Callers must call <see cref="AbandonReleaseAttempt"/> after a DEFINITE
-    ///     rejection (never after an ambiguous timeout) so a genuine retry can proceed. Mirrors
-    ///     DepositPayment.BeginItemOutcomeAttempt.
+    ///     rejection (never after an ambiguous timeout) so a genuine retry can proceed.
     /// </summary>
     public Result<string> BeginReleaseAttempt(DateTimeOffset utcNow)
     {

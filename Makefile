@@ -7,12 +7,11 @@
 SLNF_BUILD = ModularMonolith.Build.slnf
 
 .PHONY: build test test-common test-host test-iam test-products test-inventory test-outbox test-notifications test-backgroundjobs sonar \
-        ef-add-Notifications ef-add-Products ef-add-Inventory ef-add-Outbox \
+        ef-add-Notifications ef-add-Products ef-add-Inventory ef-add-Outbox ef-update-all \
         ef-script-Notifications ef-script-Products ef-script-Inventory ef-script-Outbox ef-script-all \
         check-migration-drift \
         perf perf-smoke perf-down \
-        perf-rider perf-rider-smoke perf-rider-down \
-        signalr-poc
+        perf-rider perf-rider-smoke perf-rider-down
 # ── Build & Test ──────────────────────────────────────────────────────────────
 
 build:
@@ -102,6 +101,28 @@ ef-add-Outbox:
 		--output-dir Persistence/Migrations \
 		--namespace Outbox.Migrations
 
+# Usage: make ef-update-all
+# Local development only: creates the database if missing and applies every module's migrations to
+# DatabaseOptions.ConnectionString. Shared environments apply the reviewed SQL scripts instead.
+
+ef-update-all:
+	dotnet ef database update \
+		--project src/Modules/Outbox/Outbox \
+		--startup-project src/Host/Host \
+		--context OutboxDbContext
+	dotnet ef database update \
+		--project src/Modules/Notifications/Notifications.Infrastructure \
+		--startup-project src/Host/Host \
+		--context NotificationsDbContext
+	dotnet ef database update \
+		--project src/Modules/Products/Products.Infrastructure \
+		--startup-project src/Host/Host \
+		--context ProductsDbContext
+	dotnet ef database update \
+		--project src/Modules/Inventory/Inventory.Infrastructure \
+		--startup-project src/Host/Host \
+		--context InventoryDbContext
+
 # Usage: make ef-script-Products
 # Generates an idempotent SQL script committed under migrations/{Module}/
 
@@ -178,10 +199,6 @@ perf-down:
 # Rider owns postgres/rabbitmq/redis/aspire-dashboard: do NOT touch them.
 # These targets build only mm.host and run k6 against the existing infra.
 # Before running: stop any natively-running app in Rider (free port 5001).
-
-signalr-poc:
-	@echo "Serving signalr-poc/ on http://localhost:8888, open http://localhost:8888/signalr-poc.html"
-	python3 -m http.server 8888 --directory signalr-poc
 
 perf-rider:
 	@echo "Starting mm.host + k6 (Rider infra already running)..."

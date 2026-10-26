@@ -7,8 +7,8 @@ namespace Inventory.Tests.Gateway;
 
 /// <summary>
 ///     Tests <see cref="HttpWarehouseGateway"/>'s response-mapping logic via a stub transport instead of a
-///     mocking library - mirrors Payments' <c>IyzicoPaymentsGatewayTests</c> strategy: no real HTTP call, no
-///     NSubstitute, just a fake <see cref="HttpMessageHandler"/> returning canned responses.
+///     mocking library: no real HTTP call, no NSubstitute, just a fake <see cref="HttpMessageHandler"/>
+///     returning canned responses.
 /// </summary>
 public class HttpWarehouseGatewayTests
 {

@@ -34,7 +34,7 @@ public class DeactivateTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/v1/product-templates/{template.Id}/deactivate", UriKind.Relative));
+        var response = await client.PostAsync(new Uri($"/v1/product-templates/{template.Id}/deactivate", UriKind.Relative), content: null);
 
         // Assert
         if (!response.IsSuccessStatusCode)
@@ -61,7 +61,7 @@ public class DeactivateTests : BaseIntegrationTest
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
 
         // Act
-        var response = await client.GetAsync(new Uri($"/v1/product-templates/{ProductTemplateId.New()}/deactivate", UriKind.Relative));
+        var response = await client.PostAsync(new Uri($"/v1/product-templates/{ProductTemplateId.New()}/deactivate", UriKind.Relative), content: null);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -74,7 +74,7 @@ public class DeactivateTests : BaseIntegrationTest
         var client = Factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync(new Uri($"/v1/product-templates/{ProductTemplateId.New()}/deactivate", UriKind.Relative));
+        var response = await client.PostAsync(new Uri($"/v1/product-templates/{ProductTemplateId.New()}/deactivate", UriKind.Relative), content: null);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

@@ -28,7 +28,7 @@ internal static class Endpoint
             .MapPost("webhooks/warehouse", HandleWarehouseWebhookAsync)
             .WithDescription(
                 "Anonymous webhook callback from the warehouse system - authenticated via an HMAC-SHA256 " +
-                "signature header instead of a bearer token, mirroring Payments' Iyzico webhook pattern.")
+                "signature header instead of a bearer token.")
             .AllowAnonymous()
             .LimitRequestBody(context =>
                 context.RequestServices.GetRequiredService<IOptions<InventoryOptions>>().Value.WebhookMaxBodyBytes)

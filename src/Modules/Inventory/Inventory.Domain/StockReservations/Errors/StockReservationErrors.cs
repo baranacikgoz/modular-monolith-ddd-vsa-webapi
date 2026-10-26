@@ -11,7 +11,7 @@ public static class StockReservationErrors
     /// <summary>
     ///     An earlier release attempt was interrupted between calling the external warehouse system and
     ///     recording the outcome; its true state at the provider is unknown, so a new attempt is refused
-    ///     rather than risking a blind double-release. Mirrors DepositPayment.AmbiguousPriorAttempt.
+    ///     rather than risking a blind double-release.
     /// </summary>
     public static readonly Error AmbiguousPriorAttempt = new() { Key = nameof(AmbiguousPriorAttempt) };
 
