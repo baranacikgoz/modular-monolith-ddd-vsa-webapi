@@ -16,7 +16,7 @@ already exists, so a changed file only lands on a fresh database (dev: `rm -rf .
 | `backend-api` | Resource server + Authorization Services host. Email + password direct grant. Service account with `realm-management` roles `view-realm`, `view-users`, `query-users`, `manage-users` for the Admin REST API. |
 | `backend-trusted-login` | Direct grant flow override `trusted-login`: only `Username Validation`, no credential step. The backend calls it after it has verified a one-time code itself. Its secret is equivalent to every end user's password. |
 | `ci-integration` | Sample machine caller (client credentials). Authorized through `Service Account Policy`. |
-| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
+| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `stock-reservations`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
 | Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. |
 | Tokens | Access token 5 min. SSO idle 14 days, SSO max 90 days. Refresh token rotation on, max reuse 1 (one lost-response retry of the same refresh token is tolerated; the next replay makes Keycloak detach the client session and the API revoke the whole user session). |
 | User profile | `username`, `email`, `firstName`, `lastName` (required), `phoneNumber`, `phoneNumberVerified`, `birthDate` (admin-edit only). Unmanaged attributes disabled. |
@@ -32,6 +32,58 @@ caller's bearer token, so a policy change in Keycloak is effective without a dep
 | `901111111111` / `admin@modular-monolith.local` | `system-admin` | phone OTP or password `SystemAdmin-Dev-Password-1` |
 | `staff@modular-monolith.local` | `staff` | password `Staff-Dev-Password-1` |
 | `901111111112` … `901111111116` | `basic` | phone OTP |
+
+## Signing in through the API
+
+Clients never talk to Keycloak. The API brokers every flow. Which self-service routes exist depends
+on `IdentitySchemeOptions.Scheme` (`src/Host/Host/Configurations/identityScheme.json`), a one-time
+choice per deployment.
+
+| Scheme | Self-service routes | Staff and admin |
+| :--- | :--- | :--- |
+| `PhoneNumber` (default) | `POST /otp/login`, `POST /otp/registration`, `POST /tokens`, `POST /users/register/self`, `GET /users/check-registration` | `POST /tokens/email` |
+| `Email` | `POST /users/register/self/email` | `POST /tokens/email` |
+
+`POST /otp/email`, `POST /otp/email/verify`, `POST /tokens/email`, `POST /tokens/refresh` and the
+session routes exist in both schemes.
+
+**Phone and one-time code** (end users, `PhoneNumber` scheme). In development the SMS provider is
+`Dummy` and `OtpOptions.DummyCode` is `123456`.
+
+```bash
+curl -s -X POST http://localhost:5001/otp/login -H 'Content-Type: application/json' \
+  -d '{"phoneNumber":"901111111111"}'
+
+curl -s -X POST http://localhost:5001/tokens -H 'Content-Type: application/json' \
+  -d '{"phoneNumber":"901111111111","otp":"123456","deviceId":"<guid>","clientId":"mobile-app-1"}'
+```
+
+**Email, verification and password** (staff, and everyone in the `Email` scheme). The email must be
+verified first, and the password is checked by Keycloak.
+
+```bash
+curl -s -X POST http://localhost:5001/otp/email -H 'Content-Type: application/json' \
+  -d '{"email":"staff@modular-monolith.local"}'
+
+curl -s -X POST http://localhost:5001/otp/email/verify -H 'Content-Type: application/json' \
+  -d '{"email":"staff@modular-monolith.local","otp":"123456"}'
+# returns { "isRegistered": true, "emailVerificationToken": "..." }
+
+curl -s -X POST http://localhost:5001/tokens/email -H 'Content-Type: application/json' \
+  -d '{"email":"staff@modular-monolith.local","password":"Staff-Dev-Password-1","emailVerificationToken":"<token>","deviceId":"<guid>","clientId":"mobile-app-1"}'
+```
+
+Both flows return `accessToken`, `accessTokenExpiresAt`, `refreshToken` and `refreshTokenExpiresAt`.
+Exchange the refresh token before the access token expires with
+`POST /tokens/refresh` and the body `{"refreshToken":"<token>"}`; the response has the same shape.
+`GET /tokens/sessions` lists the caller's sessions, and the current one has `isCurrent: true`.
+`clientId` must be one of `DevicesOptions.AllowedClientIds`, and every login binds a session to the
+`deviceId` and `clientId` pair. The one-time code endpoints are rate limited (see `rateLimiting.json`),
+and a code can be used once.
+
+**Replay defence.** Refresh-token rotation allows one retry of the same token. A second replay makes
+Keycloak detach the client session; the API then revokes the whole user session and sends the user a
+security alert push through the Notifications module.
 
 ## Identity audit trail
 
