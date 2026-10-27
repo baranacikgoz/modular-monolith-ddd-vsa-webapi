@@ -14,6 +14,7 @@ namespace Inventory.Domain.StockPushes;
 public sealed class StockPushDirtyItem : AuditableEntity
 {
     public const string MarkVersionSequence = "StockPushMarkVersions";
+    public const int LastErrorKeyMaxLength = 128;
 
     private StockPushDirtyItem()
     {
@@ -32,5 +33,16 @@ public sealed class StockPushDirtyItem : AuditableEntity
 
     /// <summary>When the row was first marked since it was last cleared; the sweep republishes rows older than a configured age.</summary>
     public DateTimeOffset MarkedOn { get; private init; }
+
+    /// <summary>
+    ///     How many pushes of this stock level the warehouse refused alone, since the row was last marked. A row at the
+    ///     configured maximum is parked: pushes skip it and the sweep ignores it, so one stock level the warehouse cannot
+    ///     take never holds back the ones behind it. The row stays in the table for a person to see; a new mark (the
+    ///     quantity changed again) starts the count over.
+    /// </summary>
+    public int PushAttempts { get; private set; }
+
+    /// <summary>The error key of the latest refusal; null while the row has none.</summary>
+    public string? LastErrorKey { get; private set; }
 }
 #pragma warning restore S3453, S1144

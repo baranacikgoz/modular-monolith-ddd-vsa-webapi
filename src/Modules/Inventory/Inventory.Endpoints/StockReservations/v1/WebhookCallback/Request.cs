@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Common.Application.JsonConverters;
 using Common.Application.Localization.Resources;
@@ -48,10 +49,38 @@ public sealed record Request
     public string? ProviderReference { get; init; }
 
     /// <summary>
-    ///     The warehouse system's own word for the status it reports. A body without one is the original confirmation delivery.
+    ///     The warehouse system's own word for the status it reports, of whatever JSON kind: a body that carries it as a number,
+    ///     a boolean, an object or an array is not malformed, it is a word nobody mapped (see <see cref="StatusWord" />). A body
+    ///     without one, or with <c>null</c>, is the original confirmation delivery.
+    /// </summary>
+    public JsonElement? Status { get; init; }
+
+    /// <summary>
+    ///     When the warehouse system says this happened, if it says. Statuses are applied in the order of this timestamp, not of
+    ///     arrival: a delivery stamped earlier than one already applied is acknowledged and changes nothing. A body without it
+    ///     is applied in the order it arrives.
+    /// </summary>
+    public DateTimeOffset? OccurredOn { get; init; }
+
+    /// <summary>
+    ///     What <see cref="Status" /> says as a word: the text of a JSON string, the raw JSON text of any other kind (cut to
+    ///     <see cref="ReservationConstants.ProviderStatusMaxLength" />, the bound the audit trail keeps), null when there is none.
     ///     A word this system has no mapping for is acknowledged and recorded, never refused, so it is not validated here.
     /// </summary>
-    public string? Status { get; init; }
+    [JsonIgnore]
+    public string? StatusWord => Status switch
+    {
+        null or { ValueKind: JsonValueKind.Null or JsonValueKind.Undefined } => null,
+        { ValueKind: JsonValueKind.String } text => text.GetString(),
+        { } other => Bounded(other.GetRawText())
+    };
+
+    private static string Bounded(string rawText)
+    {
+        return rawText.Length > ReservationConstants.ProviderStatusMaxLength
+            ? rawText[..ReservationConstants.ProviderStatusMaxLength]
+            : rawText;
+    }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
@@ -84,7 +113,7 @@ public sealed class RequestValidator : CustomValidator<Request>
 
     private static bool ConfirmsTheReservation(Request request)
     {
-        return ProviderStatusMap.Resolve(request.Status, out var status) == ProviderStatusResolution.Mapped
+        return ProviderStatusMap.Resolve(request.StatusWord, out var status) == ProviderStatusResolution.Mapped
                && status == ReservationStatus.Committed;
     }
 }

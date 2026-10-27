@@ -7,6 +7,7 @@ using Inventory.Application.Persistence;
 using Inventory.Application.WarehouseConnections;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
+using Inventory.Infrastructure.StockReservations;
 using Inventory.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -100,13 +101,15 @@ internal static class Endpoint
             return gatewayResult.Error!;
         }
 
-        var releaseResult = reservation.Release(timeProvider.GetUtcNow());
-        if (releaseResult.IsFailure)
+        // The warehouse released: that is a fact whatever happened to the reservation meanwhile. A webhook that landed during the
+        // call may have turned it read-only (the release is then only mirrored) or changed the row under the loaded copy.
+        var applied = await dbContext.ApplyAndSaveAsync(
+            reservation, r => r.ConfirmReleaseAttempt(timeProvider.GetUtcNow()), cancellationToken);
+        if (applied.IsFailure)
         {
-            return releaseResult.Error!;
+            return applied;
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
         InventoryTelemetry.StockReservationsReleased.Add(1);
         return Result.Success;
     }

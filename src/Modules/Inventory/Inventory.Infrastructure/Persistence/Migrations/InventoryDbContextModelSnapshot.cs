@@ -431,6 +431,10 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("LastErrorKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
@@ -445,6 +449,11 @@ namespace Inventory.Infrastructure.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("PushAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
 
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
@@ -484,6 +493,12 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("LastProviderEventOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastReleaseAttemptOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LastReleaseAttemptReference")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -512,6 +527,9 @@ namespace Inventory.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LastReleaseAttemptOn")
+                        .HasFilter("\"LastReleaseAttemptReference\" IS NOT NULL");
 
                     b.HasIndex("ProductId", "Status");
 

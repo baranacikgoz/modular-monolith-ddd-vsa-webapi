@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Common.Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Common.Application.Jobs;
 
@@ -30,7 +31,10 @@ public static class JobClaimExtensions
         return claimed == 1;
     }
 
-    /// <summary>Hands a Running job back to the queue (the consumer was cancelled before it could finish).</summary>
+    /// <summary>
+    ///     Hands a Running job back to the queue (the consumer was cancelled before it could finish). It has no lease test, so it
+    ///     is for the consumer that holds the job; a sweep uses the overload with a <c>startedBefore</c> cutoff.
+    /// </summary>
     public static async Task<bool> RequeueAsync<TJob, TId>(
         this DbSet<TJob> jobs, TId id, CancellationToken cancellationToken)
         where TJob : JobRow<TId>
@@ -43,6 +47,33 @@ public static class JobClaimExtensions
             .ExecuteUpdateAsync(s => s
                     .SetProperty(j => j.Status, JobStatus.Queued)
                     .SetProperty(j => j.StartedOn, (DateTimeOffset?)null),
+                cancellationToken);
+
+        return requeued == 1;
+    }
+
+    /// <summary>
+    ///     Hands a Running job back to the queue only if it was started before <paramref name="startedBefore" />: the lease test
+    ///     is part of the same atomic update, so a job a consumer claimed again after a sweep read it as stuck is left alone.
+    ///     True when this call changed the job. <paramref name="alsoSet" /> adds columns of the job's own to the same update.
+    /// </summary>
+    public static async Task<bool> RequeueAsync<TJob, TId>(
+        this DbSet<TJob> jobs, TId id, DateTimeOffset startedBefore, CancellationToken cancellationToken,
+        Action<UpdateSettersBuilder<TJob>>? alsoSet = null)
+        where TJob : JobRow<TId>
+        where TId : IStronglyTypedId
+    {
+        var requeued = await jobs
+            .TagWith(nameof(RequeueAsync))
+            .Where(HasId<TJob, TId>(id))
+            .Where(j => j.Status == JobStatus.Running && j.StartedOn < startedBefore)
+            .ExecuteUpdateAsync(setters =>
+                {
+                    setters
+                        .SetProperty(j => j.Status, JobStatus.Queued)
+                        .SetProperty(j => j.StartedOn, (DateTimeOffset?)null);
+                    alsoSet?.Invoke(setters);
+                },
                 cancellationToken);
 
         return requeued == 1;

@@ -23,6 +23,20 @@ public sealed record StockPushDueIntegrationEvent(DefaultIdType ConnectionId) : 
     string? ICoalescableIntegrationEvent.CoalesceKey => ConnectionId.ToString();
 }
 
+/// <summary>
+///     Consumed within Inventory itself, used as a queue message: a warehouse connection was created, so it knows none of its
+///     store's stock yet and every stock level of the store has to be marked for a first full push. A message for a connection
+///     that is gone or no longer active is a no-op.
+/// </summary>
+public sealed record StockPushInitialMarkRequestedIntegrationEvent(DefaultIdType ConnectionId) : IntegrationEvent;
+
 /// <summary>Queue message of one bulk stock adjustment job. Carries only the job id: the job row holds everything else, and a
 /// message for a job that is no longer Queued is a no-op.</summary>
 public sealed record StockBulkAdjustRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
+
+/// <summary>
+///     Consumed within Inventory itself, used as a queue message: the release of this reservation was attempted and its
+///     outcome was never recorded, so the warehouse system is asked what became of it. A message for a reservation that no
+///     longer has a pending release attempt is a no-op.
+/// </summary>
+public sealed record StockReleaseReconcileRequestedIntegrationEvent(DefaultIdType ReservationId) : IntegrationEvent;

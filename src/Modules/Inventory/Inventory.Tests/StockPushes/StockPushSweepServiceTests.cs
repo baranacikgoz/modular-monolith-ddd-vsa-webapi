@@ -104,6 +104,48 @@ public class StockPushSweepServiceTests(IntegrationTestWebAppFactory factory) : 
     }
 
     [Fact]
+    public async Task Sweep_OldMarkOfADeactivatedConnection_QueuesNothingAndTheMarkStays()
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, deactivated: true);
+        await StockPushTestData.MarkAsync(Root, store.StockLevels.Single(), store.StoreId, DateTimeOffset.UtcNow.AddMinutes(-10));
+
+        await SweepAsync();
+
+        Assert.Empty(await DueEventsAsync());
+        Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+    }
+
+    [Fact]
+    public async Task Sweep_StoreGetsANewActiveConnectionAfterTheOldOneWasDeactivated_PicksUpTheStayingMarksForTheNewConnection()
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, deactivated: true);
+        await StockPushTestData.MarkAsync(Root, store.StockLevels.Single(), store.StoreId, DateTimeOffset.UtcNow.AddMinutes(-10));
+        var (replacement, _) = await WarehouseConnectionTestData.SeedAsync(Root, store.StoreId);
+
+        await SweepAsync();
+
+        var due = Assert.Single(await DueEventsAsync(), e => e.ConnectionId == replacement.Id.Value);
+        Assert.Equal(replacement.Id.Value, due.ConnectionId);
+    }
+
+    [Fact]
+    public async Task Sweep_OldMarkThatIsParked_QueuesNothing()
+    {
+        var store = await SeedMarkedStoreAsync(TimeSpan.FromMinutes(10));
+        await using (var scope = Root.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"""UPDATE "Inventory"."StockPushDirtyItems" SET "PushAttempts" = 5 WHERE "StoreId" = {store.StoreId}""");
+        }
+
+        await SweepAsync(o => o.StockPushMaxAttempts = 5);
+
+        Assert.Empty(await DueEventsAsync());
+        Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+    }
+
+    [Fact]
     public async Task Sweep_MoreConnectionsThanOnePage_QueuesEveryConnectionOnce()
     {
         var stores = new List<SeededStore>();

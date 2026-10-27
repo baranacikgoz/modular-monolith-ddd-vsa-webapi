@@ -16,6 +16,9 @@ public static class StockReservationErrors
     /// </summary>
     public static readonly Error AmbiguousPriorAttempt = new() { Key = nameof(AmbiguousPriorAttempt) };
 
+    /// <summary>A release attempt is reconciled only while its marker stands: there is no attempt whose outcome is unknown.</summary>
+    public static readonly Error NoReleaseAttempt = new() { Key = nameof(NoReleaseAttempt), StatusCode = HttpStatusCode.Conflict };
+
     /// <summary>
     ///     The provider reported a status this system has no mapping for, so the reservation no longer follows it and takes no
     ///     local command until someone resolves it by hand.
@@ -27,6 +30,12 @@ public static class StockReservationErrors
     };
 
     public static readonly Error ProviderReferenceRequired = new() { Key = nameof(ProviderReferenceRequired) };
+
+    /// <summary>Only a read-only reservation is resolved by a person; a writable one takes the ordinary commands.</summary>
+    public static readonly Error NotReadOnly = new() { Key = nameof(NotReadOnly), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The chosen status is not one a read-only reservation can be resolved to from the status it has.</summary>
+    public static readonly Error ResolutionNotAllowed = new() { Key = nameof(ResolutionNotAllowed) };
 
     public static readonly Error SeriesTooLong = new() { Key = nameof(SeriesTooLong) };
 

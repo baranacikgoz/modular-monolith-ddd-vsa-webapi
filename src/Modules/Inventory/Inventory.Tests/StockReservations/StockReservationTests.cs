@@ -17,20 +17,25 @@ public class StockReservationTests
         return reservation;
     }
 
-    private static StockReservation ReadOnlyReservation()
+    private static StockReservation ReadOnlyReservation(bool markerFirst = false)
     {
         var reservation = NewReservation();
+        if (markerFirst)
+        {
+            reservation.BeginReleaseAttempt(Now);
+        }
+
         reservation.RecordUnrecognizedProviderStatus("partially_picked", Now);
         reservation.ClearEvents();
         return reservation;
     }
 
     /// <summary>Everything a command can change on the reservation, compared before and after it runs.</summary>
-    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, bool IsReadOnly, ReservationStatus? ProviderStatus)
-        StateOf(StockReservation reservation)
+    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, DateTimeOffset? ReleaseMarkerOn,
+        bool IsReadOnly, ReservationStatus? ProviderStatus, DateTimeOffset? LastProviderEventOn) StateOf(StockReservation reservation)
     {
         return (reservation.Status, reservation.ProviderReference, reservation.LastReleaseAttemptReference,
-            reservation.IsReadOnly, reservation.ProviderStatus);
+            reservation.LastReleaseAttemptOn, reservation.IsReadOnly, reservation.ProviderStatus, reservation.LastProviderEventOn);
     }
 
     /// <summary>
@@ -147,6 +152,18 @@ public class StockReservationTests
     }
 
     [Fact]
+    public void BeginReleaseAttempt_SetsTheMarkerAndWhenItWasSet()
+    {
+        var reservation = NewReservation();
+
+        var result = reservation.BeginReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(result.Value, reservation.LastReleaseAttemptReference);
+        Assert.Equal(Now, reservation.LastReleaseAttemptOn);
+    }
+
+    [Fact]
     public void AbandonReleaseAttempt_WithAMarker_ClearsItAndRaisesTheEvent()
     {
         var reservation = NewReservation();
@@ -155,7 +172,50 @@ public class StockReservationTests
         AssertRaisesAnEventExactlyWhenAFieldChanged(reservation, r => Assert.False(r.AbandonReleaseAttempt(Now).IsFailure));
 
         Assert.Null(reservation.LastReleaseAttemptReference);
+        Assert.Null(reservation.LastReleaseAttemptOn);
         Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptAbandonedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_WritableReservation_ReleasesItLikeRelease()
+    {
+        var reservation = NewReservation();
+        reservation.BeginReleaseAttempt(Now);
+
+        var result = reservation.ConfirmReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(ReservationStatus.Released, reservation.Status);
+        Assert.Single(reservation.Events.OfType<V1StockReservationReleasedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_ReadOnlyReservationWithAMarker_ClearsTheMarkerMirrorsTheReleaseAndKeepsItsStatus()
+    {
+        var reservation = ReadOnlyReservation(markerFirst: true);
+
+        var result = reservation.ConfirmReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.True(reservation.IsReadOnly);
+        Assert.Equal(ReservationStatus.Active, reservation.Status);
+        Assert.Equal(ReservationStatus.Released, reservation.ProviderStatus);
+        Assert.Null(reservation.LastReleaseAttemptReference);
+        Assert.Null(reservation.LastReleaseAttemptOn);
+        Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptConfirmedDomainEvent>());
+        Assert.Single(reservation.Events.OfType<V1StockReservationProviderStatusMirroredDomainEvent>());
+        Assert.Empty(reservation.Events.OfType<V1StockReservationReleasedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_ReadOnlyReservationConfirmedAgain_IsANoOpWithoutAnEvent()
+    {
+        var reservation = ReadOnlyReservation(markerFirst: true);
+        reservation.ConfirmReleaseAttempt(Now);
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(reservation, r => Assert.False(r.ConfirmReleaseAttempt(Now).IsFailure));
+
+        Assert.Empty(reservation.Events);
     }
 
     [Fact]
@@ -233,6 +293,227 @@ public class StockReservationTests
             $"{command} on a read-only reservation answered {error.Key}.");
         Assert.Equal(before, StateOf(reservation));
         Assert.Empty(reservation.Events);
+    }
+
+    [Theory]
+    [InlineData(ReservationStatus.Released)]
+    [InlineData(ReservationStatus.Expired)]
+    public void ResolveReadOnly_ActiveReservation_LiftsTheFlagAppliesTheTargetAndRaisesTheResolutionEvent(ReservationStatus target)
+    {
+        var reservation = ReadOnlyReservation();
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ResolveReadOnly(target, null, Now).IsFailure));
+
+        Assert.False(reservation.IsReadOnly);
+        Assert.Null(reservation.ProviderStatus);
+        Assert.Equal(target, reservation.Status);
+        var resolved = Assert.Single(reservation.Events.OfType<V1StockReservationReadOnlyResolvedDomainEvent>());
+        Assert.Equal(V1StockReservationReadOnlyResolvedDomainEvent.StatusSnapshot.Unknown, resolved.ProviderStatus);
+        Assert.Equal(Enum.Parse<V1StockReservationReadOnlyResolvedDomainEvent.StatusSnapshot>(target.ToString()), resolved.ResolvedStatus);
+        Assert.Equal(2, reservation.Events.Count);
+    }
+
+    [Fact]
+    public void ResolveReadOnly_ToCommitted_CommitsWithTheReferenceAndRaisesTheCommittedEvent()
+    {
+        var reservation = ReadOnlyReservation();
+
+        var result = reservation.ResolveReadOnly(ReservationStatus.Committed, "ref-9", Now);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(ReservationStatus.Committed, reservation.Status);
+        Assert.Equal("ref-9", reservation.ProviderReference);
+        Assert.False(reservation.IsReadOnly);
+        Assert.Single(reservation.Events.OfType<V1StockReservationCommittedDomainEvent>());
+        Assert.Single(reservation.Events.OfType<V1StockReservationReadOnlyResolvedDomainEvent>());
+    }
+
+    [Fact]
+    public void ResolveReadOnly_ToCommittedWithoutAReference_IsRefusedAndLeavesTheReservationReadOnly()
+    {
+        var reservation = ReadOnlyReservation();
+        var before = StateOf(reservation);
+
+        var result = reservation.ResolveReadOnly(ReservationStatus.Committed, null, Now);
+
+        Assert.Equal(StockReservationErrors.ProviderReferenceRequired.Key, result.Error!.Key);
+        Assert.Equal(before, StateOf(reservation));
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ResolveReadOnly_ToCommittedAfterTheDeadline_IsRefusedLikeACommitAndLeavesTheReservationReadOnly()
+    {
+        var reservation = ReadOnlyReservation();
+        var before = StateOf(reservation);
+
+        var result = reservation.ResolveReadOnly(ReservationStatus.Committed, "ref-9", Now.AddDays(2));
+
+        Assert.Equal(StockReservationErrors.DeadlinePassed.Key, result.Error!.Key);
+        Assert.Equal(before, StateOf(reservation));
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ResolveReadOnly_TargetEqualToTheCurrentStatus_OnlyLiftsTheFlag()
+    {
+        var reservation = NewReservation();
+        reservation.Commit("ref-1", Now);
+        reservation.RecordUnrecognizedProviderStatus("partially_picked", Now);
+        reservation.ClearEvents();
+
+        var result = reservation.ResolveReadOnly(ReservationStatus.Committed, null, Now);
+
+        Assert.False(result.IsFailure);
+        Assert.False(reservation.IsReadOnly);
+        Assert.Equal(ReservationStatus.Committed, reservation.Status);
+        Assert.Equal("ref-1", reservation.ProviderReference);
+        Assert.Single(reservation.Events);
+        Assert.Single(reservation.Events.OfType<V1StockReservationReadOnlyResolvedDomainEvent>());
+    }
+
+    [Theory]
+    [InlineData(ReservationStatus.Released)]
+    [InlineData(ReservationStatus.Expired)]
+    public void ResolveReadOnly_MoveTheTransitionTableForbids_IsRefusedAndLeavesTheReservationReadOnly(ReservationStatus target)
+    {
+        var reservation = NewReservation();
+        reservation.Commit("ref-1", Now);
+        reservation.RecordUnrecognizedProviderStatus("partially_picked", Now);
+        reservation.ClearEvents();
+        var before = StateOf(reservation);
+
+        var result = reservation.ResolveReadOnly(target, null, Now);
+
+        Assert.Equal(StockReservationErrors.ResolutionNotAllowed.Key, result.Error!.Key);
+        Assert.Equal(before, StateOf(reservation));
+        Assert.Empty(reservation.Events);
+    }
+
+    [Theory]
+    [InlineData(ReservationStatus.Active)]
+    [InlineData(ReservationStatus.RequiresReconciliation)]
+    [InlineData(ReservationStatus.Unknown)]
+    public void ResolveReadOnly_TargetThatIsNotAResolution_IsRefused(ReservationStatus target)
+    {
+        var reservation = ReadOnlyReservation();
+
+        var result = reservation.ResolveReadOnly(target, "ref-1", Now);
+
+        Assert.Equal(StockReservationErrors.ResolutionNotAllowed.Key, result.Error!.Key);
+        Assert.True(reservation.IsReadOnly);
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ResolveReadOnly_WritableReservation_IsRefusedAsNotReadOnly()
+    {
+        var reservation = NewReservation();
+
+        var result = reservation.ResolveReadOnly(ReservationStatus.Released, null, Now);
+
+        Assert.Equal(StockReservationErrors.NotReadOnly.Key, result.Error!.Key);
+        Assert.Equal(ReservationStatus.Active, reservation.Status);
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ResolveReadOnly_ResolvedReservation_TakesLocalCommandsAgain()
+    {
+        var reservation = ReadOnlyReservation();
+        reservation.ResolveReadOnly(ReservationStatus.Released, null, Now);
+
+        var again = reservation.Release(Now);
+
+        Assert.False(again.IsFailure);
+        Assert.Equal(ReservationStatus.Released, reservation.Status);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_WithATimestamp_KeepsItAndRaisesTheTimestampEventAfterTheStatusEvent()
+    {
+        var reservation = NewReservation();
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Released, null, Now, Now.AddMinutes(-3)).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.IsType<V1StockReservationReleasedDomainEvent>(reservation.Events.First());
+        var recorded = Assert.IsType<V1StockReservationProviderEventTimeRecordedDomainEvent>(reservation.Events.Last());
+        Assert.Null(recorded.PreviousOccurredOn);
+        Assert.Equal(Now.AddMinutes(-3), recorded.OccurredOn);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_StatusThatChangesNothingButCarriesANewerTimestamp_StillKeepsTheTimestamp()
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-2)).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-2), reservation.LastProviderEventOn);
+        Assert.Single(reservation.Events);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_WithoutATimestamp_NeverChangesTheKeptOne()
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Active, null, Now).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_RefusedByTheCommand_KeepsNoTimestamp()
+    {
+        var reservation = NewReservation();
+
+        var result = reservation.ReceiveProviderStatus(ReservationStatus.Committed, null, Now, Now.AddMinutes(-3));
+
+        Assert.True(result.IsFailure);
+        Assert.Null(reservation.LastProviderEventOn);
+    }
+
+    [Fact]
+    public void RecordUnrecognizedProviderStatus_WithATimestamp_KeepsIt()
+    {
+        var reservation = NewReservation();
+
+        reservation.RecordUnrecognizedProviderStatus("partially_picked", Now, Now.AddMinutes(-3));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.Single(reservation.Events.OfType<V1StockReservationProviderEventTimeRecordedDomainEvent>());
+    }
+
+    [Theory]
+    [InlineData(-4, true)]
+    [InlineData(-3, false)]
+    [InlineData(-2, false)]
+    public void IsStale_ComparesTheTimestampWithTheLatestApplied(int minutesFromNow, bool expected)
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        Assert.Equal(expected, reservation.IsStale(Now.AddMinutes(minutesFromNow)));
+    }
+
+    [Fact]
+    public void IsStale_WithoutATimestampOrBeforeAnyStampedDelivery_IsNeverStale()
+    {
+        var reservation = NewReservation();
+        Assert.False(reservation.IsStale(Now.AddYears(-1)));
+
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        Assert.False(reservation.IsStale(null));
     }
 
     [Fact]

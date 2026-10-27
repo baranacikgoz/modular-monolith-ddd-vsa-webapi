@@ -89,6 +89,53 @@ public class WebhookProviderStatusTests(IntegrationTestWebAppFactory factory) : 
         Assert.Equal(ReservationConstants.ProviderStatusMaxLength, recorded.RawStatus.Length);
     }
 
+    [Theory]
+    [InlineData("42", "42")]
+    [InlineData("true", "true")]
+    [InlineData("{\"code\":7}", "{\"code\":7}")]
+    [InlineData("[\"held\"]", "[\"held\"]")]
+    public async Task Webhook_StatusThatIsNotAJsonString_IsHandledAsAnUnrecognizedWordNotRefusedAsMalformed(string rawJsonValue, string expectedWord)
+    {
+        var scenario = await SeedAsync();
+        var body = $$"""{"reservationId":"{{scenario.Reservation.Id.Value}}","deliveryId":"delivery-1","status":{{rawJsonValue}}}""";
+
+        var response = await WarehouseWebhookSender.PostRawAsync(Factory.CreateClient(), scenario.Connection.Id, scenario.Secret, body);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, scenario.Reservation.Id);
+        Assert.True(reloaded.IsReadOnly);
+        Assert.Equal(ReservationStatus.Active, reloaded.Status);
+        var recorded = Assert.Single(await RecordedEventsAsync<V1StockReservationProviderStatusUnrecognizedDomainEvent>(scenario.Reservation.Id));
+        Assert.Equal(expectedWord, recorded.RawStatus);
+    }
+
+    [Fact]
+    public async Task Webhook_StatusThatIsAnOversizedJsonObject_IsRecordedCutToTheBound()
+    {
+        var scenario = await SeedAsync();
+        var note = new string('x', 2000);
+        var body = $$$"""{"reservationId":"{{{scenario.Reservation.Id.Value}}}","deliveryId":"delivery-1","status":{"note":"{{{note}}}"}}""";
+
+        var response = await WarehouseWebhookSender.PostRawAsync(Factory.CreateClient(), scenario.Connection.Id, scenario.Secret, body);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var recorded = Assert.Single(await RecordedEventsAsync<V1StockReservationProviderStatusUnrecognizedDomainEvent>(scenario.Reservation.Id));
+        Assert.Equal(ReservationConstants.ProviderStatusMaxLength, recorded.RawStatus.Length);
+    }
+
+    [Fact]
+    public async Task Webhook_StatusThatIsJsonNull_IsTheOriginalConfirmationDelivery()
+    {
+        var scenario = await SeedAsync();
+        var body = $$"""{"reservationId":"{{scenario.Reservation.Id.Value}}","deliveryId":"delivery-1","providerReference":"provider-ref-1","status":null}""";
+
+        var response = await WarehouseWebhookSender.PostRawAsync(Factory.CreateClient(), scenario.Connection.Id, scenario.Secret, body);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, scenario.Reservation.Id);
+        Assert.Equal(ReservationStatus.Committed, reloaded.Status);
+    }
+
     [Fact]
     public async Task Webhook_KnownStatusAfterTheReservationTurnedReadOnly_OnlyMirrorsItWithNoLocalEffect()
     {

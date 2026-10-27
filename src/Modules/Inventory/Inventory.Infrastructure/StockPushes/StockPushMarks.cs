@@ -1,5 +1,7 @@
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
+using Inventory.Domain.StockPushes;
+using Inventory.Domain.WarehouseConnections;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Infrastructure.StockPushes;
@@ -15,8 +17,8 @@ internal readonly record struct PushedMark(StockLevelId StockLevelId, long MarkV
 internal static class StockPushMarks
 {
     /// <summary>
-    ///     Creates the stock level's row or gives the existing one a new version. <c>MarkedOn</c> stays the time of the first
-    ///     mark since the row was last cleared. Runs in the transaction of the save that changed the quantity.
+    ///     Creates the stock level's row or gives the existing one a new version and a fresh start (no refused pushes, no error
+    ///     key). <c>MarkedOn</c> stays the time of the first mark since the row was last cleared. Runs in the transaction of the save that changed the quantity.
     /// </summary>
     public static Task MarkAsync(
         IInventoryDbContext dbContext, StockLevelId stockLevelId, DefaultIdType storeId, DefaultIdType productId, DateTimeOffset now,
@@ -29,7 +31,106 @@ internal static class StockPushMarks
              VALUES ({stockLevelId.Value}, {storeId}, {productId}, nextval('"Inventory"."StockPushMarkVersions"'), {now}, {now})
              ON CONFLICT ("StockLevelId") DO UPDATE SET
                  "MarkVersion" = nextval('"Inventory"."StockPushMarkVersions"'),
+                 "PushAttempts" = 0,
+                 "LastErrorKey" = NULL,
                  "LastModifiedOn" = {now}
+             """,
+            cancellationToken);
+    }
+
+    /// <summary>
+    ///     Marks the stock level of <paramref name="productId" /> for the active connection of the product's store, in one
+    ///     statement: the connection is found (through the local product copy) and the mark is upserted as in
+    ///     <see cref="MarkAsync" />, and the connection's id comes back for the push message. No row comes back, and nothing is
+    ///     marked, for a product whose store has no active connection or is not copied yet. Runs in the transaction of the save
+    ///     that changed the quantity.
+    /// </summary>
+    public static async Task<IReadOnlyList<DefaultIdType>> MarkForActiveConnectionAsync(
+        IInventoryDbContext dbContext, StockLevelId stockLevelId, DefaultIdType productId, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        var active = nameof(WarehouseConnectionStatus.Active);
+
+        return await dbContext.Database
+            .SqlQuery<DefaultIdType>(
+                $"""
+                 WITH "ActiveConnection" AS (
+                     SELECT c."Id", c."StoreId"
+                     FROM "Inventory"."WarehouseConnections" AS c
+                     WHERE c."Status" = {active}
+                       AND EXISTS (
+                           SELECT 1 FROM "Inventory"."ProductSummaries" AS p
+                           WHERE p."ProductId" = {productId} AND p."StoreId" = c."StoreId")
+                 ), "Marked" AS (
+                     INSERT INTO "Inventory"."StockPushDirtyItems"
+                         ("StockLevelId", "StoreId", "ProductId", "MarkVersion", "MarkedOn", "CreatedOn")
+                     SELECT {stockLevelId.Value}, a."StoreId", {productId}, nextval('"Inventory"."StockPushMarkVersions"'), {now}, {now}
+                     FROM "ActiveConnection" AS a
+                     ON CONFLICT ("StockLevelId") DO UPDATE SET
+                         "MarkVersion" = nextval('"Inventory"."StockPushMarkVersions"'),
+                         "PushAttempts" = 0,
+                         "LastErrorKey" = NULL,
+                         "LastModifiedOn" = {now}
+                     RETURNING "StockLevelId"
+                 )
+                 SELECT a."Id" AS "Value" FROM "ActiveConnection" AS a
+                 """)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
+    ///     Marks one page of a store's stock levels in one set-based statement: the next <paramref name="pageSize" /> stock levels
+    ///     after <paramref name="after" /> (in id order) of the products the store owns, each upserted as in <see cref="MarkAsync" />.
+    ///     Returns the ids of the page, so the caller continues after the last one; a page shorter than
+    ///     <paramref name="pageSize" /> was the last. Autocommits: a store of any size is never one long transaction.
+    /// </summary>
+    public static async Task<IReadOnlyList<DefaultIdType>> MarkStorePageAsync(
+        IInventoryDbContext dbContext, DefaultIdType storeId, DefaultIdType after, int pageSize, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Database
+            .SqlQuery<DefaultIdType>(
+                $"""
+                 WITH "Page" AS (
+                     SELECT s."Id", s."ProductId"
+                     FROM "Inventory"."StockLevels" AS s
+                     JOIN "Inventory"."ProductSummaries" AS p ON p."ProductId" = s."ProductId"
+                     WHERE p."StoreId" = {storeId} AND s."Id" > {after}
+                     ORDER BY s."Id"
+                     LIMIT {pageSize}
+                 ), "Marked" AS (
+                     INSERT INTO "Inventory"."StockPushDirtyItems"
+                         ("StockLevelId", "StoreId", "ProductId", "MarkVersion", "MarkedOn", "CreatedOn")
+                     SELECT g."Id", {storeId}, g."ProductId", nextval('"Inventory"."StockPushMarkVersions"'), {now}, {now}
+                     FROM "Page" AS g
+                     ON CONFLICT ("StockLevelId") DO UPDATE SET
+                         "MarkVersion" = nextval('"Inventory"."StockPushMarkVersions"'),
+                         "PushAttempts" = 0,
+                         "LastErrorKey" = NULL,
+                         "LastModifiedOn" = {now}
+                     RETURNING "StockLevelId"
+                 )
+                 SELECT g."Id" AS "Value" FROM "Page" AS g ORDER BY g."Id"
+                 """)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
+    ///     Counts one refused push on the row, if it still carries the version that was refused: a mark made meanwhile starts
+    ///     the count over and is not to be overwritten.
+    /// </summary>
+    public static Task<int> RecordRefusalAsync(
+        IInventoryDbContext dbContext, PushedMark refused, string errorKey, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var key = errorKey.Length > StockPushDirtyItem.LastErrorKeyMaxLength
+            ? errorKey[..StockPushDirtyItem.LastErrorKeyMaxLength]
+            : errorKey;
+
+        return dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "Inventory"."StockPushDirtyItems"
+             SET "PushAttempts" = "PushAttempts" + 1, "LastErrorKey" = {key}, "LastModifiedOn" = {now}
+             WHERE "StockLevelId" = {refused.StockLevelId.Value} AND "MarkVersion" = {refused.MarkVersion}
              """,
             cancellationToken);
     }

@@ -1,9 +1,12 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Common.Tests;
+using Inventory.Application.Persistence;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Tests.Support;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Inventory.Tests.Endpoints.StockReservations;
@@ -156,5 +159,64 @@ public class ReleaseTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
         // The marker refuses a second blind release; the warehouse saw exactly one request.
         Assert.Equal(HttpStatusCode.BadRequest, again.StatusCode);
         Assert.Single(factory.Warehouse.Requests);
+    }
+
+    /// <summary>Plays the warehouse webhook that lands while the release call is in flight and turns the reservation read-only.</summary>
+    private async Task TurnReadOnlyWhileTheProviderIsCalledAsync(StockReservationId id)
+    {
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+        var reservation = await db.StockReservations.SingleAsync(r => r.Id == id);
+        reservation.RecordUnrecognizedProviderStatus("partially_picked", DateTimeOffset.UtcNow);
+        await db.SaveChangesAsync();
+    }
+
+    [Fact]
+    public async Task Release_WebhookTurnsTheReservationReadOnlyWhileTheProviderReleases_MirrorsTheReleaseAndSucceeds()
+    {
+        var reservation = await SeedConnectedReservationAsync();
+        factory.Warehouse.Responder = _ =>
+        {
+            TurnReadOnlyWhileTheProviderIsCalledAsync(reservation.Id).GetAwaiter().GetResult();
+            return FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-ref-1" });
+        };
+
+        var response = await ReleaseAsync(reservation);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, reservation.Id);
+        Assert.True(reloaded.IsReadOnly);
+        Assert.Equal(ReservationStatus.Active, reloaded.Status);
+        Assert.Equal(ReservationStatus.Released, reloaded.ProviderStatus);
+        Assert.Null(reloaded.LastReleaseAttemptReference);
+        Assert.Single(factory.Warehouse.Requests);
+    }
+
+    [Fact]
+    public async Task Release_WebhookAlreadyReleasedTheReservationWhileTheProviderReleases_SucceedsWithoutReleasingTwice()
+    {
+        var reservation = await SeedConnectedReservationAsync();
+        factory.Warehouse.Responder = _ =>
+        {
+            ReleaseWhileTheProviderIsCalledAsync(reservation.Id).GetAwaiter().GetResult();
+            return FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-ref-1" });
+        };
+
+        var response = await ReleaseAsync(reservation);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, reservation.Id);
+        Assert.Equal(ReservationStatus.Released, reloaded.Status);
+        Assert.False(reloaded.IsReadOnly);
+    }
+
+    /// <summary>Plays the warehouse webhook that reports the same release while the release call is in flight.</summary>
+    private async Task ReleaseWhileTheProviderIsCalledAsync(StockReservationId id)
+    {
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+        var reservation = await db.StockReservations.SingleAsync(r => r.Id == id);
+        reservation.ReceiveProviderStatus(ReservationStatus.Released, null, DateTimeOffset.UtcNow);
+        await db.SaveChangesAsync();
     }
 }

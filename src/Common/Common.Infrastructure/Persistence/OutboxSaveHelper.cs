@@ -82,25 +82,25 @@ public static partial class OutboxSaveHelper
         var traceId = Activity.Current?.TraceId.ToHexString();
         var parentSpanId = Activity.Current?.SpanId.ToHexString();
 
-        // Dispatch domain events in-process BEFORE opening the transaction.
-        // Handlers collect integration events into integrationEventOutbox (in-memory).
-        // If dispatch throws, nothing is saved: exception propagates before transaction opens.
-        foreach (var domainEvent in domainEvents)
-        {
-            await eventDispatcher.DispatchAsync(domainEvent, cancellationToken);
-        }
-
-        var integrationEvents = integrationEventOutbox.Drain();
-
-        // If the caller already opened a transaction (e.g. an endpoint composing multiple
-        // Identity/DbContext operations into one atomic unit), participate in it instead of
-        // nesting: only the owner commits/rolls back.
+        // The save transaction opens BEFORE the domain events are dispatched, so a handler that writes with SQL of its
+        // own (a counter upsert, a dirty mark) commits or rolls back with the change that raised the event. If the
+        // caller already opened a transaction (e.g. an endpoint composing multiple Identity/DbContext operations into
+        // one atomic unit), participate in it instead of nesting: only the owner commits/rolls back.
         var ownsTransaction = context.Database.CurrentTransaction is null;
         await using var transaction = ownsTransaction
             ? await context.Database.BeginTransactionAsync(cancellationToken)
             : null;
         try
         {
+            // Handlers collect integration events into integrationEventOutbox (in-memory).
+            // If dispatch throws, nothing is saved: the transaction rolls back below, with the handlers' own writes.
+            foreach (var domainEvent in domainEvents)
+            {
+                await eventDispatcher.DispatchAsync(domainEvent, cancellationToken);
+            }
+
+            var integrationEvents = integrationEventOutbox.Drain();
+
             var result = await baseSaveAsync(cancellationToken);
 
             if (integrationEvents.Count > 0)
@@ -184,12 +184,15 @@ public static partial class OutboxSaveHelper
 
             // Undo this attempt's bookkeeping so a retry of SaveChangesAsync on the same scope
             // rebuilds audit + outbox from the (still-present) aggregate events instead of
-            // silently saving entities without them. The drained `integrationEvents` list is
-            // intentionally discarded: re-dispatch on retry regenerates them via DispatchAsync.
+            // silently saving entities without them. The integration events this attempt collected are
+            // intentionally discarded, whether or not they were drained yet: re-dispatch on retry regenerates
+            // them via DispatchAsync, and a half-dispatched set must not leak into the next save of the scope.
             foreach (var auditEntry in auditLogEntries)
             {
                 context.Entry(auditEntry).State = EntityState.Detached;
             }
+
+            _ = integrationEventOutbox.Drain();
 
             LogSavingError(logger, ex);
             throw;

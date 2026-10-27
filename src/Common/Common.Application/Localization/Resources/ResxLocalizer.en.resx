@@ -1047,4 +1047,106 @@
   <data name="Notifications_LowStockAlert_Message" xml:space="preserve">
     <value>On-hand stock of product ({0}) fell to ({1}), below the low stock threshold of ({2}).</value>
   </data>
+  <data name="QuantityMustBePositive" xml:space="preserve">
+    <value>The quantity must be greater than zero.</value>
+  </data>
+  <data name="AdjustmentCannotBeZero" xml:space="preserve">
+    <value>The adjustment cannot be zero.</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>A reason is required.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>There is not enough stock on hand for this operation.</value>
+  </data>
+  <data name="ReservationAlreadyDeducted" xml:space="preserve">
+    <value>The stock of this reservation was already deducted.</value>
+  </data>
+  <data name="LowStockThresholdCannotBeNegative" xml:space="preserve">
+    <value>The low stock threshold cannot be negative.</value>
+  </data>
+  <data name="WarehouseConnectionNotActive" xml:space="preserve">
+    <value>The warehouse connection is not active.</value>
+  </data>
+  <data name="NotReserved" xml:space="preserve">
+    <value>The reservation is no longer active, so this operation is not possible.</value>
+  </data>
+  <data name="DeadlinePassed" xml:space="preserve">
+    <value>The reservation deadline has passed.</value>
+  </data>
+  <data name="CannotRelease" xml:space="preserve">
+    <value>The reservation cannot be released in its current status.</value>
+  </data>
+  <data name="AmbiguousPriorAttempt" xml:space="preserve">
+    <value>The outcome of an earlier release attempt is unknown, so a new attempt is refused until it is reconciled.</value>
+  </data>
+  <data name="ReservationReadOnly" xml:space="preserve">
+    <value>The reservation is read-only because the warehouse system reported a status this system does not know, and it takes no command until it is resolved.</value>
+  </data>
+  <data name="ProviderReferenceRequired" xml:space="preserve">
+    <value>The warehouse system's reference is required for a confirmation.</value>
+  </data>
+  <data name="SeriesTooLong" xml:space="preserve">
+    <value>The series exceeds the maximum number of occurrences.</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>The product was not found.</value>
+  </data>
+  <data name="ProductStoreInactive" xml:space="preserve">
+    <value>The product's store is not active.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>The file exceeds the allowed size.</value>
+  </data>
+  <data name="AlreadyQueued" xml:space="preserve">
+    <value>A job for this upload is already queued.</value>
+  </data>
+  <data name="FileUnreadable" xml:space="preserve">
+    <value>The file could not be read.</value>
+  </data>
+  <data name="TooManyRows" xml:space="preserve">
+    <value>The file has more rows than allowed.</value>
+  </data>
+  <data name="ConcurrentUpdate" xml:space="preserve">
+    <value>The stock was changed by another operation at the same time.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="JobAbandoned" xml:space="preserve">
+    <value>The job was abandoned because it made no progress after being handed back to the queue as often as allowed.</value>
+  </data>
+  <data name="MissingProductId" xml:space="preserve">
+    <value>The row has no product id.</value>
+  </data>
+  <data name="InvalidProductId" xml:space="preserve">
+    <value>The product id in the row is not valid.</value>
+  </data>
+  <data name="InvalidQuantity" xml:space="preserve">
+    <value>The quantity in the row is not valid.</value>
+  </data>
+  <data name="UnknownProduct" xml:space="preserve">
+    <value>No stock level exists for this product.</value>
+  </data>
+  <data name="StockReservations_ResolveReadOnly_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_ResolveReadOnly_TargetStatus_Invalid" xml:space="preserve">
+    <value>The target status must be Released, Committed or Expired.</value>
+  </data>
+  <data name="StockReservations_ResolveReadOnly_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Provider reference must be at most ({0}) characters.</value>
+  </data>
+  <data name="NotReadOnly" xml:space="preserve">
+    <value>The reservation is not read-only, so there is nothing to resolve.</value>
+  </data>
+  <data name="ResolutionNotAllowed" xml:space="preserve">
+    <value>The reservation cannot be resolved to the chosen status from its current status.</value>
+  </data>
+  <data name="StockReservations_ReconcileRelease_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="NoReleaseAttempt" xml:space="preserve">
+    <value>There is no release attempt with an unknown outcome.</value>
+  </data>
 </root>

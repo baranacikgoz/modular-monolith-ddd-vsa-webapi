@@ -14,6 +14,18 @@ public class InventoryOptions
     /// <summary>Active reservations examined per recurring job run.</summary>
     public required int StockReservationExpirySweepBatchSize { get; set; }
 
+    /// <summary>
+    ///     Cron for the recurring sweep that queues one reconcile message for every reservation whose release attempt marker is
+    ///     older than <see cref="StockReleaseReconcileMinAgeSeconds" />. The sweep only publishes; a consumer asks the warehouse.
+    /// </summary>
+    public required string StockReleaseReconcileSweepCron { get; set; }
+
+    /// <summary>
+    ///     A release attempt marker younger than this belongs to a request that is still waiting for the warehouse; an older one
+    ///     means the request ended without recording the outcome, and the sweep queues a reconcile.
+    /// </summary>
+    public required int StockReleaseReconcileMinAgeSeconds { get; set; }
+
     /// <summary>Cron for the recurring job that heals the local product copy from Products.</summary>
     public required string ProductSummaryReconciliationCron { get; set; }
 
@@ -62,6 +74,19 @@ public class InventoryOptions
 
     /// <summary>Stock levels sent to the warehouse in one gateway call.</summary>
     public required int StockPushBatchSize { get; set; }
+
+    /// <summary>
+    ///     How many times the warehouse may refuse one stock level on its own (a push of just that stock level, after a refused
+    ///     batch was halved down to it) before the push parks the mark: it is skipped from then on, stays visible in the table,
+    ///     and starts over when the quantity is marked again.
+    /// </summary>
+    public required int StockPushMaxAttempts { get; set; }
+
+    /// <summary>
+    ///     Stock levels one statement marks when a new warehouse connection asks for a first full push of its store; the store
+    ///     is walked in pages of this size, each its own statement, so a large store never holds one long transaction.
+    /// </summary>
+    public required int StockPushInitialMarkPageSize { get; set; }
 
     /// <summary>Gateway calls one push message makes before it queues a continuation for itself when marks remain.</summary>
     public required int StockPushBatchesPerMessage { get; set; }
@@ -126,6 +151,14 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
             .GreaterThan(0)
             .WithMessage("StockReservationExpirySweepBatchSize must be greater than 0.");
 
+        RuleFor(x => x.StockReleaseReconcileSweepCron)
+            .NotEmpty()
+            .WithMessage("StockReleaseReconcileSweepCron must not be empty.");
+
+        RuleFor(x => x.StockReleaseReconcileMinAgeSeconds)
+            .GreaterThan(0)
+            .WithMessage("StockReleaseReconcileMinAgeSeconds must be greater than 0.");
+
         RuleFor(x => x.ProductSummaryReconciliationCron)
             .NotEmpty()
             .WithMessage("ProductSummaryReconciliationCron must not be empty.");
@@ -173,6 +206,14 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockPushBatchSize)
             .GreaterThan(0)
             .WithMessage("StockPushBatchSize must be greater than 0.");
+
+        RuleFor(x => x.StockPushMaxAttempts)
+            .GreaterThan(0)
+            .WithMessage("StockPushMaxAttempts must be greater than 0.");
+
+        RuleFor(x => x.StockPushInitialMarkPageSize)
+            .GreaterThan(0)
+            .WithMessage("StockPushInitialMarkPageSize must be greater than 0.");
 
         RuleFor(x => x.StockPushBatchesPerMessage)
             .GreaterThan(0)

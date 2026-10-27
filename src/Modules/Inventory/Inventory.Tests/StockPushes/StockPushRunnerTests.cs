@@ -44,6 +44,7 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
             services.GetRequiredService<IWarehouseGatewayFactory>(),
             services.GetRequiredService<EventBus.IIntegrationEventOutbox>(),
             TestInventoryOptions.Wrapped(configure),
+            TimeProvider.System,
             NullLogger<StockPushRunner>.Instance);
 
         await runner.RunAsync(connectionId, CancellationToken.None);
@@ -306,5 +307,119 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
         Assert.Equal("application/x-www-form-urlencoded", request.ContentType);
         Assert.Equal(WarehouseConnectionTestData.ApiCredential, request.ApiKey);
         Assert.Empty(await StockPushTestData.DirtyItemsAsync(Root));
+    }
+
+    /// <summary>The warehouse refuses (400) any call that carries <paramref name="poison" /> and takes every other.</summary>
+    private void RefuseCallsCarrying(DefaultIdType poison)
+    {
+        Warehouse.Responder = request =>
+        {
+            var body = request.Content is null ? string.Empty : request.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            return body.Contains(poison.ToString(), StringComparison.Ordinal)
+                ? new HttpResponseMessage(HttpStatusCode.BadRequest)
+                : FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-batch" });
+        };
+    }
+
+    /// <summary>A store of <paramref name="stockLevels" /> marked stock levels whose oldest mark, the one at the front of every batch, is <paramref name="poisonIndex" />.</summary>
+    private async Task<(SeededStore Store, StockLevel Poison)> SeedPoisonedStoreAsync(int stockLevels, int poisonIndex = 0)
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, stockLevels);
+        var markedOn = DateTimeOffset.UtcNow.AddHours(-1);
+        for (var i = 0; i < store.StockLevels.Count; i++)
+        {
+            // The poison is the oldest mark; the others follow in seeding order.
+            var age = i == poisonIndex ? TimeSpan.FromMinutes(-30) : TimeSpan.FromMinutes(i);
+            await StockPushTestData.MarkAsync(Root, store.StockLevels[i], store.StoreId, markedOn + age);
+        }
+
+        return (store, store.StockLevels[poisonIndex]);
+    }
+
+    [Fact]
+    public async Task Run_PoisonStockLevelAtTheFrontOfABatch_TheOnesBehindItStillGoOut()
+    {
+        var (store, poison) = await SeedPoisonedStoreAsync(stockLevels: 5);
+        RefuseCallsCarrying(poison.ProductId);
+
+        await RunAsync(store.Connection!.Id, o => o.StockPushBatchSize = 3);
+
+        var left = Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+        Assert.Equal(poison.Id, left.StockLevelId);
+        Assert.Equal(1, left.PushAttempts);
+        Assert.Equal(WarehouseGatewayErrors.CallFailed(HttpStatusCode.BadRequest).Key, left.LastErrorKey);
+        var accepted = Warehouse.Requests.Where(r => !r.Body.Contains(poison.ProductId.ToString(), StringComparison.Ordinal)).ToList();
+        var sentProducts = accepted.SelectMany(SentItems).Select(i => i.ProductReference).ToHashSet();
+        Assert.Equal(store.StockLevels.Where(s => s.Id != poison.Id).Select(s => s.ProductId.ToString()).ToHashSet(), sentProducts);
+    }
+
+    [Fact]
+    public async Task Run_PoisonStockLevel_DoesNotMakeTheRunQueueAContinuationForItself()
+    {
+        var (store, poison) = await SeedPoisonedStoreAsync(stockLevels: 2);
+        RefuseCallsCarrying(poison.ProductId);
+        var before = await QueuedDueEventIdsAsync();
+
+        await RunAsync(store.Connection!.Id);
+
+        Assert.Equal(before, await QueuedDueEventIdsAsync());
+    }
+
+    [Fact]
+    public async Task Run_PoisonStockLevelRefusedAgainAndAgain_IsParkedAtTheMaximumAndNoLongerSent()
+    {
+        var (store, poison) = await SeedPoisonedStoreAsync(stockLevels: 3);
+        RefuseCallsCarrying(poison.ProductId);
+
+        for (var run = 0; run < 3; run++)
+        {
+            await RunAsync(store.Connection!.Id, o => o.StockPushMaxAttempts = 3);
+        }
+
+        var parked = Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+        Assert.Equal(3, parked.PushAttempts);
+
+        Warehouse.Reset();
+        RefuseCallsCarrying(poison.ProductId);
+        await RunAsync(store.Connection!.Id, o => o.StockPushMaxAttempts = 3);
+
+        Assert.Empty(Warehouse.Requests);
+        Assert.Equal(3, Assert.Single(await StockPushTestData.DirtyItemsAsync(Root)).PushAttempts);
+    }
+
+    [Fact]
+    public async Task Run_ParkedMark_IsPushedAgainOnceItsQuantityIsMarkedAgain()
+    {
+        var (store, poison) = await SeedPoisonedStoreAsync(stockLevels: 2);
+        RefuseCallsCarrying(poison.ProductId);
+        await RunAsync(store.Connection!.Id, o => o.StockPushMaxAttempts = 1);
+        Assert.Equal(1, Assert.Single(await StockPushTestData.DirtyItemsAsync(Root)).PushAttempts);
+
+        await StockPushTestData.ReceiveAsync(Root, poison.Id, 1);
+
+        var renewed = Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+        Assert.Equal(0, renewed.PushAttempts);
+        Assert.Null(renewed.LastErrorKey);
+        Warehouse.Reset();
+        Warehouse.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-batch" });
+        await RunAsync(store.Connection.Id, o => o.StockPushMaxAttempts = 1);
+        Assert.Empty(await StockPushTestData.DirtyItemsAsync(Root));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    [InlineData(HttpStatusCode.TooManyRequests)]
+    [InlineData(HttpStatusCode.RequestTimeout)]
+    public async Task Run_WarehouseFailureThatIsNotARefusalOfTheItems_CountsNoAttemptAndKeepsEveryMark(HttpStatusCode status)
+    {
+        var store = await SeedDirtyStoreAsync(stockLevels: 3);
+        Warehouse.Responder = _ => new HttpResponseMessage(status);
+
+        await RunAsync(store.Connection!.Id);
+
+        var marks = await StockPushTestData.DirtyItemsAsync(Root);
+        Assert.Equal(3, marks.Count);
+        Assert.All(marks, mark => Assert.Equal(0, mark.PushAttempts));
+        Assert.Single(Warehouse.Requests);
     }
 }
