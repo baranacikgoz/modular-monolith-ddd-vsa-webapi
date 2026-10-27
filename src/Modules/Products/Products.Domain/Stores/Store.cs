@@ -5,6 +5,7 @@ using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
 using Products.Domain.Stores.DomainEvents.v1;
+using Products.Domain.Stores.DomainEvents.v2;
 
 namespace Products.Domain.Stores;
 
@@ -126,7 +127,7 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
 
     private void UpdateAddress(string address)
     {
-        var @event = new V1StoreAddressUpdatedDomainEvent(Id, address);
+        var @event = new V2StoreAddressUpdatedDomainEvent(Id, address, Address);
         Address = address;
         RaiseEvent(@event);
     }
