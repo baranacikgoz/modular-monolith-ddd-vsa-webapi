@@ -21,7 +21,10 @@ internal sealed partial class NotificationsHub(ILogger<NotificationsHub> logger)
             await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForUser(userId));
 
             // Alerts addressed to a role reach its members through the role group, so they need no per-user address list.
-            var roles = Context.User?.FindAll(JwtClaimNames.Roles).Select(claim => claim.Value).Distinct() ?? [];
+            var roles = Context.User?.FindAll(JwtClaimNames.Roles)
+                .Select(claim => claim.Value)
+                .Where(NotificationGroupName.IsAddressableRole)
+                .Distinct() ?? [];
             foreach (var role in roles)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForRole(role));
