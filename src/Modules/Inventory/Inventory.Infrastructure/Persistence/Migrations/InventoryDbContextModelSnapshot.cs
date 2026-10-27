@@ -436,6 +436,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsReadOnly")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
@@ -452,6 +455,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<string>("ProviderReference")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int?>("ProviderStatus")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");

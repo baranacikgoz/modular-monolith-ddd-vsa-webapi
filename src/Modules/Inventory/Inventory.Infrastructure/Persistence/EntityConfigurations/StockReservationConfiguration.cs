@@ -37,6 +37,14 @@ internal sealed class StockReservationConfiguration : AuditableEntityConfigurati
             .HasMaxLength(Constants.ReleaseAttemptReferenceMaxLength)
             .IsRequired(false);
 
+        builder
+            .Property(r => r.IsReadOnly)
+            .IsRequired();
+
+        builder
+            .Property(r => r.ProviderStatus)
+            .IsRequired(false);
+
         // Available-quantity aggregation (GetStockLevelRequestHandler) filters by ProductId + Status.
         builder
             .HasIndex(r => new { r.ProductId, r.Status });

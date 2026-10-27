@@ -8,7 +8,8 @@ using Microsoft.Extensions.Options;
 
 namespace Inventory.Infrastructure.StockReservations;
 
-/// <summary>Expires stock reservations past their deadline. Each reservation is saved individually: one
+/// <summary>Expires stock reservations past their deadline. A read-only reservation is left alone: it takes no local command.
+/// Each reservation is saved individually: one
 /// poisoned row's failed save is logged and the row detached, instead of aborting the whole sweep or leaving
 /// stale tracked state to contaminate the next row in the same batch.</summary>
 public sealed partial class StockReservationExpirySweepService(
@@ -24,7 +25,7 @@ public sealed partial class StockReservationExpirySweepService(
 
         var expired = await dbContext.StockReservations
             .TagWith(nameof(StockReservationExpirySweepService))
-            .Where(r => r.Status == ReservationStatus.Active && r.ReservationDeadline < utcNow)
+            .Where(r => r.Status == ReservationStatus.Active && !r.IsReadOnly && r.ReservationDeadline < utcNow)
             .Take(batchSize)
             .ToListAsync(cancellationToken);
 

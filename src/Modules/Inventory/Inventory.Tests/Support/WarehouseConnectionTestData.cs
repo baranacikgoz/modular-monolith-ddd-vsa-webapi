@@ -58,18 +58,24 @@ internal static class WarehouseConnectionTestData
         return summary.ProductId;
     }
 
-    /// <summary>Saves an active reservation of <paramref name="productId" />, optionally already committed.</summary>
+    /// <summary>Saves an active reservation of <paramref name="productId" />, optionally already committed and optionally read-only.</summary>
     public static async Task<StockReservation> SeedReservationAsync(
-        IServiceProvider services, DefaultIdType productId, bool committed = false)
+        IServiceProvider services, DefaultIdType productId, bool committed = false, bool readOnly = false,
+        DateTimeOffset? deadline = null)
     {
         await using var scope = services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
 
-        var deadline = DateTimeOffset.UtcNow.AddDays(5);
-        var reservation = StockReservation.Reserve(productId, 10, deadline);
+        var reservedUntil = deadline ?? DateTimeOffset.UtcNow.AddDays(5);
+        var reservation = StockReservation.Reserve(productId, 10, reservedUntil);
         if (committed)
         {
-            reservation.Commit("seeded-provider-reference", deadline.AddMinutes(-1));
+            reservation.Commit("seeded-provider-reference", reservedUntil.AddMinutes(-1));
+        }
+
+        if (readOnly)
+        {
+            reservation.RecordUnrecognizedProviderStatus("seeded_unmapped_word", reservedUntil.AddMinutes(-1));
         }
 
         db.StockReservations.Add(reservation);

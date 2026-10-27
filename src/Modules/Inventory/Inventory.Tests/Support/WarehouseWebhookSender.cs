@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 
@@ -15,9 +16,15 @@ internal static class WarehouseWebhookSender
         return new Uri($"/v1/stock-reservations/webhooks/warehouse/{connectionId}", UriKind.Relative);
     }
 
-    public static string BodyOf(StockReservationId reservationId, string deliveryId, string providerReference)
+    public static string BodyOf(StockReservationId reservationId, string deliveryId, string? providerReference, string? status = null)
     {
-        return $$"""{"ReservationId":"{{reservationId.Value}}","ProviderReference":"{{providerReference}}","DeliveryId":"{{deliveryId}}"}""";
+        return JsonSerializer.Serialize(new
+        {
+            ReservationId = reservationId.Value,
+            ProviderReference = providerReference,
+            DeliveryId = deliveryId,
+            Status = status
+        });
     }
 
     public static string Sign(string rawBody, string secret)
@@ -31,10 +38,11 @@ internal static class WarehouseWebhookSender
         string secret,
         StockReservationId reservationId,
         string deliveryId,
-        string providerReference,
-        string? signatureOverride = null)
+        string? providerReference,
+        string? signatureOverride = null,
+        string? status = null)
     {
-        return await PostRawAsync(client, connectionId, secret, BodyOf(reservationId, deliveryId, providerReference), signatureOverride);
+        return await PostRawAsync(client, connectionId, secret, BodyOf(reservationId, deliveryId, providerReference, status), signatureOverride);
     }
 
     public static async Task<HttpResponseMessage> PostRawAsync(

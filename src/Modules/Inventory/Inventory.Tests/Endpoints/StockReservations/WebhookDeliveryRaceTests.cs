@@ -82,14 +82,14 @@ public class WebhookDeliveryRaceTests(IntegrationTestWebAppFactory factory) : Ba
         {
             await using var competingScope = Factory.Services.CreateAsyncScope();
             await competingScope.ServiceProvider.GetRequiredService<WarehouseWebhookIntake>()
-                .ReceiveAsync(connection, competingDeliveryId, reservation.Id, providerReference, CancellationToken.None);
+                .ReceiveAsync(connection, competingDeliveryId, reservation.Id, providerReference, null, CancellationToken.None);
         });
 
         await using var scope = Factory.Services.CreateAsyncScope();
         await using var racingDb = NewContext(scope.ServiceProvider, interceptor);
         var intake = new WarehouseWebhookIntake(racingDb, TimeProvider.System);
 
-        return await intake.ReceiveAsync(connection, ownDeliveryId, reservation.Id, providerReference, CancellationToken.None);
+        return await intake.ReceiveAsync(connection, ownDeliveryId, reservation.Id, providerReference, null, CancellationToken.None);
     }
 
     private async Task<int> CountDeliveriesAsync(WarehouseConnectionId connectionId)

@@ -44,7 +44,14 @@ public sealed record Request
     [JsonConverter(typeof(StronglyTypedIdReadOnlyJsonConverter<StockReservationId>))]
     public required StockReservationId ReservationId { get; init; }
 
-    public required string ProviderReference { get; init; }
+    /// <summary>The warehouse system's reference of the confirmation. Required when the delivery confirms the reservation, ignored otherwise.</summary>
+    public string? ProviderReference { get; init; }
+
+    /// <summary>
+    ///     The warehouse system's own word for the status it reports. A body without one is the original confirmation delivery.
+    ///     A word this system has no mapping for is acknowledged and recorded, never refused, so it is not validated here.
+    /// </summary>
+    public string? Status { get; init; }
 }
 
 public sealed class RequestValidator : CustomValidator<Request>
@@ -66,11 +73,18 @@ public sealed class RequestValidator : CustomValidator<Request>
 
         RuleFor(x => x.ProviderReference)
             .NotEmpty()
-            .WithMessage(localizer.StockReservations_WebhookCallback_ProviderReference_NotEmpty);
+            .WithMessage(localizer.StockReservations_WebhookCallback_ProviderReference_NotEmpty)
+            .When(ConfirmsTheReservation);
 
         RuleFor(x => x.ProviderReference)
             .MaximumLength(ReservationConstants.ProviderReferenceMaxLength)
             .WithMessage(string.Format(CultureInfo.CurrentCulture,
                 localizer.StockReservations_WebhookCallback_ProviderReference_MaximumLength, ReservationConstants.ProviderReferenceMaxLength));
+    }
+
+    private static bool ConfirmsTheReservation(Request request)
+    {
+        return ProviderStatusMap.Resolve(request.Status, out var status) == ProviderStatusResolution.Mapped
+               && status == ReservationStatus.Committed;
     }
 }
