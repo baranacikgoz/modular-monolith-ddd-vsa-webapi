@@ -1052,4 +1052,103 @@
   <data name="Notifications_LowStockAlert_Message" xml:space="preserve">
     <value>({0}) numaralı ürünün eldeki stoku ({1}) adede düştü, düşük stok eşiği ({2}).</value>
   </data>
+  <data name="QuantityMustBePositive" xml:space="preserve">
+    <value>Miktar sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="AdjustmentCannotBeZero" xml:space="preserve">
+    <value>Düzeltme miktarı sıfır olamaz.</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>Bir gerekçe girilmelidir.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Eldeki stok bu işlem için yetersiz.</value>
+  </data>
+  <data name="ReservationAlreadyDeducted" xml:space="preserve">
+    <value>Bu rezervasyonun stoku daha önce düşülmüş.</value>
+  </data>
+  <data name="LowStockThresholdCannotBeNegative" xml:space="preserve">
+    <value>Düşük stok eşiği negatif olamaz.</value>
+  </data>
+  <data name="CannotChangeWhileDeactivated" xml:space="preserve">
+    <value>Devre dışı bırakılmış bir depo bağlantısı değiştirilemez.</value>
+  </data>
+  <data name="WarehouseConnectionNotActive" xml:space="preserve">
+    <value>Depo bağlantısı aktif değil.</value>
+  </data>
+  <data name="NotReserved" xml:space="preserve">
+    <value>Rezervasyon artık aktif olmadığı için bu işlem yapılamaz.</value>
+  </data>
+  <data name="DeadlinePassed" xml:space="preserve">
+    <value>Rezervasyonun son tarihi geçti.</value>
+  </data>
+  <data name="CannotRelease" xml:space="preserve">
+    <value>Rezervasyon bu durumdayken serbest bırakılamaz.</value>
+  </data>
+  <data name="AmbiguousPriorAttempt" xml:space="preserve">
+    <value>Önceki serbest bırakma denemesinin sonucu belli değil, yeni deneme yapılamaz.</value>
+  </data>
+  <data name="ReservationReadOnly" xml:space="preserve">
+    <value>Depo sistemi tanınmayan bir durum bildirdiği için rezervasyon salt okunur ve durum elle çözülene kadar komut kabul etmez.</value>
+  </data>
+  <data name="ProviderReferenceRequired" xml:space="preserve">
+    <value>Onay için depo sistemi referansı gereklidir.</value>
+  </data>
+  <data name="SeriesTooLong" xml:space="preserve">
+    <value>Seri, izin verilen en fazla tekrar sayısını aşıyor.</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Ürün bulunamadı.</value>
+  </data>
+  <data name="ProductStoreInactive" xml:space="preserve">
+    <value>Ürünün mağazası aktif değil.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>Dosya izin verilen boyutu aşıyor.</value>
+  </data>
+  <data name="AlreadyQueued" xml:space="preserve">
+    <value>Bu yükleme için zaten sıraya alınmış bir iş var.</value>
+  </data>
+  <data name="FileUnreadable" xml:space="preserve">
+    <value>Dosya okunamadı.</value>
+  </data>
+  <data name="TooManyRows" xml:space="preserve">
+    <value>Dosya izin verilen satır sayısını aşıyor.</value>
+  </data>
+  <data name="ConcurrentUpdate" xml:space="preserve">
+    <value>Stok aynı anda başka bir işlem tarafından değiştirildi.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu.</value>
+  </data>
+  <data name="JobAbandoned" xml:space="preserve">
+    <value>İş, izin verilen sayıda kuyruğa geri verildiği halde ilerleyemediği için terk edildi.</value>
+  </data>
+  <data name="MissingProductId" xml:space="preserve">
+    <value>Satırda ürün kimliği yok.</value>
+  </data>
+  <data name="InvalidProductId" xml:space="preserve">
+    <value>Satırdaki ürün kimliği geçerli değil.</value>
+  </data>
+  <data name="InvalidQuantity" xml:space="preserve">
+    <value>Satırdaki miktar geçerli değil.</value>
+  </data>
+  <data name="UnknownProduct" xml:space="preserve">
+    <value>Bu ürün için stok kaydı yok.</value>
+  </data>
+  <data name="WarehouseGatewayCallFailed" xml:space="preserve">
+    <value>Depo sistemi isteği kabul etmedi.</value>
+  </data>
+  <data name="WarehouseGatewayMalformedResponse" xml:space="preserve">
+    <value>Depo sistemi beklenen biçimde yanıt vermedi.</value>
+  </data>
+  <data name="WarehouseGatewayThrottled" xml:space="preserve">
+    <value>Depo sistemi için istek sınırına ulaşıldı, biraz sonra tekrar deneyin.</value>
+  </data>
+  <data name="WarehouseGatewayOutcomeUnknown" xml:space="preserve">
+    <value>Depo sistemi zamanında yanıt vermedi, işlemin sonucu belli değil.</value>
+  </data>
+  <data name="WarehouseGatewayCircuitOpen" xml:space="preserve">
+    <value>Depo sistemi geçici olarak kullanılamıyor, çağrı gönderilmedi.</value>
+  </data>
 </root>
