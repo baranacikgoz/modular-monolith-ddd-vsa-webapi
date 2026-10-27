@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Inventory.Application.Persistence;
 using Inventory.Application.ProductSummaries;
+using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockReservations;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ public sealed class InventoryDbContext(
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
     public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
+    public DbSet<StoreDailyStockTotal> StoreDailyStockTotals => Set<StoreDailyStockTotal>();
 
     /// <summary>The ledger is append-only: a tracked change to an existing movement fails before anything is written.</summary>
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

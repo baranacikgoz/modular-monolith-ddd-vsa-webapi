@@ -41,7 +41,7 @@ public class StockMovementLedgerTests(IntegrationTestWebAppFactory factory) : Ba
         var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
         var movement = await db.StockMovements.SingleAsync(m => m.StockLevelId == id);
 
-        ((DbContext)db).Entry(movement).Property(m => m.Quantity).CurrentValue = 99;
+        db.Entry(movement).Property(m => m.Quantity).CurrentValue = 99;
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => db.SaveChangesAsync());
         Assert.Equal(5, (await StockLevelTestData.LedgerOfAsync(Factory.Services, id)).Single().Quantity);

@@ -14,6 +14,13 @@ internal sealed class StockMovementConfiguration : AuditableEntityConfiguration<
         // The ledger list: one stock level's movements, newest first.
         builder.HasIndex(m => new { m.StockLevelId, m.CreatedOn });
 
+        // A reservation takes its quantity out of the stock once: the consumer checks the ledger under the row lock, this
+        // index is the race-safe backstop.
+        builder
+            .HasIndex(m => m.ReservationId)
+            .IsUnique()
+            .HasFilter($"\"Type\" = '{nameof(StockMovementType.ReservationCommitted)}'");
+
         builder
             .Property(m => m.Type)
             .HasConversion<string>()

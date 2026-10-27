@@ -128,7 +128,7 @@ public class StockLevelTests
         var stockLevel = NewStockLevel(10);
         var reservationId = DefaultIdType.CreateVersion7();
 
-        var result = stockLevel.DeductForReservation(reservationId, 4);
+        var result = stockLevel.DeductForReservation(reservationId, 4, alreadyDeducted: false);
 
         Assert.False(result.IsFailure);
         Assert.Equal(6, stockLevel.QuantityOnHand);
@@ -145,9 +145,21 @@ public class StockLevelTests
     {
         var stockLevel = NewStockLevel(3);
 
-        var result = stockLevel.DeductForReservation(DefaultIdType.CreateVersion7(), 4);
+        var result = stockLevel.DeductForReservation(DefaultIdType.CreateVersion7(), 4, alreadyDeducted: false);
 
         Assert.Equal(StockLevelErrors.InsufficientStock.Key, result.Error!.Key);
+        Assert.Empty(stockLevel.Movements);
+    }
+
+    [Fact]
+    public void DeductForReservation_AlreadyDeducted_ReturnsReservationAlreadyDeductedAndChangesNothing()
+    {
+        var stockLevel = NewStockLevel(10);
+
+        var result = stockLevel.DeductForReservation(DefaultIdType.CreateVersion7(), 4, alreadyDeducted: true);
+
+        Assert.Equal(StockLevelErrors.ReservationAlreadyDeducted.Key, result.Error!.Key);
+        Assert.Equal(10, stockLevel.QuantityOnHand);
         Assert.Empty(stockLevel.Movements);
     }
 

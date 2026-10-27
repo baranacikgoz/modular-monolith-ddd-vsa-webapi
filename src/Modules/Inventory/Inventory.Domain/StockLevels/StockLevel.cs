@@ -92,9 +92,18 @@ public class StockLevel : AggregateRoot<StockLevelId>
         return ApplyMovement(StockMovementType.Adjusted, signedQuantity, reason, reservationId: null);
     }
 
-    /// <summary>A committed stock reservation takes its quantity out of the on-hand stock.</summary>
-    public Result DeductForReservation(DefaultIdType reservationId, int quantity)
+    /// <summary>
+    ///     A committed stock reservation takes its quantity out of the on-hand stock. <paramref name="alreadyDeducted" /> is
+    ///     the caller's queried fact (the ledger holds a deduction for this reservation); the race between two callers is
+    ///     closed by the unique index on the ledger's reservation id.
+    /// </summary>
+    public Result DeductForReservation(DefaultIdType reservationId, int quantity, bool alreadyDeducted)
     {
+        if (alreadyDeducted)
+        {
+            return StockLevelErrors.ReservationAlreadyDeducted;
+        }
+
         if (quantity <= 0)
         {
             return StockLevelErrors.QuantityMustBePositive;

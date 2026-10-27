@@ -5,6 +5,7 @@
     "StockReservationExpirySweepCron": "0 */15 * * * *",
     "StockReservationExpirySweepBatchSize": 100,
     "ProductSummaryReconciliationCron": "0 3 * * *",
+    "BusinessTimeZoneId": "Europe/Berlin",
     "WarehouseGatewayProvider": "Dummy",
     "WarehouseGatewayBaseUrl": "https://warehouse.example-partner.local",
     "WebhookSharedSecret": "dev-only-shared-secret-change-in-production",

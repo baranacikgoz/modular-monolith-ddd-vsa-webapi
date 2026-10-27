@@ -145,6 +145,43 @@ namespace Inventory.Infrastructure.Migrations
                     b.ToTable("ProductSummaries", "Inventory");
                 });
 
+            modelBuilder.Entity("Inventory.Domain.StockCounters.StoreDailyStockTotal", b =>
+                {
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date");
+
+                    b.Property<int>("CommittedReservations")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("CommittedUnits")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("StoreId", "Day");
+
+                    b.ToTable("StoreDailyStockTotals", "Inventory");
+                });
+
             modelBuilder.Entity("Inventory.Domain.StockLevels.StockLevel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -228,6 +265,10 @@ namespace Inventory.Infrastructure.Migrations
                         .HasColumnName("xmin");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReservationId")
+                        .IsUnique()
+                        .HasFilter("\"Type\" = 'ReservationCommitted'");
 
                     b.HasIndex("StockLevelId", "CreatedOn");
 

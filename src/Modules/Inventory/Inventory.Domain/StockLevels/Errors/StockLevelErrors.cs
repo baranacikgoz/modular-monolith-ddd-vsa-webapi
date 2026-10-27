@@ -11,5 +11,8 @@ public static class StockLevelErrors
     /// <summary>The movement would take the on-hand quantity below zero.</summary>
     public static readonly Error InsufficientStock = new() { Key = nameof(InsufficientStock) };
 
+    /// <summary>The ledger already holds the deduction of this reservation.</summary>
+    public static readonly Error ReservationAlreadyDeducted = new() { Key = nameof(ReservationAlreadyDeducted) };
+
     public static readonly Error LowStockThresholdCannotBeNegative = new() { Key = nameof(LowStockThresholdCannotBeNegative) };
 }
