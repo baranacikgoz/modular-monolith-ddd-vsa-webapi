@@ -17,6 +17,12 @@ public static class StoreErrors
     /// <summary>The identity provider already holds a user with this email. Shares its key and message with IAM's own error of the same name.</summary>
     public static readonly Error EmailAlreadyRegistered = new() { Key = nameof(EmailAlreadyRegistered), StatusCode = HttpStatusCode.Conflict };
 
+    /// <summary>The email verification token is unknown, expired, already used or issued for another address.</summary>
+    public static readonly Error InvalidEmailVerificationToken = new() { Key = nameof(InvalidEmailVerificationToken) };
+
+    /// <summary>Too many wrong tokens were sent for this address; the token is spent and a new email code is needed.</summary>
+    public static readonly Error TooManyEmailVerificationAttempts = new() { Key = nameof(TooManyEmailVerificationAttempts) };
+
     /// <summary>The identity provider refused the user (for example its password policy); <paramref name="message" /> is its reason, when it gave one.</summary>
     public static Error IdentityProviderRejectedUser(string? message)
     {

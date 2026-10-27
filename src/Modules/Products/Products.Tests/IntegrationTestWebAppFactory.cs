@@ -2,6 +2,7 @@ using Common.Application.Storage;
 using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Common.InterModuleRequests.Notifications;
 using Common.Tests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -27,12 +28,21 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
     public IInterModuleRequestClient<DeprovisionUserRequest, DeprovisionUserResponse> DeprovisionUserClient { get; } =
         Substitute.For<IInterModuleRequestClient<DeprovisionUserRequest, DeprovisionUserResponse>>();
 
-    /// <summary>Forgets earlier calls and answers every provisioning request with a new user id.</summary>
+    /// <summary>Stands in for Notifications' check of the email verification token the store application carries; the
+    /// OTP store behind it is covered by Notifications' and IAM's own tests.</summary>
+    public IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse> VerifyEmailOtpClient { get; } =
+        Substitute.For<IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse>>();
+
+    /// <summary>Forgets earlier calls, accepts every email verification token and answers every provisioning request
+    /// with a new user id.</summary>
     public void ResetIamClients()
     {
         ProvisionUserClient.ClearSubstitute(ClearOptions.All);
         DeprovisionUserClient.ClearSubstitute(ClearOptions.All);
+        VerifyEmailOtpClient.ClearSubstitute(ClearOptions.All);
 
+        VerifyEmailOtpClient.SendAsync(Arg.Any<VerifyEmailOtpRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new VerifyEmailOtpResponse(OtpVerificationFailureReason.None));
         ProvisionUserClient.SendAsync(Arg.Any<ProvisionUserRequest>(), Arg.Any<CancellationToken>())
             .Returns(_ => new ProvisionUserResponse(new ApplicationUserId(DefaultIdType.CreateVersion7()), ProvisionUserFailureReason.None));
         DeprovisionUserClient.SendAsync(Arg.Any<DeprovisionUserRequest>(), Arg.Any<CancellationToken>())
@@ -52,6 +62,7 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
             services.AddSingleton<IPrivateObjectStore>(new InMemoryObjectStore());
             services.AddSingleton(ProvisionUserClient);
             services.AddSingleton(DeprovisionUserClient);
+            services.AddSingleton(VerifyEmailOtpClient);
         });
     }
 }
