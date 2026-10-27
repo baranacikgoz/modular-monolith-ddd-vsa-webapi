@@ -167,6 +167,11 @@ internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inn
         return inner.GetUsersInRoleAsync(roleName, skip, take, cancellationToken);
     }
 
+    public Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken)
+    {
+        return inner.GetRolesContainingAsync(roleName, cancellationToken);
+    }
+
     public Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken)
     {
         return inner.GetUserSessionsAsync(userId, cancellationToken);
