@@ -241,6 +241,125 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
     }
 
     [Fact]
+    public async Task GetUsersInRolePage_UserHoldingTheRoleOnlyThroughAGroup_IsListed()
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        await realm.CreateRoleAsync(role);
+        var group = await realm.CreateGroupAsync(NewRoleName("team"));
+        await realm.AddRealmRoleToGroupAsync(group, role);
+        var member = await CreateUserWithRolesAsync();
+        var outsider = await CreateUserWithRolesAsync();
+        await realm.AddUserToGroupAsync(member, group);
+
+        var ids = await ReadEveryPageAsync(role, pageSize: 100);
+
+        Assert.Equal([member], ids);
+        Assert.DoesNotContain(outsider, ids);
+    }
+
+    [Fact]
+    public async Task GetUsersInRolePage_UserInASubgroupOfAGroupHoldingTheRole_IsListed()
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        await realm.CreateRoleAsync(role);
+        var parent = await realm.CreateGroupAsync(NewRoleName("division"));
+        var child = await realm.CreateGroupAsync(NewRoleName("team"), parent);
+        var grandChild = await realm.CreateGroupAsync(NewRoleName("squad"), child);
+        await realm.AddRealmRoleToGroupAsync(parent, role);
+        var inParent = await CreateUserWithRolesAsync();
+        var inChild = await CreateUserWithRolesAsync();
+        var inGrandChild = await CreateUserWithRolesAsync();
+        await realm.AddUserToGroupAsync(inParent, parent);
+        await realm.AddUserToGroupAsync(inChild, child);
+        await realm.AddUserToGroupAsync(inGrandChild, grandChild);
+
+        var ids = await ReadEveryPageAsync(role, pageSize: 100);
+
+        Assert.Equal(new[] { inParent, inChild, inGrandChild }.OrderBy(i => i.Value), ids.OrderBy(i => i.Value));
+    }
+
+    [Fact]
+    public async Task GetUsersInRolePage_UserInAGroupHoldingACompositeThatIncludesTheRole_IsListed()
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        var composite = NewRoleName("lead");
+        await realm.CreateRoleAsync(role);
+        await realm.CreateRoleAsync(composite);
+        await AddCompositeAsync(realm, composite, role);
+        var group = await realm.CreateGroupAsync(NewRoleName("leads"));
+        await realm.AddRealmRoleToGroupAsync(group, composite);
+        var member = await CreateUserWithRolesAsync();
+        await realm.AddUserToGroupAsync(member, group);
+
+        var ids = await ReadEveryPageAsync(role, pageSize: 100);
+
+        Assert.Equal([member], ids);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(100)]
+    public async Task GetUsersInRolePage_DirectHolderAndGroupMemberOverlap_WalksEachUserOnceInAFixedOrder(int pageSize)
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        await realm.CreateRoleAsync(role);
+        var group = await realm.CreateGroupAsync(NewRoleName("team"));
+        await realm.AddRealmRoleToGroupAsync(group, role);
+        var directOnly = await CreateUserWithRolesAsync(role);
+        var groupOnly = await CreateUserWithRolesAsync();
+        var both = await CreateUserWithRolesAsync(role);
+        await realm.AddUserToGroupAsync(groupOnly, group);
+        await realm.AddUserToGroupAsync(both, group);
+
+        var walked = await ReadEveryPageAsync(role, pageSize);
+        var walkedAgain = await ReadEveryPageAsync(role, pageSize);
+
+        Assert.Equal(3, walked.Count);
+        Assert.Equal(new[] { directOnly, groupOnly, both }.OrderBy(i => i.Value), walked.OrderBy(i => i.Value));
+        Assert.Equal(walked, walkedAgain);
+    }
+
+    [Fact]
+    public async Task GetUsersInRolePage_DisabledMemberOfAGroupHoldingTheRole_IsLeftOut()
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        await realm.CreateRoleAsync(role);
+        var group = await realm.CreateGroupAsync(NewRoleName("team"));
+        await realm.AddRealmRoleToGroupAsync(group, role);
+        var enabled = await CreateUserWithRolesAsync();
+        var disabled = await CreateUserWithRolesAsync();
+        await realm.AddUserToGroupAsync(enabled, group);
+        await realm.AddUserToGroupAsync(disabled, group);
+        await realm.SetEnabledAsync(disabled, enabled: false);
+
+        var ids = await ReadEveryPageAsync(role, pageSize: 100);
+
+        Assert.Equal([enabled], ids);
+    }
+
+    [Fact]
+    public async Task GetUsersInRolePage_MemberOfAGroupWithoutTheRole_IsNotListed()
+    {
+        using var realm = await ConnectRealmAsync();
+        var role = NewRoleName("member");
+        await realm.CreateRoleAsync(role);
+        var group = await realm.CreateGroupAsync(NewRoleName("team"));
+        var holder = await CreateUserWithRolesAsync(role);
+        var bystander = await CreateUserWithRolesAsync();
+        await realm.AddUserToGroupAsync(bystander, group);
+
+        var ids = await ReadEveryPageAsync(role, pageSize: 100);
+
+        Assert.Equal([holder], ids);
+    }
+
+    [Fact]
     public async Task GetUsersInRolePage_RoleNoCompositeIncludes_StaysAPlainPassThrough()
     {
         using var realm = await ConnectRealmAsync();

@@ -336,6 +336,69 @@ internal sealed partial class KeycloakAdminClient(
         return childrenOf;
     }
 
+    public async Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(
+        IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken)
+    {
+        var visited = new HashSet<string>(StringComparer.Ordinal);
+        var pending = new Queue<string>();
+        foreach (var roleName in roleNames)
+        {
+            var groups = await ReadEveryPageAsync<GroupRepresentation>(
+                $"roles/{Uri.EscapeDataString(roleName)}/groups?briefRepresentation=true", pageSize, cancellationToken);
+            foreach (var group in groups.Where(g => visited.Add(g.Id)))
+            {
+                pending.Enqueue(group.Id);
+            }
+        }
+
+        var members = new Dictionary<ApplicationUserId, KeycloakUser>();
+        while (pending.TryDequeue(out var groupId))
+        {
+            var users = await ReadEveryPageAsync<UserRepresentation>(
+                $"groups/{groupId}/members?briefRepresentation=true", pageSize, cancellationToken);
+            foreach (var user in users.Select(ToUser))
+            {
+                members.TryAdd(user.Id, user);
+            }
+
+            var subGroups = await ReadEveryPageAsync<GroupRepresentation>($"groups/{groupId}/children", pageSize, cancellationToken);
+            foreach (var subGroup in subGroups.Where(g => visited.Add(g.Id)))
+            {
+                pending.Enqueue(subGroup.Id);
+            }
+        }
+
+        return members.Values.ToList();
+    }
+
+    /// <summary>Reads a paged Admin REST list to its end. A resource that does not exist (deleted meanwhile) is an empty list.</summary>
+    private async Task<List<T>> ReadEveryPageAsync<T>(string path, int pageSize, CancellationToken cancellationToken)
+    {
+        var separator = path.Contains('?', StringComparison.Ordinal) ? '&' : '?';
+        var all = new List<T>();
+        while (true)
+        {
+            var first = all.Count;
+            using var response = await SendAsync(
+                () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"{path}{separator}first={first}&max={pageSize}")),
+                cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return all;
+            }
+
+            response.EnsureSuccessStatusCode();
+            var page = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken) ?? [];
+            all.AddRange(page);
+
+            if (page.Count < pageSize)
+            {
+                return all;
+            }
+        }
+    }
+
     private async Task<List<RoleSummaryRepresentation>> GetCompositeChildrenAsync(string roleName, CancellationToken cancellationToken)
     {
         using var response = await SendAsync(

@@ -37,6 +37,14 @@ public interface IKeycloakAdminClient
     /// </summary>
     Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken);
 
+    /// <summary>
+    ///     Every user who holds one of <paramref name="roleNames" /> through a group: members of the groups that carry the role
+    ///     and of all their subgroups (a subgroup inherits its parent's role mappings), deduplicated, enabled or not. Users who
+    ///     hold the role directly are not listed: see <see cref="GetUsersInRoleAsync" />. Keycloak is read in pages of
+    ///     <paramref name="pageSize" />. An unknown role contributes nothing.
+    /// </summary>
+    Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken);
+
     Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 
     /// <summary>Revokes one session. A session that no longer exists is not an error.</summary>

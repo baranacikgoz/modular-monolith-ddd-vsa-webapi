@@ -37,6 +37,12 @@ internal sealed class RoleSummaryRepresentation
     [JsonPropertyName("clientRole")] public bool ClientRole { get; set; }
 }
 
+/// <summary>The fields of a group listing needed to walk the group tree.</summary>
+internal sealed class GroupRepresentation
+{
+    [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
+}
+
 internal sealed class UserSessionRepresentation
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;

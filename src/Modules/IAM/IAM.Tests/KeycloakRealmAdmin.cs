@@ -58,6 +58,30 @@ internal sealed class KeycloakRealmAdmin : IDisposable
         response.EnsureSuccessStatusCode();
     }
 
+    /// <summary>Creates a top-level group, or a subgroup of <paramref name="parentId" />, and returns its id.</summary>
+    public async Task<string> CreateGroupAsync(string name, string? parentId = null)
+    {
+        using var response = await _http.PostAsJsonAsync(
+            AdminUri(parentId is null ? "groups" : $"groups/{parentId}/children"), new { name });
+        response.EnsureSuccessStatusCode();
+        return response.Headers.Location!.Segments[^1].TrimEnd('/');
+    }
+
+    /// <summary>Maps a realm role onto a group, so every member of it (and of its subgroups) holds the role.</summary>
+    public async Task AddRealmRoleToGroupAsync(string groupId, string roleName)
+    {
+        var role = await _http.GetFromJsonAsync<JsonElement>(AdminUri($"roles/{Uri.EscapeDataString(roleName)}"));
+
+        using var response = await _http.PostAsJsonAsync(AdminUri($"groups/{groupId}/role-mappings/realm"), new[] { role });
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task AddUserToGroupAsync(ApplicationUserId userId, string groupId)
+    {
+        using var response = await _http.PutAsync(AdminUri($"users/{userId}/groups/{groupId}"), content: null);
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task SetEnabledAsync(ApplicationUserId userId, bool enabled)
     {
         using var response = await _http.PutAsJsonAsync(AdminUri($"users/{userId}"), new { enabled });
