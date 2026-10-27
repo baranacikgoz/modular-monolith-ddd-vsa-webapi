@@ -117,6 +117,29 @@ Step 3 commits the product, an outbox row and an audit row in one transaction. T
 
 Open the Aspire Dashboard at `http://localhost:18888` and look at the traces for the two calls to see the whole path, including the hop through RabbitMQ.
 
+### Queued work: accept, queue, poll
+
+Some calls do their work after they answer. A product export is the shortest to try with the administrator token (it holds `products:export`):
+
+```bash
+# Queue the export. The answer is 202 with the job, not the file.
+curl -s -X POST http://localhost:5001/v1/products/exports -H "$AUTH"
+
+# Poll until status is Succeeded (Queued, Running, Succeeded, Failed)
+curl -s http://localhost:5001/v1/products/exports/<job id> -H "$AUTH"
+
+# Download the CSV
+curl -s http://localhost:5001/v1/products/exports/<job id>/download -H "$AUTH" -o products.csv
+```
+
+The call writes a job row and a queue message in one transaction, a consumer builds the file in the background, and the download answers 409 `NotReady` until the job has succeeded. The product import (`POST /v1/products/imports`, a spreadsheet upload) and the Inventory bulk adjustment (`POST /v1/stock-levels/bulk-adjustments`) follow the same shape. The outbox processor and RabbitMQ must be running for the job to leave `Queued`, which they are in the compose setup above.
+
+Imports, exports and product images keep their files in an S3-compatible object store. `docker-compose.yml` starts none, and `objectStorage.json` holds `CHANGE_ME` placeholders, so point `ObjectStorageOptions` at a service you run before you try them (any S3-compatible service works, with a public and a private bucket).
+
+### Connect a store to a warehouse system
+
+Releasing a stock reservation, pushing stock levels and the warehouse webhook go through a per-store warehouse connection. The repository has no built-in stand-in warehouse, so create a connection that points at an HTTPS server answering the provider's wire shape. The steps and the wire shapes are in [`modules.md`](modules.md#inventory).
+
 ### Errors
 
 Failures return `ProblemDetails` with an extra `errorKey`, a `traceId` and the `environment`:
@@ -175,7 +198,7 @@ make perf-down     # tear down
 
 ## Configuration
 
-Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at startup and validated. Any value can be overridden with an environment variable using a double underscore for nesting, for example `RabbitMqOptions__Host=localhost` or `OutboxOptions__BatchSize=200`. The deployment model and the list of files that hold secrets are in [`Configurations/README.md`](../src/Host/Host/Configurations/README.md).
+Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at startup and validated. Any value can be overridden with an environment variable using a double underscore for nesting, for example `RabbitMqOptions__Host=localhost` or `OutboxOptions__BatchSize=200`. The deployment model and the list of files that hold secrets are in [`Configurations/README.md`](../src/Host/Host/Configurations/README.md). The Keycloak realm in `keycloak/realm-modular-monolith.json` also defines the `store-owner` role and the scopes of stock levels, warehouse connections, store approval and product import and export; like any realm change it only reaches a Keycloak that imports the file for the first time.
 
 ## Troubleshooting
 
@@ -187,3 +210,6 @@ Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at 
 | Login returns `InvalidOtp` | The code is single use. Request a new one with `POST /otp/login`. |
 | Keycloak realm changes do not show up | Keycloak skips the import when the realm exists. Delete `.containers/mm.keycloak` and start it again. |
 | Port 5001 is already in use | Stop the other process, or use the `dotnet run` profile on port 6000. |
+| An import, an export or an image upload cannot reach its files | These features need an S3-compatible object store. The compose file starts none and `objectStorage.json` holds `CHANGE_ME` placeholders. |
+| A job stays `Queued` | Its queue message is published by the outbox processor over RabbitMQ and run by a consumer in a process that loads the module. Check `OutboxOptions.IsProcessor` and that RabbitMQ is up. |
+| Startup fails naming `SecretProtectionOptions` and the development key | The checked-in `EncryptionKey` is accepted only when `ASPNETCORE_ENVIRONMENT` is `Development`. Set `SecretProtectionOptions__EncryptionKey` to base64 of 32 random bytes. |

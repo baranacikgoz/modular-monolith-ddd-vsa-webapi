@@ -21,16 +21,17 @@ The rulebook is organized in numbered sections so commands can cite them instead
 | :-- | :-- |
 | 0 Discovery | Search order: the knowledge graph first, then its report, then grep |
 | 1 Architecture | Module boundaries, the module table with test targets, and the platform services never to re-implement |
-| 2 Exemplars | A table of "need" to "file to copy": a write endpoint, a read endpoint, a module, an aggregate with events, a consumer, a test |
-| 3 Functional pipeline | Result chaining rules and the two documented exceptions |
-| 4 Persistence | Read and write shapes, search indexes, aggregate method rules |
+| 2 Exemplars | A table of "need" to "file to copy": a write endpoint, a read endpoint, a module, an aggregate with events, a consumer, a test, and one row per advanced pattern (queued job, projection, ledger, dirty-set push, webhook with dedup, secret protection, V2 event and more) |
+| 3 Functional pipeline | Result chaining rules, the extension inventory (including `Match`) and the two documented exceptions |
+| 4 Persistence | Read and write shapes, search indexes, aggregate method rules, row lock, counter upsert, ledger, jsonb list, constraint violations as results, projections |
 | 5 Endpoints and C# | REPR layout, logging, localization, typed parameters |
-| 6 Cross-module and events | Events versus inter-module requests, ordering, event versioning, command method order |
+| 6 Cross-module and events | Events versus inter-module requests, ordering, read models, dirty-set push, webhook dedup, event versioning, command method order |
 | 7 Observability | Telemetry classes, spans, metrics |
 | 8 Testing | Frameworks, fixtures, what each endpoint test asserts, how to handle CI-only failures |
 | 9 Options pattern | How to add a setting and what to tell the user afterwards |
 | 10 Report every issue | Flag bugs and violations with file and line, never silently skip them |
 | 11 Make targets | The commands the agent may run |
+| 12 Heavy work | The accept, queue, poll shape for work that grows with the caller's data: job row, 202, consumer, bounded memory, tests |
 
 The design intent: an agent should copy the shape of an existing exemplar rather than invent one, and every rule that can be a test is a test (see [Guardrails](../README.md#guardrails)).
 
@@ -62,7 +63,7 @@ A typical feature runs `/plan-feature`, then approval, then `/scaffold-test` for
 
 - **After an edit** to a module `.csproj`, `check-csproj-refs.sh` looks for a `ProjectReference` to another module and stops the agent if it finds one.
 - **Before a commit**, `pre-commit-guard.sh` scans every module project for cross-module references and blocks `git commit` while any exist.
-- **Architecture tests** in `Common.Tests/Architecture` and `Host.Tests` fail the build for the rules a hook cannot see: frozen domain event payloads, strongly typed id queries, aggregate method signatures, scope coverage and handler parameter binding.
+- **Architecture tests** in `Common.Tests/Architecture`, `Host.Tests` and `Inventory.Tests/Architecture` fail the build for the rules a hook cannot see: frozen domain event payloads, strongly typed id queries, aggregate method signatures, scope coverage, handler parameter binding and the single writer of the stock ledger.
 - `.claude/settings.json` allows the everyday commands (`git`, `gh`, `make`, `dotnet`, search tools) and denies force pushes, hard resets, forced cleans and recursive deletes of `src` and `.git`.
 
 ## The knowledge graph
