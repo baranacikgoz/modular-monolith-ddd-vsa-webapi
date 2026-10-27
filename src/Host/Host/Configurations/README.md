@@ -77,11 +77,11 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `push.json` | `PushOptions` | Push provider, Firebase service account, templates |
 | `signalR.json` | `SignalROptions` | Redis backplane |
 | `captcha.json` | `CaptchaOptions` | Captcha provider, keys, score threshold |
-| `inventory.json` | `InventoryOptions` | Webhook body limit and delivery retention, stock push and bulk adjustment tunables, sweep and reconcile schedules, series limits, business time zone |
+| `inventory.json` | `InventoryOptions` | Webhook body limit and delivery retention, stock push and bulk adjustment tunables, sweep and reconcile schedules (product copy, store access copy), series limits, business time zone and the daily totals range cap |
 | `bulkImport.json` | `BulkImportOptions` | Upload size, row and chunk ceilings of the spreadsheet jobs (product import, stock bulk adjustment) |
 | `objectStorage.json` | `ObjectStorageOptions` | S3-compatible endpoint, buckets, credentials, presign lifetimes, retries, circuit breaker |
 | `rateLimiting.json` | `CustomRateLimitingOptions` | Named rate limit policies (including the warehouse webhook and the store application), global limit, exempt paths |
-| `products.json` | `ProductsOptions` | Import and export job limits, housekeeping schedule, image and attribute limits, cross-module page cap and search cache |
+| `products.json` | `ProductsOptions` | Import and export job limits, housekeeping schedule, image and attribute limits, cross-module page caps (products and stores) and search cache |
 | `resiliency.json` | `ResiliencyOptions` | Outbound HTTP timeouts, retries, circuit breaker, keyed profiles |
 | `securityHeaders.json` | `SecurityHeadersOptions` | Response security headers |
 | `reverseProxy.json` | `ReverseProxyOptions` | Forwarded headers and trusted proxy networks |
@@ -123,7 +123,8 @@ init-container / secret volume. Checklist:
 3. Set the structural values for your network: `reverseProxy.json` `TrustedNetworks`,
    `cors.json` `AllowedOrigins`, `modules.json` `EnabledModules`. Check the values that depend on your
    business: `alertRecipients.json` `RoleName` (a realm role that has members) and the alert email
-   templates, `inventory.json` `BusinessTimeZoneId` (an IANA zone id known to the host), and
+   templates, `inventory.json` `BusinessTimeZoneId` (an IANA zone id known to the host; it decides where a
+   business day starts for the daily totals, when they are counted and when they are read), and
    `auditLog.json` `PerSchemaRetentionDays`.
 4. Alternatively, override individual secrets via `Section__Key` environment variables
    (they win over the mounted JSON) and mount only the non-secret structural files.
