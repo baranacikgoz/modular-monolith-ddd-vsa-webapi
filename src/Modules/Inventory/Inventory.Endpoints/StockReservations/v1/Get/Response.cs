@@ -10,4 +10,16 @@ public sealed record Response
     public required ReservationStatus Status { get; init; }
     public required DateTimeOffset ReservationDeadline { get; init; }
     public string? ProviderReference { get; init; }
+
+    /// <summary>True once the provider reported a status this system could not map; the reservation then takes no local command.</summary>
+    public required bool IsReadOnly { get; init; }
+
+    /// <summary>
+    ///     True while a release attempt has no recorded outcome (the warehouse system did not answer in time): the reservation
+    ///     cannot be released again until the attempt is reconciled.
+    /// </summary>
+    public required bool HasPendingReleaseAttempt { get; init; }
+
+    /// <summary>The last status the provider reported, kept for a read-only reservation only; null while it is writable.</summary>
+    public ReservationStatus? ProviderStatus { get; init; }
 }

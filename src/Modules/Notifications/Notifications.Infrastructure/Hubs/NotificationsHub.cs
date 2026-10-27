@@ -1,3 +1,4 @@
+using Common.Application.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,16 @@ internal sealed partial class NotificationsHub(ILogger<NotificationsHub> logger)
                          ?? throw new HubException("Unauthenticated connection rejected.");
 
             await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForUser(userId));
+
+            // Alerts addressed to a role reach its members through the role group, so they need no per-user address list.
+            var roles = Context.User?.FindAll(JwtClaimNames.Roles)
+                .Select(claim => claim.Value)
+                .Where(NotificationGroupName.IsAddressableRole)
+                .Distinct() ?? [];
+            foreach (var role in roles)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, NotificationGroupName.ForRole(role));
+            }
 
             NotificationsTelemetry.ActiveConnections.Add(1);
             LogConnected(logger, userId, Context.ConnectionId);

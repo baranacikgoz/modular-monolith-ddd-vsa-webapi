@@ -23,7 +23,7 @@ internal static class Endpoint
     {
         storesApiGroup
             .MapGet("search", SearchStoresAsync)
-            .WithDescription("Search stores.")
+            .WithDescription("Search active stores. A store that is pending approval, suspended or closed is not listed.")
             .RequireScope(KeycloakScopes.Stores.Search)
             .Produces<PaginationResponse<Response>>()
             .TransformResultTo<PaginationResponse<Response>>();
@@ -54,6 +54,9 @@ internal static class Endpoint
             .Stores
             .AsNoTracking()
             .TagWith(nameof(SearchStoresAsync))
+            // Only an Active store is listed, like Get: an application is not a store yet, and a suspended or closed store
+            // is not public. The owner's own "my" route and the application routes still show them.
+            .Where(s => s.Status == StoreStatus.Active)
             .WhereIf(
                 s => EF.Property<NpgsqlTsVector>(s, FullTextSearchOptions.SearchVectorColumn)
                          .Matches(EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm))
@@ -73,6 +76,7 @@ internal static class Endpoint
                     Description = s.Description,
                     Address = s.Address,
                     ProductCount = s.Products.Count,
+                    Status = s.Status,
                     CreatedBy = s.CreatedBy,
                     CreatedOn = s.CreatedOn,
                     LastModifiedBy = s.LastModifiedBy,

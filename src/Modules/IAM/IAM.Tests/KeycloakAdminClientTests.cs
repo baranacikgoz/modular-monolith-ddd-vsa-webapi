@@ -1,12 +1,16 @@
 using System.Net;
 using Common.Application.Auth;
+using Common.Application.Caching;
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.IAM;
 using Common.Tests;
 using IAM.Application.Keycloak;
 using IAM.Infrastructure.InterModuleRequestHandlers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
@@ -64,6 +68,7 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
         Assert.Equal(HttpStatusCode.BadRequest, result.Error.StatusCode);
+        Assert.NotEmpty(result.Error.SubErrors!);
     }
 
     [Fact]
@@ -89,6 +94,63 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.Null(user.BirthDate);
     }
 
+    [Theory]
+    [InlineData(true, "true")]
+    [InlineData(false, "false")]
+    public async Task CreateUserAsync_WithAPhoneNumber_RecordsWhetherTheCallerVerifiedIt(bool verified, string expectedAttribute)
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(
+                Username: phone,
+                FirstName: "Ayşe",
+                LastName: "Yılmaz",
+                PhoneNumber: phone,
+                PhoneNumberVerified: verified),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(expectedAttribute, await KeycloakUserAttributeReader.PhoneNumberVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task CreateUserAsync_WithAnEmail_RecordsWhetherTheCallerVerifiedIt(bool verified)
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(
+                Username: phone,
+                FirstName: "Ayşe",
+                LastName: "Yılmaz",
+                PhoneNumber: phone,
+                Email: $"{Guid.NewGuid():N}@example.com",
+                EmailVerified: verified),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(verified, await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_WithAnEmailAndNoFlag_LeavesTheEmailUnverified()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(phone, "Ayşe", "Yılmaz", phone, Email: $"{Guid.NewGuid():N}@example.com"),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.False(await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
     private static async Task<(ApplicationUserId Id, string Email)> CreateStaffUserAsync(IKeycloakAdminClient adminClient)
     {
         var phone = IamTestClient.NewPhoneNumber();
@@ -99,6 +161,33 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         var assigned = await adminClient.AssignRealmRoleAsync(created.Value, KeycloakRoles.Staff, CancellationToken.None);
         Assert.False(assigned.IsFailure);
         return (created.Value, email);
+    }
+
+    [Fact]
+    public async Task AssignRealmRoleAsync_UnknownUser_ReturnsNotFound()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+
+        var result = await adminClient.AssignRealmRoleAsync(
+            new ApplicationUserId(Guid.NewGuid()), KeycloakRoles.StoreOwner, CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(HttpStatusCode.NotFound, result.Error!.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteUserAsync_EvictsTheCachedDisplayEntry()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        var user = await CreateStaffUserAsync(adminClient);
+        var key = CacheKeys.For.UserDisplay(user.Id);
+        await cache.SetAsync(key, new UserDisplayCacheEntry(true, user.Email, "Ada", "Lovelace"));
+
+        await adminClient.DeleteUserAsync(user.Id, CancellationToken.None);
+
+        var cached = await cache.TryGetAsync<UserDisplayCacheEntry>(key);
+        Assert.False(cached.HasValue);
     }
 
     [Fact]
@@ -135,7 +224,10 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
         var user = await CreateStaffUserAsync(adminClient);
         await CreateStaffUserAsync(adminClient);
-        var handler = new GetUsersInRolePageRequestHandler(adminClient);
+        // The handler keeps a role's members for a window, so a list another test built earlier would hide the users above.
+        var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        await cache.RemoveAsync(CacheKeys.For.KeycloakRoleMembers(KeycloakRoles.Staff));
+        var handler = new GetUsersInRolePageRequestHandler(adminClient, cache, Scope.ServiceProvider.GetRequiredService<IOptions<KeycloakOptions>>());
 
         var firstPage = await handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 1), CancellationToken.None);
         var everyone = await handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 200), CancellationToken.None);

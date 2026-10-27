@@ -15,4 +15,15 @@ public static class V1ProductCreatedDomainEventHandlers
             return Task.CompletedTask;
         }
     }
+
+    public class ProductChangedIntegrationEventPublishingHandler(IIntegrationEventOutbox outbox)
+        : DomainEventHandlerBase<V1ProductCreatedDomainEvent>
+    {
+        public override Task HandleAsync(V1ProductCreatedDomainEvent @event, CancellationToken cancellationToken)
+        {
+            outbox.Collect(new ProductChangedIntegrationEvent(
+                @event.ProductId.Value, @event.StoreId.Value, @event.Name, @event.Version));
+            return Task.CompletedTask;
+        }
+    }
 }

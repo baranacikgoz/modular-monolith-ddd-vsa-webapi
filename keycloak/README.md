@@ -12,12 +12,13 @@ already exists, so a changed file only lands on a fresh database (dev: `rm -rf .
 
 | Concept | Value |
 | :--- | :--- |
-| Realm roles | `basic` (mobile end users), `staff` (support / management), `system-admin` (composite, includes `staff`) |
+| Realm roles | `basic` (mobile end users), `staff` (support / management), `system-admin` (composite, includes `staff`), `store-owner` (granted by the backend when a store is approved) |
 | `backend-api` | Resource server + Authorization Services host. Email + password direct grant. Service account with `realm-management` roles `view-realm`, `view-users`, `query-users`, `manage-users` for the Admin REST API. |
 | `backend-trusted-login` | Direct grant flow override `trusted-login`: only `Username Validation`, no credential step. The backend calls it after it has verified a one-time code itself. Its secret is equivalent to every end user's password. |
 | `ci-integration` | Sample machine caller (client credentials). Authorized through `Service Account Policy`. |
-| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `stock-reservations`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
-| Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. |
+| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `stock-levels`, `stock-reservations`, `warehouse-connections`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
+| Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. Administration (the `System Admin Role Policy`) holds `stores:approve`, `stores:suspend`, `stores:reinstate`, `stock-levels:update`, `warehouse-connections:create`, `warehouse-connections:view`, `warehouse-connections:update` and `products:export`. Any authenticated user (`Any Authenticated User Policy`: `basic`, `staff` or `system-admin`) holds `stock-levels:view` (which also covers `GET /v1/stock-levels/daily-totals`), `products:import-own` and `warehouse-connections:view-own`. |
+| Ownership | Every `-own` permission applies `Any Authenticated User Policy`, because the route decides ownership in its query (`GET /v1/warehouse-connections/my` joins Inventory's store access copy). `PermissionCoverageTests` rejects an `-own` permission without it. For that reason no policy keys on `store-owner`: the role is granted on store approval and read by the Notifications hub (a group per role), not by a Keycloak policy. |
 | Tokens | Access token 5 min. SSO idle 14 days, SSO max 90 days. Refresh token rotation on, max reuse 1 (one lost-response retry of the same refresh token is tolerated; the next replay makes Keycloak detach the client session and the API revoke the whole user session). |
 | User profile | `username`, `email`, `firstName`, `lastName` (required), `phoneNumber`, `phoneNumberVerified`, `birthDate` (admin-edit only). Unmanaged attributes disabled. |
 
@@ -105,6 +106,16 @@ and inject them into the API through `KeycloakOptions__*` environment variables.
 
 Keep the Keycloak token endpoint reachable only from the API network and the admin console on an
 internal network; the `trusted-login` flow is only as safe as that boundary.
+
+## Realms that already exist
+
+Keycloak skips the import when the realm exists, so a realm created from an earlier version of the file does not receive later additions. Bring it in line by hand (admin console or Admin REST API) with whatever the current file has and the live realm lacks:
+
+- the realm role `store-owner` (the API grants it when a store is approved; without it the consumer that grants it throws and the bus retries),
+- the resources `stock-levels` and `warehouse-connections` with their scopes and permissions (including `warehouse-connections:view-own` in `Warehouse Connections Self-Service Permission`),
+- the scopes `stores:approve`, `stores:suspend`, `stores:reinstate`, `products:import-own` and `products:export` and the permissions that carry them.
+
+`PermissionCoverageTests` checks the file against the endpoints, not a live realm, so it cannot tell you what a live realm is missing.
 
 ## Editing the realm
 

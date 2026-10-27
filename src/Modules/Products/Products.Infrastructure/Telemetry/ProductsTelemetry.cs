@@ -40,4 +40,7 @@ public static class ProductsTelemetry
 
     public static readonly Counter<long> StoresCreated =
         Meter.CreateCounter<long>("products.stores_created.total", description: "Total stores created");
+
+    public static readonly Counter<long> StoreApplications =
+        Meter.CreateCounter<long>("products.store_applications.total", description: "Total store applications submitted");
 }

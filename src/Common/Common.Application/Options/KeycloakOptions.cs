@@ -42,6 +42,27 @@ public class KeycloakOptions
 
     public required int TotalRequestTimeoutSeconds { get; set; }
 
+    /// <summary>Max concurrent Keycloak Admin <c>GET /users/{id}</c> calls one <c>GetUsersRequest</c> fans out for its cache misses.</summary>
+    public required int UserLookupConcurrency { get; set; }
+
+    /// <summary>L1 (in-process) lifetime of one user's cached display data.</summary>
+    public required int UserDisplayCacheDurationSeconds { get; set; }
+
+    /// <summary>L2 (Redis) lifetime of one user's cached display data. Long on purpose: a name changes only from the Keycloak console.</summary>
+    public required int UserDisplayCacheDistributedDurationSeconds { get; set; }
+
+    /// <summary>Lifetime of the negative entry cached for an id Keycloak does not know, so repeated lists do not re-ask for a deleted actor.</summary>
+    public required int UserDisplayNegativeCacheDurationSeconds { get; set; }
+
+    /// <summary>
+    ///     Lifetime of the cached realm role graph (each composite realm role and the realm roles it includes) that
+    ///     answers "which roles include this one". Composite roles change only from the realm file or the Keycloak console, so
+    ///     a short window turns the one-call-per-composite read into one read per window instead of one per request. The same
+    ///     window keeps the deduplicated members of a role that has indirect holders, so paging through them does not re-read Keycloak
+    ///     for every page.
+    /// </summary>
+    public required int RoleGraphCacheSeconds { get; set; }
+
     public string Authority => $"{BaseUrl.TrimEnd('/')}/realms/{Realm}";
 }
 
@@ -102,5 +123,25 @@ public class KeycloakOptionsValidator : CustomValidator<KeycloakOptions>
         RuleFor(o => o.TotalRequestTimeoutSeconds)
             .GreaterThanOrEqualTo(o => o.AttemptTimeoutSeconds)
             .WithMessage("TotalRequestTimeoutSeconds must be at least AttemptTimeoutSeconds.");
+
+        RuleFor(o => o.UserLookupConcurrency)
+            .GreaterThan(0)
+            .WithMessage("UserLookupConcurrency must be greater than 0.");
+
+        RuleFor(o => o.UserDisplayCacheDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage("UserDisplayCacheDurationSeconds must be greater than 0.");
+
+        RuleFor(o => o.UserDisplayCacheDistributedDurationSeconds)
+            .GreaterThanOrEqualTo(o => o.UserDisplayCacheDurationSeconds)
+            .WithMessage("UserDisplayCacheDistributedDurationSeconds must be at least UserDisplayCacheDurationSeconds.");
+
+        RuleFor(o => o.UserDisplayNegativeCacheDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage("UserDisplayNegativeCacheDurationSeconds must be greater than 0.");
+
+        RuleFor(o => o.RoleGraphCacheSeconds)
+            .GreaterThan(0)
+            .WithMessage("RoleGraphCacheSeconds must be greater than 0.");
     }
 }

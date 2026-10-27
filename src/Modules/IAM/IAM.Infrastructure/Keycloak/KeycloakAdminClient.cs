@@ -38,9 +38,8 @@ internal sealed partial class KeycloakAdminClient(
         var attributes = new Dictionary<string, List<string>>();
         if (user.PhoneNumber is { } phoneNumber)
         {
-            // Only ever set from a flow that verified the number by OTP first (phone self-registration).
             attributes[UserAttributes.PhoneNumber] = [phoneNumber];
-            attributes[UserAttributes.PhoneNumberVerified] = ["true"];
+            attributes[UserAttributes.PhoneNumberVerified] = [user.PhoneNumberVerified ? "true" : "false"];
         }
         if (user.BirthDate is { } birthDate)
         {
@@ -53,7 +52,7 @@ internal sealed partial class KeycloakAdminClient(
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            EmailVerified = user.Email is null ? null : true,
+            EmailVerified = user.Email is null ? null : user.EmailVerified,
             Enabled = true,
             Attributes = attributes,
             Credentials = user.Password is null
@@ -82,8 +81,9 @@ internal sealed partial class KeycloakAdminClient(
                 return MapConflict(conflict?.ErrorMessage);
             case HttpStatusCode.BadRequest:
                 var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
-                LogUserRejected(logger, error?.Field, error?.ErrorMessage);
-                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, error?.ErrorMessage);
+                var rejection = error?.ErrorMessage ?? error?.ErrorDescription;
+                LogUserRejected(logger, error?.Field, rejection);
+                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, rejection);
             default:
                 response.EnsureSuccessStatusCode();
                 throw new HttpRequestException($"Unexpected Keycloak status {(int)response.StatusCode} creating a user.");
@@ -133,7 +133,12 @@ internal sealed partial class KeycloakAdminClient(
         }
 
         LogRoleAssignmentFailed(logger, userId, roleName, (int)mappingResponse.StatusCode);
-        return IdentityErrors.IdentityProviderUnavailable;
+
+        // Keycloak answers 404 on the role-mapping resource of an id it does not know: the user is gone, not the
+        // identity provider. Consumers distinguish the two (a missing user is skipped, an outage is retried).
+        return mappingResponse.StatusCode == HttpStatusCode.NotFound
+            ? Error.NotFound(nameof(KeycloakUser), userId)
+            : IdentityErrors.IdentityProviderUnavailable;
     }
 
     public async Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
@@ -146,6 +151,10 @@ internal sealed partial class KeycloakAdminClient(
         {
             response.EnsureSuccessStatusCode();
         }
+
+        // The bulk display lookup (GetUsersRequestHandler) caches this user's name for up to a day; drop it now so a
+        // deleted user is not listed by name until the entry expires.
+        await cache.RemoveAsync(CacheKeys.For.UserDisplay(userId), token: cancellationToken);
     }
 
     public async Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
@@ -249,6 +258,163 @@ internal sealed partial class KeycloakAdminClient(
 
         var users = await response.Content.ReadFromJsonAsync<List<UserRepresentation>>(cancellationToken) ?? [];
         return users.Select(ToUser).ToList();
+    }
+
+    public async Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken)
+    {
+        var childrenOf = await GetRoleGraphAsync(cancellationToken);
+
+        var parentsOf = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        foreach (var (composite, children) in childrenOf)
+        {
+            foreach (var child in children)
+            {
+                if (!parentsOf.TryGetValue(child, out var parents))
+                {
+                    parents = [];
+                    parentsOf[child] = parents;
+                }
+
+                parents.Add(composite);
+            }
+        }
+
+        var containing = new HashSet<string>(StringComparer.Ordinal);
+        var pending = new Queue<string>();
+        pending.Enqueue(roleName);
+        while (pending.TryDequeue(out var current))
+        {
+            foreach (var parent in parentsOf.GetValueOrDefault(current, []))
+            {
+                if (parent != roleName && containing.Add(parent))
+                {
+                    pending.Enqueue(parent);
+                }
+            }
+        }
+
+        return containing.Order(StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    ///     Every composite realm role with the realm roles it includes. Keycloak has no reverse lookup, so building it costs
+    ///     one listing plus one call per composite role; it is kept for <see cref="KeycloakOptions.RoleGraphCacheSeconds" />
+    ///     and a failed read is never cached. Remove <see cref="CacheKeys.For.KeycloakRoleGraph" /> to force a re-read.
+    /// </summary>
+    private ValueTask<Dictionary<string, string[]>> GetRoleGraphAsync(CancellationToken cancellationToken)
+    {
+        // A fresh options instance on purpose (same reason as the bulk user lookup): the configured defaults carry factory
+        // timeouts that would turn a slow Keycloak into a synthetic timeout mid-walk.
+        var entryOptions = new FusionCacheEntryOptions
+        {
+            Duration = TimeSpan.FromSeconds(keycloakOptionsProvider.Value.RoleGraphCacheSeconds),
+            IsFailSafeEnabled = true
+        };
+
+        return cache.GetOrSetAsync<Dictionary<string, string[]>>(
+            CacheKeys.For.KeycloakRoleGraph,
+            (_, ct) => ReadRoleGraphAsync(ct),
+            options: entryOptions,
+            token: cancellationToken);
+    }
+
+    private async Task<Dictionary<string, string[]>> ReadRoleGraphAsync(CancellationToken cancellationToken)
+    {
+        using var rolesResponse = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri("roles?briefRepresentation=true")),
+            cancellationToken);
+        rolesResponse.EnsureSuccessStatusCode();
+        var roles = await rolesResponse.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
+
+        var childrenOf = new Dictionary<string, string[]>(StringComparer.Ordinal);
+        foreach (var composite in roles.Where(r => r.Composite && !r.ClientRole))
+        {
+            var children = await GetCompositeChildrenAsync(composite.Name, cancellationToken);
+            childrenOf[composite.Name] = children.Where(c => !c.ClientRole).Select(c => c.Name).ToArray();
+        }
+
+        return childrenOf;
+    }
+
+    public async Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(
+        IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
+
+        var visited = new HashSet<string>(StringComparer.Ordinal);
+        var pending = new Queue<string>();
+        foreach (var roleName in roleNames)
+        {
+            var groups = await ReadEveryPageAsync<GroupRepresentation>(
+                $"roles/{Uri.EscapeDataString(roleName)}/groups?briefRepresentation=true", pageSize, cancellationToken);
+            foreach (var group in groups.Where(g => visited.Add(g.Id)))
+            {
+                pending.Enqueue(group.Id);
+            }
+        }
+
+        var members = new Dictionary<ApplicationUserId, KeycloakUser>();
+        while (pending.TryDequeue(out var groupId))
+        {
+            var users = await ReadEveryPageAsync<UserRepresentation>(
+                $"groups/{groupId}/members?briefRepresentation=true", pageSize, cancellationToken);
+            foreach (var user in users.Select(ToUser))
+            {
+                members.TryAdd(user.Id, user);
+            }
+
+            var subGroups = await ReadEveryPageAsync<GroupRepresentation>($"groups/{groupId}/children", pageSize, cancellationToken);
+            foreach (var subGroup in subGroups.Where(g => visited.Add(g.Id)))
+            {
+                pending.Enqueue(subGroup.Id);
+            }
+        }
+
+        return members.Values.ToList();
+    }
+
+    /// <summary>Reads a paged Admin REST list to its end. A resource that does not exist (deleted meanwhile) is an empty list.</summary>
+    private async Task<List<T>> ReadEveryPageAsync<T>(string path, int pageSize, CancellationToken cancellationToken)
+    {
+        var separator = path.Contains('?', StringComparison.Ordinal) ? '&' : '?';
+        var all = new List<T>();
+        while (true)
+        {
+            var first = all.Count;
+            using var response = await SendAsync(
+                () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"{path}{separator}first={first}&max={pageSize}")),
+                cancellationToken);
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return all;
+            }
+
+            response.EnsureSuccessStatusCode();
+            var page = await response.Content.ReadFromJsonAsync<List<T>>(cancellationToken) ?? [];
+            all.AddRange(page);
+
+            if (page.Count < pageSize)
+            {
+                return all;
+            }
+        }
+    }
+
+    private async Task<List<RoleSummaryRepresentation>> GetCompositeChildrenAsync(string roleName, CancellationToken cancellationToken)
+    {
+        using var response = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"roles/{Uri.EscapeDataString(roleName)}/composites")),
+            cancellationToken);
+
+        // The role can be deleted between the listing and this read.
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return [];
+        }
+
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
     }
 
     public async Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId,

@@ -66,5 +66,31 @@ public static class CacheKeys
         {
             return $"authz_user:{userId}";
         }
+
+        /// <summary>
+        ///     Cached Keycloak display data (name, email) of one user for the bulk <c>GetUsersRequest</c> lookup.
+        ///     Evicted by <c>DeleteUserAsync</c>; a name edit in the Keycloak console surfaces when the entry expires.
+        /// </summary>
+        public static string UserDisplay(ApplicationUserId userId)
+        {
+            return $"user_display:{userId}";
+        }
+
+        /// <summary>
+        ///     The realm role graph (every composite realm role and the realm roles it includes) that answers "which roles
+        ///     include this one". One entry for the configured realm; it expires after <c>KeycloakOptions.RoleGraphCacheSeconds</c> and can be
+        ///     evicted by removing this key.
+        /// </summary>
+        public const string KeycloakRoleGraph = "keycloak_role_graph";
+
+        /// <summary>
+        ///     The deduplicated effective members of one realm role, built once so a walk over its pages slices a list instead of
+        ///     re-reading Keycloak for every page. Held in memory only and expires after <c>KeycloakOptions.RoleGraphCacheSeconds</c>;
+        ///     removing this key forces a re-read.
+        /// </summary>
+        public static string KeycloakRoleMembers(string roleName)
+        {
+            return $"keycloak_role_members:{roleName}";
+        }
     }
 }

@@ -9,6 +9,29 @@
     "CircuitBreakerMinimumThroughput": 10,
     "CircuitBreakerBreakDurationSeconds": 15,
     "AttemptTimeoutSeconds": 10,
-    "Keyed": {}
+    "Keyed": {
+      "WarehouseJsonApi": {
+        "RateLimitPermits": 20,
+        "RateLimitWindowMs": 1000,
+        "RateLimitQueueLimit": 0,
+        "RateLimitFailOpen": true,
+        "CircuitBreakerFailureRatio": 0.5,
+        "CircuitBreakerMinimumThroughput": 10,
+        "CircuitBreakerSamplingDurationSeconds": 30,
+        "CircuitBreakerBreakDurationSeconds": 15,
+        "AttemptTimeoutSeconds": 10
+      },
+      "WarehouseFormApi": {
+        "RateLimitPermits": 5,
+        "RateLimitWindowMs": 1000,
+        "RateLimitQueueLimit": 0,
+        "RateLimitFailOpen": true,
+        "CircuitBreakerFailureRatio": 0.5,
+        "CircuitBreakerMinimumThroughput": 10,
+        "CircuitBreakerSamplingDurationSeconds": 30,
+        "CircuitBreakerBreakDurationSeconds": 15,
+        "AttemptTimeoutSeconds": 15
+      }
+    }
   }
 }

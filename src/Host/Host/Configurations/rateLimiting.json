@@ -54,6 +54,18 @@
       "QueueLimit": 0,
       "FailOpen": false
     },
+    "WarehouseWebhook": {
+      "Limit": 100,
+      "PeriodInMs": 60000,
+      "QueueLimit": 0,
+      "FailOpen": true
+    },
+    "StoreApplication": {
+      "Limit": 5,
+      "PeriodInMs": 3600000,
+      "QueueLimit": 0,
+      "FailOpen": true
+    },
     "ExemptPathPrefixes": [ "/hubs" ]
   }
 }

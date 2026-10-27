@@ -44,6 +44,12 @@ internal static class Endpoint
                 Description = p.Description,
                 Quantity = p.Quantity,
                 Price = p.Price,
+                Sku = p.Sku,
+                Attributes = p.Attributes,
+                PackageDimensions = (object?)p.PackageDimensions == null
+                    ? null
+                    : new PackageDimensionsResponse(
+                        p.PackageDimensions.LengthCm, p.PackageDimensions.WidthCm, p.PackageDimensions.HeightCm, p.PackageDimensions.WeightKg),
                 CreatedBy = p.CreatedBy,
                 CreatedOn = p.CreatedOn,
                 LastModifiedBy = p.LastModifiedBy,

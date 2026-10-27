@@ -19,8 +19,18 @@ public static class Setup
         v1.Search.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.AuditLog.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.My.SetAttributes.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.My.SetPackageDimensions.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Search.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Get.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.Import.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.GetImport.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.ListImports.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.Export.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.GetExport.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.DownloadExport.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.AddImage.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.RemoveImage.Endpoint.MapEndpoint(v1ProductsApiGroup);
 
         // v2StoresApiGroup = versionedApiGroup
         //     .MapGroup("/stores")

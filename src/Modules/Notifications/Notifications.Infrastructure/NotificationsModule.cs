@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Notifications.Infrastructure.Alerts;
 using Notifications.Infrastructure.Devices;
 using Notifications.Infrastructure.Email;
 using Notifications.Infrastructure.Hubs;
@@ -31,6 +32,7 @@ public sealed class NotificationsModule : IModule
         services.AddOtpServices(configuration);
         services.AddPushServices(configuration);
         services.AddDeviceRegistryReconciliation();
+        services.AddAlertRecipients();
     }
 
     public void UseModule(IApplicationBuilder app)

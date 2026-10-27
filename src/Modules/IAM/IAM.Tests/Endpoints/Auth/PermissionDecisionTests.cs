@@ -13,7 +13,7 @@ namespace IAM.Tests.Endpoints.Auth;
 public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
     // system-admin is a composite of staff only (no basic), so this only passes when the "-own" self-service
-    // permissions apply "Any Authenticated User Policy" rather than "Basic Role Policy" (PR #149 #2).
+    // permissions apply "Any Authenticated User Policy" rather than "Basic Role Policy".
     [Theory]
     [InlineData(SeedUsers.AdminPhone)]
     [InlineData(SeedUsers.BasicPhone)]
@@ -28,6 +28,24 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
             CancellationToken.None);
 
         Assert.True(granted);
+    }
+
+    // Listing a store in any status (pending, suspended, closed) is administration; the public catalog scopes stay open to
+    // every authenticated role.
+    [Theory]
+    [InlineData(SeedUsers.AdminPhone, true)]
+    [InlineData(SeedUsers.BasicPhone, false)]
+    public async Task StoresViewAll_IsGrantedToTheAdministratorOnly(string phone, bool expected)
+    {
+        var tokens = await IamTestClient.LoginByPhoneAsync(Factory, phone);
+        var permissionClient = Scope.ServiceProvider.GetRequiredService<IKeycloakPermissionClient>();
+
+        var granted = await permissionClient.DecideAsync(
+            tokens.AccessToken,
+            KeycloakPermission.FromScope(KeycloakScopes.Stores.ViewAll).PolicyName(),
+            CancellationToken.None);
+
+        Assert.Equal(expected, granted);
     }
 
     [Fact]

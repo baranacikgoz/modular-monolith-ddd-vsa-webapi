@@ -228,7 +228,7 @@ internal sealed partial class KeycloakTokenClient(
 
         // Best effort, same as the revocation above: Notifications being down must not turn a refresh
         // into a 500. The device row otherwise stays active with a stale session id until the reconcile
-        // job catches it (PR #149 #4).
+        // job catches it.
         try
         {
             await deviceClient.SendAsync(new DeactivateDeviceSessionsRequest(userId, [sessionId]), cancellationToken);

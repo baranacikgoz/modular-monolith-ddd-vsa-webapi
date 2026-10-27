@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Modular Monolith DDD VSA API",
-    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite \u2014 30 endpoints across 6 modules. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key` \u2014 get captcha key (auto-saves)\n2. `OTP > Send OTP` \u2014 send SMS with captcha\n3. `Auth > Create Tokens` \u2014 verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\n### Postman Features Used:\n- **Collection variables** \u2014 auto-saved between requests\n- **Pre-request scripts** \u2014 auto-inject Bearer token\n- **Test scripts** \u2014 status, response time, schema checks\n- **Example responses** \u2014 structured success/error samples\n- **Bearer auth** \u2014 configured at collection level with `{{accessToken}}`",
+    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite: 74 requests. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key`: get captcha key (auto-saves)\n2. `OTP > Send OTP`: send SMS with captcha\n3. `Auth > Create Tokens`: verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\nRequests that need an administrator scope (store approval, stock level changes, warehouse connections, product export) need a token of a user in the `system-admin` role. Requests that upload a file have an empty `File` field to fill in.\n\n### Postman Features Used:\n- **Collection variables**: auto-saved between requests\n- **Pre-request scripts**: auto-inject Bearer token\n- **Test scripts**: status, response time, schema checks\n- **Example responses**: structured success/error samples\n- **Bearer auth**: configured at collection level with `{{accessToken}}`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "20929383"
   },
@@ -172,6 +172,58 @@
     {
       "key": "pushToken",
       "value": "dev-fcm-device-token"
+    },
+    {
+      "key": "storeApplicationId",
+      "value": ""
+    },
+    {
+      "key": "applicantEmail",
+      "value": "applicant@example.com"
+    },
+    {
+      "key": "applicantPhoneNumber",
+      "value": "905551234569"
+    },
+    {
+      "key": "applicantPassword",
+      "value": "Applicant-Dev-Password-1"
+    },
+    {
+      "key": "imageId",
+      "value": ""
+    },
+    {
+      "key": "importJobId",
+      "value": ""
+    },
+    {
+      "key": "exportJobId",
+      "value": ""
+    },
+    {
+      "key": "stockLevelId",
+      "value": ""
+    },
+    {
+      "key": "bulkAdjustmentJobId",
+      "value": ""
+    },
+    {
+      "key": "warehouseConnectionId",
+      "value": ""
+    },
+    {
+      "key": "warehouseBaseUrl",
+      "value": "https://warehouse.example-partner.local/api/"
+    },
+    {
+      "key": "warehouseApiCredential",
+      "value": "api-credential-dev"
+    },
+    {
+      "key": "warehouseDeliveryId",
+      "value": ""
     }
   ],
   "item": [
@@ -1698,6 +1750,648 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "Set My Product Attributes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A product is needed. Run Add Product to My Store first.",
+                  "if (!pm.collectionVariables.get(\"productId\")) {",
+                  "    console.warn(\"productId not set. A product is needed. Run Add Product to My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/my/:id/attributes",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                ":id",
+                "attributes"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Replace the attribute list of a product of my store (name and value pairs, replaced whole). 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"attributes\": [\n        {\n            \"name\": \"Color\",\n            \"value\": \"Black\"\n        },\n        {\n            \"name\": \"Material\",\n            \"value\": \"Cotton\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set My Product Package Dimensions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A product is needed. Run Add Product to My Store first.",
+                  "if (!pm.collectionVariables.get(\"productId\")) {",
+                  "    console.warn(\"productId not set. A product is needed. Run Add Product to My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/my/:id/package-dimensions",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "my",
+                ":id",
+                "package-dimensions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Set the package size (cm) and weight (kg) of a product of my store. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"lengthCm\": 30,\n    \"widthCm\": 20,\n    \"heightCm\": 10,\n    \"weightKg\": 1.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Product Image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.id) {",
+                  "    pm.collectionVariables.set(\"imageId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A product is needed. Run Add Product to My Store first.",
+                  "if (!pm.collectionVariables.get(\"productId\")) {",
+                  "    console.warn(\"productId not set. A product is needed. Run Add Product to My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/:id/images",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                ":id",
+                "images"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                }
+              ]
+            },
+            "description": "Upload one JPEG, PNG or WebP image for a product of my store. Select a file for the File field. Auto-saves the image ID.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "File",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Product Image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An image is needed. Run Add Product Image first.",
+                  "if (!pm.collectionVariables.get(\"imageId\")) {",
+                  "    console.warn(\"imageId not set. An image is needed. Run Add Product Image first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/:id/images/:imageId",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                ":id",
+                "images",
+                ":imageId"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{productId}}"
+                },
+                {
+                  "key": "imageId",
+                  "value": "{{imageId}}"
+                }
+              ]
+            },
+            "description": "Remove one image of a product of my store. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Import Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.jobId) {",
+                  "    pm.collectionVariables.set(\"importJobId\", body.jobId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An active product template is needed. Run Create Product Template and Activate Product Template first.",
+                  "if (!pm.collectionVariables.get(\"productTemplateId\")) {",
+                  "    console.warn(\"productTemplateId not set. An active product template is needed. Run Create Product Template and Activate Product Template first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/imports",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "imports"
+              ]
+            },
+            "description": "Queue an upsert of products into my store from a spreadsheet (.xlsx or .xls; row 1 header; columns name, description, quantity, price, SKU). Select a file for the File field. Answers 202 with the job. Auto-saves the job ID.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "File",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "ClientRequestId",
+                  "value": "{{$guid}}",
+                  "type": "text"
+                },
+                {
+                  "key": "ProductTemplateId",
+                  "value": "{{productTemplateId}}",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Product Imports",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/imports?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "imports"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "My product import jobs, newest first."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Import",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An import job is needed. Run Import Products first.",
+                  "if (!pm.collectionVariables.get(\"importJobId\")) {",
+                  "    console.warn(\"importJobId not set. An import job is needed. Run Import Products first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/imports/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "imports",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{importJobId}}"
+                }
+              ]
+            },
+            "description": "Poll one import job: status, progress, counters and the first rejected rows."
+          },
+          "response": []
+        },
+        {
+          "name": "Export Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.jobId) {",
+                  "    pm.collectionVariables.set(\"exportJobId\", body.jobId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/exports",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "exports"
+              ],
+              "query": [
+                {
+                  "key": "StoreId",
+                  "value": "",
+                  "description": "optional",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Queue a CSV export of products (all, or one store with StoreId). Needs an administrator token. Answers 202 with the job. Auto-saves the job ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Export",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An export job is needed. Run Export Products first.",
+                  "if (!pm.collectionVariables.get(\"exportJobId\")) {",
+                  "    console.warn(\"exportJobId not set. An export job is needed. Run Export Products first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/exports/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "exports",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{exportJobId}}"
+                }
+              ]
+            },
+            "description": "Poll one export job. Succeeded means the file can be downloaded."
+          },
+          "response": []
+        },
+        {
+          "name": "Download Product Export",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An export job is needed. Run Export Products first.",
+                  "if (!pm.collectionVariables.get(\"exportJobId\")) {",
+                  "    console.warn(\"exportJobId not set. An export job is needed. Run Export Products first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/products/exports/:id/download",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "products",
+                "exports",
+                ":id",
+                "download"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{exportJobId}}"
+                }
+              ]
+            },
+            "description": "Download the CSV of a Succeeded export. 409 NotReady until the job has succeeded."
+          },
+          "response": []
         }
       ]
     },
@@ -3256,6 +3950,361 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "Apply for a Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.id) {",
+                  "    pm.collectionVariables.set(\"storeApplicationId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/applications",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "applications"
+              ]
+            },
+            "description": "Anonymous store application. Creates the owner's account and a store in PendingApproval; no role is assigned and no token is returned. Auto-saves the store ID as storeApplicationId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{applicantEmail}}\",\n    \"phoneNumber\": \"{{applicantPhoneNumber}}\",\n    \"password\": \"{{applicantPassword}}\",\n    \"firstName\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"storeName\": \"{{storeName}}\",\n    \"storeDescription\": \"{{storeDescription}}\",\n    \"storeAddress\": \"{{storeAddress}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Store Applications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/applications?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "applications"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Stores that wait for approval. Needs an administrator token."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store application is needed. Run Apply for a Store first.",
+                  "if (!pm.collectionVariables.get(\"storeApplicationId\")) {",
+                  "    console.warn(\"storeApplicationId not set. A store application is needed. Run Apply for a Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/approve",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeApplicationId}}"
+                }
+              ]
+            },
+            "description": "Approve a store application. The store becomes Active and the owner is granted the store-owner role asynchronously. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Suspend Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store application is needed. Run Apply for a Store and Approve Store first.",
+                  "if (!pm.collectionVariables.get(\"storeApplicationId\")) {",
+                  "    console.warn(\"storeApplicationId not set. A store application is needed. Run Apply for a Store and Approve Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/suspend",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "suspend"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeApplicationId}}"
+                }
+              ]
+            },
+            "description": "Suspend an Active store. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Reinstate Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store application is needed. Run Apply for a Store first.",
+                  "if (!pm.collectionVariables.get(\"storeApplicationId\")) {",
+                  "    console.warn(\"storeApplicationId not set. A store application is needed. Run Apply for a Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/reinstate",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "reinstate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeApplicationId}}"
+                }
+              ]
+            },
+            "description": "Bring a Suspended store back to Active. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create Store or Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/:id/deactivate",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                ":id",
+                "deactivate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeId}}"
+                }
+              ]
+            },
+            "description": "Deactivate a store. Final. 204 No Content."
+          },
+          "response": []
         }
       ]
     },
@@ -3461,7 +4510,7 @@
                 }
               ]
             },
-            "description": "Get a stock reservation and its status."
+            "description": "Get a stock reservation and its status. isReadOnly is true once the warehouse system reported a status this system has no mapping for; providerStatus then holds the last status it reported."
           },
           "response": []
         },
@@ -3616,8 +4665,14 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "// Sign the exact body that will be sent (variables resolved) with the shared secret.",
+                  "// A fresh delivery id per send. It is stored first so the signed body and the sent body are the same text.",
+                  "pm.collectionVariables.set(\"warehouseDeliveryId\", pm.variables.replaceIn(\"{{$guid}}\"));",
+                  "// Sign the exact body that will be sent (variables resolved) with the connection's webhook secret.",
                   "const secret = pm.collectionVariables.get(\"warehouseWebhookSecret\");",
+                  "if (!secret || !pm.collectionVariables.get(\"warehouseConnectionId\")) {",
+                  "    console.warn(\"warehouseConnectionId or warehouseWebhookSecret not set. Run Create Warehouse Connection first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}",
                   "const body = pm.variables.replaceIn(pm.request.body.raw);",
                   "const signature = CryptoJS.HmacSHA256(body, secret).toString(CryptoJS.enc.Hex);",
                   "pm.request.headers.upsert({ key: \"X-Warehouse-Signature\", value: signature });"
@@ -3636,7 +4691,7 @@
               }
             ],
             "url": {
-              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/webhooks/warehouse",
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/webhooks/warehouse/:connectionId",
               "host": [
                 "{{modular-monolith-base-url}}"
               ],
@@ -3644,13 +4699,20 @@
                 "v1",
                 "stock-reservations",
                 "webhooks",
-                "warehouse"
+                "warehouse",
+                ":connectionId"
+              ],
+              "variable": [
+                {
+                  "key": "connectionId",
+                  "value": "{{warehouseConnectionId}}"
+                }
               ]
             },
-            "description": "Anonymous callback from the warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header. The pre-request script signs the body with warehouseWebhookSecret. 204 No Content.",
+            "description": "Anonymous callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header, made with the webhook secret of the connection in the route (warehouseWebhookSecret, returned once by Create Warehouse Connection). The pre-request script signs the body. A deliveryId seen before on the connection is acknowledged and applies nothing. status is optional (held, confirmed, released or expired; a body without it is the original confirmation) and providerReference is required only when the status confirms the reservation. A status word this system has no mapping for is acknowledged and recorded, and the reservation turns read-only. 204 No Content.",
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "raw": "{\n    \"deliveryId\": \"{{warehouseDeliveryId}}\",\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"status\": \"confirmed\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3660,6 +4722,1054 @@
             "auth": {
               "type": "noauth"
             }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stock Levels",
+      "item": [
+        {
+          "name": "Search Stock Levels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.length) {",
+                  "    pm.collectionVariables.set(\"stockLevelId\", body.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels?PageNumber=1&PageSize=10&ProductName=",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                },
+                {
+                  "key": "ProductName",
+                  "value": "",
+                  "description": "optional"
+                }
+              ]
+            },
+            "description": "List stock levels, least stock first, with the product name. ProductName narrows the list through Products. Auto-saves the first stock level ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Stock Movements",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A stock level is needed. Run Search Stock Levels first.",
+                  "if (!pm.collectionVariables.get(\"stockLevelId\")) {",
+                  "    console.warn(\"stockLevelId not set. A stock level is needed. Run Search Stock Levels first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/:id/movements?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                ":id",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                },
+                {
+                  "key": "After",
+                  "value": "",
+                  "description": "optional, NextCursor of the previous page",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockLevelId}}"
+                }
+              ]
+            },
+            "description": "The ledger of a stock level, newest first, with the acting user's name."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Daily Stock Totals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create Store or Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/daily-totals?storeId={{storeId}}&from=2026-01-01&to=2026-01-31",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "daily-totals"
+              ],
+              "query": [
+                {
+                  "key": "storeId",
+                  "value": "{{storeId}}",
+                  "description": "required"
+                },
+                {
+                  "key": "from",
+                  "value": "2026-01-01",
+                  "description": "required, a calendar day in the business time zone"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-01-31",
+                  "description": "optional, included, defaults to today in the business time zone"
+                }
+              ]
+            },
+            "description": "A store's committed reservation totals per business day, oldest first. A day with no committed reservation has no row. The range is capped by InventoryOptions.DailyTotalsMaxRangeDays; a longer range or a first day after the last day is a 400."
+          },
+          "response": []
+        },
+        {
+          "name": "Receive Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A stock level is needed. Run Search Stock Levels first.",
+                  "if (!pm.collectionVariables.get(\"stockLevelId\")) {",
+                  "    console.warn(\"stockLevelId not set. A stock level is needed. Run Search Stock Levels first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/:id/receive",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                ":id",
+                "receive"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockLevelId}}"
+                }
+              ]
+            },
+            "description": "Stock arrived: adds a positive quantity and one ledger row. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": 5,\n    \"reason\": \"Delivery\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Adjust Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A stock level is needed. Run Search Stock Levels first.",
+                  "if (!pm.collectionVariables.get(\"stockLevelId\")) {",
+                  "    console.warn(\"stockLevelId not set. A stock level is needed. Run Search Stock Levels first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/:id/adjust",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                ":id",
+                "adjust"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockLevelId}}"
+                }
+              ]
+            },
+            "description": "Signed correction (plus adds, minus removes) with a mandatory reason. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantity\": -1,\n    \"reason\": \"Counted on the shelf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Low Stock Threshold",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A stock level is needed. Run Search Stock Levels first.",
+                  "if (!pm.collectionVariables.get(\"stockLevelId\")) {",
+                  "    console.warn(\"stockLevelId not set. A stock level is needed. Run Search Stock Levels first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/:id/low-stock-threshold",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                ":id",
+                "low-stock-threshold"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockLevelId}}"
+                }
+              ]
+            },
+            "description": "Set the low stock threshold (0 turns the alert off). 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"threshold\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Adjust Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.jobId) {",
+                  "    pm.collectionVariables.set(\"bulkAdjustmentJobId\", body.jobId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/bulk-adjustments",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "bulk-adjustments"
+              ]
+            },
+            "description": "Queue signed quantity corrections from a spreadsheet (.xlsx or .xls; row 1 header; columns product id, signed quantity), all with one reason. Select a file for the File field. Answers 202 with the job. Auto-saves the job ID.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "File",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "ClientRequestId",
+                  "value": "{{$guid}}",
+                  "type": "text"
+                },
+                {
+                  "key": "Reason",
+                  "value": "Cycle count",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Bulk Adjustments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/bulk-adjustments?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "bulk-adjustments"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "My bulk adjustment jobs, newest first."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bulk Adjustment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A bulk adjustment job is needed. Run Bulk Adjust Stock first.",
+                  "if (!pm.collectionVariables.get(\"bulkAdjustmentJobId\")) {",
+                  "    console.warn(\"bulkAdjustmentJobId not set. A bulk adjustment job is needed. Run Bulk Adjust Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/bulk-adjustments/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "bulk-adjustments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{bulkAdjustmentJobId}}"
+                }
+              ]
+            },
+            "description": "Poll one bulk adjustment job: status, progress, counters and the first rejected rows."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Warehouse Connections",
+      "item": [
+        {
+          "name": "Create Warehouse Connection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.id) {",
+                  "    pm.collectionVariables.set(\"warehouseConnectionId\", body.id);",
+                  "}",
+                  "if (body.webhookSecret) {",
+                  "    pm.collectionVariables.set(\"warehouseWebhookSecret\", body.webhookSecret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create Store or Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections"
+              ]
+            },
+            "description": "Connect a store to its warehouse system. The answer carries the webhook secret exactly once; the request's API credential and that secret are stored encrypted and never returned again. Auto-saves the connection ID and the webhook secret.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"storeId\": \"{{storeId}}\",\n    \"provider\": \"JsonApi\",\n    \"baseUrl\": \"{{warehouseBaseUrl}}\",\n    \"apiCredential\": \"{{warehouseApiCredential}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Warehouse Connections",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections?StoreId=&Status=&PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections"
+              ],
+              "query": [
+                {
+                  "key": "StoreId",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "Status",
+                  "value": "",
+                  "description": "optional: Active or Deactivated"
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "List warehouse connections, optionally of one store or one status."
+          },
+          "response": []
+        },
+        {
+          "name": "Search My Warehouse Connections",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/my?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                "my"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "The warehouse connections of the active stores I own, newest first. A store that is not active, or one Inventory has not been told about yet, does not appear, so the page can be empty. Never carries a credential or a webhook secret."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Warehouse Connection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A connection is needed. Run Create Warehouse Connection first.",
+                  "if (!pm.collectionVariables.get(\"warehouseConnectionId\")) {",
+                  "    console.warn(\"warehouseConnectionId not set. A connection is needed. Run Create Warehouse Connection first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{warehouseConnectionId}}"
+                }
+              ]
+            },
+            "description": "One connection. Carries no credential and no webhook secret."
+          },
+          "response": []
+        },
+        {
+          "name": "Replace Warehouse Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A connection is needed. Run Create Warehouse Connection first.",
+                  "if (!pm.collectionVariables.get(\"warehouseConnectionId\")) {",
+                  "    console.warn(\"warehouseConnectionId not set. A connection is needed. Run Create Warehouse Connection first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/:id/credentials",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                ":id",
+                "credentials"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{warehouseConnectionId}}"
+                }
+              ]
+            },
+            "description": "Replace the API credential this system presents to the warehouse. 204 No Content.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"apiCredential\": \"{{warehouseApiCredential}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rotate Warehouse Webhook Secret",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.webhookSecret) {",
+                  "    pm.collectionVariables.set(\"warehouseWebhookSecret\", body.webhookSecret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A connection is needed. Run Create Warehouse Connection first.",
+                  "if (!pm.collectionVariables.get(\"warehouseConnectionId\")) {",
+                  "    console.warn(\"warehouseConnectionId not set. A connection is needed. Run Create Warehouse Connection first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/:id/rotate-webhook-secret",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                ":id",
+                "rotate-webhook-secret"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{warehouseConnectionId}}"
+                }
+              ]
+            },
+            "description": "Issue a new webhook secret, shown once. The previous secret stops verifying at once. Auto-saves the new secret."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Warehouse Connection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A connection is needed. Run Create Warehouse Connection first.",
+                  "if (!pm.collectionVariables.get(\"warehouseConnectionId\")) {",
+                  "    console.warn(\"warehouseConnectionId not set. A connection is needed. Run Create Warehouse Connection first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/:id/deactivate",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                ":id",
+                "deactivate"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{warehouseConnectionId}}"
+                }
+              ]
+            },
+            "description": "Deactivate a connection. Final. 204 No Content."
           },
           "response": []
         }

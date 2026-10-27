@@ -29,6 +29,20 @@ internal sealed class RoleRepresentation
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
 }
 
+/// <summary>The fields of a role listing needed to walk composite roles.</summary>
+internal sealed class RoleSummaryRepresentation
+{
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("composite")] public bool Composite { get; set; }
+    [JsonPropertyName("clientRole")] public bool ClientRole { get; set; }
+}
+
+/// <summary>The fields of a group listing needed to walk the group tree.</summary>
+internal sealed class GroupRepresentation
+{
+    [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
+}
+
 internal sealed class UserSessionRepresentation
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
@@ -42,4 +56,7 @@ internal sealed class ErrorRepresentation
     [JsonPropertyName("errorMessage")] public string? ErrorMessage { get; set; }
     [JsonPropertyName("error")] public string? Error { get; set; }
     [JsonPropertyName("field")] public string? Field { get; set; }
+
+    /// <summary>Set instead of <see cref="ErrorMessage" /> by password policy rejections.</summary>
+    [JsonPropertyName("error_description")] public string? ErrorDescription { get; set; }
 }

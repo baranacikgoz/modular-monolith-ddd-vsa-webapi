@@ -8,6 +8,7 @@ public interface IKeycloakAdminClient
 {
     Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken);
 
+    /// <summary>Assigns a realm role. An already-held role is accepted. A user Keycloak does not know is <c>NotFound</c>; any other rejection is <c>IdentityProviderUnavailable</c>.</summary>
     Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken);
 
     /// <summary>Deletes the user. A user that no longer exists is not an error.</summary>
@@ -25,8 +26,24 @@ public interface IKeycloakAdminClient
 
     Task<IReadOnlyList<ApplicationUserId>> GetUserIdsInRoleAsync(string roleName, int max, CancellationToken cancellationToken);
 
-    /// <summary>One page of a realm role's members (<paramref name="skip" />, <paramref name="take" />), enabled or not. An unknown role is an empty page.</summary>
+    /// <summary>One page of the users holding a realm role directly (<paramref name="skip" />, <paramref name="take" />), enabled or not, in Keycloak's own order. Users who hold only a composite role that includes it are not listed: see <see cref="GetRolesContainingAsync" />. An unknown role is an empty page.</summary>
     Task<IReadOnlyList<KeycloakUser>> GetUsersInRoleAsync(string roleName, int skip, int take, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Names of the realm roles that include <paramref name="roleName" />, directly or through other composite roles. The
+    ///     role itself and client roles are not listed. Keycloak has no reverse lookup, so this reads the children of every
+    ///     composite realm role, and keeps that role graph for <c>KeycloakOptions.RoleGraphCacheSeconds</c>: a composite role
+    ///     changed in Keycloak shows up after that window. An unknown role, or one no composite role includes, gives an empty list.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Every user who holds one of <paramref name="roleNames" /> through a group: members of the groups that carry the role
+    ///     and of all their subgroups (a subgroup inherits its parent's role mappings), deduplicated, enabled or not. Users who
+    ///     hold the role directly are not listed: see <see cref="GetUsersInRoleAsync" />. Keycloak is read in pages of
+    ///     <paramref name="pageSize" />. An unknown role contributes nothing.
+    /// </summary>
+    Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 

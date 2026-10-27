@@ -37,8 +37,29 @@ internal sealed class StockReservationConfiguration : AuditableEntityConfigurati
             .HasMaxLength(Constants.ReleaseAttemptReferenceMaxLength)
             .IsRequired(false);
 
+        builder
+            .Property(r => r.LastReleaseAttemptOn)
+            .IsRequired(false);
+
+        builder
+            .Property(r => r.IsReadOnly)
+            .IsRequired();
+
+        builder
+            .Property(r => r.ProviderStatus)
+            .IsRequired(false);
+
+        builder
+            .Property(r => r.LastProviderEventOn)
+            .IsRequired(false);
+
         // Available-quantity aggregation (GetStockLevelRequestHandler) filters by ProductId + Status.
         builder
             .HasIndex(r => new { r.ProductId, r.Status });
+
+        // The reconcile sweep reads only the few reservations that hold a release attempt marker, oldest first.
+        builder
+            .HasIndex(r => r.LastReleaseAttemptOn)
+            .HasFilter("\"LastReleaseAttemptReference\" IS NOT NULL");
     }
 }

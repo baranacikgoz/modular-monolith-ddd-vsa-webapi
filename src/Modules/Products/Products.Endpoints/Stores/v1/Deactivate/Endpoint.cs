@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
 
@@ -27,10 +28,12 @@ internal static class Endpoint
         IProductsDbContext dbContext,
         CancellationToken cancellationToken)
     {
+        // Store.Deactivate counts the products with stock to pick its event, so exactly those must be loaded.
         return await dbContext
             .Stores
             .TagWith(nameof(DeactivateStoreAsync), request.Id)
             .Where(s => s.Id == request.Id)
+            .Include(s => s.Products.Where(p => p.Quantity > 0))
             .SingleAsResultAsync(nameof(Store), cancellationToken)
             .TapAsync(store => store.Deactivate())
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));

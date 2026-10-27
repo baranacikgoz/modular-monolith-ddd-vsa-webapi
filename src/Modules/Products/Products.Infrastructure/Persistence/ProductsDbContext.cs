@@ -6,6 +6,8 @@ using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Products.Application.Exports;
+using Products.Application.Imports;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
@@ -25,6 +27,8 @@ public sealed class ProductsDbContext(
     public DbSet<Store> Stores => Set<Store>();
     public DbSet<ProductTemplate> ProductTemplates => Set<ProductTemplate>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductImportJob> ImportJobs => Set<ProductImportJob>();
+    public DbSet<ProductExportJob> ExportJobs => Set<ProductExportJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

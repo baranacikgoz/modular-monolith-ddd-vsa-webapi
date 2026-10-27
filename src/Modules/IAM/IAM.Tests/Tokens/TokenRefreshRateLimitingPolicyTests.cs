@@ -25,7 +25,10 @@ public class TokenRefreshRateLimitingPolicyTests
 
         Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
 
-        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+
+        WarehouseWebhook = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        StoreApplication = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     }));
 
     // RateLimitPartitions.FixedWindow resolves IConnectionMultiplexer from RequestServices to decide

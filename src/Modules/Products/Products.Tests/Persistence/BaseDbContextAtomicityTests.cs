@@ -100,8 +100,9 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
         var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
         var auditLogCountAfter = await db.AuditLog.AsNoTracking().CountAsync();
 
-        // Store.Create raises exactly 1 domain event (V1StoreCreatedDomainEvent)
-        Assert.Equal(outboxCountBefore + 1, outboxCountAfter);
+        // Store.Create raises exactly 1 domain event (V1StoreCreatedDomainEvent), which queues two integration events
+        // (StoreCreated and StoreAccessChanged).
+        Assert.Equal(outboxCountBefore + 2, outboxCountAfter);
         Assert.Equal(auditLogCountBefore + 1, auditLogCountAfter);
     }
 
@@ -222,9 +223,9 @@ public class BaseDbContextAtomicityTests : BaseIntegrationTest
             .ToListAsync();
         Assert.Empty(storeBAuditEntries);
 
-        // Assert - exactly one new OutboxMessage row for storeA's event
+        // Assert - exactly the two new OutboxMessage rows storeA's one event queues (StoreCreated and StoreAccessChanged)
         var outboxCountAfter = await outboxDb.OutboxMessages.AsNoTracking().CountAsync();
-        Assert.Equal(outboxCountBefore + 1, outboxCountAfter);
+        Assert.Equal(outboxCountBefore + 2, outboxCountAfter);
     }
 
     [Fact]

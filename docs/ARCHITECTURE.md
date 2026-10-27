@@ -157,7 +157,7 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 ### 13. Domain events are versioned and frozen
 
-**Decision:** A shipped `V{n}...DomainEvent` record never changes: no added, removed, renamed or retyped property. A new shape ships as `V{n+1}`, raised from the command method, and `V{n}` stays in the tree. Event payloads carry only primitives, ids, snapshots and nested records, never entities. `IntegrationEvent`s are exempt, because they are contracts between deployments rather than history.
+**Decision:** A shipped `V{n}...DomainEvent` record never changes: no added, removed, renamed or retyped property. A new shape ships as `V{n+1}`, raised from the command method, and `V{n}` stays in the tree. Event payloads carry only primitives, ids, snapshots and nested records, never entities. `IntegrationEvent`s are exempt, because they are contracts between deployments rather than history. `V2StoreAddressUpdatedDomainEvent` (the address event with the previous address added) is the worked example, and a test proves a shipped `V1` audit row still deserializes.
 
 **Why:** Domain events are stored in the audit log by their CLR type name. If an old event changes shape, the history that was written under the old shape can no longer be read. A contract test (`DomainEventContractTests`) enforces the allowed payload types.
 
@@ -165,7 +165,7 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 ### 14. Rules are tests and startup checks, not conventions
 
-**Decision:** Whatever can be checked mechanically is. Architecture tests cover module boundaries, event contracts, strongly typed id queries and aggregate method signatures. `PermissionCoverageTests` ties endpoint scopes to the realm. Every options class has a validator that runs at startup, and in Production those validators reject placeholder providers (`Dummy` SMS, email, push, captcha and warehouse), a fixed OTP code, an in-memory-only cache and SignalR without a backplane. `MigrationGuard` refuses to start against an unmigrated database, and CI fails when a model migration has no committed SQL.
+**Decision:** Whatever can be checked mechanically is. Architecture tests cover module boundaries, event contracts, strongly typed id queries and aggregate method signatures. `PermissionCoverageTests` ties endpoint scopes to the realm. Every options class has a validator that runs at startup, and in Production those validators reject placeholder providers (`Dummy` SMS, email, push and captcha), a fixed OTP code, an in-memory-only cache, SignalR without a backplane and the checked-in secret protection key. `MigrationGuard` refuses to start against an unmigrated database, and CI fails when a model migration has no committed SQL.
 
 **Why:** Prose rules are followed when someone remembers them. A failing build is followed always, including by contributors and AI agents who never read the document.
 
@@ -181,9 +181,29 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 ### 16. Failure is assumed at every external edge
 
-**Decision:** Outbound HTTP clients get a timeout, bounded retries and a circuit breaker from `ResiliencyOptions`, and a third party with per-key quotas gets a keyed pipeline (own rate limiter, breaker and timeout per key). Inbound endpoints that cost money or enable abuse (SMS and email sends, OTP verification, registration, token creation) have named rate limit policies that share one counter across replicas when Redis is configured.
+**Decision:** Outbound HTTP clients get a timeout, bounded retries and a circuit breaker from `ResiliencyOptions`, and a third party with per-key quotas gets a keyed pipeline (own rate limiter, breaker and timeout per key; the warehouse gateway builds one per store connection and gives it no retry, because a release changes state at the partner). Inbound endpoints that cost money or enable abuse (SMS and email sends, OTP verification, registration, token creation, store applications, partner webhooks) have named rate limit policies that share one counter across replicas when Redis is configured.
 
 **Why:** In a split deployment every module boundary is a network. Resilience that is added per call site later is the work this architecture exists to avoid, so it is part of the platform from the start.
+
+---
+
+### 17. Heavy work is accepted, queued and polled
+
+**Decision:** Work whose cost grows with the caller's data (a spreadsheet import, an export, a bulk change, a push of many rows to a third party) never runs inside the request. The endpoint stores the input, writes an event-free job row and one queue message (through the outbox) in one transaction, and answers 202 with the job to poll. A queue consumer claims the job with one atomic update, works in bounded batches, stores its cursor on the job row and queues its own continuation when the work is larger than one message. It never throws for a failed unit of work: the row carries `Failed` and a failure key. Recurring Hangfire jobs only publish messages and clean up. The rules are `CLAUDE.md` section 12, and `ProductImportJob*` and `StockBulkAdjustJob*` are the worked examples.
+
+**Why:** A request that loops over a user's data holds a connection, a transaction and memory for as long as the data is large, and a gateway timeout leaves the client not knowing what happened. The row and the message commit together, so a restart loses neither. The atomic claim keeps a redelivered message from running the work twice, and options (file size, row ceiling, batch size, batches per message) bound memory by configuration instead of by the input. The database is not the queue, because RabbitMQ already provides prefetch, concurrency limits and redelivery.
+
+**Tradeoff:** The client has to poll and the answer is eventually consistent. A consumer that dies mid-message leaves a `Running` row, so a sweep hands it back to the queue, and the sweep's lease has to stay shorter than the housekeeping window that fails stale rows.
+
+---
+
+### 18. Stored credentials are encrypted at rest with a deploy-time key
+
+**Decision:** A secret the system must read back (a warehouse API credential, a webhook secret it verifies) is encrypted by `SecretProtector` (AES-GCM) before it is stored. The master key is `SecretProtectionOptions.EncryptionKey`, delivered like every other secret by the deployment, and the checked-in development key is rejected outside the Development environment. A secret that is only compared is hashed instead. A webhook secret is generated per connection, shown to the caller once and rotatable.
+
+**Why:** A database dump or read-only SQL access must not hand out the credentials of every partner. One shared webhook secret means one leak compromises every partner, and rotating it means coordinating all of them. A secret per connection limits a leak to one connection and lets it be rotated alone.
+
+**Tradeoff:** The key is one more deploy-time dependency, and changing it makes every stored value undecryptable.
 
 ---
 

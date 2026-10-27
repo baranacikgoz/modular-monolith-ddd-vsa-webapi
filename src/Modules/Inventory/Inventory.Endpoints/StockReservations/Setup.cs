@@ -16,7 +16,11 @@ public static class Setup
         v1.Reserve.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
         v1.Commit.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
         v1.Release.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
+        v1.ReconcileRelease.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
+        v1.ResolveReadOnly.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
         v1.Get.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
+        v1.My.Get.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
+        v1.My.Search.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
         v1.ReserveSeries.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
         v1.WebhookCallback.Endpoint.MapEndpoint(v1StockReservationsApiGroup);
     }

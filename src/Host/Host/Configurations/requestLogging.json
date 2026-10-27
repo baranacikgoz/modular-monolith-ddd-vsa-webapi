@@ -41,6 +41,19 @@
         "Methods": [
           "POST"
         ]
+      },
+      {
+        "Path": "/v1/stores/applications",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/v1/warehouse-connections",
+        "Methods": [
+          "POST",
+          "PUT"
+        ]
       }
     ],
     "SensitiveResponseBodyPaths": [
@@ -58,6 +71,12 @@
       },
       {
         "Path": "/users/register/self",
+        "Methods": [
+          "POST"
+        ]
+      },
+      {
+        "Path": "/v1/warehouse-connections",
         "Methods": [
           "POST"
         ]

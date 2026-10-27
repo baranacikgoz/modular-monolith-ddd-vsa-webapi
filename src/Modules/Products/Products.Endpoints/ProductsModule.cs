@@ -10,6 +10,7 @@ using Products.Endpoints.Probe;
 using Products.Endpoints.Products;
 using Products.Endpoints.ProductTemplates;
 using Products.Endpoints.Stores;
+using Products.Infrastructure.Jobs;
 using Products.Infrastructure.Persistence;
 using Products.Infrastructure.RateLimiting;
 using Products.Infrastructure.Telemetry;
@@ -29,6 +30,7 @@ public sealed class ProductsModule : IModule
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddPersistence();
+        services.AddProductJobs();
     }
 
     public void UseModule(IApplicationBuilder app)

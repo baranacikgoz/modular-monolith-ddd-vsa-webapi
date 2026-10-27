@@ -13,7 +13,7 @@ public class CachingOptions
     /// <summary>
     ///     Upper bound of the L1 (in-process memory) cache in entries: every entry counts as size 1. Past the bound a new
     ///     entry is not kept (it is simply recomputed on the next read), so a key space that grows without limit (for
-    ///     example one key per marketplace connection and payload hash) cannot grow the heap without limit.
+    ///     example one key per warehouse connection and payload hash) cannot grow the heap without limit.
     /// </summary>
     public required long MemoryCacheSizeLimit { get; set; }
 

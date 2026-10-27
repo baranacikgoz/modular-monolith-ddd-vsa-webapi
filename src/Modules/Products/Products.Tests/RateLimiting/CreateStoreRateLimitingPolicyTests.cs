@@ -33,7 +33,9 @@ public class CreateStoreRateLimitingPolicyTests
         CheckRegistration = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
         TokenRefresh = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
         Email = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
-        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
+        OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        WarehouseWebhook = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        StoreApplication = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     };
 
     // Mirrors production wiring (Common.Infrastructure/Auth/Setup.cs AddCommonAuth) so ICurrentUser is

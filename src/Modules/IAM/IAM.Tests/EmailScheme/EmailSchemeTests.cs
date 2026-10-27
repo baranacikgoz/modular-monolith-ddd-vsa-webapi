@@ -52,6 +52,19 @@ public class EmailSchemeTests(EmailSchemeWebAppFactory factory) : BaseIntegratio
     }
 
     [Fact]
+    public async Task RegisterByEmail_ValidRequest_MarksTheEmailVerified()
+    {
+        var email = IamTestClient.NewEmail();
+
+        using var response = await IamTestClient.RegisterByEmailRawAsync(Factory, email);
+
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var user = await adminClient.FindUserByEmailAsync(email, CancellationToken.None);
+        Assert.True(await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, user!.Id));
+    }
+
+    [Fact]
     public async Task RegisterByEmail_MixedCaseEmail_StoresAndLooksUpLowercased()
     {
         var email = IamTestClient.NewEmail();

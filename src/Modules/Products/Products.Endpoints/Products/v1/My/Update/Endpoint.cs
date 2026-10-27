@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 
@@ -30,11 +31,12 @@ internal static class Endpoint
     {
         return await dbContext
             .Products
+            .Include(p => p.Store)
             .TagWith(nameof(UpdateMyProductAsync), request.Id)
             .Where(p => p.Store.OwnerId == currentUser.Id && p.Id == request.Id)
             .SingleAsResultAsync(nameof(Product), cancellationToken)
-            .TapAsync(product => product.Update(request.Body.Name, request.Body.Description, request.Body.Quantity,
-                request.Body.Price))
+            .TapAsync(product => product.Store.UpdateProduct(product, request.Body.Name, request.Body.Description,
+                request.Body.Quantity, request.Body.Price))
             .TapAsync(async _ => await dbContext.SaveChangesAsync(cancellationToken));
     }
 }

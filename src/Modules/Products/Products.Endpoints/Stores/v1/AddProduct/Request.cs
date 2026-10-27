@@ -29,6 +29,9 @@ public sealed record Request
         public required string Description { get; init; }
         public required int Quantity { get; init; }
         public required decimal Price { get; init; }
+
+        /// <summary>The store's own code for the product; unique within the store.</summary>
+        public string? Sku { get; init; }
     }
 }
 
@@ -76,8 +79,16 @@ public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
                 Constants.QuantityGreaterThanOrEqualTo));
 
         RuleFor(x => x.Price)
-            .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
+            .GreaterThanOrEqualTo(Constants.PriceGreaterThanOrEqualTo)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Price_GreaterThanOrEqualTo,
                 Constants.PriceGreaterThanOrEqualTo));
+
+        RuleFor(x => x.Sku)
+            .NotEmpty()
+            .WithMessage(localizer.Stores_AddProduct_Sku_NotEmpty)
+            .MaximumLength(Constants.SkuMaxLength)
+            .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Sku_MaxLength,
+                Constants.SkuMaxLength))
+            .When(x => x.Sku is not null);
     }
 }

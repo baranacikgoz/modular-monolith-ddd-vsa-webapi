@@ -8,6 +8,7 @@ using NpgsqlTypes;
 using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
+using Constants = Products.Domain.Products.Constants;
 
 namespace Products.Infrastructure.Persistence.EntityConfigurations;
 
@@ -38,12 +39,53 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
             .HasForeignKey(sp => sp.ProductTemplateId);
 
         builder
+            .HasMany(sp => sp.Images)
+            .WithOne()
+            .HasForeignKey(i => i.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .Navigation(sp => sp.Images)
+            .HasField("_images")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
             .Property(sp => sp.Quantity)
             .IsRequired();
 
         builder
             .Property(sp => sp.Price)
             .IsRequired();
+
+        builder
+            .Property(sp => sp.Sku)
+            .HasMaxLength(Constants.SkuMaxLength);
+
+        // A value object owned by the product: four nullable columns in the product's own row, all null until the store sets them.
+        builder.OwnsOne(sp => sp.PackageDimensions, dimensions =>
+        {
+            dimensions.Property(d => d.LengthCm).HasColumnName("PackageLengthCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.WidthCm).HasColumnName("PackageWidthCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.HeightCm).HasColumnName("PackageHeightCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.WeightKg).HasColumnName("PackageWeightKg").HasPrecision(10, 3);
+        });
+
+        // Read and replaced whole; the default fills the rows that existed before the column did.
+        builder
+            .Property(sp => sp.Attributes)
+            .HasJsonbList()
+            .HasDefaultValueSql("'[]'::jsonb");
+
+        // Declared on its own: the filtered index below does not hold products without a SKU, so it cannot serve a
+        // lookup by store, and EF would otherwise drop this index as covered by it.
+        builder.HasIndex(sp => sp.StoreId);
+
+        // Unique per store. Products without a SKU stay out of the index, so any number of them coexist. The unique
+        // violation is mapped to ProductErrors.SkuAlreadyExists by SaveChangesDetectingConflictAsync.
+        builder
+            .HasIndex(sp => new { sp.StoreId, sp.Sku })
+            .IsUnique()
+            .HasFilter("\"Sku\" IS NOT NULL");
 
         // Per-row authored language feeding the prose layer of the two-layer vector. Stamped by interceptor.
         builder

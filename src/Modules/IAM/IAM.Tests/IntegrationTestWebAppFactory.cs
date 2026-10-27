@@ -100,7 +100,7 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 }
 
 /// <summary>
-///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created username
+///     Test-only seam for the self-registration rollback: lets a test mark a not-yet-created username
 ///     (phone number or email, whichever the scheme provisions) so its role assignment fails once, without
 ///     touching real Keycloak.
 /// </summary>
@@ -165,6 +165,16 @@ internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inn
     public Task<IReadOnlyList<KeycloakUser>> GetUsersInRoleAsync(string roleName, int skip, int take, CancellationToken cancellationToken)
     {
         return inner.GetUsersInRoleAsync(roleName, skip, take, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken)
+    {
+        return inner.GetRolesContainingAsync(roleName, cancellationToken);
+    }
+
+    public Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken)
+    {
+        return inner.GetUsersInGroupsHoldingRolesAsync(roleNames, pageSize, cancellationToken);
     }
 
     public Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken)

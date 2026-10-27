@@ -29,7 +29,12 @@ public sealed class KeycloakOptionsValidatorTests
         DecisionCacheMaxDurationSeconds = 300,
         ServiceAccountTokenRefreshSkewSeconds = 30,
         AttemptTimeoutSeconds = 5,
-        TotalRequestTimeoutSeconds = 15
+        TotalRequestTimeoutSeconds = 15,
+        UserLookupConcurrency = 8,
+        UserDisplayCacheDurationSeconds = 300,
+        UserDisplayCacheDistributedDurationSeconds = 86400,
+        UserDisplayNegativeCacheDurationSeconds = 300,
+        RoleGraphCacheSeconds = 60
     };
 
     [Fact]
@@ -98,6 +103,69 @@ public sealed class KeycloakOptionsValidatorTests
         var result = new KeycloakOptionsValidator().Validate(options);
 
         Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void UserLookupConcurrency_MustBePositive()
+    {
+        var options = Valid();
+        options.UserLookupConcurrency = 0;
+
+        var result = new KeycloakOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(KeycloakOptions.UserLookupConcurrency));
+    }
+
+    [Fact]
+    public void UserDisplayCacheDuration_MustBePositive()
+    {
+        var options = Valid();
+        options.UserDisplayCacheDurationSeconds = 0;
+
+        var result = new KeycloakOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(KeycloakOptions.UserDisplayCacheDurationSeconds));
+    }
+
+    [Fact]
+    public void UserDisplayDistributedDuration_MustCoverTheInProcessDuration()
+    {
+        var options = Valid();
+        options.UserDisplayCacheDurationSeconds = 600;
+        options.UserDisplayCacheDistributedDurationSeconds = 300;
+
+        var result = new KeycloakOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(KeycloakOptions.UserDisplayCacheDistributedDurationSeconds));
+    }
+
+    [Fact]
+    public void UserDisplayNegativeCacheDuration_MustBePositive()
+    {
+        var options = Valid();
+        options.UserDisplayNegativeCacheDurationSeconds = 0;
+
+        var result = new KeycloakOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(KeycloakOptions.UserDisplayNegativeCacheDurationSeconds));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void RoleGraphCacheSeconds_MustBePositive(int value)
+    {
+        var options = Valid();
+        options.RoleGraphCacheSeconds = value;
+
+        var result = new KeycloakOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(KeycloakOptions.RoleGraphCacheSeconds));
     }
 
     [Theory]

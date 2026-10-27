@@ -29,11 +29,18 @@ public static class KeycloakScopes
     {
         public const string Create = "stores:create";
         public const string View = "stores:view";
+
+        /// <summary>Every store in any status, pending, suspended and closed included. Administration only.</summary>
+        public const string ViewAll = "stores:view-all";
+
         public const string Search = "stores:search";
         public const string Update = "stores:update";
         public const string CreateOwn = "stores:create-own";
         public const string ViewOwn = "stores:view-own";
         public const string UpdateOwn = "stores:update-own";
+        public const string Approve = "stores:approve";
+        public const string Suspend = "stores:suspend";
+        public const string Reinstate = "stores:reinstate";
     }
 
     public static class Products
@@ -48,6 +55,8 @@ public static class KeycloakScopes
         public const string UpdateOwn = "products:update-own";
         public const string DeleteOwn = "products:delete-own";
         public const string SearchOwn = "products:search-own";
+        public const string ImportOwn = "products:import-own";
+        public const string Export = "products:export";
     }
 
     public static class ProductTemplates
@@ -61,8 +70,39 @@ public static class KeycloakScopes
     public static class StockReservations
     {
         public const string Create = "stock-reservations:create";
-        public const string View = "stock-reservations:view";
+
+        /// <summary>Any reservation by id. Administration only.</summary>
+        public const string ViewAll = "stock-reservations:view-all";
+
+        /// <summary>The reservations of the products of the caller's own active stores.</summary>
+        public const string ViewOwn = "stock-reservations:view-own";
+
         public const string Update = "stock-reservations:update";
+    }
+
+    public static class StockLevels
+    {
+        /// <summary>Every store's stock levels, ledgers and daily totals. Administration only.</summary>
+        public const string ViewAll = "stock-levels:view-all";
+
+        /// <summary>The stock levels, ledgers and daily totals of the caller's own active stores.</summary>
+        public const string ViewOwn = "stock-levels:view-own";
+
+        public const string Update = "stock-levels:update";
+    }
+
+    public static class WarehouseConnections
+    {
+        public const string Create = "warehouse-connections:create";
+        public const string View = "warehouse-connections:view";
+        public const string ViewOwn = "warehouse-connections:view-own";
+        public const string Update = "warehouse-connections:update";
+
+        /// <summary>
+        ///     Connect one of the caller's own active stores to its warehouse system. Held by the <c>store-owner</c> realm role,
+        ///     so it is deliberately not a <c>-own</c> scope: the role decides who may ask, the store access copy decides which store.
+        /// </summary>
+        public const string Connect = "warehouse-connections:connect";
     }
 
     public static class Hangfire

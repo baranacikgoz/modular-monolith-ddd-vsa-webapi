@@ -4,7 +4,7 @@ import { login, register } from '../lib/auth.js';
 
 // Each buyer VU gets a unique phone: 9051 + 8-digit VU number.
 // On first iteration: register (idempotent on re-runs) then login.
-// Subsequent iterations: read-heavy marketplace browsing.
+// Subsequent iterations: read-heavy catalog browsing.
 
 function phone() {
   return `9051${String(__VU).padStart(8, '0')}`;

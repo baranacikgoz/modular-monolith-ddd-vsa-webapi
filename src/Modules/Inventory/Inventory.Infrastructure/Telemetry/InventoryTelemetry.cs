@@ -39,9 +39,27 @@ public static class InventoryTelemetry
     public static readonly Counter<long> StockReservationsReleased =
         Meter.CreateCounter<long>("inventory.stock_reservations_released.total", description: "Total stock reservations released");
 
+    public static readonly Counter<long> ReadOnlyReservationsResolved =
+        Meter.CreateCounter<long>("inventory.read_only_reservations_resolved.total", description: "Total read-only stock reservations resolved by a person, tagged by target status");
+
+    public static readonly Counter<long> StockReleaseReconciliations =
+        Meter.CreateCounter<long>("inventory.stock_release_reconciliations.total", description: "Total release attempts whose unknown outcome was resolved with the warehouse system, tagged by outcome");
+
     public static readonly Counter<long> ReservationSeriesCreated =
         Meter.CreateCounter<long>("inventory.reservation_series_created.total", description: "Total reservation series created");
 
     public static readonly Counter<long> ReservationsExpired =
         Meter.CreateCounter<long>("inventory.stock_reservations_expired.total", description: "Total stock reservations expired by the sweep job");
+
+    public static readonly Counter<long> StockMovementsRecorded =
+        Meter.CreateCounter<long>("inventory.stock_movements_recorded.total", description: "Total ledger movements appended to stock levels, tagged by movement type");
+
+    public static readonly Counter<long> StockPushItemsSent =
+        Meter.CreateCounter<long>("inventory.stock_push_items_sent.total", description: "Total stock levels whose quantity a warehouse accepted");
+
+    public static readonly Counter<long> StockPushItemsRefused =
+        Meter.CreateCounter<long>("inventory.stock_push_items_refused.total", description: "Total times a warehouse refused a single stock level of a push, which counts toward parking its mark");
+
+    public static readonly Counter<long> WebhookDeliveries =
+        Meter.CreateCounter<long>("inventory.warehouse_webhook_deliveries.total", description: "Total authenticated warehouse webhook deliveries, tagged by outcome (applied, duplicate, ignored, mirrored, unrecognized, stale)");
 }

@@ -1,0 +1,17 @@
+{
+  "ProductsOptions": {
+    "ImportJobConcurrentMessageLimit": 2,
+    "ImportBatchesPerMessage": 10,
+    "ImportMaxStoredRowErrors": 200,
+    "ExportJobConcurrentMessageLimit": 2,
+    "ExportPageSize": 500,
+    "ExportMaxRows": 100000,
+    "JobHousekeepingCron": "0 20 * * * *",
+    "ImageMaxFileBytes": 5242880,
+    "MaxImagesPerProduct": 8,
+    "MaxAttributesPerProduct": 20,
+    "ProductsPageMaxSize": 500,
+    "StoresPageMaxSize": 500,
+    "SearchCacheSeconds": 60
+  }
+}

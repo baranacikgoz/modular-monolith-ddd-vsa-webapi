@@ -133,7 +133,7 @@ public class SearchTests : BaseIntegrationTest
         var db = scope.ServiceProvider.GetRequiredService<IProductsDbContext>();
 
         // FTS covers Name + Description + Address; seed a store whose address has a unique word
-        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "General Store", "everyday products", "45 Cobblestone Marketplace"));
+        db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "General Store", "everyday products", "45 Cobblestone Square"));
         db.Stores.Add(Store.Create(new ApplicationUserId(Guid.NewGuid()), "City Shop", "urban goods", "99 Downtown Boulevard"));
         await db.SaveChangesAsync();
 

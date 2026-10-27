@@ -17,7 +17,7 @@ internal static class Endpoint
     {
         myStoresApiGroup
             .MapGet("{id}", GetStoreAsync)
-            .WithDescription("Get store.")
+            .WithDescription("Get an active store. A store that is pending approval, suspended or closed is not found.")
             .RequireScope(KeycloakScopes.Stores.View)
             .Produces<Response>()
             .TransformResultTo<Response>();
@@ -32,7 +32,9 @@ internal static class Endpoint
             .Stores
             .AsNoTracking()
             .TagWith(nameof(GetStoreAsync), request.Id)
-            .Where(store => store.Id == request.Id)
+            // An application waiting for a decision (and a store that was suspended or closed) is not public: only the
+            // application routes and the owner's own "my" route show it.
+            .Where(store => store.Id == request.Id && store.Status == StoreStatus.Active)
             .Select(store => new Response
             {
                 Id = store.Id,
@@ -41,6 +43,7 @@ internal static class Endpoint
                 Description = store.Description,
                 Address = store.Address,
                 ProductCount = store.Products.Count,
+                Status = store.Status,
                 CreatedBy = store.CreatedBy,
                 CreatedOn = store.CreatedOn,
                 LastModifiedBy = store.LastModifiedBy,

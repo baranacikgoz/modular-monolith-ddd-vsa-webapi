@@ -17,6 +17,13 @@ public static class Setup
         Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Update.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Deactivate.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.Apply.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.ListAll.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.ListApplications.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.GetApplication.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.Approve.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.Suspend.Endpoint.MapEndpoint(v1StoresApiGroup);
+        v1.Reinstate.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Get.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1StoresApiGroup);
         v1.AuditLog.Endpoint.MapEndpoint(v1StoresApiGroup);

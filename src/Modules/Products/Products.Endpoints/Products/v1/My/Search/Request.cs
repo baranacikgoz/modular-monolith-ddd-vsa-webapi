@@ -53,14 +53,14 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
             .When(x => x.MaxQuantity is not null);
 
         RuleFor(x => x.MinPrice)
-            .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
+            .GreaterThanOrEqualTo(Constants.PriceGreaterThanOrEqualTo)
             .WithMessage(string.Format(CultureInfo.CurrentCulture,
                 localizer.Products_Search_MinPrice_GreaterThanOrEqualTo,
                 Constants.PriceGreaterThanOrEqualTo))
             .When(x => x.MinPrice is not null);
 
         RuleFor(x => x.MaxPrice)
-            .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
+            .GreaterThanOrEqualTo(Constants.PriceGreaterThanOrEqualTo)
             .WithMessage(string.Format(CultureInfo.CurrentCulture,
                 localizer.Products_Search_MaxPrice_GreaterThanOrEqualTo,
                 Constants.PriceGreaterThanOrEqualTo))

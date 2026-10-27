@@ -24,5 +24,23 @@ internal sealed class StockLevelConfiguration : AuditableEntityConfiguration<Sto
         builder
             .Property(s => s.QuantityOnHand)
             .IsRequired();
+
+        builder
+            .Property(s => s.LowStockThreshold)
+            .IsRequired();
+
+        builder
+            .Property(s => s.LastMovementSequence)
+            .IsRequired();
+
+        builder
+            .HasMany(s => s.Movements)
+            .WithOne()
+            .HasForeignKey(m => m.StockLevelId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .Navigation(s => s.Movements)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

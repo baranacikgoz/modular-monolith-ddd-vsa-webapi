@@ -1,47 +1,50 @@
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
 using Inventory.Application.Gateway;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Inventory.Infrastructure.Gateway;
 
 public static class Setup
 {
-    public static IServiceCollection AddWarehouseGatewayInfrastructure(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddWarehouseGatewayInfrastructure(this IServiceCollection services)
     {
-        var inventoryOptions = configuration.GetSection(nameof(InventoryOptions)).Get<InventoryOptions>()
-            ?? throw new InvalidOperationException($"Configuration for {nameof(InventoryOptions)} is null.");
+        services.AddSingleton<WarehouseResiliencePipelines>();
+        services.TryAddSingleton<IWarehouseHostResolver, SystemWarehouseHostResolver>();
+        services.AddSingleton<WarehouseConnectGuard>();
+        services.AddSingleton<DummyWarehouseState>();
 
-        return inventoryOptions.WarehouseGatewayProvider switch
-        {
-            WarehouseGatewayProvider.Dummy => services.AddSingleton<IWarehouseGateway, DummyWarehouseGateway>(),
-            WarehouseGatewayProvider.Http => services.AddHttpWarehouseGateway(inventoryOptions),
-            _ => throw new ArgumentOutOfRangeException(nameof(configuration), inventoryOptions.WarehouseGatewayProvider,
-                "Unknown WarehouseGatewayProvider.")
-        };
-    }
-
-    private static IServiceCollection AddHttpWarehouseGateway(this IServiceCollection services, InventoryOptions inventoryOptions)
-    {
-        services.AddResilientHttpClient<IWarehouseGateway, HttpWarehouseGateway>(
-            httpClient =>
-            {
-                // Trailing slash is REQUIRED: HttpClient drops the last BaseAddress segment
-                // when combining with a relative URI otherwise.
-#pragma warning disable S1075
-                httpClient.BaseAddress = new Uri(inventoryOptions.WarehouseGatewayBaseUrl!.TrimEnd('/') + '/');
-#pragma warning restore S1075
-            },
-            resilience =>
-            {
-                // A release call is not safely retryable blind: a timeout doesn't tell you whether the
-                // warehouse already processed the release, so a naive retry risks a double-release.
-                // ReconcileReleaseAsync exists precisely to resolve this ambiguity instead of retrying blind.
-                resilience.Retry.MaxRetryAttempts = 0;
-            });
+        // No standard resilience handler (retry, breaker, timeout) on this client: each call goes through the pipeline of its
+        // own connection instead (WarehouseResiliencePipelines), which has no retry, so a release is never sent twice. The
+        // client only carries an overall timeout; the base address is the connection's and is applied per call.
+        services.AddResilientHttpClient<IWarehouseGatewayFactory, WarehouseGatewayFactory>(
+                (serviceProvider, httpClient) =>
+                {
+                    httpClient.Timeout = TimeSpan.FromSeconds(
+                        serviceProvider.GetRequiredService<IOptions<ResiliencyOptions>>().Value.TotalRequestTimeoutSeconds);
+                },
+                useStandardPipeline: false)
+            // The address of a connection is caller supplied. The handler resolves and checks it on every connect, never
+            // follows a redirect (a 3xx would otherwise lead to any address) and never goes through a proxy (the proxy would
+            // resolve the name, so the check would see the proxy instead of the target).
+            .ConfigurePrimaryHttpMessageHandler(serviceProvider => CreateHandler(
+                serviceProvider.GetRequiredService<WarehouseConnectGuard>(),
+                TimeSpan.FromMinutes(
+                    serviceProvider.GetRequiredService<IOptions<ResiliencyOptions>>().Value.PooledConnectionLifetimeMinutes)));
 
         return services;
+    }
+
+    internal static SocketsHttpHandler CreateHandler(WarehouseConnectGuard guard, TimeSpan pooledConnectionLifetime)
+    {
+        return new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = pooledConnectionLifetime,
+            AllowAutoRedirect = false,
+            UseProxy = false,
+            ConnectCallback = guard.ConnectAsync
+        };
     }
 }

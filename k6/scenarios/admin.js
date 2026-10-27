@@ -2,7 +2,7 @@ import { check, sleep } from 'k6';
 import { get, post } from '../lib/http.js';
 
 // Admin VUs use the token minted in setup(): no concurrent OTP race.
-// Simulates a system admin managing the product catalog and monitoring the marketplace.
+// Simulates a system admin managing the product catalog and monitoring the stores.
 
 export function runAdmin(data) {
   const token = data.adminToken;
@@ -22,7 +22,7 @@ export function runAdmin(data) {
     check(activateRes, { 'admin: activate template: 204': r => r.status === 204 });
   }
 
-  // Monitor the marketplace: browse all stores
+  // Monitor the stores: browse all of them
   const storesRes = get('/v1/stores/search', { PageNumber: 1, PageSize: 20 }, token);
   check(storesRes, { 'admin: search stores: 200': r => r.status === 200 });
 
