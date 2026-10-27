@@ -765,4 +765,43 @@
   <data name="Register_Password_MaxLength" xml:space="preserve">
     <value>Password must be at most {0} characters.</value>
   </data>
+  <data name="Products_Import_File_NotEmpty" xml:space="preserve">
+    <value>File must not be empty.</value>
+  </data>
+  <data name="Products_Import_File_InvalidExtension" xml:space="preserve">
+    <value>File must be an .xlsx or .xls workbook.</value>
+  </data>
+  <data name="Products_Import_ClientRequestId_NotEmpty" xml:space="preserve">
+    <value>Client request id must not be empty.</value>
+  </data>
+  <data name="Products_Import_ClientRequestId_MaxLength" xml:space="preserve">
+    <value>Client request id must be at most ({0}) characters.</value>
+  </data>
+  <data name="Products_Import_ProductTemplateId_NotEmpty" xml:space="preserve">
+    <value>Product template id must not be empty.</value>
+  </data>
+  <data name="Products_GetImport_Id_NotEmpty" xml:space="preserve">
+    <value>Import job id must not be empty.</value>
+  </data>
+  <data name="Products_Export_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store id must not be empty.</value>
+  </data>
+  <data name="Products_GetExport_Id_NotEmpty" xml:space="preserve">
+    <value>Export job id must not be empty.</value>
+  </data>
+  <data name="Products_DownloadExport_Id_NotEmpty" xml:space="preserve">
+    <value>Export job id must not be empty.</value>
+  </data>
+  <data name="Products_AddImage_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_AddImage_File_NotEmpty" xml:space="preserve">
+    <value>Image file must not be empty.</value>
+  </data>
+  <data name="Products_RemoveImage_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_RemoveImage_ImageId_NotEmpty" xml:space="preserve">
+    <value>Image id must not be empty.</value>
+  </data>
 </root>

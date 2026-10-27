@@ -80,6 +80,7 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `inventory.json` | `InventoryOptions` | Warehouse gateway, webhook secret and body limit, sweep schedule, series limits |
 | `objectStorage.json` | `ObjectStorageOptions` | S3-compatible endpoint, buckets, credentials, presign lifetimes, retries, circuit breaker |
 | `rateLimiting.json` | `CustomRateLimitingOptions` | Named rate limit policies, global limit, exempt paths |
+| `products.json` | `ProductsOptions` | Import and export job limits, housekeeping schedule, image limits, cross-module page cap and search cache |
 | `resiliency.json` | `ResiliencyOptions` | Outbound HTTP timeouts, retries, circuit breaker, keyed profiles |
 | `securityHeaders.json` | `SecurityHeadersOptions` | Response security headers |
 | `reverseProxy.json` | `ReverseProxyOptions` | Forwarded headers and trusted proxy networks |

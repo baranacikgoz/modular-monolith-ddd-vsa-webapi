@@ -824,4 +824,43 @@
   <data name="Register_Password_MaxLength" xml:space="preserve">
     <value>Parola en fazla {0} karakter olabilir.</value>
   </data>
+  <data name="Products_Import_File_NotEmpty" xml:space="preserve">
+    <value>Dosya boş olamaz.</value>
+  </data>
+  <data name="Products_Import_File_InvalidExtension" xml:space="preserve">
+    <value>Dosya .xlsx veya .xls olmalıdır.</value>
+  </data>
+  <data name="Products_Import_ClientRequestId_NotEmpty" xml:space="preserve">
+    <value>İstek kimliği boş olamaz.</value>
+  </data>
+  <data name="Products_Import_ClientRequestId_MaxLength" xml:space="preserve">
+    <value>İstek kimliği en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_Import_ProductTemplateId_NotEmpty" xml:space="preserve">
+    <value>Ürün şablonu Id boş olamaz.</value>
+  </data>
+  <data name="Products_GetImport_Id_NotEmpty" xml:space="preserve">
+    <value>İçe aktarma işi Id boş olamaz.</value>
+  </data>
+  <data name="Products_Export_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Products_GetExport_Id_NotEmpty" xml:space="preserve">
+    <value>Dışa aktarma işi Id boş olamaz.</value>
+  </data>
+  <data name="Products_DownloadExport_Id_NotEmpty" xml:space="preserve">
+    <value>Dışa aktarma işi Id boş olamaz.</value>
+  </data>
+  <data name="Products_AddImage_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_AddImage_File_NotEmpty" xml:space="preserve">
+    <value>Görsel dosyası boş olamaz.</value>
+  </data>
+  <data name="Products_RemoveImage_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_RemoveImage_ImageId_NotEmpty" xml:space="preserve">
+    <value>Görsel Id boş olamaz.</value>
+  </data>
 </root>

@@ -43,6 +43,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/jobHousekeeping");
         AddJsonFile(configuration, $"{configurationsDirectory}/objectStorage");
         AddJsonFile(configuration, $"{configurationsDirectory}/bulkImport");
+        AddJsonFile(configuration, $"{configurationsDirectory}/products");
 
         configuration.AddEnvironmentVariables();
 

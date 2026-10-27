@@ -7,4 +7,6 @@ public static class Constants
     public const int QuantityGreaterThanOrEqualTo = 1;
     public const decimal PriceGreaterThanOrEqualTo = 1;
     public const int SearchTermMaxLength = 256;
+    public const int ImageObjectKeyMaxLength = 512;
+    public const int ImageContentTypeMaxLength = 64;
 }
