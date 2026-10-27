@@ -21,7 +21,8 @@ public sealed class WarehouseGatewaySetupTests : IDisposable
     private readonly ServiceProvider _provider;
     private readonly SecretProtector _protector = new(Options.Create(new SecretProtectionOptions
     {
-        EncryptionKey = SecretProtectionOptionsValidator.DevelopmentPlaceholderKey
+        EncryptionKey = SecretProtectionOptionsValidator.DevelopmentPlaceholderKey,
+        PreviousEncryptionKeys = []
     }));
 
     public WarehouseGatewaySetupTests()

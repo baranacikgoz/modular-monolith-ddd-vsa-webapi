@@ -9,6 +9,7 @@ using Inventory.Application.StockLevels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using AllMovements = Inventory.Endpoints.StockLevels.v1.Movements;
 
 namespace Inventory.Endpoints.StockLevels.v1.My.Movements;
@@ -31,9 +32,10 @@ internal static class Endpoint
         ICurrentUser currentUser,
         IInventoryDbContext dbContext,
         IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        ILogger<AllMovements.Request> logger,
         CancellationToken cancellationToken)
     {
         return AllMovements.Endpoint.PageMovementsAsync(
-            dbContext.StockLevelsOfActiveStoresOwnedBy(currentUser.Id), dbContext, request, usersClient, cancellationToken);
+            dbContext.StockLevelsOfActiveStoresOwnedBy(currentUser.Id), dbContext, request, usersClient, logger, cancellationToken);
     }
 }

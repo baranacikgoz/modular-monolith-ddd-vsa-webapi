@@ -36,7 +36,7 @@ internal static class Endpoint
         ILogger<Request> logger,
         CancellationToken cancellationToken)
     {
-        return PageMovementsAsync(dbContext.StockLevels, dbContext, request, usersClient, cancellationToken);
+        return PageMovementsAsync(dbContext.StockLevels, dbContext, request, usersClient, logger, cancellationToken);
     }
 
     /// <summary>
@@ -49,6 +49,7 @@ internal static class Endpoint
         IInventoryDbContext dbContext,
         Request request,
         IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        ILogger logger,
         CancellationToken cancellationToken)
     {
         return await stockLevels
