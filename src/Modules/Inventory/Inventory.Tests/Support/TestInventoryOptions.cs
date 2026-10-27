@@ -31,6 +31,8 @@ internal static class TestInventoryOptions
             StockPushDirtySweepCron = "0 */2 * * * *",
             StockPushDirtyMinAgeSeconds = 120,
             StockPushBatchSize = 100,
+            StockPushMaxAttempts = 5,
+            StockPushInitialMarkPageSize = 1000,
             StockPushBatchesPerMessage = 10,
             StockPushConcurrentMessageLimit = 4,
             SweepPageSize = 100,

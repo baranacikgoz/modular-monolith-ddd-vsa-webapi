@@ -31,6 +31,28 @@ public class InventoryOptionsValidatorTests
         Assert.False(result.IsValid);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void NonPositiveStockPushMaxAttempts_FailsValidation(int attempts)
+    {
+        var result = new InventoryOptionsValidator().Validate(
+            TestInventoryOptions.Create(configure: o => o.StockPushMaxAttempts = attempts));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void NonPositiveStockPushInitialMarkPageSize_FailsValidation(int pageSize)
+    {
+        var result = new InventoryOptionsValidator().Validate(
+            TestInventoryOptions.Create(configure: o => o.StockPushInitialMarkPageSize = pageSize));
+
+        Assert.False(result.IsValid);
+    }
+
     [Fact]
     public void EmptyStockReleaseReconcileSweepCron_FailsValidation()
     {

@@ -29,6 +29,10 @@ internal sealed class StockPushDirtyItemConfiguration : AuditableEntityConfigura
         builder.Property(d => d.MarkVersion).IsRequired();
         builder.Property(d => d.MarkedOn).IsRequired();
 
+        // The mark statements leave PushAttempts out of their INSERT, so the column default is what a new row starts with.
+        builder.Property(d => d.PushAttempts).HasDefaultValue(0).IsRequired();
+        builder.Property(d => d.LastErrorKey).HasMaxLength(StockPushDirtyItem.LastErrorKeyMaxLength);
+
         // A push reads the oldest rows of one store first; the sweep reads rows by age.
         builder.HasIndex(d => new { d.StoreId, d.MarkedOn });
         builder.HasIndex(d => d.MarkedOn);
