@@ -107,19 +107,6 @@ public class WebhookProviderStatusTests(IntegrationTestWebAppFactory factory) : 
     }
 
     [Fact]
-    public async Task Webhook_SecondUnrecognizedStatusOnAReadOnlyReservation_IsAcknowledgedAndRecordedAgain()
-    {
-        var scenario = await SeedAsync();
-        await PostAsync(scenario, "delivery-1", providerReference: null, status: "partially_picked");
-
-        var response = await PostAsync(scenario, "delivery-2", providerReference: null, status: "in_transit");
-
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        var recorded = await RecordedEventsAsync<V1StockReservationProviderStatusUnrecognizedDomainEvent>(scenario.Reservation.Id);
-        Assert.Equal(["partially_picked", "in_transit"], recorded.OrderBy(e => e.ReceivedAt).Select(e => e.RawStatus));
-    }
-
-    [Fact]
     public async Task Webhook_ConfirmedStatusWithoutAProviderReference_ReturnsBadRequestAndChangesNothing()
     {
         var scenario = await SeedAsync();

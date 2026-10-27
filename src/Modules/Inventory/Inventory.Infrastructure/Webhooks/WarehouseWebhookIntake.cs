@@ -141,7 +141,6 @@ public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimePr
         {
             ReservationStatus.Committed => InventoryTelemetry.StockReservationsCommitted,
             ReservationStatus.Released => InventoryTelemetry.StockReservationsReleased,
-            ReservationStatus.Expired => InventoryTelemetry.ReservationsExpired,
             _ => null
         };
         counter?.Add(1);
