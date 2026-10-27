@@ -20,6 +20,11 @@ public class FullTextSearchOptions
     /// </summary>
     public IReadOnlyList<float> RankWeights { get; init; } = [];
 
+    /// <summary>Upper bound on ids a single cross-module search (<c>SearchProductsByTermRequest</c>) may return: an
+    /// unbounded id list must not cross a module boundary. Reaching it makes the caller's <c>IsTruncated</c> flag true,
+    /// it is not an error.</summary>
+    public required int MaxMatchResults { get; set; }
+
     /// <summary>Language-neutral config used for the universal layer on both index and query side.</summary>
     public const string UniversalConfig = "simple_unaccent";
 
@@ -50,5 +55,9 @@ public class FullTextSearchOptionsValidator : CustomValidator<FullTextSearchOpti
             .NotNull()
             .Must(w => w.Count == 4)
             .WithMessage("RankWeights must contain exactly 4 values in {D, C, B, A} order.");
+
+        RuleFor(x => x.MaxMatchResults)
+            .GreaterThan(0)
+            .WithMessage("MaxMatchResults must be greater than 0.");
     }
 }

@@ -9,6 +9,9 @@
     <PackageVersion Include="MessagePack" Version="3.1.12" />
     <PackageVersion Include="MessagePack.Annotations" Version="3.1.12" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
+    <PackageVersion Include="ExcelDataReader" Version="3.9.0" />
+    <!-- Test-only: builds .xlsx fixtures for bulk import tests. Production code only reads workbooks (ExcelDataReader above). -->
+    <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
     <!-- Roslyn set kept aligned at 5.9.0. CSharp.Workspaces (transitive via EF Design) requires CSharp/Common = 5.9.0 exactly; pin all four so the constraint holds. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.9.0" />

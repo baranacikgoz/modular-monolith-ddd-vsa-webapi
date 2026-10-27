@@ -40,6 +40,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/projectionReconciliation");
         AddJsonFile(configuration, $"{configurationsDirectory}/jobHousekeeping");
         AddJsonFile(configuration, $"{configurationsDirectory}/objectStorage");
+        AddJsonFile(configuration, $"{configurationsDirectory}/bulkImport");
 
         configuration.AddEnvironmentVariables();
 

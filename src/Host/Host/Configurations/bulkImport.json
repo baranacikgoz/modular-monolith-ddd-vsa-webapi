@@ -1,0 +1,7 @@
+{
+  "BulkImportOptions": {
+    "MaxFileBytes": 10485760,
+    "MaxRows": 50000,
+    "SaveChunkSize": 200
+  }
+}

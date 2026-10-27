@@ -6,6 +6,7 @@
       "tr": "turkish",
       "en": "english"
     },
-    "RankWeights": [ 0.1, 0.2, 0.4, 1.0 ]
+    "RankWeights": [ 0.1, 0.2, 0.4, 1.0 ],
+    "MaxMatchResults": 200
   }
 }
