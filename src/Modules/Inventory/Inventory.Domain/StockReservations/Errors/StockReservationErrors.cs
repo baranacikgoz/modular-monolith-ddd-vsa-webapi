@@ -28,6 +28,12 @@ public static class StockReservationErrors
 
     public static readonly Error ProviderReferenceRequired = new() { Key = nameof(ProviderReferenceRequired) };
 
+    /// <summary>Only a read-only reservation is resolved by a person; a writable one takes the ordinary commands.</summary>
+    public static readonly Error NotReadOnly = new() { Key = nameof(NotReadOnly), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The chosen status is not one a read-only reservation can be resolved to from the status it has.</summary>
+    public static readonly Error ResolutionNotAllowed = new() { Key = nameof(ResolutionNotAllowed) };
+
     public static readonly Error SeriesTooLong = new() { Key = nameof(SeriesTooLong) };
 
     public static readonly Error ProductNotFound = new() { Key = nameof(ProductNotFound) };

@@ -1151,4 +1151,19 @@
   <data name="WarehouseGatewayCircuitOpen" xml:space="preserve">
     <value>Depo sistemi geçici olarak kullanılamıyor, çağrı gönderilmedi.</value>
   </data>
+  <data name="StockReservations_ResolveReadOnly_Id_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_ResolveReadOnly_TargetStatus_Invalid" xml:space="preserve">
+    <value>Hedef durum Released, Committed veya Expired olmalıdır.</value>
+  </data>
+  <data name="StockReservations_ResolveReadOnly_ProviderReference_MaximumLength" xml:space="preserve">
+    <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="NotReadOnly" xml:space="preserve">
+    <value>Rezervasyon salt okunur değil, bu yüzden çözümlenemez.</value>
+  </data>
+  <data name="ResolutionNotAllowed" xml:space="preserve">
+    <value>Rezervasyon mevcut durumundan seçilen duruma çözümlenemez.</value>
+  </data>
 </root>

@@ -32,7 +32,8 @@ public readonly record struct StockReservationId(DefaultIdType Value) : IStrongl
 ///         The status is also reported by an external system. Which changes of <see cref="Status" /> are legal is decided
 ///         only by <see cref="ReservationStatusTransitions" />. A status the provider reports in a word nobody mapped never
 ///         fails the delivery: the word is recorded, and the reservation turns <see cref="IsReadOnly" />, refusing every
-///         local command while <see cref="ProviderStatus" /> keeps mirroring what the provider says.
+///         local command while <see cref="ProviderStatus" /> keeps mirroring what the provider says. A person resolves it
+///         with <see cref="ResolveReadOnly" />.
 ///     </para>
 ///     <para>
 ///         Every change of a field raises an event, because the lifecycle lives in the AuditLog. A command that finds nothing
@@ -54,7 +55,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
 
     /// <summary>
     ///     True once the provider reported a status this system could not map. From then on no local command applies and
-    ///     <see cref="Status" /> no longer follows the provider; it never becomes false again.
+    ///     <see cref="Status" /> no longer follows the provider, until a person resolves it with <see cref="ResolveReadOnly" />.
     /// </summary>
     public bool IsReadOnly { get; private set; }
 
@@ -307,6 +308,62 @@ public class StockReservation : AggregateRoot<StockReservationId>
         IsReadOnly = true;
         ProviderStatus = ReservationStatus.Unknown;
         RaiseEvent(@event);
+    }
+
+    /// <summary>
+    ///     A person's decision on a read-only reservation, taken after checking with the provider what it really is: it takes
+    ///     local commands again and is brought to <paramref name="target" />, which is <see cref="ReservationStatus.Released" />,
+    ///     <see cref="ReservationStatus.Committed" /> or <see cref="ReservationStatus.Expired" />. The move is made by the
+    ///     command a local caller would use, so its rules hold (a commit needs the provider reference and a deadline that has
+    ///     not passed), and <see cref="ReservationStatusTransitions" /> decides whether the move exists at all. A target equal to
+    ///     the status the reservation already has only lifts the flag. A refusal changes nothing and the reservation stays
+    ///     read-only.
+    /// </summary>
+    public Result ResolveReadOnly(ReservationStatus target, string? providerReference, DateTimeOffset utcNow)
+    {
+        if (!IsReadOnly)
+        {
+            return StockReservationErrors.NotReadOnly;
+        }
+
+        if (target is not (ReservationStatus.Released or ReservationStatus.Committed or ReservationStatus.Expired)
+            || (target != Status && !CanMoveTo(target)))
+        {
+            return StockReservationErrors.ResolutionNotAllowed;
+        }
+
+        var previousProviderStatus = ProviderStatus;
+        var @event = new V1StockReservationReadOnlyResolvedDomainEvent(
+            Id, (previousProviderStatus ?? ReservationStatus.Unknown).ToResolvedSnapshot(), target.ToResolvedSnapshot(), utcNow);
+
+        // The commands refuse a read-only reservation, so the flag goes first and comes back if the move is refused.
+        IsReadOnly = false;
+        ProviderStatus = null;
+
+        var moved = target == Status ? Result.Success : MoveTo(target, providerReference, utcNow);
+
+        if (moved.IsFailure)
+        {
+            IsReadOnly = true;
+            ProviderStatus = previousProviderStatus;
+            return moved;
+        }
+
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
+    /// <summary>The command a local caller would use to reach <paramref name="target" />, one of Released, Committed and Expired.</summary>
+    private Result MoveTo(ReservationStatus target, string? providerReference, DateTimeOffset utcNow)
+    {
+        if (target == ReservationStatus.Committed)
+        {
+            return providerReference is null
+                ? StockReservationErrors.ProviderReferenceRequired
+                : Commit(providerReference, utcNow);
+        }
+
+        return target == ReservationStatus.Released ? Release(utcNow) : Expire(utcNow);
     }
 
     private Result MirrorProviderStatus(ReservationStatus reported, DateTimeOffset utcNow)
