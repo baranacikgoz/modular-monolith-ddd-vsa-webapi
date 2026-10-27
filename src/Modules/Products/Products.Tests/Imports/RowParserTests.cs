@@ -20,6 +20,15 @@ public class RowParserTests
     }
 
     [Fact]
+    public void Parse_ColumnsAfterTheSku_AreIgnored()
+    {
+        var result = RowParser.Parse(Row("Desk lamp", "LED", "12", "49.90", "LAMP-1", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "2026-01-01T00:00:00.0000000+00:00"));
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(new ProductRow(2, "Desk lamp", "LED", 12, 49.90m, "LAMP-1"), result.Value);
+    }
+
+    [Fact]
     public void Parse_QuantityAndPriceAtTheirMinimums_AreAccepted()
     {
         var result = RowParser.Parse(Row("Desk lamp", "d", Constants.QuantityGreaterThanOrEqualTo.ToString(CultureInfo.InvariantCulture),
