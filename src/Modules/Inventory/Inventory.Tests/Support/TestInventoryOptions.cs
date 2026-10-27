@@ -19,6 +19,8 @@ internal static class TestInventoryOptions
             SafetyBufferQuantity = 5,
             StockReservationExpirySweepCron = "0 */15 * * * *",
             StockReservationExpirySweepBatchSize = 100,
+            StockReleaseReconcileSweepCron = "0 */10 * * * *",
+            StockReleaseReconcileMinAgeSeconds = 600,
             ProductSummaryReconciliationCron = productSummaryReconciliationCron,
             StoreAccessReconciliationCron = "30 3 * * *",
             BusinessTimeZoneId = businessTimeZoneId,

@@ -14,6 +14,18 @@ public class InventoryOptions
     /// <summary>Active reservations examined per recurring job run.</summary>
     public required int StockReservationExpirySweepBatchSize { get; set; }
 
+    /// <summary>
+    ///     Cron for the recurring sweep that queues one reconcile message for every reservation whose release attempt marker is
+    ///     older than <see cref="StockReleaseReconcileMinAgeSeconds" />. The sweep only publishes; a consumer asks the warehouse.
+    /// </summary>
+    public required string StockReleaseReconcileSweepCron { get; set; }
+
+    /// <summary>
+    ///     A release attempt marker younger than this belongs to a request that is still waiting for the warehouse; an older one
+    ///     means the request ended without recording the outcome, and the sweep queues a reconcile.
+    /// </summary>
+    public required int StockReleaseReconcileMinAgeSeconds { get; set; }
+
     /// <summary>Cron for the recurring job that heals the local product copy from Products.</summary>
     public required string ProductSummaryReconciliationCron { get; set; }
 
@@ -118,6 +130,14 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockReservationExpirySweepBatchSize)
             .GreaterThan(0)
             .WithMessage("StockReservationExpirySweepBatchSize must be greater than 0.");
+
+        RuleFor(x => x.StockReleaseReconcileSweepCron)
+            .NotEmpty()
+            .WithMessage("StockReleaseReconcileSweepCron must not be empty.");
+
+        RuleFor(x => x.StockReleaseReconcileMinAgeSeconds)
+            .GreaterThan(0)
+            .WithMessage("StockReleaseReconcileMinAgeSeconds must be greater than 0.");
 
         RuleFor(x => x.ProductSummaryReconciliationCron)
             .NotEmpty()

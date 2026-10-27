@@ -29,7 +29,8 @@ public static class StockReservationWrites
         }
         catch (Exception ex) when (ex is DbUpdateConcurrencyException or UniqueConstraintException)
         {
-            dbContext.ChangeTracker.Clear();
+            // Only the stale copy goes: anything else the scope tracks (a consumer's pending inbox row) still belongs to the save.
+            dbContext.Entry(loaded).State = EntityState.Detached;
 
             return await dbContext.StockReservations
                 .TagWith(nameof(ApplyAndSaveAsync), loaded.Id)

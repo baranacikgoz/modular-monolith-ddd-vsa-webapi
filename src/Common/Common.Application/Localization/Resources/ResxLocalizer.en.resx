@@ -1107,4 +1107,10 @@
   <data name="ResolutionNotAllowed" xml:space="preserve">
     <value>The reservation cannot be resolved to the chosen status from its current status.</value>
   </data>
+  <data name="StockReservations_ReconcileRelease_Id_NotEmpty" xml:space="preserve">
+    <value>Reservation ID cannot be empty.</value>
+  </data>
+  <data name="NoReleaseAttempt" xml:space="preserve">
+    <value>There is no release attempt with an unknown outcome.</value>
+  </data>
 </root>

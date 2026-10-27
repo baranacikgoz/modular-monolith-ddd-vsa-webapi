@@ -1166,4 +1166,10 @@
   <data name="ResolutionNotAllowed" xml:space="preserve">
     <value>Rezervasyon mevcut durumundan seçilen duruma çözümlenemez.</value>
   </data>
+  <data name="StockReservations_ReconcileRelease_Id_NotEmpty" xml:space="preserve">
+    <value>Rezervasyon Id boş olamaz.</value>
+  </data>
+  <data name="NoReleaseAttempt" xml:space="preserve">
+    <value>Sonucu bilinmeyen bir serbest bırakma denemesi yok.</value>
+  </data>
 </root>

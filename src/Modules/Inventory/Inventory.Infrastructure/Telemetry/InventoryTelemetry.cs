@@ -42,6 +42,9 @@ public static class InventoryTelemetry
     public static readonly Counter<long> ReadOnlyReservationsResolved =
         Meter.CreateCounter<long>("inventory.read_only_reservations_resolved.total", description: "Total read-only stock reservations resolved by a person, tagged by target status");
 
+    public static readonly Counter<long> StockReleaseReconciliations =
+        Meter.CreateCounter<long>("inventory.stock_release_reconciliations.total", description: "Total release attempts whose unknown outcome was resolved with the warehouse system, tagged by outcome");
+
     public static readonly Counter<long> ReservationSeriesCreated =
         Meter.CreateCounter<long>("inventory.reservation_series_created.total", description: "Total reservation series created");
 

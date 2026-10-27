@@ -487,6 +487,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastProviderEventOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset?>("LastReleaseAttemptOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LastReleaseAttemptReference")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -515,6 +518,9 @@ namespace Inventory.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LastReleaseAttemptOn")
+                        .HasFilter("\"LastReleaseAttemptReference\" IS NOT NULL");
 
                     b.HasIndex("ProductId", "Status");
 

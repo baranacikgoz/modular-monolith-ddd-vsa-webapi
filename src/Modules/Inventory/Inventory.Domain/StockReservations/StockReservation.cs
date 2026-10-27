@@ -54,6 +54,12 @@ public class StockReservation : AggregateRoot<StockReservationId>
     public string? LastReleaseAttemptReference { get; private set; }
 
     /// <summary>
+    ///     When <see cref="LastReleaseAttemptReference" /> was set; null with it. A marker that is old means the attempt's
+    ///     outcome was never recorded, which is what a reconcile sweep looks for.
+    /// </summary>
+    public DateTimeOffset? LastReleaseAttemptOn { get; private set; }
+
+    /// <summary>
     ///     True once the provider reported a status this system could not map. From then on no local command applies and
     ///     <see cref="Status" /> no longer follows the provider, until a person resolves it with <see cref="ResolveReadOnly" />.
     /// </summary>
@@ -215,6 +221,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
         var @event = new V1StockReservationReleaseAttemptStartedDomainEvent(Id, reference, utcNow);
 
         LastReleaseAttemptReference = reference;
+        LastReleaseAttemptOn = utcNow;
         RaiseEvent(@event);
         return reference;
     }
@@ -239,6 +246,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
         var @event = new V1StockReservationReleaseAttemptAbandonedDomainEvent(Id, utcNow);
 
         LastReleaseAttemptReference = null;
+        LastReleaseAttemptOn = null;
         RaiseEvent(@event);
         return Result.Success;
     }
@@ -262,6 +270,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
             var @event = new V1StockReservationReleaseAttemptConfirmedDomainEvent(Id, utcNow);
 
             LastReleaseAttemptReference = null;
+            LastReleaseAttemptOn = null;
             RaiseEvent(@event);
         }
 

@@ -31,6 +31,26 @@ public class InventoryOptionsValidatorTests
         Assert.False(result.IsValid);
     }
 
+    [Fact]
+    public void EmptyStockReleaseReconcileSweepCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(
+            TestInventoryOptions.Create(configure: o => o.StockReleaseReconcileSweepCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void NonPositiveStockReleaseReconcileMinAgeSeconds_FailsValidation(int seconds)
+    {
+        var result = new InventoryOptionsValidator().Validate(
+            TestInventoryOptions.Create(configure: o => o.StockReleaseReconcileMinAgeSeconds = seconds));
+
+        Assert.False(result.IsValid);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("Not/AZone")]

@@ -26,3 +26,10 @@ public sealed record StockPushDueIntegrationEvent(DefaultIdType ConnectionId) : 
 /// <summary>Queue message of one bulk stock adjustment job. Carries only the job id: the job row holds everything else, and a
 /// message for a job that is no longer Queued is a no-op.</summary>
 public sealed record StockBulkAdjustRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
+
+/// <summary>
+///     Consumed within Inventory itself, used as a queue message: the release of this reservation was attempted and its
+///     outcome was never recorded, so the warehouse system is asked what became of it. A message for a reservation that no
+///     longer has a pending release attempt is a no-op.
+/// </summary>
+public sealed record StockReleaseReconcileRequestedIntegrationEvent(DefaultIdType ReservationId) : IntegrationEvent;

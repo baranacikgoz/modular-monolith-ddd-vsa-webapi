@@ -16,6 +16,9 @@ public static class StockReservationErrors
     /// </summary>
     public static readonly Error AmbiguousPriorAttempt = new() { Key = nameof(AmbiguousPriorAttempt) };
 
+    /// <summary>A release attempt is reconciled only while its marker stands: there is no attempt whose outcome is unknown.</summary>
+    public static readonly Error NoReleaseAttempt = new() { Key = nameof(NoReleaseAttempt), StatusCode = HttpStatusCode.Conflict };
+
     /// <summary>
     ///     The provider reported a status this system has no mapping for, so the reservation no longer follows it and takes no
     ///     local command until someone resolves it by hand.

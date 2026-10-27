@@ -36,6 +36,7 @@ public sealed class InventoryModule : IModule
     {
         services.AddPersistence();
         services.AddStockReservationExpirySweep();
+        services.AddStockReleaseReconciliation();
         services.AddProductSummaryReconciliation();
         services.AddStoreAccessReconciliation();
         services.AddWarehouseGatewayInfrastructure();

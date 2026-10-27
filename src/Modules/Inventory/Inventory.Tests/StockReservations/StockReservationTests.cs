@@ -31,11 +31,11 @@ public class StockReservationTests
     }
 
     /// <summary>Everything a command can change on the reservation, compared before and after it runs.</summary>
-    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, bool IsReadOnly,
-        ReservationStatus? ProviderStatus, DateTimeOffset? LastProviderEventOn) StateOf(StockReservation reservation)
+    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, DateTimeOffset? ReleaseMarkerOn,
+        bool IsReadOnly, ReservationStatus? ProviderStatus, DateTimeOffset? LastProviderEventOn) StateOf(StockReservation reservation)
     {
         return (reservation.Status, reservation.ProviderReference, reservation.LastReleaseAttemptReference,
-            reservation.IsReadOnly, reservation.ProviderStatus, reservation.LastProviderEventOn);
+            reservation.LastReleaseAttemptOn, reservation.IsReadOnly, reservation.ProviderStatus, reservation.LastProviderEventOn);
     }
 
     /// <summary>
@@ -152,6 +152,18 @@ public class StockReservationTests
     }
 
     [Fact]
+    public void BeginReleaseAttempt_SetsTheMarkerAndWhenItWasSet()
+    {
+        var reservation = NewReservation();
+
+        var result = reservation.BeginReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(result.Value, reservation.LastReleaseAttemptReference);
+        Assert.Equal(Now, reservation.LastReleaseAttemptOn);
+    }
+
+    [Fact]
     public void AbandonReleaseAttempt_WithAMarker_ClearsItAndRaisesTheEvent()
     {
         var reservation = NewReservation();
@@ -160,6 +172,7 @@ public class StockReservationTests
         AssertRaisesAnEventExactlyWhenAFieldChanged(reservation, r => Assert.False(r.AbandonReleaseAttempt(Now).IsFailure));
 
         Assert.Null(reservation.LastReleaseAttemptReference);
+        Assert.Null(reservation.LastReleaseAttemptOn);
         Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptAbandonedDomainEvent>());
     }
 
@@ -188,6 +201,7 @@ public class StockReservationTests
         Assert.Equal(ReservationStatus.Active, reservation.Status);
         Assert.Equal(ReservationStatus.Released, reservation.ProviderStatus);
         Assert.Null(reservation.LastReleaseAttemptReference);
+        Assert.Null(reservation.LastReleaseAttemptOn);
         Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptConfirmedDomainEvent>());
         Assert.Single(reservation.Events.OfType<V1StockReservationProviderStatusMirroredDomainEvent>());
         Assert.Empty(reservation.Events.OfType<V1StockReservationReleasedDomainEvent>());
