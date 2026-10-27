@@ -42,6 +42,18 @@ public class KeycloakOptions
 
     public required int TotalRequestTimeoutSeconds { get; set; }
 
+    /// <summary>Max concurrent Keycloak Admin <c>GET /users/{id}</c> calls one <c>GetUsersRequest</c> fans out for its cache misses.</summary>
+    public required int UserLookupConcurrency { get; set; }
+
+    /// <summary>L1 (in-process) lifetime of one user's cached display data.</summary>
+    public required int UserDisplayCacheDurationSeconds { get; set; }
+
+    /// <summary>L2 (Redis) lifetime of one user's cached display data. Long on purpose: a name changes only from the Keycloak console.</summary>
+    public required int UserDisplayCacheDistributedDurationSeconds { get; set; }
+
+    /// <summary>Lifetime of the negative entry cached for an id Keycloak does not know, so repeated lists do not re-ask for a deleted actor.</summary>
+    public required int UserDisplayNegativeCacheDurationSeconds { get; set; }
+
     public string Authority => $"{BaseUrl.TrimEnd('/')}/realms/{Realm}";
 }
 
@@ -102,5 +114,21 @@ public class KeycloakOptionsValidator : CustomValidator<KeycloakOptions>
         RuleFor(o => o.TotalRequestTimeoutSeconds)
             .GreaterThanOrEqualTo(o => o.AttemptTimeoutSeconds)
             .WithMessage("TotalRequestTimeoutSeconds must be at least AttemptTimeoutSeconds.");
+
+        RuleFor(o => o.UserLookupConcurrency)
+            .GreaterThan(0)
+            .WithMessage("UserLookupConcurrency must be greater than 0.");
+
+        RuleFor(o => o.UserDisplayCacheDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage("UserDisplayCacheDurationSeconds must be greater than 0.");
+
+        RuleFor(o => o.UserDisplayCacheDistributedDurationSeconds)
+            .GreaterThanOrEqualTo(o => o.UserDisplayCacheDurationSeconds)
+            .WithMessage("UserDisplayCacheDistributedDurationSeconds must be at least UserDisplayCacheDurationSeconds.");
+
+        RuleFor(o => o.UserDisplayNegativeCacheDurationSeconds)
+            .GreaterThan(0)
+            .WithMessage("UserDisplayNegativeCacheDurationSeconds must be greater than 0.");
     }
 }

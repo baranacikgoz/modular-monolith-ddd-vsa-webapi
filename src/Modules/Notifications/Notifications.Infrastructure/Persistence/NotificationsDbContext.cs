@@ -6,6 +6,7 @@ using Common.Infrastructure.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Notifications.Application.Persistence;
+using Notifications.Domain.Alerts;
 using Notifications.Domain.Devices;
 
 namespace Notifications.Infrastructure.Persistence;
@@ -21,6 +22,7 @@ public sealed class NotificationsDbContext(
     INotificationsDbContext
 {
     public DbSet<DeviceRegistration> DeviceRegistrations => Set<DeviceRegistration>();
+    public DbSet<AlertRecipient> AlertRecipients => Set<AlertRecipient>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

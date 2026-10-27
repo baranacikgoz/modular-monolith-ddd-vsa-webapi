@@ -82,8 +82,9 @@ internal sealed partial class KeycloakAdminClient(
                 return MapConflict(conflict?.ErrorMessage);
             case HttpStatusCode.BadRequest:
                 var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
-                LogUserRejected(logger, error?.Field, error?.ErrorMessage);
-                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, error?.ErrorMessage);
+                var rejection = error?.ErrorMessage ?? error?.ErrorDescription;
+                LogUserRejected(logger, error?.Field, rejection);
+                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, rejection);
             default:
                 response.EnsureSuccessStatusCode();
                 throw new HttpRequestException($"Unexpected Keycloak status {(int)response.StatusCode} creating a user.");
@@ -133,7 +134,12 @@ internal sealed partial class KeycloakAdminClient(
         }
 
         LogRoleAssignmentFailed(logger, userId, roleName, (int)mappingResponse.StatusCode);
-        return IdentityErrors.IdentityProviderUnavailable;
+
+        // Keycloak answers 404 on the role-mapping resource of an id it does not know: the user is gone, not the
+        // identity provider. Consumers distinguish the two (a missing user is skipped, an outage is retried).
+        return mappingResponse.StatusCode == HttpStatusCode.NotFound
+            ? Error.NotFound(nameof(KeycloakUser), userId)
+            : IdentityErrors.IdentityProviderUnavailable;
     }
 
     public async Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
@@ -146,6 +152,10 @@ internal sealed partial class KeycloakAdminClient(
         {
             response.EnsureSuccessStatusCode();
         }
+
+        // The bulk display lookup (GetUsersRequestHandler) caches this user's name for up to a day; drop it now so a
+        // deleted user is not listed by name until the entry expires.
+        await cache.RemoveAsync(CacheKeys.For.UserDisplay(userId), token: cancellationToken);
     }
 
     public async Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)

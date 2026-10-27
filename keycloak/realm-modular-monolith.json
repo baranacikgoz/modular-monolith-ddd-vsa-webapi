@@ -71,6 +71,12 @@
             "staff"
           ]
         }
+      },
+      {
+        "name": "store-owner",
+        "description": "Owner of an approved store. Assigned by the backend when the store approval event arrives.",
+        "composite": false,
+        "clientRole": false
       }
     ]
   },

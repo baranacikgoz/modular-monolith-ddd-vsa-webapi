@@ -66,5 +66,14 @@ public static class CacheKeys
         {
             return $"authz_user:{userId}";
         }
+
+        /// <summary>
+        ///     Cached Keycloak display data (name, email) of one user for the bulk <c>GetUsersRequest</c> lookup.
+        ///     Evicted by <c>DeleteUserAsync</c>; a name edit in the Keycloak console surfaces when the entry expires.
+        /// </summary>
+        public static string UserDisplay(ApplicationUserId userId)
+        {
+            return $"user_display:{userId}";
+        }
     }
 }

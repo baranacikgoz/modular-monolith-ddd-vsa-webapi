@@ -66,9 +66,11 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `projectionReconciliation.json` | `ProjectionReconciliationOptions` | Reconciliation page size and page ceiling |
 | `auditLog.json` | `AuditLogOptions` | Audit retention, purge batch and schedule, per-schema overrides |
 | `caching.json` | `CachingOptions` | Memory bound, Redis on/off, entry defaults, idempotency key durations |
+| `secretProtection.json` | `SecretProtectionOptions` | AES-256 master key of `SecretProtector` (base64, 32 bytes) |
 | `keycloak.json` | `KeycloakOptions` | Keycloak address, realm, client ids and secrets, decision cache, timeouts |
 | `identityScheme.json` | `IdentitySchemeOptions` | `PhoneNumber` or `Email` self-service scheme |
 | `devices.json` | `DevicesOptions` | Allowed client ids, device reconciliation schedule |
+| `alertRecipients.json` | `AlertRecipientsOptions` | Role whose members get critical alert emails, recipient list reconcile schedule, alert email templates |
 | `otp.json` | `OtpOptions` | One-time code length, expiry, resend interval, quotas, development `DummyCode` |
 | `sms.json` | `SmsOptions` | SMS provider, credentials, timeouts, caps, templates |
 | `email.json` | `EmailOptions` | Email provider, API key, sender, timeouts, caps, templates |
@@ -114,6 +116,8 @@ init-container / secret volume. Checklist:
      `WebhookSharedSecret`
    - `objectStorage.json` → endpoint, `AccessKey`, `SecretKey`, bucket names, public base URL
    - `otp.json` → remove `DummyCode`
+   - `secretProtection.json` → `SecretProtectionOptions.EncryptionKey` (the checked-in key is rejected outside
+     `Development`)
 3. Set the structural values for your network: `reverseProxy.json` `TrustedNetworks`,
    `cors.json` `AllowedOrigins`, `modules.json` `EnabledModules`.
 4. Alternatively, override individual secrets via `Section__Key` environment variables

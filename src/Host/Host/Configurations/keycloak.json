@@ -10,6 +10,10 @@
     "DecisionCacheMaxDurationSeconds": 300,
     "ServiceAccountTokenRefreshSkewSeconds": 30,
     "AttemptTimeoutSeconds": 5,
-    "TotalRequestTimeoutSeconds": 15
+    "TotalRequestTimeoutSeconds": 15,
+    "UserLookupConcurrency": 8,
+    "UserDisplayCacheDurationSeconds": 300,
+    "UserDisplayCacheDistributedDurationSeconds": 86400,
+    "UserDisplayNegativeCacheDurationSeconds": 300
   }
 }

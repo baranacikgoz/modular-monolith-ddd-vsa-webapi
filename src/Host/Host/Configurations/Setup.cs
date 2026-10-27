@@ -10,6 +10,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/localization");
         AddJsonFile(configuration, $"{configurationsDirectory}/keycloak");
         AddJsonFile(configuration, $"{configurationsDirectory}/devices");
+        AddJsonFile(configuration, $"{configurationsDirectory}/alertRecipients");
         AddJsonFile(configuration, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, $"{configurationsDirectory}/captcha");
@@ -22,6 +23,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/outbox");
         AddJsonFile(configuration, $"{configurationsDirectory}/backgroundJobs");
         AddJsonFile(configuration, $"{configurationsDirectory}/caching");
+        AddJsonFile(configuration, $"{configurationsDirectory}/secretProtection");
         AddJsonFile(configuration, $"{configurationsDirectory}/auditLog");
         AddJsonFile(configuration, $"{configurationsDirectory}/modules");
         AddJsonFile(configuration, $"{configurationsDirectory}/healthCheck");
