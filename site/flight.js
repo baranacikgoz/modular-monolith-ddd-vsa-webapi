@@ -90,6 +90,8 @@
     return s;
   }
 
+  MM.setNum('hops', buildScript({ A: false, B: false, C: false }).length);
+
   function laneColor(id) { return LANES[IDX[id]].color; }
 
   function head(x, y, dir) {

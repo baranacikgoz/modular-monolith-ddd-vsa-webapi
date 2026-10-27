@@ -58,10 +58,15 @@
   }
 
   function buildProc(i, mods, key, animate) {
-    var lines = key === 'mono' ? [['0', '*']] : mods.map(function (m, k) { return [String(k), m]; });
+    var enabled = key === 'mono' ? ['*'] : mods;
     var env = el('p', { class: 'proc-env' },
-      el('span', { text: 'ModulesOptions__EnabledModules' }),
-      lines.map(function (l) { return el('span', null, '__' + l[0] + '=', el('b', { text: l[1] })); }));
+      el('span', { text: '{' }),
+      el('span', { text: '  "ModulesOptions": {' }),
+      el('span', null, '    "EnabledModules": [', enabled.map(function (m, k) {
+        return [k ? ', ' : '', '"', el('b', { text: m }), '"'];
+      }), ']'),
+      el('span', { text: '  }' }),
+      el('span', { text: '}' }));
     var cols = isVertical() ? Math.min(mods.length, 2) : mods.length;
     var body = el('div', { class: 'proc-body', style: '--cols:' + cols });
     mods.forEach(function (m) { body.appendChild(cells[m]); procIndexOf[m] = i; });

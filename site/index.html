@@ -72,7 +72,7 @@
       <a class="btn primary" href="#deploy" data-i18n="hero.cta1">Split the slab</a>
       <a class="btn" href="#start" data-i18n="hero.cta2">Run it in four steps</a>
     </div>
-    <p class="envline"><code>ModulesOptions__EnabledModules__0=<b id="envval">*</b></code></p>
+    <p class="envline"><code>{ "ModulesOptions": { "EnabledModules": ["<b id="envval">*</b>"] } }</code></p>
   </div>
 
   <div class="scrollhint" aria-hidden="true"><span></span></div>
@@ -120,7 +120,7 @@
     <header class="sec-head reveal">
       <p class="eyebrow"><span class="num">02</span><span data-i18n="fl.eyebrow">Flight recorder</span></p>
       <h2 data-i18n="fl.h">Follow one request. <em>Then break it.</em></h2>
-      <p class="sec-lede" data-i18n="fl.p">A store owner adds a product to their store. Ten hops later Inventory holds a stock level. Inject a failure, press play and watch which guarantee catches it.</p>
+      <p class="sec-lede" data-i18n="fl.p">A store owner adds a product to their store. <span data-num="hops" data-word>Ten</span> hops later Inventory holds a stock level. Inject a failure, press play and watch which guarantee catches it.</p>
     </header>
 
     <div class="flight reveal">
@@ -198,10 +198,10 @@
     <header class="sec-head reveal">
       <p class="eyebrow"><span class="num">03</span><span data-i18n="walls.eyebrow">Guardrails</span></p>
       <h2 data-i18n="walls.h">Conventions rot. <em>Walls don't.</em></h2>
-      <p class="sec-lede" data-i18n="walls.p">Thirteen rules, each checked by a test, a startup validator, a hook or CI. Pick a rule and try to break it.</p>
+      <p class="sec-lede" data-i18n="walls.p"><span data-num="walls" data-word>Thirteen</span> rules, each checked by a test, a startup validator, a hook or CI. Pick a rule and try to break it.</p>
     </header>
     <div class="walls-bar reveal">
-      <p class="walls-count"><b id="wallCount">0</b> / 13 <span data-i18n="walls.count">attempts blocked</span></p>
+      <p class="walls-count"><b id="wallCount">0</b> / <span data-num="walls">13</span> <span data-i18n="walls.count">attempts blocked</span></p>
       <button type="button" class="btn" id="wallAll" data-i18n="walls.all">Try to break all of them</button>
     </div>
     <div class="tablets reveal" id="tablets"></div>
@@ -213,7 +213,7 @@
   <div class="wrap">
     <header class="sec-head reveal">
       <p class="eyebrow"><span class="num">04</span><span data-i18n="atlas.eyebrow">Modules</span></p>
-      <h2 data-i18n="atlas.h">Six modules. <em>Zero references.</em></h2>
+      <h2 data-i18n="atlas.h"><span data-num="modules" data-word>Six</span> modules. <em>Zero references.</em></h2>
       <p class="sec-lede" data-i18n="atlas.p">They know each other only through contracts. Dashed lines are integration events, solid lines are inter-module requests, and every one of them travels through RabbitMQ. Select a module.</p>
     </header>
     <div class="atlas reveal">
@@ -255,7 +255,7 @@
 
     <div class="agents reveal">
       <div class="panel palette">
-        <h3 data-i18n="ag.cmds">Fifteen slash commands</h3>
+        <h3 data-i18n="ag.cmds"><span data-num="commands" data-word>Fifteen</span> slash commands</h3>
         <label class="pal-input"><span aria-hidden="true">/</span><input id="palQ" type="text" autocomplete="off" spellcheck="false" placeholder="scaffold, plan, fix…" aria-label="Filter commands"></label>
         <ul class="pal-list" id="palList"></ul>
         <div class="pal-detail" id="palDetail" aria-live="polite"></div>
@@ -282,9 +282,9 @@
         <h3 data-i18n="ag.graph">A graph instead of grep</h3>
         <p data-i18n="ag.graphp">A generated knowledge graph answers where something lives without searching the tree. The picture is decorative, the numbers are from the repository's own report.</p>
         <dl class="graph-stats">
-          <div><dt data-i18n="ag.nodes">nodes</dt><dd data-count="5951">0</dd></div>
-          <div><dt data-i18n="ag.edges">edges</dt><dd data-count="17893">0</dd></div>
-          <div><dt data-i18n="ag.comm">communities</dt><dd data-count="342">0</dd></div>
+          <div><dt data-i18n="ag.nodes">nodes</dt><dd data-count="5951" data-stat="graphNodes">0</dd></div>
+          <div><dt data-i18n="ag.edges">edges</dt><dd data-count="17893" data-stat="graphEdges">0</dd></div>
+          <div><dt data-i18n="ag.comm">communities</dt><dd data-count="342" data-stat="graphCommunities">0</dd></div>
         </dl>
       </div>
     </div>
@@ -294,14 +294,14 @@
 <section class="band" id="numbers" aria-label="Numbers">
   <div class="wrap">
     <ul class="nums reveal">
-      <li><b data-count="6">0</b><span data-i18n="n.modules">modules</span></li>
-      <li><b data-count="32">0</b><span data-i18n="n.projects">projects</span></li>
-      <li><b data-count="1280">0</b><span data-i18n="n.cs">C# files</span></li>
-      <li><b data-count="1658">0</b><span data-i18n="n.tests">test methods</span></li>
-      <li><b data-count="987">0</b><span data-i18n="n.commits">commits</span></li>
+      <li><b data-count="6" data-stat="modules">0</b><span data-i18n="n.modules">modules</span></li>
+      <li><b data-count="32" data-stat="projects">0</b><span data-i18n="n.projects">projects</span></li>
+      <li><b data-count="1280" data-stat="csFiles">0</b><span data-i18n="n.cs">C# files</span></li>
+      <li><b data-count="1658" data-stat="tests">0</b><span data-i18n="n.tests">test methods</span></li>
+      <li><b data-count="988" data-stat="commits">0</b><span data-i18n="n.commits">commits</span></li>
       <li class="hot"><b data-count="0">0</b><span data-i18n="n.refs">cross-module references</span></li>
     </ul>
-    <p class="nums-note reveal" data-i18n="n.note">Counted from the repository with git ls-files, the test attributes, git rev-list and the same check the commit hook runs.</p>
+    <p class="nums-note reveal" data-i18n="n.note">Counted from the repository on every deploy with git ls-files, the test attributes, git rev-list.</p>
   </div>
 </section>
 
@@ -341,6 +341,7 @@
   </div>
 </footer>
 
+<script src="stats.js" defer></script>
 <script src="core.js" defer></script>
 <script src="i18n.js" defer></script>
 <script src="bg.js" defer></script>

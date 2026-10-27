@@ -67,6 +67,38 @@
 
   MM.onLang = function (fn) { document.addEventListener('langchange', fn); };
 
+  MM.stats = window.MM_STATS || {};
+  MM.nums = {};
+
+  var WORDS = {
+    en: ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen',
+      'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty'],
+    tr: ['Sıfır', 'Bir', 'İki', 'Üç', 'Dört', 'Beş', 'Altı', 'Yedi', 'Sekiz', 'Dokuz', 'On', 'On bir', 'On iki', 'On üç',
+      'On dört', 'On beş', 'On altı', 'On yedi', 'On sekiz', 'On dokuz', 'Yirmi']
+  };
+
+  // A count the page derives from its own data wins over a measured one.
+  MM.num = function (key) {
+    var v = MM.nums[key] != null ? MM.nums[key] : MM.stats[key];
+    return typeof v === 'number' ? v : null;
+  };
+
+  // Elements marked data-num show the count; data-word spells it out at the start of a sentence.
+  // The markup keeps its own text as the fallback when a count is unknown.
+  MM.fillNums = function () {
+    var words = WORDS[MM.lang] || WORDS.en;
+    MM.$$('[data-num]').forEach(function (n) {
+      var v = MM.num(n.getAttribute('data-num'));
+      if (v === null) return;
+      n.textContent = n.hasAttribute('data-word') && v < words.length ? words[v] : String(v);
+    });
+  };
+
+  MM.setNum = function (key, v) {
+    MM.nums[key] = v;
+    MM.fillNums();
+  };
+
   MM.onVisible = function (node, cb, margin) {
     if (!('IntersectionObserver' in window)) { cb(true); return; }
     var io = new IntersectionObserver(function (entries) {
@@ -112,7 +144,11 @@
 
   function initCounters() {
     var nodes = MM.$$('[data-count]');
-    nodes.forEach(function (n) { n.textContent = '0'; });
+    nodes.forEach(function (n) {
+      var v = MM.num(n.getAttribute('data-stat'));
+      if (v !== null) n.setAttribute('data-count', String(v));
+      n.textContent = '0';
+    });
     if (!('IntersectionObserver' in window)) { nodes.forEach(animateCount); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {

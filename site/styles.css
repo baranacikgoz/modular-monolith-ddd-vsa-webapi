@@ -108,7 +108,7 @@ main,.foot{position:relative;z-index:1}
 .lede{max-width:34em;margin:0 0 34px;font-size:clamp(18px,1.7vw,23px);line-height:1.5;color:var(--ink2);animation:rise 1.2s var(--ease) .45s both}
 .cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:34px;animation:rise 1.2s var(--ease) .6s both}
 .envline{margin:0;font:500 13px var(--mono);color:var(--dim);animation:rise 1.2s var(--ease) .75s both}
-.envline code{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.45)}
+.envline code{display:inline-block;max-width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.45);white-space:pre-wrap;overflow-wrap:anywhere}
 .envline b{color:var(--signal);font-weight:500}
 .scrollhint{position:absolute;left:50%;bottom:22px;width:1px;height:46px;background:linear-gradient(var(--line2),transparent);overflow:hidden;z-index:3}
 .scrollhint span{position:absolute;left:0;top:-14px;width:1px;height:14px;background:var(--ink);animation:drip 2.2s ease-in infinite}
@@ -136,7 +136,7 @@ main,.foot{position:relative;z-index:1}
 .proc-env span{display:block}
 .proc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 .proc-name{color:var(--ink)}
-.proc-env{margin:0;font:500 10.5px/1.55 var(--mono);color:var(--dim);overflow-wrap:anywhere}
+.proc-env{margin:0;font:500 10.5px/1.55 var(--mono);color:var(--dim);white-space:pre-wrap;overflow-wrap:anywhere}
 .proc-env b{color:var(--signal);font-weight:500}
 .proc-body{flex:1;display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:10px}
 .cell{position:relative;display:flex;flex-direction:column;gap:3px;min-height:86px;padding:12px;text-align:left;cursor:pointer;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);border-radius:12px;background:color-mix(in srgb,var(--c) 8%,#0b0b0d);transition:transform .25s var(--ease),border-color .25s,background .25s}

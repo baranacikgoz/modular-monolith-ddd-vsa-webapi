@@ -3,7 +3,13 @@
 
   var MM = window.MM, $ = MM.$, el = MM.el, T = MM.t;
 
-  var ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII'];
+  function roman(n) {
+    var out = '';
+    [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']].forEach(function (p) {
+      while (n >= p[0]) { out += p[1]; n -= p[0]; }
+    });
+    return out;
+  }
 
   var RULES = [
     {
@@ -139,7 +145,7 @@
       ];
       if (r.msg) parts.splice(2, 0, el('pre', { class: 'demo-code', style: 'margin-top:8px;color:#ffb0b0;white-space:pre-wrap' }, r.msg));
       var tablet = el('article', { class: 'tablet' },
-        el('span', { class: 'tablet-n', text: ROMAN[i] }),
+        el('span', { class: 'tablet-n', text: roman(i + 1) }),
         el('p', { class: 'tablet-t', text: T(r.rule) }),
         btn,
         el('div', { class: 'tablet-demo' }, el('div', null, parts)));
@@ -165,6 +171,7 @@
     allBtn.disabled = false;
   });
 
+  MM.setNum('walls', RULES.length);
   MM.onLang(render);
   render();
 })();

@@ -34,7 +34,7 @@
     'cnt.cross': 'süreç sınırını geçen',
     'fl.eyebrow': 'Uçuş kaydedici',
     'fl.h': 'Tek bir isteği izle. <em>Sonra bozmayı dene.</em>',
-    'fl.p': 'Bir mağaza sahibi mağazasına ürün ekler. On adım sonra Inventory modülünde bir stok kaydı oluşur. Bir arıza ekle, oynat ve hangi garantinin devreye girdiğini izle.',
+    'fl.p': 'Bir mağaza sahibi mağazasına ürün ekler. <span data-num="hops" data-word>On</span> adım sonra Inventory modülünde bir stok kaydı oluşur. Bir arıza ekle, oynat ve hangi garantinin devreye girdiğini izle.',
     'fl.chaos': 'Arıza ekle',
     'fl.a': 'Commit öncesi çökme',
     'fl.b': 'Commit sonrası hemen çökme',
@@ -59,11 +59,11 @@
     'p.rec': 'Reconciliation\'ı çalıştır',
     'walls.eyebrow': 'Korumalar',
     'walls.h': 'Gelenekler çürür. <em>Duvarlar çürümez.</em>',
-    'walls.p': 'On üç kuralın her biri bir test, bir açılış doğrulayıcısı, bir hook ya da CI tarafından denetlenir. Bir kural seç ve bozmayı dene.',
+    'walls.p': '<span data-num="walls" data-word>On üç</span> kuralın her biri bir test, bir açılış doğrulayıcısı, bir hook ya da CI tarafından denetlenir. Bir kural seç ve bozmayı dene.',
     'walls.count': 'deneme engellendi',
     'walls.all': 'Hepsini bozmayı dene',
     'atlas.eyebrow': 'Modüller',
-    'atlas.h': 'Altı modül. <em>Sıfır referans.</em>',
+    'atlas.h': '<span data-num="modules" data-word>Altı</span> modül. <em>Sıfır referans.</em>',
     'atlas.p': 'Birbirlerini yalnızca sözleşmeler üzerinden tanırlar. Kesik çizgiler entegrasyon olaylarını, düz çizgiler modüller arası istekleri gösterir ve hepsi RabbitMQ üzerinden geçer. Bir modül seç.',
     'rails.eyebrow': 'Ray',
     'rails.h': 'Mutlu yol <em>kodun kendisidir.</em>',
@@ -75,7 +75,7 @@
     'ag.eyebrow': 'Ajanlar için yapıldı',
     'ag.h': 'İnsanlar <em>ve ajanları için yazıldı.</em>',
     'ag.p': 'Katı mimari, bir yapay zeka ajanını işe yarar kılan şeydir. Depo; kural kitabını, iş akışını ve korumaları birlikte sunar ve kodu kullanmak için bunların hiçbiri zorunlu değildir.',
-    'ag.cmds': 'On beş slash komutu',
+    'ag.cmds': '<span data-num="commands" data-word>On beş</span> slash komutu',
     'ag.hooks': 'Hayır diyen iki hook',
     'ag.h1': 'Bir .csproj düzenle',
     'ag.h2': 'git commit',
@@ -91,7 +91,7 @@
     'n.tests': 'test metodu',
     'n.commits': 'commit',
     'n.refs': 'çapraz modül referansı',
-    'n.note': 'Sayılar depodan git ls-files, test öznitelikleri, git rev-list ve commit hook\'unun çalıştırdığı aynı kontrolle sayıldı.',
+    'n.note': 'Sayılar her yayında depodan git ls-files, test öznitelikleri ve git rev-list ile sayılır.',
     'st.eyebrow': 'Başla',
     'st.h': 'Çalıştır. <em>Sonra böl.</em>',
     'st.p': '.NET 10 SDK, Docker, GNU Make ve EF Core CLI gerekir. Keycloak realm\'i ilk açılışta bir dosyadan içe aktarır ve geliştirmede tek kullanımlık kod her zaman 123456\'dır.',
@@ -128,6 +128,7 @@
     MM.$$('.lang button').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
     });
+    MM.fillNums();
     document.dispatchEvent(new CustomEvent('langchange', { detail: lang }));
   }
 
@@ -142,6 +143,7 @@
   try { saved = localStorage.getItem('mm-lang'); } catch (e) { /* storage may be blocked */ }
   var pref = saved || ((navigator.language || '').toLowerCase().indexOf('tr') === 0 ? 'tr' : 'en');
   if (pref === 'tr') apply('tr');
+  else MM.fillNums();
 
   MM.$$('.lang button').forEach(function (b) {
     b.addEventListener('click', function () { MM.setLang(b.getAttribute('data-lang')); });

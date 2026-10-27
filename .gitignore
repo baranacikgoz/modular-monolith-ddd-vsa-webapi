@@ -504,3 +504,6 @@ scheduled_tasks.lock
 
 # graphify query timestamp, rewritten on every graphify query
 last_query_stamp
+
+# Site numbers, measured at deploy time by scripts/site-stats.sh
+site/stats.js

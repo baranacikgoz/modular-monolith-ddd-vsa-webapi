@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'site/**'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +24,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Measure repository numbers
+        run: bash scripts/site-stats.sh site/stats.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
