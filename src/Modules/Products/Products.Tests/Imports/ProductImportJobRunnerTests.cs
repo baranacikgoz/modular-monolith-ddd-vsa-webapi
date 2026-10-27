@@ -363,6 +363,71 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
     }
 
     [Fact]
+    public async Task Run_NameSharedByTwoProducts_RejectsTheRowAsAmbiguousInsteadOfPickingOne()
+    {
+        var (job, seeded) = await QueueJobAsync(
+            Workbooks.Build(["Lamp", "new description", 9, 12m], ["Chair", "", 1, 5m]),
+            "Lamp", "Lamp");
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal(JobStatus.Succeeded, finished.Status);
+        Assert.Equal([new ProductImportRowError(2, "AmbiguousProductName")], finished.RowErrors);
+        Assert.Equal(1, finished.ProductsCreated);
+        Assert.Equal(0, finished.ProductsUpdated);
+        var lamps = (await ProductsOfAsync(seeded.Store.Id)).Where(p => p.Name == "Lamp").ToList();
+        Assert.Equal(2, lamps.Count);
+        Assert.All(lamps, lamp =>
+        {
+            Assert.Equal(5, lamp.Quantity);
+            Assert.Equal("Description", lamp.Description);
+        });
+    }
+
+    [Fact]
+    public async Task Run_RowWithASkuOfOneOfTwoSameNamedProducts_UpdatesThatProduct()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(["Lamp", "LED", 9, 12m, "SKU-B"]));
+        await AddProductAsync(seeded, "Lamp", "SKU-A");
+        await AddProductAsync(seeded, "Lamp", "SKU-B");
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Empty(finished.RowErrors);
+        Assert.Equal(1, finished.ProductsUpdated);
+        var products = await ProductsOfAsync(seeded.Store.Id);
+        var bySku = products.ToDictionary(p => p.Sku!);
+        Assert.Equal(9, bySku["SKU-B"].Quantity);
+        Assert.Equal(12m, bySku["SKU-B"].Price);
+        Assert.Equal("LED", bySku["SKU-B"].Description);
+        Assert.Equal(1, bySku["SKU-A"].Quantity);
+        Assert.Equal("d", bySku["SKU-A"].Description);
+    }
+
+    [Fact]
+    public async Task Run_RowWithAnUnknownSkuAndANameSharedByTwoProducts_RejectsTheRowAsAmbiguous()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(["Lamp", "", 9, 12m, "SKU-C"]));
+        await AddProductAsync(seeded, "Lamp", "SKU-A");
+        await AddProductAsync(seeded, "Lamp", "SKU-B");
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal([new ProductImportRowError(2, "AmbiguousProductName")], finished.RowErrors);
+        Assert.Equal(2, (await ProductsOfAsync(seeded.Store.Id)).Count);
+    }
+
+    private async Task AddProductAsync(SeededStore seeded, string name, string? sku)
+    {
+        Db.Products.Add(Domain.Products.Product.Create(seeded.Store.Id, seeded.Template.Id, name, "d", 1, 5m, sku));
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+    }
+
+    [Fact]
     public async Task Run_ConcurrentWriterTakesASkuDuringABatch_RejectsThatBatchInsteadOfFailingTheJob()
     {
         var (job, seeded) = await QueueJobAsync(Workbooks.Build(["P1", "", 1, 5m, "SKU-1"], ["P2", "", 1, 5m, "SKU-2"]));

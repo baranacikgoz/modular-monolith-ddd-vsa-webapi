@@ -32,6 +32,9 @@ public static class ProductImportRowErrors
     public static readonly Error InvalidPrice = new() { Key = nameof(InvalidPrice) };
     public static readonly Error SkuTooLong = new() { Key = nameof(SkuTooLong) };
 
+    /// <summary>Several products of the store carry the row's name and the row has no SKU that picks one of them.</summary>
+    public static readonly Error AmbiguousProductName = new() { Key = nameof(AmbiguousProductName) };
+
     /// <summary>The row names a SKU for a product that already exists under another one (or none); a SKU is set at creation only.</summary>
     public static readonly Error SkuDiffers = new() { Key = nameof(SkuDiffers) };
 }
