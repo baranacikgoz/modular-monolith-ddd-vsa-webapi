@@ -986,6 +986,15 @@
   <data name="NotSuspended" xml:space="preserve">
     <value>Mağaza askıda değil.</value>
   </data>
+  <data name="StoreIsPendingApproval" xml:space="preserve">
+    <value>Mağaza başvurusu henüz onaylanmadığı için değişiklik yapılamaz.</value>
+  </data>
+  <data name="StoreIsSuspended" xml:space="preserve">
+    <value>Mağaza askıda olduğu için değişiklik yapılamaz.</value>
+  </data>
+  <data name="StoreIsInactive" xml:space="preserve">
+    <value>Mağaza kapatıldığı için değişiklik yapılamaz.</value>
+  </data>
   <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
     <value>SKU boş olamaz.</value>
   </data>

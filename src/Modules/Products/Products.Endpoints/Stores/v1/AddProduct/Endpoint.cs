@@ -56,7 +56,7 @@ internal static class Endpoint
             .TapAsync(triple =>
             {
                 var (store, _, product) = triple;
-                store.AddProduct(product);
+                return store.AddProduct(product);
             })
             // The SKU is unique per store; a duplicate is a conflict answer, never an unhandled database error.
             .BindAsync(_ => dbContext.SaveChangesDetectingConflictAsync(

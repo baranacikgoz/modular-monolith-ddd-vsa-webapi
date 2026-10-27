@@ -39,7 +39,7 @@ internal static class Endpoint
             .TapAsync(tuple =>
             {
                 var (store, product) = tuple;
-                store.RemoveProduct(product);
+                return store.RemoveProduct(product);
             })
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken));
     }

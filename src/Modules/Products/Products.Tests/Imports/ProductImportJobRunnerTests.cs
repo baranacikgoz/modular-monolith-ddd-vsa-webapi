@@ -145,6 +145,25 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
     }
 
     [Fact]
+    public async Task Run_StoreNotActive_RejectsEveryNewProductRowWithTheStoreStatusKey()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(["Desk lamp", "LED", 5, 49.9m], ["Chair", "", 1, 5m]));
+        var store = await Db.Stores.SingleAsync(s => s.Id == seeded.Store.Id);
+        store.Suspend();
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal(JobStatus.Succeeded, finished.Status);
+        Assert.Equal(0, finished.ProductsCreated);
+        Assert.Equal(2, finished.RowsRejected);
+        Assert.All(finished.RowErrors, e => Assert.Equal("StoreIsSuspended", e.Reason));
+        Assert.Empty(await ProductsOfAsync(seeded.Store.Id));
+    }
+
+    [Fact]
     public async Task Run_FileBiggerThanOneMessage_StoresItsCursorAndQueuesItselfUntilTheEnd()
     {
         var (job, seeded) = await QueueJobAsync(Workbooks.Build(

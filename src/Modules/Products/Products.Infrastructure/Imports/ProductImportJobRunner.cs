@@ -209,14 +209,20 @@ public sealed partial class ProductImportJobRunner(
         }
 
         var created = Product.Create(job.StoreId, job.ProductTemplateId, row.Name, row.Description, row.Quantity, row.Price, row.Sku);
-        store.AddProduct(created);
-        existing[row.Name] = created;
-        if (row.Sku is not null)
-        {
-            bySku[row.Sku] = created;
-        }
 
-        return RowResult.Created;
+        // A store that is not Active takes no new product: the row is rejected with the store's status error.
+        return store.AddProduct(created).Match(
+            () =>
+            {
+                existing[row.Name] = created;
+                if (row.Sku is not null)
+                {
+                    bySku[row.Sku] = created;
+                }
+
+                return RowResult.Created;
+            },
+            error => RowResult.Rejected(row.RowNumber, error));
     }
 
     /// <summary>Saves the batch's products and the job's cursor in one transaction. A concurrent writer on the same

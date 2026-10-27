@@ -927,6 +927,15 @@
   <data name="NotSuspended" xml:space="preserve">
     <value>The store is not suspended.</value>
   </data>
+  <data name="StoreIsPendingApproval" xml:space="preserve">
+    <value>The store application has not been approved yet, so the store cannot be changed.</value>
+  </data>
+  <data name="StoreIsSuspended" xml:space="preserve">
+    <value>The store is suspended, so it cannot be changed.</value>
+  </data>
+  <data name="StoreIsInactive" xml:space="preserve">
+    <value>The store is closed, so it cannot be changed.</value>
+  </data>
   <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
     <value>SKU cannot be empty.</value>
   </data>
