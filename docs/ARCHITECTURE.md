@@ -79,7 +79,7 @@ This architecture removes "extract later" from the equation entirely, because th
 
 **Decision:** No application code calls `IPublishEndpoint` directly. Domain events are written to `OutboxMessages` by `BaseDbContext` in the same database transaction as the aggregate state change. The `OutboxProcessor` background service polls the table and publishes via MassTransit over RabbitMQ.
 
-**Why:** Calling `IPublishEndpoint` directly from application code creates a dual-write problem: the database write and the publish are two separate operations. If the process crashes between them, the state is saved but the event is never published, or the event is published but the state change is rolled back. `BaseDbContext` eliminates this by writing to `OutboxMessages` atomically with the aggregate. Either both commit or neither does.
+**Why:** Calling `IPublishEndpoint` directly from application code creates a dual-write problem: the database write and the publish are two separate operations. If the process crashes between them, the state is saved but the event is never published, or the event is published but the state change is rolled back. `BaseDbContext` eliminates this by writing to `OutboxMessages` atomically with the aggregate. Either both commit or neither does. The transaction opens before the domain event handlers run, so a handler that writes with SQL of its own (a counter, a dirty mark) commits or rolls back with the change that raised the event.
 
 The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` that selects rows `FOR UPDATE SKIP LOCKED` and pushes each row's `NextRetryAt` into the future (a lease). That statement commits at once, so no database lock or transaction is held while publishing. The processor publishes the claimed rows to RabbitMQ in parallel (`PublishConcurrency`), then records each outcome in one save: processed, or retry with exponential backoff. Multiple processors running concurrently claim disjoint batches.
 
@@ -151,6 +151,8 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 **Why:** Passwords, sessions, token rotation and a permission model are expensive to build and easy to get wrong. A policy change in Keycloak takes effect without a deploy, the realm file reviews like code, and tests boot the same realm in a container. `PermissionCoverageTests` keeps endpoint scopes and the realm in sync.
 
+An administration read asks a `-view-all` scope and its owner twin a `-view-own` scope, with the ownership decided in the query against a local copy of store access; a right that belongs to a role instead (connecting a store to its warehouse) binds to a role policy. A deployed realm does not re-import, so new scopes, policies and roles are added by hand.
+
 **Tradeoff:** Keycloak is a runtime dependency of sign-in and of permission decisions. A cached decision does not need Keycloak, a new one does. Its health is therefore reported on a separate dependency probe rather than gating readiness. The `trusted-login` client secret is as sensitive as every user's password and must stay on the API's network (see [`../keycloak/README.md`](../keycloak/README.md)).
 
 ---
@@ -165,7 +167,7 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 ### 14. Rules are tests and startup checks, not conventions
 
-**Decision:** Whatever can be checked mechanically is. Architecture tests cover module boundaries, event contracts, strongly typed id queries and aggregate method signatures. `PermissionCoverageTests` ties endpoint scopes to the realm. Every options class has a validator that runs at startup, and in Production those validators reject placeholder providers (`Dummy` SMS, email, push and captcha), a fixed OTP code, an in-memory-only cache, SignalR without a backplane and the checked-in secret protection key. `MigrationGuard` refuses to start against an unmigrated database, and CI fails when a model migration has no committed SQL.
+**Decision:** Whatever can be checked mechanically is. Architecture tests cover module boundaries, event contracts, strongly typed id queries and aggregate method signatures. `PermissionCoverageTests` ties endpoint scopes to the realm. Every options class has a validator that runs at startup, and in Production those validators reject placeholder providers (`Dummy` SMS, email, push and captcha), a fixed OTP code, an in-memory-only cache, SignalR without a backplane, the checked-in secret protection key and the switch that lets a warehouse connection point at a private address (`AllowPrivateWarehouseAddresses`). A per-record placeholder, the `Dummy` warehouse provider, is refused at creation and again when the gateway is built in a Production host. Who may call what is checked the same way: a route-scope test per module pins the scope of every route whose scope separates administration from owner access, and an error key without a localized text fails `ErrorKeyLocalizationTests`. `MigrationGuard` refuses to start against an unmigrated database, and CI fails when a model migration has no committed SQL.
 
 **Why:** Prose rules are followed when someone remembers them. A failing build is followed always, including by contributors and AI agents who never read the document.
 
@@ -181,7 +183,7 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 ### 16. Failure is assumed at every external edge
 
-**Decision:** Outbound HTTP clients get a timeout, bounded retries and a circuit breaker from `ResiliencyOptions`, and a third party with per-key quotas gets a keyed pipeline (own rate limiter, breaker and timeout per key; the warehouse gateway builds one per store connection and gives it no retry, because a release changes state at the partner). Inbound endpoints that cost money or enable abuse (SMS and email sends, OTP verification, registration, token creation, store applications, partner webhooks) have named rate limit policies that share one counter across replicas when Redis is configured.
+**Decision:** Outbound HTTP clients get a timeout, bounded retries and a circuit breaker from `ResiliencyOptions`, and a third party with per-key quotas gets a keyed pipeline (own rate limiter, breaker and timeout per key; the warehouse gateway builds one per store connection and gives it no retry, because a release changes state at the partner, and sends the local reservation id as the call's idempotency key so an unknown outcome can be reconciled). An address a caller typed in is called only after two checks: the validator refuses what the address says, and the connect callback resolves the name, refuses any non public answer and connects to the address it checked, with no redirects and no proxy. Inbound endpoints that cost money or enable abuse (SMS and email sends, OTP verification, registration, token creation, store applications, partner webhooks) have named rate limit policies that share one counter across replicas when Redis is configured.
 
 **Why:** In a split deployment every module boundary is a network. Resilience that is added per call site later is the work this architecture exists to avoid, so it is part of the platform from the start.
 
@@ -203,7 +205,9 @@ The `OutboxProcessor` then claims a batch with a single `UPDATE ... RETURNING` t
 
 **Why:** A database dump or read-only SQL access must not hand out the credentials of every partner. One shared webhook secret means one leak compromises every partner, and rotating it means coordinating all of them. A secret per connection limits a leak to one connection and lets it be rotated alone.
 
-**Tradeoff:** The key is one more deploy-time dependency, and changing it makes every stored value undecryptable.
+**Rotation:** every value carries the id of the key that protected it, so the previous key moves to `PreviousEncryptionKeys` (decrypt only), a new key encrypts from then on, and a recurring sweep rewrites the stored values under the new key before the old one is dropped. A password never travels in clear on the bus either: it is encrypted with the same protector before it is sent.
+
+**Tradeoff:** The key is one more deploy-time dependency, and a value whose key is neither the current one nor listed can no longer be read.
 
 ---
 

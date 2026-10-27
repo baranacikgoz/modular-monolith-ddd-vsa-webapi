@@ -82,13 +82,15 @@ The hard constraint that shapes everything below: **in PostgreSQL full-text sear
 
 **Tradeoff:** A client wanting results in a non-UI language must change `Accept-Language`. Acceptable and consistent.
 
+**Outside a request.** A queue consumer has no request culture, so a product it creates would be stamped with the process default. The product import records the uploader's culture on the job (`UiCulture`) and its consumer runs each message under it, restoring the previous culture afterwards, so products created by an import get the language of the person who uploaded the file.
+
 ---
 
 ### 6. No language filter on read
 
 **Decision:** Read queries do **not** filter `WHERE Language = currentConfig`. They match against the whole vector with both query layers.
 
-**Why:** Filtering by language would make products authored in another language invisible, wrong for a marketplace. Because the universal layer is language-neutral and the prose layer naturally only matches same-language words, the dual-query approach (below) gives correct results without a filter. The `Language` column is a **write-side input to the vector**, not a read-side filter.
+**Why:** Filtering by language would make products authored in another language invisible, wrong for a catalogue whose stores write in more than one language. Because the universal layer is language-neutral and the prose layer naturally only matches same-language words, the dual-query approach (below) gives correct results without a filter. The `Language` column is a **write-side input to the vector**, not a read-side filter.
 
 ---
 
@@ -123,8 +125,8 @@ Per prose-bearing entity, an immutable wrapper that produces the two-layer vecto
 ```sql
 CREATE OR REPLACE FUNCTION fts_product(lang text, name text, descr text)
 RETURNS tsvector LANGUAGE sql IMMUTABLE AS $$
-  SELECT setweight(to_tsvector('simple_unaccent', coalesce(name,  '')), 'A')   -- universal layer
-      || setweight(to_tsvector(lang::regconfig,   coalesce(descr, '')), 'B');  -- prose layer (per-row language)
+  SELECT setweight(to_tsvector('simple_unaccent', coalesce(name,  '')), 'A')   /* universal layer */
+      || setweight(to_tsvector(lang::regconfig,   coalesce(descr, '')), 'B');  /* prose layer (per-row language) */
 $$;
 ```
 
@@ -181,12 +183,12 @@ GET /products/search?searchTerm=...    Accept-Language: <locale>
    │
    ▼  CurrentUICulture → ISearchLanguageResolver → userConfig (e.g. "english_unaccent")
 build TWO tsqueries from the same term:
-   simpleQ = websearch_to_tsquery('simple_unaccent', term)   -- universal layer, ALL locales
-   userQ   = websearch_to_tsquery( userConfig,        term)  -- prose layer, user's language stemming
+   simpleQ = websearch_to_tsquery('simple_unaccent', term)   /* universal layer, ALL locales */
+   userQ   = websearch_to_tsquery( userConfig,        term)  /* prose layer, user's language stemming */
    │
    ▼
 WHERE  SearchVector @@ simpleQ  OR  SearchVector @@ userQ
-ORDER BY ts_rank(SearchVector, simpleQ || userQ) DESC      -- only when a term is present
+ORDER BY ts_rank(SearchVector, simpleQ || userQ) DESC      /* only when a term is present */
 ```
 
 Why two queries: a single `tsquery` has one config. Querying the `simple`-indexed name layer with `english` would stem `running → run` and miss the stored `running`. The two OR-ed queries let the universal layer match for everyone while the prose layer is stemmed in the user's language.

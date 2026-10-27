@@ -66,8 +66,8 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `projectionReconciliation.json` | `ProjectionReconciliationOptions` | Reconciliation page size and page ceiling |
 | `auditLog.json` | `AuditLogOptions` | Audit retention, purge batch and schedule, per-schema overrides |
 | `caching.json` | `CachingOptions` | Memory bound, Redis on/off, entry defaults, idempotency key durations |
-| `secretProtection.json` | `SecretProtectionOptions` | AES-256 master key of `SecretProtector` (base64, 32 bytes) |
-| `keycloak.json` | `KeycloakOptions` | Keycloak address, realm, client ids and secrets, decision cache, timeouts, user display lookup and cache |
+| `secretProtection.json` | `SecretProtectionOptions` | AES-256 current key of `SecretProtector` (base64, 32 bytes) and `PreviousEncryptionKeys`, the keys that only decrypt during a rotation (`[]` when none is in progress) |
+| `keycloak.json` | `KeycloakOptions` | Keycloak address, realm, client ids and secrets, decision cache, timeouts, user display lookup and cache, and the in-memory lifetime of the realm role graph and of the effective member list of a role (`RoleGraphCacheSeconds`) |
 | `identityScheme.json` | `IdentitySchemeOptions` | `PhoneNumber` or `Email` self-service scheme |
 | `devices.json` | `DevicesOptions` | Allowed client ids, device reconciliation schedule |
 | `alertRecipients.json` | `AlertRecipientsOptions` | Role whose members get critical alert emails, recipient list reconcile schedule, alert email templates |
@@ -77,7 +77,7 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `push.json` | `PushOptions` | Push provider, Firebase service account, templates |
 | `signalR.json` | `SignalROptions` | Redis backplane |
 | `captcha.json` | `CaptchaOptions` | Captcha provider, keys, score threshold |
-| `inventory.json` | `InventoryOptions` | Webhook body limit and delivery retention, stock push and bulk adjustment tunables, sweep and reconcile schedules (product copy, store access copy), series limits, business time zone and the daily totals range cap |
+| `inventory.json` | `InventoryOptions` | Warehouse address guard switch (`AllowPrivateWarehouseAddresses`), webhook body limit, future timestamp skew and delivery retention, stock push (batch, attempts, first full push) and bulk adjustment tunables, sweep and reconcile schedules (product copy, store access copy, release reconcile, secret re-protect), series limits, business time zone and the daily totals range cap |
 | `bulkImport.json` | `BulkImportOptions` | Upload size, row and chunk ceilings of the spreadsheet jobs (product import, stock bulk adjustment) |
 | `objectStorage.json` | `ObjectStorageOptions` | S3-compatible endpoint, buckets, credentials, presign lifetimes, retries, circuit breaker |
 | `rateLimiting.json` | `CustomRateLimitingOptions` | Named rate limit policies (including the warehouse webhook and the store application), global limit, exempt paths |
@@ -87,7 +87,7 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `reverseProxy.json` | `ReverseProxyOptions` | Forwarded headers and trusted proxy networks |
 | `cors.json` | `CorsOptions` | Allowed origins, methods and headers |
 | `healthCheck.json` | `HealthCheckOptions` | Health checks on/off and probe timeouts |
-| `requestLogging.json` | `RequestLoggingOptions` | Request and response body logging, exclusions, redaction |
+| `requestLogging.json` | `RequestLoggingOptions` | Request and response body logging, exclusions, redaction (the store application, the token and OTP routes and the warehouse connection routes, whose bodies carry credentials and secrets) |
 | `observability.json` | `ObservabilityOptions` | Log levels and sinks, tracing and metrics, OTLP endpoint |
 | `openApi.json` | `OpenApiOptions` | Swagger switch and API metadata |
 | `localization.json` | `ResxLocalizationOptions` | Default and supported cultures |
@@ -115,11 +115,16 @@ init-container / secret volume. Checklist:
    - `push.json` → `PushOptions.Provider` plus the `ServiceAccount` block
    - `captcha.json` → `CaptchaOptions.Provider` plus `ClientKey`, `SecretKey`
    - `inventory.json` holds no secrets: warehouse credentials and webhook secrets are created per store
-     through `POST /v1/warehouse-connections` and stored encrypted with the `secretProtection.json` key
+     through `POST /v1/warehouse-connections` (or `POST /v1/warehouse-connections/my`) and stored encrypted with the
+     `secretProtection.json` key. Keep `AllowPrivateWarehouseAddresses` at `false`: the validator rejects `true`
+     in `Production`
    - `objectStorage.json` → endpoint, `AccessKey`, `SecretKey`, bucket names, public base URL
    - `otp.json` → remove `DummyCode`
    - `secretProtection.json` → `SecretProtectionOptions.EncryptionKey` (the checked-in key is rejected outside
-     `Development`)
+     `Development`, also inside `PreviousEncryptionKeys`). To rotate it, move the old key to
+     `PreviousEncryptionKeys`, set the new one and deploy, wait for the Inventory re-protect sweep
+     (`InventoryOptions.WarehouseSecretReprotectCron`) to rewrite the stored values, then remove the old key.
+     A value whose key is in neither place cannot be decrypted
 3. Set the structural values for your network: `reverseProxy.json` `TrustedNetworks`,
    `cors.json` `AllowedOrigins`, `modules.json` `EnabledModules`. Check the values that depend on your
    business: `alertRecipients.json` `RoleName` (a realm role that has members) and the alert email
@@ -131,14 +136,42 @@ init-container / secret volume. Checklist:
 5. Apply the idempotent SQL scripts under `migrations/{Module}` before the deploy; the app refuses to start
    with pending migrations.
 6. Keycloak imports the realm file only when the realm does not exist yet. A realm created from an earlier
-   version of `keycloak/realm-modular-monolith.json` needs the `store-owner` realm role and the newer
-   resources, scopes and permissions added by hand (see `keycloak/README.md`). Without the role, the
-   consumer that grants it on store approval throws and the bus retries it.
+   version of `keycloak/realm-modular-monolith.json` needs the `store-owner` realm role, the `Store Owner Role
+   Policy` and the newer resources, scopes and permissions added by hand (the checklist is in
+   `keycloak/README.md`). Without the role, the consumer that grants it on store approval throws and the bus
+   retries it. The scopes `stock-levels:view` and `stock-reservations:view` no longer exist; their replacements
+   are `-view-all` and `-view-own`.
 
 In `Production` the host refuses to start with `Dummy` SMS, email, push or captcha providers, a fixed
 OTP `DummyCode`, an in-memory-only cache (unless `AllowInMemoryOnlyInProduction` is set) or SignalR
 without a Redis backplane (unless `RequireRedisBackplaneInProduction` is off). In every environment
 other than `Development` it also refuses the checked-in `secretProtection.json` key.
+
+## Fields added to classes that are already deployed
+
+Every deployed environment needs these before the next deploy, because a configuration that predates a field
+fails validation at startup. Values are the committed ones.
+
+| File | Class | Field | Committed value |
+| :-- | :-- | :-- | :-- |
+| `inventory.json` | `InventoryOptions` | `StockReleaseReconcileSweepCron` | `0 */10 * * * *` |
+| `inventory.json` | `InventoryOptions` | `StockReleaseReconcileMinAgeSeconds` | `600` |
+| `inventory.json` | `InventoryOptions` | `StoreAccessReconciliationCron` | `30 3 * * *` |
+| `inventory.json` | `InventoryOptions` | `DailyTotalsMaxRangeDays` | `366` |
+| `inventory.json` | `InventoryOptions` | `AllowPrivateWarehouseAddresses` | `false` (rejected when `true` in Production) |
+| `inventory.json` | `InventoryOptions` | `WebhookMaxFutureSkewSeconds` | `300` |
+| `inventory.json` | `InventoryOptions` | `WarehouseSecretReprotectCron` | `0 40 4 * * *` |
+| `inventory.json` | `InventoryOptions` | `StockPushMaxAttempts` | `5` |
+| `inventory.json` | `InventoryOptions` | `StockPushInitialMarkPageSize` | `1000` |
+| `keycloak.json` | `KeycloakOptions` | `RoleGraphCacheSeconds` | `60` |
+| `products.json` | `ProductsOptions` | `StoresPageMaxSize` | `500` |
+| `secretProtection.json` | `SecretProtectionOptions` | `PreviousEncryptionKeys` | `[]` |
+
+`requestLogging.json` also lists `/v1/warehouse-connections` among the sensitive request body paths (`POST` and `PUT`)
+and the sensitive response body paths (`POST`). `rateLimiting.json` carries the `WarehouseWebhook` and
+`StoreApplication` policies, `resiliency.json` the `WarehouseJsonApi` and `WarehouseFormApi` keyed profiles,
+`auditLog.json` a longer `PerSchemaRetentionDays` for `Inventory`, and `products.json` and `bulkImport.json` the
+import, export, image and attribute limits.
 
 ## Adding a field to an options class that is already deployed
 

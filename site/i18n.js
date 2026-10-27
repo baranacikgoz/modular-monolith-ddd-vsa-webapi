@@ -34,7 +34,7 @@
     'cnt.cross': 'süreç sınırını geçen',
     'fl.eyebrow': 'Uçuş kaydedici',
     'fl.h': 'Tek bir isteği izle. <em>Sonra bozmayı dene.</em>',
-    'fl.p': 'Bir satıcı mağazasına ürün ekler. On adım sonra Inventory modülünde bir stok kaydı oluşur. Bir arıza ekle, oynat ve hangi garantinin devreye girdiğini izle.',
+    'fl.p': 'Bir mağaza sahibi mağazasına ürün ekler. On adım sonra Inventory modülünde bir stok kaydı oluşur. Bir arıza ekle, oynat ve hangi garantinin devreye girdiğini izle.',
     'fl.chaos': 'Arıza ekle',
     'fl.a': 'Commit öncesi çökme',
     'fl.b': 'Commit sonrası hemen çökme',
