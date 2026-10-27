@@ -23,6 +23,9 @@ public class RequestLoggingSensitivePathsTests
         { "POST", "/users/register/self" },
         { "POST", "/users/register/self/email" },
         { "POST", "/v1/stores/applications" },
+        { "POST", "/v1/warehouse-connections" },
+        { "POST", "/v1/warehouse-connections/my" },
+        { "PUT", "/v1/warehouse-connections/0192f0aa-0000-7000-8000-000000000001/credentials" },
     };
 
     public static TheoryData<string, string> ResponseRoutesCarryingASecret => new()
@@ -33,6 +36,9 @@ public class RequestLoggingSensitivePathsTests
         { "POST", "/otp/email/verify" },
         { "POST", "/users/register/self" },
         { "POST", "/users/register/self/email" },
+        { "POST", "/v1/warehouse-connections" },
+        { "POST", "/v1/warehouse-connections/my" },
+        { "POST", "/v1/warehouse-connections/0192f0aa-0000-7000-8000-000000000001/rotate-webhook-secret" },
     };
 
     private static RequestLoggingOptions CheckedInOptions()
