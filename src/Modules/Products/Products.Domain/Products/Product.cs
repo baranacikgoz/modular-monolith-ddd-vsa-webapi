@@ -2,14 +2,16 @@ using System.Text.Json.Serialization;
 using Common.Domain.Aggregates;
 using Common.Domain.Entities;
 using Common.Domain.Events;
+using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products.DomainEvents.v1;
+using Products.Domain.Products.Errors;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 
 namespace Products.Domain.Products;
 
-public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
+public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId, IComparable<ProductId>
 {
     public static ProductId New()
     {
@@ -25,10 +27,40 @@ public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId
     {
         return StronglyTypedIdHelper.TryDeserialize(str, out id);
     }
+
+    /// <summary>Keyset cursor comparisons: in a query EF translates them to SQL on the uuid column, so a page boundary
+    /// follows Postgres' own uuid ordering. The C# bodies are only the in-memory fallback and order differently from
+    /// Postgres, so never sort or compare already materialized ids with them.</summary>
+    public static bool operator >(ProductId left, ProductId right)
+    {
+        return left.Value.CompareTo(right.Value) > 0;
+    }
+
+    public static bool operator <(ProductId left, ProductId right)
+    {
+        return left.Value.CompareTo(right.Value) < 0;
+    }
+
+    public static bool operator >=(ProductId left, ProductId right)
+    {
+        return left.Value.CompareTo(right.Value) >= 0;
+    }
+
+    public static bool operator <=(ProductId left, ProductId right)
+    {
+        return left.Value.CompareTo(right.Value) <= 0;
+    }
+
+    public int CompareTo(ProductId other)
+    {
+        return Value.CompareTo(other.Value);
+    }
 }
 
 public class Product : AggregateRoot<ProductId>, ISearchLocalized
 {
+    private readonly List<ProductImage> _images = [];
+
     public Product() : base(new ProductId(DefaultIdType.Empty))
     {
     } // ORMs need a parameterless ctor
@@ -48,6 +80,8 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
     // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
     public string Language { get; private set; } = "simple_unaccent";
+
+    public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
 
     public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description,
         int quantity, decimal price)
@@ -147,6 +181,37 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             : (DomainEvent)new V1ProductPriceDecreasedDomainEvent(Id, price);
 
         Price = price;
+        RaiseEvent(@event);
+    }
+
+    /// <summary>The caller has uploaded (or is about to upload) the file under <paramref name="objectKey" />; the key is a
+    /// content hash, so the same bytes never become two images of one product.</summary>
+    public Result<ProductImage> AddImage(string objectKey, string contentType, long sizeBytes, int maxImages)
+    {
+        if (_images.Count >= maxImages)
+        {
+            return ProductErrors.ImageLimitReached;
+        }
+
+        if (_images.Any(i => i.ObjectKey == objectKey))
+        {
+            return ProductErrors.ImageAlreadyAdded;
+        }
+
+        var image = ProductImage.Create(Id, objectKey, contentType, sizeBytes);
+        var @event = new V1ProductImageAddedDomainEvent(Id, image.Id, objectKey);
+
+        _images.Add(image);
+        RaiseEvent(@event);
+
+        return image;
+    }
+
+    public void RemoveImage(ProductImage image)
+    {
+        var @event = new V1ProductImageRemovedDomainEvent(Id, image.Id, image.ObjectKey);
+
+        _images.Remove(image);
         RaiseEvent(@event);
     }
 }

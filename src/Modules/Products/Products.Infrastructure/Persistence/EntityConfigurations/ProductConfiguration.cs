@@ -38,6 +38,17 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
             .HasForeignKey(sp => sp.ProductTemplateId);
 
         builder
+            .HasMany(sp => sp.Images)
+            .WithOne()
+            .HasForeignKey(i => i.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
+            .Navigation(sp => sp.Images)
+            .HasField("_images")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
             .Property(sp => sp.Quantity)
             .IsRequired();
 
