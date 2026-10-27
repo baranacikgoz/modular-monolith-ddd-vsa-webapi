@@ -49,7 +49,7 @@ public class DeprovisionUserRequestHandlerTests(IntegrationTestWebAppFactory fac
         var client = Scope.ServiceProvider
             .GetRequiredService<IInterModuleRequestClient<ProvisionUserRequest, ProvisionUserResponse>>();
         var provisioned = await client.SendAsync(
-            new ProvisionUserRequest($"{Guid.NewGuid():N}@example.com", phone, "A-Valid-Password-1", "Ada", "Lovelace"),
+            ProvisionUserTestRequests.Create(Scope.ServiceProvider, $"{Guid.NewGuid():N}@example.com", phone, "A-Valid-Password-1"),
             CancellationToken.None);
 
         return provisioned.UserId!.Value;

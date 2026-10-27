@@ -29,7 +29,7 @@ public class ProductJobsHousekeepingTests(IntegrationTestWebAppFactory factory) 
     {
         return ProductImportJob.Queue(
             ProductImportJobId.New(), DefaultUser, Expired.AddMinutes(-5), StoreId.New(), ProductTemplateId.New(),
-            Guid.NewGuid().ToString("N"), "products.xlsx", objectKey);
+            Guid.NewGuid().ToString("N"), "products.xlsx", objectKey, string.Empty);
     }
 
     [Fact]

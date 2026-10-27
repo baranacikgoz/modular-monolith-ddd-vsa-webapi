@@ -73,7 +73,7 @@ public class RequestBodyValidator : CustomValidator<Request.RequestBody>
             .When(x => x.Quantity is not null);
 
         RuleFor(x => x.Price)
-            .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
+            .GreaterThanOrEqualTo(Constants.PriceGreaterThanOrEqualTo)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Products_Update_Price_GreaterThanOrEqualTo,
                 Constants.PriceGreaterThanOrEqualTo))
             .When(x => x.Price is not null);

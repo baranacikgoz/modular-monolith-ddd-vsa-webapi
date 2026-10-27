@@ -10,6 +10,7 @@ using Common.Tests;
 using IAM.Application.Keycloak;
 using IAM.Domain.Errors;
 using IAM.Infrastructure.IntegrationEventHandlers;
+using IAM.Tests.InterModuleRequestHandlers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -108,8 +109,8 @@ public class AssignStoreOwnerRoleOnStoreApprovedHandlerTests(IntegrationTestWebA
         var provisionClient = Scope.ServiceProvider
             .GetRequiredService<IInterModuleRequestClient<ProvisionUserRequest, ProvisionUserResponse>>();
         var provisioned = await provisionClient.SendAsync(
-            new ProvisionUserRequest($"{Guid.NewGuid():N}@example.com", IamTestClient.NewPhoneNumber(),
-                "A-Valid-Password-1", "Ada", "Lovelace"),
+            ProvisionUserTestRequests.Create(
+                Scope.ServiceProvider, $"{Guid.NewGuid():N}@example.com", IamTestClient.NewPhoneNumber(), "A-Valid-Password-1"),
             CancellationToken.None);
 
         return provisioned.UserId!.Value;

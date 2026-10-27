@@ -79,7 +79,7 @@ public sealed class RequestBodyValidator : CustomValidator<Request.RequestBody>
                 Constants.QuantityGreaterThanOrEqualTo));
 
         RuleFor(x => x.Price)
-            .GreaterThan(Constants.PriceGreaterThanOrEqualTo)
+            .GreaterThanOrEqualTo(Constants.PriceGreaterThanOrEqualTo)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_AddProduct_Price_GreaterThanOrEqualTo,
                 Constants.PriceGreaterThanOrEqualTo));
 

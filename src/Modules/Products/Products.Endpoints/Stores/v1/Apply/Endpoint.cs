@@ -3,8 +3,10 @@ using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
+using Common.Infrastructure.Security;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Common.InterModuleRequests.Notifications;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -17,12 +19,15 @@ using Products.Infrastructure.Telemetry;
 namespace Products.Endpoints.Stores.v1.Apply;
 
 /// <summary>
-///     Anonymous store application. The owner's identity-provider account is created first
-///     (<see cref="ProvisionUserRequest" />), then the store is saved as PendingApproval; the two writes cannot share a
-///     transaction. When the save fails after the account exists, the account is deleted again
+///     Anonymous store application. The applicant first proves they own the email address: the request carries the
+///     verification token <c>POST /otp/email/verify</c> issued after the mailed code, checked through
+///     <see cref="VerifyEmailOtpRequest" /> (Notifications' OTP store) under <see cref="EmailVerificationPurposes.NewAddress" />.
+///     Then the owner's identity-provider account is created (<see cref="ProvisionUserRequest" />) and the store is saved
+///     as PendingApproval; the two writes cannot share a transaction. When the save fails after the account exists, the account is deleted again
 ///     (<see cref="DeprovisionUserRequest" />), otherwise a retry would collide with the half-created account.
 ///     This is the compensation exception to the functional pipeline (CLAUDE.md section 3): the compensation after the
 ///     failed save is written as plain control flow in <see cref="SaveOrCompensateAsync" />, everything around it is a chain.
+///     The password crosses the bus encrypted (<see cref="SecretProtector" />), never in clear.
 ///     No role is assigned and no token is returned; the store-owner role follows the approval through the outbox.
 /// </summary>
 internal static partial class Endpoint
@@ -40,24 +45,32 @@ internal static partial class Endpoint
 
     private static async Task<Result<Response>> ApplyAsync(
         Request request,
+        IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse> verifyEmailClient,
         IInterModuleRequestClient<ProvisionUserRequest, ProvisionUserResponse> provisionClient,
         IInterModuleRequestClient<DeprovisionUserRequest, DeprovisionUserResponse> deprovisionClient,
         IProductsDbContext dbContext,
+        SecretProtector secretProtector,
         ILogger<Request> logger,
         CancellationToken cancellationToken)
     {
         using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
 
-        // The identity provider stores emails lowercased; the same form must reach it and the duplicate check.
+        // The identity provider stores emails lowercased; the same form must reach it, the OTP store and the duplicate check.
 #pragma warning disable CA1308
         var email = request.Email.Trim().ToLowerInvariant();
 #pragma warning restore CA1308
 
-        var provisioned = (await provisionClient.SendAsync(
-            new ProvisionUserRequest(email, request.PhoneNumber, request.Password, request.FirstName.Trim(), request.LastName.Trim()),
+        // Proof of mailbox ownership comes first: no account is created for an address nobody proved they own. The
+        // token is single use, so a later failure (a weak password, a taken address) needs a fresh email code.
+        var verified = (await verifyEmailClient.SendAsync(
+            new VerifyEmailOtpRequest(email, request.EmailVerificationToken, EmailVerificationPurposes.NewAddress),
             cancellationToken)).ToResult();
 
-        return await provisioned
+        return await verified
+            .BindAsync<ApplicationUserId>(async () => (await provisionClient.SendAsync(
+                new ProvisionUserRequest(
+                    email, request.PhoneNumber, secretProtector.Encrypt(request.Password), request.FirstName.Trim(), request.LastName.Trim()),
+                cancellationToken)).ToResult())
             .BindAsync(ownerId => SaveOrCompensateAsync(
                 Store.Apply(ownerId, request.StoreName, request.StoreDescription, request.StoreAddress),
                 dbContext, deprovisionClient, logger, cancellationToken))

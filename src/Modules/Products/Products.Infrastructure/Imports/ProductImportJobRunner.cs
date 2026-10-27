@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Application.Auth;
 using Common.Application.EventBus;
 using Common.Application.Jobs;
@@ -58,7 +59,7 @@ public sealed partial class ProductImportJobRunner(
             // No HttpContext here: the products this run writes are attributed to the user who uploaded the workbook.
             backgroundUser.Set(job.RequestedBy);
 
-            await RunMessageAsync(job, cancellationToken);
+            await RunUnderUploaderCultureAsync(job.UiCulture, () => RunMessageAsync(job, cancellationToken));
         }
         catch (OperationCanceledException)
         {
@@ -73,6 +74,39 @@ public sealed partial class ProductImportJobRunner(
             LogJobCrashed(logger, jobId.Value, ex);
             dbContext.ChangeTracker.Clear();
             await FinishAsync(jobId, JobStatus.Failed, ProductImportErrors.UnexpectedError);
+        }
+    }
+
+    /// <summary>
+    ///     A queue consumer has no request, so the search language that <c>ApplySearchLanguageInterceptor</c> stamps on a new
+    ///     product (it reads <see cref="CultureInfo.CurrentUICulture" />) would be the process default. The message runs under the
+    ///     culture the uploader had when the job was queued instead, and the previous culture is put back afterwards.
+    /// </summary>
+    private static async Task RunUnderUploaderCultureAsync(string cultureName, Func<Task> work)
+    {
+        var previous = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureOf(cultureName);
+
+        try
+        {
+            await work();
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    private static CultureInfo CultureOf(string cultureName)
+    {
+        try
+        {
+            return CultureInfo.GetCultureInfo(cultureName);
+        }
+        catch (CultureNotFoundException)
+        {
+            // A name this process's culture data does not know: the invariant culture resolves to the default search config.
+            return CultureInfo.InvariantCulture;
         }
     }
 
@@ -159,17 +193,17 @@ public sealed partial class ProductImportJobRunner(
             .Distinct()
             .ToList();
 
-        // One bounded IN per batch, by name and by SKU. Names are not unique in the table, so the oldest product of a name
-        // is the one a row updates; a SKU is unique per store, so it names at most one product.
+        // One bounded IN per batch, by name and by SKU. Names are not unique in the table, so every product of a name is
+        // loaded and a row that matches several is rejected; a SKU is unique per store, so it names at most one product.
         var loaded = await dbContext.Products
             .TagWith(nameof(ImportBatchAsync), job.StoreId)
             .Where(p => p.StoreId == job.StoreId && (names.Contains(p.Name) || (p.Sku != null && skus.Contains(p.Sku))))
             .OrderBy(p => p.Id)
             .ToListAsync(cancellationToken);
-        var existing = loaded
+        var byName = loaded
             .Where(p => names.Contains(p.Name))
             .GroupBy(p => p.Name, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.Ordinal);
         var bySku = loaded
             .Where(p => p.Sku is not null)
             .ToDictionary(p => p.Sku!, StringComparer.Ordinal);
@@ -180,43 +214,67 @@ public sealed partial class ProductImportJobRunner(
             .SingleAsResultAsync(nameof(Store), cancellationToken)
             .MapAsync(store => parsed
                 .Select(p => p.Parsed.Match(
-                    row => Apply(job, store, existing, bySku, row),
+                    row => Apply(job, store, byName, bySku, row),
                     error => RowResult.Rejected(p.RowNumber, error)))
                 .ToList())
             .BindAsync(results => SaveBatchAsync(job, batch, results, storedErrors, cancellationToken));
     }
 
+    /// <summary>
+    ///     A row with a SKU is matched by it first: the SKU names one product, which settles which of several same-named
+    ///     products the row means. Without a SKU the name decides, and a name shared by several products is ambiguous, so the
+    ///     row is rejected instead of updating one of them by chance.
+    /// </summary>
     private static RowResult Apply(
-        ProductImportJob job, Store store, Dictionary<string, Product> existing, Dictionary<string, Product> bySku, ProductRow row)
+        ProductImportJob job, Store store, Dictionary<string, List<Product>> byName, Dictionary<string, Product> bySku, ProductRow row)
     {
-        if (existing.TryGetValue(row.Name, out var product))
+        if (row.Sku is not null && bySku.TryGetValue(row.Sku, out var holder))
         {
-            // A SKU is set when the product is created and never changes, so a row cannot name another one for it.
-            if (row.Sku is not null && !string.Equals(product.Sku, row.Sku, StringComparison.Ordinal))
-            {
-                return RowResult.Rejected(row.RowNumber, ProductImportRowErrors.SkuDiffers);
-            }
-
-            // The aggregate raises nothing for a row that changes nothing, so the event count tells an update from a no-op.
-            var eventsBefore = product.Events.Count;
-            product.Update(null, row.Description, row.Quantity, row.Price);
-            return product.Events.Count > eventsBefore ? RowResult.Updated : RowResult.Unchanged;
+            return string.Equals(holder.Name, row.Name, StringComparison.Ordinal)
+                ? Update(holder, row)
+                : RowResult.Rejected(row.RowNumber, ProductErrors.SkuAlreadyExists);
         }
 
-        if (row.Sku is not null && bySku.ContainsKey(row.Sku))
+        return byName.GetValueOrDefault(row.Name) switch
         {
-            return RowResult.Rejected(row.RowNumber, ProductErrors.SkuAlreadyExists);
-        }
+            { Count: > 1 } => RowResult.Rejected(row.RowNumber, ProductImportRowErrors.AmbiguousProductName),
 
+            // A SKU is set when the product is created and never changes, so a row cannot name another one for it (the
+            // branch above already took the product that holds the row's SKU).
+            [var named] when row.Sku is not null && !string.Equals(named.Sku, row.Sku, StringComparison.Ordinal)
+                => RowResult.Rejected(row.RowNumber, ProductImportRowErrors.SkuDiffers),
+            [var named] => Update(named, row),
+
+            _ => Create(job, store, byName, bySku, row)
+        };
+    }
+
+    private static RowResult Update(Product product, ProductRow row)
+    {
+        // The aggregate raises nothing for a row that changes nothing, so the event count tells an update from a no-op.
+        var eventsBefore = product.Events.Count;
+        product.Update(null, row.Description, row.Quantity, row.Price);
+        return product.Events.Count > eventsBefore ? RowResult.Updated : RowResult.Unchanged;
+    }
+
+    private static RowResult Create(
+        ProductImportJob job, Store store, Dictionary<string, List<Product>> byName, Dictionary<string, Product> bySku, ProductRow row)
+    {
         var created = Product.Create(job.StoreId, job.ProductTemplateId, row.Name, row.Description, row.Quantity, row.Price, row.Sku);
-        store.AddProduct(created);
-        existing[row.Name] = created;
-        if (row.Sku is not null)
-        {
-            bySku[row.Sku] = created;
-        }
 
-        return RowResult.Created;
+        // A store that is not Active takes no new product: the row is rejected with the store's status error.
+        return store.AddProduct(created).Match(
+            () =>
+            {
+                byName[row.Name] = [created];
+                if (row.Sku is not null)
+                {
+                    bySku[row.Sku] = created;
+                }
+
+                return RowResult.Created;
+            },
+            error => RowResult.Rejected(row.RowNumber, error));
     }
 
     /// <summary>Saves the batch's products and the job's cursor in one transaction. A concurrent writer on the same

@@ -38,9 +38,8 @@ internal sealed partial class KeycloakAdminClient(
         var attributes = new Dictionary<string, List<string>>();
         if (user.PhoneNumber is { } phoneNumber)
         {
-            // Only ever set from a flow that verified the number by OTP first (phone self-registration).
             attributes[UserAttributes.PhoneNumber] = [phoneNumber];
-            attributes[UserAttributes.PhoneNumberVerified] = ["true"];
+            attributes[UserAttributes.PhoneNumberVerified] = [user.PhoneNumberVerified ? "true" : "false"];
         }
         if (user.BirthDate is { } birthDate)
         {

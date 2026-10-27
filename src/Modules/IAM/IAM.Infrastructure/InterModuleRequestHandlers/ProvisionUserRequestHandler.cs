@@ -1,5 +1,6 @@
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
+using Common.Infrastructure.Security;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
 using IAM.Application.Keycloak;
@@ -13,10 +14,12 @@ namespace IAM.Infrastructure.InterModuleRequestHandlers;
 /// <summary>
 ///     Creates a Keycloak user carrying only the platform baseline role, for another module's own approval-gated
 ///     registration flow. The caller assigns a business role later, once the registration is approved. The failure
-///     reason mirrors the identity provider's outcome so the caller can tell a duplicate from an outage.
+///     reason mirrors the identity provider's outcome so the caller can tell a duplicate from an outage. The password
+///     arrives encrypted and is decrypted only here, to be handed to Keycloak; it is never logged.
 /// </summary>
 public class ProvisionUserRequestHandler(
     IKeycloakAdminClient adminClient,
+    SecretProtector secretProtector,
     IOptions<IdentitySchemeOptions> identitySchemeOptions,
     ILogger<ProvisionUserRequestHandler> logger)
     : InterModuleRequestHandler<ProvisionUserRequest, ProvisionUserResponse>
@@ -36,7 +39,8 @@ public class ProvisionUserRequestHandler(
                     LastName: request.LastName,
                     PhoneNumber: request.PhoneNumber,
                     Email: request.Email,
-                    Password: request.Password),
+                    Password: secretProtector.Decrypt(request.EncryptedPassword),
+                    PhoneNumberVerified: false),
                 cancellationToken)
             .BindAsync(userId => RegistrationCompletion.AssignBasicRoleOrRollbackAsync(userId, adminClient, logger, cancellationToken));
 

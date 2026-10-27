@@ -201,22 +201,38 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
         return Result.Success;
     }
 
-    public void Update(string? name, string? description, string? address)
+    /// <summary>Only an Active store changes; every other status answers with the error of that status and changes nothing.</summary>
+    public Result Update(string? name, string? description, string? address)
     {
-        if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
+        return EnsureActive().Tap(() =>
         {
-            UpdateName(name);
-        }
+            if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
+            {
+                UpdateName(name);
+            }
 
-        if (!string.IsNullOrEmpty(description) && !string.Equals(Description, description, StringComparison.Ordinal))
-        {
-            UpdateDescription(description);
-        }
+            if (!string.IsNullOrEmpty(description) && !string.Equals(Description, description, StringComparison.Ordinal))
+            {
+                UpdateDescription(description);
+            }
 
-        if (!string.IsNullOrEmpty(address) && !string.Equals(Address, address, StringComparison.Ordinal))
+            if (!string.IsNullOrEmpty(address) && !string.Equals(Address, address, StringComparison.Ordinal))
+            {
+                UpdateAddress(address);
+            }
+        });
+    }
+
+    private Result EnsureActive()
+    {
+        return Status switch
         {
-            UpdateAddress(address);
-        }
+            StoreStatus.Active => Result.Success,
+            StoreStatus.PendingApproval => StoreErrors.StoreIsPendingApproval,
+            StoreStatus.Suspended => StoreErrors.StoreIsSuspended,
+            StoreStatus.Inactive => StoreErrors.StoreIsInactive,
+            _ => throw new InvalidOperationException($"Unknown {nameof(StoreStatus)}: {Status}")
+        };
     }
 
     private void UpdateName(string name)
@@ -242,24 +258,41 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
 
     // Event carries only a ProductSnapshot (CLAUDE.md §5), never the live entity: EF's Products
     // navigation (HasField("_products")) needs the real instance to track the FK.
-    public void AddProduct(Product product)
+    /// <summary>Only an Active store takes products; every other status answers with the error of that status and changes nothing.</summary>
+    public Result AddProduct(Product product)
     {
-        _products.Add(product);
-        var @event = new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot());
-        RaiseEvent(@event);
+        return EnsureActive().Tap(() =>
+        {
+            _products.Add(product);
+            var @event = new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot());
+            RaiseEvent(@event);
+        });
     }
 
-    public void RemoveProduct(Product product)
+    /// <summary>
+    ///     Only an Active store gives products up; every other status answers with the error of that status and changes nothing.
+    ///     The product's image rows are deleted with it, so the caller loads <see cref="Product.Images" /> with the product: their
+    ///     object keys leave in <see cref="V1ProductImagesRemovedWithProductDomainEvent" />, otherwise the files stay behind.
+    /// </summary>
+    public Result RemoveProduct(Product product)
     {
-        _products.Remove(product);
-        var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product.ToRemovedSnapshot());
-        RaiseEvent(@event);
-
-        // Cascade: a post-mutation check of the collection deciding whether a second, higher-level event
-        // fires alongside the primary one - removing this product left the store with none.
-        if (_products.Count == 0)
+        return EnsureActive().Tap(() =>
         {
-            RaiseEvent(new V1StoreEmptiedDomainEvent(Id));
-        }
+            _products.Remove(product);
+            var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product.ToRemovedSnapshot());
+            RaiseEvent(@event);
+
+            if (product.Images.Count > 0)
+            {
+                RaiseEvent(new V1ProductImagesRemovedWithProductDomainEvent(Id, product.Id, product.Images.Select(i => i.ObjectKey).ToList()));
+            }
+
+            // Cascade: a post-mutation check of the collection deciding whether a second, higher-level event
+            // fires alongside the primary one - removing this product left the store with none.
+            if (_products.Count == 0)
+            {
+                RaiseEvent(new V1StoreEmptiedDomainEvent(Id));
+            }
+        });
     }
 }

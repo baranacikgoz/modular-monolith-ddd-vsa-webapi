@@ -19,6 +19,11 @@ public sealed record KeycloakUserSession(
     DateTimeOffset StartedAt,
     DateTimeOffset LastAccessAt);
 
+/// <summary>
+///     <paramref name="PhoneNumberVerified" /> says whether the caller proved ownership of <paramref name="PhoneNumber" />
+///     (an OTP round trip) before asking for the user; it defaults to unverified, so a flow that did not verify the number
+///     cannot mark it verified by omission. It is ignored when there is no phone number.
+/// </summary>
 public sealed record CreateKeycloakUser(
     string Username,
     string FirstName,
@@ -26,7 +31,8 @@ public sealed record CreateKeycloakUser(
     string? PhoneNumber,
     DateOnly? BirthDate = null,
     string? Email = null,
-    string? Password = null);
+    string? Password = null,
+    bool PhoneNumberVerified = false);
 
 public sealed record KeycloakUserPage(IReadOnlyList<KeycloakUser> Users, int TotalCount);
 

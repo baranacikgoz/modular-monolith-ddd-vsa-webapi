@@ -9,6 +9,10 @@ namespace Products.Endpoints.Stores.v1.Apply;
 public sealed record Request
 {
     public required string Email { get; init; }
+
+    /// <summary>The single-use token <c>POST /otp/email/verify</c> returns once the applicant has entered the code mailed to <see cref="Email" />.</summary>
+    public required string EmailVerificationToken { get; init; }
+
     public required string PhoneNumber { get; init; }
     public required string Password { get; init; }
     public required string FirstName { get; init; }
@@ -30,6 +34,10 @@ public sealed class RequestValidator : CustomValidator<Request>
             .MaximumLength(Constants.ApplicantEmailMaxLength)
             .WithMessage(string.Format(CultureInfo.CurrentCulture, localizer.Stores_v1_Apply_Email_MaxLength,
                 Constants.ApplicantEmailMaxLength));
+
+        RuleFor(x => x.EmailVerificationToken)
+            .NotEmpty()
+            .WithMessage(localizer.Stores_v1_Apply_EmailVerificationToken_NotEmpty);
 
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()

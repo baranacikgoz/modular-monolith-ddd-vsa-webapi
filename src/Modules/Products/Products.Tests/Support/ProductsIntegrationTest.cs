@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence.Outbox;
 using Common.IntegrationEvents;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Common.InterModuleRequests.Notifications;
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,8 @@ public abstract class ProductsIntegrationTest(IntegrationTestWebAppFactory facto
     protected IInterModuleRequestClient<ProvisionUserRequest, ProvisionUserResponse> ProvisionUserClient => factory.ProvisionUserClient;
 
     protected IInterModuleRequestClient<DeprovisionUserRequest, DeprovisionUserResponse> DeprovisionUserClient => factory.DeprovisionUserClient;
+
+    protected IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse> VerifyEmailOtpClient => factory.VerifyEmailOtpClient;
 
     /// <summary>A client authenticated as the default test user, or as <paramref name="user" />.</summary>
     protected HttpClient AuthorizedClient(ApplicationUserId? user = null)

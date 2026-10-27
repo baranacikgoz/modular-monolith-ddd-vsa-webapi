@@ -11,11 +11,26 @@ public static class StoreErrors
 
     public static readonly Error NotSuspended = new() { Key = nameof(NotSuspended), StatusCode = HttpStatusCode.Conflict };
 
+    /// <summary>The store is still an application waiting for a decision, so it takes no edit yet.</summary>
+    public static readonly Error StoreIsPendingApproval = new() { Key = nameof(StoreIsPendingApproval), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The store is suspended: its edits resume when it is reinstated.</summary>
+    public static readonly Error StoreIsSuspended = new() { Key = nameof(StoreIsSuspended), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The store is closed for good.</summary>
+    public static readonly Error StoreIsInactive = new() { Key = nameof(StoreIsInactive), StatusCode = HttpStatusCode.Conflict };
+
     /// <summary>The identity provider already holds a user with this phone number. Shares its key and message with IAM's own error of the same name.</summary>
     public static readonly Error PhoneNumberAlreadyRegistered = new() { Key = nameof(PhoneNumberAlreadyRegistered), StatusCode = HttpStatusCode.Conflict };
 
     /// <summary>The identity provider already holds a user with this email. Shares its key and message with IAM's own error of the same name.</summary>
     public static readonly Error EmailAlreadyRegistered = new() { Key = nameof(EmailAlreadyRegistered), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The email verification token is unknown, expired, already used or issued for another address.</summary>
+    public static readonly Error InvalidEmailVerificationToken = new() { Key = nameof(InvalidEmailVerificationToken) };
+
+    /// <summary>Too many wrong tokens were sent for this address; the token is spent and a new email code is needed.</summary>
+    public static readonly Error TooManyEmailVerificationAttempts = new() { Key = nameof(TooManyEmailVerificationAttempts) };
 
     /// <summary>The identity provider refused the user (for example its password policy); <paramref name="message" /> is its reason, when it gave one.</summary>
     public static Error IdentityProviderRejectedUser(string? message)

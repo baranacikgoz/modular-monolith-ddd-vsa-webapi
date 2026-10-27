@@ -260,6 +260,11 @@ namespace Products.Infrastructure.Migrations
                     b.Property<int>("TotalRows")
                         .HasColumnType("integer");
 
+                    b.Property<string>("UiCulture")
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("character varying(35)");
+
                     b.Property<uint>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()

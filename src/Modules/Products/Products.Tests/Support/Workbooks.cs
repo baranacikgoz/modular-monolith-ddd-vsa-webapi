@@ -4,6 +4,9 @@ namespace Products.Tests.Support;
 
 internal static class Workbooks
 {
+    /// <summary>The columns the import reads, by position (<c>RowParser</c>): what an export's header has to carry for its file to be a valid import input.</summary>
+    public static IReadOnlyList<string> ImportColumns { get; } = ["Name", "Description", "Quantity", "Price", "Sku"];
+
     /// <summary>A one-sheet .xlsx with the import header (name, description, quantity, price) and the given data rows; a row may add a fifth cell, the SKU.
     /// Strings become text cells, numbers become numeric cells, the way a spreadsheet user would type them.</summary>
     public static byte[] Build(params object[][] rows)

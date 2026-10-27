@@ -900,6 +900,15 @@
   <data name="Stores_v1_Apply_StoreAddress_MaxLength" xml:space="preserve">
     <value>Store address can be at most ({0}) characters long.</value>
   </data>
+  <data name="Stores_v1_Apply_EmailVerificationToken_NotEmpty" xml:space="preserve">
+    <value>Email verification token must not be empty.</value>
+  </data>
+  <data name="InvalidEmailVerificationToken" xml:space="preserve">
+    <value>The email verification token is invalid or has expired.</value>
+  </data>
+  <data name="TooManyEmailVerificationAttempts" xml:space="preserve">
+    <value>Too many failed email verification attempts.</value>
+  </data>
   <data name="Stores_v1_Approve_Id_NotEmpty" xml:space="preserve">
     <value>Store ID cannot be empty.</value>
   </data>
@@ -917,6 +926,15 @@
   </data>
   <data name="NotSuspended" xml:space="preserve">
     <value>The store is not suspended.</value>
+  </data>
+  <data name="StoreIsPendingApproval" xml:space="preserve">
+    <value>The store application has not been approved yet, so the store cannot be changed.</value>
+  </data>
+  <data name="StoreIsSuspended" xml:space="preserve">
+    <value>The store is suspended, so it cannot be changed.</value>
+  </data>
+  <data name="StoreIsInactive" xml:space="preserve">
+    <value>The store is closed, so it cannot be changed.</value>
   </data>
   <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
     <value>SKU cannot be empty.</value>

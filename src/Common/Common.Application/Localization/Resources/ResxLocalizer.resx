@@ -959,6 +959,15 @@
   <data name="Stores_v1_Apply_StoreAddress_MaxLength" xml:space="preserve">
     <value>Mağaza adresi en fazla ({0}) karakter olabilir.</value>
   </data>
+  <data name="Stores_v1_Apply_EmailVerificationToken_NotEmpty" xml:space="preserve">
+    <value>E-posta doğrulama jetonu boş olamaz.</value>
+  </data>
+  <data name="InvalidEmailVerificationToken" xml:space="preserve">
+    <value>E-posta doğrulama jetonu geçersiz veya süresi dolmuş.</value>
+  </data>
+  <data name="TooManyEmailVerificationAttempts" xml:space="preserve">
+    <value>E-posta doğrulaması için çok fazla hatalı deneme yapıldı.</value>
+  </data>
   <data name="Stores_v1_Approve_Id_NotEmpty" xml:space="preserve">
     <value>Mağaza Id boş olamaz.</value>
   </data>
@@ -976,6 +985,15 @@
   </data>
   <data name="NotSuspended" xml:space="preserve">
     <value>Mağaza askıda değil.</value>
+  </data>
+  <data name="StoreIsPendingApproval" xml:space="preserve">
+    <value>Mağaza başvurusu henüz onaylanmadığı için değişiklik yapılamaz.</value>
+  </data>
+  <data name="StoreIsSuspended" xml:space="preserve">
+    <value>Mağaza askıda olduğu için değişiklik yapılamaz.</value>
+  </data>
+  <data name="StoreIsInactive" xml:space="preserve">
+    <value>Mağaza kapatıldığı için değişiklik yapılamaz.</value>
   </data>
   <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
     <value>SKU boş olamaz.</value>
