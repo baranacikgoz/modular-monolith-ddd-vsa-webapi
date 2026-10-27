@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Common.Domain.ResultMonad;
 using Inventory.Application.Gateway;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 
 namespace Inventory.Infrastructure.Gateway;
@@ -11,19 +12,19 @@ namespace Inventory.Infrastructure.Gateway;
 /// </summary>
 internal sealed class DummyWarehouseState
 {
-    private readonly ConcurrentDictionary<(WarehouseConnectionId Connection, string Product), string> _releases = new();
+    private readonly ConcurrentDictionary<(WarehouseConnectionId Connection, StockReservationId Reservation), string> _releases = new();
     private readonly ConcurrentDictionary<(WarehouseConnectionId Connection, string Product), int> _stock = new();
     private int _pushes;
 
-    /// <summary>The reference of the release of <paramref name="productReference" />; the same product always gets the same reference.</summary>
-    public string RecordRelease(WarehouseConnectionId connection, string productReference)
+    /// <summary>The reference of the release made for <paramref name="reservation" />; the same reservation always gets the same reference.</summary>
+    public string RecordRelease(WarehouseConnectionId connection, StockReservationId reservation)
     {
-        return _releases.GetOrAdd((connection, productReference), key => $"dummy-release-{key.Product}");
+        return _releases.GetOrAdd((connection, reservation), key => $"dummy-release-{key.Reservation}");
     }
 
-    public bool TryGetRelease(WarehouseConnectionId connection, string productReference, out string reference)
+    public bool TryGetRelease(WarehouseConnectionId connection, StockReservationId reservation, out string reference)
     {
-        var found = _releases.TryGetValue((connection, productReference), out var stored);
+        var found = _releases.TryGetValue((connection, reservation), out var stored);
         reference = stored ?? string.Empty;
         return found;
     }
@@ -49,24 +50,26 @@ internal sealed class DummyWarehouseState
 /// <summary>
 ///     The in-memory provider: no network, no base address, no credential. It keeps the same outcome rules as the HTTP
 ///     providers so the code above the gateway behaves the same against it: a release is answered with a reference and is
-///     idempotent per product, the reconcile call finds a release that was made and reports the missing reference otherwise
+///     idempotent per reservation (two reservations of one product are two releases), the reconcile call finds the release of
+///     a reservation that was made and reports the missing reference otherwise
 ///     (<see cref="WarehouseGatewayErrors.ReferenceNotFound" />), and a stock push sets the absolute quantities and answers
 ///     the reference of the batch. It never times out, so it never throws <see cref="WarehouseOutcomeUnknownException" />.
 /// </summary>
 internal sealed class DummyWarehouseGateway(WarehouseConnectionId connectionId, DummyWarehouseState state) : IWarehouseGateway
 {
-    public Task<Result<string>> RequestReleaseAsync(string productReference, int quantity, CancellationToken cancellationToken)
+    public Task<Result<string>> RequestReleaseAsync(
+        StockReservationId reservationId, string productReference, int quantity, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return Task.FromResult(Result<string>.Success(state.RecordRelease(connectionId, productReference)));
+        return Task.FromResult(Result<string>.Success(state.RecordRelease(connectionId, reservationId)));
     }
 
-    public Task<Result<string>> ReconcileReleaseAsync(string productReference, CancellationToken cancellationToken)
+    public Task<Result<string>> ReconcileReleaseAsync(StockReservationId reservationId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        return Task.FromResult(state.TryGetRelease(connectionId, productReference, out var reference)
+        return Task.FromResult(state.TryGetRelease(connectionId, reservationId, out var reference)
             ? Result<string>.Success(reference)
             : WarehouseGatewayErrors.ReferenceNotFound);
     }

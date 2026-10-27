@@ -2,12 +2,14 @@ using System.Net;
 using Common.Application.Options;
 using Common.Infrastructure.Security;
 using Common.Tests;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.WarehouseConnections.Errors;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
 using Microsoft.Extensions.Options;
 using Xunit;
+using WarehouseConstants = Inventory.Domain.WarehouseConnections.Constants;
 
 namespace Inventory.Tests.Gateway;
 
@@ -44,7 +46,7 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
         Assert.False(created.IsFailure);
         Assert.IsType<JsonApiWarehouseGateway>(created.Value);
-        var released = await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None);
+        var released = await created.Value.RequestReleaseAsync(StockReservationId.New(), "product-1", 2, CancellationToken.None);
         Assert.Equal("ref-1", released.Value);
         var request = Assert.Single(Handler.Requests);
         Assert.Equal(new Uri("https://warehouse.example-partner.local/api/releases"), request.Uri);
@@ -61,7 +63,7 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
         Assert.False(created.IsFailure);
         Assert.IsType<FormApiWarehouseGateway>(created.Value);
-        var released = await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None);
+        var released = await created.Value.RequestReleaseAsync(StockReservationId.New(), "product-1", 2, CancellationToken.None);
         Assert.Equal("ref-2", released.Value);
         var request = Assert.Single(Handler.Requests);
         Assert.Equal(new Uri("https://warehouse.example-other.local/gateway/v2/holds/release"), request.Uri);
@@ -73,13 +75,13 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
     [Fact]
     public async Task Create_DummyConnection_ReturnsTheInMemoryGatewayAndNeverTouchesTheNetwork()
     {
-        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(WarehouseConstants.DummyBaseUrl));
 
         var created = NewFactory().Create(connection);
 
         Assert.False(created.IsFailure);
         Assert.IsType<DummyWarehouseGateway>(created.Value);
-        var released = await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None);
+        var released = await created.Value.RequestReleaseAsync(StockReservationId.New(), "product-1", 2, CancellationToken.None);
         Assert.False(released.IsFailure);
         Assert.Empty(Handler.Requests);
     }
@@ -89,7 +91,7 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
     [Fact]
     public void Create_DummyConnectionInProduction_ReturnsADefiniteErrorAndBuildsNoGateway()
     {
-        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(WarehouseConstants.DummyBaseUrl));
 
         var created = NewFactory("Production").Create(connection);
 
@@ -108,13 +110,13 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
         Assert.False(created.IsFailure);
         Assert.IsType<JsonApiWarehouseGateway>(created.Value);
-        Assert.False((await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None)).IsFailure);
+        Assert.False((await created.Value.RequestReleaseAsync(StockReservationId.New(), "product-1", 2, CancellationToken.None)).IsFailure);
     }
 
     [Fact]
     public void Create_DeactivatedDummyConnection_ReturnsAnErrorAndBuildsNoGateway()
     {
-        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(WarehouseConstants.DummyBaseUrl));
         connection.Deactivate();
 
         var created = NewFactory().Create(connection);

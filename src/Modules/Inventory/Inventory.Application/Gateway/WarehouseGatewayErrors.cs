@@ -13,8 +13,9 @@ public static class WarehouseGatewayErrors
     }
 
     /// <summary>
-    ///     The warehouse answered 404 to a call that names its subject in the body (a release, a stock push): the route itself
-    ///     does not exist there, which points at the connection's base address, not at a missing reference.
+    ///     The warehouse answered 404 without saying that it knows no such release: the route itself does not exist there, which
+    ///     points at the connection's base address, not at a missing reference. Every 404 of a release or a stock push is this,
+    ///     and so is a bare 404 of a reconcile, which therefore changes nothing and leaves the attempt marker in place.
     /// </summary>
     public static readonly Error EndpointNotFound = new()
     {
@@ -32,7 +33,10 @@ public static class WarehouseGatewayErrors
         StatusCode = HttpStatusCode.BadGateway
     };
 
-    /// <summary>The warehouse answered 404 to a call that asks about one reference (a reconcile): it knows no such release.</summary>
+    /// <summary>
+    ///     The warehouse answered a reconcile with a 404 whose body says, in the provider's documented words, that it knows no
+    ///     release for the reservation. Only this lets the caller drop the attempt marker.
+    /// </summary>
     public static readonly Error ReferenceNotFound = Error.NotFound("WarehouseReference");
 
     /// <summary>The warehouse answered successfully but not in the shape its provider documents.</summary>

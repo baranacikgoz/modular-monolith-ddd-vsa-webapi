@@ -3,6 +3,7 @@ using Common.Infrastructure.Resiliency;
 using Common.Infrastructure.Security;
 using Common.Tests;
 using Inventory.Application.Gateway;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Xunit;
 using GatewaySetup = Inventory.Infrastructure.Gateway.Setup;
+using WarehouseConstants = Inventory.Domain.WarehouseConnections.Constants;
 
 namespace Inventory.Tests.Gateway;
 
@@ -53,7 +55,7 @@ public sealed class WarehouseGatewaySetupTests : IDisposable
             WarehouseProvider.JsonApi, _protector.Encrypt("credential"), new Uri("https://localhost:9/api/"));
         var gateway = _provider.GetRequiredService<IWarehouseGatewayFactory>().Create(connection);
 
-        var released = await gateway.Value!.RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var released = await gateway.Value!.RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.True(released.IsFailure);
         Assert.Equal(WarehouseGatewayErrors.AddressNotAllowed.Key, released.Error!.Key);
@@ -62,11 +64,13 @@ public sealed class WarehouseGatewaySetupTests : IDisposable
     [Fact]
     public async Task RegisteredFactory_DummyConnection_KeepsTheStateAcrossGateways()
     {
-        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(WarehouseConstants.DummyBaseUrl));
         var factory = _provider.GetRequiredService<IWarehouseGatewayFactory>();
 
-        await factory.Create(connection).Value!.RequestReleaseAsync("product-1", 1, CancellationToken.None);
-        var reconciled = await factory.Create(connection).Value!.ReconcileReleaseAsync("product-1", CancellationToken.None);
+        var reservationId = StockReservationId.New();
+
+        await factory.Create(connection).Value!.RequestReleaseAsync(reservationId, "product-1", 1, CancellationToken.None);
+        var reconciled = await factory.Create(connection).Value!.ReconcileReleaseAsync(reservationId, CancellationToken.None);
 
         Assert.False(reconciled.IsFailure);
     }

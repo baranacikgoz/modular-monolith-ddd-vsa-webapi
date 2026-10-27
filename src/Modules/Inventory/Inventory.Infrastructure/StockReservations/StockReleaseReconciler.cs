@@ -31,8 +31,9 @@ public enum ReleaseReconcileOutcome
 ///     endpoint would have (<see cref="StockReservation.ConfirmReleaseAttempt" />); a warehouse that has no such release lets
 ///     the marker go (<see cref="StockReservation.AbandonReleaseAttempt" />), so a genuine retry can proceed. Any other answer,
 ///     a timeout included, is returned as a failed result and leaves the marker in place for the next reconcile: an unknown
-///     outcome is never guessed. The gateway is asked with the product reference the release call used, because that is the
-///     only reference the warehouse was given.
+///     outcome is never guessed, and neither is a bare 404, which says the route is not there (a wrong base address), not that
+///     the warehouse knows no such release. The gateway is asked with the reservation id the release call carried as its
+///     reference, so a second reservation of the same product is never mistaken for this one.
 ///     <para>
 ///         Shared by the admin endpoint and by the queue consumer a recurring sweep feeds. Every expected outcome is a
 ///         <see cref="Result" />; only a fault of this system (the database) is an exception.
@@ -67,17 +68,20 @@ public sealed class StockReleaseReconciler(
         }
 
         return ResolveGatewayAsync(reservation.ProductId, cancellationToken)
-            .BindAsync(gateway => AskTheWarehouseAsync(gateway, reservation.ProductId, cancellationToken))
+            .BindAsync(gateway => AskTheWarehouseAsync(gateway, reservation.Id, cancellationToken))
             .BindAsync(released => ApplyAsync(reservation, released, cancellationToken));
     }
 
-    /// <summary>True when the warehouse released the hold, false when it has no such release; every other answer is a failure.</summary>
+    /// <summary>
+    ///     True when the warehouse released the hold, false when it says it has no such release; every other answer is a
+    ///     failure, a plain 404 included.
+    /// </summary>
     private static async Task<Result<bool>> AskTheWarehouseAsync(
-        IWarehouseGateway gateway, DefaultIdType productId, CancellationToken cancellationToken)
+        IWarehouseGateway gateway, StockReservationId reservationId, CancellationToken cancellationToken)
     {
         try
         {
-            var answer = await gateway.ReconcileReleaseAsync(productId.ToString(), cancellationToken);
+            var answer = await gateway.ReconcileReleaseAsync(reservationId, cancellationToken);
             if (!answer.IsFailure)
             {
                 return true;

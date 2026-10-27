@@ -1,5 +1,6 @@
 using System.Net;
 using Inventory.Application.Gateway;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
@@ -14,6 +15,8 @@ namespace Inventory.Tests.Gateway;
 public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
 {
     private const string Credential = "form-api-credential";
+
+    private static readonly StockReservationId Reservation = new(Guid.Parse("0197c2d4-1f3a-7b5e-9c60-3a8e5d7f1b24"));
 
     private FormApiWarehouseGateway NewGateway()
     {
@@ -30,7 +33,7 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
     {
         Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { result = new { reference = "form-ref-9" } });
 
-        var result = await NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var result = await NewGateway().RequestReleaseAsync(Reservation, "product-1", 5, CancellationToken.None);
 
         Assert.False(result.IsFailure);
         Assert.Equal("form-ref-9", result.Value);
@@ -40,21 +43,21 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
         Assert.Equal(Credential, request.ApiKey);
         Assert.Null(request.Authorization);
         Assert.Equal("application/x-www-form-urlencoded", request.ContentType);
-        Assert.Equal("sku=product-1&units=5", request.Body);
+        Assert.Equal($"sku=product-1&units=5&ref={Reservation.Value}", request.Body);
     }
 
     [Fact]
-    public async Task ReconcileReleaseAsync_SuccessResponse_ReadsTheHoldRouteWithTheEscapedReferenceInTheQuery()
+    public async Task ReconcileReleaseAsync_SuccessResponse_ReadsTheHoldRouteWithTheReservationInTheQuery()
     {
         Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { result = new { reference = "form-ref-3" } });
 
-        var result = await NewGateway().ReconcileReleaseAsync("rel:1/2", CancellationToken.None);
+        var result = await NewGateway().ReconcileReleaseAsync(Reservation, CancellationToken.None);
 
         Assert.Equal("form-ref-3", result.Value);
         var request = Assert.Single(Handler.Requests);
         Assert.Equal(HttpMethod.Get, request.Method);
         Assert.Equal("/gateway/v2/holds/release", request.Uri!.AbsolutePath);
-        Assert.Equal("?sku=rel%3A1%2F2", request.Uri.Query);
+        Assert.Equal($"?ref={Reservation.Value}", request.Uri.Query);
         Assert.Equal(Credential, request.ApiKey);
     }
 
@@ -63,22 +66,53 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
     {
         Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
 
-        var result = await NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var result = await NewGateway().RequestReleaseAsync(StockReservationId.New(), "product-1", 5, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayEndpointNotFound", result.Error!.Key);
         Assert.Equal(HttpStatusCode.BadGateway, result.Error.StatusCode);
     }
 
+    // The warehouse says it knows no such release in the body of the 404. Nothing else is taken for that.
     [Fact]
-    public async Task ReconcileReleaseAsync_NotFoundResponse_ReturnsTheReferenceNotFound()
+    public async Task ReconcileReleaseAsync_NotFoundWithTheDocumentedBody_ReturnsTheReferenceNotFound()
     {
-        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+        Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.NotFound, new { result = new { error = "hold_not_found" } });
 
-        var result = await NewGateway().ReconcileReleaseAsync("rel-1", CancellationToken.None);
+        var result = await NewGateway().ReconcileReleaseAsync(Reservation, CancellationToken.None);
 
         Assert.Equal("NotFound", result.Error!.Key);
         Assert.Equal("WarehouseReference", result.Error.ParameterName);
         Assert.Equal(HttpStatusCode.NotFound, result.Error.StatusCode);
+    }
+
+    // A wrong base address answers 404 from some other server: that must never read as "the release was not made".
+    [Fact]
+    public async Task ReconcileReleaseAsync_BareNotFound_IsTheRouteMissingNotAMissingRelease()
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        var result = await NewGateway().ReconcileReleaseAsync(Reservation, CancellationToken.None);
+
+        Assert.Equal("WarehouseGatewayEndpointNotFound", result.Error!.Key);
+        Assert.Equal(HttpStatusCode.BadGateway, result.Error.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("{\"result\":{\"error\":\"some_other_word\"}}")]
+    [InlineData("{\"result\":{}}")]
+    [InlineData("{\"error\":\"hold_not_found\"}")]
+    [InlineData("<html>Not Found</html>")]
+    [InlineData("null")]
+    public async Task ReconcileReleaseAsync_NotFoundWithAnyOtherBody_IsTheRouteMissing(string body)
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound)
+        {
+            Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json")
+        };
+
+        var result = await NewGateway().ReconcileReleaseAsync(Reservation, CancellationToken.None);
+
+        Assert.Equal("WarehouseGatewayEndpointNotFound", result.Error!.Key);
     }
 
     [Fact]
@@ -97,7 +131,7 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
     {
         Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.BadGateway);
 
-        var result = await NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var result = await NewGateway().RequestReleaseAsync(StockReservationId.New(), "product-1", 5, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayCallFailed", result.Error!.Key);
         Assert.Equal(HttpStatusCode.BadGateway, result.Error.StatusCode);
@@ -110,7 +144,7 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
         // The other provider's envelope is not this provider's: the reference is missing, so the answer is unusable.
         Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-ref-123" });
 
-        var result = await NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var result = await NewGateway().RequestReleaseAsync(StockReservationId.New(), "product-1", 5, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayMalformedResponse", result.Error!.Key);
     }
@@ -121,7 +155,7 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
         Handler.Responder = _ => throw new HttpRequestException("Connection reset by peer.");
 
         await Assert.ThrowsAsync<WarehouseOutcomeUnknownException>(
-            () => NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None));
+            () => NewGateway().RequestReleaseAsync(StockReservationId.New(), "product-1", 5, CancellationToken.None));
 
         Assert.Single(Handler.Requests);
     }

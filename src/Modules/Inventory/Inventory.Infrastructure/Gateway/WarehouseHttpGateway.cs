@@ -3,6 +3,7 @@ using System.Text.Json;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Resiliency;
 using Inventory.Application.Gateway;
+using Inventory.Domain.StockReservations;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.RateLimiting;
@@ -12,8 +13,8 @@ namespace Inventory.Infrastructure.Gateway;
 
 /// <summary>
 ///     What every HTTP warehouse provider shares: sending through the connection's pipeline and turning the answer into a
-///     <see cref="Result" />. A provider only states its wire shape (the two request builders and where its response
-///     carries the reference).
+///     <see cref="Result" />. A provider only states its wire shape (the request builders, where its response carries the
+///     reference, and the words in which it says it knows no such release).
 ///     <para>
 ///         Every call goes through <paramref name="pipeline" />, the pipeline of this connection and provider
 ///         (<see cref="WarehouseResiliencePipelines" />). It has no retry, so the release, which is not idempotent, is never sent
@@ -27,26 +28,39 @@ namespace Inventory.Infrastructure.Gateway;
 internal abstract class WarehouseHttpGateway(
     HttpClient httpClient, Uri baseUrl, ResiliencePipeline<HttpResponseMessage> pipeline) : IWarehouseGateway
 {
-    // A 404 means "the route is not there" for the two calls that carry their subject in the body, and "no such release"
-    // for the reconcile, whose route carries the reference.
-    public Task<Result<string>> RequestReleaseAsync(string productReference, int quantity, CancellationToken cancellationToken)
+    // A bare 404 always means "the route is not there". Only a reconcile can be told that the warehouse knows no such release,
+    // and only when the body of the 404 says so in the provider's documented words.
+    public Task<Result<string>> RequestReleaseAsync(
+        StockReservationId reservationId, string productReference, int quantity, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildReleaseRequest(productReference, quantity), WarehouseGatewayErrors.EndpointNotFound, cancellationToken);
+        return SendAsync(
+            BuildReleaseRequest(reservationId.Value.ToString(), productReference, quantity), canReportMissingRelease: false, cancellationToken);
     }
 
-    public Task<Result<string>> ReconcileReleaseAsync(string productReference, CancellationToken cancellationToken)
+    public Task<Result<string>> ReconcileReleaseAsync(StockReservationId reservationId, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildReconcileRequest(productReference), WarehouseGatewayErrors.ReferenceNotFound, cancellationToken);
+        return SendAsync(BuildReconcileRequest(reservationId.Value.ToString()), canReportMissingRelease: true, cancellationToken);
     }
 
     public Task<Result<string>> PushStockAsync(IReadOnlyCollection<WarehouseStockQuantity> quantities, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildPushStockRequest(quantities), WarehouseGatewayErrors.EndpointNotFound, cancellationToken);
+        return SendAsync(BuildPushStockRequest(quantities), canReportMissingRelease: false, cancellationToken);
     }
 
-    protected abstract HttpRequestMessage BuildReleaseRequest(string productReference, int quantity);
+    /// <summary>
+    ///     The release call. <paramref name="reservationReference" /> is the reservation id, the provider-facing reference and
+    ///     idempotency key of the release.
+    /// </summary>
+    protected abstract HttpRequestMessage BuildReleaseRequest(string reservationReference, string productReference, int quantity);
 
-    protected abstract HttpRequestMessage BuildReconcileRequest(string productReference);
+    /// <summary>The read that asks what became of the release made under <paramref name="reservationReference" />.</summary>
+    protected abstract HttpRequestMessage BuildReconcileRequest(string reservationReference);
+
+    /// <summary>
+    ///     True when the body of a 404 to a reconcile says, in the provider's documented words, that the warehouse knows no
+    ///     release under the reference. An empty body, another shape or another word is false: that 404 is the route missing.
+    /// </summary>
+    protected abstract Task<bool> SaysNoSuchReleaseAsync(HttpContent content, CancellationToken cancellationToken);
 
     protected abstract HttpRequestMessage BuildPushStockRequest(IReadOnlyCollection<WarehouseStockQuantity> quantities);
 
@@ -62,7 +76,7 @@ internal abstract class WarehouseHttpGateway(
         return new Uri(root, relativePath);
     }
 
-    private async Task<Result<string>> SendAsync(HttpRequestMessage request, Error notFound, CancellationToken cancellationToken)
+    private async Task<Result<string>> SendAsync(HttpRequestMessage request, bool canReportMissingRelease, CancellationToken cancellationToken)
     {
         using (request)
         {
@@ -91,16 +105,19 @@ internal abstract class WarehouseHttpGateway(
 
             using (response)
             {
-                return await MapResponseAsync(response, notFound, cancellationToken);
+                return await MapResponseAsync(response, canReportMissingRelease, cancellationToken);
             }
         }
     }
 
-    private async Task<Result<string>> MapResponseAsync(HttpResponseMessage response, Error notFound, CancellationToken cancellationToken)
+    private async Task<Result<string>> MapResponseAsync(
+        HttpResponseMessage response, bool canReportMissingRelease, CancellationToken cancellationToken)
     {
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return notFound;
+            return canReportMissingRelease && await SaysNoSuchReleaseSafelyAsync(response.Content, cancellationToken)
+                ? WarehouseGatewayErrors.ReferenceNotFound
+                : WarehouseGatewayErrors.EndpointNotFound;
         }
 
         if (response.StatusCode == HttpStatusCode.TooManyRequests)
@@ -126,6 +143,19 @@ internal abstract class WarehouseHttpGateway(
         return string.IsNullOrEmpty(reference)
             ? WarehouseGatewayErrors.MalformedResponse
             : Result<string>.Success(reference);
+    }
+
+    /// <summary>A body that is not the documented JSON is not the provider saying anything: it is a plain 404.</summary>
+    private async Task<bool> SaysNoSuchReleaseSafelyAsync(HttpContent content, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await SaysNoSuchReleaseAsync(content, cancellationToken);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 
     /// <summary>A caller that cancelled is not an unknown outcome; the client's own overall timeout and the attempt timeout are.</summary>

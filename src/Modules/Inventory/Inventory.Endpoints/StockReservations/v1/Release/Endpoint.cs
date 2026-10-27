@@ -83,7 +83,7 @@ internal static class Endpoint
         try
         {
             gatewayResult = await gatewayResolution.Value!.RequestReleaseAsync(
-                reservation.ProductId.ToString(), reservation.Quantity, cancellationToken);
+                reservation.Id, reservation.ProductId.ToString(), reservation.Quantity, cancellationToken);
         }
         catch (WarehouseOutcomeUnknownException)
         {

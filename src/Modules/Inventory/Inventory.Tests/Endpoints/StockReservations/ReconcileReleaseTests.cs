@@ -1,10 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Web;
 using Common.IntegrationEvents;
 using Common.Tests;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.StockReservations.Errors;
+using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Tests.Support;
 using MassTransit;
@@ -71,14 +73,14 @@ public class ReconcileReleaseTests(IntegrationTestWebAppFactory factory) : BaseI
         Assert.Equal(ReservationStatus.Released, reloaded.Status);
         var asked = Assert.Single(factory.Warehouse.Requests);
         Assert.Equal(HttpMethod.Get, asked.Method);
-        Assert.Equal($"/api/releases/{reservation.ProductId}/status", asked.Uri!.AbsolutePath);
+        Assert.Equal($"/api/releases/{reservation.Id}/status", asked.Uri!.AbsolutePath);
     }
 
     [Fact]
     public async Task Reconcile_WarehouseHasNoSuchRelease_AbandonsTheMarkerSoTheReleaseCanBeTriedAgain()
     {
         var reservation = await SeedUnansweredReleaseAsync();
-        factory.Warehouse.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+        factory.Warehouse.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.NotFound, new { error = "release_not_found" });
 
         var response = await ReconcileAsync(reservation);
 
@@ -93,6 +95,89 @@ public class ReconcileReleaseTests(IntegrationTestWebAppFactory factory) : BaseI
         factory.Warehouse.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-ref-2" });
         var again = await StockLevelTestData.AuthedClient(Factory).PostAsync(ReleaseRoute(reservation.Id), null);
         Assert.Equal(HttpStatusCode.NoContent, again.StatusCode);
+    }
+
+    // A wrong base address answers 404 from some other server. That is not the warehouse saying the release was never made,
+    // so the marker stays and a second release is not let through.
+    [Fact]
+    public async Task Reconcile_BareNotFound_ReturnsBadGatewayAndKeepsTheMarker()
+    {
+        var reservation = await SeedUnansweredReleaseAsync();
+        factory.Warehouse.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        var response = await ReconcileAsync(reservation);
+
+        Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
+        Assert.Contains("WarehouseGatewayEndpointNotFound", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, reservation.Id);
+        Assert.NotNull(reloaded.LastReleaseAttemptReference);
+        Assert.Equal(ReservationStatus.Active, reloaded.Status);
+        var again = await StockLevelTestData.AuthedClient(Factory).PostAsync(ReleaseRoute(reservation.Id), null);
+        Assert.Equal(HttpStatusCode.BadRequest, again.StatusCode);
+    }
+
+    private static string ReservationAskedAbout(Uri uri, WarehouseProvider provider)
+    {
+        return provider == WarehouseProvider.JsonApi
+            ? uri.Segments[^2].TrimEnd('/')
+            : HttpUtility.ParseQueryString(uri.Query)["ref"]!;
+    }
+
+    private static HttpResponseMessage WarehouseThatReleasedOnly(
+        HttpRequestMessage request, WarehouseProvider provider, StockReservationId released)
+    {
+        var knowsIt = ReservationAskedAbout(request.RequestUri!, provider) == released.Value.ToString();
+        if (provider == WarehouseProvider.JsonApi)
+        {
+            return knowsIt
+                ? FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-ref-1" })
+                : FakeWarehouseHandler.Json(HttpStatusCode.NotFound, new { error = "release_not_found" });
+        }
+
+        return knowsIt
+            ? FakeWarehouseHandler.Json(HttpStatusCode.OK, new { result = new { reference = "wh-ref-1" } })
+            : FakeWarehouseHandler.Json(HttpStatusCode.NotFound, new { result = new { error = "hold_not_found" } });
+    }
+
+    // The warehouse is asked about the reservation, not about the product: when it released one of two reservations of the
+    // same product, the other one's reconcile must not report that release as its own.
+    [Theory]
+    [InlineData(WarehouseProvider.JsonApi)]
+    [InlineData(WarehouseProvider.FormApi)]
+    public async Task Reconcile_TwoReservationsOfOneProduct_AreReconciledIndependently(WarehouseProvider provider)
+    {
+        var storeId = DefaultIdType.CreateVersion7();
+        await WarehouseConnectionTestData.SeedAsync(Factory.Services, storeId, provider);
+        var productId = await WarehouseConnectionTestData.SeedProductOfStoreAsync(Factory.Services, storeId);
+        var released = await WarehouseConnectionTestData.SeedReservationAsync(Factory.Services, productId);
+        var notReleased = await WarehouseConnectionTestData.SeedReservationAsync(Factory.Services, productId);
+        factory.Warehouse.Responder = _ => throw new HttpRequestException("Connection reset by peer.");
+        foreach (var reservation in new[] { released, notReleased })
+        {
+            var unanswered = await StockLevelTestData.AuthedClient(Factory).PostAsync(ReleaseRoute(reservation.Id), null);
+            Assert.Equal(HttpStatusCode.GatewayTimeout, unanswered.StatusCode);
+        }
+
+        factory.Warehouse.Reset();
+        factory.Warehouse.Responder = request => WarehouseThatReleasedOnly(request, provider, released.Id);
+
+        var releasedAnswer = await ReconcileAsync(released);
+        var notReleasedAnswer = await ReconcileAsync(notReleased);
+
+        Assert.Equal(HttpStatusCode.OK, releasedAnswer.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, notReleasedAnswer.StatusCode);
+        Assert.Equal(
+            ReleaseReconcileOutcome.Released, (await releasedAnswer.Content.ReadFromJsonAsync<ReconcileResponse>(JsonSerializerOptions))!.Outcome);
+        Assert.Equal(
+            ReleaseReconcileOutcome.NotReleased, (await notReleasedAnswer.Content.ReadFromJsonAsync<ReconcileResponse>(JsonSerializerOptions))!.Outcome);
+        var reloadedReleased = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, released.Id);
+        var reloadedNotReleased = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, notReleased.Id);
+        Assert.Equal(ReservationStatus.Released, reloadedReleased.Status);
+        Assert.Equal(ReservationStatus.Active, reloadedNotReleased.Status);
+        Assert.Null(reloadedNotReleased.LastReleaseAttemptReference);
+        Assert.Equal(
+            [released.Id.Value.ToString(), notReleased.Id.Value.ToString()],
+            factory.Warehouse.Requests.Select(r => ReservationAskedAbout(r.Uri!, provider)).ToArray());
     }
 
     [Fact]

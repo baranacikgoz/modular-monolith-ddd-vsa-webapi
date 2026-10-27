@@ -1,4 +1,5 @@
 using System.Net;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Xunit;
@@ -17,35 +18,39 @@ public class DummyWarehouseGatewayTests
     }
 
     [Fact]
-    public async Task RequestReleaseAsync_AnyProduct_AnswersADeterministicReference()
+    public async Task RequestReleaseAsync_AnyReservation_AnswersADeterministicReferencePerReservation()
     {
-        var first = await Gateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
-        var again = await Gateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
-        var other = await Gateway().RequestReleaseAsync("product-2", 5, CancellationToken.None);
+        var reservation = StockReservationId.New();
+        var otherReservation = StockReservationId.New();
+
+        var first = await Gateway().RequestReleaseAsync(reservation, "product-1", 5, CancellationToken.None);
+        var again = await Gateway().RequestReleaseAsync(reservation, "product-1", 5, CancellationToken.None);
+        var other = await Gateway().RequestReleaseAsync(otherReservation, "product-1", 5, CancellationToken.None);
 
         Assert.False(first.IsFailure);
-        Assert.Equal("dummy-release-product-1", first.Value);
+        Assert.Equal($"dummy-release-{reservation}", first.Value);
         Assert.Equal(first.Value, again.Value);
-        Assert.Equal("dummy-release-product-2", other.Value);
+        Assert.Equal($"dummy-release-{otherReservation}", other.Value);
     }
 
-    // A reconcile asks about a release by its product: it finds the one that was made, and reports a missing reference otherwise,
-    // the same answers the HTTP providers give for a 200 and a 404 on that route.
+    // A reconcile asks about a release by its reservation: it finds the one that was made, and reports the missing reference
+    // otherwise, the same answers the HTTP providers give for a 200 and for a 404 that says so.
     [Fact]
     public async Task ReconcileReleaseAsync_ReleaseWasMade_ReturnsItsReference()
     {
-        await Gateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var reservation = StockReservationId.New();
+        await Gateway().RequestReleaseAsync(reservation, "product-1", 5, CancellationToken.None);
 
-        var result = await Gateway().ReconcileReleaseAsync("product-1", CancellationToken.None);
+        var result = await Gateway().ReconcileReleaseAsync(reservation, CancellationToken.None);
 
         Assert.False(result.IsFailure);
-        Assert.Equal("dummy-release-product-1", result.Value);
+        Assert.Equal($"dummy-release-{reservation}", result.Value);
     }
 
     [Fact]
     public async Task ReconcileReleaseAsync_NoReleaseWasMade_ReturnsTheReferenceNotFound()
     {
-        var result = await Gateway().ReconcileReleaseAsync("product-1", CancellationToken.None);
+        var result = await Gateway().ReconcileReleaseAsync(StockReservationId.New(), CancellationToken.None);
 
         Assert.True(result.IsFailure);
         Assert.Equal("NotFound", result.Error!.Key);
@@ -56,11 +61,27 @@ public class DummyWarehouseGatewayTests
     [Fact]
     public async Task ReconcileReleaseAsync_ReleaseOfAnotherConnection_IsNotSeen()
     {
-        await Gateway(WarehouseConnectionId.New()).RequestReleaseAsync("product-1", 5, CancellationToken.None);
+        var reservation = StockReservationId.New();
+        await Gateway(WarehouseConnectionId.New()).RequestReleaseAsync(reservation, "product-1", 5, CancellationToken.None);
 
-        var result = await Gateway().ReconcileReleaseAsync("product-1", CancellationToken.None);
+        var result = await Gateway().ReconcileReleaseAsync(reservation, CancellationToken.None);
 
         Assert.True(result.IsFailure);
+    }
+
+    // The old key was the product, so releasing one reservation made the other reservation of the same product look released.
+    [Fact]
+    public async Task ReconcileReleaseAsync_TwoReservationsOfOneProduct_AreAskedAboutIndependently()
+    {
+        var released = StockReservationId.New();
+        var notReleased = StockReservationId.New();
+        await Gateway().RequestReleaseAsync(released, "product-1", 5, CancellationToken.None);
+
+        var answerForReleased = await Gateway().ReconcileReleaseAsync(released, CancellationToken.None);
+        var answerForNotReleased = await Gateway().ReconcileReleaseAsync(notReleased, CancellationToken.None);
+
+        Assert.False(answerForReleased.IsFailure);
+        Assert.True(answerForNotReleased.IsFailure);
     }
 
     [Fact]
@@ -84,8 +105,10 @@ public class DummyWarehouseGatewayTests
         using var cancelled = new CancellationTokenSource();
         await cancelled.CancelAsync();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Gateway().RequestReleaseAsync("product-1", 1, cancelled.Token));
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Gateway().ReconcileReleaseAsync("product-1", cancelled.Token));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => Gateway().RequestReleaseAsync(StockReservationId.New(), "product-1", 1, cancelled.Token));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => Gateway().ReconcileReleaseAsync(StockReservationId.New(), cancelled.Token));
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Gateway().PushStockAsync([new("product-1", 1)], cancelled.Token));
     }
 }

@@ -1,6 +1,7 @@
 using System.Net;
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
@@ -70,17 +71,17 @@ public class WarehouseResiliencePipelinesTests : WarehouseTransportTestBase
 
         for (var i = 0; i < 2; i++)
         {
-            var ok = await GatewayOf(pipelines, exhausted).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+            var ok = await GatewayOf(pipelines, exhausted).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
             Assert.False(ok.IsFailure);
         }
 
-        var throttled = await GatewayOf(pipelines, exhausted).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var throttled = await GatewayOf(pipelines, exhausted).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayThrottled", throttled.Error!.Key);
         Assert.Equal(HttpStatusCode.TooManyRequests, throttled.Error.StatusCode);
         Assert.Equal(2, Handler.Requests.Count);
 
-        var unaffected = await GatewayOf(pipelines, other).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var unaffected = await GatewayOf(pipelines, other).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.False(unaffected.IsFailure);
         Assert.Equal(3, Handler.Requests.Count);
@@ -94,10 +95,10 @@ public class WarehouseResiliencePipelinesTests : WarehouseTransportTestBase
         var form = TestWarehouseResilience.Connection(WarehouseProvider.FormApi);
         Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "ref" });
 
-        await GatewayOf(pipelines, json).RequestReleaseAsync("product-1", 1, CancellationToken.None);
-        var jsonSecond = await GatewayOf(pipelines, json).RequestReleaseAsync("product-1", 1, CancellationToken.None);
-        await GatewayOf(pipelines, form).RequestReleaseAsync("product-1", 1, CancellationToken.None);
-        var formSecond = await GatewayOf(pipelines, form).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        await GatewayOf(pipelines, json).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
+        var jsonSecond = await GatewayOf(pipelines, json).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
+        await GatewayOf(pipelines, form).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
+        var formSecond = await GatewayOf(pipelines, form).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayThrottled", jsonSecond.Error!.Key);
         Assert.False(formSecond.IsFailure);
@@ -113,18 +114,18 @@ public class WarehouseResiliencePipelinesTests : WarehouseTransportTestBase
 
         for (var i = 0; i < 2; i++)
         {
-            var failed = await GatewayOf(pipelines, failing).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+            var failed = await GatewayOf(pipelines, failing).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
             Assert.Equal("WarehouseGatewayCallFailed", failed.Error!.Key);
         }
 
-        var rejected = await GatewayOf(pipelines, failing).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var rejected = await GatewayOf(pipelines, failing).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayCircuitOpen", rejected.Error!.Key);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, rejected.Error.StatusCode);
         Assert.Equal(2, Handler.Requests.Count);
 
         Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "ref" });
-        var unaffected = await GatewayOf(pipelines, healthy).RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var unaffected = await GatewayOf(pipelines, healthy).RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.False(unaffected.IsFailure);
         Assert.Equal(3, Handler.Requests.Count);
