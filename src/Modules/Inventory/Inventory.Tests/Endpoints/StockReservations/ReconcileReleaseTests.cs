@@ -7,6 +7,7 @@ using Inventory.Domain.StockReservations;
 using Inventory.Domain.StockReservations.Errors;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Tests.Support;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -171,6 +172,15 @@ public class ReconcileReleaseTests(IntegrationTestWebAppFactory factory) : BaseI
         Assert.Equal(ReservationStatus.Active, reloaded.Status);
         Assert.Equal(ReservationStatus.Released, reloaded.ProviderStatus);
         Assert.Null(reloaded.LastReleaseAttemptReference);
+    }
+
+    /// <summary>The consumer is picked up by the Host's assembly scan; this is the check that a rename or a moved namespace does not silently drop its queue.</summary>
+    [Fact]
+    public void Host_HasAReceiveEndpointForTheConsumer()
+    {
+        var health = Factory.Services.GetRequiredService<IBusControl>().CheckHealth();
+
+        Assert.Contains(health.Endpoints.Keys, name => name.EndsWith($"/{nameof(ReconcileStockReleaseHandler)}", StringComparison.Ordinal));
     }
 
     [Fact]

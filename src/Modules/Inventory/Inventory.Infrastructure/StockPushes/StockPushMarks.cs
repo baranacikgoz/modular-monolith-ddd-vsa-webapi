@@ -79,6 +79,43 @@ internal static class StockPushMarks
     }
 
     /// <summary>
+    ///     Marks one page of a store's stock levels in one set-based statement: the next <paramref name="pageSize" /> stock levels
+    ///     after <paramref name="after" /> (in id order) of the products the store owns, each upserted as in <see cref="MarkAsync" />.
+    ///     Returns the ids of the page, so the caller continues after the last one; a page shorter than
+    ///     <paramref name="pageSize" /> was the last. Autocommits: a store of any size is never one long transaction.
+    /// </summary>
+    public static async Task<IReadOnlyList<DefaultIdType>> MarkStorePageAsync(
+        IInventoryDbContext dbContext, DefaultIdType storeId, DefaultIdType after, int pageSize, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Database
+            .SqlQuery<DefaultIdType>(
+                $"""
+                 WITH "Page" AS (
+                     SELECT s."Id", s."ProductId"
+                     FROM "Inventory"."StockLevels" AS s
+                     JOIN "Inventory"."ProductSummaries" AS p ON p."ProductId" = s."ProductId"
+                     WHERE p."StoreId" = {storeId} AND s."Id" > {after}
+                     ORDER BY s."Id"
+                     LIMIT {pageSize}
+                 ), "Marked" AS (
+                     INSERT INTO "Inventory"."StockPushDirtyItems"
+                         ("StockLevelId", "StoreId", "ProductId", "MarkVersion", "MarkedOn", "CreatedOn")
+                     SELECT g."Id", {storeId}, g."ProductId", nextval('"Inventory"."StockPushMarkVersions"'), {now}, {now}
+                     FROM "Page" AS g
+                     ON CONFLICT ("StockLevelId") DO UPDATE SET
+                         "MarkVersion" = nextval('"Inventory"."StockPushMarkVersions"'),
+                         "PushAttempts" = 0,
+                         "LastErrorKey" = NULL,
+                         "LastModifiedOn" = {now}
+                     RETURNING "StockLevelId"
+                 )
+                 SELECT g."Id" AS "Value" FROM "Page" AS g ORDER BY g."Id"
+                 """)
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
     ///     Counts one refused push on the row, if it still carries the version that was refused: a mark made meanwhile starts
     ///     the count over and is not to be overwritten.
     /// </summary>
