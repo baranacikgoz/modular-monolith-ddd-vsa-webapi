@@ -1,12 +1,14 @@
 using System.Net;
 using Common.Application.Auth;
 using Common.Application.Caching;
+using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.IAM;
 using Common.Tests;
 using IAM.Application.Keycloak;
 using IAM.Infrastructure.InterModuleRequestHandlers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
 
@@ -222,7 +224,10 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
         var user = await CreateStaffUserAsync(adminClient);
         await CreateStaffUserAsync(adminClient);
-        var handler = new GetUsersInRolePageRequestHandler(adminClient);
+        // The handler keeps a role's members for a window, so a list another test built earlier would hide the users above.
+        var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        await cache.RemoveAsync(CacheKeys.For.KeycloakRoleMembers(KeycloakRoles.Staff));
+        var handler = new GetUsersInRolePageRequestHandler(adminClient, cache, Scope.ServiceProvider.GetRequiredService<IOptions<KeycloakOptions>>());
 
         var firstPage = await handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 1), CancellationToken.None);
         var everyone = await handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 200), CancellationToken.None);

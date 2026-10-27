@@ -25,7 +25,10 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
 {
     private IKeycloakAdminClient AdminClient => Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
 
-    private GetUsersInRolePageRequestHandler Handler => new(AdminClient);
+    private GetUsersInRolePageRequestHandler Handler => new(
+        AdminClient,
+        Scope.ServiceProvider.GetRequiredService<IFusionCache>(),
+        Scope.ServiceProvider.GetRequiredService<IOptions<KeycloakOptions>>());
 
     private Task<KeycloakRealmAdmin> ConnectRealmAsync()
     {
@@ -37,6 +40,15 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
     {
         await realm.AddCompositeAsync(parent, child);
         await Scope.ServiceProvider.GetRequiredService<IFusionCache>().RemoveAsync(CacheKeys.For.KeycloakRoleGraph);
+    }
+
+    /// <summary>
+    ///     Drops the members the handler kept for a role, which would otherwise hide a user created after another test read the
+    ///     same shared role (only the seeded roles are shared; every other test builds its own).
+    /// </summary>
+    private async Task ForgetMembersAsync(string role)
+    {
+        await Scope.ServiceProvider.GetRequiredService<IFusionCache>().RemoveAsync(CacheKeys.For.KeycloakRoleMembers(role));
     }
 
     private static string NewRoleName(string prefix) => $"{prefix}-{Guid.NewGuid():N}";
@@ -126,6 +138,7 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
     public async Task GetUsersInRolePage_UserHoldingOnlyACompositeThatIncludesTheRole_IsListed()
     {
         var holder = await CreateUserWithRolesAsync(KeycloakRoles.SystemAdmin);
+        await ForgetMembersAsync(KeycloakRoles.Staff);
 
         var page = await Handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 1000), CancellationToken.None);
 
@@ -137,6 +150,7 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
     public async Task GetUsersInRolePage_UserHoldingTheRoleAndTheCompositeToo_IsListedOnce()
     {
         var both = await CreateUserWithRolesAsync(KeycloakRoles.Staff, KeycloakRoles.SystemAdmin);
+        await ForgetMembersAsync(KeycloakRoles.Staff);
 
         var page = await Handler.HandleAsync(new GetUsersInRolePageRequest(KeycloakRoles.Staff, 0, 1000), CancellationToken.None);
 
