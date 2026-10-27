@@ -3,6 +3,7 @@ using Common.Infrastructure.Modules;
 using Inventory.Endpoints.StockReservations;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Infrastructure.Persistence;
+using Inventory.Infrastructure.ProductSummaries;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +27,7 @@ public sealed class InventoryModule : IModule
     {
         services.AddPersistence();
         services.AddStockReservationExpirySweep();
+        services.AddProductSummaryReconciliation();
         services.AddWarehouseGatewayInfrastructure(configuration);
     }
 

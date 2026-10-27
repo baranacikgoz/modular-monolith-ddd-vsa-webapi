@@ -4,6 +4,7 @@ using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Inventory.Application.Persistence;
+using Inventory.Application.ProductSummaries;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockReservations;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ public sealed class InventoryDbContext(
 {
     public DbSet<StockLevel> StockLevels => Set<StockLevel>();
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
+    public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
