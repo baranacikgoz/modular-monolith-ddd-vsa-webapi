@@ -125,9 +125,7 @@ internal static class StockPushMarks
     public static Task<int> RecordRefusalAsync(
         IInventoryDbContext dbContext, PushedMark refused, string errorKey, DateTimeOffset now, CancellationToken cancellationToken)
     {
-        var key = errorKey.Length > StockPushDirtyItem.LastErrorKeyMaxLength
-            ? errorKey[..StockPushDirtyItem.LastErrorKeyMaxLength]
-            : errorKey;
+        var key = Truncated(errorKey);
 
         return dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"""
@@ -136,6 +134,34 @@ internal static class StockPushMarks
              WHERE "StockLevelId" = {refused.StockLevelId.Value} AND "MarkVersion" = {refused.MarkVersion}
              """,
             cancellationToken);
+    }
+
+    /// <summary>
+    ///     Counts one failed run on every mark of the store that is not parked yet, for a failure of the connection itself that
+    ///     no later run can cure: no gateway could be built, so no mark was refused and there is no version to match. A mark
+    ///     made meanwhile starts its count over (see <see cref="MarkAsync" />) and at worst keeps this one attempt. Returns how
+    ///     many marks were counted. Autocommits.
+    /// </summary>
+    public static Task<int> RecordConfigurationFailureAsync(
+        IInventoryDbContext dbContext, DefaultIdType storeId, string errorKey, int maxAttempts, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        var key = Truncated(errorKey);
+
+        return dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+             UPDATE "Inventory"."StockPushDirtyItems"
+             SET "PushAttempts" = "PushAttempts" + 1, "LastErrorKey" = {key}, "LastModifiedOn" = {now}
+             WHERE "StoreId" = {storeId} AND "PushAttempts" < {maxAttempts}
+             """,
+            cancellationToken);
+    }
+
+    private static string Truncated(string errorKey)
+    {
+        return errorKey.Length > StockPushDirtyItem.LastErrorKeyMaxLength
+            ? errorKey[..StockPushDirtyItem.LastErrorKeyMaxLength]
+            : errorKey;
     }
 
     /// <summary>Deletes the rows that still carry the version that was pushed; returns how many were cleared.</summary>
