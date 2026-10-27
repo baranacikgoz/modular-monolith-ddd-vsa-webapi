@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Products.Application.Persistence;
 using Products.Domain.Stores;
+using Products.Domain.Stores.Errors;
 using Products.Infrastructure.RateLimiting;
 using Products.Infrastructure.Telemetry;
 
@@ -62,9 +63,7 @@ internal static partial class Endpoint
 
         // Proof of mailbox ownership comes first: no account is created for an address nobody proved they own. The
         // token is single use, so a later failure (a weak password, a taken address) needs a fresh email code.
-        var verified = (await verifyEmailClient.SendAsync(
-            new VerifyEmailOtpRequest(email, request.EmailVerificationToken, EmailVerificationPurposes.NewAddress),
-            cancellationToken)).ToResult();
+        var verified = await VerifyOwnershipAsync(verifyEmailClient, email, request.EmailVerificationToken, cancellationToken);
 
         return await verified
             .BindAsync<ApplicationUserId>(async () => (await provisionClient.SendAsync(
@@ -77,6 +76,35 @@ internal static partial class Endpoint
             .TapAsync(_ => ProductsTelemetry.StoreApplications.Add(1))
             .MapAsync(store => new Response { Id = store.Id })
             .TapActivityAsync(activity);
+    }
+
+    /// <summary>
+    ///     Checks the token under the new-address purpose. When that purpose does not know it, the token may be the one
+    ///     issued for an address that already has a user: its holder proved they own the mailbox (and was told the address is
+    ///     registered when they verified it), so the answer is <c>EmailAlreadyRegistered</c> rather than an invalid token.
+    ///     That second check consumes the token like any verification, so it cannot be replayed, and a token neither
+    ///     purpose knows gets the same <c>InvalidEmailVerificationToken</c> whether or not the address has a user.
+    ///     A run-out of attempts on the new-address purpose is final.
+    /// </summary>
+    private static async Task<Result> VerifyOwnershipAsync(
+        IInterModuleRequestClient<VerifyEmailOtpRequest, VerifyEmailOtpResponse> verifyEmailClient,
+        string email,
+        string token,
+        CancellationToken cancellationToken)
+    {
+        var asNewAddress = await verifyEmailClient.SendAsync(
+            new VerifyEmailOtpRequest(email, token, EmailVerificationPurposes.NewAddress), cancellationToken);
+        if (asNewAddress.FailureReason != OtpVerificationFailureReason.InvalidOtp)
+        {
+            return asNewAddress.ToResult();
+        }
+
+        var asExistingAddress = await verifyEmailClient.SendAsync(
+            new VerifyEmailOtpRequest(email, token, EmailVerificationPurposes.ExistingAddress), cancellationToken);
+
+        return asExistingAddress.FailureReason == OtpVerificationFailureReason.None
+            ? StoreErrors.EmailAlreadyRegistered
+            : asNewAddress.ToResult();
     }
 
     /// <summary>

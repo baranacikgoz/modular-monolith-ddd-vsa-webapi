@@ -34,4 +34,21 @@ internal static class KeycloakUserAttributeReader
     {
         return ReadAsync(factory, services, userId, UserAttributes.PhoneNumberVerified);
     }
+
+    /// <summary>The user's <c>emailVerified</c> flag, read straight from Keycloak's Admin REST API.</summary>
+    internal static async Task<bool?> EmailVerifiedAsync(
+        IntegrationTestWebAppFactory factory, IServiceProvider services, ApplicationUserId userId)
+    {
+        var tokenProvider = services.GetRequiredService<IServiceAccountTokenProvider>();
+        var realm = services.GetRequiredService<IOptions<KeycloakOptions>>().Value.Realm;
+
+        using var http = new HttpClient { BaseAddress = new Uri(factory.KeycloakBaseAddress + "/") };
+        http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", await tokenProvider.GetAccessTokenAsync(false, CancellationToken.None));
+
+        var user = await http.GetFromJsonAsync<UserRepresentation>(
+            new Uri(KeycloakPaths.Admin(realm, $"users/{userId}"), UriKind.Relative));
+
+        return user?.EmailVerified;
+    }
 }

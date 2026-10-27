@@ -113,6 +113,42 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.Equal(expectedAttribute, await KeycloakUserAttributeReader.PhoneNumberVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task CreateUserAsync_WithAnEmail_RecordsWhetherTheCallerVerifiedIt(bool verified)
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(
+                Username: phone,
+                FirstName: "Ayşe",
+                LastName: "Yılmaz",
+                PhoneNumber: phone,
+                Email: $"{Guid.NewGuid():N}@example.com",
+                EmailVerified: verified),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(verified, await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
+    [Fact]
+    public async Task CreateUserAsync_WithAnEmailAndNoFlag_LeavesTheEmailUnverified()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(phone, "Ayşe", "Yılmaz", phone, Email: $"{Guid.NewGuid():N}@example.com"),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.False(await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
     private static async Task<(ApplicationUserId Id, string Email)> CreateStaffUserAsync(IKeycloakAdminClient adminClient)
     {
         var phone = IamTestClient.NewPhoneNumber();

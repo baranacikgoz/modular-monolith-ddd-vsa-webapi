@@ -53,6 +53,23 @@ public class DeleteOrphanedProductImageObjectsHandlerTests(IntegrationTestWebApp
     }
 
     [Fact]
+    public async Task Consume_KeyReferencedAgainByAnImageRow_KeepsThatObject()
+    {
+        // An image's key is a hash of its bytes, so the same file added to the product again after the removal reuses the key.
+        var seeded = await ProductsSeed.StoreWithProductsAsync(Db, DefaultUser, "Lamp");
+        var product = seeded.Products.Single();
+        const string reused = "products/lamp/images/a.png";
+        seeded.Store.AddProductImage(product, reused, "image/png", 10, 8);
+        await Db.SaveChangesAsync();
+        await StoreAsync(Keys);
+
+        await ConsumerHarness.DeliverAsync<DeleteOrphanedProductImageObjectsHandler, ProductImageObjectsOrphanedIntegrationEvent>(
+            Factory.Services, NewEvent(Keys));
+
+        Assert.Equal([reused], PublicStore.Keys);
+    }
+
+    [Fact]
     public async Task Consume_ObjectsAlreadyGone_Succeeds()
     {
         var exception = await Record.ExceptionAsync(() =>
@@ -90,6 +107,7 @@ public class DeleteOrphanedProductImageObjectsHandlerTests(IntegrationTestWebApp
         var services = scope.ServiceProvider;
         var handler = new DeleteOrphanedProductImageObjectsHandler(
             failingStore,
+            services.GetRequiredService<IProductsDbContext>(),
             services.GetRequiredService<IFusionCache>(),
             services.GetRequiredService<IOptions<CachingOptions>>(),
             services.GetRequiredService<IInboxStore<IProductsDbContext>>(),

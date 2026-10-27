@@ -231,7 +231,7 @@ public sealed partial class ProductImportJobRunner(
         if (row.Sku is not null && bySku.TryGetValue(row.Sku, out var holder))
         {
             return string.Equals(holder.Name, row.Name, StringComparison.Ordinal)
-                ? Update(holder, row)
+                ? Update(store, holder, row)
                 : RowResult.Rejected(row.RowNumber, ProductErrors.SkuAlreadyExists);
         }
 
@@ -243,18 +243,20 @@ public sealed partial class ProductImportJobRunner(
             // branch above already took the product that holds the row's SKU).
             [var named] when row.Sku is not null && !string.Equals(named.Sku, row.Sku, StringComparison.Ordinal)
                 => RowResult.Rejected(row.RowNumber, ProductImportRowErrors.SkuDiffers),
-            [var named] => Update(named, row),
+            [var named] => Update(store, named, row),
 
             _ => Create(job, store, byName, bySku, row)
         };
     }
 
-    private static RowResult Update(Product product, ProductRow row)
+    /// <summary>A store that is not Active changes none of its products: the row is rejected with the store's status error.</summary>
+    private static RowResult Update(Store store, Product product, ProductRow row)
     {
         // The aggregate raises nothing for a row that changes nothing, so the event count tells an update from a no-op.
         var eventsBefore = product.Events.Count;
-        product.Update(null, row.Description, row.Quantity, row.Price);
-        return product.Events.Count > eventsBefore ? RowResult.Updated : RowResult.Unchanged;
+        return store.UpdateProduct(product, null, row.Description, row.Quantity, row.Price).Match(
+            () => product.Events.Count > eventsBefore ? RowResult.Updated : RowResult.Unchanged,
+            error => RowResult.Rejected(row.RowNumber, error));
     }
 
     private static RowResult Create(

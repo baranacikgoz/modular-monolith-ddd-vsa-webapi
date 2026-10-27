@@ -31,8 +31,10 @@ public sealed partial class ProductExportJobRunner(
     TimeProvider timeProvider,
     ILogger<ProductExportJobRunner> logger)
 {
-    // Carries every column the product import reads (name, description, quantity, price, SKU) next to the export's own.
-    private static readonly string[] Header = ["Id", "StoreId", "Name", "Description", "Quantity", "Price", "Sku", "CreatedOn"];
+    // The first five columns are the ones the product import reads by position (name, description, quantity, price, SKU), in
+    // its order, so an exported sheet can be saved as .xlsx and imported as it is. The export's own columns follow; the
+    // import ignores everything after the SKU.
+    private static readonly string[] Header = ["Name", "Description", "Quantity", "Price", "Sku", "Id", "StoreId", "CreatedOn"];
 
     public async Task RunAsync(ProductExportJobId jobId, CancellationToken cancellationToken)
     {
@@ -133,13 +135,13 @@ public sealed partial class ProductExportJobRunner(
     {
         return
         [
-            row.Id.ToString(),
-            row.StoreId.ToString(),
             row.Name,
             row.Description,
             row.Quantity.ToString(CultureInfo.InvariantCulture),
             row.Price.ToString(CultureInfo.InvariantCulture),
             row.Sku,
+            row.Id.ToString(),
+            row.StoreId.ToString(),
             CsvWriter.FormatDate(row.CreatedOn)
         ];
     }

@@ -217,10 +217,14 @@ public class ApprovalLifecycleTests(IntegrationTestWebAppFactory factory) : Prod
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Fact]
-    public async Task Search_DoesNotListStoresStillWaitingForApproval()
+    /// <summary>Search lists what Get answers: only Active stores. An application, a suspended store and a closed one are out.</summary>
+    [Theory]
+    [InlineData(StoreStatus.PendingApproval)]
+    [InlineData(StoreStatus.Suspended)]
+    [InlineData(StoreStatus.Inactive)]
+    public async Task Search_StoreNotActive_IsNotListed(StoreStatus status)
     {
-        var pending = await SeedAsync(StoreStatus.PendingApproval);
+        var notActive = await SeedAsync(status);
         var active = await SeedAsync(StoreStatus.Active);
 
         using var response = await AuthorizedClient().GetAsync(new Uri("/v1/stores/search?PageNumber=1&PageSize=50", UriKind.Relative));
@@ -228,7 +232,8 @@ public class ApprovalLifecycleTests(IntegrationTestWebAppFactory factory) : Prod
         var page = await response.Content.ReadFromJsonAsync<PaginationResponse<SearchResponse>>(JsonSerializerOptions);
         Assert.NotNull(page);
         Assert.Contains(page.Data, s => s.Id == active.Id);
-        Assert.DoesNotContain(page.Data, s => s.Id == pending.Id);
+        Assert.DoesNotContain(page.Data, s => s.Id == notActive.Id);
+        Assert.All(page.Data, s => Assert.Equal(StoreStatus.Active, s.Status));
     }
 
     [Fact]

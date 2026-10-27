@@ -14,6 +14,7 @@
     "UserLookupConcurrency": 8,
     "UserDisplayCacheDurationSeconds": 300,
     "UserDisplayCacheDistributedDurationSeconds": 86400,
-    "UserDisplayNegativeCacheDurationSeconds": 300
+    "UserDisplayNegativeCacheDurationSeconds": 300,
+    "RoleGraphCacheSeconds": 60
   }
 }

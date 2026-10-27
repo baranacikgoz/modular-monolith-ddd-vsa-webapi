@@ -109,6 +109,56 @@ public class ApplyTests(IntegrationTestWebAppFactory factory) : ProductsIntegrat
     }
 
     [Fact]
+    public async Task Apply_TokenIssuedForAnAddressThatAlreadyHasAUser_ReturnsEmailAlreadyRegisteredAndTouchesNothing()
+    {
+        VerifyEmailOtpClient.SendAsync(
+                Arg.Is<VerifyEmailOtpRequest>(r => r.Purpose == EmailVerificationPurposes.NewAddress), Arg.Any<CancellationToken>())
+            .Returns(new VerifyEmailOtpResponse(OtpVerificationFailureReason.InvalidOtp));
+        VerifyEmailOtpClient.SendAsync(
+                Arg.Is<VerifyEmailOtpRequest>(r => r.Purpose == EmailVerificationPurposes.ExistingAddress), Arg.Any<CancellationToken>())
+            .Returns(new VerifyEmailOtpResponse(OtpVerificationFailureReason.None));
+        var request = ValidRequest();
+
+        using var response = await Factory.CreateClient().PostAsJsonAsync(Route, request);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Equal("EmailAlreadyRegistered", await ErrorKeyAsync(response));
+        await VerifyEmailOtpClient.Received(1).SendAsync(
+            Arg.Is<VerifyEmailOtpRequest>(r => r.Email == "ada.lovelace@example.com"
+                                               && r.Otp == request.EmailVerificationToken
+                                               && r.Purpose == EmailVerificationPurposes.ExistingAddress),
+            Arg.Any<CancellationToken>());
+        await ProvisionUserClient.DidNotReceiveWithAnyArgs().SendAsync(default!, default);
+        Assert.Empty(await Db.Stores.AsNoTracking().ToListAsync());
+    }
+
+    [Fact]
+    public async Task Apply_NewAddressTokenRunsOutOfAttempts_DoesNotTryTheExistingAddressPurpose()
+    {
+        VerifyEmailOtpClient.SendAsync(Arg.Any<VerifyEmailOtpRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new VerifyEmailOtpResponse(OtpVerificationFailureReason.TooManyAttempts));
+
+        using var response = await Factory.CreateClient().PostAsJsonAsync(Route, ValidRequest());
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("TooManyEmailVerificationAttempts", await ErrorKeyAsync(response));
+        await VerifyEmailOtpClient.Received(1).SendAsync(Arg.Any<VerifyEmailOtpRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Apply_TokenNeitherPurposeAccepts_ReturnsInvalidEmailVerificationTokenAfterTryingBoth()
+    {
+        VerifyEmailOtpClient.SendAsync(Arg.Any<VerifyEmailOtpRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new VerifyEmailOtpResponse(OtpVerificationFailureReason.InvalidOtp));
+
+        using var response = await Factory.CreateClient().PostAsJsonAsync(Route, ValidRequest());
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("InvalidEmailVerificationToken", await ErrorKeyAsync(response));
+        await VerifyEmailOtpClient.Received(2).SendAsync(Arg.Any<VerifyEmailOtpRequest>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Apply_WithoutAnEmailVerificationToken_ReturnsBadRequestAndNeverChecksOrProvisions()
     {
         var request = ValidRequest() with { EmailVerificationToken = "" };

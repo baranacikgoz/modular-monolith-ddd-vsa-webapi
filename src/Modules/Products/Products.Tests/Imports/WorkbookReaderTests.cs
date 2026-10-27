@@ -22,6 +22,20 @@ public class WorkbookReaderTests
     }
 
     [Fact]
+    public void ReadRows_ExportedCsvSavedAsWorkbook_KeepsEveryColumnOfEveryRow()
+    {
+        using var workbook = new MemoryStream(Workbooks.FromCsv(
+            "Name,Description,Quantity,Price,Sku,Id,StoreId,CreatedOn\r\n" +
+            "\"Lamp, desk\",\"Says \"\"bright\"\"\",5,49.9,LAMP-1,id-1,store-1,2026-01-01\r\n"));
+
+        var rows = WorkbookReader.ReadRows(workbook).ToList();
+
+        var row = Assert.Single(rows);
+        Assert.Equal(2, row.RowNumber);
+        Assert.Equal(["Lamp, desk", "Says \"bright\"", "5", "49.9", "LAMP-1", "id-1", "store-1", "2026-01-01"], row.Cells);
+    }
+
+    [Fact]
     public void ReadRows_ReadTwiceFromTheSameStream_LeavesTheStreamOpenForTheSecondPass()
     {
         using var workbook = new MemoryStream(Workbooks.Build(["Desk lamp", "LED", 5, 49.9m]));

@@ -147,7 +147,8 @@ public sealed class GetUsersRequestHandlerTests : IDisposable
             UserLookupConcurrency = concurrency,
             UserDisplayCacheDurationSeconds = cacheDurationSeconds,
             UserDisplayCacheDistributedDurationSeconds = 86400,
-            UserDisplayNegativeCacheDurationSeconds = 300
+            UserDisplayNegativeCacheDurationSeconds = 300,
+            RoleGraphCacheSeconds = 60
         });
 
         return new GetUsersRequestHandler(_adminClient, _cache, options);

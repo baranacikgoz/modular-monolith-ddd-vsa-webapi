@@ -22,6 +22,8 @@ namespace Products.Tests.Exports;
 
 public class ProductExportJobRunnerTests(IntegrationTestWebAppFactory factory) : ProductsIntegrationTest(factory)
 {
+    private static readonly string[] Header = ["Name", "Description", "Quantity", "Price", "Sku", "Id", "StoreId", "CreatedOn"];
+
     private async Task<ProductExportJob> QueueJobAsync(StoreId? storeId = null, DateTimeOffset? queuedOn = null)
     {
         var job = ProductExportJob.Queue(DefaultUser, queuedOn ?? DateTimeOffset.UtcNow.AddMinutes(1), storeId);
@@ -76,7 +78,7 @@ public class ProductExportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         Assert.Equal("text/csv", PrivateStore.ContentTypeOf(job.ObjectKey!));
 
         var lines = ReadCsv(job).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-        Assert.Equal("Id,StoreId,Name,Description,Quantity,Price,Sku,CreatedOn", lines[0]);
+        Assert.Equal("Name,Description,Quantity,Price,Sku,Id,StoreId,CreatedOn", lines[0]);
         Assert.Equal(4, lines.Length);
         Assert.Contains(lines, l => l.Contains("\"Lamp, desk\"", StringComparison.Ordinal));
         Assert.Contains(lines, l => l.Contains("\"Say \"\"hi\"\"\"", StringComparison.Ordinal));
@@ -107,14 +109,15 @@ public class ProductExportJobRunnerTests(IntegrationTestWebAppFactory factory) :
     }
 
     [Fact]
-    public async Task Run_Header_CarriesEveryColumnTheImportReads()
+    public async Task Run_Header_StartsWithTheColumnsTheImportReadsInTheImportsOrder()
     {
         var queued = await QueueJobAsync();
 
         await RunMessageAsync(queued.Id);
 
         var header = ReadCsv(await ReadJobAsync(queued.Id)).Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[0].Split(',');
-        Assert.All(Workbooks.ImportColumns, column => Assert.Contains(column, header));
+        Assert.Equal(Workbooks.ImportColumns, header.Take(Workbooks.ImportColumns.Count));
+        Assert.Equal(["Id", "StoreId", "CreatedOn"], header.Skip(Workbooks.ImportColumns.Count));
     }
 
     [Fact]
@@ -128,7 +131,7 @@ public class ProductExportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         var job = await ReadJobAsync(queued.Id);
         var dataLines = ReadCsv(job).Split("\r\n", StringSplitOptions.RemoveEmptyEntries).Skip(1).ToList();
         Assert.Equal(5, dataLines.Count);
-        var ids = dataLines.Select(l => l.Split(',')[0]).ToList();
+        var ids = dataLines.Select(l => l.Split(',')[Array.IndexOf(Header, "Id")]).ToList();
         Assert.Equal(seeded.Products.Select(p => p.Id.ToString()).Order(), ids.Order());
     }
 

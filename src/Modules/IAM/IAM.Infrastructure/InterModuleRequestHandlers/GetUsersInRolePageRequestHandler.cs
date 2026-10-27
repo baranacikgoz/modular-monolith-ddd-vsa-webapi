@@ -7,14 +7,16 @@ namespace IAM.Infrastructure.InterModuleRequestHandlers;
 
 /// <summary>
 ///     Reads one page of a realm role's effective members from Keycloak for a projection's scheduled reconciliation: the
-///     users who hold the role directly and the users who hold a realm role that includes it, directly or through other
-///     composite roles (a user holding only <c>system-admin</c> is a member of <c>staff</c>). Disabled users are left out:
-///     they cannot log in, so a module addressing "everyone in this role" must not address them.
+///     users who hold the role directly, the users who hold a realm role that includes it (directly or through other
+///     composite roles: a user holding only <c>system-admin</c> is a member of <c>staff</c>), and the members of every group
+///     that carries the role or such a containing role, subgroups included. Disabled users are left out: they cannot log in,
+///     so a module addressing "everyone in this role" must not address them.
 ///     <para>
-///         The members are one deduplicated sequence in a fixed order: first the users holding any containing role, sorted
-///         by user id, then the users holding only the role itself, in Keycloak's own order. Keycloak cannot list members
-///         through composites, so the containing roles' members are read in full (those roles are administrative and
-///         small), while the role's own members are read only as far as the page needs.
+///         The members are one deduplicated sequence in a fixed order: first the users who hold the role only indirectly
+///         (through a containing role or a group), sorted by user id, then the users holding only the role itself, in
+///         Keycloak's own order. Keycloak cannot list members through composites or groups in one call, so those users are
+///         read in full on every page (the containing roles and the groups that carry a role are administrative and small),
+///         while the role's own members are read only as far as the page needs.
 ///     </para>
 /// </summary>
 public class GetUsersInRolePageRequestHandler(IKeycloakAdminClient adminClient)
@@ -40,19 +42,25 @@ public class GetUsersInRolePageRequestHandler(IKeycloakAdminClient adminClient)
         string roleName, int skip, int take, CancellationToken cancellationToken)
     {
         var containingRoles = await adminClient.GetRolesContainingAsync(roleName, cancellationToken);
-        if (containingRoles.Count == 0)
+        var inherited = await ReadEveryMemberAsync(containingRoles, take, cancellationToken);
+        var throughGroups = await adminClient.GetUsersInGroupsHoldingRolesAsync([roleName, .. containingRoles], take, cancellationToken);
+        foreach (var user in throughGroups)
+        {
+            inherited.TryAdd(user.Id, user);
+        }
+
+        if (inherited.Count == 0)
         {
             return await adminClient.GetUsersInRoleAsync(roleName, skip, take, cancellationToken);
         }
 
-        var inherited = await ReadEveryMemberAsync(containingRoles, take, cancellationToken);
         var page = inherited.Values
             .OrderBy(u => u.Id.Value)
             .Skip(skip)
             .Take(take)
             .ToList();
 
-        // Direct holders that a containing role already lists were placed above, so they are skipped here.
+        // Direct holders that a containing role or a group already lists were placed above, so they are skipped here.
         var toSkip = Math.Max(0, skip - inherited.Count);
         var offset = 0;
         while (page.Count < take)
