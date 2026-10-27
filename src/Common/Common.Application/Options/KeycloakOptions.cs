@@ -57,7 +57,9 @@ public class KeycloakOptions
     /// <summary>
     ///     Lifetime of the cached realm role graph (each composite realm role and the realm roles it includes) that
     ///     answers "which roles include this one". Composite roles change only from the realm file or the Keycloak console, so
-    ///     a short window turns the one-call-per-composite read into one read per window instead of one per request.
+    ///     a short window turns the one-call-per-composite read into one read per window instead of one per request. The same
+    ///     window keeps the deduplicated members of a role that has indirect holders, so paging through them does not re-read Keycloak
+    ///     for every page.
     /// </summary>
     public required int RoleGraphCacheSeconds { get; set; }
 

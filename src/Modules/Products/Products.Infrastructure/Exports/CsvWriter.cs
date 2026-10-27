@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Products.Infrastructure.Spreadsheets;
 
 namespace Products.Infrastructure.Exports;
 
@@ -22,15 +23,10 @@ internal static class CsvWriter
 
     private static string Escape(string? field)
     {
-        field ??= string.Empty;
-
-        // A cell a spreadsheet would run as a formula (a leading "=", "+", "-", "@", tab or carriage return) gets a leading
-        // apostrophe, the usual CSV injection mitigation: the cell is read as text and never evaluated. Names and
-        // descriptions are typed by users, and the file is opened in a spreadsheet by someone else.
-        if (field.Length > 0 && field[0] is '=' or '+' or '-' or '@' or '\t' or '\r')
-        {
-            field = "'" + field;
-        }
+        // A cell a spreadsheet would run as a formula gets a leading apostrophe, the usual CSV injection mitigation: the cell is
+        // read as text and never evaluated. Names and descriptions are typed by users, and the file is opened in a spreadsheet by
+        // someone else. The import takes the apostrophe off again.
+        field = FormulaGuard.Apply(field ?? string.Empty);
 
         return field.IndexOfAny(CharactersThatNeedQuoting) < 0
             ? field

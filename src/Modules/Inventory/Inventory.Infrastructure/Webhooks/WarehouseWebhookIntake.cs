@@ -1,12 +1,15 @@
+using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Persistence.Extensions;
 using EntityFramework.Exceptions.Common;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockReservations;
+using Inventory.Domain.StockReservations.Errors;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.WebhookDeliveries;
 using Inventory.Infrastructure.Telemetry;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Inventory.Infrastructure.Webhooks;
 
@@ -48,9 +51,11 @@ public enum WebhookDeliveryOutcome
 ///     already has (or, for a read-only reservation, only as a mirror), and a word nobody mapped is recorded and acknowledged.
 ///     A delivery that carries the provider's timestamp is applied in the order of that timestamp: one older than the latest
 ///     applied to the reservation is recorded as received and applies nothing, so a status feed that arrives out of order
-///     cannot move a reservation back.
+///     cannot move a reservation back. A timestamp further ahead of this system's clock than
+///     <see cref="InventoryOptions.WebhookMaxFutureSkewSeconds" /> would make every later delivery stale, so it is refused
+///     first, before anything is looked up or recorded, whoever the caller is.
 /// </summary>
-public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimeProvider timeProvider)
+public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimeProvider timeProvider, IOptions<InventoryOptions> options)
 {
     public async Task<Result<WebhookDeliveryOutcome>> ReceiveAsync(
         WarehouseConnection connection,
@@ -61,12 +66,17 @@ public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimePr
         DateTimeOffset? occurredOn,
         CancellationToken cancellationToken)
     {
+        var receivedOn = timeProvider.GetUtcNow();
+        if (occurredOn is { } stamp && stamp > receivedOn.AddSeconds(options.Value.WebhookMaxFutureSkewSeconds))
+        {
+            return StockReservationErrors.WebhookOccurredOnInTheFuture;
+        }
+
         if (await IsRecordedAsync(connection.Id, deliveryId, cancellationToken))
         {
             return WebhookDeliveryOutcome.Duplicate;
         }
 
-        var receivedOn = timeProvider.GetUtcNow();
         var resolution = ProviderStatusMap.Resolve(rawStatus, out var reported);
 
         // A reservation of another store is not found: a connection's secret only reaches the reservations of its own store.

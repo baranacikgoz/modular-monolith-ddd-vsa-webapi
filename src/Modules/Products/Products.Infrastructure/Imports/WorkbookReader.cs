@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using ExcelDataReader;
 using Products.Application.Imports;
+using Products.Infrastructure.Spreadsheets;
 
 namespace Products.Infrastructure.Imports;
 
@@ -61,6 +62,8 @@ internal static class WorkbookReader
             double d => d.ToString(CultureInfo.InvariantCulture),
             decimal m => m.ToString(CultureInfo.InvariantCulture),
             DateTime dt => dt.ToString("O", CultureInfo.InvariantCulture),
+            // The export guards a text a spreadsheet would run as a formula with a leading apostrophe; it is not part of the text.
+            string text => FormulaGuard.Strip(text),
             _ => value.ToString() ?? string.Empty
         };
     }

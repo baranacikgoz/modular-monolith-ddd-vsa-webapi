@@ -1,12 +1,15 @@
 using System.Net;
 using System.Text.Json;
 using Common.Application.Options;
+using Common.Infrastructure.Security;
 using Common.IntegrationEvents;
 using Common.Tests;
 using Inventory.Application.Gateway;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.WarehouseConnections;
+using Inventory.Domain.WarehouseConnections.Errors;
+using Inventory.Infrastructure.Gateway;
 using Inventory.Infrastructure.StockPushes;
 using Inventory.Tests.Support;
 using Microsoft.EntityFrameworkCore;
@@ -35,13 +38,24 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
         Warehouse.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-batch" });
     }
 
-    private async Task RunAsync(WarehouseConnectionId connectionId, Action<InventoryOptions>? configure = null)
+    /// <param name="hostEnvironment">
+    ///     When set, the real gateway factory of that host environment is used instead of the test host's (which is not
+    ///     Production, so it builds a gateway for a Dummy connection).
+    /// </param>
+    private async Task RunAsync(
+        WarehouseConnectionId connectionId, Action<InventoryOptions>? configure = null, string? hostEnvironment = null)
     {
         using var scope = Root.CreateScope();
         var services = scope.ServiceProvider;
+        using var http = new HttpClient();
+        IWarehouseGatewayFactory gatewayFactory = hostEnvironment is null
+            ? services.GetRequiredService<IWarehouseGatewayFactory>()
+            : new WarehouseGatewayFactory(
+                http, services.GetRequiredService<SecretProtector>(), TestWarehouseResilience.Pipelines(), new DummyWarehouseState(),
+                new FakeHostEnvironment(hostEnvironment));
         var runner = new StockPushRunner(
             services.GetRequiredService<IInventoryDbContext>(),
-            services.GetRequiredService<IWarehouseGatewayFactory>(),
+            gatewayFactory,
             services.GetRequiredService<EventBus.IIntegrationEventOutbox>(),
             TestInventoryOptions.Wrapped(configure),
             TimeProvider.System,
@@ -60,6 +74,20 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
         }
 
         return store;
+    }
+
+    private async Task SweepAsync(Action<InventoryOptions> configure)
+    {
+        using var scope = Root.CreateScope();
+        var services = scope.ServiceProvider;
+        var sweep = new StockPushSweepService(
+            services.GetRequiredService<IInventoryDbContext>(),
+            services.GetRequiredService<EventBus.IIntegrationEventOutbox>(),
+            TimeProvider.System,
+            TestInventoryOptions.Wrapped(configure),
+            NullLogger<StockPushSweepService>.Instance);
+
+        await sweep.SweepAsync();
     }
 
     private static List<(string ProductReference, int Quantity)> SentItems(RecordedWarehouseRequest request)
@@ -292,6 +320,72 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
 
         Assert.Empty(Warehouse.Requests);
         Assert.Single(await StockPushTestData.DirtyItemsAsync(Root));
+    }
+
+    [Fact]
+    public async Task Run_ConnectionWasDeactivated_CountsNoAttemptOnItsMarks()
+    {
+        var store = await SeedDirtyStoreAsync(stockLevels: 2);
+        await using (var scope = Root.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+            var connection = await db.WarehouseConnections.SingleAsync(c => c.Id == store.Connection!.Id);
+            connection.Deactivate();
+            await db.SaveChangesAsync();
+        }
+
+        await RunAsync(store.Connection!.Id);
+
+        Assert.All(await StockPushTestData.DirtyItemsAsync(Root), mark => Assert.Equal(0, mark.PushAttempts));
+    }
+
+    // A Dummy connection that reached a Production database can never be pushed, whatever the warehouse would say: the factory
+    // refuses to build a gateway. Without a count the sweep would queue the same failing run every few minutes for ever.
+    [Fact]
+    public async Task Run_DummyConnectionInProduction_CountsAnAttemptOnEveryMarkOfTheStoreAndCallsNothing()
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, stockLevels: 3, provider: WarehouseProvider.Dummy);
+        foreach (var stockLevel in store.StockLevels)
+        {
+            await StockPushTestData.ReceiveAsync(Root, stockLevel.Id, 5);
+        }
+
+        var otherStore = await SeedDirtyStoreAsync();
+
+        await RunAsync(store.Connection!.Id, hostEnvironment: "Production");
+
+        var allMarks = await StockPushTestData.DirtyItemsAsync(Root);
+        var marks = allMarks.Where(m => m.StoreId == store.StoreId).ToList();
+        Assert.Equal(3, marks.Count);
+        Assert.All(marks, mark =>
+        {
+            Assert.Equal(1, mark.PushAttempts);
+            Assert.Equal(WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key, mark.LastErrorKey);
+        });
+        Assert.Equal(0, Assert.Single(allMarks, m => m.StoreId == otherStore.StoreId).PushAttempts);
+        Assert.Empty(Warehouse.Requests);
+    }
+
+    [Fact]
+    public async Task Run_DummyConnectionInProductionAgainAndAgain_ParksTheMarksAtTheMaximumAndTheSweepLetsGo()
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, stockLevels: 2, provider: WarehouseProvider.Dummy);
+        foreach (var stockLevel in store.StockLevels)
+        {
+            await StockPushTestData.MarkAsync(Root, stockLevel, store.StoreId, DateTimeOffset.UtcNow.AddMinutes(-10));
+        }
+
+        for (var run = 0; run < 5; run++)
+        {
+            await RunAsync(store.Connection!.Id, o => o.StockPushMaxAttempts = 3, hostEnvironment: "Production");
+        }
+
+        var marks = await StockPushTestData.DirtyItemsAsync(Root);
+        Assert.Equal(2, marks.Count);
+        Assert.All(marks, mark => Assert.Equal(3, mark.PushAttempts));
+        var before = await QueuedDueEventIdsAsync();
+        await SweepAsync(o => o.StockPushMaxAttempts = 3);
+        Assert.Equal(before, await QueuedDueEventIdsAsync());
     }
 
     [Fact]

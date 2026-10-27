@@ -449,6 +449,9 @@
   <data name="Stores_Search_SearchTerm_MaximumLength" xml:space="preserve">
     <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
   </data>
+  <data name="Stores_ListAll_Status_Invalid" xml:space="preserve">
+    <value>Mağaza durumu geçersiz.</value>
+  </data>
   <data name="ProductTemplates_Search_SearchTerm_MaximumLength" xml:space="preserve">
     <value>Arama terimi en fazla ({0}) karakter olabilir.</value>
   </data>

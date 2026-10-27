@@ -44,6 +44,25 @@ public class CsvWriterTests
         Assert.Equal(expected + "\r\n", Write(field));
     }
 
+    // The import takes one apostrophe off a cell that starts with apostrophes and then a formula character, so a name that already
+    // starts that way needs one more to survive.
+    [Theory]
+    [InlineData("'=x", "''=x")]
+    [InlineData("''-5", "'''-5")]
+    public void AppendRow_FieldWithApostrophesBeforeAFormulaCharacter_GetsOneMore(string field, string expected)
+    {
+        Assert.Equal(expected + "\r\n", Write(field));
+    }
+
+    [Theory]
+    [InlineData("'Tis the season")]
+    [InlineData("rock 'n' roll")]
+    [InlineData("'")]
+    public void AppendRow_FieldWithAnApostropheThatIsNotBeforeAFormulaCharacter_IsUnchanged(string field)
+    {
+        Assert.Equal(field + "\r\n", Write(field));
+    }
+
     [Fact]
     public void AppendRow_FormulaFieldThatAlsoNeedsQuoting_IsPrefixedThenQuoted()
     {

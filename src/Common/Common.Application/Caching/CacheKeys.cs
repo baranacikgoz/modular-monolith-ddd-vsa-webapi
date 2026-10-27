@@ -82,5 +82,15 @@ public static class CacheKeys
         ///     evicted by removing this key.
         /// </summary>
         public const string KeycloakRoleGraph = "keycloak_role_graph";
+
+        /// <summary>
+        ///     The deduplicated effective members of one realm role, built once so a walk over its pages slices a list instead of
+        ///     re-reading Keycloak for every page. Held in memory only and expires after <c>KeycloakOptions.RoleGraphCacheSeconds</c>;
+        ///     removing this key forces a re-read.
+        /// </summary>
+        public static string KeycloakRoleMembers(string roleName)
+        {
+            return $"keycloak_role_members:{roleName}";
+        }
     }
 }

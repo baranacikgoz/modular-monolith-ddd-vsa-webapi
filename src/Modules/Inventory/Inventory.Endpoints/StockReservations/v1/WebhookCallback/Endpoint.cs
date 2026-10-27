@@ -54,8 +54,6 @@ internal static class Endpoint
         IInventoryDbContext dbContext,
         SecretProtector protector,
         WarehouseWebhookIntake intake,
-        IOptions<InventoryOptions> options,
-        TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         // The raw bytes, never a decoded string: the signature covers exactly what the partner sent.
@@ -73,25 +71,12 @@ internal static class Endpoint
                     .Map(() => connection)))
             .BindAsync(connection => connection.Status == WarehouseConnectionStatus.Active
                 ? ParseAndValidateAsync(rawBody, validator, cancellationToken)
-                    .TapAsync(body => EnsureNotFromTheFuture(
-                        body.OccurredOn, timeProvider.GetUtcNow(), options.Value.WebhookMaxFutureSkewSeconds))
                     .BindAsync(body => intake.ReceiveAsync(
                         connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, body.OccurredOn, cancellationToken))
                 // A deactivated connection's authenticated delivery is acknowledged and ignored: the warehouse stops retrying and
                 // nothing of its body is read or applied.
                 : Task.FromResult(Result<WebhookDeliveryOutcome>.Success(WebhookDeliveryOutcome.Ignored)))
             .TapAsync(RecordOutcome);
-    }
-
-    /// <summary>
-    ///     A timestamp far ahead of the clock would make every later delivery of the reservation stale once it was applied, so it
-    ///     is refused up front: nothing is recorded, and the warehouse can correct its clock and deliver again.
-    /// </summary>
-    private static Result EnsureNotFromTheFuture(DateTimeOffset? occurredOn, DateTimeOffset now, int maxFutureSkewSeconds)
-    {
-        return occurredOn is { } stamp && stamp > now.AddSeconds(maxFutureSkewSeconds)
-            ? StockReservationErrors.WebhookOccurredOnInTheFuture
-            : Result.Success;
     }
 
     private static void RecordOutcome(WebhookDeliveryOutcome outcome)

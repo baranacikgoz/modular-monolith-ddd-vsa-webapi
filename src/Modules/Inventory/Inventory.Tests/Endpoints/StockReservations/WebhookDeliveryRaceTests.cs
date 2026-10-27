@@ -1,5 +1,6 @@
 using System.Net;
 using Common.Application.Auth;
+using Common.Application.Options;
 using Common.Domain.Events;
 using Common.Domain.ResultMonad;
 using Common.IntegrationEvents;
@@ -17,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Inventory.Tests.Endpoints.StockReservations;
@@ -87,7 +89,8 @@ public class WebhookDeliveryRaceTests(IntegrationTestWebAppFactory factory) : Ba
 
         await using var scope = Factory.Services.CreateAsyncScope();
         await using var racingDb = NewContext(scope.ServiceProvider, interceptor);
-        var intake = new WarehouseWebhookIntake(racingDb, TimeProvider.System);
+        var intake = new WarehouseWebhookIntake(
+            racingDb, TimeProvider.System, scope.ServiceProvider.GetRequiredService<IOptions<InventoryOptions>>());
 
         return await intake.ReceiveAsync(connection, ownDeliveryId, reservation.Id, providerReference, null, null, CancellationToken.None);
     }

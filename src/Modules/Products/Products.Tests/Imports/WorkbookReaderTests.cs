@@ -35,6 +35,36 @@ public class WorkbookReaderTests
         Assert.Equal(["Lamp, desk", "Says \"bright\"", "5", "49.9", "LAMP-1", "id-1", "store-1", "2026-01-01"], row.Cells);
     }
 
+    // The export puts an apostrophe in front of a cell a spreadsheet would run as a formula; a spreadsheet keeps it as part of the
+    // text when the CSV is opened and saved as a workbook, so the reader takes it off again.
+    [Theory]
+    [InlineData("'=SUM(A1)", "=SUM(A1)")]
+    [InlineData("'+1 deal", "+1 deal")]
+    [InlineData("'-5 degree sock", "-5 degree sock")]
+    [InlineData("'@home", "@home")]
+    public void ReadRows_TextCellWithTheFormulaGuardApostrophe_IsReadWithoutIt(string cell, string expected)
+    {
+        using var workbook = new MemoryStream(Workbooks.FromCsv($"Name,Description\r\n{cell},x\r\n"));
+
+        var row = Assert.Single(WorkbookReader.ReadRows(workbook));
+
+        Assert.Equal(expected, row.Cells[0]);
+    }
+
+    [Theory]
+    [InlineData("'Tis the season")]
+    [InlineData("'")]
+    [InlineData("rock 'n' roll")]
+    [InlineData("=SUM(A1)")]
+    public void ReadRows_TextCellWithoutTheFormulaGuardApostrophe_IsReadAsItIs(string cell)
+    {
+        using var workbook = new MemoryStream(Workbooks.FromCsv($"Name,Description\r\n\"{cell}\",x\r\n"));
+
+        var row = Assert.Single(WorkbookReader.ReadRows(workbook));
+
+        Assert.Equal(cell, row.Cells[0]);
+    }
+
     [Fact]
     public void ReadRows_ReadTwiceFromTheSameStream_LeavesTheStreamOpenForTheSecondPass()
     {

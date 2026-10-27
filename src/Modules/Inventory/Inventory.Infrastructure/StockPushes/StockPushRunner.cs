@@ -8,6 +8,7 @@ using Inventory.Application.Gateway;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.WarehouseConnections;
+using Inventory.Domain.WarehouseConnections.Errors;
 using Inventory.Infrastructure.Telemetry;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,13 @@ namespace Inventory.Infrastructure.StockPushes;
 ///         ignores it, until its quantity is marked again. One stock level the warehouse cannot take never holds back the
 ///         ones behind it.
 ///     </para>
+///     <para>
+///         A connection the host will never build a gateway for (a Dummy connection in a Production host) fails every run the
+///         same way and no warehouse is to blame, so each run counts one attempt on every mark of its store instead of leaving
+///         the sweep to queue the same failing run for ever: at <see cref="InventoryOptions.StockPushMaxAttempts" /> the marks
+///         are parked like a refused one. A connection that is merely deactivated counts nothing: the sweep does not queue for
+///         it and its marks wait for the store's next active connection.
+///     </para>
 /// </summary>
 public sealed partial class StockPushRunner(
     IInventoryDbContext dbContext,
@@ -45,6 +53,8 @@ public sealed partial class StockPushRunner(
     ILogger<StockPushRunner> logger)
 {
     private static readonly string CallFailedKey = WarehouseGatewayErrors.CallFailed(HttpStatusCode.BadRequest).Key;
+
+    private static readonly string DummyInProductionKey = WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key;
 
     public async Task RunAsync(WarehouseConnectionId connectionId, CancellationToken cancellationToken)
     {
@@ -80,8 +90,8 @@ public sealed partial class StockPushRunner(
                 .TagWith(nameof(PushUnderLeaseAsync), connectionId)
                 .Where(c => c.Id == connectionId)
                 .SingleAsResultAsync(nameof(WarehouseConnection), cancellationToken)
-                .CombineAsync(connection => Task.FromResult(gatewayFactory.Create(connection)))
-                .BindAsync(pair => PushBatchesAsync(pair.Item1.StoreId, pair.Item2, cancellationToken));
+                .BindAsync(connection => CreateGatewayAsync(connection, cancellationToken))
+                .BindAsync(target => PushBatchesAsync(target.StoreId, target.Gateway, cancellationToken));
 
             return outcome.Match(
                 marksRemain => marksRemain,
@@ -95,6 +105,30 @@ public sealed partial class StockPushRunner(
         {
             await ReleaseLeaseAsync(connectionId);
         }
+    }
+
+    /// <summary>
+    ///     The gateway of the connection, or the factory's refusal. A refusal that no later run can cure counts an attempt on the
+    ///     store's marks on its way out (see <see cref="StockPushMarks.RecordConfigurationFailureAsync" />).
+    /// </summary>
+    private Task<Result<PushTarget>> CreateGatewayAsync(WarehouseConnection connection, CancellationToken cancellationToken)
+    {
+        return gatewayFactory.Create(connection).Match(
+            gateway => Task.FromResult(Result<PushTarget>.Success(new PushTarget(connection.StoreId, gateway))),
+            error => CountConfigurationFailureAsync(connection, error, cancellationToken));
+    }
+
+    private async Task<Result<PushTarget>> CountConfigurationFailureAsync(
+        WarehouseConnection connection, Error error, CancellationToken cancellationToken)
+    {
+        if (error.Key == DummyInProductionKey)
+        {
+            var counted = await StockPushMarks.RecordConfigurationFailureAsync(
+                dbContext, connection.StoreId, error.Key, options.Value.StockPushMaxAttempts, timeProvider.GetUtcNow(), cancellationToken);
+            LogMarksCounted(logger, connection.Id.Value, error.Key, counted);
+        }
+
+        return error;
     }
 
     private async Task<Result<bool>> PushBatchesAsync(DefaultIdType storeId, IWarehouseGateway gateway, CancellationToken cancellationToken)
@@ -239,6 +273,8 @@ public sealed partial class StockPushRunner(
         }
     }
 
+    private sealed record PushTarget(DefaultIdType StoreId, IWarehouseGateway Gateway);
+
     private sealed record DirtyStock(StockLevelId StockLevelId, long MarkVersion, DefaultIdType ProductId, int Quantity);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Stock push of connection {ConnectionId} skipped: another run holds its lease.")]
@@ -246,6 +282,9 @@ public sealed partial class StockPushRunner(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Stock push of connection {ConnectionId} stopped ({Reason}); its marks stay for the next attempt.")]
     private static partial void LogPushStopped(ILogger logger, Guid connectionId, string reason);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Stock push of connection {ConnectionId} cannot run ({Reason}); counted one attempt on {MarkCount} marks of its store.")]
+    private static partial void LogMarksCounted(ILogger logger, Guid connectionId, string reason, int markCount);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Stock push of connection {ConnectionId} could not release its lease; the server drops it with the session.")]
     private static partial void LogLeaseReleaseFailed(ILogger logger, Guid connectionId, Exception exception);
