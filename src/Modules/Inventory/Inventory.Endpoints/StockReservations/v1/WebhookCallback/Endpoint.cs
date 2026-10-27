@@ -70,7 +70,7 @@ internal static class Endpoint
                     .Map(() => connection)))
             .BindAsync(connection => connection.Status == WarehouseConnectionStatus.Active
                 ? ParseAndValidateAsync(rawBody, validator, cancellationToken).BindAsync(body => intake.ReceiveAsync(
-                    connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.Status, cancellationToken))
+                    connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, cancellationToken))
                 // A deactivated connection's authenticated delivery is acknowledged and ignored: the warehouse stops retrying and
                 // nothing of its body is read or applied.
                 : Task.FromResult(Result<WebhookDeliveryOutcome>.Success(WebhookDeliveryOutcome.Ignored)))
