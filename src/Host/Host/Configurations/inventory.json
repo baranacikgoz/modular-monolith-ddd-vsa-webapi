@@ -6,9 +6,8 @@
     "StockReservationExpirySweepBatchSize": 100,
     "ProductSummaryReconciliationCron": "0 3 * * *",
     "BusinessTimeZoneId": "Europe/Berlin",
-    "WarehouseGatewayProvider": "Dummy",
-    "WarehouseGatewayBaseUrl": "https://warehouse.example-partner.local",
-    "WebhookSharedSecret": "dev-only-shared-secret-change-in-production",
-    "WebhookMaxBodyBytes": 65536
+    "WebhookMaxBodyBytes": 65536,
+    "WebhookDeliveryRetentionDays": 30,
+    "WebhookDeliveryRetentionCron": "0 4 * * *"
   }
 }

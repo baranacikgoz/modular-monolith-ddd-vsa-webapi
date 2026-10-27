@@ -3,13 +3,6 @@ using FluentValidation;
 
 namespace Common.Application.Options;
 
-public enum WarehouseGatewayProvider
-{
-    /// <summary>In-memory fake, always succeeds. Non-production only.</summary>
-    Dummy,
-    Http
-}
-
 public class InventoryOptions
 {
     public required int MaxOccurrencesPerSeries { get; set; }
@@ -30,16 +23,17 @@ public class InventoryOptions
     /// </summary>
     public required string BusinessTimeZoneId { get; set; }
 
-    public required WarehouseGatewayProvider WarehouseGatewayProvider { get; set; }
-
-    /// <summary>Base URL for the warehouse system's HTTP API. Only read when Provider is Http.</summary>
-    public string? WarehouseGatewayBaseUrl { get; set; }
-
-    /// <summary>Shared secret used to verify the HMAC-SHA256 signature on inbound warehouse webhook callbacks.</summary>
-    public required string WebhookSharedSecret { get; set; }
-
     /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
     public required int WebhookMaxBodyBytes { get; set; }
+
+    /// <summary>
+    ///     Days a recorded webhook delivery id is kept. It has to outlive the longest span in which the warehouse system may deliver
+    ///     the same delivery again; after that the record only takes space.
+    /// </summary>
+    public required int WebhookDeliveryRetentionDays { get; set; }
+
+    /// <summary>Cron for the recurring job that deletes recorded webhook deliveries older than <see cref="WebhookDeliveryRetentionDays" />.</summary>
+    public required string WebhookDeliveryRetentionCron { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -71,23 +65,16 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
             .Must(id => !string.IsNullOrEmpty(id) && TimeZoneInfo.TryFindSystemTimeZoneById(id, out _))
             .WithMessage("BusinessTimeZoneId must be the id of a time zone known to the host.");
 
-        // Dummy gateway always succeeds; set Provider to 'Http' (with a real BaseUrl) before deploying.
-        RuleFor(x => x.WarehouseGatewayProvider)
-            .Must((_, provider, context) => !context.IsProduction() || provider != WarehouseGatewayProvider.Dummy)
-            .WithMessage("InventoryOptions.WarehouseGatewayProvider is 'Dummy' in Production.");
-
-        RuleFor(x => x.WarehouseGatewayBaseUrl)
-            .NotEmpty()
-            .Must(x => Uri.TryCreate(x, UriKind.Absolute, out _))
-            .WithMessage("WarehouseGatewayBaseUrl must be a valid URL.")
-            .When(x => x.WarehouseGatewayProvider == WarehouseGatewayProvider.Http);
-
-        RuleFor(x => x.WebhookSharedSecret)
-            .NotEmpty()
-            .WithMessage("WebhookSharedSecret must not be empty.");
-
         RuleFor(x => x.WebhookMaxBodyBytes)
             .GreaterThan(0)
             .WithMessage("WebhookMaxBodyBytes must be greater than 0.");
+
+        RuleFor(x => x.WebhookDeliveryRetentionDays)
+            .GreaterThan(0)
+            .WithMessage("WebhookDeliveryRetentionDays must be greater than 0.");
+
+        RuleFor(x => x.WebhookDeliveryRetentionCron)
+            .NotEmpty()
+            .WithMessage("WebhookDeliveryRetentionCron must not be empty.");
     }
 }

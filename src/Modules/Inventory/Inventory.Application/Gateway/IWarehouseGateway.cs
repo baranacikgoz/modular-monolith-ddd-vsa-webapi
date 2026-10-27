@@ -3,9 +3,17 @@ using Common.Domain.ResultMonad;
 namespace Inventory.Application.Gateway;
 
 /// <summary>
-///     3rd-party warehouse system integration, paired with <c>StockReservation.BeginReleaseAttempt</c> /
+///     3rd-party warehouse system integration for ONE connection, paired with <c>StockReservation.BeginReleaseAttempt</c> /
 ///     <c>AbandonReleaseAttempt</c>: the aggregate's attempt marker guards against a blind double-release,
-///     this gateway is the actual outbound call made while that marker is held.
+///     this gateway is the actual outbound call made while that marker is held. Obtained from
+///     <see cref="IWarehouseGatewayFactory" />, which binds it to the connection's provider, address and credential.
+///     <para>
+///         Nothing here is retried inside a request. A failed first attempt is never sent a second time, because the
+///         release changes state at the warehouse and a timeout does not say whether it happened. A <see cref="Result" />
+///         failure is a definite outcome (the warehouse answered, or our own quota or open circuit stopped the call before
+///         anything was sent); an exception (timeout, connection reset) is ambiguous and must be resolved with
+///         <see cref="ReconcileReleaseAsync" />.
+///     </para>
 /// </summary>
 public interface IWarehouseGateway
 {

@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Bogus;
@@ -107,34 +106,6 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         var client = factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("TestScheme");
         return client;
-    }
-
-    private async Task<string> WebhookSecretAsync()
-    {
-        using var scope = Factory.Services.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<IOptions<InventoryOptions>>().Value.WebhookSharedSecret;
-    }
-
-    private static string ComputeSignature(string rawBody, string secret)
-    {
-        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
-        return Convert.ToHexString(hmac.ComputeHash(Encoding.UTF8.GetBytes(rawBody)));
-    }
-
-    private async Task<HttpResponseMessage> SendWebhookAsync(
-        HttpClient client, StockReservationId reservationId, string providerReference, string? signatureOverride = null)
-    {
-        var rawBody = $$"""{"ReservationId":"{{reservationId.Value}}","ProviderReference":"{{providerReference}}"}""";
-        var secret = await WebhookSecretAsync();
-        var signature = signatureOverride ?? ComputeSignature(rawBody, secret);
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri("/v1/stock-reservations/webhooks/warehouse", UriKind.Relative))
-        {
-            Content = new StringContent(rawBody, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Add("X-Warehouse-Signature", signature);
-
-        return await client.SendAsync(request);
     }
 
     private async Task<StockReservation?> FindReservationAsync(StockReservationId id)
@@ -323,64 +294,9 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // ── Commit via HMAC webhook ──
+    // The warehouse webhook is covered by WebhookCallbackTests and WebhookDeliveryRaceTests.
 
-    [Fact]
-    public async Task Webhook_ValidSignature_CommitsReservation()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var response = await SendWebhookAsync(client, reservation.Id, "provider-ref-1");
-
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Committed, reloaded!.Status);
-        Assert.Equal("provider-ref-1", reloaded.ProviderReference);
-    }
-
-    [Fact]
-    public async Task Webhook_InvalidSignature_ReturnsUnauthorized()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var response = await SendWebhookAsync(client, reservation.Id, "provider-ref-1", signatureOverride: "00");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Webhook_MissingSignatureHeader_ReturnsUnauthorized()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-        var rawBody = $$"""{"ReservationId":"{{reservation.Id.Value}}","ProviderReference":"x"}""";
-
-        using var content = new StringContent(rawBody, Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(new Uri("/v1/stock-reservations/webhooks/warehouse", UriKind.Relative), content);
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Webhook_ProviderReferenceOverMaxLength_ReturnsBadRequest()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var response = await SendWebhookAsync(client, reservation.Id, new string('r', Constants.ProviderReferenceMaxLength + 1));
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
-    }
+    // ── Commit ──
 
     [Fact]
     public async Task Commit_ProviderReferenceOverMaxLength_ReturnsBadRequest()
@@ -414,126 +330,6 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         var reloaded = await FindReservationAsync(reservation.Id);
         Assert.Equal(ReservationStatus.Committed, reloaded!.Status);
         Assert.Equal(reference, reloaded.ProviderReference);
-    }
-
-    [Fact]
-    public async Task Webhook_BodyOverTheLimit_Returns413BeforeTheEndpointReadsIt()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-        int maxBodyBytes;
-        using (var scope = Factory.Services.CreateScope())
-        {
-            maxBodyBytes = scope.ServiceProvider.GetRequiredService<IOptions<InventoryOptions>>().Value.WebhookMaxBodyBytes;
-        }
-
-        // Correctly signed, so only the size can reject it.
-        var response = await SendWebhookAsync(client, reservation.Id, new string('x', maxBodyBytes));
-
-        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Active, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Webhook_MalformedBody_ReturnsBadRequest()
-    {
-        var client = AuthedClient(Factory);
-        const string rawBody = "{not valid json";
-        var secret = await WebhookSecretAsync();
-        var signature = ComputeSignature(rawBody, secret);
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri("/v1/stock-reservations/webhooks/warehouse", UriKind.Relative))
-        {
-            Content = new StringContent(rawBody, Encoding.UTF8, "application/json")
-        };
-        request.Headers.Add("X-Warehouse-Signature", signature);
-
-        var response = await client.SendAsync(request);
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Webhook_DuplicateProviderReference_IsIdempotentNoOp()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var first = await SendWebhookAsync(client, reservation.Id, "provider-ref-dup");
-        var second = await SendWebhookAsync(client, reservation.Id, "provider-ref-dup");
-
-        Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, second.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Committed, reloaded!.Status);
-        Assert.Equal("provider-ref-dup", reloaded.ProviderReference);
-    }
-
-    [Fact]
-    public async Task Webhook_ConflictingProviderReference_TransitionsToRequiresReconciliation()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var first = await SendWebhookAsync(client, reservation.Id, "provider-ref-A");
-        var second = await SendWebhookAsync(client, reservation.Id, "provider-ref-B");
-
-        // The aggregate never surfaces a conflicting webhook as a client-facing error - it's flagged for
-        // manual reconciliation instead, so the
-        // webhook always 204s; the conflict is only visible in the persisted Status.
-        Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, second.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.RequiresReconciliation, reloaded!.Status);
-    }
-
-    // ── Release ──
-
-    [Fact]
-    public async Task Release_ActiveReservation_Succeeds()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var response = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Released, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Release_AlreadyReleased_IsIdempotentNoOp()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var first = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-        var second = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, second.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Released, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Release_CommittedReservation_ReturnsBadRequest()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedCommittedReservationAsync(
-            productId, 10, DateTimeOffset.UtcNow.AddDays(5), "already-committed-ref");
-
-        var response = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     // ── Sweep expiry (in-process call, not waiting for the real cron) ──

@@ -82,6 +82,9 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
                 { "CustomRateLimitingOptions:Register:Limit", "5000" },
                 { "CustomRateLimitingOptions:Register:PeriodInMs", "60000" },
                 { "CustomRateLimitingOptions:Register:QueueLimit", "1000" },
+                { "CustomRateLimitingOptions:WarehouseWebhook:Limit", "5000" },
+                { "CustomRateLimitingOptions:WarehouseWebhook:PeriodInMs", "60000" },
+                { "CustomRateLimitingOptions:WarehouseWebhook:QueueLimit", "1000" },
                 { "AuditLogOptions:RetentionDays", "90" },
                 { "CaptchaOptions:BaseUrl", "" },
                 // Processor OFF for slice tests: the OutboxProcessor BackgroundService opens

@@ -47,4 +47,7 @@ public static class InventoryTelemetry
 
     public static readonly Counter<long> StockMovementsRecorded =
         Meter.CreateCounter<long>("inventory.stock_movements_recorded.total", description: "Total ledger movements appended to stock levels, tagged by movement type");
+
+    public static readonly Counter<long> WebhookDeliveries =
+        Meter.CreateCounter<long>("inventory.warehouse_webhook_deliveries.total", description: "Total authenticated warehouse webhook deliveries, tagged by outcome (applied, duplicate, ignored)");
 }

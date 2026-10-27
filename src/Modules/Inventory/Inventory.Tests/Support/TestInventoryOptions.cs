@@ -6,7 +6,10 @@ internal static class TestInventoryOptions
 {
     /// <summary>A valid options object; the arguments are the fields a test varies.</summary>
     public static InventoryOptions Create(
-        string productSummaryReconciliationCron = "0 3 * * *", string businessTimeZoneId = "Europe/Berlin")
+        string productSummaryReconciliationCron = "0 3 * * *",
+        string businessTimeZoneId = "Europe/Berlin",
+        int webhookDeliveryRetentionDays = 30,
+        string webhookDeliveryRetentionCron = "0 4 * * *")
     {
         return new InventoryOptions
         {
@@ -16,9 +19,9 @@ internal static class TestInventoryOptions
             StockReservationExpirySweepBatchSize = 100,
             ProductSummaryReconciliationCron = productSummaryReconciliationCron,
             BusinessTimeZoneId = businessTimeZoneId,
-            WarehouseGatewayProvider = WarehouseGatewayProvider.Dummy,
-            WebhookSharedSecret = "secret",
-            WebhookMaxBodyBytes = 65536
+            WebhookMaxBodyBytes = 65536,
+            WebhookDeliveryRetentionDays = webhookDeliveryRetentionDays,
+            WebhookDeliveryRetentionCron = webhookDeliveryRetentionCron
         };
     }
 }

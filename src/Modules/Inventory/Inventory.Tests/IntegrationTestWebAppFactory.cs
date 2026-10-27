@@ -1,6 +1,9 @@
 using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.IAM;
 using Common.InterModuleRequests.Products;
 using Common.Tests;
+using Inventory.Application.Gateway;
+using Inventory.Tests.Support;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +28,35 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
     public IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse> ProductSearchClient { get; } =
         Substitute.For<IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse>>();
 
+    /// <summary>
+    ///     Stands in for IAM's bulk user lookup, which the stock movement list calls to name the acting users. IAM is not
+    ///     active in these tests; a test sets what it returns. It answers with no users until then.
+    /// </summary>
+    public IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> UsersClient { get; } =
+        Substitute.For<IInterModuleRequestClient<GetUsersRequest, GetUsersResponse>>();
+
+    /// <summary>
+    ///     The warehouse system every connection talks to in these tests: installed as the primary handler of the gateway
+    ///     factory's HTTP client, so the real gateways, pipelines and encryption run and only the network is replaced. A test
+    ///     calls <see cref="FakeWarehouseHandler.Reset" /> first and sets what it answers.
+    /// </summary>
+    public FakeWarehouseHandler Warehouse { get; } = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
 
-        builder.ConfigureTestServices(services => services.AddSingleton(ProductSearchClient));
+        UsersClient
+            .SendAsync(Arg.Any<GetUsersRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new GetUsersResponse([]));
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddSingleton(ProductSearchClient);
+            services.AddSingleton(UsersClient);
+
+            // A typed client is named after its service type.
+            services.AddHttpClient(nameof(IWarehouseGatewayFactory)).ConfigurePrimaryHttpMessageHandler(() => Warehouse);
+        });
     }
 }

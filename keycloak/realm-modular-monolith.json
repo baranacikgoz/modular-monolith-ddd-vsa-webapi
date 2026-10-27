@@ -276,6 +276,26 @@
             ]
           },
           {
+            "name": "warehouse-connections",
+            "displayName": "Warehouse Connections",
+            "type": "urn:backend-api:resources:warehouse-connections",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/warehouse-connections/*"
+            ],
+            "scopes": [
+              {
+                "name": "warehouse-connections:create"
+              },
+              {
+                "name": "warehouse-connections:view"
+              },
+              {
+                "name": "warehouse-connections:update"
+              }
+            ]
+          },
+          {
             "name": "products",
             "displayName": "Products",
             "type": "urn:backend-api:resources:products",
@@ -532,6 +552,17 @@
             "config": {
               "resources": "[\"stock-levels\"]",
               "scopes": "[\"stock-levels:update\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Warehouse Connections Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"warehouse-connections\"]",
+              "scopes": "[\"warehouse-connections:create\",\"warehouse-connections:view\",\"warehouse-connections:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
