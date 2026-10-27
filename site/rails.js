@@ -60,7 +60,12 @@
     var old = $('.gut', block);
     if (old) old.remove();
     var br = block.getBoundingClientRect(), H = block.scrollHeight;
-    ys = lineEls.map(function (n) { var r = n.getBoundingClientRect(); return r.top - br.top + r.height / 2 + block.scrollTop; });
+    // A line that wraps on a narrow screen puts its station on the first line.
+    ys = lineEls.map(function (n) {
+      var r = n.getBoundingClientRect(), lh = parseFloat(getComputedStyle(n).lineHeight);
+      var h = r.height > lh * 1.5 ? lh : r.height;
+      return r.top - br.top + h / 2 + block.scrollTop;
+    });
     var top = ys[0] - 16, bottom = H - 22;
     var g = svg('svg', { class: 'gut', width: 92, height: H, viewBox: '0 0 92 ' + H });
     g.appendChild(svg('path', { class: 'track', d: 'M' + MAINX + ' ' + top + ' V' + bottom }));

@@ -46,6 +46,7 @@ main,.foot{position:relative;z-index:1}
 .lang button[aria-pressed=true]{background:var(--ink);color:#09090a}
 .gh{font:500 13px var(--sans);text-decoration:none;color:var(--ink2);transition:color .2s}
 .gh:hover{color:var(--signal)}
+.menu-btn,.nav-gh{display:none}
 
 .dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:14px}
 .dots a{position:relative;width:9px;height:9px;border-radius:50%;border:1px solid var(--line2);display:block;transition:all .3s}
@@ -281,7 +282,7 @@ main,.foot{position:relative;z-index:1}
 .walls-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}
 .walls-count{margin:0;font:500 13px var(--mono);color:var(--dim)}
 .walls-count b{font:300 44px/1 var(--sans);color:var(--ink);margin-right:6px;letter-spacing:-.02em}
-.tablets{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;align-items:start}
+.tablets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px;align-items:start}
 .tablet{position:relative;display:flex;flex-direction:column;gap:10px;padding:22px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#111113,#08080a);overflow:hidden;transition:border-color .4s,background .4s}
 .tablet-n{font:400 44px/1 var(--serif);color:var(--faint);letter-spacing:.02em}
 .tablet-t{margin:0;font-size:16.5px;line-height:1.4;color:var(--ink)}
@@ -431,7 +432,7 @@ main,.foot{position:relative;z-index:1}
 .termbar .btn{padding:8px 16px;font-size:13px}
 .termwin .term{border:0;border-radius:0;min-height:240px;font-size:13.5px;padding:22px}
 .docs-h{margin-top:70px}
-.docs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.docs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
 .doc{display:flex;flex-direction:column;gap:6px;height:100%;padding:18px 20px;border:1px solid var(--line);border-radius:16px;text-decoration:none;transition:all .3s var(--ease);background:rgba(236,231,219,.015)}
 .doc:hover{border-color:var(--signal);transform:translateY(-4px);background:rgba(255,106,31,.05)}
 .doc b{font:500 15px var(--sans);display:flex;justify-content:space-between;gap:10px}
@@ -448,10 +449,22 @@ main,.foot{position:relative;z-index:1}
 
 @media (max-width:1100px){
   .dots{display:none}
-  .nav-links{display:none}
   .atlas,.rails,.agents,.lab{grid-template-columns:minmax(0,1fr)}
   .nums{grid-template-columns:repeat(3,minmax(0,1fr))}
   .ledger{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .menu-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:40px;height:40px;padding:0;border:1px solid var(--line2);border-radius:50%;background:none;cursor:pointer;transition:border-color .25s}
+  .menu-btn:hover{border-color:var(--ink)}
+  .menu-btn i{display:block;width:16px;height:1.5px;background:var(--ink);transition:transform .3s var(--ease)}
+  .nav.open{background:var(--bg);border-color:var(--line)}
+  .nav.open .menu-btn i:nth-child(1){transform:translateY(3.25px) rotate(45deg)}
+  .nav.open .menu-btn i:nth-child(2){transform:translateY(-3.25px) rotate(-45deg)}
+  .nav-links{position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:2px;padding:8px 14px 18px;max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow-y:auto;background:var(--bg);border-bottom:1px solid var(--line);visibility:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .25s,transform .25s var(--ease),visibility 0s .25s}
+  .nav.open .nav-links{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition:opacity .25s,transform .25s var(--ease)}
+  .nav-links a{padding:14px 16px;font-size:16px;border-radius:12px}
+}
+@media (max-width:1100px) and (max-height:520px){
+  .nav-links{flex-direction:row;flex-wrap:wrap}
+  .nav-links a{flex:1 1 30%;padding:10px 12px;text-align:center}
 }
 @media (max-width:760px){
   body{font-size:16px}
@@ -459,17 +472,51 @@ main,.foot{position:relative;z-index:1}
   .slab-wrap{--sh:min(34vh,300px);left:50%;bottom:calc(5vh + 1px)}
   .sun{left:50%;width:70vh;height:70vh;bottom:-30vh}
   .horizon{bottom:5vh}
-  .hero-copy{margin-bottom:34vh}
+  .hero-copy{margin-bottom:calc(min(34vh,300px) + 5vh)}
   .stage-wrap,.flight,.lab{padding:14px;border-radius:18px}
   .stage{padding-bottom:0;padding-left:60px}
   .procs{flex-direction:column}
   .ledger{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nums{grid-template-columns:repeat(2,minmax(0,1fr))}
   .gh{display:none}
-  .codeblock{padding-left:78px}
+  .nav-gh{display:block}
+  .codeblock{padding:18px 14px 18px 78px}
   .graph-copy{max-width:none;padding:20px}
   .nav{padding:0 14px}
   .brand-name{display:none}
+  .seg{border-radius:22px}
+  .pal-input{font-size:16px}
+  .seq-scroll,.codeblock,.term{overscroll-behavior-x:contain}
+  .atlas-map{padding:4px}
+  .node text{font-size:15.5px}
+  .node .sub{font-size:10.5px}
+  .hub text{font-size:12px}
+  .edge-lbl{font-size:12.5px}
+  .dossier{padding:20px}
+  .dos-grid{grid-template-columns:minmax(0,1fr);gap:0}
+  .dos-grid dt{margin:14px 0 6px;padding-top:0}
+  .dos-grid dt:first-child{margin-top:0}
+  .routes li{overflow-wrap:anywhere}
+  .cl{display:block;min-width:0;padding-left:2ch;text-indent:-2ch;white-space:pre-wrap;word-break:break-all;font-size:12px;line-height:2}
+  .sw{margin:-5px 0 -5px 10px;text-indent:0;vertical-align:middle}
+  .graph-stats{flex-wrap:wrap;gap:12px 26px}
+  .graph-stats dd{font-size:38px}
+}
+@media (max-width:380px){
+  .hero,.sec,.band,.foot{padding-left:18px;padding-right:18px}
+  .stage-wrap,.flight,.lab{padding:12px}
+  .panel,.rulebook{padding:18px}
+}
+@media (pointer:coarse) and (max-width:1100px){
+  .lang button{padding:9px 13px}
+  .tog span{padding:11px 16px}
+  .tablet-btn{padding:11px 18px}
+  .pal-item{padding:10px 14px}
+  .seg button{padding:11px 18px}
+  .sw{padding:6px 14px 6px 6px}
+}
+@media (hover:none){
+  .kbd-hint{display:none}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}

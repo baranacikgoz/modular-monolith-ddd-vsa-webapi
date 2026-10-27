@@ -23,7 +23,7 @@
     <span class="brand-slab" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span class="brand-name">Modular Monolith</span>
   </a>
-  <nav class="nav-links" aria-label="Sections">
+  <nav class="nav-links" id="navLinks" aria-label="Sections">
     <a href="#deploy" data-i18n="nav.deploy">Deploy</a>
     <a href="#flight" data-i18n="nav.flight">Flight</a>
     <a href="#walls" data-i18n="nav.walls">Walls</a>
@@ -31,6 +31,7 @@
     <a href="#rails" data-i18n="nav.rails">Rails</a>
     <a href="#agents" data-i18n="nav.agents">Agents</a>
     <a href="#start" data-i18n="nav.start">Start</a>
+    <a class="nav-gh" href="https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi" target="_blank" rel="noopener">GitHub ↗</a>
   </nav>
   <div class="nav-right">
     <div class="lang" role="group" aria-label="Language">
@@ -38,6 +39,7 @@
       <button type="button" data-lang="tr" aria-pressed="false">TR</button>
     </div>
     <a class="gh" href="https://github.com/baranacikgoz/modular-monolith-ddd-vsa-webapi" target="_blank" rel="noopener">GitHub ↗</a>
+    <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Menu" data-i18n-aria="menu.aria"><i></i><i></i></button>
   </div>
 </header>
 
@@ -92,7 +94,7 @@
           <button type="button" role="radio" aria-checked="false" data-topo="duo"><span data-i18n="topo.duo">Two processes</span><small>2</small></button>
           <button type="button" role="radio" aria-checked="false" data-topo="quad"><span data-i18n="topo.quad">Four processes</span><small>4</small></button>
         </div>
-        <p class="stage-hint"><span class="kbd">S</span> <span data-i18n="stage.cycle">cycles the shape</span> · <span data-i18n="stage.click">click a module to make it talk</span></p>
+        <p class="stage-hint"><span class="kbd-hint"><span class="kbd">S</span> <span data-i18n="stage.cycle">cycles the shape</span> · </span><span data-i18n="stage.click">click a module to make it talk</span></p>
         <p class="zero"><b>0</b> <span data-i18n="stage.zero">call sites changed</span></p>
       </div>
 

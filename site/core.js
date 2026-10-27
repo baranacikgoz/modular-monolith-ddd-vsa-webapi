@@ -114,6 +114,22 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  function initMenu() {
+    var nav = MM.$('#nav'), btn = MM.$('#menuBtn'), panel = MM.$('#navLinks');
+    if (!nav || !btn || !panel) return;
+    var set = function (open) {
+      nav.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    };
+    btn.addEventListener('click', function () { set(!nav.classList.contains('open')); });
+    panel.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+    document.addEventListener('click', function (e) { if (!nav.contains(e.target)) set(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); btn.focus(); }
+    });
+    window.matchMedia('(min-width:1101px)').addEventListener('change', function (e) { if (e.matches) set(false); });
+  }
+
   function initReveal() {
     var items = MM.$$('.reveal');
     if (!('IntersectionObserver' in window) || MM.reduced) {
@@ -191,6 +207,7 @@
 
   function init() {
     initNav();
+    initMenu();
     initReveal();
     initCounters();
     initDots();

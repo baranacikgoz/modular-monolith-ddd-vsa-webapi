@@ -28,6 +28,15 @@
 
   var S = { script: [], groups: [], pos: 0, auto: false, busy: false, token: 0, led: null, deadY: {} };
   var seq = $('#seq'), narr = $('#narr'), verdict = $('#verdict'), ledgerEl = $('#ledger');
+  var seqScroll = $('.seq-scroll');
+
+  // On a narrow screen the diagram is wider than its box: keep the moving dot in view.
+  function followDot(x) {
+    var room = seqScroll.scrollWidth - seqScroll.clientWidth;
+    if (room <= 1) return;
+    var want = MM.clamp(x * seq.getBoundingClientRect().width / 1000 - seqScroll.clientWidth / 2, 0, room);
+    seqScroll.scrollLeft += (want - seqScroll.scrollLeft) * 0.25;
+  }
   var chA = $('#chA'), chB = $('#chB'), chC = $('#chC');
   var btnPlay = $('#flPlay'), btnStep = $('#flStep'), btnReset = $('#flReset');
   var ledEls = {};
@@ -247,6 +256,7 @@
       var pt = o.path.getPointAtLength(len * q);
       S.dot.setAttribute('cx', pt.x);
       S.dot.setAttribute('cy', pt.y);
+      followDot(pt.x);
     });
     S.dot.setAttribute('opacity', 0);
     o.path.style.strokeDasharray = '';
@@ -322,6 +332,7 @@
     S.led = newLedger();
     S.script = buildScript(flags());
     layout();
+    seqScroll.scrollLeft = 0;
     paintLedger();
     idleNarr();
     verdict.textContent = '';

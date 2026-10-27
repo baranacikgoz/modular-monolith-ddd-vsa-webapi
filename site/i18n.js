@@ -12,6 +12,7 @@
     'nav.rails': 'Raylar',
     'nav.agents': 'Ajanlar',
     'nav.start': 'Başla',
+    'menu.aria': 'Menü',
     'slab.aria': 'Monoliti böl',
     'slab.hint': 'monolite tıkla',
     'h1.a': 'Monolit olarak geliştir.',
