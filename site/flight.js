@@ -4,7 +4,7 @@
   var MM = window.MM, $ = MM.$, el = MM.el, svg = MM.svg, C = MM.colors, T = MM.t;
 
   var LANES = [
-    { id: 'seller', name: { en: 'Seller', tr: 'Satıcı' }, color: '#ece7db' },
+    { id: 'owner', name: { en: 'Store owner', tr: 'Mağaza sahibi' }, color: '#ece7db' },
     { id: 'api', name: { en: 'Products API', tr: 'Products API' }, color: C.Products },
     { id: 'agg', name: { en: 'Store aggregate', tr: 'Store aggregate' }, color: C.Products },
     { id: 'db', name: { en: 'PostgreSQL', tr: 'PostgreSQL' }, color: '#8fb4ff' },
@@ -36,8 +36,8 @@
 
   function buildScript(f) {
     var s = [];
-    s.push({ from: 'seller', to: 'api', label: 'POST /stores/my/products',
-      cap: { en: 'A seller sends the request. So far it is plain HTTP.', tr: 'Satıcı isteği gönderir. Şimdilik düz HTTP.' } });
+    s.push({ from: 'owner', to: 'api', label: 'POST /stores/my/products',
+      cap: { en: 'A store owner sends the request. So far it is plain HTTP.', tr: 'Mağaza sahibi isteği gönderir. Şimdilik düz HTTP.' } });
     s.push({ from: 'api', to: 'api', label: { en: 'validate + scope check', tr: 'doğrula + scope kontrolü' },
       cap: { en: 'The request is validated and Keycloak is asked for the products:create-own decision. A failure here short-circuits into a localized ProblemDetails.',
         tr: 'İstek doğrulanır ve Keycloak\'a products:create-own kararı sorulur. Buradaki bir hata, yerelleştirilmiş bir ProblemDetails ile hemen sonuçlanır.' } });
