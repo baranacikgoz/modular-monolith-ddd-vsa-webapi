@@ -290,6 +290,12 @@
               },
               {
                 "name": "products:search-own"
+              },
+              {
+                "name": "products:import-own"
+              },
+              {
+                "name": "products:export"
               }
             ]
           },
@@ -502,7 +508,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"products\"]",
-              "scopes": "[\"products:create-own\",\"products:view-own\",\"products:update-own\",\"products:delete-own\",\"products:search-own\"]",
+              "scopes": "[\"products:create-own\",\"products:view-own\",\"products:update-own\",\"products:delete-own\",\"products:search-own\",\"products:import-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
@@ -513,7 +519,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"products\"]",
-              "scopes": "[\"products:create\",\"products:update\",\"products:delete\"]",
+              "scopes": "[\"products:create\",\"products:update\",\"products:delete\",\"products:export\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -631,6 +637,12 @@
           },
           {
             "name": "products:search-own"
+          },
+          {
+            "name": "products:import-own"
+          },
+          {
+            "name": "products:export"
           },
           {
             "name": "product-templates:create"

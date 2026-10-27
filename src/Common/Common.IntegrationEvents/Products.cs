@@ -17,3 +17,10 @@ public sealed record ProductChangedIntegrationEvent(DefaultIdType ProductId, Def
 
 /// <summary>A store passed the approval step; the owner may now act as a store owner.</summary>
 public sealed record StoreApprovedIntegrationEvent(DefaultIdType StoreId, ApplicationUserId OwnerId) : IntegrationEvent;
+
+/// <summary>Queue message of one product import job. Carries only the job id: the job row holds everything else, and a
+/// message for a job that is no longer Queued is a no-op.</summary>
+public sealed record ProductImportRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
+
+/// <summary>Queue message of one product export job, same contract as <see cref="ProductImportRequestedIntegrationEvent" />.</summary>
+public sealed record ProductExportRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;

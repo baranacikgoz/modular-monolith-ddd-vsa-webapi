@@ -48,6 +48,8 @@ public static class KeycloakScopes
         public const string UpdateOwn = "products:update-own";
         public const string DeleteOwn = "products:delete-own";
         public const string SearchOwn = "products:search-own";
+        public const string ImportOwn = "products:import-own";
+        public const string Export = "products:export";
     }
 
     public static class ProductTemplates
