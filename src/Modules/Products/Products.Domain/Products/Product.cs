@@ -57,6 +57,12 @@ public readonly record struct ProductId(DefaultIdType Value) : IStronglyTypedId,
     }
 }
 
+/// <summary>
+///     A product is created and changed only through the store that owns it (<see cref="Store.AddProduct" />,
+///     <see cref="Store.UpdateProduct" />, <see cref="Store.SetProductAttributes" />, <see cref="Store.SetProductPackageDimensions" />,
+///     <see cref="Store.AddProductImage" />, <see cref="Store.RemoveProductImage" />), which refuses every write while it is not
+///     Active. The mutators below are internal for that reason: they hold the product's own rules, the store holds the gate.
+/// </summary>
 public class Product : AggregateRoot<ProductId>, ISearchLocalized
 {
     private readonly List<ProductImage> _images = [];
@@ -122,7 +128,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
         return product;
     }
 
-    public void Update(string? name, string? description, int? quantity, decimal? price)
+    internal void Update(string? name, string? description, int? quantity, decimal? price)
     {
         if (!string.IsNullOrEmpty(name) && !string.Equals(Name, name, StringComparison.Ordinal))
         {
@@ -202,7 +208,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
     }
 
     /// <summary>The same values as the current ones are no change and raise nothing.</summary>
-    public void SetPackageDimensions(PackageDimensions dimensions)
+    internal void SetPackageDimensions(PackageDimensions dimensions)
     {
         if (dimensions.Equals(PackageDimensions))
         {
@@ -217,7 +223,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
     /// <summary>Replaces the whole list. The same content in the same order is no change and raises nothing; the maximum comes
     /// from the caller (it is an option), the rest of the rules are the product's own.</summary>
-    public Result SetAttributes(IReadOnlyList<ProductAttribute> attributes, int maxAttributes)
+    internal Result SetAttributes(IReadOnlyList<ProductAttribute> attributes, int maxAttributes)
     {
         if (attributes.Count > maxAttributes)
         {
@@ -243,7 +249,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
     /// <summary>The caller has uploaded (or is about to upload) the file under <paramref name="objectKey" />; the key is a
     /// content hash, so the same bytes never become two images of one product.</summary>
-    public Result<ProductImage> AddImage(string objectKey, string contentType, long sizeBytes, int maxImages)
+    internal Result<ProductImage> AddImage(string objectKey, string contentType, long sizeBytes, int maxImages)
     {
         if (_images.Count >= maxImages)
         {
@@ -264,7 +270,7 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
         return image;
     }
 
-    public void RemoveImage(ProductImage image)
+    internal void RemoveImage(ProductImage image)
     {
         var @event = new V1ProductImageRemovedDomainEvent(Id, image.Id, image.ObjectKey);
 

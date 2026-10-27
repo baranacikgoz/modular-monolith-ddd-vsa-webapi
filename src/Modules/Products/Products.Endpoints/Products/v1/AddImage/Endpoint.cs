@@ -59,11 +59,12 @@ internal static class Endpoint
         return await ReadImageAsync(request.File, options.Value.ImageMaxFileBytes, cancellationToken)
             .BindAsync(image => dbContext.Products
                 .Include(p => p.Images)
+                .Include(p => p.Store)
                 .TagWith(nameof(AddImageAsync), request.Id)
                 .Where(p => p.Id == request.Id && p.Store.OwnerId == currentUser.Id)
                 .SingleAsResultAsync(nameof(Product), cancellationToken)
-                .BindAsync(product => Task.FromResult(product.AddImage(
-                    image.ObjectKey(request.Id), image.ContentType, image.Content.Length, options.Value.MaxImagesPerProduct)))
+                .BindAsync(product => Task.FromResult(product.Store.AddProductImage(
+                    product, image.ObjectKey(request.Id), image.ContentType, image.Content.Length, options.Value.MaxImagesPerProduct)))
                 .TapAsync(_ => UploadAsync(objectStore, image, request.Id, cancellationToken))
                 .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
                 .MapAsync(saved => new Response { Id = saved.Id, Url = objectStore.GetPublicUrl(saved.ObjectKey) }))

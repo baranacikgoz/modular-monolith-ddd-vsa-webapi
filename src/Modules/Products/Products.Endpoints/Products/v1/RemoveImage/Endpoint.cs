@@ -42,12 +42,13 @@ internal static partial class Endpoint
 
         return await dbContext.Products
             .Include(p => p.Images)
+            .Include(p => p.Store)
             .TagWith(nameof(RemoveImageAsync), request.Id)
             .Where(p => p.Id == request.Id && p.Store.OwnerId == currentUser.Id)
             .SingleAsResultAsync(nameof(Product), cancellationToken)
             .BindAsync(product => Task.FromResult(product.Images
                 .SingleAsResult(i => i.Id == request.ImageId)
-                .Tap(image => product.RemoveImage(image))))
+                .Tap(image => product.Store.RemoveProductImage(product, image))))
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
             .TapAsync(image => DeleteObjectAsync(objectStore, logger, image.ObjectKey, cancellationToken))
             .TapActivityAsync(activity);

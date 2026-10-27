@@ -4,6 +4,7 @@ using Common.Domain.Events;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
+using Products.Domain.Products.DomainEvents.v1;
 using Products.Domain.Stores.DomainEvents.v1;
 using Products.Domain.Stores.DomainEvents.v2;
 using Products.Domain.Stores.Errors;
@@ -267,6 +268,42 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
             var @event = new V1ProductAddedToStoreDomainEvent(Id, product.ToAddedSnapshot());
             RaiseEvent(@event);
         });
+    }
+
+    // The store is the gate for every write to one of its products: the Product mutators are internal, so nothing outside
+    // this assembly can change a product without going through a method below. The caller loads the product with its store
+    // (Include(p => p.Store)) and passes a product that belongs to this store.
+
+    /// <summary>Only an Active store's products change; every other status answers with the error of that status and changes nothing.</summary>
+    public Result UpdateProduct(Product product, string? name, string? description, int? quantity, decimal? price)
+    {
+        return EnsureActive().Tap(() => product.Update(name, description, quantity, price));
+    }
+
+    /// <summary>Only an Active store's products change; see <see cref="UpdateProduct" />. A refused list (too many, duplicate name) is the product's own error.</summary>
+    public Result SetProductAttributes(Product product, IReadOnlyList<ProductAttribute> attributes, int maxAttributes)
+    {
+        return EnsureActive().Tap(() => product.SetAttributes(attributes, maxAttributes));
+    }
+
+    /// <summary>Only an Active store's products change; see <see cref="UpdateProduct" />.</summary>
+    public Result SetProductPackageDimensions(Product product, PackageDimensions dimensions)
+    {
+        return EnsureActive().Tap(() => product.SetPackageDimensions(dimensions));
+    }
+
+    /// <summary>Only an Active store's products change; see <see cref="UpdateProduct" />. The product loads with its images.</summary>
+    public Result<ProductImage> AddProductImage(Product product, string objectKey, string contentType, long sizeBytes, int maxImages)
+    {
+        return EnsureActive().Match(
+            () => product.AddImage(objectKey, contentType, sizeBytes, maxImages),
+            Result<ProductImage>.Failure);
+    }
+
+    /// <summary>Only an Active store's products change; see <see cref="UpdateProduct" />. The image's object leaves in <see cref="V1ProductImageRemovedDomainEvent" />.</summary>
+    public Result RemoveProductImage(Product product, ProductImage image)
+    {
+        return EnsureActive().Tap(() => product.RemoveImage(image));
     }
 
     /// <summary>
