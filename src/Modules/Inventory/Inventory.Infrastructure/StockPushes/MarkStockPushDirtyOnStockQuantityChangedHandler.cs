@@ -14,8 +14,8 @@ namespace Inventory.Infrastructure.StockPushes;
 ///     A changed quantity has to reach the warehouse of the product's store: the stock level is marked dirty and one
 ///     <see cref="StockPushDueIntegrationEvent" /> per connection is collected (the events of one save coalesce into a
 ///     single message). A store without an active connection has nobody to push to, so nothing is marked. Runs inside the
-///     transaction of the save that changed the quantity (see <c>InventoryDbContext.SaveChangesAsync</c>), so a push can
-///     never read the old quantity under a mark that is already gone.
+///     transaction of the save that changed the quantity, so a push can never read the old quantity under a mark that is
+///     already gone.
 /// </summary>
 public sealed class MarkStockPushDirtyOnStockQuantityChangedHandler(
     IInventoryDbContext dbContext,
