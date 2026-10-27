@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Modular Monolith DDD VSA API",
-    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite: 72 requests. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key`: get captcha key (auto-saves)\n2. `OTP > Send OTP`: send SMS with captcha\n3. `Auth > Create Tokens`: verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\nRequests that need an administrator scope (store approval, stock level changes, warehouse connections, product export) need a token of a user in the `system-admin` role. Requests that upload a file have an empty `File` field to fill in.\n\n### Postman Features Used:\n- **Collection variables**: auto-saved between requests\n- **Pre-request scripts**: auto-inject Bearer token\n- **Test scripts**: status, response time, schema checks\n- **Example responses**: structured success/error samples\n- **Bearer auth**: configured at collection level with `{{accessToken}}`",
+    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite: 74 requests. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key`: get captcha key (auto-saves)\n2. `OTP > Send OTP`: send SMS with captcha\n3. `Auth > Create Tokens`: verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\nRequests that need an administrator scope (store approval, stock level changes, warehouse connections, product export) need a token of a user in the `system-admin` role. Requests that upload a file have an empty `File` field to fill in.\n\n### Postman Features Used:\n- **Collection variables**: auto-saved between requests\n- **Pre-request scripts**: auto-inject Bearer token\n- **Test scripts**: status, response time, schema checks\n- **Example responses**: structured success/error samples\n- **Bearer auth**: configured at collection level with `{{accessToken}}`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "20929383"
   },
@@ -4510,7 +4510,7 @@
                 }
               ]
             },
-            "description": "Get a stock reservation and its status."
+            "description": "Get a stock reservation and its status. isReadOnly is true once the warehouse system reported a status this system has no mapping for; providerStatus then holds the last status it reported."
           },
           "response": []
         },
@@ -4709,10 +4709,10 @@
                 }
               ]
             },
-            "description": "Anonymous callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header, made with the webhook secret of the connection in the route (warehouseWebhookSecret, returned once by Create Warehouse Connection). The pre-request script signs the body. A deliveryId seen before on the connection is acknowledged and applies nothing. 204 No Content.",
+            "description": "Anonymous callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header, made with the webhook secret of the connection in the route (warehouseWebhookSecret, returned once by Create Warehouse Connection). The pre-request script signs the body. A deliveryId seen before on the connection is acknowledged and applies nothing. status is optional (held, confirmed, released or expired; a body without it is the original confirmation) and providerReference is required only when the status confirms the reservation. A status word this system has no mapping for is acknowledged and recorded, and the reservation turns read-only. 204 No Content.",
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"deliveryId\": \"{{warehouseDeliveryId}}\",\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "raw": "{\n    \"deliveryId\": \"{{warehouseDeliveryId}}\",\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"status\": \"confirmed\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4868,6 +4868,77 @@
               ]
             },
             "description": "The ledger of a stock level, newest first, with the acting user's name."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Daily Stock Totals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create Store or Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/daily-totals?storeId={{storeId}}&from=2026-01-01&to=2026-01-31",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "daily-totals"
+              ],
+              "query": [
+                {
+                  "key": "storeId",
+                  "value": "{{storeId}}",
+                  "description": "required"
+                },
+                {
+                  "key": "from",
+                  "value": "2026-01-01",
+                  "description": "required, a calendar day in the business time zone"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-01-31",
+                  "description": "optional, included, defaults to today in the business time zone"
+                }
+              ]
+            },
+            "description": "A store's committed reservation totals per business day, oldest first. A day with no committed reservation has no row. The range is capped by InventoryOptions.DailyTotalsMaxRangeDays; a longer range or a first day after the last day is a 400."
           },
           "response": []
         },
@@ -5389,6 +5460,59 @@
               ]
             },
             "description": "List warehouse connections, optionally of one store or one status."
+          },
+          "response": []
+        },
+        {
+          "name": "Search My Warehouse Connections",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/my?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                "my"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "The warehouse connections of the active stores I own, newest first. A store that is not active, or one Inventory has not been told about yet, does not appear, so the page can be empty. Never carries a credential or a webhook secret."
           },
           "response": []
         },

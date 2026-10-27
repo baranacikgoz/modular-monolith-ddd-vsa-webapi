@@ -978,4 +978,19 @@
   <data name="InvalidPackageDimensions" xml:space="preserve">
     <value>The package dimensions or weight are outside the valid range.</value>
   </data>
+  <data name="StockLevels_DailyTotals_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store Id must not be empty.</value>
+  </data>
+  <data name="StockLevels_DailyTotals_From_NotAfterTo" xml:space="preserve">
+    <value>The first day must not be after the last day.</value>
+  </data>
+  <data name="StockLevels_DailyTotals_Range_MaxDays" xml:space="preserve">
+    <value>The range may span at most ({0}) days.</value>
+  </data>
+  <data name="Notifications_LowStockAlert_Title" xml:space="preserve">
+    <value>Low stock alert</value>
+  </data>
+  <data name="Notifications_LowStockAlert_Message" xml:space="preserve">
+    <value>On-hand stock of product ({0}) fell to ({1}), below the low stock threshold of ({2}).</value>
+  </data>
 </root>
