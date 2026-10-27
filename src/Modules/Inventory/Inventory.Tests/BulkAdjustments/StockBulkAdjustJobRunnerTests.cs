@@ -162,8 +162,8 @@ public class StockBulkAdjustJobRunnerTests(IntegrationTestWebAppFactory factory)
         await RunMessageAsync(job.Id);
 
         Assert.Equal(20, await QuantityOfAsync(stocked));
-        // Both rows of one save share a timestamp, so the running quantity is what tells them apart.
-        Assert.Equal([15, 20], (await StockLevelTestData.LedgerOfAsync(Root, stocked.Id)).Select(m => m.QuantityOnHandAfter).Order());
+        var ledger = await StockLevelTestData.LedgerOfAsync(Root, stocked.Id);
+        Assert.Equal([15, 20], ledger.Select(m => m.QuantityOnHandAfter).ToArray());
     }
 
     [Fact]
