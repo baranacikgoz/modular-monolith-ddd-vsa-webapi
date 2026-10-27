@@ -1,4 +1,10 @@
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.Products;
 using Common.Tests;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 
 namespace Inventory.Tests;
 
@@ -11,4 +17,18 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
     // assert the outbox message was written, matching the convention used everywhere else in this
     // repo's test suite (see IntegrationTestFactory's own comment on that setting).
     protected override string[] GetActiveModules() => ["Inventory", "Products", "Outbox"];
+
+    /// <summary>
+    ///     Stands in for Products' free-text product search, which the stock level list calls for its product name
+    ///     filter. A test sets what it returns; the search itself is covered where it lives.
+    /// </summary>
+    public IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse> ProductSearchClient { get; } =
+        Substitute.For<IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse>>();
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        base.ConfigureWebHost(builder);
+
+        builder.ConfigureTestServices(services => services.AddSingleton(ProductSearchClient));
+    }
 }

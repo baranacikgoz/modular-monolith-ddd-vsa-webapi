@@ -462,6 +462,12 @@
   <data name="StockReservations_ReserveSeries_Warehouses_QuantitySumMismatch" xml:space="preserve">
     <value>The sum of warehouse quantities must equal the quantity per occurrence.</value>
   </data>
+  <data name="StockLevels_Search_ProductName_MaximumLength" xml:space="preserve">
+    <value>Product name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="StockLevels_Search_After_NotSupported" xml:space="preserve">
+    <value>This list does not page by cursor, use the page number.</value>
+  </data>
   <data name="StockLevels_Receive_Id_NotEmpty" xml:space="preserve">
     <value>Stock level ID cannot be empty.</value>
   </data>

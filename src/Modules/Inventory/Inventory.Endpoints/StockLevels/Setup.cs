@@ -13,6 +13,7 @@ public static class Setup
             .WithTags("StockLevels")
             .MapToApiVersion(1);
 
+        v1.Search.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.Receive.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.Adjust.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.ChangeLowStockThreshold.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
