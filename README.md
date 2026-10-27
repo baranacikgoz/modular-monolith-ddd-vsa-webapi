@@ -144,10 +144,10 @@ The second call returns `accessToken`, `refreshToken` and their expiry times. Pa
 
 | Module | What it owns | Database |
 | :-- | :-- | :-- |
-| **IAM** | Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone + SMS OTP or email + password. | None. Keycloak is the identity store. |
-| **Products** | Stores, product templates and products. The exemplar module: copy its shape. | Schema `Products` |
-| **Inventory** | Stock levels and stock reservations (a saga-shaped aggregate), a warehouse gateway, an HMAC-signed webhook and an expiry sweep job. | Schema `Inventory` |
-| **Notifications** | SMS, email, push (Firebase), SignalR hub, OTP issuing and verification, device registry. | Schema `Notifications` |
+| **IAM** | Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone + SMS OTP or email + password. Also provisions and deprovisions users for other modules, looks up user names in bulk and grants the store-owner role when a store is approved. | None. Keycloak is the identity store. |
+| **Products** | Stores (with an application and approval flow), product templates and products (images, SKU, attributes, package dimensions), queued spreadsheet import and CSV export. The exemplar module: copy its shape. | Schema `Products` |
+| **Inventory** | Stock levels with an immutable movement ledger and low stock thresholds, stock reservations (a saga-shaped aggregate), per-store warehouse connections with encrypted credentials, a per-provider gateway, an HMAC-signed webhook that applies each delivery once, a dirty-set stock push, a queued bulk adjustment and sweep jobs. | Schema `Inventory` |
+| **Notifications** | SMS, email, push (Firebase), SignalR hub, OTP issuing and verification, device registry, critical alerts to a role. | Schema `Notifications` |
 | **Outbox** | Transactional outbox processor, cleanup, lag metrics and the inbox cleanup job. Loads on every instance. | Schema `Outbox` |
 | **BackgroundJobs** | Hangfire server, dashboard, job metrics and the no-overlap filter. Loads on every instance. | Schema `BackgroundJobs`, created by Hangfire itself |
 
@@ -203,15 +203,17 @@ Routes, scopes, events, requests, jobs and configuration for each module are in 
 | S3-compatible object storage | A public store for CDN-cached objects and a private store with presigned upload and download URLs. Circuit breaker, retries and multipart uploads are configurable. |
 | Caching | FusionCache with a size-bounded in-memory L1. Switch on Redis for an L2 and a backplane, with fail-safe settings for slow or failing sources. |
 | Seeding | Ordered `IDatabaseSeeder`s run after the host has fully started. |
-| Job building blocks | `JobRow`, claim extensions and a housekeeping job for modules that accept work and process it later. |
+| Queued jobs | Accept, queue, poll: `JobRow`, an atomic claim, 202 answers, bounded batches with a stored cursor, a stuck-job sweep and housekeeping. Worked examples: product import and export, stock bulk adjustment. |
+| Spreadsheets and CSV | Uploaded `.xlsx` and `.xls` files are read in batches (ExcelDataReader) with a row ceiling, row-level rejections and a stored list of the first errors. A CSV writer guards against formula injection, and the file is served as a download. |
+| Secret protection | `SecretProtector` encrypts credentials a module must read back (AES-GCM, key from `secretProtection.json`), and `SecretGenerator` invents the secrets a caller presents back. |
 
 ### Resilience and protection
 
 | Capability | What you get |
 | :-- | :-- |
-| Rate limiting | Named fixed-window policies (global, SMS, email, OTP verify, registration, registration check, token create and refresh, own-store creation). With Redis configured every replica shares one counter, without it an in-process limiter takes over. Each policy chooses to fail open or closed. |
-| Keyed resilience pipelines | Outbound HTTP gets timeouts, retries and circuit breakers from `ResiliencyOptions`, with keyed overrides per dependency. |
-| Webhook hardening | Constant-time HMAC-SHA256 verification (hex or base64, with or without `sha256=`) and a request body size limit. |
+| Rate limiting | Named fixed-window policies (global, SMS, email, OTP verify, registration, registration check, token create and refresh, own-store creation, store application, warehouse webhook). With Redis configured every replica shares one counter, without it an in-process limiter takes over. Each policy chooses to fail open or closed. |
+| Keyed resilience pipelines | Outbound HTTP gets timeouts, retries and circuit breakers from `ResiliencyOptions`, with keyed overrides per dependency. The warehouse gateway builds one pipeline per store connection, without a retry for calls that change state. |
+| Webhook hardening | Constant-time HMAC-SHA256 verification (hex or base64, with or without `sha256=`), a secret per connection, a request body size limit, a per-connection rate limit, and each delivery applied once through a delivery id table. |
 | Security headers | Configurable response headers from `securityHeaders.json`: `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` and `Permissions-Policy`. |
 | Reverse proxy support | Forwarded headers honoured only from configured trusted networks. |
 | Request and response logging | Size-capped body logging with per-path redaction for tokens, OTP codes and registrations, and path exclusions. |
@@ -259,11 +261,12 @@ Conventions rot under deadline pressure. These do not, because the build checks 
 | Domain events carry only frozen payload types | `DomainEventContractTests` |
 | Queries never compare a strongly typed id through `.Value` (EF cannot translate it) | `StronglyTypedIdQueryTests` |
 | Aggregate methods take child entities, never child ids | `AggregateChildEntityParameterTests` |
+| Stock ledger rows are written only by the `StockLevel` aggregate | `StockMovementWriteGuardTests` |
 | Every endpoint scope exists in the Keycloak realm, and every realm scope is used | `PermissionCoverageTests` |
 | Handlers that bind request parts declare `[AsParameters]` | `EndpointParameterBindingTests` |
 | Every model migration has a committed SQL script | `make check-migration-drift`, run in CI |
 | The app never starts against an unmigrated database | `MigrationGuard` |
-| Production never boots with a fake provider | Startup validation rejects the `Dummy` SMS, email, push, captcha and warehouse providers, a fixed OTP code, a cache without Redis (unless explicitly allowed) and SignalR without a Redis backplane |
+| Production never boots with a fake provider | Startup validation rejects the `Dummy` SMS, email, push and captcha providers, a fixed OTP code, a cache without Redis (unless explicitly allowed) and SignalR without a Redis backplane. Outside Development it also rejects the checked-in secret protection key |
 | Zero warnings | `TreatWarningsAsErrors` with analyzers on |
 
 ## Database changes
@@ -311,6 +314,7 @@ Everything goes through the Makefile.
 | Validation and API | FluentValidation, Asp.Versioning, Swashbuckle |
 | Observability | OpenTelemetry, Serilog, Aspire Dashboard |
 | Object storage | AWSSDK.S3 (any S3-compatible service) |
+| Spreadsheets | ExcelDataReader (reading `.xlsx` and `.xls` uploads) |
 | Providers | NetGSM (SMS), Brevo (email), Firebase Admin (push), reCAPTCHA |
 | Tests | xUnit v3, Testcontainers, Respawn, NetArchTest, Bogus, NSubstitute, k6 |
 

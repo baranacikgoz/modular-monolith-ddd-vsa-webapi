@@ -197,6 +197,10 @@ Worked searches against rows T and E:
 - **Any user, brand `nike`** (if name/brand contained it): `simpleQ='nike'` matches the universal layer of any row regardless of authored language → cross-locale discovery.
 - **ASCII `kosu`**: `simpleQ` runs through `unaccent` → `'kosu'`, matches Row T's unaccented stored lexeme `'kosu'` → `kosu` finds `Koşu`.
 
+### Cross-module term search
+
+Another module that wants to filter its own list by a product's name or description does not copy the vector and does not ask for every match. It sends `SearchProductsByTermRequest(term)` (`Common.InterModuleRequests/Products/SearchProductsByTerm.cs`), and `SearchProductsByTermRequestHandler` (`Products.Infrastructure/InterModuleRequestHandlers`) runs the same dual `tsquery` against the product's `SearchVector`. The answer is a list of product ids, newest first, cut at `FullTextSearchOptions.MaxMatchResults`, with an `IsTruncated` flag. The handler reads one row more than the cap, so the flag needs no `COUNT(*)`. A truncated answer is not an error: the caller tells the user the match list was cut. The answer is cached for `ProductsOptions.SearchCacheSeconds` (0 turns the cache off) under a key that hashes the term, the resolved prose config and the cap, so a product edit shows up once the entry expires. `GET /v1/stock-levels?ProductName=...` in Inventory is the caller.
+
 ### Ranking
 
 `ts_rank(SearchVector, simpleQ || userQ)` scores a row using the OR-combined query. The default weight map (`{A=1.0, B=0.4, C=0.2, D=0.1}`, tunable per call) makes universal-layer (`A`) matches outrank prose-layer (`B`) matches. Ordering is applied only when a search term is present; with no term, the existing `PaginateAsync` fallback (`CreatedOn DESC`) stands.
@@ -233,7 +237,8 @@ Bound via the options pattern as `FullTextSearchOptions` (validated with a `Cust
     "tr": "turkish",
     "en": "english"
   },
-  "RankWeights": [ 0.1, 0.2, 0.4, 1.0 ]         // Postgres/Npgsql ts_rank order {D, C, B, A}
+  "RankWeights": [ 0.1, 0.2, 0.4, 1.0 ],        // Postgres/Npgsql ts_rank order {D, C, B, A}
+  "MaxMatchResults": 200                        // most ids a cross-module term search may return
 }
 ```
 
@@ -241,7 +246,7 @@ Bound via the options pattern as `FullTextSearchOptions` (validated with a `Cust
 
 **What the options legitimately control, and what they do not**: this matters and is a known sharp edge in this codebase:
 
-- **Runtime, real effect:** the culture→config map and rank weights are read at request time by `ISearchLanguageResolver` and the read endpoints. Changing them in `appsettings` takes effect on restart, no migration.
+- **Runtime, real effect:** the culture→config map, rank weights and `MaxMatchResults` are read at request time by `ISearchLanguageResolver` and the read endpoints. Changing them in `appsettings` takes effect on restart, no migration.
 - **Schema, NOT runtime:** column name, index method, the generated-column expression, and which fields feed the vector live in **migrations**. Options may feed the *default* into `OnModelCreating`, but changing such a value still requires a new migration to alter the schema. Editing `appsettings` will not re-index an existing database. The database schema is the source of truth for DDL; options are the source of truth for request-time behavior.
 
 This split is the same registration-time-vs-runtime distinction documented elsewhere for this project, respect it or a config change will silently "have no effect."

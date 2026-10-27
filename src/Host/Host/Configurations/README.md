@@ -67,7 +67,7 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `auditLog.json` | `AuditLogOptions` | Audit retention, purge batch and schedule, per-schema overrides |
 | `caching.json` | `CachingOptions` | Memory bound, Redis on/off, entry defaults, idempotency key durations |
 | `secretProtection.json` | `SecretProtectionOptions` | AES-256 master key of `SecretProtector` (base64, 32 bytes) |
-| `keycloak.json` | `KeycloakOptions` | Keycloak address, realm, client ids and secrets, decision cache, timeouts |
+| `keycloak.json` | `KeycloakOptions` | Keycloak address, realm, client ids and secrets, decision cache, timeouts, user display lookup and cache |
 | `identityScheme.json` | `IdentitySchemeOptions` | `PhoneNumber` or `Email` self-service scheme |
 | `devices.json` | `DevicesOptions` | Allowed client ids, device reconciliation schedule |
 | `alertRecipients.json` | `AlertRecipientsOptions` | Role whose members get critical alert emails, recipient list reconcile schedule, alert email templates |
@@ -77,10 +77,11 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `push.json` | `PushOptions` | Push provider, Firebase service account, templates |
 | `signalR.json` | `SignalROptions` | Redis backplane |
 | `captcha.json` | `CaptchaOptions` | Captcha provider, keys, score threshold |
-| `inventory.json` | `InventoryOptions` | Warehouse gateway, webhook secret and body limit, sweep schedule, series limits |
+| `inventory.json` | `InventoryOptions` | Webhook body limit and delivery retention, stock push and bulk adjustment tunables, sweep and reconcile schedules, series limits, business time zone |
+| `bulkImport.json` | `BulkImportOptions` | Upload size, row and chunk ceilings of the spreadsheet jobs (product import, stock bulk adjustment) |
 | `objectStorage.json` | `ObjectStorageOptions` | S3-compatible endpoint, buckets, credentials, presign lifetimes, retries, circuit breaker |
-| `rateLimiting.json` | `CustomRateLimitingOptions` | Named rate limit policies, global limit, exempt paths |
-| `products.json` | `ProductsOptions` | Import and export job limits, housekeeping schedule, image limits, cross-module page cap and search cache |
+| `rateLimiting.json` | `CustomRateLimitingOptions` | Named rate limit policies (including the warehouse webhook and the store application), global limit, exempt paths |
+| `products.json` | `ProductsOptions` | Import and export job limits, housekeeping schedule, image and attribute limits, cross-module page cap and search cache |
 | `resiliency.json` | `ResiliencyOptions` | Outbound HTTP timeouts, retries, circuit breaker, keyed profiles |
 | `securityHeaders.json` | `SecurityHeadersOptions` | Response security headers |
 | `reverseProxy.json` | `ReverseProxyOptions` | Forwarded headers and trusted proxy networks |
@@ -91,7 +92,7 @@ Each file's top-level key is the options class it binds to (the class lives in
 | `openApi.json` | `OpenApiOptions` | Swagger switch and API metadata |
 | `localization.json` | `ResxLocalizationOptions` | Default and supported cultures |
 | `featureFlags.json` | `FeatureManagement` | Feature flags, targeting rules and variants |
-| `fullTextSearch.json` | `FullTextSearchOptions` | Search language mapping and ranking weights |
+| `fullTextSearch.json` | `FullTextSearchOptions` | Search language mapping, ranking weights and the cap on a cross-module match list |
 
 A new options class gets its own file here and an entry in the `AddJsonFile(...)` list in
 `Setup.cs`.
@@ -113,20 +114,30 @@ init-container / secret volume. Checklist:
    - `email.json` → `EmailOptions.Provider` plus `ApiKey`, `SenderEmail`
    - `push.json` → `PushOptions.Provider` plus the `ServiceAccount` block
    - `captcha.json` → `CaptchaOptions.Provider` plus `ClientKey`, `SecretKey`
-   - `inventory.json` → `InventoryOptions.WarehouseGatewayProvider`, `WarehouseGatewayBaseUrl`,
-     `WebhookSharedSecret`
+   - `inventory.json` holds no secrets: warehouse credentials and webhook secrets are created per store
+     through `POST /v1/warehouse-connections` and stored encrypted with the `secretProtection.json` key
    - `objectStorage.json` → endpoint, `AccessKey`, `SecretKey`, bucket names, public base URL
    - `otp.json` → remove `DummyCode`
    - `secretProtection.json` → `SecretProtectionOptions.EncryptionKey` (the checked-in key is rejected outside
      `Development`)
 3. Set the structural values for your network: `reverseProxy.json` `TrustedNetworks`,
-   `cors.json` `AllowedOrigins`, `modules.json` `EnabledModules`.
+   `cors.json` `AllowedOrigins`, `modules.json` `EnabledModules`. Check the values that depend on your
+   business: `alertRecipients.json` `RoleName` (a realm role that has members) and the alert email
+   templates, `inventory.json` `BusinessTimeZoneId` (an IANA zone id known to the host), and
+   `auditLog.json` `PerSchemaRetentionDays`.
 4. Alternatively, override individual secrets via `Section__Key` environment variables
    (they win over the mounted JSON) and mount only the non-secret structural files.
+5. Apply the idempotent SQL scripts under `migrations/{Module}` before the deploy; the app refuses to start
+   with pending migrations.
+6. Keycloak imports the realm file only when the realm does not exist yet. A realm created from an earlier
+   version of `keycloak/realm-modular-monolith.json` needs the `store-owner` realm role and the newer
+   resources, scopes and permissions added by hand (see `keycloak/README.md`). Without the role, the
+   consumer that grants it on store approval throws and the bus retries it.
 
-In `Production` the host refuses to start with `Dummy` SMS, email, push, captcha or warehouse
-providers, a fixed OTP `DummyCode`, an in-memory-only cache (unless `AllowInMemoryOnlyInProduction`
-is set) or SignalR without a Redis backplane (unless `RequireRedisBackplaneInProduction` is off).
+In `Production` the host refuses to start with `Dummy` SMS, email, push or captcha providers, a fixed
+OTP `DummyCode`, an in-memory-only cache (unless `AllowInMemoryOnlyInProduction` is set) or SignalR
+without a Redis backplane (unless `RequireRedisBackplaneInProduction` is off). In every environment
+other than `Development` it also refuses the checked-in `secretProtection.json` key.
 
 ## Adding a field to an options class that is already deployed
 
