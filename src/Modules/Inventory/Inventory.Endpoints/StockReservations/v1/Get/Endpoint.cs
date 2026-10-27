@@ -17,21 +17,32 @@ internal static class Endpoint
     {
         stockReservationsApiGroup
             .MapGet("{id}", GetStockReservationAsync)
-            .WithDescription("Get a stock reservation by id.")
-            .RequireScope(KeycloakScopes.StockReservations.View)
+            .WithDescription("Get any stock reservation by id. Administration only; a store owner reads the reservations of their own " +
+                             "stores through /my and /my/{id}.")
+            .RequireScope(KeycloakScopes.StockReservations.ViewAll)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
-    private static async Task<Result<Response>> GetStockReservationAsync(
+    private static Task<Result<Response>> GetStockReservationAsync(
         [AsParameters] Request request,
         IInventoryDbContext dbContext,
         CancellationToken cancellationToken)
     {
-        return await dbContext.StockReservations
+        return ReadAsync(dbContext.StockReservations, request.Id, cancellationToken);
+    }
+
+    /// <summary>
+    ///     The reservation <paramref name="id" /> names, looked up inside <paramref name="reservations" />: every reservation for the
+    ///     administration route, the caller's own for the store owner's route, where one outside the set is simply not found.
+    /// </summary>
+    internal static async Task<Result<Response>> ReadAsync(
+        IQueryable<StockReservation> reservations, StockReservationId id, CancellationToken cancellationToken)
+    {
+        return await reservations
             .AsNoTracking()
-            .TagWith(nameof(GetStockReservationAsync), request.Id)
-            .Where(r => r.Id == request.Id)
+            .TagWith(nameof(ReadAsync), id)
+            .Where(r => r.Id == id)
             .Select(r => new Response
             {
                 Id = r.Id,

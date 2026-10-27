@@ -444,6 +444,12 @@
   <data name="StockReservations_Get_Id_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
   </data>
+  <data name="StockReservations_MySearch_ProductId_NotEmpty" xml:space="preserve">
+    <value>Product ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_MySearch_Status_Invalid" xml:space="preserve">
+    <value>Reservation status is invalid.</value>
+  </data>
   <data name="StockReservations_ReserveSeries_ProductId_NotEmpty" xml:space="preserve">
     <value>Product ID cannot be empty.</value>
   </data>
