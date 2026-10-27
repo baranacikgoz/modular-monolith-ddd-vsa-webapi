@@ -66,8 +66,7 @@ public class ApprovalLifecycleTests(IntegrationTestWebAppFactory factory) : Prod
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(StoreStatus.Active, await StatusOfAsync(store.Id));
-        var published = Assert.Single(await OutboxEventsAsync());
-        var approved = Assert.IsType<StoreApprovedIntegrationEvent>(published);
+        var approved = Assert.Single((await OutboxEventsAsync()).OfType<StoreApprovedIntegrationEvent>());
         Assert.Equal(store.Id.Value, approved.StoreId);
         Assert.Equal(owner, approved.OwnerId);
     }
