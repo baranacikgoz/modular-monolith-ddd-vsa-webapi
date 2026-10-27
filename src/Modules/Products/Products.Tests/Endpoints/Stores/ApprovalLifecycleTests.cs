@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Products.Domain.Stores;
 using Products.Tests.Support;
 using Xunit;
+using GetApplicationResponse = Products.Endpoints.Stores.v1.GetApplication.Response;
 using ListApplicationsResponse = Products.Endpoints.Stores.v1.ListApplications.Response;
 using MyGetResponse = Products.Endpoints.Stores.v1.My.Get.Response;
 using SearchResponse = Products.Endpoints.Stores.v1.Search.Response;
@@ -160,6 +161,60 @@ public class ApprovalLifecycleTests(IntegrationTestWebAppFactory factory) : Prod
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var page = await response.Content.ReadFromJsonAsync<PaginationResponse<ListApplicationsResponse>>(JsonSerializerOptions);
         Assert.Equal([first.Id, second.Id], page!.Data.Select(a => a.Id));
+    }
+
+    [Theory]
+    [InlineData(StoreStatus.PendingApproval)]
+    [InlineData(StoreStatus.Suspended)]
+    [InlineData(StoreStatus.Inactive)]
+    public async Task Get_StoreNotActive_ReturnsNotFound(StoreStatus status)
+    {
+        var store = await SeedAsync(status);
+
+        using var response = await AuthorizedClient().GetAsync(new Uri($"/v1/stores/{store.Id}", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetApplication_PendingStore_ReturnsTheApplication()
+    {
+        var owner = new ApplicationUserId(Guid.NewGuid());
+        var store = await SeedAsync(StoreStatus.PendingApproval, owner);
+
+        using var response = await AuthorizedClient().GetAsync(new Uri($"/v1/stores/applications/{store.Id}", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var application = await response.Content.ReadFromJsonAsync<GetApplicationResponse>(JsonSerializerOptions);
+        Assert.Equal(store.Id, application!.Id);
+        Assert.Equal(owner, application.OwnerId);
+        Assert.Equal(store.Name, application.Name);
+        Assert.Equal("Description", application.Description);
+        Assert.Equal("Address", application.Address);
+        Assert.Equal(StoreStatus.PendingApproval, application.Status);
+    }
+
+    [Theory]
+    [InlineData(StoreStatus.Active)]
+    [InlineData(StoreStatus.Suspended)]
+    [InlineData(StoreStatus.Inactive)]
+    public async Task GetApplication_StoreThatIsNotAnApplication_ReturnsNotFound(StoreStatus status)
+    {
+        var store = await SeedAsync(status);
+
+        using var response = await AuthorizedClient().GetAsync(new Uri($"/v1/stores/applications/{store.Id}", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetApplication_WithoutAuthentication_ReturnsUnauthorized()
+    {
+        var store = await SeedAsync(StoreStatus.PendingApproval);
+
+        using var response = await Factory.CreateClient().GetAsync(new Uri($"/v1/stores/applications/{store.Id}", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
