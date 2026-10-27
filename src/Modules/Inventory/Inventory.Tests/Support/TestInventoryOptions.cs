@@ -30,6 +30,7 @@ internal static class TestInventoryOptions
             WebhookMaxFutureSkewSeconds = 300,
             WebhookDeliveryRetentionDays = webhookDeliveryRetentionDays,
             WebhookDeliveryRetentionCron = webhookDeliveryRetentionCron,
+            WarehouseSecretReprotectCron = "0 40 4 * * *",
             StockPushDirtySweepCron = "0 */2 * * * *",
             StockPushDirtyMinAgeSeconds = 120,
             StockPushBatchSize = 100,

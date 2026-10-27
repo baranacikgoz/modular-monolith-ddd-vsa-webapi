@@ -148,6 +148,14 @@ public class InventoryOptionsValidatorTests
     }
 
     [Fact]
+    public void EmptyWarehouseSecretReprotectCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.WarehouseSecretReprotectCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
     public void EmptyStockJobHousekeepingCron_FailsValidation()
     {
         var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockJobHousekeepingCron = ""));

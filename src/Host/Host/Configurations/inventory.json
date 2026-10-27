@@ -15,6 +15,7 @@
     "WebhookMaxFutureSkewSeconds": 300,
     "WebhookDeliveryRetentionDays": 30,
     "WebhookDeliveryRetentionCron": "0 4 * * *",
+    "WarehouseSecretReprotectCron": "0 40 4 * * *",
     "StockPushDirtySweepCron": "0 */2 * * * *",
     "StockPushDirtyMinAgeSeconds": 120,
     "StockPushBatchSize": 100,

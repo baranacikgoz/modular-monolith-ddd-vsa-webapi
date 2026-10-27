@@ -13,6 +13,7 @@ using Inventory.Infrastructure.StockPushes;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Infrastructure.StoreAccesses;
 using Inventory.Infrastructure.Telemetry;
+using Inventory.Infrastructure.WarehouseSecrets;
 using Inventory.Infrastructure.Webhooks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.RateLimiting;
@@ -43,6 +44,7 @@ public sealed class InventoryModule : IModule
         services.AddWarehouseWebhooks();
         services.AddStockPushes();
         services.AddStockBulkAdjustments();
+        services.AddWarehouseSecretReprotection();
     }
 
     public void UseModule(IApplicationBuilder app)

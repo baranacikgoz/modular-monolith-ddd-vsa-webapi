@@ -79,6 +79,14 @@ public class InventoryOptions
     /// </summary>
     public required int StockPushDirtyMinAgeSeconds { get; set; }
 
+    /// <summary>
+    ///     Cron for the recurring sweep that finds warehouse connections whose stored API credential or webhook secret is still
+    ///     under an encryption key that is no longer the current one (after a key rotation) and queues one message per page of
+    ///     <see cref="SweepPageSize" /> connections. The sweep only reads the key marker of each value and publishes; a consumer
+    ///     rewrites the values under the current key.
+    /// </summary>
+    public required string WarehouseSecretReprotectCron { get; set; }
+
     /// <summary>Stock levels sent to the warehouse in one gateway call.</summary>
     public required int StockPushBatchSize { get; set; }
 
@@ -209,6 +217,10 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockPushDirtySweepCron)
             .NotEmpty()
             .WithMessage("StockPushDirtySweepCron must not be empty.");
+
+        RuleFor(x => x.WarehouseSecretReprotectCron)
+            .NotEmpty()
+            .WithMessage("WarehouseSecretReprotectCron must not be empty.");
 
         RuleFor(x => x.StockPushDirtyMinAgeSeconds)
             .GreaterThan(0)

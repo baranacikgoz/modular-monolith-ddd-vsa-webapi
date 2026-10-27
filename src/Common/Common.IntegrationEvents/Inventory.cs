@@ -40,3 +40,11 @@ public sealed record StockBulkAdjustRequestedIntegrationEvent(DefaultIdType JobI
 ///     longer has a pending release attempt is a no-op.
 /// </summary>
 public sealed record StockReleaseReconcileRequestedIntegrationEvent(DefaultIdType ReservationId) : IntegrationEvent;
+
+/// <summary>
+///     Consumed within Inventory itself, used as a queue message: the listed warehouse connections may store a secret under an
+///     encryption key that is no longer the current one, so each stored value is checked and rewritten under the current key.
+///     One message is one page of at most InventoryOptions.SweepPageSize connections and carries only ids, never a secret. A
+///     connection whose values are all under the current key is left alone, so a repeated or late message is a no-op.
+/// </summary>
+public sealed record WarehouseSecretsReprotectRequestedIntegrationEvent(IReadOnlyCollection<DefaultIdType> ConnectionIds) : IntegrationEvent;
