@@ -54,7 +54,11 @@ public sealed partial class StockPushRunner(
 {
     private static readonly string CallFailedKey = WarehouseGatewayErrors.CallFailed(HttpStatusCode.BadRequest).Key;
 
-    private static readonly string DummyInProductionKey = WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key;
+    private static readonly string[] ConfigurationFaultKeys =
+    [
+        WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key,
+        WarehouseConnectionErrors.CredentialUnreadable.Key
+    ];
 
     public async Task RunAsync(WarehouseConnectionId connectionId, CancellationToken cancellationToken)
     {
@@ -121,7 +125,7 @@ public sealed partial class StockPushRunner(
     private async Task<Result<PushTarget>> CountConfigurationFailureAsync(
         WarehouseConnection connection, Error error, CancellationToken cancellationToken)
     {
-        if (error.Key == DummyInProductionKey)
+        if (ConfigurationFaultKeys.Contains(error.Key))
         {
             var counted = await StockPushMarks.RecordConfigurationFailureAsync(
                 dbContext, connection.StoreId, error.Key, options.Value.StockPushMaxAttempts, timeProvider.GetUtcNow(), cancellationToken);

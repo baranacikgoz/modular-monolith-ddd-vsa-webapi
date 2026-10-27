@@ -134,4 +134,25 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
         Assert.Equal(WarehouseConnectionErrors.NotActive.Key, created.Error!.Key);
     }
+
+    // A stored credential that no configured key can open (the master key was rotated without keeping the old one) is a
+    // configuration fault of that connection, not a transient one: the factory answers with a definite error instead of
+    // throwing, so a consumer does not retry the same message for ever.
+    [Fact]
+    public void Create_CredentialProtectedUnderAnUnknownKey_ReturnsADefiniteErrorInsteadOfThrowing()
+    {
+        var otherProtector = new SecretProtector(Options.Create(new SecretProtectionOptions
+        {
+            EncryptionKey = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32)),
+            PreviousEncryptionKeys = []
+        }));
+        var connection = TestWarehouseResilience.Connection(
+            WarehouseProvider.JsonApi, otherProtector.Encrypt(Credential), new Uri("https://warehouse.example-partner.local/api"));
+
+        var created = NewFactory().Create(connection);
+
+        Assert.True(created.IsFailure);
+        Assert.Equal(WarehouseConnectionErrors.CredentialUnreadable.Key, created.Error!.Key);
+        Assert.Empty(Handler.Requests);
+    }
 }

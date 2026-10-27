@@ -549,6 +549,9 @@
   <data name="WarehouseDummyProviderNotAllowedInProduction" xml:space="preserve">
     <value>A connection of the dummy warehouse provider cannot be used in Production, nothing was sent to a warehouse system.</value>
   </data>
+  <data name="WarehouseCredentialUnreadable" xml:space="preserve">
+    <value>The stored credential of the warehouse connection cannot be read, enter the credential again.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Base URL cannot be empty.</value>
   </data>

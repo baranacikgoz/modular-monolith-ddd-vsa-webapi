@@ -29,4 +29,14 @@ public static class WarehouseConnectionErrors
     ///     active, or never heard of. One answer for all three, so an id does not tell a stranger whether the store exists.
     /// </summary>
     public static readonly Error StoreNotAccessible = new() { Key = nameof(StoreNotAccessible), StatusCode = HttpStatusCode.NotFound };
+
+    /// <summary>
+    ///     The stored credential cannot be opened with any configured key (the master key was rotated without keeping the
+    ///     previous one). A fault of this connection that no retry cures: the credential has to be entered again.
+    /// </summary>
+    public static readonly Error CredentialUnreadable = new()
+    {
+        Key = "WarehouseCredentialUnreadable",
+        StatusCode = HttpStatusCode.Conflict
+    };
 }

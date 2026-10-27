@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Security;
 using Inventory.Application.Gateway;
@@ -36,23 +37,32 @@ internal sealed class WarehouseGatewayFactory(
             return WarehouseConnectionErrors.DummyProviderNotAllowedInProduction;
         }
 
-        IWarehouseGateway gateway = connection.Provider == WarehouseProvider.Dummy
-            ? new DummyWarehouseGateway(connection.Id, dummyState)
+        return connection.Provider == WarehouseProvider.Dummy
+            ? Result<IWarehouseGateway>.Success(new DummyWarehouseGateway(connection.Id, dummyState))
             : CreateHttpGateway(connection);
-
-        return Result<IWarehouseGateway>.Success(gateway);
     }
 
-    private WarehouseHttpGateway CreateHttpGateway(WarehouseConnection connection)
+    private Result<IWarehouseGateway> CreateHttpGateway(WarehouseConnection connection)
     {
-        var apiCredential = protector.Decrypt(connection.EncryptedApiCredential);
+        string apiCredential;
+        try
+        {
+            apiCredential = protector.Decrypt(connection.EncryptedApiCredential);
+        }
+        catch (CryptographicException)
+        {
+            return WarehouseConnectionErrors.CredentialUnreadable;
+        }
+
         var pipeline = pipelines.For(connection);
 
-        return connection.Provider switch
+        IWarehouseGateway gateway = connection.Provider switch
         {
             WarehouseProvider.JsonApi => new JsonApiWarehouseGateway(httpClient, connection.BaseUrl, apiCredential, pipeline),
             WarehouseProvider.FormApi => new FormApiWarehouseGateway(httpClient, connection.BaseUrl, apiCredential, pipeline),
             _ => throw new ArgumentOutOfRangeException(nameof(connection), connection.Provider, "Unknown WarehouseProvider.")
         };
+
+        return Result<IWarehouseGateway>.Success(gateway);
     }
 }

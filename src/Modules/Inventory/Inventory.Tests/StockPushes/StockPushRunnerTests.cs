@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Common.Application.Options;
 using Common.Infrastructure.Security;
@@ -15,6 +16,7 @@ using Inventory.Tests.Support;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Xunit;
 using EventBus = Common.Application.EventBus;
 
@@ -42,17 +44,22 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
     ///     When set, the real gateway factory of that host environment is used instead of the test host's (which is not
     ///     Production, so it builds a gateway for a Dummy connection).
     /// </param>
+    /// <param name="protector">
+    ///     When set, the real gateway factory with this protector is used (a protector holding another key cannot open the stored
+    ///     credential).
+    /// </param>
     private async Task RunAsync(
-        WarehouseConnectionId connectionId, Action<InventoryOptions>? configure = null, string? hostEnvironment = null)
+        WarehouseConnectionId connectionId, Action<InventoryOptions>? configure = null, string? hostEnvironment = null,
+        SecretProtector? protector = null)
     {
         using var scope = Root.CreateScope();
         var services = scope.ServiceProvider;
         using var http = new HttpClient();
-        IWarehouseGatewayFactory gatewayFactory = hostEnvironment is null
+        IWarehouseGatewayFactory gatewayFactory = hostEnvironment is null && protector is null
             ? services.GetRequiredService<IWarehouseGatewayFactory>()
             : new WarehouseGatewayFactory(
-                http, services.GetRequiredService<SecretProtector>(), TestWarehouseResilience.Pipelines(), new DummyWarehouseState(),
-                new FakeHostEnvironment(hostEnvironment));
+                http, protector ?? services.GetRequiredService<SecretProtector>(), TestWarehouseResilience.Pipelines(), new DummyWarehouseState(),
+                new FakeHostEnvironment(hostEnvironment ?? "Development"));
         var runner = new StockPushRunner(
             services.GetRequiredService<IInventoryDbContext>(),
             gatewayFactory,
@@ -363,6 +370,36 @@ public class StockPushRunnerTests(IntegrationTestWebAppFactory factory) : BaseIn
             Assert.Equal(WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key, mark.LastErrorKey);
         });
         Assert.Equal(0, Assert.Single(allMarks, m => m.StoreId == otherStore.StoreId).PushAttempts);
+        Assert.Empty(Warehouse.Requests);
+    }
+
+    // The same holds for a credential no configured key can open (the master key was rotated without keeping the old one): the
+    // factory answers with a definite error, so the run counts an attempt on the store's marks instead of throwing into a retry
+    // loop, and calls nothing.
+    [Fact]
+    public async Task Run_CredentialNoKeyCanOpen_CountsAnAttemptOnEveryMarkOfTheStoreAndCallsNothing()
+    {
+        var store = await StockPushTestData.SeedStoreAsync(Root, stockLevels: 2);
+        foreach (var stockLevel in store.StockLevels)
+        {
+            await StockPushTestData.ReceiveAsync(Root, stockLevel.Id, 5);
+        }
+
+        var otherKey = new SecretProtector(Options.Create(new SecretProtectionOptions
+        {
+            EncryptionKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
+            PreviousEncryptionKeys = []
+        }));
+
+        await RunAsync(store.Connection!.Id, protector: otherKey);
+
+        var marks = (await StockPushTestData.DirtyItemsAsync(Root)).Where(m => m.StoreId == store.StoreId).ToList();
+        Assert.Equal(2, marks.Count);
+        Assert.All(marks, mark =>
+        {
+            Assert.Equal(1, mark.PushAttempts);
+            Assert.Equal(WarehouseConnectionErrors.CredentialUnreadable.Key, mark.LastErrorKey);
+        });
         Assert.Empty(Warehouse.Requests);
     }
 

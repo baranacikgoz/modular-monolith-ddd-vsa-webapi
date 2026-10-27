@@ -608,6 +608,9 @@
   <data name="WarehouseDummyProviderNotAllowedInProduction" xml:space="preserve">
     <value>Sahte depo sağlayıcısına ait bağlantı üretim ortamında kullanılamaz, depo sistemine istek gönderilmedi.</value>
   </data>
+  <data name="WarehouseCredentialUnreadable" xml:space="preserve">
+    <value>Depo bağlantısının saklı kimlik bilgisi okunamıyor, kimlik bilgisi yeniden girilmeli.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Temel adres boş olamaz.</value>
   </data>
