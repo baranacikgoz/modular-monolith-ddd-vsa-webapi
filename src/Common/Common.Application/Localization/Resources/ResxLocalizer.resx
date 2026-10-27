@@ -533,9 +533,6 @@
   <data name="StockLevels_Search_ProductName_MaximumLength" xml:space="preserve">
     <value>Ürün adı en fazla ({0}) karakter olabilir.</value>
   </data>
-  <data name="StockLevels_Search_After_NotSupported" xml:space="preserve">
-    <value>Bu liste imleçle sayfalanmaz, sayfa numarası kullanın.</value>
-  </data>
   <data name="StockLevels_Receive_Id_NotEmpty" xml:space="preserve">
     <value>Stok seviyesi Id boş olamaz.</value>
   </data>

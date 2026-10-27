@@ -20,7 +20,7 @@ internal static class Endpoint
             .MapGet("", SearchStockLevelsAsync)
             .WithDescription("List stock levels, least stock first, with the name of each product from the local product copy. " +
                              "ProductName narrows the list to the products Products matches; IsTruncated says that match list was cut. " +
-                             "Pages by offset only.")
+                             "Pass the previous page's NextCursor as 'after' to continue without an offset.")
             .RequireScope(KeycloakScopes.StockLevels.View)
             .Produces<PageResponse>()
             .TransformResultTo<PageResponse>();
@@ -54,17 +54,17 @@ internal static class Endpoint
                     LowStockThreshold = stockLevel.LowStockThreshold
                 });
 
-        var totalCount = request.ShouldIncludeTotal ? await rows.CountAsync(cancellationToken) : -1;
-
-        // PaginateAsync pages an auditable entity; the joined projection is not one, so this pages by offset directly.
-        var data = await rows
-            .OrderBy(r => r.QuantityOnHand)
-            .ThenBy(r => r.Id)
-            .Skip(request.Skip)
-            .Take(request.Take)
-            .ToListAsync(cancellationToken);
-
-        return new PageResponse(data, totalCount, request.PageNumber, request.PageSize, isTruncated);
+        // The joined projection is not an auditable entity, so it pages through the keyed overload: least stock first,
+        // the stock level id as the unique tiebreaker the cursor carries.
+        return await rows
+            .PaginateKeyedAsync(
+                selector: r => r,
+                request: request,
+                sortKey: r => r.QuantityOnHand,
+                tiebreaker: r => r.Id,
+                cancellationToken: cancellationToken)
+            .MapAsync(page => new PageResponse(
+                page.Data, page.TotalCount, page.PageNumber, page.PageSize, isTruncated, page.NextCursor));
     }
 
     private static async Task<(IReadOnlyCollection<DefaultIdType>? ProductIds, bool IsTruncated)> ResolveProductNameAsync(

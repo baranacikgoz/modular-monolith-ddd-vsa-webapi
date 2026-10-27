@@ -29,7 +29,7 @@ public static class PaginationQueryableExtensions
     ///         <see cref="PaginationResponse{T}.TotalCount" /> <c>-1</c>.
     ///     </para>
     /// </summary>
-    public static async Task<Result<PaginationResponse<TDto>>> PaginateAsync<TEntity, TDto>(
+    public static Task<Result<PaginationResponse<TDto>>> PaginateAsync<TEntity, TDto>(
         this IQueryable<TEntity> queryable,
         Expression<Func<TEntity, TDto>> selector,
         PaginationRequest request,
@@ -40,6 +40,49 @@ public static class PaginationQueryableExtensions
         Expression<Func<TEntity, object>>? tiebreaker = null,
         CancellationToken cancellationToken = default)
         where TEntity : IAuditableEntity
+    {
+        // Primary sort key: the caller's, or the default CreatedOn descending.
+        var descending = orderByDescending is not null || orderBy is null;
+        Expression<Func<TEntity, object>> sortKey = orderByDescending ?? orderBy ?? (e => e.CreatedOn);
+
+        return PaginateCoreAsync(
+            queryable, selector, request, sortKey, descending, thenBy, thenByDescending, tiebreaker, cancellationToken);
+    }
+
+    /// <summary>
+    ///     Hybrid offset/keyset pagination (see <see cref="PaginateAsync{TEntity, TDto}" />) for a query that is not an
+    ///     auditable entity: a joined projection, a view, any row type with one sort key and one unique key.
+    ///     <paramref name="sortKey" /> is the only sort key and <paramref name="descending" /> its direction;
+    ///     <paramref name="tiebreaker" /> is a unique, non-null key that is always ascending and is what the cursor carries
+    ///     next to the sort value. The page carries <see cref="PaginationResponse{T}.NextCursor" /> and a supplied
+    ///     <see cref="PaginationRequest.After" /> continues right after that row, so pages never repeat or skip a row.
+    /// </summary>
+    public static Task<Result<PaginationResponse<TDto>>> PaginateKeyedAsync<TRow, TDto>(
+        this IQueryable<TRow> queryable,
+        Expression<Func<TRow, TDto>> selector,
+        PaginationRequest request,
+        Expression<Func<TRow, object>> sortKey,
+        Expression<Func<TRow, object>> tiebreaker,
+        bool descending = false,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(sortKey);
+        ArgumentNullException.ThrowIfNull(tiebreaker);
+
+        return PaginateCoreAsync(
+            queryable, selector, request, sortKey, descending, null, null, tiebreaker, cancellationToken);
+    }
+
+    private static async Task<Result<PaginationResponse<TDto>>> PaginateCoreAsync<TEntity, TDto>(
+        IQueryable<TEntity> queryable,
+        Expression<Func<TEntity, TDto>> selector,
+        PaginationRequest request,
+        Expression<Func<TEntity, object>> sortKey,
+        bool descending,
+        Expression<Func<TEntity, object>>? thenBy,
+        Expression<Func<TEntity, object>>? thenByDescending,
+        Expression<Func<TEntity, object>>? tiebreaker,
+        CancellationToken cancellationToken)
     {
         var useCursor = request.After is not null;
 
@@ -52,10 +95,6 @@ public static class PaginationQueryableExtensions
         {
             throw new ArgumentException("Keyset pagination (After) supports one sort key plus the tiebreaker; thenBy is not supported.", nameof(thenBy));
         }
-
-        // Primary sort key: the caller's, or the default CreatedOn descending.
-        var descending = orderByDescending is not null || orderBy is null;
-        Expression<Func<TEntity, object>> sortKey = orderByDescending ?? orderBy ?? (e => e.CreatedOn);
 
         Expression<Func<TEntity, bool>>? keyset = null;
 
