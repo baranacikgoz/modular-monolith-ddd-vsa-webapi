@@ -1,11 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using Common.Domain.Entities;
 using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
+using Common.Infrastructure.Security;
 using Common.InterModuleRequests.IAM;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Products.Domain.Stores;
@@ -62,7 +65,6 @@ public class ApplyTests(IntegrationTestWebAppFactory factory) : ProductsIntegrat
         await ProvisionUserClient.Received(1).SendAsync(
             Arg.Is<ProvisionUserRequest>(r => r.Email == "ada.lovelace@example.com"
                                                && r.PhoneNumber == request.PhoneNumber
-                                               && r.Password == request.Password
                                                && r.FirstName == "Ada"
                                                && r.LastName == "Lovelace"),
             Arg.Any<CancellationToken>());
@@ -70,6 +72,21 @@ public class ApplyTests(IntegrationTestWebAppFactory factory) : ProductsIntegrat
         var audit = await Db.AuditLog.AsNoTracking().SingleAsync(e => e.AggregateId == store.Id.Value);
         Assert.IsType<V1StoreApplicationSubmittedDomainEvent>(audit.Event);
         Assert.Empty(await OutboxEventsAsync());
+    }
+
+    [Fact]
+    public async Task Apply_ValidRequest_SendsThePasswordEncryptedAndNeverInClear()
+    {
+        ProvisioningReturns(new ProvisionUserResponse(new ApplicationUserId(Guid.NewGuid()), ProvisionUserFailureReason.None));
+        var request = ValidRequest();
+
+        using var response = await Factory.CreateClient().PostAsJsonAsync(Route, request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var sent = ProvisionUserClient.ReceivedCalls().SelectMany(call => call.GetArguments()).OfType<ProvisionUserRequest>().Single();
+        Assert.DoesNotContain(request.Password, JsonSerializer.Serialize(sent), StringComparison.Ordinal);
+        Assert.DoesNotContain(request.Password, Encoding.UTF8.GetString(sent.EncryptedPassword), StringComparison.Ordinal);
+        Assert.Equal(request.Password, Scope.ServiceProvider.GetRequiredService<SecretProtector>().Decrypt(sent.EncryptedPassword));
     }
 
     [Theory]
