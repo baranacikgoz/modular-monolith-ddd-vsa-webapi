@@ -2,6 +2,7 @@ using Common.Application.Persistence;
 using Inventory.Application.ProductSummaries;
 using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
+using Inventory.Domain.StockPushes;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.WebhookDeliveries;
@@ -16,6 +17,7 @@ public interface IInventoryDbContext : IDbContext
     public DbSet<StockReservation> StockReservations { get; }
     public DbSet<ProductSummary> ProductSummaries { get; }
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals { get; }
+    public DbSet<StockPushDirtyItem> StockPushDirtyItems { get; }
     public DbSet<WarehouseConnection> WarehouseConnections { get; }
     public DbSet<WebhookDelivery> WebhookDeliveries { get; }
 }

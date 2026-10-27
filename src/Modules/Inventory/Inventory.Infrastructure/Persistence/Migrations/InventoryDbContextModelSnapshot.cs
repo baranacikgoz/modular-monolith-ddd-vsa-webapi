@@ -23,6 +23,8 @@ namespace Inventory.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.HasSequence("StockPushMarkVersions");
+
             modelBuilder.Entity("Common.Application.Persistence.Inbox.ProcessedMessage", b =>
                 {
                     b.Property<string>("ConsumerName")
@@ -273,6 +275,50 @@ namespace Inventory.Infrastructure.Migrations
                     b.HasIndex("StockLevelId", "CreatedOn");
 
                     b.ToTable("StockMovements", "Inventory");
+                });
+
+            modelBuilder.Entity("Inventory.Domain.StockPushes.StockPushDirtyItem", b =>
+                {
+                    b.Property<Guid>("StockLevelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("MarkVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("MarkedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("StockLevelId");
+
+                    b.HasIndex("MarkedOn");
+
+                    b.HasIndex("StoreId", "MarkedOn");
+
+                    b.ToTable("StockPushDirtyItems", "Inventory");
                 });
 
             modelBuilder.Entity("Inventory.Domain.StockReservations.StockReservation", b =>
