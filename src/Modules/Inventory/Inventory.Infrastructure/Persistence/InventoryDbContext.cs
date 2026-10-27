@@ -8,6 +8,7 @@ using Inventory.Application.ProductSummaries;
 using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockReservations;
+using Inventory.Domain.WarehouseConnections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -27,6 +28,7 @@ public sealed class InventoryDbContext(
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
     public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals => Set<StoreDailyStockTotal>();
+    public DbSet<WarehouseConnection> WarehouseConnections => Set<WarehouseConnection>();
 
     /// <summary>The ledger is append-only: a tracked change to an existing movement fails before anything is written.</summary>
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

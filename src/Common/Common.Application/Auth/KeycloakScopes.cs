@@ -71,6 +71,13 @@ public static class KeycloakScopes
         public const string Update = "stock-levels:update";
     }
 
+    public static class WarehouseConnections
+    {
+        public const string Create = "warehouse-connections:create";
+        public const string View = "warehouse-connections:view";
+        public const string Update = "warehouse-connections:update";
+    }
+
     public static class Hangfire
     {
         public const string Manage = "hangfire:manage";

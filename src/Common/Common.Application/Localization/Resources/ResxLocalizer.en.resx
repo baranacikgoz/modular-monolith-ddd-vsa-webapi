@@ -501,6 +501,51 @@
   <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
     <value>Stock level ID cannot be empty.</value>
   </data>
+  <data name="WarehouseConnections_Create_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Create_Provider_Invalid" xml:space="preserve">
+    <value>The warehouse provider is not valid.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
+    <value>Base URL cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_MaximumLength" xml:space="preserve">
+    <value>Base URL cannot be longer than ({0}) characters.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_MustBeHttps" xml:space="preserve">
+    <value>Base URL must be a valid address that starts with https.</value>
+  </data>
+  <data name="WarehouseConnections_Create_ApiCredential_NotEmpty" xml:space="preserve">
+    <value>API credential cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Create_ApiCredential_MaximumLength" xml:space="preserve">
+    <value>API credential cannot be longer than ({0}) characters.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_Id_NotEmpty" xml:space="preserve">
+    <value>Warehouse connection ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_ApiCredential_NotEmpty" xml:space="preserve">
+    <value>API credential cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_ApiCredential_MaximumLength" xml:space="preserve">
+    <value>API credential cannot be longer than ({0}) characters.</value>
+  </data>
+  <data name="WarehouseConnections_RotateWebhookSecret_Id_NotEmpty" xml:space="preserve">
+    <value>Warehouse connection ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Deactivate_Id_NotEmpty" xml:space="preserve">
+    <value>Warehouse connection ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Warehouse connection ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Search_StoreId_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="WarehouseConnections_Search_Status_Invalid" xml:space="preserve">
+    <value>The connection status is not valid.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
   </data>

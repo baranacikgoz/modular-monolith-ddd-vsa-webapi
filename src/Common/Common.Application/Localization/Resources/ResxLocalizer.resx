@@ -560,6 +560,51 @@
   <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
     <value>Stok seviyesi Id boş olamaz.</value>
   </data>
+  <data name="WarehouseConnections_Create_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Create_Provider_Invalid" xml:space="preserve">
+    <value>Depo sağlayıcısı geçersiz.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
+    <value>Temel adres boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_MaximumLength" xml:space="preserve">
+    <value>Temel adres en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_MustBeHttps" xml:space="preserve">
+    <value>Temel adres https ile başlayan geçerli bir adres olmalıdır.</value>
+  </data>
+  <data name="WarehouseConnections_Create_ApiCredential_NotEmpty" xml:space="preserve">
+    <value>API kimlik bilgisi boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Create_ApiCredential_MaximumLength" xml:space="preserve">
+    <value>API kimlik bilgisi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_Id_NotEmpty" xml:space="preserve">
+    <value>Depo bağlantısı Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_ApiCredential_NotEmpty" xml:space="preserve">
+    <value>API kimlik bilgisi boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_ReplaceCredentials_ApiCredential_MaximumLength" xml:space="preserve">
+    <value>API kimlik bilgisi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="WarehouseConnections_RotateWebhookSecret_Id_NotEmpty" xml:space="preserve">
+    <value>Depo bağlantısı Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Deactivate_Id_NotEmpty" xml:space="preserve">
+    <value>Depo bağlantısı Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Get_Id_NotEmpty" xml:space="preserve">
+    <value>Depo bağlantısı Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Search_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="WarehouseConnections_Search_Status_Invalid" xml:space="preserve">
+    <value>Bağlantı durumu geçersiz.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>
   </data>
