@@ -70,6 +70,40 @@ public class StockLevelTests
     }
 
     [Fact]
+    public void Movements_EveryCommand_GetsTheNextSequenceAndTheStockLevelKeepsTheLast()
+    {
+        var stockLevel = NewStockLevel(10);
+
+        stockLevel.Receive(5, null);
+        stockLevel.Adjust(-3, "Count");
+        stockLevel.DeductForReservation(DefaultIdType.CreateVersion7(), 2, alreadyDeducted: false);
+
+        Assert.Equal([1L, 2L, 3L], stockLevel.Movements.Select(m => m.Sequence).ToArray());
+        Assert.Equal(3L, stockLevel.LastMovementSequence);
+    }
+
+    [Fact]
+    public void Movements_RefusedCommand_DoesNotUseUpASequence()
+    {
+        var stockLevel = NewStockLevel(1);
+
+        stockLevel.Adjust(-5, "More than there is");
+        stockLevel.Receive(0, null);
+        stockLevel.Receive(1, null);
+
+        Assert.Equal(1L, Assert.Single(stockLevel.Movements).Sequence);
+        Assert.Equal(1L, stockLevel.LastMovementSequence);
+    }
+
+    [Fact]
+    public void Create_NewStockLevel_HasAnEmptyLedger()
+    {
+        var stockLevel = StockLevel.Create(DefaultIdType.CreateVersion7(), 10);
+
+        Assert.Equal(0L, stockLevel.LastMovementSequence);
+    }
+
+    [Fact]
     public void Adjust_NegativeQuantity_DecreasesOnHandAndRecordsTheReason()
     {
         var stockLevel = NewStockLevel(10);

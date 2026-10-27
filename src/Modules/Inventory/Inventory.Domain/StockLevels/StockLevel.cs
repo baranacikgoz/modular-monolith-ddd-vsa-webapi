@@ -46,6 +46,13 @@ public class StockLevel : AggregateRoot<StockLevelId>
     public int QuantityOnHand { get; private set; }
     public int LowStockThreshold { get; private set; }
 
+    /// <summary>
+    ///     The <see cref="StockMovement.Sequence" /> of the newest ledger row, 0 while the ledger is empty. The ledger itself is
+    ///     never loaded, so the next row's sequence comes from here. Every movement changes this row too, so two writers of one
+    ///     stock level cannot hand out the same sequence: the second one fails its concurrency check.
+    /// </summary>
+    public long LastMovementSequence { get; private set; }
+
     public IReadOnlyCollection<StockMovement> Movements => _movements.AsReadOnly();
 
     public static StockLevel Create(DefaultIdType productId, int quantityOnHand)
@@ -158,7 +165,7 @@ public class StockLevel : AggregateRoot<StockLevelId>
             return StockLevelErrors.InsufficientStock;
         }
 
-        var movement = StockMovement.Create(Id, type, signedQuantity, after, reason, reservationId);
+        var movement = StockMovement.Create(Id, LastMovementSequence + 1, type, signedQuantity, after, reason, reservationId);
         var @event = new V1StockQuantityChangedDomainEvent(
             Id, ProductId, movement.Id, type.ToChangedSnapshot(), signedQuantity, after, movement.Reason);
         var crossedEvent = before >= LowStockThreshold && after < LowStockThreshold
@@ -170,6 +177,7 @@ public class StockLevel : AggregateRoot<StockLevelId>
 
         _movements.Add(movement);
         QuantityOnHand = after;
+        LastMovementSequence = movement.Sequence;
 
         RaiseEvent(@event);
         RaiseWhenNotNull(crossedEvent);

@@ -344,6 +344,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<long>("LastMovementSequence")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("LowStockThreshold")
                         .HasColumnType("integer");
 
@@ -395,6 +398,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<Guid?>("ReservationId")
                         .HasColumnType("uuid");
 
+                    b.Property<long>("Sequence")
+                        .HasColumnType("bigint");
+
                     b.Property<Guid>("StockLevelId")
                         .HasColumnType("uuid");
 
@@ -415,7 +421,8 @@ namespace Inventory.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"Type\" = 'ReservationCommitted'");
 
-                    b.HasIndex("StockLevelId", "CreatedOn");
+                    b.HasIndex("StockLevelId", "Sequence")
+                        .IsUnique();
 
                     b.ToTable("StockMovements", "Inventory");
                 });

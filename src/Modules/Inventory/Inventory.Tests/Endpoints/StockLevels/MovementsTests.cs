@@ -93,6 +93,38 @@ public class MovementsTests(IntegrationTestWebAppFactory factory) : BaseIntegrat
         Assert.Null(second.NextCursor);
     }
 
+    // The rows of one save share a timestamp and their ids are random inside a millisecond, so only the sequence puts them in
+    // order. Several stock levels make a wrong order or a repeated or skipped row at a page boundary show up on every run.
+    [Fact]
+    public async Task GetMovements_RowsOfOneSave_AreListedNewestFirstAndCursorPagesNeitherRepeatNorSkip()
+    {
+        var client = StockLevelTestData.AuthedClient(Factory);
+        for (var attempt = 0; attempt < 10; attempt++)
+        {
+            var stockLevel = await StockLevelTestData.SeedStockLevelAsync(Factory.Services, quantityOnHand: 0);
+            await using (var scope = Factory.Services.CreateAsyncScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+                var tracked = await db.StockLevels.SingleAsync(s => s.Id == stockLevel.Id);
+                foreach (var quantity in new[] { 1, 2, 3, 4, 5 })
+                {
+                    Assert.False(tracked.Receive(quantity, $"Delivery {quantity}").IsFailure);
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+            var first = await GetPageAsync(client, stockLevel.Id, "pageNumber=1&pageSize=2");
+            var second = await GetPageAsync(client, stockLevel.Id, $"pageNumber=1&pageSize=2&after={first.NextCursor}");
+            var third = await GetPageAsync(client, stockLevel.Id, $"pageNumber=1&pageSize=2&after={second.NextCursor}");
+
+            Assert.Equal([5L, 4L], first.Data.Select(m => m.Sequence).ToArray());
+            Assert.Equal([3L, 2L], second.Data.Select(m => m.Sequence).ToArray());
+            Assert.Equal([1L], third.Data.Select(m => m.Sequence).ToArray());
+            Assert.Equal([5, 4, 3, 2, 1], first.Data.Concat(second.Data).Concat(third.Data).Select(m => m.Quantity).ToArray());
+        }
+    }
+
     [Fact]
     public async Task GetMovements_UnknownStockLevel_ReturnsNotFound()
     {

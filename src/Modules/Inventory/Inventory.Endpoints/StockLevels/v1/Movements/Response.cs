@@ -4,12 +4,14 @@ using Inventory.Domain.StockLevels;
 namespace Inventory.Endpoints.StockLevels.v1.Movements;
 
 /// <summary>
-///     One ledger row. <see cref="ActingUserId" /> is empty for a movement a consumer made without a user;
+///     One ledger row. <see cref="Sequence" /> is its place in the stock level's ledger, 1 for the first row; the ledger is
+///     listed by it, newest first. <see cref="ActingUserId" /> is empty for a movement a consumer made without a user;
 ///     <see cref="ActingUserName" /> is empty as well when the identity provider does not know the user.
 /// </summary>
 public sealed record Response
 {
     public required StockMovementId Id { get; init; }
+    public required long Sequence { get; init; }
     public required StockMovementType Type { get; init; }
     public required int Quantity { get; init; }
     public required int QuantityOnHandAfter { get; init; }
