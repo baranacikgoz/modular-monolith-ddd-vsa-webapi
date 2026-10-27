@@ -146,6 +146,10 @@ internal sealed partial class KeycloakAdminClient(
         {
             response.EnsureSuccessStatusCode();
         }
+
+        // The bulk display lookup (GetUsersRequestHandler) caches this user's name for up to a day; drop it now so a
+        // deleted user is not listed by name until the entry expires.
+        await cache.RemoveAsync(CacheKeys.For.UserDisplay(userId), token: cancellationToken);
     }
 
     public async Task<Result<KeycloakUser>> GetUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)

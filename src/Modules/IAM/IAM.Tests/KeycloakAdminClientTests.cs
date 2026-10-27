@@ -1,5 +1,6 @@
 using System.Net;
 using Common.Application.Auth;
+using Common.Application.Caching;
 using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.IAM;
 using Common.Tests;
@@ -7,6 +8,7 @@ using IAM.Application.Keycloak;
 using IAM.Infrastructure.InterModuleRequestHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
@@ -99,6 +101,21 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         var assigned = await adminClient.AssignRealmRoleAsync(created.Value, KeycloakRoles.Staff, CancellationToken.None);
         Assert.False(assigned.IsFailure);
         return (created.Value, email);
+    }
+
+    [Fact]
+    public async Task DeleteUserAsync_EvictsTheCachedDisplayEntry()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
+        var user = await CreateStaffUserAsync(adminClient);
+        var key = CacheKeys.For.UserDisplay(user.Id);
+        await cache.SetAsync(key, new UserDisplayCacheEntry(true, user.Email, "Ada", "Lovelace"));
+
+        await adminClient.DeleteUserAsync(user.Id, CancellationToken.None);
+
+        var cached = await cache.TryGetAsync<UserDisplayCacheEntry>(key);
+        Assert.False(cached.HasValue);
     }
 
     [Fact]
