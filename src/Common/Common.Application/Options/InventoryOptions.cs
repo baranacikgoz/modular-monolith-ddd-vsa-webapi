@@ -21,6 +21,15 @@ public class InventoryOptions
     /// <summary>Active reservations examined per recurring job run.</summary>
     public required int StockReservationExpirySweepBatchSize { get; set; }
 
+    /// <summary>Cron for the recurring job that heals the local product copy from Products.</summary>
+    public required string ProductSummaryReconciliationCron { get; set; }
+
+    /// <summary>
+    ///     Time zone id (IANA, for example <c>Europe/Berlin</c>) whose calendar days the per-store daily stock totals are
+    ///     counted in. A business day is not the UTC day.
+    /// </summary>
+    public required string BusinessTimeZoneId { get; set; }
+
     public required WarehouseGatewayProvider WarehouseGatewayProvider { get; set; }
 
     /// <summary>Base URL for the warehouse system's HTTP API. Only read when Provider is Http.</summary>
@@ -52,6 +61,15 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockReservationExpirySweepBatchSize)
             .GreaterThan(0)
             .WithMessage("StockReservationExpirySweepBatchSize must be greater than 0.");
+
+        RuleFor(x => x.ProductSummaryReconciliationCron)
+            .NotEmpty()
+            .WithMessage("ProductSummaryReconciliationCron must not be empty.");
+
+        RuleFor(x => x.BusinessTimeZoneId)
+            .NotEmpty()
+            .Must(id => !string.IsNullOrEmpty(id) && TimeZoneInfo.TryFindSystemTimeZoneById(id, out _))
+            .WithMessage("BusinessTimeZoneId must be the id of a time zone known to the host.");
 
         // Dummy gateway always succeeds; set Provider to 'Http' (with a real BaseUrl) before deploying.
         RuleFor(x => x.WarehouseGatewayProvider)

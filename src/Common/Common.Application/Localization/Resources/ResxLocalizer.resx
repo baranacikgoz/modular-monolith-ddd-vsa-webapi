@@ -521,6 +521,45 @@
   <data name="StockReservations_ReserveSeries_Warehouses_QuantitySumMismatch" xml:space="preserve">
     <value>Depo miktarlarının toplamı, tekrar başına miktara eşit olmalıdır.</value>
   </data>
+  <data name="StockLevels_Search_ProductName_MaximumLength" xml:space="preserve">
+    <value>Ürün adı en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="StockLevels_Search_After_NotSupported" xml:space="preserve">
+    <value>Bu liste imleçle sayfalanmaz, sayfa numarası kullanın.</value>
+  </data>
+  <data name="StockLevels_Receive_Id_NotEmpty" xml:space="preserve">
+    <value>Stok seviyesi Id boş olamaz.</value>
+  </data>
+  <data name="StockLevels_Receive_Quantity_InclusiveBetween" xml:space="preserve">
+    <value>Miktar ({0}) ile ({1}) arasında olmalıdır.</value>
+  </data>
+  <data name="StockLevels_Receive_Reason_MaximumLength" xml:space="preserve">
+    <value>Açıklama en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="StockLevels_Adjust_Id_NotEmpty" xml:space="preserve">
+    <value>Stok seviyesi Id boş olamaz.</value>
+  </data>
+  <data name="StockLevels_Adjust_Quantity_NotZero" xml:space="preserve">
+    <value>Miktar sıfır olamaz.</value>
+  </data>
+  <data name="StockLevels_Adjust_Quantity_InclusiveBetween" xml:space="preserve">
+    <value>Miktar ({0}) ile ({1}) arasında olmalıdır.</value>
+  </data>
+  <data name="StockLevels_Adjust_Reason_NotEmpty" xml:space="preserve">
+    <value>Düzeltme nedeni boş olamaz.</value>
+  </data>
+  <data name="StockLevels_Adjust_Reason_MaximumLength" xml:space="preserve">
+    <value>Düzeltme nedeni en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="StockLevels_ChangeLowStockThreshold_Id_NotEmpty" xml:space="preserve">
+    <value>Stok seviyesi Id boş olamaz.</value>
+  </data>
+  <data name="StockLevels_ChangeLowStockThreshold_Threshold_InclusiveBetween" xml:space="preserve">
+    <value>Düşük stok eşiği ({0}) ile ({1}) arasında olmalıdır.</value>
+  </data>
+  <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
+    <value>Stok seviyesi Id boş olamaz.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>
   </data>

@@ -1,8 +1,10 @@
 using Common.Endpoints.Versioning;
 using Common.Infrastructure.Modules;
+using Inventory.Endpoints.StockLevels;
 using Inventory.Endpoints.StockReservations;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Infrastructure.Persistence;
+using Inventory.Infrastructure.ProductSummaries;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
@@ -26,6 +28,7 @@ public sealed class InventoryModule : IModule
     {
         services.AddPersistence();
         services.AddStockReservationExpirySweep();
+        services.AddProductSummaryReconciliation();
         services.AddWarehouseGatewayInfrastructure(configuration);
     }
 
@@ -44,5 +47,6 @@ public sealed class InventoryModule : IModule
             .RequireAuthorization();
 
         versionedApiGroup.MapStockReservationsEndpoints();
+        versionedApiGroup.MapStockLevelsEndpoints();
     }
 }

@@ -462,6 +462,45 @@
   <data name="StockReservations_ReserveSeries_Warehouses_QuantitySumMismatch" xml:space="preserve">
     <value>The sum of warehouse quantities must equal the quantity per occurrence.</value>
   </data>
+  <data name="StockLevels_Search_ProductName_MaximumLength" xml:space="preserve">
+    <value>Product name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="StockLevels_Search_After_NotSupported" xml:space="preserve">
+    <value>This list does not page by cursor, use the page number.</value>
+  </data>
+  <data name="StockLevels_Receive_Id_NotEmpty" xml:space="preserve">
+    <value>Stock level ID cannot be empty.</value>
+  </data>
+  <data name="StockLevels_Receive_Quantity_InclusiveBetween" xml:space="preserve">
+    <value>Quantity must be between ({0}) and ({1}).</value>
+  </data>
+  <data name="StockLevels_Receive_Reason_MaximumLength" xml:space="preserve">
+    <value>Reason can be at most ({0}) characters long.</value>
+  </data>
+  <data name="StockLevels_Adjust_Id_NotEmpty" xml:space="preserve">
+    <value>Stock level ID cannot be empty.</value>
+  </data>
+  <data name="StockLevels_Adjust_Quantity_NotZero" xml:space="preserve">
+    <value>Quantity cannot be zero.</value>
+  </data>
+  <data name="StockLevels_Adjust_Quantity_InclusiveBetween" xml:space="preserve">
+    <value>Quantity must be between ({0}) and ({1}).</value>
+  </data>
+  <data name="StockLevels_Adjust_Reason_NotEmpty" xml:space="preserve">
+    <value>Adjustment reason cannot be empty.</value>
+  </data>
+  <data name="StockLevels_Adjust_Reason_MaximumLength" xml:space="preserve">
+    <value>Adjustment reason can be at most ({0}) characters long.</value>
+  </data>
+  <data name="StockLevels_ChangeLowStockThreshold_Id_NotEmpty" xml:space="preserve">
+    <value>Stock level ID cannot be empty.</value>
+  </data>
+  <data name="StockLevels_ChangeLowStockThreshold_Threshold_InclusiveBetween" xml:space="preserve">
+    <value>Low stock threshold must be between ({0}) and ({1}).</value>
+  </data>
+  <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
+    <value>Stock level ID cannot be empty.</value>
+  </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Address can be at most ({0}) characters long.</value>
   </data>
