@@ -3,6 +3,8 @@ using Common.Application.Storage;
 using Common.Domain.StronglyTypedIds;
 using Common.Infrastructure.Persistence.Outbox;
 using Common.IntegrationEvents;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.IAM;
 using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +31,12 @@ public abstract class ProductsIntegrationTest(IntegrationTestWebAppFactory facto
         await base.InitializeAsync();
         PublicStore.Clear();
         PrivateStore.Clear();
+        factory.ResetIamClients();
     }
+
+    protected IInterModuleRequestClient<ProvisionUserRequest, ProvisionUserResponse> ProvisionUserClient => factory.ProvisionUserClient;
+
+    protected IInterModuleRequestClient<DeprovisionUserRequest, DeprovisionUserResponse> DeprovisionUserClient => factory.DeprovisionUserClient;
 
     /// <summary>A client authenticated as the default test user, or as <paramref name="user" />.</summary>
     protected HttpClient AuthorizedClient(ApplicationUserId? user = null)

@@ -54,6 +54,8 @@ internal static class Endpoint
             .Stores
             .AsNoTracking()
             .TagWith(nameof(SearchStoresAsync))
+            // An application is not a store yet: it stays out of the catalog until an administrator approves it.
+            .Where(s => s.Status != StoreStatus.PendingApproval)
             .WhereIf(
                 s => EF.Property<NpgsqlTsVector>(s, FullTextSearchOptions.SearchVectorColumn)
                          .Matches(EF.Functions.WebSearchToTsQuery(universalConfig, searchTerm))
@@ -73,6 +75,7 @@ internal static class Endpoint
                     Description = s.Description,
                     Address = s.Address,
                     ProductCount = s.Products.Count,
+                    Status = s.Status,
                     CreatedBy = s.CreatedBy,
                     CreatedOn = s.CreatedOn,
                     LastModifiedBy = s.LastModifiedBy,
