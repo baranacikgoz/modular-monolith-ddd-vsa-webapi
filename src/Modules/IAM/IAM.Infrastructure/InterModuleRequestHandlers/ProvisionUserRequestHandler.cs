@@ -39,7 +39,8 @@ public class ProvisionUserRequestHandler(
                     LastName: request.LastName,
                     PhoneNumber: request.PhoneNumber,
                     Email: request.Email,
-                    Password: secretProtector.Decrypt(request.EncryptedPassword)),
+                    Password: secretProtector.Decrypt(request.EncryptedPassword),
+                    PhoneNumberVerified: false),
                 cancellationToken)
             .BindAsync(userId => RegistrationCompletion.AssignBasicRoleOrRollbackAsync(userId, adminClient, logger, cancellationToken));
 

@@ -92,6 +92,27 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.Null(user.BirthDate);
     }
 
+    [Theory]
+    [InlineData(true, "true")]
+    [InlineData(false, "false")]
+    public async Task CreateUserAsync_WithAPhoneNumber_RecordsWhetherTheCallerVerifiedIt(bool verified, string expectedAttribute)
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var result = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(
+                Username: phone,
+                FirstName: "Ayşe",
+                LastName: "Yılmaz",
+                PhoneNumber: phone,
+                PhoneNumberVerified: verified),
+            CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(expectedAttribute, await KeycloakUserAttributeReader.PhoneNumberVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+    }
+
     private static async Task<(ApplicationUserId Id, string Email)> CreateStaffUserAsync(IKeycloakAdminClient adminClient)
     {
         var phone = IamTestClient.NewPhoneNumber();

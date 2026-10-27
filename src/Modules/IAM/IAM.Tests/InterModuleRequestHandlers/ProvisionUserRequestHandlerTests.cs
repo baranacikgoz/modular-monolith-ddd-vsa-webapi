@@ -35,6 +35,20 @@ public class ProvisionUserRequestHandlerTests(IntegrationTestWebAppFactory facto
     }
 
     [Fact]
+    public async Task ProvisionUser_ValidRequest_LeavesThePhoneNumberUnverified()
+    {
+        var phone = IamTestClient.NewPhoneNumber();
+
+        var response = await SendAsync(Request($"{Guid.NewGuid():N}@example.com", phone, ValidPassword));
+
+        Assert.Equal(ProvisionUserFailureReason.None, response.FailureReason);
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var user = await adminClient.FindUserByUsernameAsync(phone, CancellationToken.None);
+        Assert.Equal(phone, user!.PhoneNumber);
+        Assert.Equal("false", await KeycloakUserAttributeReader.PhoneNumberVerifiedAsync(factory, Scope.ServiceProvider, user.Id));
+    }
+
+    [Fact]
     public async Task ProvisionUser_ValidRequest_CreatesAUserWhoCanLogInWithTheDecryptedPassword()
     {
         var phone = IamTestClient.NewPhoneNumber();

@@ -63,7 +63,8 @@ internal static class Endpoint
                     LastName: request.LastName.Trim(),
                     PhoneNumber: request.PhoneNumber,
                     BirthDate: DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
-                        CultureInfo.InvariantCulture)),
+                        CultureInfo.InvariantCulture),
+                    PhoneNumberVerified: true),
                 cancellationToken))
             .BindAsync(userId => RegistrationCompletion.AssignBasicRoleOrRollbackAsync(userId, adminClient, logger, cancellationToken))
             .TapAsync(userId => activity?.SetTag("user.id", userId.ToString()))
