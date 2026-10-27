@@ -1,5 +1,6 @@
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
+using Inventory.Domain.WarehouseConnections;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Infrastructure.StockPushes;
@@ -32,6 +33,44 @@ internal static class StockPushMarks
                  "LastModifiedOn" = {now}
              """,
             cancellationToken);
+    }
+
+    /// <summary>
+    ///     Marks the stock level of <paramref name="productId" /> for the active connection of the product's store, in one
+    ///     statement: the connection is found (through the local product copy) and the mark is upserted as in
+    ///     <see cref="MarkAsync" />, and the connection's id comes back for the push message. No row comes back, and nothing is
+    ///     marked, for a product whose store has no active connection or is not copied yet. Runs in the transaction of the save
+    ///     that changed the quantity.
+    /// </summary>
+    public static async Task<IReadOnlyList<DefaultIdType>> MarkForActiveConnectionAsync(
+        IInventoryDbContext dbContext, StockLevelId stockLevelId, DefaultIdType productId, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        var active = nameof(WarehouseConnectionStatus.Active);
+
+        return await dbContext.Database
+            .SqlQuery<DefaultIdType>(
+                $"""
+                 WITH "ActiveConnection" AS (
+                     SELECT c."Id", c."StoreId"
+                     FROM "Inventory"."WarehouseConnections" AS c
+                     WHERE c."Status" = {active}
+                       AND EXISTS (
+                           SELECT 1 FROM "Inventory"."ProductSummaries" AS p
+                           WHERE p."ProductId" = {productId} AND p."StoreId" = c."StoreId")
+                 ), "Marked" AS (
+                     INSERT INTO "Inventory"."StockPushDirtyItems"
+                         ("StockLevelId", "StoreId", "ProductId", "MarkVersion", "MarkedOn", "CreatedOn")
+                     SELECT {stockLevelId.Value}, a."StoreId", {productId}, nextval('"Inventory"."StockPushMarkVersions"'), {now}, {now}
+                     FROM "ActiveConnection" AS a
+                     ON CONFLICT ("StockLevelId") DO UPDATE SET
+                         "MarkVersion" = nextval('"Inventory"."StockPushMarkVersions"'),
+                         "LastModifiedOn" = {now}
+                     RETURNING "StockLevelId"
+                 )
+                 SELECT a."Id" AS "Value" FROM "ActiveConnection" AS a
+                 """)
+            .ToListAsync(cancellationToken);
     }
 
     /// <summary>Deletes the rows that still carry the version that was pushed; returns how many were cleared.</summary>
