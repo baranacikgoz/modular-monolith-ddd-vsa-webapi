@@ -10,6 +10,7 @@ using IAM.Application.Captcha.Services;
 using IAM.Application.Keycloak;
 using IAM.Endpoints.Otp;
 using IAM.Endpoints.Tokens;
+using IAM.Infrastructure.Keycloak;
 using IAM.Infrastructure.Telemetry;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

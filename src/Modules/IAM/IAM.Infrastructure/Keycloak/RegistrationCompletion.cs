@@ -7,20 +7,20 @@ using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
-namespace IAM.Endpoints.Users;
+namespace IAM.Infrastructure.Keycloak;
 
 /// <summary>
-///     Second half of every self-registration, shared by the phone and email variants (mirrors
-///     <see cref="Tokens.LoginCompletion" />).
+///     Second half of every user creation, shared by the phone and email self-registration endpoints and by the
+///     <c>ProvisionUserRequest</c> handler (mirrors <c>LoginCompletion</c>).
 /// </summary>
-internal static partial class RegistrationCompletion
+public static partial class RegistrationCompletion
 {
     /// <summary>
     ///     The user already exists in Keycloak from <c>CreateUserAsync</c>; role assignment is the second of two
     ///     non-transactional Admin REST calls. On failure, delete the user so a retry sees a clean "not registered"
-    ///     state instead of a roleless account that 409s forever (PR #149 #3).
+    ///     state instead of a roleless account that 409s forever.
     /// </summary>
-    internal static async Task<Result<ApplicationUserId>> AssignBasicRoleOrRollbackAsync(
+    public static async Task<Result<ApplicationUserId>> AssignBasicRoleOrRollbackAsync(
         ApplicationUserId userId, IKeycloakAdminClient adminClient, ILogger logger, CancellationToken cancellationToken)
     {
         var assigned = await adminClient.AssignRealmRoleAsync(userId, KeycloakRoles.Basic, cancellationToken);

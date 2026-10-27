@@ -66,6 +66,7 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
         Assert.Equal(HttpStatusCode.BadRequest, result.Error.StatusCode);
+        Assert.NotEmpty(result.Error.SubErrors!);
     }
 
     [Fact]

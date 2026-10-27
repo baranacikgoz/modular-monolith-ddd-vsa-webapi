@@ -82,8 +82,9 @@ internal sealed partial class KeycloakAdminClient(
                 return MapConflict(conflict?.ErrorMessage);
             case HttpStatusCode.BadRequest:
                 var error = await response.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
-                LogUserRejected(logger, error?.Field, error?.ErrorMessage);
-                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, error?.ErrorMessage);
+                var rejection = error?.ErrorMessage ?? error?.ErrorDescription;
+                LogUserRejected(logger, error?.Field, rejection);
+                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, rejection);
             default:
                 response.EnsureSuccessStatusCode();
                 throw new HttpRequestException($"Unexpected Keycloak status {(int)response.StatusCode} creating a user.");

@@ -42,4 +42,7 @@ internal sealed class ErrorRepresentation
     [JsonPropertyName("errorMessage")] public string? ErrorMessage { get; set; }
     [JsonPropertyName("error")] public string? Error { get; set; }
     [JsonPropertyName("field")] public string? Field { get; set; }
+
+    /// <summary>Set instead of <see cref="ErrorMessage" /> by password policy rejections.</summary>
+    [JsonPropertyName("error_description")] public string? ErrorDescription { get; set; }
 }
