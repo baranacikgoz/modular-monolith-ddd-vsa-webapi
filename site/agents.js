@@ -42,7 +42,8 @@
     { n: 8, t: { en: 'Testing', tr: 'Test' } },
     { n: 9, t: { en: 'Options pattern', tr: 'Options deseni' } },
     { n: 10, t: { en: 'Report every issue you see', tr: 'Gördüğün her sorunu bildir' } },
-    { n: 11, t: { en: 'Make targets', tr: 'Make hedefleri' } }
+    { n: 11, t: { en: 'Make targets', tr: 'Make hedefleri' } },
+    { n: 12, t: { en: 'Heavy work: accept, queue, poll', tr: 'Ağır iş: kabul et, kuyruğa al, sorgula' } }
   ];
 
   var REF = '<ProjectReference Include="..\\..\\Inventory\\Inventory.Domain\\Inventory.Domain.csproj"/>';

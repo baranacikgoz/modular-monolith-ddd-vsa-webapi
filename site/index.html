@@ -158,6 +158,38 @@
       </div>
       <div class="lab-stage" id="ordStage"></div>
     </div>
+
+    <div class="lab reveal" id="queueLab">
+      <div class="lab-copy">
+        <h3 data-i18n="q.h">Heavy work never runs in the request</h3>
+        <p data-i18n="q.p">The endpoint stores the file, writes a job row and one queue message in a single transaction, and answers 202 with a job to poll. A consumer then works through the file in batches. Break something and send it.</p>
+        <div class="chaos" role="group" aria-label="Failure injection">
+          <label class="tog"><input type="checkbox" id="qDbl"><span data-i18n="q.dbl">Double click</span></label>
+          <label class="tog"><input type="checkbox" id="qBad"><span data-i18n="q.bad">Two bad rows</span></label>
+          <label class="tog"><input type="checkbox" id="qKill"><span data-i18n="q.kill">Kill the consumer mid-run</span></label>
+        </div>
+        <div class="lab-ctl lab-go">
+          <button type="button" class="btn primary" id="qGo" data-i18n="q.go">Send the file</button>
+        </div>
+      </div>
+      <div class="lab-stage" id="qStage"></div>
+    </div>
+
+    <div class="lab reveal" id="projLab">
+      <div class="lab-copy">
+        <h3 data-i18n="p.h">A copy can miss an event</h3>
+        <p data-i18n="p.p">Inventory keeps a local copy of the product facts it needs, so a request never asks Products. Events keep the copy fresh, and a copy can still miss one. Rename a product, lose the event, then run the reconciliation job: it pages through Products and heals the row, guarded by the row's version.</p>
+        <div class="chaos" role="group" aria-label="Failure injection">
+          <label class="tog"><input type="checkbox" id="pLose"><span data-i18n="p.lose">Lose the event</span></label>
+        </div>
+        <div class="lab-ctl lab-go">
+          <button type="button" class="btn primary" id="pRename" data-i18n="p.rename">Rename a product</button>
+          <button type="button" class="btn" id="pRec" data-i18n="p.rec">Run the reconciliation</button>
+          <button type="button" class="btn" id="pReset" data-i18n="fl.reset">Reset</button>
+        </div>
+      </div>
+      <div class="lab-stage" id="pStage"></div>
+    </div>
   </div>
 </section>
 
@@ -166,10 +198,10 @@
     <header class="sec-head reveal">
       <p class="eyebrow"><span class="num">03</span><span data-i18n="walls.eyebrow">Guardrails</span></p>
       <h2 data-i18n="walls.h">Conventions rot. <em>Walls don't.</em></h2>
-      <p class="sec-lede" data-i18n="walls.p">Eleven rules, each checked by a test, a startup validator, a hook or CI. Pick a rule and try to break it.</p>
+      <p class="sec-lede" data-i18n="walls.p">Thirteen rules, each checked by a test, a startup validator, a hook or CI. Pick a rule and try to break it.</p>
     </header>
     <div class="walls-bar reveal">
-      <p class="walls-count"><b id="wallCount">0</b> / 11 <span data-i18n="walls.count">attempts blocked</span></p>
+      <p class="walls-count"><b id="wallCount">0</b> / 13 <span data-i18n="walls.count">attempts blocked</span></p>
       <button type="button" class="btn" id="wallAll" data-i18n="walls.all">Try to break all of them</button>
     </div>
     <div class="tablets reveal" id="tablets"></div>
@@ -250,9 +282,9 @@
         <h3 data-i18n="ag.graph">A graph instead of grep</h3>
         <p data-i18n="ag.graphp">A generated knowledge graph answers where something lives without searching the tree. The picture is decorative, the numbers are from the repository's own report.</p>
         <dl class="graph-stats">
-          <div><dt data-i18n="ag.nodes">nodes</dt><dd data-count="4067">0</dd></div>
-          <div><dt data-i18n="ag.edges">edges</dt><dd data-count="10747">0</dd></div>
-          <div><dt data-i18n="ag.comm">communities</dt><dd data-count="296">0</dd></div>
+          <div><dt data-i18n="ag.nodes">nodes</dt><dd data-count="5951">0</dd></div>
+          <div><dt data-i18n="ag.edges">edges</dt><dd data-count="17893">0</dd></div>
+          <div><dt data-i18n="ag.comm">communities</dt><dd data-count="342">0</dd></div>
         </dl>
       </div>
     </div>
@@ -264,9 +296,9 @@
     <ul class="nums reveal">
       <li><b data-count="6">0</b><span data-i18n="n.modules">modules</span></li>
       <li><b data-count="32">0</b><span data-i18n="n.projects">projects</span></li>
-      <li><b data-count="777">0</b><span data-i18n="n.cs">C# files</span></li>
-      <li><b data-count="653">0</b><span data-i18n="n.tests">test methods</span></li>
-      <li><b data-count="834">0</b><span data-i18n="n.commits">commits</span></li>
+      <li><b data-count="1280">0</b><span data-i18n="n.cs">C# files</span></li>
+      <li><b data-count="1658">0</b><span data-i18n="n.tests">test methods</span></li>
+      <li><b data-count="987">0</b><span data-i18n="n.commits">commits</span></li>
       <li class="hot"><b data-count="0">0</b><span data-i18n="n.refs">cross-module references</span></li>
     </ul>
     <p class="nums-note reveal" data-i18n="n.note">Counted from the repository with git ls-files, the test attributes, git rev-list and the same check the commit hook runs.</p>
@@ -314,6 +346,7 @@
 <script src="bg.js" defer></script>
 <script src="stage.js" defer></script>
 <script src="flight.js" defer></script>
+<script src="labs.js" defer></script>
 <script src="walls.js" defer></script>
 <script src="atlas.js" defer></script>
 <script src="rails.js" defer></script>

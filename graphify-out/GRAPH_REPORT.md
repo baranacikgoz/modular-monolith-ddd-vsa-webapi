@@ -1,16 +1,16 @@
 # Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-27)
 
 ## Corpus Check
-- 882 files · ~192,206 words
+- 882 files · ~192,214 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 5951 nodes · 17892 edges · 342 communities (211 shown, 131 thin omitted)
+- 5951 nodes · 17893 edges · 342 communities (211 shown, 131 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 868 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3b24c986`
+- Built from commit: `e6bf700f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1232,10 +1232,10 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `DomainEvent` be split into smaller, more focused modules?**
   _Cohesion score 0.0379746835443038 - nodes in this community are weakly interconnected._
 - **Why does `Result` connect `Result` to `DomainEvent`, `DateTimeOffset`, `.DownloadExportAsync`, `List`, `.GetClientKey`, `ProductId`, `Result`, `IResult`, `IOtpService`, `InterModuleRequestHandler`, `IInterModuleRequestClient`, `NetGsmSmsGateway`, `Error`, `IDbContext`, `ResultTelemetryExtensions`, `PaginationResponse`, `IQueryable`, `Product`, `IInventoryDbContext`, `IEnumerable`, `BrevoEmailGateway`, `StoreId`, `StockBulkAdjustJobId`, `.CreateAsync`, `PackageDimensions`, `EmailOtpDispatchOutcome`, `IIntegrationEventOutbox`, `IReadOnlyList`, `SmsOtpDispatchOutcome`, `.SearchAsync`, `ILogger`, `Task`, `WarehouseHttpGateway`, `.ToResult`, `WarehouseConnectionId`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
 - **Should `DateTimeOffset` be split into smaller, more focused modules?**
   _Cohesion score 0.05194805194805195 - nodes in this community are weakly interconnected._
 - **Why does `Common.Domain.ResultMonad` connect `Common.Domain.ResultMonad` to `ResultToResponseTransformer.cs`, `system_security_cryptography`, `Inventory.Domain.WarehouseConnections`, `StockLevelErrors.cs`, `microsoft_entityframeworkcore`, `Common.InterModuleRequests.Contracts`, `Result`, `StockBulkAdjustErrors.cs`, `Result`, `IResult`, `Common.Application.Options`, `SmsOptions`, `Common.Domain.StronglyTypedIds`, `system_diagnostics`, `Error`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Should `Inventory.Domain.WarehouseConnections` be split into smaller, more focused modules?**
   _Cohesion score 0.05817028027498678 - nodes in this community are weakly interconnected._

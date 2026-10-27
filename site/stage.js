@@ -20,6 +20,7 @@
     { from: 'Products', to: 'Inventory', name: 'ProductCreatedIntegrationEvent', kind: 'event' },
     { from: 'Products', to: 'Inventory', name: 'GetStockLevel', kind: 'req' },
     { from: 'Inventory', to: 'Products', name: 'GetProduct', kind: 'req' },
+    { from: 'Inventory', to: 'Notifications', name: 'StockLowThresholdCrossedIntegrationEvent', kind: 'event' },
     { from: 'IAM', to: 'Notifications', name: 'SendPhoneOtp', kind: 'req' },
     { from: 'IAM', to: 'Notifications', name: 'VerifyPhoneOtp', kind: 'req' },
     { from: 'IAM', to: 'Notifications', name: 'SendSecurityAlert', kind: 'req' },

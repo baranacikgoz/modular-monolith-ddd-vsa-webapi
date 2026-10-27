@@ -3,7 +3,7 @@
 
   var MM = window.MM, $ = MM.$, el = MM.el, T = MM.t;
 
-  var ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+  var ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII'];
 
   var RULES = [
     {
@@ -38,6 +38,12 @@
       by: ['AggregateChildEntityParameterTests']
     },
     {
+      rule: { en: 'Only the StockLevel aggregate writes the stock ledger.', tr: 'Stok defterine yalnızca StockLevel aggregate\'i yazar.' },
+      file: 'src/Modules/Inventory/Inventory.Infrastructure/Fixups/TidyLedgerJob.cs',
+      code: 'foreach (var movement in oldMovements)\n    «db.StockMovements.Remove(movement);»',
+      by: ['StockMovementWriteGuardTests']
+    },
+    {
       rule: { en: 'Every endpoint scope exists in the Keycloak realm, and every realm scope is used.', tr: 'Her uç nokta scope\'u Keycloak realm\'inde vardır ve her realm scope\'u kullanılır.' },
       file: 'src/Common/Common.Application/Auth/KeycloakScopes.cs',
       code: 'public static class Products\n{\n    «public const string Teleport = "products:teleport";»\n}\n// keycloak/realm-modular-monolith.json has no such scope',
@@ -67,6 +73,13 @@
       code: '{\n  "SmsOptions": {\n    «"Provider": "Dummy"»\n  }\n}',
       by: [{ en: 'options validator at startup', tr: 'açılışta seçenek doğrulayıcısı' }],
       msg: 'SmsOptions.Provider is \'Dummy\' in Production. Dummy SMS gateway is a no-op: OTPs and notifications would never reach users.'
+    },
+    {
+      rule: { en: 'The server never calls an address that leads into its own network.', tr: 'Sunucu, kendi ağının içine çıkan bir adresi asla çağırmaz.' },
+      file: 'POST /v1/warehouse-connections',
+      code: '{\n  "provider": "JsonApi",\n  "baseUrl": "«https://169.254.169.254/latest/meta-data/»"\n}',
+      by: ['RequestValidator', 'WarehouseConnectGuard'],
+      msg: 'Base URL cannot lead to a local, private or reserved network address.'
     },
     {
       rule: { en: 'Zero warnings.', tr: 'Sıfır uyarı.' },
