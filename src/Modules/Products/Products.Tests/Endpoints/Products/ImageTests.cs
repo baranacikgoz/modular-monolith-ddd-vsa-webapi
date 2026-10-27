@@ -2,8 +2,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Common.Domain.StronglyTypedIds;
+using Common.IntegrationEvents;
+using Common.Tests;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Products.Application.IntegrationEventHandlers;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Domain.Products.Errors;
@@ -109,14 +112,14 @@ public class ImageTests(IntegrationTestWebAppFactory factory) : ProductsIntegrat
     }
 
     [Fact]
-    public async Task RemoveImage_ExistingImage_DeletesTheRowAndTheObject()
+    public async Task RemoveImage_ExistingImage_DeletesTheRowAndQueuesTheObjectForDeletionInTheSameSave()
     {
         var seeded = await ProductsSeed.StoreWithProductsAsync(Db, Owner, "Lamp");
         var product = seeded.Products[0];
         var client = AuthorizedClient();
         using var upload = await UploadAsync(client, product.Id, Png());
         var uploaded = await upload.Content.ReadFromJsonAsync<AddImageResponse>(JsonSerializerOptions);
-        Assert.Single(PublicStore.Keys);
+        var key = Assert.Single(PublicStore.Keys);
 
         using var response = await client.DeleteAsync(new Uri($"/v1/products/{product.Id}/images/{uploaded!.Id}", UriKind.Relative));
 
@@ -124,6 +127,13 @@ public class ImageTests(IntegrationTestWebAppFactory factory) : ProductsIntegrat
         using var checkScope = Factory.Services.CreateScope();
         Assert.False(await checkScope.ServiceProvider.GetRequiredService<IProductsDbContext>().Set<ProductImage>()
             .AsNoTracking().AnyAsync(i => i.ProductId == product.Id));
+        var queued = Assert.Single((await OutboxEventsAsync()).OfType<ProductImageObjectsOrphanedIntegrationEvent>());
+        Assert.Equal(product.Id.Value, queued.ProductId);
+        Assert.Equal([key], queued.ObjectKeys);
+
+        // The object goes when the queue consumer runs, which these slice tests leave off: nothing deletes it in the request.
+        Assert.Equal([key], PublicStore.Keys);
+        await ConsumerHarness.DeliverAsync<DeleteOrphanedProductImageObjectsHandler, ProductImageObjectsOrphanedIntegrationEvent>(Factory.Services, queued);
         Assert.Empty(PublicStore.Keys);
     }
 

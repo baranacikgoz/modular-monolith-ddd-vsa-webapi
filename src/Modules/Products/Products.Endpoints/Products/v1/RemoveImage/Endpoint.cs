@@ -1,6 +1,5 @@
 using Common.Application.Auth;
 using Common.Application.Extensions;
-using Common.Application.Storage;
 using Common.Domain.ResultMonad;
 using Common.Infrastructure.Extensions;
 using Common.Infrastructure.Persistence.Extensions;
@@ -8,17 +7,19 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Products.Application.Persistence;
 using Products.Domain.Products;
 using Products.Infrastructure.Telemetry;
 
 namespace Products.Endpoints.Products.v1.RemoveImage;
 
-/// <summary>Removes the row first, then the stored file. A failed file delete only leaves an unreferenced object (logged),
-/// never a row pointing at a missing file. The object key is a content hash scoped to the product, so no other row can
-/// share the file.</summary>
-internal static partial class Endpoint
+/// <summary>
+///     Removes the image row and, in the same save, collects the message that deletes the stored file
+///     (<c>ProductImageObjectsOrphanedIntegrationEvent</c>, raised from the image's domain event). The request never touches
+///     the object store, so a crash or a storage failure cannot leave an object behind that nothing will delete. The object
+///     key is a content hash scoped to the product, so no other row shares the file.
+/// </summary>
+internal static class Endpoint
 {
     internal static void MapEndpoint(RouteGroupBuilder productsApiGroup)
     {
@@ -34,8 +35,6 @@ internal static partial class Endpoint
         [AsParameters] Request request,
         ICurrentUser currentUser,
         IProductsDbContext dbContext,
-        IPublicObjectStore objectStore,
-        ILogger<Product> logger,
         CancellationToken cancellationToken)
     {
         using var activity = ProductsTelemetry.ActivitySource.StartActivityForCaller();
@@ -50,23 +49,6 @@ internal static partial class Endpoint
                 .SingleAsResult(i => i.Id == request.ImageId)
                 .Tap(image => product.Store.RemoveProductImage(product, image))))
             .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
-            .TapAsync(image => DeleteObjectAsync(objectStore, logger, image.ObjectKey, cancellationToken))
             .TapActivityAsync(activity);
     }
-
-    private static async Task DeleteObjectAsync(
-        IPublicObjectStore objectStore, ILogger logger, string objectKey, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await objectStore.DeleteAsync(objectKey, cancellationToken);
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException)
-        {
-            LogObjectDeleteFailed(logger, exception, objectKey);
-        }
-    }
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Product image row removed but object {ObjectKey} could not be deleted; it stays unreferenced in the bucket.")]
-    private static partial void LogObjectDeleteFailed(ILogger logger, Exception exception, string objectKey);
 }

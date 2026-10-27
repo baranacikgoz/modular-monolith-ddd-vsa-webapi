@@ -23,9 +23,10 @@ public sealed record StoreApprovedIntegrationEvent(DefaultIdType StoreId, Applic
 public sealed record ProductImportRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
 
 /// <summary>
-///     A product was removed and its image rows went with it, so these public-store objects are no longer referenced by
-///     anything. Products consumes it to delete them: raised in the same save as the removal, so an object is never left
-///     behind by a crash between the two, and deleting an object that is already gone is not an error.
+///     A product was removed with its image rows, or one image row was removed from a product, so these public-store
+///     objects are no longer referenced by anything. Products consumes it to delete them: raised in the same save as the
+///     removal, so an object is never left behind by a crash between the two, and deleting an object that is already gone is
+///     not an error. The consumer keeps a key that an image row points at again by then.
 /// </summary>
 public sealed record ProductImageObjectsOrphanedIntegrationEvent(DefaultIdType ProductId, IReadOnlyList<string> ObjectKeys)
     : IntegrationEvent;
