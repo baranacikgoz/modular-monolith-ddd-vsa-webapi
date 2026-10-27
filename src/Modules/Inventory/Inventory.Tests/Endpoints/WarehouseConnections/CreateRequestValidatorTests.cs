@@ -19,11 +19,12 @@ public class CreateRequestValidatorTests(IntegrationTestWebAppFactory factory) :
 {
     private IResxLocalizer Localizer => Scope.ServiceProvider.GetRequiredService<IResxLocalizer>();
 
-    private RequestValidator ValidatorOf(bool allowPrivateAddresses = false)
+    private RequestValidator ValidatorOf(bool allowPrivateAddresses = false, string environmentName = "Development")
     {
         return new RequestValidator(
             Localizer,
-            Options.Create(TestInventoryOptions.Create(configure: o => o.AllowPrivateWarehouseAddresses = allowPrivateAddresses)));
+            Options.Create(TestInventoryOptions.Create(configure: o => o.AllowPrivateWarehouseAddresses = allowPrivateAddresses)),
+            new FakeHostEnvironment(environmentName));
     }
 
     private static Request RequestOf(string address)
@@ -35,6 +36,11 @@ public class CreateRequestValidatorTests(IntegrationTestWebAppFactory factory) :
             BaseUrl = new Uri(address, UriKind.RelativeOrAbsolute),
             ApiCredential = WarehouseConnectionTestData.ApiCredential
         };
+    }
+
+    private static Request DummyRequest()
+    {
+        return new Request { StoreId = DefaultIdType.CreateVersion7(), Provider = WarehouseProvider.Dummy };
     }
 
     [Theory]
@@ -93,6 +99,35 @@ public class CreateRequestValidatorTests(IntegrationTestWebAppFactory factory) :
 
         var error = Assert.Single(result.Errors);
         Assert.Equal(Localizer.WarehouseConnections_Create_BaseUrl_AddressNotAllowed, error.ErrorMessage);
+    }
+
+    [Theory]
+    [InlineData("Development")]
+    [InlineData("Staging")]
+    public void Validate_DummyProviderWithoutAddressOrCredential_IsValidOutsideProduction(string environmentName)
+    {
+        var result = ValidatorOf(environmentName: environmentName).Validate(DummyRequest());
+
+        Assert.True(result.IsValid, string.Join("; ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_DummyProviderInProduction_ReportsDummyNotAllowedInProduction()
+    {
+        var result = ValidatorOf(environmentName: "Production").Validate(DummyRequest());
+
+        var error = Assert.Single(result.Errors);
+        Assert.Equal(nameof(Request.Provider), error.PropertyName);
+        Assert.Equal(Localizer.WarehouseConnections_Create_Provider_DummyNotAllowedInProduction, error.ErrorMessage);
+    }
+
+    [Fact]
+    public void Validate_RealProviderInProduction_StillNeedsItsAddressAndCredential()
+    {
+        var validator = ValidatorOf(environmentName: "Production");
+
+        Assert.True(validator.Validate(RequestOf("https://warehouse.example-partner.local/api")).IsValid);
+        Assert.False(validator.Validate(new Request { StoreId = DefaultIdType.CreateVersion7(), Provider = WarehouseProvider.JsonApi }).IsValid);
     }
 
     // A developer's stub lives on the local machine: the switch lifts the address rule only, https and the shape still apply.

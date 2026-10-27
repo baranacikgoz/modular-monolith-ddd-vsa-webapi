@@ -19,9 +19,11 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
         EncryptionKey = SecretProtectionOptionsValidator.DevelopmentPlaceholderKey
     }));
 
+    private readonly DummyWarehouseState _dummyState = new();
+
     private WarehouseGatewayFactory NewFactory()
     {
-        return new WarehouseGatewayFactory(Client, _protector, TestWarehouseResilience.Pipelines());
+        return new WarehouseGatewayFactory(Client, _protector, TestWarehouseResilience.Pipelines(), _dummyState);
     }
 
     private WarehouseConnection ConnectionOf(WarehouseProvider provider, Uri baseUrl)
@@ -61,6 +63,33 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
         var request = Assert.Single(Handler.Requests);
         Assert.Equal(new Uri("https://warehouse.example-other.local/gateway/v2/holds/release"), request.Uri);
         Assert.Equal(Credential, request.ApiKey);
+    }
+
+    // The test pipelines, like resiliency.json, have no profile for the dummy provider, and its stored credential is not
+    // even decryptable here: the factory must ask for neither.
+    [Fact]
+    public async Task Create_DummyConnection_ReturnsTheInMemoryGatewayAndNeverTouchesTheNetwork()
+    {
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+
+        var created = NewFactory().Create(connection);
+
+        Assert.False(created.IsFailure);
+        Assert.IsType<DummyWarehouseGateway>(created.Value);
+        var released = await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None);
+        Assert.False(released.IsFailure);
+        Assert.Empty(Handler.Requests);
+    }
+
+    [Fact]
+    public void Create_DeactivatedDummyConnection_ReturnsAnErrorAndBuildsNoGateway()
+    {
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+        connection.Deactivate();
+
+        var created = NewFactory().Create(connection);
+
+        Assert.Equal(WarehouseConnectionErrors.NotActive.Key, created.Error!.Key);
     }
 
     [Fact]

@@ -534,6 +534,9 @@
   <data name="WarehouseConnections_Create_Provider_Invalid" xml:space="preserve">
     <value>The warehouse provider is not valid.</value>
   </data>
+  <data name="WarehouseConnections_Create_Provider_DummyNotAllowedInProduction" xml:space="preserve">
+    <value>The dummy warehouse provider cannot be used in Production.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Base URL cannot be empty.</value>
   </data>

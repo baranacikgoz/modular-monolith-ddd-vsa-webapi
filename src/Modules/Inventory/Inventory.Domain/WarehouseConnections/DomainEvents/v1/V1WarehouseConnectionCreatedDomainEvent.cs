@@ -12,7 +12,8 @@ public sealed record V1WarehouseConnectionCreatedDomainEvent(
     public enum ProviderSnapshot
     {
         JsonApi,
-        FormApi
+        FormApi,
+        Dummy
     }
 }
 
@@ -24,6 +25,7 @@ internal static class V1WarehouseConnectionCreatedDomainEventExtensions
         {
             WarehouseProvider.JsonApi => V1WarehouseConnectionCreatedDomainEvent.ProviderSnapshot.JsonApi,
             WarehouseProvider.FormApi => V1WarehouseConnectionCreatedDomainEvent.ProviderSnapshot.FormApi,
+            WarehouseProvider.Dummy => V1WarehouseConnectionCreatedDomainEvent.ProviderSnapshot.Dummy,
             _ => throw new ArgumentOutOfRangeException(nameof(provider), provider, null)
         };
     }

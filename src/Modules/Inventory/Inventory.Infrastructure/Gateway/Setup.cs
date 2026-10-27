@@ -14,6 +14,7 @@ public static class Setup
         services.AddSingleton<WarehouseResiliencePipelines>();
         services.TryAddSingleton<IWarehouseHostResolver, SystemWarehouseHostResolver>();
         services.AddSingleton<WarehouseConnectGuard>();
+        services.AddSingleton<DummyWarehouseState>();
 
         // No standard resilience handler (retry, breaker, timeout) on this client: each call goes through the pipeline of its
         // own connection instead (WarehouseResiliencePipelines), which has no retry, so a release is never sent twice. The

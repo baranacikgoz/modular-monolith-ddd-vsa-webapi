@@ -9,10 +9,12 @@ namespace Inventory.Infrastructure.Gateway;
 /// <summary>
 ///     Picks the gateway implementation by the connection's provider. Registered as a typed client (see <see cref="Setup" />)
 ///     so every gateway it builds shares one pooled <see cref="HttpClient" />; what separates connections is the pipeline
-///     and the address, not the client.
+///     and the address, not the client. The in-memory <see cref="WarehouseProvider.Dummy" /> provider uses neither the client,
+///     a pipeline nor a credential.
 /// </summary>
 internal sealed class WarehouseGatewayFactory(
-    HttpClient httpClient, SecretProtector protector, WarehouseResiliencePipelines pipelines) : IWarehouseGatewayFactory
+    HttpClient httpClient, SecretProtector protector, WarehouseResiliencePipelines pipelines, DummyWarehouseState dummyState)
+    : IWarehouseGatewayFactory
 {
     public Result<IWarehouseGateway> Create(WarehouseConnection connection)
     {
@@ -23,16 +25,23 @@ internal sealed class WarehouseGatewayFactory(
             return WarehouseConnectionErrors.NotActive;
         }
 
+        IWarehouseGateway gateway = connection.Provider == WarehouseProvider.Dummy
+            ? new DummyWarehouseGateway(connection.Id, dummyState)
+            : CreateHttpGateway(connection);
+
+        return Result<IWarehouseGateway>.Success(gateway);
+    }
+
+    private WarehouseHttpGateway CreateHttpGateway(WarehouseConnection connection)
+    {
         var apiCredential = protector.Decrypt(connection.EncryptedApiCredential);
         var pipeline = pipelines.For(connection);
 
-        IWarehouseGateway gateway = connection.Provider switch
+        return connection.Provider switch
         {
             WarehouseProvider.JsonApi => new JsonApiWarehouseGateway(httpClient, connection.BaseUrl, apiCredential, pipeline),
             WarehouseProvider.FormApi => new FormApiWarehouseGateway(httpClient, connection.BaseUrl, apiCredential, pipeline),
             _ => throw new ArgumentOutOfRangeException(nameof(connection), connection.Provider, "Unknown WarehouseProvider.")
         };
-
-        return Result<IWarehouseGateway>.Success(gateway);
     }
 }
