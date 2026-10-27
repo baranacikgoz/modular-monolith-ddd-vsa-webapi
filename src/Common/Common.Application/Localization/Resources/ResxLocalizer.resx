@@ -1037,6 +1037,15 @@
   <data name="InvalidPackageDimensions" xml:space="preserve">
     <value>Paket ölçüleri veya ağırlığı geçerli aralığın dışında.</value>
   </data>
+  <data name="StockLevels_DailyTotals_StoreId_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="StockLevels_DailyTotals_From_NotAfterTo" xml:space="preserve">
+    <value>Başlangıç günü bitiş gününden sonra olamaz.</value>
+  </data>
+  <data name="StockLevels_DailyTotals_Range_MaxDays" xml:space="preserve">
+    <value>Gün aralığı en fazla ({0}) gün olabilir.</value>
+  </data>
   <data name="Notifications_LowStockAlert_Title" xml:space="preserve">
     <value>Düşük stok uyarısı</value>
   </data>

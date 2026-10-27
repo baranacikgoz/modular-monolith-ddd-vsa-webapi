@@ -44,6 +44,16 @@ public class InventoryOptionsValidatorTests
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
+    public void NonPositiveDailyTotalsMaxRangeDays_FailsValidation(int days)
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.DailyTotalsMaxRangeDays = days));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
     public void NonPositiveWebhookDeliveryRetentionDays_FailsValidation(int days)
     {
         var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(webhookDeliveryRetentionDays: days));

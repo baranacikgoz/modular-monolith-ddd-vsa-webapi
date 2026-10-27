@@ -26,6 +26,9 @@ public class InventoryOptions
     /// </summary>
     public required string BusinessTimeZoneId { get; set; }
 
+    /// <summary>Most business days one daily totals read may span, both ends included; a longer range is refused.</summary>
+    public required int DailyTotalsMaxRangeDays { get; set; }
+
     /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
     public required int WebhookMaxBodyBytes { get; set; }
 
@@ -128,6 +131,10 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
             .NotEmpty()
             .Must(id => !string.IsNullOrEmpty(id) && TimeZoneInfo.TryFindSystemTimeZoneById(id, out _))
             .WithMessage("BusinessTimeZoneId must be the id of a time zone known to the host.");
+
+        RuleFor(x => x.DailyTotalsMaxRangeDays)
+            .GreaterThan(0)
+            .WithMessage("DailyTotalsMaxRangeDays must be greater than 0.");
 
         RuleFor(x => x.WebhookMaxBodyBytes)
             .GreaterThan(0)
