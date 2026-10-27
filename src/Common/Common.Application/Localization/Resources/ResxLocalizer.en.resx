@@ -978,4 +978,10 @@
   <data name="InvalidPackageDimensions" xml:space="preserve">
     <value>The package dimensions or weight are outside the valid range.</value>
   </data>
+  <data name="Notifications_LowStockAlert_Title" xml:space="preserve">
+    <value>Low stock alert</value>
+  </data>
+  <data name="Notifications_LowStockAlert_Message" xml:space="preserve">
+    <value>On-hand stock of product ({0}) fell to ({1}), below the low stock threshold of ({2}).</value>
+  </data>
 </root>

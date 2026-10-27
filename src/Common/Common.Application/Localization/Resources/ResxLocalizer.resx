@@ -1037,4 +1037,10 @@
   <data name="InvalidPackageDimensions" xml:space="preserve">
     <value>Paket ölçüleri veya ağırlığı geçerli aralığın dışında.</value>
   </data>
+  <data name="Notifications_LowStockAlert_Title" xml:space="preserve">
+    <value>Düşük stok uyarısı</value>
+  </data>
+  <data name="Notifications_LowStockAlert_Message" xml:space="preserve">
+    <value>({0}) numaralı ürünün eldeki stoku ({1}) adede düştü, düşük stok eşiği ({2}).</value>
+  </data>
 </root>
