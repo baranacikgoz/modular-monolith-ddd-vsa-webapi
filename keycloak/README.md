@@ -16,8 +16,8 @@ already exists, so a changed file only lands on a fresh database (dev: `rm -rf .
 | `backend-api` | Resource server + Authorization Services host. Email + password direct grant. Service account with `realm-management` roles `view-realm`, `view-users`, `query-users`, `manage-users` for the Admin REST API. |
 | `backend-trusted-login` | Direct grant flow override `trusted-login`: only `Username Validation`, no credential step. The backend calls it after it has verified a one-time code itself. Its secret is equivalent to every end user's password. |
 | `ci-integration` | Sample machine caller (client credentials). Authorized through `Service Account Policy`. |
-| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `stock-reservations`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
-| Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. |
+| Resources / scopes | `users`, `sessions`, `devices`, `stores`, `products`, `product-templates`, `stock-levels`, `stock-reservations`, `warehouse-connections`, `hangfire`; scopes named `resource:action`, ownership variants `-own`. |
+| Permissions | Scope-based, grouped per resource and audience (`* Self-Service`, `* Catalog`, `* Administration`, `Machine Integration`). Resource server decision strategy `AFFIRMATIVE`. Administration (the `System Admin Role Policy`) holds `stores:approve`, `stores:suspend`, `stores:reinstate`, `stock-levels:update`, all `warehouse-connections:*` scopes and `products:export`. Any authenticated user holds `stock-levels:view` and `products:import-own`. |
 | Tokens | Access token 5 min. SSO idle 14 days, SSO max 90 days. Refresh token rotation on, max reuse 1 (one lost-response retry of the same refresh token is tolerated; the next replay makes Keycloak detach the client session and the API revoke the whole user session). |
 | User profile | `username`, `email`, `firstName`, `lastName` (required), `phoneNumber`, `phoneNumberVerified`, `birthDate` (admin-edit only). Unmanaged attributes disabled. |
 
@@ -105,6 +105,16 @@ and inject them into the API through `KeycloakOptions__*` environment variables.
 
 Keep the Keycloak token endpoint reachable only from the API network and the admin console on an
 internal network; the `trusted-login` flow is only as safe as that boundary.
+
+## Realms that already exist
+
+Keycloak skips the import when the realm exists, so a realm created from an earlier version of the file does not receive later additions. Bring it in line by hand (admin console or Admin REST API) with whatever the current file has and the live realm lacks:
+
+- the realm role `store-owner` (the API grants it when a store is approved; without it the consumer that grants it throws and the bus retries),
+- the resources `stock-levels` and `warehouse-connections` with their scopes and permissions,
+- the scopes `stores:approve`, `stores:suspend`, `stores:reinstate`, `products:import-own` and `products:export` and the permissions that carry them.
+
+`PermissionCoverageTests` checks the file against the endpoints, not a live realm, so it cannot tell you what a live realm is missing.
 
 ## Editing the realm
 
