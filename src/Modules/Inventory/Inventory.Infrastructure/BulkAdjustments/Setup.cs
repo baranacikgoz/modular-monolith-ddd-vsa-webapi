@@ -5,7 +5,8 @@ namespace Inventory.Infrastructure.BulkAdjustments;
 public static class Setup
 {
     /// <summary>The accept-queue-poll bulk adjustment of the module: its enqueuer and runner (the queue consumer itself is
-    /// picked up by the Host's consumer scan) and the housekeeping behind the job table.</summary>
+    /// picked up by the Host's consumer scan), the housekeeping behind the job table and the sweep that hands stuck jobs back
+    /// to the queue.</summary>
     public static IServiceCollection AddStockBulkAdjustments(this IServiceCollection services)
     {
         return services
@@ -13,6 +14,8 @@ public static class Setup
             .AddScoped<StockBulkAdjustJobRunner>()
             .AddScoped<StockBulkAdjustJobHousekeeping>()
             .AddScoped<StockJobsHousekeeping>()
-            .AddHostedService<StockJobsHousekeepingRegistrar>();
+            .AddScoped<StockJobRequeueService>()
+            .AddHostedService<StockJobsHousekeepingRegistrar>()
+            .AddHostedService<StockJobRequeueJobRegistrar>();
     }
 }

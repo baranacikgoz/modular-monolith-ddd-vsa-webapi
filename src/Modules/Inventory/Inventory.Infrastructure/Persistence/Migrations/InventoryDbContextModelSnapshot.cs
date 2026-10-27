@@ -164,6 +164,9 @@ namespace Inventory.Infrastructure.Migrations
                     b.Property<Guid?>("RequestedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("RequeueCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RowErrors")
                         .IsRequired()
                         .ValueGeneratedOnAdd()

@@ -66,6 +66,14 @@ public class InventoryOptionsValidatorTests
         Assert.False(result.IsValid);
     }
 
+    [Fact]
+    public void EmptyStockJobRequeueCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockJobRequeueCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
     [Theory]
     [InlineData(nameof(InventoryOptions.StockPushDirtyMinAgeSeconds))]
     [InlineData(nameof(InventoryOptions.StockPushBatchSize))]
@@ -75,6 +83,8 @@ public class InventoryOptionsValidatorTests
     [InlineData(nameof(InventoryOptions.BulkAdjustJobConcurrentMessageLimit))]
     [InlineData(nameof(InventoryOptions.BulkAdjustBatchesPerMessage))]
     [InlineData(nameof(InventoryOptions.BulkAdjustMaxStoredRowErrors))]
+    [InlineData(nameof(InventoryOptions.StockJobRunningLeaseMinutes))]
+    [InlineData(nameof(InventoryOptions.StockJobMaxRequeues))]
     public void ZeroTunable_FailsValidation(string tunable)
     {
         var options = TestInventoryOptions.Create();

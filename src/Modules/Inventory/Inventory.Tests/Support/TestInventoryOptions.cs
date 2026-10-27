@@ -33,7 +33,10 @@ internal static class TestInventoryOptions
             BulkAdjustJobConcurrentMessageLimit = 2,
             BulkAdjustBatchesPerMessage = 10,
             BulkAdjustMaxStoredRowErrors = 200,
-            StockJobHousekeepingCron = "0 25 * * * *"
+            StockJobHousekeepingCron = "0 25 * * * *",
+            StockJobRequeueCron = "0 */5 * * * *",
+            StockJobRunningLeaseMinutes = 15,
+            StockJobMaxRequeues = 3
         };
         configure?.Invoke(options);
         return options;

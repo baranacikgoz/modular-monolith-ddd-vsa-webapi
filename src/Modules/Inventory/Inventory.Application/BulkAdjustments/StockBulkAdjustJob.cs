@@ -80,6 +80,12 @@ public sealed class StockBulkAdjustJob : JobRow<StockBulkAdjustJobId>
     public int RowsAdjusted { get; private set; }
     public int RowsRejected { get; private set; }
 
+    /// <summary>
+    ///     How many times the stuck-job sweep handed this job back to the queue since it last saved a batch. A batch resets it,
+    ///     so only a job that keeps dying before it makes progress reaches <c>InventoryOptions.StockJobMaxRequeues</c>.
+    /// </summary>
+    public int RequeueCount { get; private set; }
+
     /// <summary>The first rejected rows, capped by <c>InventoryOptions.BulkAdjustMaxStoredRowErrors</c>; the rest are only
     /// counted in <see cref="RowsRejected" />.</summary>
     public IReadOnlyList<StockBulkAdjustRowError> RowErrors { get; private set; } = [];

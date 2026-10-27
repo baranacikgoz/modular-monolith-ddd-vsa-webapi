@@ -142,6 +142,18 @@ public class StockBulkAdjustJobRunnerTests(IntegrationTestWebAppFactory factory)
     }
 
     [Fact]
+    public async Task Run_BatchSaved_ResetsTheCountOfRequeuesWithoutProgress()
+    {
+        var stocked = await StockLevelTestData.SeedStockLevelAsync(Root, quantityOnHand: 10);
+        var job = await QueueJobAsync(Workbooks.Build([stocked.ProductId, 1]));
+        await Db.StockBulkAdjustJobs.Where(j => j.Id == job.Id).ExecuteUpdateAsync(s => s.SetProperty(j => j.RequeueCount, 2));
+
+        await RunMessageAsync(job.Id);
+
+        Assert.Equal(0, (await ReadJobAsync(job.Id)).RequeueCount);
+    }
+
+    [Fact]
     public async Task Run_SameProductTwiceInOneFile_AppendsTwoLedgerRows()
     {
         var stocked = await StockLevelTestData.SeedStockLevelAsync(Root, quantityOnHand: 10);

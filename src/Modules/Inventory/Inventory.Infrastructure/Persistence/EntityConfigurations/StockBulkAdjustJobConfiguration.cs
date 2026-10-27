@@ -22,6 +22,7 @@ internal sealed class StockBulkAdjustJobConfiguration : JobRowConfiguration<Stoc
         builder.Property(j => j.FileName).HasMaxLength(StockBulkAdjustJob.FileNameMaxLength).IsRequired();
         builder.Property(j => j.ObjectKey).HasMaxLength(StockBulkAdjustJob.ObjectKeyMaxLength).IsRequired();
         builder.Property(j => j.Reason).HasMaxLength(Constants.ReasonMaxLength).IsRequired();
+        builder.Property(j => j.RequeueCount).IsRequired();
 
         // Only ever read back whole by the poll endpoints, never queried: jsonb with a plain System.Text.Json converter.
         builder

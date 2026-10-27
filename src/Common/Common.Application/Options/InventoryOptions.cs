@@ -72,6 +72,25 @@ public class InventoryOptions
 
     /// <summary>Cron of the recurring job that fails stale bulk adjustment jobs and deletes finished ones with their uploads.</summary>
     public required string StockJobHousekeepingCron { get; set; }
+
+    /// <summary>
+    ///     Cron of the recurring sweep that hands a job its consumer died on back to the queue. The sweep only publishes the
+    ///     job's queue message; a consumer runs it.
+    /// </summary>
+    public required string StockJobRequeueCron { get; set; }
+
+    /// <summary>
+    ///     A job that has been Running longer than this is taken to be orphaned by a crashed consumer. It has to outlast one
+    ///     message (a message saves at most <see cref="BulkAdjustBatchesPerMessage" /> batches, then the job requeues itself)
+    ///     and stay under <c>JobHousekeepingOptions.StaleAfterMinutes</c>, or housekeeping fails the job first.
+    /// </summary>
+    public required int StockJobRunningLeaseMinutes { get; set; }
+
+    /// <summary>
+    ///     How many times the sweep hands one job back to the queue without the job saving a batch in between. The next time it
+    ///     is found stuck it is failed instead, so a job that kills its consumer every time cannot loop forever.
+    /// </summary>
+    public required int StockJobMaxRequeues { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -154,5 +173,17 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockJobHousekeepingCron)
             .NotEmpty()
             .WithMessage("StockJobHousekeepingCron must not be empty.");
+
+        RuleFor(x => x.StockJobRequeueCron)
+            .NotEmpty()
+            .WithMessage("StockJobRequeueCron must not be empty.");
+
+        RuleFor(x => x.StockJobRunningLeaseMinutes)
+            .GreaterThan(0)
+            .WithMessage("StockJobRunningLeaseMinutes must be greater than 0.");
+
+        RuleFor(x => x.StockJobMaxRequeues)
+            .GreaterThan(0)
+            .WithMessage("StockJobMaxRequeues must be greater than 0.");
     }
 }

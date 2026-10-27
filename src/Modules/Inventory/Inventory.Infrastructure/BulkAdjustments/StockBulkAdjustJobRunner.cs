@@ -220,6 +220,7 @@ public sealed partial class StockBulkAdjustJobRunner(
             .Where(j => j.Id == jobId)
             .ExecuteUpdateAsync(s => s
                 .SetProperty(j => j.LastProcessedRow, lastRow)
+                .SetProperty(j => j.RequeueCount, 0)
                 .SetProperty(j => j.Progress, j => j.Progress + batch.Length)
                 .SetProperty(j => j.RowsAdjusted, j => j.RowsAdjusted + summary.Adjusted)
                 .SetProperty(j => j.RowsRejected, j => j.RowsRejected + summary.Rejections.Count)

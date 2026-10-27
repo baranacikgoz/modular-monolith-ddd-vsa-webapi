@@ -20,6 +20,9 @@ public static class StockBulkAdjustErrors
     public static readonly Error ConcurrentUpdate = new() { Key = nameof(ConcurrentUpdate), StatusCode = HttpStatusCode.Conflict };
 
     public const string UnexpectedError = "UnexpectedError";
+
+    /// <summary>The job was handed back to the queue as often as allowed and still never saved a batch: it is not retried again.</summary>
+    public const string JobAbandoned = "JobAbandoned";
 }
 
 /// <summary>
