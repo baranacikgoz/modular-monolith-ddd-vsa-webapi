@@ -9,6 +9,7 @@ public sealed record Response : AuditableEntityResponse<ProductId>
     public required string Description { get; init; }
     public required int Quantity { get; init; }
     public required decimal Price { get; init; }
+    public string? Sku { get; init; }
 
     // Populated via a cross-module InterModuleRequest to Inventory after the DB projection below -
     // 0 until Inventory's ProductCreatedIntegrationEvent consumer has processed this product (async).

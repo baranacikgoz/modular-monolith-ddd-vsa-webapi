@@ -286,4 +286,85 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         Assert.Equal(JobStatus.Queued, (await ReadJobAsync(job.Id)).Status);
         Assert.Single((await OutboxEventsAsync()).OfType<ProductImportRequestedIntegrationEvent>(), e => e.JobId == job.Id.Value);
     }
+
+    [Fact]
+    public async Task Run_SkuColumn_CreatesProductsThatCarryTheirSku()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(
+            ["Desk lamp", "", 5, 49.9m, "SKU-1"],
+            ["Office chair", "", 2, 120m, ""]));
+
+        await RunMessageAsync(job.Id);
+
+        var products = await ProductsOfAsync(seeded.Store.Id);
+        Assert.Equal("SKU-1", products.Single(p => p.Name == "Desk lamp").Sku);
+        Assert.Null(products.Single(p => p.Name == "Office chair").Sku);
+    }
+
+    [Fact]
+    public async Task Run_SkuAlreadyUsedInTheStoreOrEarlierInTheFile_RejectsOnlyThoseRows()
+    {
+        var (job, seeded) = await QueueJobAsync(
+            Workbooks.Build(
+                ["Table", "", 1, 5m, "SKU-1"],
+                ["Shelf", "", 1, 5m, "SKU-2"],
+                ["Stool", "", 1, 5m, "SKU-2"],
+                ["Rug", "", 1, 5m, "SKU-3"]),
+            "Existing");
+        Db.Products.Add(Domain.Products.Product.Create(seeded.Store.Id, seeded.Template.Id, "Holder of SKU-1", "d", 1, 5m, "SKU-1"));
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal(JobStatus.Succeeded, finished.Status);
+        Assert.Equal(2, finished.ProductsCreated);
+        Assert.Equal(
+            [new ProductImportRowError(2, "SkuAlreadyExists"), new ProductImportRowError(4, "SkuAlreadyExists")],
+            finished.RowErrors);
+        var names = (await ProductsOfAsync(seeded.Store.Id)).Select(p => p.Name);
+        Assert.Equal(["Existing", "Holder of SKU-1", "Rug", "Shelf"], names);
+    }
+
+    [Fact]
+    public async Task Run_RowNamingADifferentSkuForAnExistingProduct_RejectsTheRow()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(["Desk lamp", "", 9, 5m, "SKU-9"]));
+        Db.Products.Add(Domain.Products.Product.Create(seeded.Store.Id, seeded.Template.Id, "Desk lamp", "d", 1, 5m, "SKU-1"));
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+
+        await RunMessageAsync(job.Id);
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal([new ProductImportRowError(2, "SkuDiffers")], finished.RowErrors);
+        var lamp = Assert.Single(await ProductsOfAsync(seeded.Store.Id));
+        Assert.Equal(1, lamp.Quantity);
+    }
+
+    [Fact]
+    public async Task Run_ConcurrentWriterTakesASkuDuringABatch_RejectsThatBatchInsteadOfFailingTheJob()
+    {
+        var (job, seeded) = await QueueJobAsync(Workbooks.Build(["P1", "", 1, 5m, "SKU-1"], ["P2", "", 1, 5m, "SKU-2"]));
+        var storeId = seeded.Store.Id;
+        var templateId = seeded.Template.Id;
+
+        // Another request adds a product with the same SKU between the runner's read and its save.
+        async Task ConcurrentWriteAsync()
+        {
+            using var other = Factory.Services.CreateScope();
+            var otherDb = other.ServiceProvider.GetRequiredService<IProductsDbContext>();
+            otherDb.Products.Add(Domain.Products.Product.Create(storeId, templateId, "Concurrent", "d", 1, 5m, "SKU-1"));
+            await otherDb.SaveChangesAsync();
+        }
+
+        await RunMessageAsync(job.Id, wrapDbContext: inner => new ConflictingProductsDbContext(inner, ConcurrentWriteAsync));
+
+        var finished = await ReadJobAsync(job.Id);
+        Assert.Equal(JobStatus.Succeeded, finished.Status);
+        Assert.Equal(2, finished.RowsRejected);
+        Assert.All(finished.RowErrors, e => Assert.Equal(ProductImportErrors.ConcurrentUpdate.Key, e.Reason));
+        Assert.Equal(["Concurrent"], (await ProductsOfAsync(storeId)).Select(p => p.Name));
+    }
 }

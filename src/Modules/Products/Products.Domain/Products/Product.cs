@@ -78,13 +78,16 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
 
+    /// <summary>The store's own code for the product, unique within the store; null when the store keeps none. Set at creation only.</summary>
+    public string? Sku { get; private set; }
+
     // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
     public string Language { get; private set; } = "simple_unaccent";
 
     public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
 
     public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description,
-        int quantity, decimal price)
+        int quantity, decimal price, string? sku = null)
     {
         var id = ProductId.New();
         var product = new Product();
@@ -101,6 +104,14 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
         product.Price = price;
 
         product.RaiseEvent(@event);
+
+        // The created event is frozen and has no SKU, so the SKU gets an event of its own right after it.
+        if (sku is not null)
+        {
+            var skuEvent = new V1ProductSkuAssignedDomainEvent(id, sku);
+            product.Sku = sku;
+            product.RaiseEvent(skuEvent);
+        }
 
         return product;
     }

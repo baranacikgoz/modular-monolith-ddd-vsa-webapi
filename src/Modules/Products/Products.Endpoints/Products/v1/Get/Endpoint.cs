@@ -44,6 +44,7 @@ internal static class Endpoint
                 Description = p.Description,
                 Quantity = p.Quantity,
                 Price = p.Price,
+                Sku = p.Sku,
                 CreatedBy = p.CreatedBy,
                 CreatedOn = p.CreatedOn,
                 LastModifiedBy = p.LastModifiedBy,

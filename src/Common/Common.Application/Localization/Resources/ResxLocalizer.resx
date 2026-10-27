@@ -902,4 +902,16 @@
   <data name="NotSuspended" xml:space="preserve">
     <value>Mağaza askıda değil.</value>
   </data>
+  <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
+    <value>SKU boş olamaz.</value>
+  </data>
+  <data name="Stores_AddProduct_Sku_MaxLength" xml:space="preserve">
+    <value>SKU en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="SkuAlreadyExists" xml:space="preserve">
+    <value>Bu SKU mağazadaki başka bir üründe zaten kullanılıyor.</value>
+  </data>
+  <data name="ParentNoLongerExists" xml:space="preserve">
+    <value>Mağaza veya ürün şablonu artık mevcut değil.</value>
+  </data>
 </root>

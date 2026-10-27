@@ -843,4 +843,16 @@
   <data name="NotSuspended" xml:space="preserve">
     <value>The store is not suspended.</value>
   </data>
+  <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
+    <value>SKU cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Sku_MaxLength" xml:space="preserve">
+    <value>SKU can be at most ({0}) characters long.</value>
+  </data>
+  <data name="SkuAlreadyExists" xml:space="preserve">
+    <value>Another product of this store already uses this SKU.</value>
+  </data>
+  <data name="ParentNoLongerExists" xml:space="preserve">
+    <value>The store or the product template no longer exists.</value>
+  </data>
 </root>

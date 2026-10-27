@@ -9,4 +9,5 @@ public sealed record Response : AuditableEntityResponse<ProductId>
     public required string Description { get; init; }
     public required int Quantity { get; init; }
     public required decimal Price { get; init; }
+    public string? Sku { get; init; }
 }

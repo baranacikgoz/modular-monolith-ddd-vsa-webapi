@@ -404,6 +404,10 @@ namespace Products.Infrastructure.Migrations
                         .HasColumnName("SearchVector")
                         .HasComputedColumnSql("fts_product(\"Language\", \"Name\", \"Description\")", true);
 
+                    b.Property<string>("Sku")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
 
@@ -425,6 +429,10 @@ namespace Products.Infrastructure.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.HasIndex("StoreId");
+
+                    b.HasIndex("StoreId", "Sku")
+                        .IsUnique()
+                        .HasFilter("\"Sku\" IS NOT NULL");
 
                     b.ToTable("Products", "Products");
                 });
