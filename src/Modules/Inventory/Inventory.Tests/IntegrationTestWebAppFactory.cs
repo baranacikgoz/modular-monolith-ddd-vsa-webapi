@@ -4,6 +4,8 @@ using Common.Application.Storage;
 using Common.InterModuleRequests.Products;
 using Common.Tests;
 using Inventory.Application.Gateway;
+using Inventory.Application.Persistence;
+using Inventory.Infrastructure.Persistence;
 using Inventory.Tests.Support;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -44,6 +46,13 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
     /// </summary>
     public FakeWarehouseHandler Warehouse { get; } = new();
 
+    /// <summary>
+    ///     Plays a competing writer: runs once, right before the first save of the database context the next request
+    ///     resolves, so that save loses its concurrency check. A test sets it before sending the request; it is cleared as soon
+    ///     as a request picks it up.
+    /// </summary>
+    public Func<Task>? BeforeNextRequestSave { get; set; }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -56,6 +65,20 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
         {
             services.AddSingleton(ProductSearchClient);
             services.AddSingleton(UsersClient);
+
+            // The module context itself unless a test asked for a competing writer for the next request.
+            services.AddScoped<IInventoryDbContext>(provider =>
+            {
+                var context = provider.GetRequiredService<InventoryDbContext>();
+                var compete = BeforeNextRequestSave;
+                if (compete is null)
+                {
+                    return context;
+                }
+
+                BeforeNextRequestSave = null;
+                return new ConflictingInventoryDbContext(context, compete);
+            });
 
             // A typed client is named after its service type.
             services.AddHttpClient(nameof(IWarehouseGatewayFactory)).ConfigurePrimaryHttpMessageHandler(() => Warehouse);
