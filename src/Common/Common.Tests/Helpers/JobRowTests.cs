@@ -49,6 +49,70 @@ public class JobRowTests(IntegrationTestFactory factory) : BaseIntegrationTest(f
     }
 
     [Fact]
+    public async Task RequeueAsync_LeaseExpiredBefore_RequeuesOnlyAJobStartedBeforeTheCutoff()
+    {
+        await using var db = await HelpersTestDbContext.CreateAsync(Factory.ConnectionString);
+        var stuck = new SampleJob(null, Now.AddHours(-2));
+        var fresh = new SampleJob(null, Now.AddMinutes(-5));
+        db.Jobs.AddRange(stuck, fresh);
+        await db.SaveChangesAsync();
+        Assert.True(await db.Jobs.TryClaimAsync(stuck.Id, Now.AddHours(-1), CancellationToken.None));
+        Assert.True(await db.Jobs.TryClaimAsync(fresh.Id, Now.AddMinutes(-1), CancellationToken.None));
+        var cutoff = Now.AddMinutes(-15);
+
+        var stuckRequeued = await db.Jobs.RequeueAsync(stuck.Id, cutoff, CancellationToken.None);
+        var freshRequeued = await db.Jobs.RequeueAsync(fresh.Id, cutoff, CancellationToken.None);
+
+        Assert.True(stuckRequeued);
+        Assert.False(freshRequeued);
+        var stuckRow = await db.Jobs.AsNoTracking().SingleAsync(j => j.Id == stuck.Id);
+        Assert.Equal(JobStatus.Queued, stuckRow.Status);
+        Assert.Null(stuckRow.StartedOn);
+        var freshRow = await db.Jobs.AsNoTracking().SingleAsync(j => j.Id == fresh.Id);
+        Assert.Equal(JobStatus.Running, freshRow.Status);
+        Assert.Equal(Now.AddMinutes(-1), freshRow.StartedOn);
+    }
+
+    [Fact]
+    public async Task RequeueAsync_LeaseExpiredBefore_ReclaimedJobIsLeftAlone()
+    {
+        await using var db = await HelpersTestDbContext.CreateAsync(Factory.ConnectionString);
+        var job = new SampleJob(null, Now.AddHours(-2));
+        db.Jobs.Add(job);
+        await db.SaveChangesAsync();
+        Assert.True(await db.Jobs.TryClaimAsync(job.Id, Now.AddHours(-1), CancellationToken.None));
+        var cutoff = Now.AddMinutes(-15);
+        // The sweep read the job as stuck, then a consumer took it again before the sweep's update ran.
+        Assert.True(await db.Jobs.RequeueAsync(job.Id, CancellationToken.None));
+        Assert.True(await db.Jobs.TryClaimAsync(job.Id, Now, CancellationToken.None));
+
+        var requeued = await db.Jobs.RequeueAsync(job.Id, cutoff, CancellationToken.None);
+
+        Assert.False(requeued);
+        var row = await db.Jobs.AsNoTracking().SingleAsync(j => j.Id == job.Id);
+        Assert.Equal(JobStatus.Running, row.Status);
+        Assert.Equal(Now, row.StartedOn);
+    }
+
+    [Fact]
+    public async Task RequeueAsync_LeaseExpiredBeforeWithExtraSetter_AppliesItInTheSameUpdate()
+    {
+        await using var db = await HelpersTestDbContext.CreateAsync(Factory.ConnectionString);
+        var job = new SampleJob(null, Now.AddHours(-2));
+        db.Jobs.Add(job);
+        await db.SaveChangesAsync();
+        Assert.True(await db.Jobs.TryClaimAsync(job.Id, Now.AddHours(-1), CancellationToken.None));
+
+        var requeued = await db.Jobs.RequeueAsync(
+            job.Id, Now.AddMinutes(-15), CancellationToken.None, s => s.SetProperty(j => j.Progress, j => j.Progress + 7));
+
+        Assert.True(requeued);
+        var row = await db.Jobs.AsNoTracking().SingleAsync(j => j.Id == job.Id);
+        Assert.Equal(JobStatus.Queued, row.Status);
+        Assert.Equal(7, row.Progress);
+    }
+
+    [Fact]
     public async Task Housekeeping_FailsStaleRunningRowsAndDeletesExpiredFinishedRowsInPages()
     {
         await using var db = await HelpersTestDbContext.CreateAsync(Factory.ConnectionString);

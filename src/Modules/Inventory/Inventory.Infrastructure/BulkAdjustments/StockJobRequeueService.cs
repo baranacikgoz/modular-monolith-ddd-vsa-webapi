@@ -20,10 +20,10 @@ namespace Inventory.Infrastructure.BulkAdjustments;
 ///     <see cref="InventoryOptions.StockJobMaxRequeues" /> times without saving a batch is failed instead
 ///     (<see cref="StockBulkAdjustErrors.JobAbandoned" />). It never runs a job.
 ///     <para>
-///         Each change carries the lease test itself (<c>Status = Running AND StartedOn &lt; cutoff</c>), not just the status
-///         that <see cref="JobClaimExtensions.RequeueAsync{TJob,TId}" /> checks: a job a consumer claimed again a moment ago,
-///         or one another overlapping run of this sweep just requeued, is no longer stuck and must not be requeued over the
-///         consumer working on it.
+///         Each change carries the lease test itself (<c>Status = Running AND StartedOn &lt; cutoff</c>), which the cutoff
+///         overload of <c>RequeueAsync</c> in <see cref="JobClaimExtensions" /> applies in the same update: a job a consumer
+///         claimed again a moment ago, or one another overlapping run of this sweep just requeued, is no longer stuck and
+///         must not be requeued over the consumer working on it.
 ///     </para>
 /// </summary>
 public sealed partial class StockJobRequeueService(
@@ -79,22 +79,17 @@ public sealed partial class StockJobRequeueService(
     {
         await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        var changed = await dbContext.StockBulkAdjustJobs
-            .TagWith(nameof(RequeueAsync), jobId)
-            .Where(j => j.Id == jobId && j.Status == JobStatus.Running && j.StartedOn < leaseExpiredBefore)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(j => j.Status, JobStatus.Queued)
-                .SetProperty(j => j.StartedOn, (DateTimeOffset?)null)
-                .SetProperty(j => j.RequeueCount, j => j.RequeueCount + 1), cancellationToken);
+        var requeued = await dbContext.StockBulkAdjustJobs.RequeueAsync(
+            jobId, leaseExpiredBefore, cancellationToken, s => s.SetProperty(j => j.RequeueCount, j => j.RequeueCount + 1));
 
-        if (changed == 1)
+        if (requeued)
         {
             outbox.Collect(new StockBulkAdjustRequestedIntegrationEvent(jobId.Value));
             await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         await transaction.CommitAsync(cancellationToken);
-        return changed == 1;
+        return requeued;
     }
 
     internal async Task<bool> AbandonAsync(
