@@ -596,6 +596,9 @@
   <data name="WarehouseConnections_Create_Provider_DummyNotAllowedInProduction" xml:space="preserve">
     <value>Sahte depo sağlayıcısı üretim ortamında kullanılamaz.</value>
   </data>
+  <data name="WarehouseDummyProviderNotAllowedInProduction" xml:space="preserve">
+    <value>Sahte depo sağlayıcısına ait bağlantı üretim ortamında kullanılamaz, depo sistemine istek gönderilmedi.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Temel adres boş olamaz.</value>
   </data>

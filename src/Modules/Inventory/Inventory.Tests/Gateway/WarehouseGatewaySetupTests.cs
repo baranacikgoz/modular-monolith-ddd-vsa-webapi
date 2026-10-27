@@ -1,11 +1,13 @@
 using Common.Application.Options;
 using Common.Infrastructure.Resiliency;
 using Common.Infrastructure.Security;
+using Common.Tests;
 using Inventory.Application.Gateway;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Xunit;
 using GatewaySetup = Inventory.Infrastructure.Gateway.Setup;
@@ -33,6 +35,7 @@ public sealed class WarehouseGatewaySetupTests : IDisposable
         services.AddSingleton(Options.Create(resiliency));
         services.AddSingleton(Options.Create(TestInventoryOptions.Create()));
         services.AddSingleton(_protector);
+        services.AddSingleton<IHostEnvironment>(new FakeHostEnvironment("Development"));
         services.AddKeyedResiliencePipelines();
         services.AddWarehouseGatewayInfrastructure();
         _provider = services.BuildServiceProvider();

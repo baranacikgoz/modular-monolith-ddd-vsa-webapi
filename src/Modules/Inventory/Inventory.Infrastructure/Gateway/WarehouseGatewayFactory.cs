@@ -3,6 +3,7 @@ using Common.Infrastructure.Security;
 using Inventory.Application.Gateway;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.WarehouseConnections.Errors;
+using Microsoft.Extensions.Hosting;
 
 namespace Inventory.Infrastructure.Gateway;
 
@@ -10,10 +11,15 @@ namespace Inventory.Infrastructure.Gateway;
 ///     Picks the gateway implementation by the connection's provider. Registered as a typed client (see <see cref="Setup" />)
 ///     so every gateway it builds shares one pooled <see cref="HttpClient" />; what separates connections is the pipeline
 ///     and the address, not the client. The in-memory <see cref="WarehouseProvider.Dummy" /> provider uses neither the client,
-///     a pipeline nor a credential.
+///     a pipeline nor a credential, and is never built in Production
+///     (<see cref="WarehouseConnectionErrors.DummyProviderNotAllowedInProduction" />).
 /// </summary>
 internal sealed class WarehouseGatewayFactory(
-    HttpClient httpClient, SecretProtector protector, WarehouseResiliencePipelines pipelines, DummyWarehouseState dummyState)
+    HttpClient httpClient,
+    SecretProtector protector,
+    WarehouseResiliencePipelines pipelines,
+    DummyWarehouseState dummyState,
+    IHostEnvironment environment)
     : IWarehouseGatewayFactory
 {
     public Result<IWarehouseGateway> Create(WarehouseConnection connection)
@@ -23,6 +29,11 @@ internal sealed class WarehouseGatewayFactory(
         if (connection.Status != WarehouseConnectionStatus.Active)
         {
             return WarehouseConnectionErrors.NotActive;
+        }
+
+        if (connection.Provider == WarehouseProvider.Dummy && environment.IsProduction())
+        {
+            return WarehouseConnectionErrors.DummyProviderNotAllowedInProduction;
         }
 
         IWarehouseGateway gateway = connection.Provider == WarehouseProvider.Dummy

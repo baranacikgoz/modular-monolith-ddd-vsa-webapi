@@ -1,6 +1,7 @@
 using System.Net;
 using Common.Application.Options;
 using Common.Infrastructure.Security;
+using Common.Tests;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.WarehouseConnections.Errors;
 using Inventory.Infrastructure.Gateway;
@@ -22,9 +23,10 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
     private readonly DummyWarehouseState _dummyState = new();
 
-    private WarehouseGatewayFactory NewFactory()
+    private WarehouseGatewayFactory NewFactory(string environmentName = "Development")
     {
-        return new WarehouseGatewayFactory(Client, _protector, TestWarehouseResilience.Pipelines(), _dummyState);
+        return new WarehouseGatewayFactory(
+            Client, _protector, TestWarehouseResilience.Pipelines(), _dummyState, new FakeHostEnvironment(environmentName));
     }
 
     private WarehouseConnection ConnectionOf(WarehouseProvider provider, Uri baseUrl)
@@ -80,6 +82,33 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
         var released = await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None);
         Assert.False(released.IsFailure);
         Assert.Empty(Handler.Requests);
+    }
+
+    // A connection row copied into a production database from elsewhere would otherwise answer every release and stock push
+    // from memory, so the warehouse it stands for would never hear of them.
+    [Fact]
+    public void Create_DummyConnectionInProduction_ReturnsADefiniteErrorAndBuildsNoGateway()
+    {
+        var connection = TestWarehouseResilience.Connection(WarehouseProvider.Dummy, baseUrl: new Uri(Constants.DummyBaseUrl));
+
+        var created = NewFactory("Production").Create(connection);
+
+        Assert.True(created.IsFailure);
+        Assert.Equal(WarehouseConnectionErrors.DummyProviderNotAllowedInProduction.Key, created.Error!.Key);
+        Assert.Empty(Handler.Requests);
+    }
+
+    [Fact]
+    public async Task Create_RealProviderInProduction_StillBuildsItsGateway()
+    {
+        Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "ref-3" });
+        var connection = ConnectionOf(WarehouseProvider.JsonApi, new Uri("https://warehouse.example-partner.local/api"));
+
+        var created = NewFactory("Production").Create(connection);
+
+        Assert.False(created.IsFailure);
+        Assert.IsType<JsonApiWarehouseGateway>(created.Value);
+        Assert.False((await created.Value.RequestReleaseAsync("product-1", 2, CancellationToken.None)).IsFailure);
     }
 
     [Fact]

@@ -537,6 +537,9 @@
   <data name="WarehouseConnections_Create_Provider_DummyNotAllowedInProduction" xml:space="preserve">
     <value>The dummy warehouse provider cannot be used in Production.</value>
   </data>
+  <data name="WarehouseDummyProviderNotAllowedInProduction" xml:space="preserve">
+    <value>A connection of the dummy warehouse provider cannot be used in Production, nothing was sent to a warehouse system.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Base URL cannot be empty.</value>
   </data>
