@@ -1,3 +1,4 @@
+using System.Globalization;
 using Products.Application.Imports;
 using Products.Domain.Products;
 using Products.Infrastructure.Imports;
@@ -16,6 +17,16 @@ public class RowParserTests
 
         Assert.False(result.IsFailure);
         Assert.Equal(new ProductRow(2, "Desk lamp", "LED, dimmable", 12, 49.90m), result.Value);
+    }
+
+    [Fact]
+    public void Parse_QuantityAndPriceAtTheirMinimums_AreAccepted()
+    {
+        var result = RowParser.Parse(Row("Desk lamp", "d", Constants.QuantityGreaterThanOrEqualTo.ToString(CultureInfo.InvariantCulture),
+            Constants.PriceGreaterThanOrEqualTo.ToString(CultureInfo.InvariantCulture)));
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(Constants.PriceGreaterThanOrEqualTo, result.Value!.Price);
     }
 
     [Fact]
