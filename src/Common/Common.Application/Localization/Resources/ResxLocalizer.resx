@@ -650,6 +650,21 @@
   <data name="WarehouseReference" xml:space="preserve">
     <value>Depo referansı</value>
   </data>
+  <data name="StockReservation" xml:space="preserve">
+    <value>Stok rezervasyonu</value>
+  </data>
+  <data name="StockLevel" xml:space="preserve">
+    <value>Stok seviyesi</value>
+  </data>
+  <data name="WarehouseConnection" xml:space="preserve">
+    <value>Depo bağlantısı</value>
+  </data>
+  <data name="ProductSummary" xml:space="preserve">
+    <value>Ürün özeti</value>
+  </data>
+  <data name="StockBulkAdjustJob" xml:space="preserve">
+    <value>Toplu stok düzeltme işi</value>
+  </data>
   <data name="WarehouseGatewayCallFailed" xml:space="preserve">
     <value>Depo sistemi isteği başarısız bir yanıtla sonuçlandırdı.</value>
   </data>

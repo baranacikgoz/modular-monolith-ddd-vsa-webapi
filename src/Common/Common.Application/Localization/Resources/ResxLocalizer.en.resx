@@ -591,6 +591,21 @@
   <data name="WarehouseReference" xml:space="preserve">
     <value>Warehouse reference</value>
   </data>
+  <data name="StockReservation" xml:space="preserve">
+    <value>Stock reservation</value>
+  </data>
+  <data name="StockLevel" xml:space="preserve">
+    <value>Stock level</value>
+  </data>
+  <data name="WarehouseConnection" xml:space="preserve">
+    <value>Warehouse connection</value>
+  </data>
+  <data name="ProductSummary" xml:space="preserve">
+    <value>Product summary</value>
+  </data>
+  <data name="StockBulkAdjustJob" xml:space="preserve">
+    <value>Bulk stock adjustment</value>
+  </data>
   <data name="WarehouseGatewayCallFailed" xml:space="preserve">
     <value>The warehouse system answered the request with a failure.</value>
   </data>
