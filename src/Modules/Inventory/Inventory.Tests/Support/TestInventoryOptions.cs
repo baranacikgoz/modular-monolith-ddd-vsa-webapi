@@ -20,6 +20,7 @@ internal static class TestInventoryOptions
             StockReservationExpirySweepCron = "0 */15 * * * *",
             StockReservationExpirySweepBatchSize = 100,
             ProductSummaryReconciliationCron = productSummaryReconciliationCron,
+            StoreAccessReconciliationCron = "30 3 * * *",
             BusinessTimeZoneId = businessTimeZoneId,
             WebhookMaxBodyBytes = 65536,
             WebhookDeliveryRetentionDays = webhookDeliveryRetentionDays,

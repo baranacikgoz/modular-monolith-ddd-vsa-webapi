@@ -2,6 +2,7 @@ using Common.Domain.Entities;
 using Inventory.Application.BulkAdjustments;
 using Inventory.Application.Persistence;
 using Inventory.Application.ProductSummaries;
+using Inventory.Application.StoreAccesses;
 using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockPushes;
@@ -26,6 +27,7 @@ internal sealed class ConflictingInventoryDbContext(IInventoryDbContext inner, F
     public DbSet<StockMovement> StockMovements => inner.StockMovements;
     public DbSet<StockReservation> StockReservations => inner.StockReservations;
     public DbSet<ProductSummary> ProductSummaries => inner.ProductSummaries;
+    public DbSet<StoreAccess> StoreAccess => inner.StoreAccess;
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals => inner.StoreDailyStockTotals;
     public DbSet<StockPushDirtyItem> StockPushDirtyItems => inner.StockPushDirtyItems;
     public DbSet<StockBulkAdjustJob> StockBulkAdjustJobs => inner.StockBulkAdjustJobs;

@@ -28,6 +28,16 @@ public readonly record struct StockReservationId(DefaultIdType Value) : IStrongl
 ///     A saga-shaped hold against stock for a pending order: a header-level state machine
 ///     driven by different callers over time (the creating endpoint, a warehouse-system webhook, a sweep
 ///     job), with idempotent no-ops for retry safety and a duplicate-vs-conflicting-webhook distinction.
+///     <para>
+///         The status is also reported by an external system. Which changes of <see cref="Status" /> are legal is decided
+///         only by <see cref="ReservationStatusTransitions" />. A status the provider reports in a word nobody mapped never
+///         fails the delivery: the word is recorded, and the reservation turns <see cref="IsReadOnly" />, refusing every
+///         local command while <see cref="ProviderStatus" /> keeps mirroring what the provider says.
+///     </para>
+///     <para>
+///         Every change of a field raises an event, because the lifecycle lives in the AuditLog. A command that finds nothing
+///         to change returns without one.
+///     </para>
 /// </summary>
 public class StockReservation : AggregateRoot<StockReservationId>
 {
@@ -41,6 +51,19 @@ public class StockReservation : AggregateRoot<StockReservationId>
     public DateTimeOffset ReservationDeadline { get; private set; }
     public string? ProviderReference { get; private set; }
     public string? LastReleaseAttemptReference { get; private set; }
+
+    /// <summary>
+    ///     True once the provider reported a status this system could not map. From then on no local command applies and
+    ///     <see cref="Status" /> no longer follows the provider; it never becomes false again.
+    /// </summary>
+    public bool IsReadOnly { get; private set; }
+
+    /// <summary>
+    ///     The last status the provider reported, kept only for a read-only reservation, whose own <see cref="Status" /> no
+    ///     longer follows it. <see cref="ReservationStatus.Unknown" /> when the last word could not be mapped. Null while the
+    ///     reservation is writable: its <see cref="Status" /> is then the provider's.
+    /// </summary>
+    public ReservationStatus? ProviderStatus { get; private set; }
 
     public static StockReservation Reserve(DefaultIdType productId, int quantity, DateTimeOffset deadline)
     {
@@ -68,6 +91,11 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// </summary>
     public Result Commit(string providerReference, DateTimeOffset utcNow)
     {
+        if (IsReadOnly)
+        {
+            return StockReservationErrors.ReservationReadOnly;
+        }
+
         if (Status == ReservationStatus.Committed)
         {
             if (string.Equals(ProviderReference, providerReference, StringComparison.Ordinal))
@@ -83,7 +111,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
             return Result.Success;
         }
 
-        if (Status != ReservationStatus.Active)
+        if (!CanMoveTo(ReservationStatus.Committed))
         {
             return StockReservationErrors.NotReserved;
         }
@@ -105,12 +133,17 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// <summary>Idempotent/retry-safe: already-Released returns Success as a no-op.</summary>
     public Result Release(DateTimeOffset utcNow)
     {
+        if (IsReadOnly)
+        {
+            return StockReservationErrors.ReservationReadOnly;
+        }
+
         if (Status == ReservationStatus.Released)
         {
             return Result.Success;
         }
 
-        if (Status != ReservationStatus.Active)
+        if (!CanMoveTo(ReservationStatus.Released))
         {
             return StockReservationErrors.CannotRelease;
         }
@@ -129,7 +162,12 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// </summary>
     public Result Expire(DateTimeOffset utcNow)
     {
-        if (Status != ReservationStatus.Active)
+        if (IsReadOnly)
+        {
+            return StockReservationErrors.ReservationReadOnly;
+        }
+
+        if (!CanMoveTo(ReservationStatus.Expired))
         {
             return Result.Success;
         }
@@ -150,7 +188,12 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// </summary>
     public Result<string> BeginReleaseAttempt(DateTimeOffset utcNow)
     {
-        if (Status != ReservationStatus.Active)
+        if (IsReadOnly)
+        {
+            return StockReservationErrors.ReservationReadOnly;
+        }
+
+        if (!CanMoveTo(ReservationStatus.Released))
         {
             return StockReservationErrors.CannotRelease;
         }
@@ -175,10 +218,88 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// </summary>
     public Result AbandonReleaseAttempt(DateTimeOffset utcNow)
     {
+        if (IsReadOnly)
+        {
+            return StockReservationErrors.ReservationReadOnly;
+        }
+
+        if (LastReleaseAttemptReference is null)
+        {
+            return Result.Success;
+        }
+
         var @event = new V1StockReservationReleaseAttemptAbandonedDomainEvent(Id, utcNow);
 
         LastReleaseAttemptReference = null;
         RaiseEvent(@event);
         return Result.Success;
+    }
+
+    /// <summary>
+    ///     Applies a status the provider reported in a word that maps (<see cref="ProviderStatusMap" />). A writable
+    ///     reservation follows it through the same commands a local caller uses, so every rule of those commands holds;
+    ///     <see cref="ReservationStatus.Active" /> says the provider still holds the reservation and changes nothing. A
+    ///     read-only reservation only mirrors it into <see cref="ProviderStatus" />, with no local effect and no failure.
+    ///     <see cref="ReservationStatus.Unknown" /> and <see cref="ReservationStatus.RequiresReconciliation" /> are never
+    ///     something a provider reports, so passing them is a caller bug.
+    /// </summary>
+    public Result ReceiveProviderStatus(ReservationStatus reported, string? providerReference, DateTimeOffset utcNow)
+    {
+        if (reported is ReservationStatus.Unknown or ReservationStatus.RequiresReconciliation)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reported), reported, "A provider cannot report this status.");
+        }
+
+        if (IsReadOnly)
+        {
+            return MirrorProviderStatus(reported, utcNow);
+        }
+
+        return reported switch
+        {
+            ReservationStatus.Committed => providerReference is null
+                ? Result.Failure(StockReservationErrors.ProviderReferenceRequired)
+                : Commit(providerReference, utcNow),
+            ReservationStatus.Released => Release(utcNow),
+            ReservationStatus.Expired => Expire(utcNow),
+            ReservationStatus.Active => Result.Success,
+            _ => throw new ArgumentOutOfRangeException(nameof(reported), reported, null)
+        };
+    }
+
+    /// <summary>
+    ///     Records a status word the provider sent that has no mapping. Never fails and never changes <see cref="Status" />:
+    ///     the reservation turns read-only and its <see cref="ProviderStatus" /> becomes <see cref="ReservationStatus.Unknown" />.
+    ///     Every such word is recorded, also on a reservation that is read-only already, because the word itself is what an
+    ///     operator needs to find.
+    /// </summary>
+    public void RecordUnrecognizedProviderStatus(string rawStatus, DateTimeOffset utcNow)
+    {
+        var word = rawStatus.Trim();
+        var @event = new V1StockReservationProviderStatusUnrecognizedDomainEvent(
+            Id, word.Length > Constants.ProviderStatusMaxLength ? word[..Constants.ProviderStatusMaxLength] : word, utcNow);
+
+        IsReadOnly = true;
+        ProviderStatus = ReservationStatus.Unknown;
+        RaiseEvent(@event);
+    }
+
+    private Result MirrorProviderStatus(ReservationStatus reported, DateTimeOffset utcNow)
+    {
+        if (ProviderStatus == reported)
+        {
+            return Result.Success;
+        }
+
+        var @event = new V1StockReservationProviderStatusMirroredDomainEvent(Id, reported.ToMirroredSnapshot(), utcNow);
+
+        ProviderStatus = reported;
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
+    private bool CanMoveTo(ReservationStatus next)
+    {
+        return ReservationStatusTransitions.CanTransition(Status, next);
     }
 }

@@ -39,7 +39,9 @@ internal static class Endpoint
                 Quantity = r.Quantity,
                 Status = r.Status,
                 ReservationDeadline = r.ReservationDeadline,
-                ProviderReference = r.ProviderReference
+                ProviderReference = r.ProviderReference,
+                IsReadOnly = r.IsReadOnly,
+                ProviderStatus = r.ProviderStatus
             })
             .SingleAsResultAsync(nameof(StockReservation), cancellationToken);
     }

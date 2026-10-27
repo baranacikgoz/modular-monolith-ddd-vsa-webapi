@@ -57,8 +57,8 @@ internal static class Endpoint
         var reservation = loadResult.Value!;
 
         // Already resolved: idempotent no-op, no external call needed. Never re-attempt an outcome that
-        // already landed at the provider.
-        if (reservation.Status == ReservationStatus.Released)
+        // already landed at the provider. A read-only reservation takes no local command, this one included.
+        if (reservation is { Status: ReservationStatus.Released, IsReadOnly: false })
         {
             return Result.Success;
         }
