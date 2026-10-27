@@ -224,7 +224,11 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
         });
     }
 
-    private Result EnsureActive()
+    /// <summary>
+    ///     Succeeds for an Active store; every other status answers with the error of that status. For work the store's own
+    ///     methods do not cover, such as accepting a queued import before its rows are read.
+    /// </summary>
+    public Result EnsureActive()
     {
         return Status switch
         {

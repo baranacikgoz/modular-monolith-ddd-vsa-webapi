@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Products.Application.Imports;
 using Products.Application.Persistence;
 using Products.Domain.ProductTemplates;
+using Products.Domain.Stores;
+using Products.Tests.Stores;
 using Products.Tests.Support;
 using Xunit;
 using ImportResponse = Products.Endpoints.Products.v1.Import.Response;
@@ -67,6 +69,25 @@ public class ImportTests(IntegrationTestWebAppFactory factory) : ProductsIntegra
 
         var queued = (await OutboxEventsAsync()).OfType<ProductImportRequestedIntegrationEvent>().Single();
         Assert.Equal(job.JobId.Value, queued.JobId);
+    }
+
+    [Theory]
+    [MemberData(nameof(StoreStatusGuardTests.NonActiveStatuses), MemberType = typeof(StoreStatusGuardTests))]
+    public async Task Import_StoreNotActive_ReturnsConflictWithTheStatusKeyAndStoresNothing(StoreStatus status, string expectedKey)
+    {
+        var store = StoreStatusGuardTests.StoreIn(status, DefaultUser);
+        var template = ProductTemplate.Create("Brand", "Model", "Color");
+        Db.Stores.Add(store);
+        Db.ProductTemplates.Add(template);
+        await Db.SaveChangesAsync();
+
+        using var response = await UploadAsync(AuthorizedClient(), SmallWorkbook, "request-1", template.Id.Value);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Contains(expectedKey, await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+        Assert.Empty(PrivateStore.Keys);
+        Assert.Empty(await Db.ImportJobs.AsNoTracking().ToListAsync());
+        Assert.Empty((await OutboxEventsAsync()).OfType<ProductImportRequestedIntegrationEvent>());
     }
 
     [Fact]

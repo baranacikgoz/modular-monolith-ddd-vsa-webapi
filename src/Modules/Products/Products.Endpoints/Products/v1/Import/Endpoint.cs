@@ -23,7 +23,8 @@ namespace Products.Endpoints.Products.v1.Import;
 ///     Accept, queue, poll. Only the size and the extension are checked here: the workbook is stored in the private object
 ///     store, a job row and one queue message are written in the same transaction, and the answer is 202 with the job to
 ///     poll at GET /products/imports/{id}. The rows are read and saved by the queue consumer, in batches. Imports into the
-///     caller's own store. A repeated <c>ClientRequestId</c>, or an import already active for the caller, returns that job
+///     caller's own store, which has to be Active: any other status answers 409 with that status's error before the file is
+///     stored. A repeated <c>ClientRequestId</c>, or an import already active for the caller, returns that job
 ///     instead of queueing another.
 /// </summary>
 internal static class Endpoint
@@ -60,6 +61,7 @@ internal static class Endpoint
                 .TagWith(nameof(ImportAsync), "StoreByOwner", currentUser.Id)
                 .Where(s => s.OwnerId == currentUser.Id)
                 .SingleAsResultAsync(nameof(Store), cancellationToken))
+            .TapAsync(store => store.EnsureActive())
             .CombineAsync(store => dbContext.ProductTemplates
                 .AsNoTracking()
                 .TagWith(nameof(ImportAsync), "ActiveProductTemplateById", productTemplateId)
