@@ -55,5 +55,5 @@ public static class InventoryTelemetry
         Meter.CreateCounter<long>("inventory.stock_push_items_sent.total", description: "Total stock levels whose quantity a warehouse accepted");
 
     public static readonly Counter<long> WebhookDeliveries =
-        Meter.CreateCounter<long>("inventory.warehouse_webhook_deliveries.total", description: "Total authenticated warehouse webhook deliveries, tagged by outcome (applied, duplicate, ignored)");
+        Meter.CreateCounter<long>("inventory.warehouse_webhook_deliveries.total", description: "Total authenticated warehouse webhook deliveries, tagged by outcome (applied, duplicate, ignored, mirrored, unrecognized, stale)");
 }

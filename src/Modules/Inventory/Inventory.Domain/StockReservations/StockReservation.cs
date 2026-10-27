@@ -66,6 +66,13 @@ public class StockReservation : AggregateRoot<StockReservationId>
     /// </summary>
     public ReservationStatus? ProviderStatus { get; private set; }
 
+    /// <summary>
+    ///     The provider's own timestamp of the latest delivery applied to this reservation, when the provider sends one. A
+    ///     delivery stamped earlier than this is stale (<see cref="IsStale" />): it describes a moment the reservation has
+    ///     moved past. Null until a stamped delivery was applied; a delivery without a stamp never changes it.
+    /// </summary>
+    public DateTimeOffset? LastProviderEventOn { get; private set; }
+
     public static StockReservation Reserve(DefaultIdType productId, int quantity, DateTimeOffset deadline)
     {
         var id = StockReservationId.New();
@@ -269,13 +276,35 @@ public class StockReservation : AggregateRoot<StockReservationId>
     ///     <see cref="ReservationStatus.Unknown" /> and <see cref="ReservationStatus.RequiresReconciliation" /> are never
     ///     something a provider reports, so passing them is a caller bug.
     /// </summary>
-    public Result ReceiveProviderStatus(ReservationStatus reported, string? providerReference, DateTimeOffset utcNow)
+    public Result ReceiveProviderStatus(
+        ReservationStatus reported, string? providerReference, DateTimeOffset utcNow, DateTimeOffset? occurredOn = null)
     {
         if (reported is ReservationStatus.Unknown or ReservationStatus.RequiresReconciliation)
         {
             throw new ArgumentOutOfRangeException(nameof(reported), reported, "A provider cannot report this status.");
         }
 
+        var applied = ApplyProviderStatus(reported, providerReference, utcNow);
+        if (!applied.IsFailure)
+        {
+            RecordProviderEventTime(occurredOn, utcNow);
+        }
+
+        return applied;
+    }
+
+    /// <summary>
+    ///     True when a delivery stamped <paramref name="occurredOn" /> is older than the latest stamped delivery applied: the
+    ///     caller acknowledges it and applies nothing. A delivery without a stamp, and one stamped the same instant, is not
+    ///     stale.
+    /// </summary>
+    public bool IsStale(DateTimeOffset? occurredOn)
+    {
+        return occurredOn is { } stamp && LastProviderEventOn is { } last && stamp.ToUniversalTime() < last;
+    }
+
+    private Result ApplyProviderStatus(ReservationStatus reported, string? providerReference, DateTimeOffset utcNow)
+    {
         if (IsReadOnly)
         {
             return MirrorProviderStatus(reported, utcNow);
@@ -299,7 +328,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
     ///     Every such word is recorded, also on a reservation that is read-only already, because the word itself is what an
     ///     operator needs to find.
     /// </summary>
-    public void RecordUnrecognizedProviderStatus(string rawStatus, DateTimeOffset utcNow)
+    public void RecordUnrecognizedProviderStatus(string rawStatus, DateTimeOffset utcNow, DateTimeOffset? occurredOn = null)
     {
         var word = rawStatus.Trim();
         var @event = new V1StockReservationProviderStatusUnrecognizedDomainEvent(
@@ -308,6 +337,7 @@ public class StockReservation : AggregateRoot<StockReservationId>
         IsReadOnly = true;
         ProviderStatus = ReservationStatus.Unknown;
         RaiseEvent(@event);
+        RecordProviderEventTime(occurredOn, utcNow);
     }
 
     /// <summary>
@@ -351,6 +381,26 @@ public class StockReservation : AggregateRoot<StockReservationId>
 
         RaiseEvent(@event);
         return Result.Success;
+    }
+
+    /// <summary>Keeps the provider's timestamp of an applied delivery; one that is not newer than the kept stamp changes nothing.</summary>
+    private void RecordProviderEventTime(DateTimeOffset? occurredOn, DateTimeOffset utcNow)
+    {
+        if (occurredOn is not { } stamp)
+        {
+            return;
+        }
+
+        var instant = stamp.ToUniversalTime();
+        if (LastProviderEventOn is { } last && instant <= last)
+        {
+            return;
+        }
+
+        var @event = new V1StockReservationProviderEventTimeRecordedDomainEvent(Id, LastProviderEventOn, instant, utcNow);
+
+        LastProviderEventOn = instant;
+        RaiseEvent(@event);
     }
 
     /// <summary>The command a local caller would use to reach <paramref name="target" />, one of Released, Committed and Expired.</summary>

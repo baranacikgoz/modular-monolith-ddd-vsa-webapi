@@ -31,11 +31,11 @@ public class StockReservationTests
     }
 
     /// <summary>Everything a command can change on the reservation, compared before and after it runs.</summary>
-    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, bool IsReadOnly, ReservationStatus? ProviderStatus)
-        StateOf(StockReservation reservation)
+    private static (ReservationStatus Status, string? ProviderReference, string? ReleaseMarker, bool IsReadOnly,
+        ReservationStatus? ProviderStatus, DateTimeOffset? LastProviderEventOn) StateOf(StockReservation reservation)
     {
         return (reservation.Status, reservation.ProviderReference, reservation.LastReleaseAttemptReference,
-            reservation.IsReadOnly, reservation.ProviderStatus);
+            reservation.IsReadOnly, reservation.ProviderStatus, reservation.LastProviderEventOn);
     }
 
     /// <summary>
@@ -414,6 +414,92 @@ public class StockReservationTests
 
         Assert.False(again.IsFailure);
         Assert.Equal(ReservationStatus.Released, reservation.Status);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_WithATimestamp_KeepsItAndRaisesTheTimestampEventAfterTheStatusEvent()
+    {
+        var reservation = NewReservation();
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Released, null, Now, Now.AddMinutes(-3)).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.IsType<V1StockReservationReleasedDomainEvent>(reservation.Events.First());
+        var recorded = Assert.IsType<V1StockReservationProviderEventTimeRecordedDomainEvent>(reservation.Events.Last());
+        Assert.Null(recorded.PreviousOccurredOn);
+        Assert.Equal(Now.AddMinutes(-3), recorded.OccurredOn);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_StatusThatChangesNothingButCarriesANewerTimestamp_StillKeepsTheTimestamp()
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-2)).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-2), reservation.LastProviderEventOn);
+        Assert.Single(reservation.Events);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_WithoutATimestamp_NeverChangesTheKeptOne()
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(
+            reservation, r => Assert.False(r.ReceiveProviderStatus(ReservationStatus.Active, null, Now).IsFailure));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.Empty(reservation.Events);
+    }
+
+    [Fact]
+    public void ReceiveProviderStatus_RefusedByTheCommand_KeepsNoTimestamp()
+    {
+        var reservation = NewReservation();
+
+        var result = reservation.ReceiveProviderStatus(ReservationStatus.Committed, null, Now, Now.AddMinutes(-3));
+
+        Assert.True(result.IsFailure);
+        Assert.Null(reservation.LastProviderEventOn);
+    }
+
+    [Fact]
+    public void RecordUnrecognizedProviderStatus_WithATimestamp_KeepsIt()
+    {
+        var reservation = NewReservation();
+
+        reservation.RecordUnrecognizedProviderStatus("partially_picked", Now, Now.AddMinutes(-3));
+
+        Assert.Equal(Now.AddMinutes(-3), reservation.LastProviderEventOn);
+        Assert.Single(reservation.Events.OfType<V1StockReservationProviderEventTimeRecordedDomainEvent>());
+    }
+
+    [Theory]
+    [InlineData(-4, true)]
+    [InlineData(-3, false)]
+    [InlineData(-2, false)]
+    public void IsStale_ComparesTheTimestampWithTheLatestApplied(int minutesFromNow, bool expected)
+    {
+        var reservation = NewReservation();
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        Assert.Equal(expected, reservation.IsStale(Now.AddMinutes(minutesFromNow)));
+    }
+
+    [Fact]
+    public void IsStale_WithoutATimestampOrBeforeAnyStampedDelivery_IsNeverStale()
+    {
+        var reservation = NewReservation();
+        Assert.False(reservation.IsStale(Now.AddYears(-1)));
+
+        reservation.ReceiveProviderStatus(ReservationStatus.Active, null, Now, Now.AddMinutes(-3));
+
+        Assert.False(reservation.IsStale(null));
     }
 
     [Fact]

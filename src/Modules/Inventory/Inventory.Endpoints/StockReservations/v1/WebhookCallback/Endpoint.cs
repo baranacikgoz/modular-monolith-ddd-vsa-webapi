@@ -33,8 +33,8 @@ internal static class Endpoint
             .WithDescription(
                 "Anonymous webhook callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature header made " +
                 "with the connection's own webhook secret instead of a bearer token. A delivery id seen before on the connection " +
-                "is acknowledged and applies nothing. A status word this system has no mapping for is acknowledged and recorded, " +
-                "never refused.")
+                "is acknowledged and applies nothing, and so is a delivery whose optional occurredOn is earlier than one already " +
+                "applied. A status word this system has no mapping for is acknowledged and recorded, never refused.")
             .AllowAnonymous()
             .RequireRateLimiting(RateLimitingConstants.WarehouseWebhook)
             .LimitRequestBody(context =>
@@ -70,7 +70,7 @@ internal static class Endpoint
                     .Map(() => connection)))
             .BindAsync(connection => connection.Status == WarehouseConnectionStatus.Active
                 ? ParseAndValidateAsync(rawBody, validator, cancellationToken).BindAsync(body => intake.ReceiveAsync(
-                    connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, cancellationToken))
+                    connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, body.OccurredOn, cancellationToken))
                 // A deactivated connection's authenticated delivery is acknowledged and ignored: the warehouse stops retrying and
                 // nothing of its body is read or applied.
                 : Task.FromResult(Result<WebhookDeliveryOutcome>.Success(WebhookDeliveryOutcome.Ignored)))

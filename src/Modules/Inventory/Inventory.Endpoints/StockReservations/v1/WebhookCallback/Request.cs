@@ -56,6 +56,13 @@ public sealed record Request
     public JsonElement? Status { get; init; }
 
     /// <summary>
+    ///     When the warehouse system says this happened, if it says. Statuses are applied in the order of this timestamp, not of
+    ///     arrival: a delivery stamped earlier than one already applied is acknowledged and changes nothing. A body without it
+    ///     is applied in the order it arrives.
+    /// </summary>
+    public DateTimeOffset? OccurredOn { get; init; }
+
+    /// <summary>
     ///     What <see cref="Status" /> says as a word: the text of a JSON string, the raw JSON text of any other kind (cut to
     ///     <see cref="ReservationConstants.ProviderStatusMaxLength" />, the bound the audit trail keeps), null when there is none.
     ///     A word this system has no mapping for is acknowledged and recorded, never refused, so it is not validated here.

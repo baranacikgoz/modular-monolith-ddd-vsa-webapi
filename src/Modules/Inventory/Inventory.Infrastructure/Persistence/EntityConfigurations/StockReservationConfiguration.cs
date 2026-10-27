@@ -45,6 +45,10 @@ internal sealed class StockReservationConfiguration : AuditableEntityConfigurati
             .Property(r => r.ProviderStatus)
             .IsRequired(false);
 
+        builder
+            .Property(r => r.LastProviderEventOn)
+            .IsRequired(false);
+
         // Available-quantity aggregation (GetStockLevelRequestHandler) filters by ProductId + Status.
         builder
             .HasIndex(r => new { r.ProductId, r.Status });

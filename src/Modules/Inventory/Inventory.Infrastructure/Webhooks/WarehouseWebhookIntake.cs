@@ -29,7 +29,13 @@ public enum WebhookDeliveryOutcome
     ///     The status word has no mapping: acknowledged, never refused. It is recorded in the audit trail and the reservation is
     ///     read-only from now on.
     /// </summary>
-    Unrecognized
+    Unrecognized,
+
+    /// <summary>
+    ///     The delivery carries a provider timestamp earlier than one already applied to the reservation: acknowledged and
+    ///     recorded as received, nothing applied.
+    /// </summary>
+    Stale
 }
 
 /// <summary>
@@ -40,6 +46,9 @@ public enum WebhookDeliveryOutcome
 ///     row. A recorded delivery is acknowledged whatever state the reservation has moved on to, which applying it again would
 ///     refuse. The status word of the delivery is mapped once, here: a mapped one reaches the reservation as the commands it
 ///     already has (or, for a read-only reservation, only as a mirror), and a word nobody mapped is recorded and acknowledged.
+///     A delivery that carries the provider's timestamp is applied in the order of that timestamp: one older than the latest
+///     applied to the reservation is recorded as received and applies nothing, so a status feed that arrives out of order
+///     cannot move a reservation back.
 /// </summary>
 public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimeProvider timeProvider)
 {
@@ -49,6 +58,7 @@ public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimePr
         StockReservationId reservationId,
         string? providerReference,
         string? rawStatus,
+        DateTimeOffset? occurredOn,
         CancellationToken cancellationToken)
     {
         if (await IsRecordedAsync(connection.Id, deliveryId, cancellationToken))
@@ -65,15 +75,26 @@ public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimePr
             .Where(r => r.Id == reservationId
                         && dbContext.ProductSummaries.Any(p => p.ProductId == r.ProductId && p.StoreId == connection.StoreId))
             .SingleAsResultAsync(nameof(StockReservation), cancellationToken)
-            .MapAsync(reservation => (Reservation: reservation, Outcome: OutcomeOf(resolution, reservation)))
-            .TapAsync(pending => Apply(pending.Reservation, resolution, reported, rawStatus, providerReference, receivedOn))
+            .MapAsync(reservation => (Reservation: reservation, Outcome: OutcomeOf(resolution, reservation, occurredOn)))
+            .TapAsync(pending => pending.Outcome == WebhookDeliveryOutcome.Stale
+                ? Result.Success
+                : Apply(pending.Reservation, resolution, reported, rawStatus, providerReference, receivedOn, occurredOn))
             .TapAsync(_ => dbContext.WebhookDeliveries.Add(WebhookDelivery.Receive(connection.Id, deliveryId, reservationId, receivedOn)))
             .MapAsync(pending => SaveAsync(connection.Id, deliveryId, pending.Outcome, reported, cancellationToken));
     }
 
-    /// <summary>Decided before the status is applied: an unrecognized word turns the reservation read-only, and that is not what mirrored means.</summary>
-    private static WebhookDeliveryOutcome OutcomeOf(ProviderStatusResolution resolution, StockReservation reservation)
+    /// <summary>
+    ///     Decided before the status is applied: a delivery older than one already applied is stale whatever it says, and an
+    ///     unrecognized word turns the reservation read-only, which is not what mirrored means.
+    /// </summary>
+    private static WebhookDeliveryOutcome OutcomeOf(
+        ProviderStatusResolution resolution, StockReservation reservation, DateTimeOffset? occurredOn)
     {
+        if (reservation.IsStale(occurredOn))
+        {
+            return WebhookDeliveryOutcome.Stale;
+        }
+
         if (resolution == ProviderStatusResolution.Unrecognized)
         {
             return WebhookDeliveryOutcome.Unrecognized;
@@ -88,16 +109,17 @@ public sealed class WarehouseWebhookIntake(IInventoryDbContext dbContext, TimePr
         ReservationStatus reported,
         string? rawStatus,
         string? providerReference,
-        DateTimeOffset receivedOn)
+        DateTimeOffset receivedOn,
+        DateTimeOffset? occurredOn)
     {
         if (resolution == ProviderStatusResolution.Unrecognized)
         {
             // Unrecognized means the word is not blank.
-            reservation.RecordUnrecognizedProviderStatus(rawStatus!, receivedOn);
+            reservation.RecordUnrecognizedProviderStatus(rawStatus!, receivedOn, occurredOn);
             return Result.Success;
         }
 
-        return reservation.ReceiveProviderStatus(reported, providerReference, receivedOn);
+        return reservation.ReceiveProviderStatus(reported, providerReference, receivedOn, occurredOn);
     }
 
     private async Task<WebhookDeliveryOutcome> SaveAsync(

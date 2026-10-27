@@ -16,14 +16,17 @@ internal static class WarehouseWebhookSender
         return new Uri($"/v1/stock-reservations/webhooks/warehouse/{connectionId}", UriKind.Relative);
     }
 
-    public static string BodyOf(StockReservationId reservationId, string deliveryId, string? providerReference, string? status = null)
+    public static string BodyOf(
+        StockReservationId reservationId, string deliveryId, string? providerReference, string? status = null,
+        DateTimeOffset? occurredOn = null)
     {
         return JsonSerializer.Serialize(new
         {
             ReservationId = reservationId.Value,
             ProviderReference = providerReference,
             DeliveryId = deliveryId,
-            Status = status
+            Status = status,
+            OccurredOn = occurredOn
         });
     }
 
@@ -40,9 +43,11 @@ internal static class WarehouseWebhookSender
         string deliveryId,
         string? providerReference,
         string? signatureOverride = null,
-        string? status = null)
+        string? status = null,
+        DateTimeOffset? occurredOn = null)
     {
-        return await PostRawAsync(client, connectionId, secret, BodyOf(reservationId, deliveryId, providerReference, status), signatureOverride);
+        return await PostRawAsync(
+            client, connectionId, secret, BodyOf(reservationId, deliveryId, providerReference, status, occurredOn), signatureOverride);
     }
 
     public static async Task<HttpResponseMessage> PostRawAsync(
