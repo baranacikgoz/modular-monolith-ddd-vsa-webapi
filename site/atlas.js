@@ -19,50 +19,59 @@
     { id: 'e3', a: 'Products', b: 'Inventory', type: 'event', x: 381, label: { en: 'ProductCreatedIntegrationEvent', tr: 'ProductCreatedIntegrationEvent' } },
     { id: 'e4', a: 'Products', b: 'Inventory', type: 'req', x: 395, label: { en: 'stock level', tr: 'stok seviyesi' } },
     { id: 'e5', a: 'Inventory', b: 'Products', type: 'req', x: 409, label: { en: 'product and store status', tr: 'ürün ve mağaza durumu' } },
-    { id: 'e6', a: 'Products', b: 'IAM', type: 'req', horizontal: true, y: 120, label: { en: 'seed user ids', tr: 'tohum kullanıcı id\'leri' } }
+    { id: 'e6', a: 'Products', b: 'IAM', type: 'req', horizontal: true, y: 120, label: { en: 'seed user ids', tr: 'tohum kullanıcı id\'leri' } },
+    { id: 'e7', a: 'Inventory', b: 'Notifications', type: 'event', horizontal: true, y: 340, label: { en: 'StockLowThresholdCrossedIntegrationEvent', tr: 'StockLowThresholdCrossedIntegrationEvent' } }
   ];
 
   var DATA = {
     IAM: {
       kind: { en: 'optional · starts 3rd', tr: 'isteğe bağlı · 3. başlar' },
-      desc: { en: 'Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone with an SMS code, or email with a password.',
-        tr: 'Giriş, kayıt, token, oturum ve izinler Keycloak üzerinden yönetilir. SMS kodlu telefon ya da parolalı e-posta.' },
+      desc: { en: 'Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone with an SMS code, or email with a password. Grants the store-owner role when a store is approved.',
+        tr: 'Giriş, kayıt, token, oturum ve izinler Keycloak üzerinden yönetilir. SMS kodlu telefon ya da parolalı e-posta. Bir mağaza onaylandığında store-owner rolünü verir.' },
       db: { en: 'none, Keycloak is the identity store', tr: 'yok, kimlik deposu Keycloak' },
-      routes: [['POST', '/otp/login', 'anonymous'], ['POST', '/tokens', 'anonymous'], ['POST', '/tokens/refresh', 'anonymous'], ['GET', '/users/me', 'users:view-own'], ['POST', '/tokens/sessions/revoke-all', 'sessions:revoke-own']],
-      serves: ['GetSeedUserIds', 'GetActiveSessionIds', 'GetUsersInRolePage'],
+      routes: [['POST', '/otp/login', 'anonymous'], ['POST', '/tokens', 'anonymous'], ['POST', '/tokens/refresh', 'anonymous'], ['GET', '/users/me', 'users:view-own'], ['GET', '/users/search', 'users:search'], ['POST', '/tokens/sessions/revoke-all', 'sessions:revoke-own']],
+      consumes: ['StoreApprovedIntegrationEvent'],
+      serves: ['GetSeedUserIds', 'GetActiveSessionIds', 'GetUsersInRolePage', 'GetUsers', 'ProvisionUser', 'DeprovisionUser'],
       calls: [{ en: 'Notifications: OTP, verification tokens, device sessions, alerts', tr: 'Notifications: OTP, doğrulama tokenları, cihaz oturumları, uyarılar' }],
       test: 'make test-iam'
     },
     Products: {
       kind: { en: 'optional · starts 5th', tr: 'isteğe bağlı · 5. başlar' },
-      desc: { en: 'Stores, product templates and products. The exemplar module: copy its shape when you add a new one.',
-        tr: 'Mağazalar, ürün şablonları ve ürünler. Örnek modül: yenisini eklerken şeklini kopyala.' },
+      desc: { en: 'Stores with an application and approval lifecycle, product templates, products with images, and queued spreadsheet import and export. The exemplar module: copy its shape when you add a new one.',
+        tr: 'Başvuru ve onay yaşam döngüsü olan mağazalar, ürün şablonları, görselli ürünler ve kuyruğa alınan elektronik tablo içe/dışa aktarma. Örnek modül: yenisini eklerken şeklini kopyala.' },
       db: { en: 'schema Products', tr: 'Products şeması' },
-      routes: [['POST', '/v1/stores/my/products', 'products:create-own'], ['GET', '/v1/products/search', 'products:search'], ['POST', '/v1/product-templates/{id}/activate', 'product-templates:update'], ['GET', '/v1/probe/cross-module', 'anonymous']],
-      publishes: ['ProductCreatedIntegrationEvent', 'StoreCreatedIntegrationEvent'],
-      serves: ['GetProduct'],
-      calls: ['GetStockLevel', 'GetSeedUserIds'],
+      routes: [['POST', '/v1/stores/applications', 'anonymous'], ['POST', '/v1/stores/{id}/approve', 'stores:approve'], ['POST', '/v1/stores/my/products', 'products:create-own'], ['GET', '/v1/products/search', 'products:search'], ['POST', '/v1/products/imports', 'products:import-own'], ['POST', '/v1/products/exports', 'products:export'], ['POST', '/v1/product-templates/{id}/activate', 'product-templates:update'], ['GET', '/v1/probe/cross-module', 'anonymous']],
+      jobs: ['ProductJobsHousekeeping'],
+      publishes: ['ProductCreatedIntegrationEvent', 'StoreCreatedIntegrationEvent', 'ProductChangedIntegrationEvent', 'StoreApprovedIntegrationEvent', 'StoreAccessChangedIntegrationEvent', 'ProductImportRequestedIntegrationEvent', 'ProductExportRequestedIntegrationEvent'],
+      consumes: ['ProductImportRequestedIntegrationEvent', 'ProductExportRequestedIntegrationEvent'],
+      serves: ['GetProduct', 'GetProductsPage', 'GetStoresPage', 'SearchProductsByTerm'],
+      calls: ['GetStockLevel', 'GetSeedUserIds', 'ProvisionUser', 'DeprovisionUser'],
       test: 'make test-products'
     },
     Inventory: {
       kind: { en: 'optional · starts 6th', tr: 'isteğe bağlı · 6. başlar' },
-      desc: { en: 'Stock levels and reservations. A saga-shaped StockReservation moves through Active, Committed, Released, Expired and RequiresReconciliation.',
-        tr: 'Stok seviyeleri ve rezervasyonlar. Saga biçimli StockReservation; Active, Committed, Released, Expired ve RequiresReconciliation durumlarından geçer.' },
+      desc: { en: 'Stock levels with a ledger, reservations and per-store warehouse connections. A saga-shaped StockReservation moves through Active, Committed, Released, Expired and RequiresReconciliation, and follows the status its warehouse system reports; a status nobody mapped makes it read-only.',
+        tr: 'Defterli stok seviyeleri, rezervasyonlar ve mağaza başına depo bağlantıları. Saga biçimli StockReservation; Active, Committed, Released, Expired ve RequiresReconciliation durumlarından geçer ve depo sisteminin bildirdiği durumu izler; eşlenmemiş bir durum onu salt okunur yapar.' },
       db: { en: 'schema Inventory', tr: 'Inventory şeması' },
-      routes: [['POST', '/v1/stock-reservations', 'stock-reservations:create'], ['POST', '/v1/stock-reservations/{id}/commit', 'stock-reservations:update'], ['POST', '/v1/stock-reservations/{id}/release', 'stock-reservations:update'], ['POST', '/v1/stock-reservations/webhooks/warehouse', 'HMAC signature']],
-      consumes: ['ProductCreatedIntegrationEvent'],
+      routes: [['POST', '/v1/stock-reservations', 'stock-reservations:create'], ['GET', '/v1/stock-reservations/{id}', 'stock-reservations:view'], ['POST', '/v1/stock-reservations/{id}/commit', 'stock-reservations:update'], ['POST', '/v1/stock-reservations/{id}/release', 'stock-reservations:update'], ['POST', '/v1/stock-reservations/webhooks/warehouse/{connectionId}', 'HMAC signature'], ['GET', '/v1/stock-levels', 'stock-levels:view'], ['GET', '/v1/stock-levels/daily-totals', 'stock-levels:view'], ['POST', '/v1/stock-levels/bulk-adjustments', 'stock-levels:update'], ['POST', '/v1/warehouse-connections', 'warehouse-connections:create'], ['GET', '/v1/warehouse-connections/my', 'warehouse-connections:view-own']],
+      jobs: ['StockReservationExpirySweepService', 'ProductSummariesReconciliationJob', 'StoreAccessReconciliationJob', 'WebhookDeliveryRetentionService', 'StockPushSweepService', 'StockJobRequeueService', 'StockJobsHousekeeping'],
+      publishes: ['StockReservationCommittedIntegrationEvent', 'StockLowThresholdCrossedIntegrationEvent', 'StockLowThresholdRecoveredIntegrationEvent', 'StockPushDueIntegrationEvent', 'StockBulkAdjustRequestedIntegrationEvent'],
+      consumes: ['ProductCreatedIntegrationEvent', 'ProductChangedIntegrationEvent', 'StoreAccessChangedIntegrationEvent', 'StockReservationCommittedIntegrationEvent', 'StockPushDueIntegrationEvent', 'StockBulkAdjustRequestedIntegrationEvent'],
       serves: ['GetStockLevel'],
-      calls: ['GetProduct'],
+      calls: ['GetProduct', 'GetProductsPage', 'GetStoresPage', 'SearchProductsByTerm', 'GetUsers'],
       test: 'make test-inventory'
     },
     Notifications: {
       kind: { en: 'optional · starts 4th', tr: 'isteğe bağlı · 4. başlar' },
-      desc: { en: 'Everything that reaches a person: SMS, email, push, a SignalR hub, one-time codes and the device registry.',
-        tr: 'Bir kişiye ulaşan her şey: SMS, e-posta, push, SignalR hub\'ı, tek kullanımlık kodlar ve cihaz kaydı.' },
+      desc: { en: 'Everything that reaches a person: SMS, email, push, a SignalR hub, one-time codes, the device registry and critical alerts to a role, such as a low stock alert.',
+        tr: 'Bir kişiye ulaşan her şey: SMS, e-posta, push, SignalR hub\'ı, tek kullanımlık kodlar, cihaz kaydı ve bir role giden kritik uyarılar; örneğin düşük stok uyarısı.' },
       db: { en: 'schema Notifications', tr: 'Notifications şeması' },
       routes: [['PUT', '/notifications/devices/current/push-token', 'devices:update-own'], ['WS', '/hubs/notifications', 'any signed-in user']],
+      jobs: ['DeviceRegistryReconciliationService', 'AlertRecipientsReconciliationJob'],
+      publishes: ['CriticalAlertRaisedIntegrationEvent'],
+      consumes: ['StockLowThresholdCrossedIntegrationEvent', 'CriticalAlertRaisedIntegrationEvent'],
       serves: ['SendPhoneOtp', 'VerifyPhoneOtp', 'SendEmailOtp', 'VerifyEmailOtp', 'IssueVerificationToken', 'SendSecurityAlert', 'BindDeviceSession', 'DeactivateDeviceSessions', 'GetDeviceSessions'],
-      calls: ['GetActiveSessionIds'],
+      calls: ['GetActiveSessionIds', 'GetUsersInRolePage'],
       test: 'make test-notifications'
     },
     Outbox: {
