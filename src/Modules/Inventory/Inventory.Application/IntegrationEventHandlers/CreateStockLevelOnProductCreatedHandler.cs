@@ -30,6 +30,7 @@ public sealed partial class CreateStockLevelOnProductCreatedHandler(
     {
         var alreadyExists = await dbContext.StockLevels
             .AsNoTracking()
+            .TagWith($"({nameof(ProcessAsync)})-({@event.ProductId})")
             .AnyAsync(s => s.ProductId == @event.ProductId, cancellationToken);
 
         if (alreadyExists)

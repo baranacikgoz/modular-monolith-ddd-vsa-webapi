@@ -260,7 +260,10 @@
                 "name": "stock-reservations:create"
               },
               {
-                "name": "stock-reservations:view"
+                "name": "stock-reservations:view-all"
+              },
+              {
+                "name": "stock-reservations:view-own"
               },
               {
                 "name": "stock-reservations:update"
@@ -541,13 +544,13 @@
             }
           },
           {
-            "name": "Stock Reservations Catalog Permission",
+            "name": "Stock Reservations Self-Service Permission",
             "type": "scope",
             "logic": "POSITIVE",
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-reservations\"]",
-              "scopes": "[\"stock-reservations:view\"]",
+              "scopes": "[\"stock-reservations:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
@@ -558,7 +561,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-reservations\"]",
-              "scopes": "[\"stock-reservations:create\",\"stock-reservations:update\"]",
+              "scopes": "[\"stock-reservations:create\",\"stock-reservations:view-all\",\"stock-reservations:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -748,7 +751,10 @@
             "name": "stock-reservations:create"
           },
           {
-            "name": "stock-reservations:view"
+            "name": "stock-reservations:view-all"
+          },
+          {
+            "name": "stock-reservations:view-own"
           },
           {
             "name": "stock-reservations:update"

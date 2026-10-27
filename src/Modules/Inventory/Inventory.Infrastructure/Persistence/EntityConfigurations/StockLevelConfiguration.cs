@@ -30,6 +30,10 @@ internal sealed class StockLevelConfiguration : AuditableEntityConfiguration<Sto
             .IsRequired();
 
         builder
+            .Property(s => s.LastMovementSequence)
+            .IsRequired();
+
+        builder
             .HasMany(s => s.Movements)
             .WithOne()
             .HasForeignKey(m => m.StockLevelId)

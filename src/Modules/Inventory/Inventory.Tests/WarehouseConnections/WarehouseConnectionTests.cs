@@ -107,6 +107,69 @@ public class WarehouseConnectionTests
     }
 
     [Fact]
+    public void ReprotectSecrets_BothValues_ReplacesThemAndRaisesOneEventSayingWhichWereRewritten()
+    {
+        var connection = NewConnection();
+        byte[] apiCredential = [8, 8, 8];
+        byte[] webhookSecret = [6, 6, 6];
+
+        var result = connection.ReprotectSecrets(apiCredential, webhookSecret);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(apiCredential, connection.EncryptedApiCredential);
+        Assert.Equal(webhookSecret, connection.EncryptedWebhookSecret);
+        var @event = Assert.Single(connection.Events);
+        var reprotected = Assert.IsType<V1WarehouseConnectionSecretsReprotectedDomainEvent>(@event);
+        Assert.Equal(connection.Id, reprotected.WarehouseConnectionId);
+        Assert.True(reprotected.ApiCredential);
+        Assert.True(reprotected.WebhookSecret);
+    }
+
+    [Fact]
+    public void ReprotectSecrets_OneValue_LeavesTheOtherAsItIs()
+    {
+        var connection = NewConnection();
+        byte[] webhookSecret = [6, 6, 6];
+
+        connection.ReprotectSecrets(null, webhookSecret);
+
+        Assert.Equal(Credential, connection.EncryptedApiCredential);
+        Assert.Equal(webhookSecret, connection.EncryptedWebhookSecret);
+        var reprotected = Assert.Single(connection.Events.OfType<V1WarehouseConnectionSecretsReprotectedDomainEvent>());
+        Assert.False(reprotected.ApiCredential);
+        Assert.True(reprotected.WebhookSecret);
+    }
+
+    [Fact]
+    public void ReprotectSecrets_NothingToRewrite_IsANoOpWithoutAnEvent()
+    {
+        var connection = NewConnection();
+
+        var result = connection.ReprotectSecrets(null, null);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(Credential, connection.EncryptedApiCredential);
+        Assert.Equal(WebhookSecret, connection.EncryptedWebhookSecret);
+        Assert.Empty(connection.Events);
+    }
+
+    // An old key can only be dropped once no stored value is under it, a deactivated connection's included.
+    [Fact]
+    public void ReprotectSecrets_Deactivated_StillReplacesTheValues()
+    {
+        var connection = NewConnection();
+        connection.Deactivate();
+        connection.ClearEvents();
+        byte[] apiCredential = [8, 8, 8];
+
+        var result = connection.ReprotectSecrets(apiCredential, null);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(apiCredential, connection.EncryptedApiCredential);
+        Assert.Single(connection.Events.OfType<V1WarehouseConnectionSecretsReprotectedDomainEvent>());
+    }
+
+    [Fact]
     public void Deactivate_Active_BecomesDeactivatedAndRaisesTheEvent()
     {
         var connection = NewConnection();

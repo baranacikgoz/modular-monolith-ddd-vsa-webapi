@@ -26,6 +26,16 @@ internal static class ConsumerHarness
         await handler.Consume(context);
     }
 
+    /// <summary>Delivers to a consumer the test built itself, for a test that swaps one of its dependencies.</summary>
+    public static async Task DeliverAsync<TEvent>(IConsumer<TEvent> handler, TEvent @event)
+        where TEvent : IntegrationEvent
+    {
+        var context = Substitute.For<ConsumeContext<TEvent>>();
+        context.Message.Returns(@event);
+        context.CancellationToken.Returns(CancellationToken.None);
+        await handler.Consume(context);
+    }
+
     /// <summary>
     ///     Simulates the idempotency cache losing the key (Redis blip, other instance), so only the inbox and the
     ///     handler's own guards stand between a redelivery and a second side effect.

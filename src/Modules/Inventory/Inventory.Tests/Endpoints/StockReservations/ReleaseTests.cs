@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using Common.Tests;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockReservations;
@@ -54,6 +55,9 @@ public class ReleaseTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
         var sent = Assert.Single(factory.Warehouse.Requests);
         Assert.Equal(new Uri("https://warehouse.example-partner.local/api/releases"), sent.Uri);
         Assert.Equal($"Bearer {WarehouseConnectionTestData.ApiCredential}", sent.Authorization);
+        using var body = JsonDocument.Parse(sent.Body);
+        Assert.Equal(reservation.ProductId.ToString(), body.RootElement.GetProperty("productReference").GetString());
+        Assert.Equal(reservation.Id.Value.ToString(), body.RootElement.GetProperty("reservationId").GetString());
     }
 
     [Fact]
@@ -69,6 +73,7 @@ public class ReleaseTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
         Assert.Equal("application/x-www-form-urlencoded", sent.ContentType);
         Assert.Equal(WarehouseConnectionTestData.ApiCredential, sent.ApiKey);
         Assert.Null(sent.Authorization);
+        Assert.Contains($"ref={reservation.Id.Value}", sent.Body, StringComparison.Ordinal);
     }
 
     [Fact]

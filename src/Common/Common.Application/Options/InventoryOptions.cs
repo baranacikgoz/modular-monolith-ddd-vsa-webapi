@@ -52,6 +52,13 @@ public class InventoryOptions
     public required int WebhookMaxBodyBytes { get; set; }
 
     /// <summary>
+    ///     How far ahead of this system's clock a webhook delivery's <c>occurredOn</c> may be. A timestamp further ahead is
+    ///     refused with 400 before anything is recorded, because applying it would make every later delivery of that reservation
+    ///     stale. It only has to cover the warehouse system's clock drift.
+    /// </summary>
+    public required int WebhookMaxFutureSkewSeconds { get; set; }
+
+    /// <summary>
     ///     Days a recorded webhook delivery id is kept. It has to outlive the longest span in which the warehouse system may deliver
     ///     the same delivery again; after that the record only takes space.
     /// </summary>
@@ -71,6 +78,14 @@ public class InventoryOptions
     ///     failed, and the sweep queues another.
     /// </summary>
     public required int StockPushDirtyMinAgeSeconds { get; set; }
+
+    /// <summary>
+    ///     Cron for the recurring sweep that finds warehouse connections whose stored API credential or webhook secret is still
+    ///     under an encryption key that is no longer the current one (after a key rotation) and queues one message per page of
+    ///     <see cref="SweepPageSize" /> connections. The sweep only reads the key marker of each value and publishes; a consumer
+    ///     rewrites the values under the current key.
+    /// </summary>
+    public required string WarehouseSecretReprotectCron { get; set; }
 
     /// <summary>Stock levels sent to the warehouse in one gateway call.</summary>
     public required int StockPushBatchSize { get; set; }
@@ -187,6 +202,10 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
             .GreaterThan(0)
             .WithMessage("WebhookMaxBodyBytes must be greater than 0.");
 
+        RuleFor(x => x.WebhookMaxFutureSkewSeconds)
+            .GreaterThan(0)
+            .WithMessage("WebhookMaxFutureSkewSeconds must be greater than 0.");
+
         RuleFor(x => x.WebhookDeliveryRetentionDays)
             .GreaterThan(0)
             .WithMessage("WebhookDeliveryRetentionDays must be greater than 0.");
@@ -198,6 +217,10 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.StockPushDirtySweepCron)
             .NotEmpty()
             .WithMessage("StockPushDirtySweepCron must not be empty.");
+
+        RuleFor(x => x.WarehouseSecretReprotectCron)
+            .NotEmpty()
+            .WithMessage("WarehouseSecretReprotectCron must not be empty.");
 
         RuleFor(x => x.StockPushDirtyMinAgeSeconds)
             .GreaterThan(0)

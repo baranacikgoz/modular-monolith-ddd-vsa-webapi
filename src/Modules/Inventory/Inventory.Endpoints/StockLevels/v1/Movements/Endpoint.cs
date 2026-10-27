@@ -22,7 +22,7 @@ internal static class Endpoint
     {
         stockLevelsApiGroup
             .MapGet("{id}/movements", GetMovementsAsync)
-            .WithDescription("A stock level's ledger, newest first. Pass the previous page's NextCursor as 'after' to continue without an offset. " +
+            .WithDescription("A stock level's ledger, newest first by each row's sequence. Pass the previous page's NextCursor as 'after' to continue without an offset. " +
                              "Administration only; a store owner reads the ledger of their own stock level through /my/{id}/movements.")
             .RequireScope(KeycloakScopes.StockLevels.ViewAll)
             .Produces<PaginationResponse<Response>>()
@@ -67,6 +67,7 @@ internal static class Endpoint
                     selector: m => new Response
                     {
                         Id = m.Id,
+                        Sequence = m.Sequence,
                         Type = m.Type,
                         Quantity = m.Quantity,
                         QuantityOnHandAfter = m.QuantityOnHandAfter,
@@ -75,7 +76,7 @@ internal static class Endpoint
                         ActingUserId = m.CreatedBy,
                         CreatedOn = m.CreatedOn
                     },
-                    orderByDescending: m => m.CreatedOn,
+                    orderByDescending: m => m.Sequence,
                     tiebreaker: m => m.Id,
                     cancellationToken: cancellationToken))
             .MapAsync(page => NameActingUsersAsync(page, usersClient, logger, cancellationToken));

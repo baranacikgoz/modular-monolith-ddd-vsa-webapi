@@ -66,7 +66,13 @@ public static class KeycloakScopes
     public static class StockReservations
     {
         public const string Create = "stock-reservations:create";
-        public const string View = "stock-reservations:view";
+
+        /// <summary>Any reservation by id. Administration only.</summary>
+        public const string ViewAll = "stock-reservations:view-all";
+
+        /// <summary>The reservations of the products of the caller's own active stores.</summary>
+        public const string ViewOwn = "stock-reservations:view-own";
+
         public const string Update = "stock-reservations:update";
     }
 

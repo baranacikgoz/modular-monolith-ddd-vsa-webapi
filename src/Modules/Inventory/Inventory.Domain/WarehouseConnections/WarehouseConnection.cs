@@ -106,6 +106,29 @@ public class WarehouseConnection : AggregateRoot<WarehouseConnectionId>
         return Result.Success;
     }
 
+    /// <summary>
+    ///     Stores the same secrets again under a newer encryption key: key rotation, not a change of a secret, so nothing that
+    ///     verifies or authenticates with them is affected. A <see langword="null" /> value is left as it is, and when both are
+    ///     <see langword="null" /> nothing changes and nothing is raised. A deactivated connection is rewritten too, because an
+    ///     old key can only be dropped from the configuration once no stored value is under it.
+    /// </summary>
+    public Result ReprotectSecrets(byte[]? reprotectedApiCredential, byte[]? reprotectedWebhookSecret)
+    {
+        if (reprotectedApiCredential is null && reprotectedWebhookSecret is null)
+        {
+            return Result.Success;
+        }
+
+        var @event = new V1WarehouseConnectionSecretsReprotectedDomainEvent(
+            Id, reprotectedApiCredential is not null, reprotectedWebhookSecret is not null);
+
+        EncryptedApiCredential = reprotectedApiCredential ?? EncryptedApiCredential;
+        EncryptedWebhookSecret = reprotectedWebhookSecret ?? EncryptedWebhookSecret;
+
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
     /// <summary>Idempotent: an already deactivated connection changes nothing and raises nothing.</summary>
     public Result Deactivate()
     {

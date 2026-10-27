@@ -1,6 +1,7 @@
 using System.Net;
 using Common.Application.Options;
 using Inventory.Application.Gateway;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Tests.Support;
@@ -125,7 +126,7 @@ public sealed class WarehouseConnectGuardTests : IDisposable
         _resolver.Answer("warehouse.example.com", IPAddress.Loopback);
         var gateway = GatewayOf(ClientOf(GuardOf()), new Uri($"http://warehouse.example.com:{server.Port}/api/"));
 
-        var result = await gateway.RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var result = await gateway.RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.True(result.IsFailure);
         Assert.Equal("WarehouseGatewayAddressNotAllowed", result.Error!.Key);
@@ -142,7 +143,7 @@ public sealed class WarehouseConnectGuardTests : IDisposable
         _resolver.Answer("stub.internal.test", IPAddress.Loopback);
         var gateway = GatewayOf(ClientOf(GuardOf(allowPrivateAddresses: true)), new Uri($"http://stub.internal.test:{server.Port}/api/"));
 
-        var result = await gateway.RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var result = await gateway.RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayMalformedResponse", result.Error!.Key); // the stub answered 200 with no reference
         Assert.Equal(1, server.Connections);
@@ -160,7 +161,7 @@ public sealed class WarehouseConnectGuardTests : IDisposable
         _resolver.Answer("internal.test", IPAddress.Loopback);
         var gateway = GatewayOf(ClientOf(GuardOf(allowPrivateAddresses: true)), new Uri($"http://stub.internal.test:{warehouse.Port}/api/"));
 
-        var result = await gateway.RequestReleaseAsync("product-1", 1, CancellationToken.None);
+        var result = await gateway.RequestReleaseAsync(StockReservationId.New(), "product-1", 1, CancellationToken.None);
 
         Assert.Equal("WarehouseGatewayCallFailed", result.Error!.Key);
         Assert.Equal(302, result.Error.Value);
