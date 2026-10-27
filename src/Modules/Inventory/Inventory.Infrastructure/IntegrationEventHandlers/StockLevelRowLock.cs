@@ -26,6 +26,7 @@ internal static class StockLevelRowLock
     {
         var stockLevels = await dbContext.StockLevels
             .FromSql($"SELECT * FROM \"Inventory\".\"StockLevels\" WHERE \"ProductId\" = {productId} FOR UPDATE")
+            .TagWith(nameof(LoadForUpdateAsync), productId)
             .ToListAsync(cancellationToken);
 
         return stockLevels.SingleAsResult(_ => true);

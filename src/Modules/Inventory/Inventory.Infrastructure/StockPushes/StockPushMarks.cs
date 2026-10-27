@@ -1,3 +1,4 @@
+using Common.Infrastructure.Persistence.Extensions;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockPushes;
@@ -75,6 +76,7 @@ internal static class StockPushMarks
                  )
                  SELECT a."Id" AS "Value" FROM "ActiveConnection" AS a
                  """)
+            .TagWith(nameof(MarkForActiveConnectionAsync), stockLevelId)
             .ToListAsync(cancellationToken);
     }
 
@@ -112,6 +114,7 @@ internal static class StockPushMarks
                  )
                  SELECT g."Id" AS "Value" FROM "Page" AS g ORDER BY g."Id"
                  """)
+            .TagWith(nameof(MarkStorePageAsync), storeId)
             .ToListAsync(cancellationToken);
     }
 
