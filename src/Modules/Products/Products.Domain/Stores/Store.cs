@@ -269,7 +269,11 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
         });
     }
 
-    /// <summary>Only an Active store gives products up; every other status answers with the error of that status and changes nothing.</summary>
+    /// <summary>
+    ///     Only an Active store gives products up; every other status answers with the error of that status and changes nothing.
+    ///     The product's image rows are deleted with it, so the caller loads <see cref="Product.Images" /> with the product: their
+    ///     object keys leave in <see cref="V1ProductImagesRemovedWithProductDomainEvent" />, otherwise the files stay behind.
+    /// </summary>
     public Result RemoveProduct(Product product)
     {
         return EnsureActive().Tap(() =>
@@ -277,6 +281,11 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
             _products.Remove(product);
             var @event = new V1ProductRemovedFromStoreDomainEvent(Id, product.ToRemovedSnapshot());
             RaiseEvent(@event);
+
+            if (product.Images.Count > 0)
+            {
+                RaiseEvent(new V1ProductImagesRemovedWithProductDomainEvent(Id, product.Id, product.Images.Select(i => i.ObjectKey).ToList()));
+            }
 
             // Cascade: a post-mutation check of the collection deciding whether a second, higher-level event
             // fires alongside the primary one - removing this product left the store with none.

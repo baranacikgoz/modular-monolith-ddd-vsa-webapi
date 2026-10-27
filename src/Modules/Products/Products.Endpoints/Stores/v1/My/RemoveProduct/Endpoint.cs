@@ -34,6 +34,7 @@ internal static class Endpoint
             .TagWith(nameof(RemoveMyProductAsync), "StoreByOwner", currentUser.Id)
             .Where(s => s.OwnerId == currentUser.Id)
             .Include(s => s.Products.Where(p => p.Id == request.Id))
+            .ThenInclude(p => p.Images)
             .SingleAsResultAsync(nameof(Store), cancellationToken)
             .CombineAsync(store => store.Products.SingleAsResult(p => p.Id == request.Id))
             .TapAsync(tuple =>

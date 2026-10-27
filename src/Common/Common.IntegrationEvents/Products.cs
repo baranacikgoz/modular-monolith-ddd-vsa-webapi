@@ -22,5 +22,13 @@ public sealed record StoreApprovedIntegrationEvent(DefaultIdType StoreId, Applic
 /// message for a job that is no longer Queued is a no-op.</summary>
 public sealed record ProductImportRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
 
+/// <summary>
+///     A product was removed and its image rows went with it, so these public-store objects are no longer referenced by
+///     anything. Products consumes it to delete them: raised in the same save as the removal, so an object is never left
+///     behind by a crash between the two, and deleting an object that is already gone is not an error.
+/// </summary>
+public sealed record ProductImageObjectsOrphanedIntegrationEvent(DefaultIdType ProductId, IReadOnlyList<string> ObjectKeys)
+    : IntegrationEvent;
+
 /// <summary>Queue message of one product export job, same contract as <see cref="ProductImportRequestedIntegrationEvent" />.</summary>
 public sealed record ProductExportRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
