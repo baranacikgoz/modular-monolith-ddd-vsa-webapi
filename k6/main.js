@@ -14,7 +14,7 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 //  buyer      50%  Read-heavy browsing: search stores → products → details
 //  seller     30%  Mixed: manage own store, update listings, browse catalog
 //  new_seller 15%  Write-heavy onboarding: register → create store → list product → logout
-//  admin       5%  Admin catalog management and marketplace monitoring
+//  admin       5%  Admin catalog management and store monitoring
 //
 // Total peak: 50 VUs. Ramp: 1 min up → 5 min steady → 30 s down.
 

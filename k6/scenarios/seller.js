@@ -75,7 +75,7 @@ export function runSeller(data) {
     const productRes = get(`/v1/products/my/${product.id}`, {}, token);
     check(productRes, { 'seller: get my product: 200': r => r.status === 200 });
 
-    // Update price (simulates a seller adjusting to market)
+    // Update price (simulates a store owner adjusting prices)
     const newPrice = parseFloat((50 + Math.random() * 950).toFixed(2));
     const updateRes = put(`/v1/products/my/${product.id}`, {
       name: product.name,
