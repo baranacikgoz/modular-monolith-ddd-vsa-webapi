@@ -941,4 +941,25 @@
   <data name="DuplicateAttributeName" xml:space="preserve">
     <value>Aynı özellik adı birden fazla kez kullanılamaz.</value>
   </data>
+  <data name="Products_SetPackageDimensions_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_Body_NotEmpty" xml:space="preserve">
+    <value>İstek gövdesi boş olamaz.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_LengthCm_Range" xml:space="preserve">
+    <value>Uzunluk sıfırdan büyük ve en fazla ({0}) cm olmalıdır.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WidthCm_Range" xml:space="preserve">
+    <value>Genişlik sıfırdan büyük ve en fazla ({0}) cm olmalıdır.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_HeightCm_Range" xml:space="preserve">
+    <value>Yükseklik sıfırdan büyük ve en fazla ({0}) cm olmalıdır.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WeightKg_Range" xml:space="preserve">
+    <value>Ağırlık sıfırdan büyük ve en fazla ({0}) kg olmalıdır.</value>
+  </data>
+  <data name="InvalidPackageDimensions" xml:space="preserve">
+    <value>Paket ölçüleri veya ağırlığı geçerli aralığın dışında.</value>
+  </data>
 </root>

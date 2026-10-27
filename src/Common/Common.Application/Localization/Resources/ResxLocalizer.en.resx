@@ -882,4 +882,25 @@
   <data name="DuplicateAttributeName" xml:space="preserve">
     <value>An attribute name can be used only once.</value>
   </data>
+  <data name="Products_SetPackageDimensions_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_Body_NotEmpty" xml:space="preserve">
+    <value>Request body must not be empty.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_LengthCm_Range" xml:space="preserve">
+    <value>Length must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WidthCm_Range" xml:space="preserve">
+    <value>Width must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_HeightCm_Range" xml:space="preserve">
+    <value>Height must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WeightKg_Range" xml:space="preserve">
+    <value>Weight must be greater than 0 and at most ({0}) kg.</value>
+  </data>
+  <data name="InvalidPackageDimensions" xml:space="preserve">
+    <value>The package dimensions or weight are outside the valid range.</value>
+  </data>
 </root>

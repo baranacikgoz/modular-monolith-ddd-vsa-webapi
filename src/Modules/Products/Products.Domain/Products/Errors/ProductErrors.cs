@@ -24,4 +24,7 @@ public static class ProductErrors
 
     /// <summary>Two attributes share a name, compared without regard to case.</summary>
     public static readonly Error DuplicateAttributeName = new() { Key = nameof(DuplicateAttributeName), StatusCode = HttpStatusCode.BadRequest };
+
+    /// <summary>A package side or the weight is not above zero, or is above the largest value a package may have.</summary>
+    public static readonly Error InvalidPackageDimensions = new() { Key = nameof(InvalidPackageDimensions), StatusCode = HttpStatusCode.BadRequest };
 }

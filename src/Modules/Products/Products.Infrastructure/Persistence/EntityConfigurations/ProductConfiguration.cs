@@ -61,6 +61,15 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
             .Property(sp => sp.Sku)
             .HasMaxLength(Constants.SkuMaxLength);
 
+        // A value object owned by the product: four nullable columns in the product's own row, all null until the store sets them.
+        builder.OwnsOne(sp => sp.PackageDimensions, dimensions =>
+        {
+            dimensions.Property(d => d.LengthCm).HasColumnName("PackageLengthCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.WidthCm).HasColumnName("PackageWidthCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.HeightCm).HasColumnName("PackageHeightCm").HasPrecision(10, 2);
+            dimensions.Property(d => d.WeightKg).HasColumnName("PackageWeightKg").HasPrecision(10, 3);
+        });
+
         // Read and replaced whole; the default fills the rows that existed before the column did.
         builder
             .Property(sp => sp.Attributes)

@@ -581,6 +581,41 @@ namespace Products.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Products.Domain.Products.PackageDimensions", "PackageDimensions", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("HeightCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageHeightCm");
+
+                            b1.Property<decimal>("LengthCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageLengthCm");
+
+                            b1.Property<decimal>("WeightKg")
+                                .HasPrecision(10, 3)
+                                .HasColumnType("numeric(10,3)")
+                                .HasColumnName("PackageWeightKg");
+
+                            b1.Property<decimal>("WidthCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageWidthCm");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("Products", "Products");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("PackageDimensions");
+
                     b.Navigation("ProductTemplate");
 
                     b.Navigation("Store");

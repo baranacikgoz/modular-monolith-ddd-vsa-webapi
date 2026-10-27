@@ -11,8 +11,11 @@ public sealed record Response : AuditableEntityResponse<ProductId>
     public required decimal Price { get; init; }
     public string? Sku { get; init; }
     public IReadOnlyList<ProductAttribute> Attributes { get; init; } = [];
+    public PackageDimensionsResponse? PackageDimensions { get; init; }
 
     // Populated via a cross-module InterModuleRequest to Inventory after the DB projection below -
     // 0 until Inventory's ProductCreatedIntegrationEvent consumer has processed this product (async).
     public int AvailableQuantity { get; init; }
 }
+
+public sealed record PackageDimensionsResponse(decimal LengthCm, decimal WidthCm, decimal HeightCm, decimal WeightKg);

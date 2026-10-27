@@ -81,6 +81,9 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
     /// <summary>The store's own code for the product, unique within the store; null when the store keeps none. Set at creation only.</summary>
     public string? Sku { get; private set; }
 
+    /// <summary>Size and weight of the product as shipped; null until the store sets them.</summary>
+    public PackageDimensions? PackageDimensions { get; private set; }
+
     /// <summary>Name and value pairs the store describes the product with. Read and replaced as a whole (one jsonb column).</summary>
     public IReadOnlyList<ProductAttribute> Attributes { get; private set; } = [];
 
@@ -195,6 +198,20 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
             : (DomainEvent)new V1ProductPriceDecreasedDomainEvent(Id, price);
 
         Price = price;
+        RaiseEvent(@event);
+    }
+
+    /// <summary>The same values as the current ones are no change and raise nothing.</summary>
+    public void SetPackageDimensions(PackageDimensions dimensions)
+    {
+        if (dimensions.Equals(PackageDimensions))
+        {
+            return;
+        }
+
+        var @event = new V1ProductPackageDimensionsChangedDomainEvent(Id, dimensions.ToSnapshot());
+
+        PackageDimensions = dimensions;
         RaiseEvent(@event);
     }
 

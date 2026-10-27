@@ -10,6 +10,8 @@ public static class Constants
     public const int SkuMaxLength = 64;
     public const int AttributeNameMaxLength = 64;
     public const int AttributeValueMaxLength = 256;
+    public const decimal PackageSideMaxCm = 1000m;
+    public const decimal PackageWeightMaxKg = 1000m;
     public const int ImageObjectKeyMaxLength = 512;
     public const int ImageContentTypeMaxLength = 64;
 }
