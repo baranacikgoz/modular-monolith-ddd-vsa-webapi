@@ -65,6 +65,12 @@ public static class KeycloakScopes
         public const string Update = "stock-reservations:update";
     }
 
+    public static class StockLevels
+    {
+        public const string View = "stock-levels:view";
+        public const string Update = "stock-levels:update";
+    }
+
     public static class Hangfire
     {
         public const string Manage = "hangfire:manage";

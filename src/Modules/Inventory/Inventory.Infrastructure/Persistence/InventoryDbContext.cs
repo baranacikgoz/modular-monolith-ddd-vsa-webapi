@@ -22,8 +22,23 @@ public sealed class InventoryDbContext(
 ) : BaseDbContext(options, timeProvider, currentUser, logger, eventDispatcher, integrationEventOutbox), IInventoryDbContext
 {
     public DbSet<StockLevel> StockLevels => Set<StockLevel>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
     public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
+
+    /// <summary>The ledger is append-only: a tracked change to an existing movement fails before anything is written.</summary>
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var rewritten = ChangeTracker.Entries<StockMovement>()
+            .FirstOrDefault(e => e.State is EntityState.Modified or EntityState.Deleted);
+        if (rewritten is not null)
+        {
+            throw new InvalidOperationException(
+                $"StockMovement {rewritten.Entity.Id} is part of the immutable ledger and cannot be saved as {rewritten.State}.");
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

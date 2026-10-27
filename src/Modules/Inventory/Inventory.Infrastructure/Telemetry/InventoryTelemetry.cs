@@ -44,4 +44,7 @@ public static class InventoryTelemetry
 
     public static readonly Counter<long> ReservationsExpired =
         Meter.CreateCounter<long>("inventory.stock_reservations_expired.total", description: "Total stock reservations expired by the sweep job");
+
+    public static readonly Counter<long> StockMovementsRecorded =
+        Meter.CreateCounter<long>("inventory.stock_movements_recorded.total", description: "Total ledger movements appended to stock levels, tagged by movement type");
 }

@@ -253,6 +253,23 @@
             ]
           },
           {
+            "name": "stock-levels",
+            "displayName": "Stock Levels",
+            "type": "urn:backend-api:resources:stock-levels",
+            "ownerManagedAccess": false,
+            "uris": [
+              "/v1/stock-levels/*"
+            ],
+            "scopes": [
+              {
+                "name": "stock-levels:view"
+              },
+              {
+                "name": "stock-levels:update"
+              }
+            ]
+          },
+          {
             "name": "products",
             "displayName": "Products",
             "type": "urn:backend-api:resources:products",
@@ -481,6 +498,28 @@
             "config": {
               "resources": "[\"stock-reservations\"]",
               "scopes": "[\"stock-reservations:create\",\"stock-reservations:update\"]",
+              "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Stock Levels Catalog Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stock-levels\"]",
+              "scopes": "[\"stock-levels:view\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Stock Levels Administration Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"stock-levels\"]",
+              "scopes": "[\"stock-levels:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
