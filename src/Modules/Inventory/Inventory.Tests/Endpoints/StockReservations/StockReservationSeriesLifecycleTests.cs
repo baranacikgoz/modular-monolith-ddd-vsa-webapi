@@ -491,50 +491,7 @@ public class StockReservationSeriesLifecycleTests : BaseIntegrationTest
         Assert.Equal(ReservationStatus.RequiresReconciliation, reloaded!.Status);
     }
 
-    // ── Release ──
-
-    [Fact]
-    public async Task Release_ActiveReservation_Succeeds()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var response = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Released, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Release_AlreadyReleased_IsIdempotentNoOp()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedReservationAsync(productId, 10, DateTimeOffset.UtcNow.AddDays(5));
-
-        var first = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-        var second = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.NoContent, first.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, second.StatusCode);
-        var reloaded = await FindReservationAsync(reservation.Id);
-        Assert.Equal(ReservationStatus.Released, reloaded!.Status);
-    }
-
-    [Fact]
-    public async Task Release_CommittedReservation_ReturnsBadRequest()
-    {
-        var client = AuthedClient(Factory);
-        var productId = await SeedProductAsync(client);
-        var reservation = await SeedCommittedReservationAsync(
-            productId, 10, DateTimeOffset.UtcNow.AddDays(5), "already-committed-ref");
-
-        var response = await client.PostAsync(new Uri($"/v1/stock-reservations/{reservation.Id}/release", UriKind.Relative), null);
-
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    }
+    // Release is covered by ReleaseTests: it goes through the warehouse connection of the product's store.
 
     // ── Sweep expiry (in-process call, not waiting for the real cron) ──
 

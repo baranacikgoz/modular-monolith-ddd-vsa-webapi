@@ -1,5 +1,7 @@
 using Common.Infrastructure.Security;
 using Inventory.Application.Persistence;
+using Inventory.Application.ProductSummaries;
+using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +42,47 @@ internal static class WarehouseConnectionTestData
         await db.SaveChangesAsync();
 
         return (connection, webhookSecret);
+    }
+
+    /// <summary>Saves the local copy of a product owned by <paramref name="storeId" />, the link from a product to the store's connection.</summary>
+    public static async Task<DefaultIdType> SeedProductOfStoreAsync(IServiceProvider services, DefaultIdType storeId)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+
+        var summary = ProductSummary.Create(DefaultIdType.CreateVersion7());
+        summary.ApplyIfNewer(storeId, "Widget", 1);
+        db.ProductSummaries.Add(summary);
+        await db.SaveChangesAsync();
+
+        return summary.ProductId;
+    }
+
+    /// <summary>Saves an active reservation of <paramref name="productId" />, optionally already committed.</summary>
+    public static async Task<StockReservation> SeedReservationAsync(
+        IServiceProvider services, DefaultIdType productId, bool committed = false)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+
+        var deadline = DateTimeOffset.UtcNow.AddDays(5);
+        var reservation = StockReservation.Reserve(productId, 10, deadline);
+        if (committed)
+        {
+            reservation.Commit("seeded-provider-reference", deadline.AddMinutes(-1));
+        }
+
+        db.StockReservations.Add(reservation);
+        await db.SaveChangesAsync();
+
+        return reservation;
+    }
+
+    public static async Task<StockReservation> ReloadReservationAsync(IServiceProvider services, StockReservationId id)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+        return await db.StockReservations.AsNoTracking().SingleAsync(r => r.Id == id);
     }
 
     public static async Task<WarehouseConnection> ReloadAsync(IServiceProvider services, WarehouseConnectionId id)

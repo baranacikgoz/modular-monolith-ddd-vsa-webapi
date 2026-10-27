@@ -30,7 +30,7 @@ public sealed class InventoryModule : IModule
         services.AddPersistence();
         services.AddStockReservationExpirySweep();
         services.AddProductSummaryReconciliation();
-        services.AddWarehouseGatewayInfrastructure(configuration);
+        services.AddWarehouseGatewayInfrastructure();
     }
 
     public void UseModule(IApplicationBuilder app)
