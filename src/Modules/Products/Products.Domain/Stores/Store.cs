@@ -10,7 +10,7 @@ using Products.Domain.Stores.Errors;
 
 namespace Products.Domain.Stores;
 
-public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
+public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId, IComparable<StoreId>
 {
     public static StoreId New()
     {
@@ -25,6 +25,34 @@ public readonly record struct StoreId(DefaultIdType Value) : IStronglyTypedId
     public static bool TryParse(string str, out StoreId id)
     {
         return StronglyTypedIdHelper.TryDeserialize(str, out id);
+    }
+
+    /// <summary>Keyset cursor comparisons: in a query EF translates them to SQL on the uuid column, so a page boundary
+    /// follows Postgres' own uuid ordering. The C# bodies are only the in-memory fallback and order differently from
+    /// Postgres, so never sort or compare already materialized ids with them.</summary>
+    public static bool operator >(StoreId left, StoreId right)
+    {
+        return left.Value.CompareTo(right.Value) > 0;
+    }
+
+    public static bool operator <(StoreId left, StoreId right)
+    {
+        return left.Value.CompareTo(right.Value) < 0;
+    }
+
+    public static bool operator >=(StoreId left, StoreId right)
+    {
+        return left.Value.CompareTo(right.Value) >= 0;
+    }
+
+    public static bool operator <=(StoreId left, StoreId right)
+    {
+        return left.Value.CompareTo(right.Value) <= 0;
+    }
+
+    public int CompareTo(StoreId other)
+    {
+        return Value.CompareTo(other.Value);
     }
 }
 

@@ -38,6 +38,9 @@ public class ProductsOptions
     /// <summary>Largest page <c>GetProductsPageRequest</c> returns, whatever size the caller asks for.</summary>
     public required int ProductsPageMaxSize { get; set; }
 
+    /// <summary>Largest page <c>GetStoresPageRequest</c> returns, whatever size the caller asks for.</summary>
+    public required int StoresPageMaxSize { get; set; }
+
     /// <summary>How long a <c>SearchProductsByTermRequest</c> answer is cached. 0 disables the cache.</summary>
     public required int? SearchCacheSeconds { get; set; }
 }
@@ -89,6 +92,10 @@ public class ProductsOptionsValidator : CustomValidator<ProductsOptions>
         RuleFor(x => x.ProductsPageMaxSize)
             .GreaterThan(0)
             .WithMessage("ProductsPageMaxSize must be greater than 0.");
+
+        RuleFor(x => x.StoresPageMaxSize)
+            .GreaterThan(0)
+            .WithMessage("StoresPageMaxSize must be greater than 0.");
 
         RuleFor(x => x.SearchCacheSeconds)
             .NotNull()

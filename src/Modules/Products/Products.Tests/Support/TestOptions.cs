@@ -22,6 +22,7 @@ internal static class TestOptions
             MaxImagesPerProduct = 8,
             MaxAttributesPerProduct = 20,
             ProductsPageMaxSize = 500,
+            StoresPageMaxSize = 500,
             SearchCacheSeconds = 60
         };
         configure?.Invoke(options);
