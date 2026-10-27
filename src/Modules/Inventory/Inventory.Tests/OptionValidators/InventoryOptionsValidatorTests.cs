@@ -164,6 +164,7 @@ public class InventoryOptionsValidatorTests
     }
 
     [Theory]
+    [InlineData(nameof(InventoryOptions.WebhookMaxFutureSkewSeconds))]
     [InlineData(nameof(InventoryOptions.StockPushDirtyMinAgeSeconds))]
     [InlineData(nameof(InventoryOptions.StockPushBatchSize))]
     [InlineData(nameof(InventoryOptions.StockPushBatchesPerMessage))]

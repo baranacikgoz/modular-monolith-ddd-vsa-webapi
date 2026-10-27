@@ -1220,6 +1220,18 @@
   <data name="ResolutionNotAllowed" xml:space="preserve">
     <value>Rezervasyon mevcut durumundan seçilen duruma çözümlenemez.</value>
   </data>
+  <data name="WebhookOccurredOnInTheFuture" xml:space="preserve">
+    <value>Olay zamanı (occurredOn) sunucu saatinden izin verilen süreden fazla ileride, teslimat kaydedilmedi.</value>
+  </data>
+  <data name="MissingWebhookSignature" xml:space="preserve">
+    <value>İmza başlığı eksik.</value>
+  </data>
+  <data name="InvalidWebhookSignature" xml:space="preserve">
+    <value>İmza doğrulanamadı.</value>
+  </data>
+  <data name="MalformedWebhookBody" xml:space="preserve">
+    <value>İstek gövdesi geçerli bir JSON değil.</value>
+  </data>
   <data name="StockReservations_ReconcileRelease_Id_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>
   </data>

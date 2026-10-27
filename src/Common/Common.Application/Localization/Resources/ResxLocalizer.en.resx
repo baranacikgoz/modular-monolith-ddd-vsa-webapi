@@ -1161,6 +1161,18 @@
   <data name="ResolutionNotAllowed" xml:space="preserve">
     <value>The reservation cannot be resolved to the chosen status from its current status.</value>
   </data>
+  <data name="WebhookOccurredOnInTheFuture" xml:space="preserve">
+    <value>The occurredOn timestamp is further ahead of the server clock than allowed, the delivery was not recorded.</value>
+  </data>
+  <data name="MissingWebhookSignature" xml:space="preserve">
+    <value>The signature header is missing.</value>
+  </data>
+  <data name="InvalidWebhookSignature" xml:space="preserve">
+    <value>The signature could not be verified.</value>
+  </data>
+  <data name="MalformedWebhookBody" xml:space="preserve">
+    <value>The request body is not valid JSON.</value>
+  </data>
   <data name="StockReservations_ReconcileRelease_Id_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
   </data>

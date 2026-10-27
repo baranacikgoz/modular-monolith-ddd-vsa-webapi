@@ -12,6 +12,7 @@
     "DailyTotalsMaxRangeDays": 366,
     "AllowPrivateWarehouseAddresses": false,
     "WebhookMaxBodyBytes": 65536,
+    "WebhookMaxFutureSkewSeconds": 300,
     "WebhookDeliveryRetentionDays": 30,
     "WebhookDeliveryRetentionCron": "0 4 * * *",
     "StockPushDirtySweepCron": "0 */2 * * * *",

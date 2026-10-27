@@ -37,6 +37,33 @@ public static class StockReservationErrors
     /// <summary>The chosen status is not one a read-only reservation can be resolved to from the status it has.</summary>
     public static readonly Error ResolutionNotAllowed = new() { Key = nameof(ResolutionNotAllowed) };
 
+    /// <summary>
+    ///     A webhook delivery is stamped further ahead of this system's clock than <c>WebhookMaxFutureSkewSeconds</c> allows.
+    ///     Applied, it would make every later delivery of the reservation stale, so it is refused before anything is recorded.
+    /// </summary>
+    public static readonly Error WebhookOccurredOnInTheFuture = new() { Key = nameof(WebhookOccurredOnInTheFuture) };
+
+    /// <summary>The inbound webhook carried no signature header.</summary>
+    public static readonly Error MissingWebhookSignature = new()
+    {
+        Key = nameof(MissingWebhookSignature),
+        StatusCode = HttpStatusCode.Unauthorized
+    };
+
+    /// <summary>The signature of the inbound webhook does not match the raw body under the connection's secret.</summary>
+    public static readonly Error InvalidWebhookSignature = new()
+    {
+        Key = nameof(InvalidWebhookSignature),
+        StatusCode = HttpStatusCode.Unauthorized
+    };
+
+    /// <summary>The authenticated webhook body is not the JSON shape the endpoint reads.</summary>
+    public static readonly Error MalformedWebhookBody = new()
+    {
+        Key = nameof(MalformedWebhookBody),
+        StatusCode = HttpStatusCode.BadRequest
+    };
+
     public static readonly Error SeriesTooLong = new() { Key = nameof(SeriesTooLong) };
 
     public static readonly Error ProductNotFound = new() { Key = nameof(ProductNotFound) };

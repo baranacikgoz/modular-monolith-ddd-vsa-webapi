@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using Common.Application.Extensions;
 using Common.Application.Options;
@@ -8,6 +7,7 @@ using Common.Infrastructure.Persistence.Extensions;
 using Common.Infrastructure.Security;
 using FluentValidation;
 using Inventory.Application.Persistence;
+using Inventory.Domain.StockReservations.Errors;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Infrastructure.Telemetry;
 using Inventory.Infrastructure.Webhooks;
@@ -34,7 +34,8 @@ internal static class Endpoint
                 "Anonymous webhook callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature header made " +
                 "with the connection's own webhook secret instead of a bearer token. A delivery id seen before on the connection " +
                 "is acknowledged and applies nothing, and so is a delivery whose optional occurredOn is earlier than one already " +
-                "applied. A status word this system has no mapping for is acknowledged and recorded, never refused.")
+                "applied. An occurredOn further ahead of this system's clock than the configured tolerance is refused with 400 before " +
+                "anything is recorded. A status word this system has no mapping for is acknowledged and recorded, never refused.")
             .AllowAnonymous()
             .RequireRateLimiting(RateLimitingConstants.WarehouseWebhook)
             .LimitRequestBody(context =>
@@ -53,6 +54,8 @@ internal static class Endpoint
         IInventoryDbContext dbContext,
         SecretProtector protector,
         WarehouseWebhookIntake intake,
+        IOptions<InventoryOptions> options,
+        TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
         // The raw bytes, never a decoded string: the signature covers exactly what the partner sent.
@@ -69,12 +72,26 @@ internal static class Endpoint
                 VerifySignature(httpContext.Request.Headers, rawBody, protector.Decrypt(connection.EncryptedWebhookSecret))
                     .Map(() => connection)))
             .BindAsync(connection => connection.Status == WarehouseConnectionStatus.Active
-                ? ParseAndValidateAsync(rawBody, validator, cancellationToken).BindAsync(body => intake.ReceiveAsync(
-                    connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, body.OccurredOn, cancellationToken))
+                ? ParseAndValidateAsync(rawBody, validator, cancellationToken)
+                    .TapAsync(body => EnsureNotFromTheFuture(
+                        body.OccurredOn, timeProvider.GetUtcNow(), options.Value.WebhookMaxFutureSkewSeconds))
+                    .BindAsync(body => intake.ReceiveAsync(
+                        connection, body.DeliveryId, body.ReservationId, body.ProviderReference, body.StatusWord, body.OccurredOn, cancellationToken))
                 // A deactivated connection's authenticated delivery is acknowledged and ignored: the warehouse stops retrying and
                 // nothing of its body is read or applied.
                 : Task.FromResult(Result<WebhookDeliveryOutcome>.Success(WebhookDeliveryOutcome.Ignored)))
             .TapAsync(RecordOutcome);
+    }
+
+    /// <summary>
+    ///     A timestamp far ahead of the clock would make every later delivery of the reservation stale once it was applied, so it
+    ///     is refused up front: nothing is recorded, and the warehouse can correct its clock and deliver again.
+    /// </summary>
+    private static Result EnsureNotFromTheFuture(DateTimeOffset? occurredOn, DateTimeOffset now, int maxFutureSkewSeconds)
+    {
+        return occurredOn is { } stamp && stamp > now.AddSeconds(maxFutureSkewSeconds)
+            ? StockReservationErrors.WebhookOccurredOnInTheFuture
+            : Result.Success;
     }
 
     private static void RecordOutcome(WebhookDeliveryOutcome outcome)
@@ -90,12 +107,12 @@ internal static class Endpoint
     {
         if (!headers.TryGetValue(SignatureHeaderName, out var signatureHeader) || string.IsNullOrEmpty(signatureHeader))
         {
-            return new Error { Key = "MissingWebhookSignature", StatusCode = HttpStatusCode.Unauthorized };
+            return StockReservationErrors.MissingWebhookSignature;
         }
 
         return HmacSignatureVerifier.VerifySha256(webhookSecret, rawBody, signatureHeader.ToString())
             ? Result.Success
-            : new Error { Key = "InvalidWebhookSignature", StatusCode = HttpStatusCode.Unauthorized };
+            : StockReservationErrors.InvalidWebhookSignature;
     }
 
     private static async Task<Result<Request>> ParseAndValidateAsync(
@@ -108,12 +125,12 @@ internal static class Endpoint
         }
         catch (JsonException)
         {
-            return new Error { Key = "MalformedWebhookBody", StatusCode = HttpStatusCode.BadRequest };
+            return StockReservationErrors.MalformedWebhookBody;
         }
 
         if (body is null)
         {
-            return new Error { Key = "MalformedWebhookBody", StatusCode = HttpStatusCode.BadRequest };
+            return StockReservationErrors.MalformedWebhookBody;
         }
 
         var validationResult = await validator.ValidateAsync(body, cancellationToken);

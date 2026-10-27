@@ -27,6 +27,7 @@ internal static class TestInventoryOptions
             DailyTotalsMaxRangeDays = 366,
             AllowPrivateWarehouseAddresses = false,
             WebhookMaxBodyBytes = 65536,
+            WebhookMaxFutureSkewSeconds = 300,
             WebhookDeliveryRetentionDays = webhookDeliveryRetentionDays,
             WebhookDeliveryRetentionCron = webhookDeliveryRetentionCron,
             StockPushDirtySweepCron = "0 */2 * * * *",
