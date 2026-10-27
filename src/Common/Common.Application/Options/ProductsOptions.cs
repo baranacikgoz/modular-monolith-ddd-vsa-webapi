@@ -32,6 +32,9 @@ public class ProductsOptions
 
     public required int MaxImagesPerProduct { get; set; }
 
+    /// <summary>Most name and value attributes one product may carry.</summary>
+    public required int MaxAttributesPerProduct { get; set; }
+
     /// <summary>Largest page <c>GetProductsPageRequest</c> returns, whatever size the caller asks for.</summary>
     public required int ProductsPageMaxSize { get; set; }
 
@@ -78,6 +81,10 @@ public class ProductsOptionsValidator : CustomValidator<ProductsOptions>
         RuleFor(x => x.MaxImagesPerProduct)
             .GreaterThan(0)
             .WithMessage("MaxImagesPerProduct must be greater than 0.");
+
+        RuleFor(x => x.MaxAttributesPerProduct)
+            .GreaterThan(0)
+            .WithMessage("MaxAttributesPerProduct must be greater than 0.");
 
         RuleFor(x => x.ProductsPageMaxSize)
             .GreaterThan(0)

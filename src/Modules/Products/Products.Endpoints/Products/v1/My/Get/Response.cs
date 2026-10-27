@@ -10,4 +10,5 @@ public sealed record Response : AuditableEntityResponse<ProductId>
     public required int Quantity { get; init; }
     public required decimal Price { get; init; }
     public string? Sku { get; init; }
+    public IReadOnlyList<ProductAttribute> Attributes { get; init; } = [];
 }

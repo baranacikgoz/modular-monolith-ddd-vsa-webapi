@@ -1,8 +1,6 @@
-using System.Text.Json;
 using Common.Infrastructure.Persistence.EntityConfigurations;
 using Common.Infrastructure.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Products.Application.Imports;
 using Products.Domain.ProductTemplates;
@@ -12,8 +10,6 @@ namespace Products.Infrastructure.Persistence.EntityConfigurations;
 
 internal sealed class ProductImportJobConfiguration : JobRowConfiguration<ProductImportJob, ProductImportJobId>
 {
-    private static readonly JsonSerializerOptions RowErrorsJsonOptions = new(JsonSerializerDefaults.Web);
-
     public override void Configure(EntityTypeBuilder<ProductImportJob> builder)
     {
         base.Configure(builder);
@@ -34,19 +30,11 @@ internal sealed class ProductImportJobConfiguration : JobRowConfiguration<Produc
         builder.Property(j => j.FileName).HasMaxLength(ProductImportJob.FileNameMaxLength).IsRequired();
         builder.Property(j => j.ObjectKey).HasMaxLength(ProductImportJob.ObjectKeyMaxLength).IsRequired();
 
-        // Only ever read back whole by the poll endpoints, never queried: jsonb with a plain System.Text.Json converter.
+        // Only ever read back whole by the poll endpoints, never queried.
         builder
             .Property(j => j.RowErrors)
-            .HasConversion(
-                errors => JsonSerializer.Serialize(errors, RowErrorsJsonOptions),
-                json => JsonSerializer.Deserialize<List<ProductImportRowError>>(json, RowErrorsJsonOptions) ?? new List<ProductImportRowError>(),
-                new ValueComparer<IReadOnlyList<ProductImportRowError>>(
-                    (a, b) => a!.SequenceEqual(b!),
-                    errors => errors.Aggregate(0, (hash, e) => HashCode.Combine(hash, e.GetHashCode())),
-                    errors => errors.ToList()))
-            .HasColumnType("jsonb")
-            .HasDefaultValueSql("'[]'::jsonb")
-            .IsRequired();
+            .HasJsonbList()
+            .HasDefaultValueSql("'[]'::jsonb");
 
         // The client's own retry token: a repeat of the same id by the same user is the first job.
         builder

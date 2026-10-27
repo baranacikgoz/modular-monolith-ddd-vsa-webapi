@@ -61,6 +61,12 @@ internal sealed class ProductConfiguration : AuditableEntityConfiguration<Produc
             .Property(sp => sp.Sku)
             .HasMaxLength(Constants.SkuMaxLength);
 
+        // Read and replaced whole; the default fills the rows that existed before the column did.
+        builder
+            .Property(sp => sp.Attributes)
+            .HasJsonbList()
+            .HasDefaultValueSql("'[]'::jsonb");
+
         // Declared on its own: the filtered index below does not hold products without a SKU, so it cannot serve a
         // lookup by store, and EF would otherwise drop this index as covered by it.
         builder.HasIndex(sp => sp.StoreId);

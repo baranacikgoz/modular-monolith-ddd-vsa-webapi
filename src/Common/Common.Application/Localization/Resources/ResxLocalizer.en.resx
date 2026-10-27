@@ -855,4 +855,31 @@
   <data name="ParentNoLongerExists" xml:space="preserve">
     <value>The store or the product template no longer exists.</value>
   </data>
+  <data name="Products_SetAttributes_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Body_NotEmpty" xml:space="preserve">
+    <value>Request body must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Attributes_NotNull" xml:space="preserve">
+    <value>The attribute list must not be null. Send an empty list to clear it.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_NotEmpty" xml:space="preserve">
+    <value>Attribute name must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_MaxLength" xml:space="preserve">
+    <value>Attribute name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_NotEmpty" xml:space="preserve">
+    <value>Attribute value must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_MaxLength" xml:space="preserve">
+    <value>Attribute value can be at most ({0}) characters long.</value>
+  </data>
+  <data name="TooManyAttributes" xml:space="preserve">
+    <value>The product has more attributes than allowed.</value>
+  </data>
+  <data name="DuplicateAttributeName" xml:space="preserve">
+    <value>An attribute name can be used only once.</value>
+  </data>
 </root>

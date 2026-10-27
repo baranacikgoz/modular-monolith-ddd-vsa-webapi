@@ -81,6 +81,9 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
     /// <summary>The store's own code for the product, unique within the store; null when the store keeps none. Set at creation only.</summary>
     public string? Sku { get; private set; }
 
+    /// <summary>Name and value pairs the store describes the product with. Read and replaced as a whole (one jsonb column).</summary>
+    public IReadOnlyList<ProductAttribute> Attributes { get; private set; } = [];
+
     // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
     public string Language { get; private set; } = "simple_unaccent";
 
@@ -193,6 +196,32 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
         Price = price;
         RaiseEvent(@event);
+    }
+
+    /// <summary>Replaces the whole list. The same content in the same order is no change and raises nothing; the maximum comes
+    /// from the caller (it is an option), the rest of the rules are the product's own.</summary>
+    public Result SetAttributes(IReadOnlyList<ProductAttribute> attributes, int maxAttributes)
+    {
+        if (attributes.Count > maxAttributes)
+        {
+            return ProductErrors.TooManyAttributes;
+        }
+
+        if (attributes.Select(a => a.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != attributes.Count)
+        {
+            return ProductErrors.DuplicateAttributeName;
+        }
+
+        if (Attributes.SequenceEqual(attributes))
+        {
+            return Result.Success;
+        }
+
+        var @event = new V1ProductAttributesReplacedDomainEvent(Id, attributes.Select(a => a.ToSnapshot()).ToList());
+
+        Attributes = attributes.ToList();
+        RaiseEvent(@event);
+        return Result.Success;
     }
 
     /// <summary>The caller has uploaded (or is about to upload) the file under <paramref name="objectKey" />; the key is a

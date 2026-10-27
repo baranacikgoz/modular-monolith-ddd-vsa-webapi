@@ -914,4 +914,31 @@
   <data name="ParentNoLongerExists" xml:space="preserve">
     <value>Mağaza veya ürün şablonu artık mevcut değil.</value>
   </data>
+  <data name="Products_SetAttributes_Id_NotEmpty" xml:space="preserve">
+    <value>Ürün Id boş olamaz.</value>
+  </data>
+  <data name="Products_SetAttributes_Body_NotEmpty" xml:space="preserve">
+    <value>İstek gövdesi boş olamaz.</value>
+  </data>
+  <data name="Products_SetAttributes_Attributes_NotNull" xml:space="preserve">
+    <value>Özellik listesi boş (null) olamaz. Listeyi temizlemek için boş bir liste gönderin.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_NotEmpty" xml:space="preserve">
+    <value>Özellik adı boş olamaz.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_MaxLength" xml:space="preserve">
+    <value>Özellik adı en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_NotEmpty" xml:space="preserve">
+    <value>Özellik değeri boş olamaz.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_MaxLength" xml:space="preserve">
+    <value>Özellik değeri en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="TooManyAttributes" xml:space="preserve">
+    <value>Ürün için izin verilen özellik sayısı aşıldı.</value>
+  </data>
+  <data name="DuplicateAttributeName" xml:space="preserve">
+    <value>Aynı özellik adı birden fazla kez kullanılamaz.</value>
+  </data>
 </root>

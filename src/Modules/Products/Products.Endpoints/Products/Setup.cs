@@ -19,6 +19,7 @@ public static class Setup
         v1.Search.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.AuditLog.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Update.Endpoint.MapEndpoint(v1ProductsApiGroup);
+        v1.My.SetAttributes.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Search.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.My.Get.Endpoint.MapEndpoint(v1ProductsApiGroup);
         v1.Import.Endpoint.MapEndpoint(v1ProductsApiGroup);

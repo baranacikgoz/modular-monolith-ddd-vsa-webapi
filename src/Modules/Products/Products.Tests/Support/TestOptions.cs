@@ -20,6 +20,7 @@ internal static class TestOptions
             JobHousekeepingCron = "0 20 * * * *",
             ImageMaxFileBytes = 5242880,
             MaxImagesPerProduct = 8,
+            MaxAttributesPerProduct = 20,
             ProductsPageMaxSize = 500,
             SearchCacheSeconds = 60
         };

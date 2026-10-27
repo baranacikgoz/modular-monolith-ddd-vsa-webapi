@@ -18,4 +18,10 @@ public static class ProductErrors
 
     /// <summary>The store or the product template a product points at was removed between the read and the save.</summary>
     public static readonly Error ParentNoLongerExists = new() { Key = nameof(ParentNoLongerExists), StatusCode = HttpStatusCode.Conflict };
+
+    /// <summary>The list holds more attributes than <c>ProductsOptions.MaxAttributesPerProduct</c> allows.</summary>
+    public static readonly Error TooManyAttributes = new() { Key = nameof(TooManyAttributes), StatusCode = HttpStatusCode.BadRequest };
+
+    /// <summary>Two attributes share a name, compared without regard to case.</summary>
+    public static readonly Error DuplicateAttributeName = new() { Key = nameof(DuplicateAttributeName), StatusCode = HttpStatusCode.BadRequest };
 }
