@@ -138,7 +138,15 @@ Imports, exports and product images keep their files in an S3-compatible object 
 
 ### Connect a store to a warehouse system
 
-Releasing a stock reservation, pushing stock levels and the warehouse webhook go through a per-store warehouse connection. The repository has no built-in stand-in warehouse, so create a connection that points at an HTTPS server answering the provider's wire shape. The steps and the wire shapes are in [`modules.md`](modules.md#inventory).
+Releasing a stock reservation, pushing stock levels and the warehouse webhook go through a per-store warehouse connection. The quickest way to try them is the in-memory `Dummy` provider, which needs no server, no base address and no credential:
+
+```bash
+curl -s -X POST http://localhost:5001/v1/warehouse-connections -H "$AUTH" -H "$JSON" \
+  -d '{"storeId":"<store id>","provider":"Dummy"}'
+# the answer carries the webhookSecret (shown once) and the webhookPath to sign deliveries for
+```
+
+The system administrator may connect any store. A store owner connects their own active store with `POST /v1/warehouse-connections/my`, with a token issued after the store was approved (the route needs the `store-owner` role, which is granted asynchronously on approval). The `Dummy` provider is refused in Production. To exercise the HTTP providers, point a connection at an HTTPS server that answers the provider's wire shape; the address is checked, so a stub on your own machine needs `InventoryOptions.AllowPrivateWarehouseAddresses` set to `true` in the Development configuration (the validator rejects it in Production) and a certificate the host trusts. The steps, the wire shapes and the address policy are in [`modules.md`](modules.md#inventory).
 
 ### Errors
 
@@ -194,11 +202,11 @@ make perf          # 50 virtual users at peak, about 7 minutes
 make perf-down     # tear down
 ```
 
-`make perf` starts the stack with `docker-compose.perf.yml`, which lifts the rate limits for the run and starts k6. The scenarios in `k6/scenarios` are buyer (50 percent), seller (30), new seller (15) and admin (5). Keep the Aspire Dashboard open while it runs to watch traces and metrics live. If an IDE already runs your infrastructure, use the `perf-rider*` targets, which start only the API and k6.
+`make perf` starts the stack with `docker-compose.perf.yml`, which lifts the rate limits for the run and starts k6. The scenarios in `k6/scenarios` are buyer (50 percent), store owner (30, `seller.js`), new store owner (15, `new_seller.js`) and admin (5). Keep the Aspire Dashboard open while it runs to watch traces and metrics live. If an IDE already runs your infrastructure, use the `perf-rider*` targets, which start only the API and k6.
 
 ## Configuration
 
-Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at startup and validated. Any value can be overridden with an environment variable using a double underscore for nesting, for example `RabbitMqOptions__Host=localhost` or `OutboxOptions__BatchSize=200`. The deployment model and the list of files that hold secrets are in [`Configurations/README.md`](../src/Host/Host/Configurations/README.md). The Keycloak realm in `keycloak/realm-modular-monolith.json` also defines the `store-owner` role and the scopes of stock levels, warehouse connections, store approval and product import and export; like any realm change it only reaches a Keycloak that imports the file for the first time.
+Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at startup and validated. Any value can be overridden with an environment variable using a double underscore for nesting, for example `RabbitMqOptions__Host=localhost` or `OutboxOptions__BatchSize=200`. The deployment model and the list of files that hold secrets are in [`Configurations/README.md`](../src/Host/Host/Configurations/README.md). The Keycloak realm in `keycloak/realm-modular-monolith.json` also defines the `store-owner` role and its policy, and the scopes of stock levels, stock reservations, warehouse connections, store approval and administration, and product import and export; like any realm change it only reaches a Keycloak that imports the file for the first time (the checklist for an existing realm is in [`keycloak/README.md`](../keycloak/README.md)).
 
 ## Troubleshooting
 
@@ -213,3 +221,8 @@ Every option class has a JSON file in `src/Host/Host/Configurations`, loaded at 
 | An import, an export or an image upload cannot reach its files | These features need an S3-compatible object store. The compose file starts none and `objectStorage.json` holds `CHANGE_ME` placeholders. |
 | A job stays `Queued` | Its queue message is published by the outbox processor over RabbitMQ and run by a consumer in a process that loads the module. Check `OutboxOptions.IsProcessor` and that RabbitMQ is up. |
 | Startup fails naming `SecretProtectionOptions` and the development key | The checked-in `EncryptionKey` is accepted only when `ASPNETCORE_ENVIRONMENT` is `Development`. Set `SecretProtectionOptions__EncryptionKey` to base64 of 32 random bytes. |
+| Creating a warehouse connection answers 400 about the address | The base address must be https, carry no user info or fragment, and not be `localhost` or a private, loopback, link-local or reserved address. For a local stub set `InventoryOptions__AllowPrivateWarehouseAddresses=true` (never in Production), or use the `Dummy` provider. |
+| A call through a connection answers `WarehouseGatewayAddressNotAllowed` | The host name resolved to a non public address; the connect guard refused it before sending anything. |
+| `POST /v1/warehouse-connections/my` answers 403 for a freshly approved store owner | The token was issued before the `store-owner` role was granted. Refresh the token or sign in again. |
+| A stock reservation answers 409 `ReservationReadOnly` | The warehouse system reported a status this system has no mapping for. After checking with the warehouse what it really is, resolve it with `POST /v1/stock-reservations/{id}/resolve-read-only`. |
+| A release answers 504 `WarehouseGatewayOutcomeUnknown` | The warehouse did not answer in time and the attempt marker stays. `POST /v1/stock-reservations/{id}/reconcile-release` asks the warehouse what became of it; a sweep does the same after `StockReleaseReconcileMinAgeSeconds`. |
