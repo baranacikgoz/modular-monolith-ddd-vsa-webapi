@@ -70,6 +70,20 @@ public class ImportTests(IntegrationTestWebAppFactory factory) : ProductsIntegra
     }
 
     [Fact]
+    public async Task Import_WithAnAcceptLanguage_RecordsTheUploadersCultureOnTheJob()
+    {
+        var (template, _) = await SeedStoreAndTemplateAsync();
+        var client = AuthorizedClient();
+        client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("tr"));
+
+        using var response = await UploadAsync(client, SmallWorkbook, "request-1", template.Id.Value);
+
+        var job = await ReadJobAsync(response);
+        var row = await Db.ImportJobs.AsNoTracking().SingleAsync(j => j.Id == job.JobId);
+        Assert.Equal("tr", row.UiCulture);
+    }
+
+    [Fact]
     public async Task Import_RepeatedClientRequestId_ReturnsTheFirstJobAndQueuesNothingNew()
     {
         var (template, _) = await SeedStoreAndTemplateAsync();

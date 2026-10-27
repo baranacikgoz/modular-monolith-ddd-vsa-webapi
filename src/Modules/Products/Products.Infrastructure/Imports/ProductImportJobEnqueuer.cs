@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Application.EventBus;
 using Common.Application.Jobs;
 using Common.Application.Storage;
@@ -17,7 +18,8 @@ namespace Products.Infrastructure.Imports;
 /// <summary>
 ///     The only way a product import starts: stores the uploaded workbook, then writes the
 ///     <see cref="ProductImportJob" /> row and the <see cref="ProductImportRequestedIntegrationEvent" /> queue message in
-///     one transaction (outbox) and returns without reading a single row of the file.
+///     one transaction (outbox) and returns without reading a single row of the file. The request culture is recorded on the
+///     job, because the consumer that reads the file has no request of its own.
 /// </summary>
 public sealed partial class ProductImportJobEnqueuer(
     IProductsDbContext dbContext,
@@ -49,7 +51,8 @@ public sealed partial class ProductImportJobEnqueuer(
         await objectStore.UploadAsync(new UploadObjectRequest(objectKey, content, WorkbookContentType), cancellationToken);
 
         var job = ProductImportJob.Queue(
-            jobId, requestedBy, timeProvider.GetUtcNow(), storeId, productTemplateId, clientRequestId, fileName, objectKey);
+            jobId, requestedBy, timeProvider.GetUtcNow(), storeId, productTemplateId, clientRequestId, fileName, objectKey,
+            CultureInfo.CurrentUICulture.Name);
         dbContext.ImportJobs.Add(job);
         outbox.Collect(new ProductImportRequestedIntegrationEvent(jobId.Value));
 

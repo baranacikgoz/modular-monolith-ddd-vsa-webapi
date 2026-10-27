@@ -18,7 +18,7 @@ public class ImportJobPollingTests(IntegrationTestWebAppFactory factory) : Produ
     private async Task<ProductImportJob> AddJobAsync(ApplicationUserId owner, DateTimeOffset queuedOn, string clientRequestId)
     {
         var job = ProductImportJob.Queue(
-            ProductImportJobId.New(), owner, queuedOn, StoreId.New(), ProductTemplateId.New(), clientRequestId, "products.xlsx", "key");
+            ProductImportJobId.New(), owner, queuedOn, StoreId.New(), ProductTemplateId.New(), clientRequestId, "products.xlsx", "key", string.Empty);
         job.MarkSucceeded(queuedOn.AddMinutes(1));
         Db.ImportJobs.Add(job);
         await Db.SaveChangesAsync();

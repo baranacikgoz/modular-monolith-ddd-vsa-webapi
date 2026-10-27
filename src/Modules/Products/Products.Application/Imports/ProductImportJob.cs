@@ -40,6 +40,7 @@ public sealed class ProductImportJob : JobRow<ProductImportJobId>
     public const int FileNameMaxLength = 256;
     public const int ClientRequestIdMaxLength = 64;
     public const int ObjectKeyMaxLength = 512;
+    public const int UiCultureMaxLength = 35;
 
     /// <summary>The header is row 1, so a job that has not processed anything yet is at row 1.</summary>
     public const int HeaderRowNumber = 1;
@@ -52,7 +53,7 @@ public sealed class ProductImportJob : JobRow<ProductImportJobId>
 
     private ProductImportJob(
         ProductImportJobId id, ApplicationUserId requestedBy, DateTimeOffset queuedOn, StoreId storeId,
-        ProductTemplateId productTemplateId, string clientRequestId, string fileName, string objectKey)
+        ProductTemplateId productTemplateId, string clientRequestId, string fileName, string objectKey, string uiCulture)
         : base(id, requestedBy, queuedOn)
     {
         StoreId = storeId;
@@ -60,6 +61,7 @@ public sealed class ProductImportJob : JobRow<ProductImportJobId>
         ClientRequestId = clientRequestId;
         FileName = fileName;
         ObjectKey = objectKey;
+        UiCulture = uiCulture;
     }
 
     public StoreId StoreId { get; private set; }
@@ -72,6 +74,13 @@ public sealed class ProductImportJob : JobRow<ProductImportJobId>
 
     /// <summary>Where the uploaded workbook sits in the private object store; deleted when the job finishes.</summary>
     public string ObjectKey { get; private set; } = string.Empty;
+
+    /// <summary>
+    ///     The uploader's request culture (<c>CultureInfo.Name</c>, empty for the invariant culture), recorded when the job is
+    ///     queued. The queue consumer has no request, so it runs the job under this culture: the search language stamped on
+    ///     the products it creates is the uploader's, not the consumer process's default.
+    /// </summary>
+    public string UiCulture { get; private set; } = string.Empty;
 
     /// <summary>Excel row number of the last row a saved batch consumed: the next message resumes after it.</summary>
     public int LastProcessedRow { get; private set; } = HeaderRowNumber;
@@ -89,10 +98,10 @@ public sealed class ProductImportJob : JobRow<ProductImportJobId>
 
     public static ProductImportJob Queue(
         ProductImportJobId id, ApplicationUserId requestedBy, DateTimeOffset queuedOn, StoreId storeId,
-        ProductTemplateId productTemplateId, string clientRequestId, string fileName, string objectKey)
+        ProductTemplateId productTemplateId, string clientRequestId, string fileName, string objectKey, string uiCulture)
     {
         var trimmedName = fileName.Length <= FileNameMaxLength ? fileName : fileName[..FileNameMaxLength];
-        return new ProductImportJob(id, requestedBy, queuedOn, storeId, productTemplateId, clientRequestId, trimmedName, objectKey);
+        return new ProductImportJob(id, requestedBy, queuedOn, storeId, productTemplateId, clientRequestId, trimmedName, objectKey, uiCulture);
     }
 }
 #pragma warning restore S1144

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Application.Auth;
 using Common.Application.EventBus;
 using Common.Application.Jobs;
@@ -58,7 +59,7 @@ public sealed partial class ProductImportJobRunner(
             // No HttpContext here: the products this run writes are attributed to the user who uploaded the workbook.
             backgroundUser.Set(job.RequestedBy);
 
-            await RunMessageAsync(job, cancellationToken);
+            await RunUnderUploaderCultureAsync(job.UiCulture, () => RunMessageAsync(job, cancellationToken));
         }
         catch (OperationCanceledException)
         {
@@ -73,6 +74,39 @@ public sealed partial class ProductImportJobRunner(
             LogJobCrashed(logger, jobId.Value, ex);
             dbContext.ChangeTracker.Clear();
             await FinishAsync(jobId, JobStatus.Failed, ProductImportErrors.UnexpectedError);
+        }
+    }
+
+    /// <summary>
+    ///     A queue consumer has no request, so the search language that <c>ApplySearchLanguageInterceptor</c> stamps on a new
+    ///     product (it reads <see cref="CultureInfo.CurrentUICulture" />) would be the process default. The message runs under the
+    ///     culture the uploader had when the job was queued instead, and the previous culture is put back afterwards.
+    /// </summary>
+    private static async Task RunUnderUploaderCultureAsync(string cultureName, Func<Task> work)
+    {
+        var previous = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureOf(cultureName);
+
+        try
+        {
+            await work();
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previous;
+        }
+    }
+
+    private static CultureInfo CultureOf(string cultureName)
+    {
+        try
+        {
+            return CultureInfo.GetCultureInfo(cultureName);
+        }
+        catch (CultureNotFoundException)
+        {
+            // A name this process's culture data does not know: the invariant culture resolves to the default search config.
+            return CultureInfo.InvariantCulture;
         }
     }
 

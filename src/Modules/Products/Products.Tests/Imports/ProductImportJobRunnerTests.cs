@@ -1,3 +1,4 @@
+using System.Globalization;
 using Common.Application.Auth;
 using Common.Application.EventBus;
 using Common.Application.Jobs;
@@ -25,8 +26,13 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
 {
     private static readonly ApplicationUserId Requester = new(Guid.NewGuid());
 
+    private Task<(ProductImportJob Job, SeededStore Seeded)> QueueJobAsync(byte[] workbook, params string[] existingProductNames)
+    {
+        return QueueJobAsync(string.Empty, workbook, existingProductNames);
+    }
+
     private async Task<(ProductImportJob Job, SeededStore Seeded)> QueueJobAsync(
-        byte[] workbook, params string[] existingProductNames)
+        string uiCulture, byte[] workbook, params string[] existingProductNames)
     {
         var seeded = await ProductsSeed.StoreWithProductsAsync(Db, Requester, existingProductNames);
         var jobId = ProductImportJobId.New();
@@ -35,7 +41,8 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         await PrivateStore.UploadAsync(new UploadObjectRequest(objectKey, content, "application/octet-stream"), CancellationToken.None);
 
         var job = ProductImportJob.Queue(
-            jobId, Requester, DateTimeOffset.UtcNow, seeded.Store.Id, seeded.Template.Id, Guid.NewGuid().ToString("N"), "products.xlsx", objectKey);
+            jobId, Requester, DateTimeOffset.UtcNow, seeded.Store.Id, seeded.Template.Id, Guid.NewGuid().ToString("N"), "products.xlsx", objectKey,
+            uiCulture);
         Db.ImportJobs.Add(job);
         await Db.SaveChangesAsync();
         Db.ChangeTracker.Clear();
@@ -142,6 +149,32 @@ public class ProductImportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         Assert.Equal(["Desk lamp", "Sofa", "Table"], products.Select(p => p.Name));
         Assert.Equal(7, products.Single(p => p.Name == "Desk lamp").Quantity);
         Assert.Equal(4, products.Single(p => p.Name == "Table").Quantity);
+    }
+
+    [Theory]
+    [InlineData("tr", "turkish_unaccent")]
+    [InlineData("en", "english_unaccent")]
+    [InlineData("", "simple_unaccent")]
+    public async Task Run_NewProducts_CarryTheSearchLanguageOfTheUploaderNotOfTheConsumerProcess(string uiCulture, string expectedConfig)
+    {
+        var (job, seeded) = await QueueJobAsync(uiCulture, Workbooks.Build(["Desk lamp", "LED", 5, 49.9m], ["Office chair", "Mesh", 2, 120m]));
+
+        await RunMessageAsync(job.Id);
+
+        var products = await ProductsOfAsync(seeded.Store.Id);
+        Assert.Equal(2, products.Count);
+        Assert.All(products, p => Assert.Equal(expectedConfig, p.Language));
+    }
+
+    [Fact]
+    public async Task Run_LeavesTheCultureOfTheCallingThreadAsItWas()
+    {
+        var (job, _) = await QueueJobAsync("tr", Workbooks.Build(["Desk lamp", "LED", 5, 49.9m]));
+        var before = CultureInfo.CurrentUICulture;
+
+        await RunMessageAsync(job.Id);
+
+        Assert.Equal(before, CultureInfo.CurrentUICulture);
     }
 
     [Fact]

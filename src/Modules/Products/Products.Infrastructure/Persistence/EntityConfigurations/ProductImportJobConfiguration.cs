@@ -29,6 +29,7 @@ internal sealed class ProductImportJobConfiguration : JobRowConfiguration<Produc
         builder.Property(j => j.ClientRequestId).HasMaxLength(ProductImportJob.ClientRequestIdMaxLength).IsRequired();
         builder.Property(j => j.FileName).HasMaxLength(ProductImportJob.FileNameMaxLength).IsRequired();
         builder.Property(j => j.ObjectKey).HasMaxLength(ProductImportJob.ObjectKeyMaxLength).IsRequired();
+        builder.Property(j => j.UiCulture).HasMaxLength(ProductImportJob.UiCultureMaxLength).IsRequired();
 
         // Only ever read back whole by the poll endpoints, never queried.
         builder
