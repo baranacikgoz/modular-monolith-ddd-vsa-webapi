@@ -1,5 +1,6 @@
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.IAM;
+using Common.Application.Storage;
 using Common.InterModuleRequests.Products;
 using Common.Tests;
 using Inventory.Application.Gateway;
@@ -7,6 +8,7 @@ using Inventory.Tests.Support;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 
 namespace Inventory.Tests;
@@ -57,6 +59,12 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 
             // A typed client is named after its service type.
             services.AddHttpClient(nameof(IWarehouseGatewayFactory)).ConfigurePrimaryHttpMessageHandler(() => Warehouse);
+
+            // The S3 stores are replaced by in-memory ones: no storage engine runs in the tests.
+            services.RemoveAll<IPublicObjectStore>();
+            services.RemoveAll<IPrivateObjectStore>();
+            services.AddSingleton<IPublicObjectStore>(new InMemoryObjectStore());
+            services.AddSingleton<IPrivateObjectStore>(new InMemoryObjectStore());
         });
     }
 }

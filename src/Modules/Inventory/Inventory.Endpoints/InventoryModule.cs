@@ -4,6 +4,7 @@ using Common.Infrastructure.Modules;
 using Inventory.Endpoints.StockLevels;
 using Inventory.Endpoints.StockReservations;
 using Inventory.Endpoints.WarehouseConnections;
+using Inventory.Infrastructure.BulkAdjustments;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Infrastructure.Persistence;
 using Inventory.Infrastructure.ProductSummaries;
@@ -38,6 +39,7 @@ public sealed class InventoryModule : IModule
         services.AddWarehouseGatewayInfrastructure();
         services.AddWarehouseWebhooks();
         services.AddStockPushes();
+        services.AddStockBulkAdjustments();
     }
 
     public void UseModule(IApplicationBuilder app)

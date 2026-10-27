@@ -1,4 +1,5 @@
 using Common.Application.Persistence;
+using Inventory.Application.BulkAdjustments;
 using Inventory.Application.ProductSummaries;
 using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
@@ -18,6 +19,7 @@ public interface IInventoryDbContext : IDbContext
     public DbSet<ProductSummary> ProductSummaries { get; }
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals { get; }
     public DbSet<StockPushDirtyItem> StockPushDirtyItems { get; }
+    public DbSet<StockBulkAdjustJob> StockBulkAdjustJobs { get; }
     public DbSet<WarehouseConnection> WarehouseConnections { get; }
     public DbSet<WebhookDelivery> WebhookDeliveries { get; }
 }

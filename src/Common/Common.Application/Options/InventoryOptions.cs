@@ -58,6 +58,20 @@ public class InventoryOptions
 
     /// <summary>Connections (or job rows) one page of a recurring sweep publishes before the next page is read.</summary>
     public required int SweepPageSize { get; set; }
+
+    /// <summary>Bulk adjustment messages one pod works on at once. Also the consumer's prefetch count: a prefetched message
+    /// waiting for a slot sits unacked and would trip the broker's consumer timeout.</summary>
+    public required int BulkAdjustJobConcurrentMessageLimit { get; set; }
+
+    /// <summary>Batches of <see cref="BulkImportOptions.SaveChunkSize" /> rows one bulk adjustment message saves before the job
+    /// stores its cursor and queues a continuation message for itself.</summary>
+    public required int BulkAdjustBatchesPerMessage { get; set; }
+
+    /// <summary>Row errors kept on a bulk adjustment job; further rejected rows are only counted.</summary>
+    public required int BulkAdjustMaxStoredRowErrors { get; set; }
+
+    /// <summary>Cron of the recurring job that fails stale bulk adjustment jobs and deletes finished ones with their uploads.</summary>
+    public required string StockJobHousekeepingCron { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -124,5 +138,21 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.SweepPageSize)
             .GreaterThan(0)
             .WithMessage("SweepPageSize must be greater than 0.");
+
+        RuleFor(x => x.BulkAdjustJobConcurrentMessageLimit)
+            .GreaterThan(0)
+            .WithMessage("BulkAdjustJobConcurrentMessageLimit must be greater than 0.");
+
+        RuleFor(x => x.BulkAdjustBatchesPerMessage)
+            .GreaterThan(0)
+            .WithMessage("BulkAdjustBatchesPerMessage must be greater than 0.");
+
+        RuleFor(x => x.BulkAdjustMaxStoredRowErrors)
+            .GreaterThan(0)
+            .WithMessage("BulkAdjustMaxStoredRowErrors must be greater than 0.");
+
+        RuleFor(x => x.StockJobHousekeepingCron)
+            .NotEmpty()
+            .WithMessage("StockJobHousekeepingCron must not be empty.");
     }
 }

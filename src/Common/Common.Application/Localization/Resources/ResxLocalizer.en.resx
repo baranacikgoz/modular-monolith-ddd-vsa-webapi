@@ -510,6 +510,27 @@
   <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
     <value>Stock level ID cannot be empty.</value>
   </data>
+  <data name="StockLevels_BulkAdjust_File_NotEmpty" xml:space="preserve">
+    <value>File must not be empty.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_File_InvalidExtension" xml:space="preserve">
+    <value>File must be .xlsx or .xls.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_ClientRequestId_NotEmpty" xml:space="preserve">
+    <value>Request id must not be empty.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_ClientRequestId_MaxLength" xml:space="preserve">
+    <value>Request id must be at most ({0}) characters.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_Reason_NotEmpty" xml:space="preserve">
+    <value>Adjustment reason must not be empty.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_Reason_MaximumLength" xml:space="preserve">
+    <value>Adjustment reason must be at most ({0}) characters.</value>
+  </data>
+  <data name="StockLevels_GetBulkAdjustment_Id_NotEmpty" xml:space="preserve">
+    <value>Bulk adjustment job id must not be empty.</value>
+  </data>
   <data name="WarehouseConnections_Create_StoreId_NotEmpty" xml:space="preserve">
     <value>Store ID cannot be empty.</value>
   </data>

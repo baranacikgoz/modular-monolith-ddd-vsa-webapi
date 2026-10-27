@@ -108,6 +108,107 @@ namespace Inventory.Infrastructure.Migrations
                     b.ToTable("AuditLog", "Inventory");
                 });
 
+            modelBuilder.Entity("Inventory.Application.BulkAdjustments.StockBulkAdjustJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientRequestId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FailureKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset?>("FinishedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LastProcessedRow")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ObjectKey")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<int>("Progress")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("QueuedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("RequestedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RowErrors")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValueSql("'[]'::jsonb");
+
+                    b.Property<int>("RowsAdjusted")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RowsRejected")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("StartedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalRows")
+                        .HasColumnType("integer");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinishedOn");
+
+                    b.HasIndex("RequestedBy", "QueuedOn");
+
+                    b.HasIndex("Status", "StartedOn");
+
+                    b.HasIndex(new[] { "RequestedBy" }, "UX_StockBulkAdjustJobs_RequestedBy_Active")
+                        .IsUnique()
+                        .HasFilter("\"Status\" IN (0, 1)");
+
+                    b.HasIndex(new[] { "RequestedBy", "ClientRequestId" }, "UX_StockBulkAdjustJobs_RequestedBy_ClientRequestId")
+                        .IsUnique();
+
+                    b.ToTable("StockBulkAdjustJobs", "Inventory");
+                });
+
             modelBuilder.Entity("Inventory.Application.ProductSummaries.ProductSummary", b =>
                 {
                     b.Property<Guid>("ProductId")

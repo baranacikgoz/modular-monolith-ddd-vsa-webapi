@@ -29,7 +29,11 @@ internal static class TestInventoryOptions
             StockPushBatchSize = 100,
             StockPushBatchesPerMessage = 10,
             StockPushConcurrentMessageLimit = 4,
-            SweepPageSize = 100
+            SweepPageSize = 100,
+            BulkAdjustJobConcurrentMessageLimit = 2,
+            BulkAdjustBatchesPerMessage = 10,
+            BulkAdjustMaxStoredRowErrors = 200,
+            StockJobHousekeepingCron = "0 25 * * * *"
         };
         configure?.Invoke(options);
         return options;
@@ -39,5 +43,12 @@ internal static class TestInventoryOptions
     public static IOptions<InventoryOptions> Wrapped(Action<InventoryOptions>? configure = null)
     {
         return Options.Create(Create(configure: configure));
+    }
+
+    public static IOptions<BulkImportOptions> BulkImport(Action<BulkImportOptions>? configure = null)
+    {
+        var options = new BulkImportOptions { MaxFileBytes = 10485760, MaxRows = 50000, SaveChunkSize = 200 };
+        configure?.Invoke(options);
+        return Options.Create(options);
     }
 }

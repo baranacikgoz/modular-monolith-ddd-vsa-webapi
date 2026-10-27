@@ -3,6 +3,7 @@ using Common.Domain.Events;
 using Common.Infrastructure.EventBus;
 using Common.Infrastructure.Persistence;
 using Common.Infrastructure.Persistence.EntityConfigurations;
+using Inventory.Application.BulkAdjustments;
 using Inventory.Application.Persistence;
 using Inventory.Application.ProductSummaries;
 using Inventory.Domain.StockCounters;
@@ -31,6 +32,7 @@ public sealed class InventoryDbContext(
     public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals => Set<StoreDailyStockTotal>();
     public DbSet<StockPushDirtyItem> StockPushDirtyItems => Set<StockPushDirtyItem>();
+    public DbSet<StockBulkAdjustJob> StockBulkAdjustJobs => Set<StockBulkAdjustJob>();
     public DbSet<WarehouseConnection> WarehouseConnections => Set<WarehouseConnection>();
     public DbSet<WebhookDelivery> WebhookDeliveries => Set<WebhookDelivery>();
 

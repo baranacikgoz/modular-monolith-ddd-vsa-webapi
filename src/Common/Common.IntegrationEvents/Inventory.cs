@@ -22,3 +22,7 @@ public sealed record StockPushDueIntegrationEvent(DefaultIdType ConnectionId) : 
 {
     string? ICoalescableIntegrationEvent.CoalesceKey => ConnectionId.ToString();
 }
+
+/// <summary>Queue message of one bulk stock adjustment job. Carries only the job id: the job row holds everything else, and a
+/// message for a job that is no longer Queued is a no-op.</summary>
+public sealed record StockBulkAdjustRequestedIntegrationEvent(DefaultIdType JobId) : IntegrationEvent;
