@@ -4,6 +4,7 @@ using Inventory.Application.Persistence;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
 using Inventory.Domain.StockReservations.Errors;
+using Inventory.Infrastructure.Webhooks;
 using Inventory.Tests.Support;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +59,56 @@ public class WebhookFutureTimestampTests(IntegrationTestWebAppFactory factory) :
         Assert.Equal(ReservationStatus.Active, reloaded.Status);
         Assert.Null(reloaded.LastProviderEventOn);
         Assert.Equal(0, await CountDeliveriesAsync(scenario));
+    }
+
+    // The rule belongs to the intake, so a caller other than the endpoint gets the same tolerance.
+    [Fact]
+    public async Task ReceiveAsync_TimestampFarInTheFuture_IsRefusedByTheIntakeAndNothingIsRecordedOrApplied()
+    {
+        var scenario = await SeedAsync();
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var intake = scope.ServiceProvider.GetRequiredService<WarehouseWebhookIntake>();
+
+        var result = await intake.ReceiveAsync(
+            scenario.Connection, "delivery-1", scenario.Reservation.Id, "provider-ref-1", "confirmed",
+            DateTimeOffset.UtcNow.AddDays(1), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(StockReservationErrors.WebhookOccurredOnInTheFuture.Key, result.Error!.Key);
+        var reloaded = await WarehouseConnectionTestData.ReloadReservationAsync(Factory.Services, scenario.Reservation.Id);
+        Assert.Equal(ReservationStatus.Active, reloaded.Status);
+        Assert.Equal(0, await CountDeliveriesAsync(scenario));
+    }
+
+    [Fact]
+    public async Task ReceiveAsync_RecordedDeliveryRepeatedWithATimestampFarInTheFuture_IsRefusedToo()
+    {
+        var scenario = await SeedAsync();
+        await PostAsync(scenario, "delivery-1", "confirmed", DateTimeOffset.UtcNow.AddSeconds(-5));
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var intake = scope.ServiceProvider.GetRequiredService<WarehouseWebhookIntake>();
+
+        var result = await intake.ReceiveAsync(
+            scenario.Connection, "delivery-1", scenario.Reservation.Id, "provider-ref-1", "confirmed",
+            DateTimeOffset.UtcNow.AddDays(1), CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(StockReservationErrors.WebhookOccurredOnInTheFuture.Key, result.Error!.Key);
+    }
+
+    [Fact]
+    public async Task ReceiveAsync_TimestampSlightlyAhead_IsWithinTheToleranceAndApplied()
+    {
+        var scenario = await SeedAsync();
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var intake = scope.ServiceProvider.GetRequiredService<WarehouseWebhookIntake>();
+
+        var result = await intake.ReceiveAsync(
+            scenario.Connection, "delivery-1", scenario.Reservation.Id, "provider-ref-1", "released",
+            DateTimeOffset.UtcNow.AddSeconds(30), CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(WebhookDeliveryOutcome.Applied, result.Value);
     }
 
     [Fact]
