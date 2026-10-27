@@ -9,7 +9,8 @@ internal static class Workbooks
     public static IReadOnlyList<string> ImportColumns { get; } = ["Name", "Description", "Quantity", "Price", "Sku"];
 
     /// <summary>The .xlsx a spreadsheet user gets by opening an exported CSV and saving it as a workbook: the first sheet holds
-    /// the CSV's rows as they are, every field a text cell, the header row included.</summary>
+    /// the CSV's rows as they are, every field a text cell, the header row included. A field that starts with an apostrophe keeps
+    /// it as part of the text, as a CSV opened in a spreadsheet does.</summary>
     public static byte[] FromCsv(string csv)
     {
         using var workbook = new XLWorkbook();
@@ -20,13 +21,26 @@ internal static class Workbooks
         {
             for (var column = 0; column < rows[row].Count; column++)
             {
-                sheet.Cell(row + 1, column + 1).Value = rows[row][column];
+                SetText(sheet.Cell(row + 1, column + 1), rows[row][column]);
             }
         }
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return stream.ToArray();
+    }
+
+    /// <summary>The cell setter reads a leading apostrophe as a spreadsheet's "keep this as text" marker and drops it, which is not
+    /// what a text file brings in: there the apostrophe is a character like any other. A rich text run is stored as it is.</summary>
+    private static void SetText(IXLCell cell, string text)
+    {
+        if (text.StartsWith('\''))
+        {
+            cell.CreateRichText().AddText(text);
+            return;
+        }
+
+        cell.Value = text;
     }
 
     /// <summary>RFC 4180: fields separated by commas, a field with a comma, quote or line break wrapped in quotes with inner quotes doubled.</summary>

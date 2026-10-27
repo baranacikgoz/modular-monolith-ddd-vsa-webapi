@@ -132,6 +132,39 @@ public class ExportImportRoundTripTests(IntegrationTestWebAppFactory factory) : 
         Assert.Equal(await ProductsOfAsync(source.Id), await ProductsOfAsync(target.Id));
     }
 
+    // The export guards a cell a spreadsheet would run as a formula with a leading apostrophe; the import takes it off, so these
+    // names come back exactly, and the ones that merely start with an apostrophe are never touched.
+    [Fact]
+    public async Task Import_ExportedNamesThatLookLikeFormulas_ComeBackExactly()
+    {
+        var source = Store.Create(DefaultUser, $"Source {Guid.NewGuid():N}", "Description", "Address");
+        var template = ProductTemplate.Create("Brand", "Model", "Color");
+        Db.Stores.Add(source);
+        Db.ProductTemplates.Add(template);
+        string[] names =
+        [
+            "-5 degree sock", "+1 free", "=SUM(A1:A9)", "@home", "'Tis the season", "'=odd", "''-5", "rock 'n' roll"
+        ];
+        for (var i = 0; i < names.Length; i++)
+        {
+            source.AddProduct(Product.Create(source.Id, template.Id, names[i], $"-{names[i]}", 1, 10m, $"SKU-{i}"));
+        }
+
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+        var target = await SeedEmptyTargetStoreAsync();
+        var csv = await ExportCsvAsync(source.Id);
+
+        var job = await ImportAsync(Workbooks.FromCsv(csv), target.Id, template.Id);
+
+        Assert.Equal(JobStatus.Succeeded, job.Status);
+        Assert.True(job.RowsRejected == 0, Rejections(job));
+        Assert.Equal(names.Length, job.ProductsCreated);
+        var imported = await ProductsOfAsync(target.Id);
+        Assert.Equal(names.Order(StringComparer.Ordinal), imported.Select(p => p.Name).Order(StringComparer.Ordinal));
+        Assert.All(imported, p => Assert.Equal($"-{p.Name}", p.Description));
+    }
+
     [Fact]
     public async Task Import_ExportedFileOfTheSameStore_ChangesNothing()
     {
