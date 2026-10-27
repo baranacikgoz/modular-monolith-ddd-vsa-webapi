@@ -16,7 +16,8 @@ public class WarehouseGatewayFactoryTests : WarehouseTransportTestBase
 
     private readonly SecretProtector _protector = new(Options.Create(new SecretProtectionOptions
     {
-        EncryptionKey = SecretProtectionOptionsValidator.DevelopmentPlaceholderKey
+        EncryptionKey = SecretProtectionOptionsValidator.DevelopmentPlaceholderKey,
+        PreviousEncryptionKeys = []
     }));
 
     private WarehouseGatewayFactory NewFactory()

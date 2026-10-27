@@ -29,6 +29,14 @@ internal sealed class RoleRepresentation
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
 }
 
+/// <summary>The fields of a role listing needed to walk composite roles.</summary>
+internal sealed class RoleSummaryRepresentation
+{
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("composite")] public bool Composite { get; set; }
+    [JsonPropertyName("clientRole")] public bool ClientRole { get; set; }
+}
+
 internal sealed class UserSessionRepresentation
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;

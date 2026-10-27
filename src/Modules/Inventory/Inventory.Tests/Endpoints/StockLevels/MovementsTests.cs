@@ -7,9 +7,11 @@ using Common.Tests;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Inventory.Tests.Support;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Xunit;
 using Response = Inventory.Endpoints.StockLevels.v1.Movements.Response;
 
@@ -153,6 +155,22 @@ public class MovementsTests(IntegrationTestWebAppFactory factory) : BaseIntegrat
 
         var page = await GetPageAsync(client, stockLevel.Id, "pageNumber=1&pageSize=10");
 
+        Assert.All(page.Data, m => Assert.Null(m.ActingUserName));
+        Assert.All(page.Data, m => Assert.Equal(TestAuthHandler.DefaultUserId, m.ActingUserId?.Value));
+    }
+
+    [Fact]
+    public async Task GetMovements_IamTimesOut_StillReturnsTheLedgerWithIdsOnly()
+    {
+        var client = StockLevelTestData.AuthedClient(Factory);
+        var stockLevel = await SeedLedgerAsync(client);
+        factory.UsersClient
+            .SendAsync(Arg.Any<GetUsersRequest>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new RequestTimeoutException("get-users"));
+
+        var page = await GetPageAsync(client, stockLevel.Id, "pageNumber=1&pageSize=10");
+
+        Assert.Equal(3, page.Data.Count);
         Assert.All(page.Data, m => Assert.Null(m.ActingUserName));
         Assert.All(page.Data, m => Assert.Equal(TestAuthHandler.DefaultUserId, m.ActingUserId?.Value));
     }

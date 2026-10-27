@@ -43,7 +43,7 @@ internal sealed partial class KeycloakPermissionClient(
 
             // Anything other than the two expected denial codes (e.g. invalid_resource, invalid_scope from a
             // typo'd resource/scope name) is a realm/config mismatch, not a normal deny: worth a Warning so it
-            // does not read as routine traffic (PR #149 #7).
+            // does not read as routine traffic.
             if (error?.Error is OAuthErrors.AccessDenied or OAuthErrors.InvalidGrant)
             {
                 LogDenied(logger, permission, error.Error, error.ErrorDescription);

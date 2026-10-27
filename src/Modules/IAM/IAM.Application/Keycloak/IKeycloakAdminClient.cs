@@ -26,8 +26,15 @@ public interface IKeycloakAdminClient
 
     Task<IReadOnlyList<ApplicationUserId>> GetUserIdsInRoleAsync(string roleName, int max, CancellationToken cancellationToken);
 
-    /// <summary>One page of a realm role's members (<paramref name="skip" />, <paramref name="take" />), enabled or not. An unknown role is an empty page.</summary>
+    /// <summary>One page of the users holding a realm role directly (<paramref name="skip" />, <paramref name="take" />), enabled or not, in Keycloak's own order. Users who hold only a composite role that includes it are not listed: see <see cref="GetRolesContainingAsync" />. An unknown role is an empty page.</summary>
     Task<IReadOnlyList<KeycloakUser>> GetUsersInRoleAsync(string roleName, int skip, int take, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Names of the realm roles that include <paramref name="roleName" />, directly or through other composite roles. The
+    ///     role itself and client roles are not listed. Keycloak has no reverse lookup, so this reads the children of every
+    ///     composite realm role. An unknown role, or one no composite role includes, gives an empty list.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 

@@ -261,6 +261,65 @@ internal sealed partial class KeycloakAdminClient(
         return users.Select(ToUser).ToList();
     }
 
+    public async Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken)
+    {
+        using var rolesResponse = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri("roles?briefRepresentation=true")),
+            cancellationToken);
+        rolesResponse.EnsureSuccessStatusCode();
+        var roles = await rolesResponse.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
+
+        var parentsOf = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        foreach (var composite in roles.Where(r => r.Composite && !r.ClientRole))
+        {
+            foreach (var child in await GetCompositeChildrenAsync(composite.Name, cancellationToken))
+            {
+                if (!child.ClientRole)
+                {
+                    if (!parentsOf.TryGetValue(child.Name, out var parents))
+                    {
+                        parents = [];
+                        parentsOf[child.Name] = parents;
+                    }
+
+                    parents.Add(composite.Name);
+                }
+            }
+        }
+
+        var containing = new HashSet<string>(StringComparer.Ordinal);
+        var pending = new Queue<string>();
+        pending.Enqueue(roleName);
+        while (pending.TryDequeue(out var current))
+        {
+            foreach (var parent in parentsOf.GetValueOrDefault(current, []))
+            {
+                if (parent != roleName && containing.Add(parent))
+                {
+                    pending.Enqueue(parent);
+                }
+            }
+        }
+
+        return containing.Order(StringComparer.Ordinal).ToList();
+    }
+
+    private async Task<List<RoleSummaryRepresentation>> GetCompositeChildrenAsync(string roleName, CancellationToken cancellationToken)
+    {
+        using var response = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"roles/{Uri.EscapeDataString(roleName)}/composites")),
+            cancellationToken);
+
+        // The role can be deleted between the listing and this read.
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return [];
+        }
+
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
+    }
+
     public async Task<IReadOnlyList<KeycloakUserSession>> GetUserSessionsAsync(ApplicationUserId userId,
         CancellationToken cancellationToken)
     {

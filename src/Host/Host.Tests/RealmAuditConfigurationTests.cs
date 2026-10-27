@@ -4,8 +4,8 @@ using Xunit;
 
 namespace Host.Tests;
 
-// IAM has no database, so Keycloak's own event log is the only durable audit trail for identity events
-// (PR #149 #5). This guards the realm file against silently losing that configuration on a future edit.
+// IAM has no database, so Keycloak's own event log is the only durable audit trail for identity events.
+// This guards the realm file against silently losing that configuration on a future edit.
 public class RealmAuditConfigurationTests
 {
     [Fact]

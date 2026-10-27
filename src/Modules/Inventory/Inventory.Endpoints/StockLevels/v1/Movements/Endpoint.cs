@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Inventory.Endpoints.StockLevels.v1.Movements;
 
@@ -31,6 +32,7 @@ internal static class Endpoint
         [AsParameters] Request request,
         IInventoryDbContext dbContext,
         IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        ILogger<Request> logger,
         CancellationToken cancellationToken)
     {
         return await dbContext.StockLevels
@@ -59,16 +61,17 @@ internal static class Endpoint
                     orderByDescending: m => m.CreatedOn,
                     tiebreaker: m => m.Id,
                     cancellationToken: cancellationToken))
-            .MapAsync(page => NameActingUsersAsync(page, usersClient, cancellationToken));
+            .MapAsync(page => NameActingUsersAsync(page, usersClient, logger, cancellationToken));
     }
 
     /// <summary>One IAM lookup for the whole page; a page whose rows have no acting user asks nobody.</summary>
     private static async Task<PaginationResponse<Response>> NameActingUsersAsync(
         PaginationResponse<Response> page,
         IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        ILogger logger,
         CancellationToken cancellationToken)
     {
-        var names = await ActorNames.ResolveAsync(usersClient, page.Data.Select(m => m.ActingUserId), cancellationToken);
+        var names = await ActorNames.ResolveAsync(usersClient, page.Data.Select(m => m.ActingUserId), logger, cancellationToken);
 
         return page with
         {
