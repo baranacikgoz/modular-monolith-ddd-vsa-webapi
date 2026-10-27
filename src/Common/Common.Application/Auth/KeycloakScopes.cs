@@ -72,7 +72,12 @@ public static class KeycloakScopes
 
     public static class StockLevels
     {
-        public const string View = "stock-levels:view";
+        /// <summary>Every store's stock levels, ledgers and daily totals. Administration only.</summary>
+        public const string ViewAll = "stock-levels:view-all";
+
+        /// <summary>The stock levels, ledgers and daily totals of the caller's own active stores.</summary>
+        public const string ViewOwn = "stock-levels:view-own";
+
         public const string Update = "stock-levels:update";
     }
 

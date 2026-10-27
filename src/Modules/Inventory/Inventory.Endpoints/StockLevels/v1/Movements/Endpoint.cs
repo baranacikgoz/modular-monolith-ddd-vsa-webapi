@@ -21,27 +21,43 @@ internal static class Endpoint
     {
         stockLevelsApiGroup
             .MapGet("{id}/movements", GetMovementsAsync)
-            .WithDescription("A stock level's ledger, newest first. Pass the previous page's NextCursor as 'after' to continue without an offset.")
-            .RequireScope(KeycloakScopes.StockLevels.View)
+            .WithDescription("A stock level's ledger, newest first. Pass the previous page's NextCursor as 'after' to continue without an offset. " +
+                             "Administration only; a store owner reads the ledger of their own stock level through /my/{id}/movements.")
+            .RequireScope(KeycloakScopes.StockLevels.ViewAll)
             .Produces<PaginationResponse<Response>>()
             .TransformResultTo<PaginationResponse<Response>>();
     }
 
-    private static async Task<Result<PaginationResponse<Response>>> GetMovementsAsync(
+    private static Task<Result<PaginationResponse<Response>>> GetMovementsAsync(
         [AsParameters] Request request,
         IInventoryDbContext dbContext,
         IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
         CancellationToken cancellationToken)
     {
-        return await dbContext.StockLevels
+        return PageMovementsAsync(dbContext.StockLevels, dbContext, request, usersClient, cancellationToken);
+    }
+
+    /// <summary>
+    ///     The ledger of the stock level <paramref name="request" /> names, looked up inside <paramref name="stockLevels" />:
+    ///     every stock level for the administration route, the caller's own for the store owner's route, where one outside
+    ///     the set is simply not found.
+    /// </summary>
+    internal static async Task<Result<PaginationResponse<Response>>> PageMovementsAsync(
+        IQueryable<StockLevel> stockLevels,
+        IInventoryDbContext dbContext,
+        Request request,
+        IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        CancellationToken cancellationToken)
+    {
+        return await stockLevels
             .AsNoTracking()
-            .TagWith(nameof(GetMovementsAsync), request.Id)
+            .TagWith(nameof(PageMovementsAsync), request.Id)
             .Where(s => s.Id == request.Id)
             .Select(s => new { s.Id })
             .SingleAsResultAsync(nameof(StockLevel), cancellationToken)
             .BindAsync(stockLevel => dbContext.StockMovements
                 .AsNoTracking()
-                .TagWith(nameof(GetMovementsAsync), request.Id)
+                .TagWith(nameof(PageMovementsAsync), request.Id)
                 .Where(m => m.StockLevelId == stockLevel.Id)
                 .PaginateAsync(
                     request: request,

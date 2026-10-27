@@ -277,7 +277,10 @@
             ],
             "scopes": [
               {
-                "name": "stock-levels:view"
+                "name": "stock-levels:view-all"
+              },
+              {
+                "name": "stock-levels:view-own"
               },
               {
                 "name": "stock-levels:update"
@@ -546,13 +549,13 @@
             }
           },
           {
-            "name": "Stock Levels Catalog Permission",
+            "name": "Stock Levels Self-Service Permission",
             "type": "scope",
             "logic": "POSITIVE",
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-levels\"]",
-              "scopes": "[\"stock-levels:view\"]",
+              "scopes": "[\"stock-levels:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
@@ -563,7 +566,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-levels\"]",
-              "scopes": "[\"stock-levels:update\"]",
+              "scopes": "[\"stock-levels:view-all\",\"stock-levels:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
