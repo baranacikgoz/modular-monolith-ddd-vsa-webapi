@@ -339,6 +339,8 @@ internal sealed partial class KeycloakAdminClient(
     public async Task<IReadOnlyList<KeycloakUser>> GetUsersInGroupsHoldingRolesAsync(
         IReadOnlyCollection<string> roleNames, int pageSize, CancellationToken cancellationToken)
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
+
         var visited = new HashSet<string>(StringComparer.Ordinal);
         var pending = new Queue<string>();
         foreach (var roleName in roleNames)

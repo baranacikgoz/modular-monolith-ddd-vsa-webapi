@@ -94,6 +94,16 @@ public sealed class KeycloakAdminClientRoleGraphTests : IDisposable
         Assert.Equal(["middle", "top"], roles);
     }
 
+    [Fact]
+    public async Task GetUsersInGroupsHoldingRolesAsync_PageSizeBelowOne_ThrowsInsteadOfPagingForever()
+    {
+        var client = CreateClient();
+
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+            () => client.GetUsersInGroupsHoldingRolesAsync(["leaf"], pageSize: 0, CancellationToken.None));
+        Assert.Equal(0, _keycloak.RequestCount);
+    }
+
     private KeycloakAdminClient CreateClient()
     {
         var keycloakOptions = Options.Create(new KeycloakOptions
