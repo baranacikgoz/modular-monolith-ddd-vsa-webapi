@@ -33,6 +33,30 @@ public class StockMovementLedgerTests(IntegrationTestWebAppFactory factory) : Ba
         Assert.NotEqual(default, movement.CreatedOn);
     }
 
+    // Movement ids are version 7 and random inside a millisecond, so rows of one save can only be told apart by the
+    // running quantity. Many stock levels make a wrong order show up on every run, not once in a while.
+    [Fact]
+    public async Task LedgerOf_RowsOfOneSave_ComeBackInTheOrderTheyWereWritten()
+    {
+        for (var attempt = 0; attempt < 25; attempt++)
+        {
+            var stockLevel = await StockLevelTestData.SeedStockLevelAsync(Factory.Services, quantityOnHand: 10);
+            await using (var scope = Factory.Services.CreateAsyncScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+                var tracked = await db.StockLevels.SingleAsync(s => s.Id == stockLevel.Id);
+                tracked.Receive(5, "Delivery");
+                tracked.Adjust(-7, "Count");
+                tracked.Receive(1, "Delivery");
+                await db.SaveChangesAsync();
+            }
+
+            var ledger = await StockLevelTestData.LedgerOfAsync(Factory.Services, stockLevel.Id);
+
+            Assert.Equal([15, 8, 9], ledger.Select(m => m.QuantityOnHandAfter).ToArray());
+        }
+    }
+
     [Fact]
     public async Task SaveChanges_RewritingAPersistedMovement_Throws()
     {

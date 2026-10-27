@@ -5,6 +5,7 @@ using Common.Infrastructure.Persistence.Extensions;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Products;
 using Inventory.Application.Persistence;
+using Inventory.Domain.StockLevels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -18,25 +19,39 @@ internal static class Endpoint
     {
         stockLevelsApiGroup
             .MapGet("", SearchStockLevelsAsync)
-            .WithDescription("List stock levels, least stock first, with the name of each product from the local product copy. " +
+            .WithDescription("List the stock levels of every store, least stock first, with the name of each product from the local product copy. " +
                              "ProductName narrows the list to the products Products matches; IsTruncated says that match list was cut. " +
-                             "Pages by offset only.")
-            .RequireScope(KeycloakScopes.StockLevels.View)
+                             "Pass the previous page's NextCursor as 'after' to continue without an offset. Administration only; a store owner reads their own through /my.")
+            .RequireScope(KeycloakScopes.StockLevels.ViewAll)
             .Produces<PageResponse>()
             .TransformResultTo<PageResponse>();
     }
 
-    private static async Task<Result<PageResponse>> SearchStockLevelsAsync(
+    private static Task<Result<PageResponse>> SearchStockLevelsAsync(
         [AsParameters] Request request,
         IInventoryDbContext dbContext,
         IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse> productSearchClient,
         CancellationToken cancellationToken)
     {
+        return SearchAsync(dbContext.StockLevels, dbContext, request, productSearchClient, cancellationToken);
+    }
+
+    /// <summary>
+    ///     The list over <paramref name="stockLevels" />, which is every stock level for the administration route and the
+    ///     caller's own for the store owner's route: the only thing the two routes differ in.
+    /// </summary>
+    internal static async Task<Result<PageResponse>> SearchAsync(
+        IQueryable<StockLevel> stockLevels,
+        IInventoryDbContext dbContext,
+        Request request,
+        IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse> productSearchClient,
+        CancellationToken cancellationToken)
+    {
         var (matchedProductIds, isTruncated) = await ResolveProductNameAsync(productSearchClient, request.ProductName, cancellationToken);
 
-        var rows = dbContext.StockLevels
+        var rows = stockLevels
             .AsNoTracking()
-            .TagWith(nameof(SearchStockLevelsAsync))
+            .TagWith(nameof(SearchAsync))
             // null: no ProductName given, no filter. An empty list: nothing matched, so zero rows.
             .WhereIf(s => matchedProductIds!.Contains(s.ProductId), matchedProductIds is not null)
             // LEFT JOIN: a stock level whose product is not projected yet is still listed, with a null name.
@@ -54,17 +69,17 @@ internal static class Endpoint
                     LowStockThreshold = stockLevel.LowStockThreshold
                 });
 
-        var totalCount = request.ShouldIncludeTotal ? await rows.CountAsync(cancellationToken) : -1;
-
-        // PaginateAsync pages an auditable entity; the joined projection is not one, so this pages by offset directly.
-        var data = await rows
-            .OrderBy(r => r.QuantityOnHand)
-            .ThenBy(r => r.Id)
-            .Skip(request.Skip)
-            .Take(request.Take)
-            .ToListAsync(cancellationToken);
-
-        return new PageResponse(data, totalCount, request.PageNumber, request.PageSize, isTruncated);
+        // The joined projection is not an auditable entity, so it pages through the keyed overload: least stock first,
+        // the stock level id as the unique tiebreaker the cursor carries.
+        return await rows
+            .PaginateKeyedAsync(
+                selector: r => r,
+                request: request,
+                sortKey: r => r.QuantityOnHand,
+                tiebreaker: r => r.Id,
+                cancellationToken: cancellationToken)
+            .MapAsync(page => new PageResponse(
+                page.Data, page.TotalCount, page.PageNumber, page.PageSize, isTruncated, page.NextCursor));
     }
 
     private static async Task<(IReadOnlyCollection<DefaultIdType>? ProductIds, bool IsTruncated)> ResolveProductNameAsync(

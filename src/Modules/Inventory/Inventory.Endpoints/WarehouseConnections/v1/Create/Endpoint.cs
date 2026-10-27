@@ -19,13 +19,27 @@ internal static class Endpoint
     {
         warehouseConnectionsApiGroup
             .MapPost("", CreateWarehouseConnectionAsync)
-            .WithDescription("Connect a store to its warehouse system. The response carries the webhook secret exactly once; the API credential and the secret are stored encrypted and never returned again.")
+            .WithDescription("Connect a store to its warehouse system. The response carries the webhook secret exactly once; the API credential and the secret are stored encrypted and never returned again. " +
+                             "The Dummy provider needs no base address and no credential and is refused in Production.")
             .RequireScope(KeycloakScopes.WarehouseConnections.Create)
             .Produces<Response>()
             .TransformResultTo<Response>();
     }
 
-    private static async Task<Result<Response>> CreateWarehouseConnectionAsync(
+    private static Task<Result<Response>> CreateWarehouseConnectionAsync(
+        Request request,
+        IInventoryDbContext dbContext,
+        SecretProtector protector,
+        CancellationToken cancellationToken)
+    {
+        return CreateAsync(request, dbContext, protector, cancellationToken);
+    }
+
+    /// <summary>
+    ///     The connection of one store, shared by the admin route and the store owner's route (which only decides first who may
+    ///     ask). A store has at most one active connection.
+    /// </summary>
+    internal static async Task<Result<Response>> CreateAsync(
         Request request,
         IInventoryDbContext dbContext,
         SecretProtector protector,
@@ -35,15 +49,15 @@ internal static class Endpoint
 
         return await dbContext.WarehouseConnections
             .AsNoTracking()
-            .TagWith(nameof(CreateWarehouseConnectionAsync), "GetActiveByStoreId", request.StoreId)
+            .TagWith(nameof(CreateAsync), "GetActiveByStoreId", request.StoreId)
             .Where(c => c.StoreId == request.StoreId && c.Status == WarehouseConnectionStatus.Active)
             .AnyAsResultAsync(cancellationToken)
             .TapAsync(any => any ? Error.ViolatesUniqueConstraint(nameof(WarehouseConnection)) : Result.Success)
             .MapAsync(_ => WarehouseConnection.Create(
                 request.StoreId,
                 request.Provider,
-                request.BaseUrl,
-                protector.Encrypt(request.ApiCredential),
+                BaseUrlOf(request),
+                protector.Encrypt(ApiCredentialOf(request)),
                 protector.Encrypt(webhookSecret)))
             .TapAsync(connection => dbContext.WarehouseConnections.Add(connection))
             // The check above narrows the common case; the unique index on the active connection of a store is what is
@@ -56,5 +70,16 @@ internal static class Endpoint
                 WebhookSecret = webhookSecret,
                 WebhookPath = WebhookRoute.PathFor(connection.Id)
             });
+    }
+
+    // The validator guarantees both are present for every provider but Dummy, which has neither and stores a placeholder.
+    private static Uri BaseUrlOf(Request request)
+    {
+        return request.Provider == WarehouseProvider.Dummy ? new Uri(Constants.DummyBaseUrl) : request.BaseUrl!;
+    }
+
+    private static string ApiCredentialOf(Request request)
+    {
+        return request.Provider == WarehouseProvider.Dummy ? Constants.DummyApiCredential : request.ApiCredential!;
     }
 }

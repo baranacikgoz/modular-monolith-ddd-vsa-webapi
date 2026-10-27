@@ -12,6 +12,29 @@ public static class WarehouseGatewayErrors
         return new Error { Key = "WarehouseGatewayCallFailed", Value = (int)statusCode, StatusCode = HttpStatusCode.BadGateway };
     }
 
+    /// <summary>
+    ///     The warehouse answered 404 to a call that names its subject in the body (a release, a stock push): the route itself
+    ///     does not exist there, which points at the connection's base address, not at a missing reference.
+    /// </summary>
+    public static readonly Error EndpointNotFound = new()
+    {
+        Key = "WarehouseGatewayEndpointNotFound",
+        StatusCode = HttpStatusCode.BadGateway
+    };
+
+    /// <summary>
+    ///     The connection's host is, or resolves to, a loopback, private or otherwise non public address, so the connection was
+    ///     refused before anything was sent. A definite outcome: the call did not happen.
+    /// </summary>
+    public static readonly Error AddressNotAllowed = new()
+    {
+        Key = "WarehouseGatewayAddressNotAllowed",
+        StatusCode = HttpStatusCode.BadGateway
+    };
+
+    /// <summary>The warehouse answered 404 to a call that asks about one reference (a reconcile): it knows no such release.</summary>
+    public static readonly Error ReferenceNotFound = Error.NotFound("WarehouseReference");
+
     /// <summary>The warehouse answered successfully but not in the shape its provider documents.</summary>
     public static readonly Error MalformedResponse = new()
     {

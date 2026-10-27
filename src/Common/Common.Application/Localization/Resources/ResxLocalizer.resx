@@ -533,9 +533,6 @@
   <data name="StockLevels_Search_ProductName_MaximumLength" xml:space="preserve">
     <value>Ürün adı en fazla ({0}) karakter olabilir.</value>
   </data>
-  <data name="StockLevels_Search_After_NotSupported" xml:space="preserve">
-    <value>Bu liste imleçle sayfalanmaz, sayfa numarası kullanın.</value>
-  </data>
   <data name="StockLevels_Receive_Id_NotEmpty" xml:space="preserve">
     <value>Stok seviyesi Id boş olamaz.</value>
   </data>
@@ -596,6 +593,9 @@
   <data name="WarehouseConnections_Create_Provider_Invalid" xml:space="preserve">
     <value>Depo sağlayıcısı geçersiz.</value>
   </data>
+  <data name="WarehouseConnections_Create_Provider_DummyNotAllowedInProduction" xml:space="preserve">
+    <value>Sahte depo sağlayıcısı üretim ortamında kullanılamaz.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Temel adres boş olamaz.</value>
   </data>
@@ -604,6 +604,12 @@
   </data>
   <data name="WarehouseConnections_Create_BaseUrl_MustBeHttps" xml:space="preserve">
     <value>Temel adres https ile başlayan geçerli bir adres olmalıdır.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_NoUserInfoOrFragment" xml:space="preserve">
+    <value>Temel adres kullanıcı bilgisi veya parça (#) içeremez.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_AddressNotAllowed" xml:space="preserve">
+    <value>Temel adres yerel, özel veya ayrılmış bir ağ adresine çıkamaz.</value>
   </data>
   <data name="WarehouseConnections_Create_ApiCredential_NotEmpty" xml:space="preserve">
     <value>API kimlik bilgisi boş olamaz.</value>
@@ -634,6 +640,36 @@
   </data>
   <data name="WarehouseConnections_Search_Status_Invalid" xml:space="preserve">
     <value>Bağlantı durumu geçersiz.</value>
+  </data>
+  <data name="StoreNotAccessible" xml:space="preserve">
+    <value>Mağaza bulunamadı veya size ait etkin bir mağaza değil.</value>
+  </data>
+  <data name="CannotChangeWhileDeactivated" xml:space="preserve">
+    <value>Devre dışı bırakılmış depo bağlantısı değiştirilemez.</value>
+  </data>
+  <data name="WarehouseReference" xml:space="preserve">
+    <value>Depo referansı</value>
+  </data>
+  <data name="WarehouseGatewayCallFailed" xml:space="preserve">
+    <value>Depo sistemi isteği başarısız bir yanıtla sonuçlandırdı.</value>
+  </data>
+  <data name="WarehouseGatewayMalformedResponse" xml:space="preserve">
+    <value>Depo sistemi beklenen biçimde olmayan bir yanıt verdi.</value>
+  </data>
+  <data name="WarehouseGatewayThrottled" xml:space="preserve">
+    <value>Depo sistemine çok fazla istek gönderildi, biraz sonra yeniden deneyin.</value>
+  </data>
+  <data name="WarehouseGatewayOutcomeUnknown" xml:space="preserve">
+    <value>Depo sistemi zamanında yanıt vermedi, işlemin sonucu bilinmiyor.</value>
+  </data>
+  <data name="WarehouseGatewayCircuitOpen" xml:space="preserve">
+    <value>Depo sistemine yapılan çağrılar art arda başarısız olduğu için bağlantı geçici olarak durduruldu.</value>
+  </data>
+  <data name="WarehouseGatewayAddressNotAllowed" xml:space="preserve">
+    <value>Depo bağlantısının adresi yerel, özel veya ayrılmış bir ağa çıkıyor, istek gönderilmedi.</value>
+  </data>
+  <data name="WarehouseGatewayEndpointNotFound" xml:space="preserve">
+    <value>Depo sistemi bu isteğin adresini bulamadı, bağlantının temel adresini kontrol edin.</value>
   </data>
   <data name="Stores_Update_Address_MaxLength" xml:space="preserve">
     <value>Adres en fazla ({0}) karakter olabilir.</value>

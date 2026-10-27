@@ -22,10 +22,5 @@ public sealed class RequestValidator : PaginationRequestValidator<Request>
             .WithMessage(string.Format(CultureInfo.CurrentCulture,
                 localizer.StockLevels_Search_ProductName_MaximumLength, Constants.ProductNameSearchMaxLength))
             .When(x => x.ProductName is not null);
-
-        // The joined rows page by offset only; the keyset cursor belongs to the movements endpoint.
-        RuleFor(x => x.After)
-            .Null()
-            .WithMessage(localizer.StockLevels_Search_After_NotSupported);
     }
 }

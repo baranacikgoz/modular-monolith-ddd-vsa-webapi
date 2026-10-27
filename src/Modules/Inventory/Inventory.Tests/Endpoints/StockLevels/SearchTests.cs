@@ -5,6 +5,7 @@ using Common.InterModuleRequests.Products;
 using Common.Tests;
 using Inventory.Application.Persistence;
 using Inventory.Application.ProductSummaries;
+using Inventory.Domain.StockLevels;
 using Inventory.Endpoints.StockLevels.v1.Search;
 using Inventory.Tests.Support;
 using Microsoft.Extensions.DependencyInjection;
@@ -143,12 +144,72 @@ public class SearchTests(IntegrationTestWebAppFactory factory) : BaseIntegration
             .SendAsync(Arg.Any<SearchProductsByTermRequest>(), Arg.Any<CancellationToken>());
     }
 
-    // The joined rows are not a keyset-pageable entity; the cursor of the ledger endpoint is refused here, not ignored.
+    // Several rows share a quantity, so the page boundary falls inside a tie: the cursor must continue after exactly that row.
     [Fact]
-    public async Task Search_CursorSupplied_ReturnsBadRequest()
+    public async Task Search_FollowingTheCursor_WalksEveryRowOnceInTheOffsetOrder()
+    {
+        foreach (var quantity in new[] { 3, 1, 3, 2, 3, 5, 1, 3 })
+        {
+            await StockLevelTestData.SeedStockLevelAsync(Factory.Services, quantityOnHand: quantity);
+        }
+
+        var everything = await GetPageAsync("pageNumber=1&pageSize=50");
+        var walked = new List<Response>();
+        var pages = 0;
+        string? cursor = null;
+        do
+        {
+            var page = await GetPageAsync($"pageNumber=1&pageSize=3{(cursor is null ? string.Empty : $"&after={cursor}")}");
+            walked.AddRange(page.Data);
+            cursor = page.NextCursor;
+            pages++;
+        }
+        while (cursor is not null && pages < 10);
+
+        Assert.Equal(everything.Data.Select(r => r.Id).ToArray(), walked.Select(r => r.Id).ToArray());
+        Assert.Equal(8, walked.Select(r => r.Id).Distinct().Count());
+        Assert.Equal(everything.Data.Select(r => r.QuantityOnHand).Order().ToArray(), walked.Select(r => r.QuantityOnHand).ToArray());
+        Assert.Null(everything.NextCursor);
+    }
+
+    [Fact]
+    public async Task Search_CursorWithTheProductNameFilter_ContinuesInsideTheMatchedRows()
+    {
+        var matched = new List<StockLevel>();
+        foreach (var quantity in new[] { 4, 2, 4, 6 })
+        {
+            matched.Add(await StockLevelTestData.SeedStockLevelAsync(Factory.Services, quantityOnHand: quantity));
+        }
+
+        await StockLevelTestData.SeedStockLevelAsync(Factory.Services, quantityOnHand: 1);
+        ProductSearchReturns(isTruncated: false, [.. matched.Select(s => s.ProductId)]);
+
+        var first = await GetPageAsync("pageNumber=1&pageSize=3&productName=widget&includeTotal=false");
+        var second = await GetPageAsync($"pageNumber=1&pageSize=3&productName=widget&includeTotal=false&after={first.NextCursor}");
+
+        Assert.Equal(-1, first.TotalCount);
+        Assert.Equal(3, first.Data.Count);
+        Assert.Single(second.Data);
+        Assert.Equal(6, second.Data.Single().QuantityOnHand);
+        Assert.Equal(matched.Select(s => s.ProductId).Order().ToArray(), first.Data.Concat(second.Data).Select(r => r.ProductId).Order().ToArray());
+    }
+
+    [Fact]
+    public async Task Search_MalformedCursor_ReturnsBadRequest()
     {
         var client = StockLevelTestData.AuthedClient(Factory);
-        var cursor = PaginationCursor.Encode(1, DefaultIdType.CreateVersion7());
+
+        var response = await client.GetAsync(new Uri("/v1/stock-levels?pageNumber=1&pageSize=10&after=not-a-cursor", UriKind.Relative));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    // A well-formed cursor minted for another sort key type is user input too: a failed result, not an exception.
+    [Fact]
+    public async Task Search_CursorOfAnotherKeyType_ReturnsBadRequest()
+    {
+        var client = StockLevelTestData.AuthedClient(Factory);
+        var cursor = PaginationCursor.Encode("Widget", DefaultIdType.CreateVersion7());
 
         var response = await client.GetAsync(new Uri($"/v1/stock-levels?pageNumber=1&pageSize=10&after={cursor}", UriKind.Relative));
 

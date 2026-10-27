@@ -10,7 +10,8 @@ namespace Inventory.Tests.Gateway;
 
 /// <summary>
 ///     A provider added to <see cref="WarehouseProvider" /> without its profile in <c>resiliency.json</c> would only fail
-///     on the first release through it. This fails the build instead.
+///     on the first release through it. This fails the build instead. The dummy provider makes no HTTP call, so it has no
+///     pipeline and no profile.
 /// </summary>
 [Collection("IntegrationTestCollection")]
 public class WarehouseProviderProfilesTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
@@ -21,6 +22,7 @@ public class WarehouseProviderProfilesTests(IntegrationTestWebAppFactory factory
         var keyed = Scope.ServiceProvider.GetRequiredService<IOptions<ResiliencyOptions>>().Value.Keyed;
 
         var missing = Enum.GetValues<WarehouseProvider>()
+            .Where(provider => provider != WarehouseProvider.Dummy)
             .Select(WarehouseResiliencePipelines.ProfileNameOf)
             .Where(profile => !keyed.ContainsKey(profile))
             .ToList();

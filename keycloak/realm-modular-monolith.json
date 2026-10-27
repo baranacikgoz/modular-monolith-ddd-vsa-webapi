@@ -277,7 +277,10 @@
             ],
             "scopes": [
               {
-                "name": "stock-levels:view"
+                "name": "stock-levels:view-all"
+              },
+              {
+                "name": "stock-levels:view-own"
               },
               {
                 "name": "stock-levels:update"
@@ -304,6 +307,9 @@
               },
               {
                 "name": "warehouse-connections:update"
+              },
+              {
+                "name": "warehouse-connections:connect"
               }
             ]
           },
@@ -427,6 +433,17 @@
             }
           },
           {
+            "name": "Store Owner Role Policy",
+            "description": "Users holding the realm role 'store-owner'.",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "fetchRoles": "true",
+              "roles": "[{\"id\":\"store-owner\",\"required\":false}]"
+            }
+          },
+          {
             "name": "Service Account Policy",
             "description": "Machine callers authenticating with client credentials.",
             "type": "client",
@@ -546,13 +563,13 @@
             }
           },
           {
-            "name": "Stock Levels Catalog Permission",
+            "name": "Stock Levels Self-Service Permission",
             "type": "scope",
             "logic": "POSITIVE",
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-levels\"]",
-              "scopes": "[\"stock-levels:view\"]",
+              "scopes": "[\"stock-levels:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
@@ -563,7 +580,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stock-levels\"]",
-              "scopes": "[\"stock-levels:update\"]",
+              "scopes": "[\"stock-levels:view-all\",\"stock-levels:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -576,6 +593,17 @@
               "resources": "[\"warehouse-connections\"]",
               "scopes": "[\"warehouse-connections:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Warehouse Connections Store Owner Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"warehouse-connections\"]",
+              "scopes": "[\"warehouse-connections:connect\"]",
+              "applyPolicies": "[\"Store Owner Role Policy\"]"
             }
           },
           {
@@ -715,6 +743,39 @@
           },
           {
             "name": "stores:reinstate"
+          },
+          {
+            "name": "stock-reservations:create"
+          },
+          {
+            "name": "stock-reservations:view"
+          },
+          {
+            "name": "stock-reservations:update"
+          },
+          {
+            "name": "stock-levels:view-all"
+          },
+          {
+            "name": "stock-levels:view-own"
+          },
+          {
+            "name": "stock-levels:update"
+          },
+          {
+            "name": "warehouse-connections:create"
+          },
+          {
+            "name": "warehouse-connections:view"
+          },
+          {
+            "name": "warehouse-connections:view-own"
+          },
+          {
+            "name": "warehouse-connections:update"
+          },
+          {
+            "name": "warehouse-connections:connect"
           },
           {
             "name": "products:create"

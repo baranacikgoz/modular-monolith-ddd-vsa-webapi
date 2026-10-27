@@ -19,6 +19,9 @@ public static class Setup
         v1.ChangeLowStockThreshold.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.Movements.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.DailyTotals.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
+        v1.My.Search.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
+        v1.My.Movements.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
+        v1.My.DailyTotals.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.BulkAdjust.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.GetBulkAdjustment.Endpoint.MapEndpoint(v1StockLevelsApiGroup);
         v1.ListBulkAdjustments.Endpoint.MapEndpoint(v1StockLevelsApiGroup);

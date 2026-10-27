@@ -27,19 +27,21 @@ namespace Inventory.Infrastructure.Gateway;
 internal abstract class WarehouseHttpGateway(
     HttpClient httpClient, Uri baseUrl, ResiliencePipeline<HttpResponseMessage> pipeline) : IWarehouseGateway
 {
+    // A 404 means "the route is not there" for the two calls that carry their subject in the body, and "no such release"
+    // for the reconcile, whose route carries the reference.
     public Task<Result<string>> RequestReleaseAsync(string productReference, int quantity, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildReleaseRequest(productReference, quantity), cancellationToken);
+        return SendAsync(BuildReleaseRequest(productReference, quantity), WarehouseGatewayErrors.EndpointNotFound, cancellationToken);
     }
 
     public Task<Result<string>> ReconcileReleaseAsync(string productReference, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildReconcileRequest(productReference), cancellationToken);
+        return SendAsync(BuildReconcileRequest(productReference), WarehouseGatewayErrors.ReferenceNotFound, cancellationToken);
     }
 
     public Task<Result<string>> PushStockAsync(IReadOnlyCollection<WarehouseStockQuantity> quantities, CancellationToken cancellationToken)
     {
-        return SendAsync(BuildPushStockRequest(quantities), cancellationToken);
+        return SendAsync(BuildPushStockRequest(quantities), WarehouseGatewayErrors.EndpointNotFound, cancellationToken);
     }
 
     protected abstract HttpRequestMessage BuildReleaseRequest(string productReference, int quantity);
@@ -60,7 +62,7 @@ internal abstract class WarehouseHttpGateway(
         return new Uri(root, relativePath);
     }
 
-    private async Task<Result<string>> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    private async Task<Result<string>> SendAsync(HttpRequestMessage request, Error notFound, CancellationToken cancellationToken)
     {
         using (request)
         {
@@ -77,6 +79,11 @@ internal abstract class WarehouseHttpGateway(
             {
                 return WarehouseGatewayErrors.CircuitOpen;
             }
+            catch (HttpRequestException ex) when (WarehouseAddressRefusedException.IsCauseOf(ex))
+            {
+                // The connect guard refused the host before a byte was sent: a definite outcome, not an unknown one.
+                return WarehouseGatewayErrors.AddressNotAllowed;
+            }
             catch (Exception ex) when (IsOutcomeUnknown(ex, cancellationToken))
             {
                 throw new WarehouseOutcomeUnknownException("The warehouse system did not answer in time.", ex);
@@ -84,16 +91,16 @@ internal abstract class WarehouseHttpGateway(
 
             using (response)
             {
-                return await MapResponseAsync(response, cancellationToken);
+                return await MapResponseAsync(response, notFound, cancellationToken);
             }
         }
     }
 
-    private async Task<Result<string>> MapResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    private async Task<Result<string>> MapResponseAsync(HttpResponseMessage response, Error notFound, CancellationToken cancellationToken)
     {
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return Error.NotFound("WarehouseReference");
+            return notFound;
         }
 
         if (response.StatusCode == HttpStatusCode.TooManyRequests)

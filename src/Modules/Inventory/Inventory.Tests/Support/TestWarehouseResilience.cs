@@ -16,7 +16,20 @@ internal static class TestWarehouseResilience
     public static WarehouseResiliencePipelines Pipelines(
         int jsonApiPermits = 20, int formApiPermits = 5, int breakerMinimumThroughput = 10, int windowMs = 10000)
     {
-        var options = Options.Create(new ResiliencyOptions
+        var options = Options.Create(ResiliencyConfiguration(jsonApiPermits, formApiPermits, breakerMinimumThroughput, windowMs));
+
+        // Owned by the returned wrapper for the life of one test; the process-wide registry in the host is the DI
+        // singleton, this one only holds a few in-memory limiters.
+#pragma warning disable CA2000
+        return new WarehouseResiliencePipelines(new KeyedResiliencePipelines(options), options);
+#pragma warning restore CA2000
+    }
+
+    /// <summary>The resilience options with a keyed profile for each HTTP provider; the dummy provider has none.</summary>
+    public static ResiliencyOptions ResiliencyConfiguration(
+        int jsonApiPermits = 20, int formApiPermits = 5, int breakerMinimumThroughput = 10, int windowMs = 10000)
+    {
+        return new ResiliencyOptions
         {
             PooledConnectionLifetimeMinutes = 15,
             TotalRequestTimeoutSeconds = 30,
@@ -32,13 +45,7 @@ internal static class TestWarehouseResilience
                 [WarehouseResiliencePipelines.ProfileNameOf(WarehouseProvider.JsonApi)] = Profile(jsonApiPermits, windowMs, breakerMinimumThroughput),
                 [WarehouseResiliencePipelines.ProfileNameOf(WarehouseProvider.FormApi)] = Profile(formApiPermits, windowMs, breakerMinimumThroughput)
             }
-        });
-
-        // Owned by the returned wrapper for the life of one test; the process-wide registry in the host is the DI
-        // singleton, this one only holds a few in-memory limiters.
-#pragma warning disable CA2000
-        return new WarehouseResiliencePipelines(new KeyedResiliencePipelines(options), options);
-#pragma warning restore CA2000
+        };
     }
 
     private static KeyedResilienceProfile Profile(int permits, int windowMs, int breakerMinimumThroughput)

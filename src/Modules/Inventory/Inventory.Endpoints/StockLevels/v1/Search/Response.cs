@@ -21,5 +21,6 @@ public sealed record Response
 ///     The shared page shape plus the one signal specific to the product name filter: <see cref="IsTruncated" /> is true
 ///     when Products cut its match list at its cap, so the page may be missing stock levels of products it did not return.
 /// </summary>
-public sealed record PageResponse(ICollection<Response> Data, int TotalCount, int PageNumber, int PageSize, bool IsTruncated)
-    : PaginationResponse<Response>(Data, TotalCount, PageNumber, PageSize);
+public sealed record PageResponse(
+    ICollection<Response> Data, int TotalCount, int PageNumber, int PageSize, bool IsTruncated, string? NextCursor = null)
+    : PaginationResponse<Response>(Data, TotalCount, PageNumber, PageSize, NextCursor);
