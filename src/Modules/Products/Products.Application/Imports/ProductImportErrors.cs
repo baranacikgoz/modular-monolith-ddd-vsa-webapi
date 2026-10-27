@@ -30,4 +30,8 @@ public static class ProductImportRowErrors
     public static readonly Error DescriptionTooLong = new() { Key = nameof(DescriptionTooLong) };
     public static readonly Error InvalidQuantity = new() { Key = nameof(InvalidQuantity) };
     public static readonly Error InvalidPrice = new() { Key = nameof(InvalidPrice) };
+    public static readonly Error SkuTooLong = new() { Key = nameof(SkuTooLong) };
+
+    /// <summary>The row names a SKU for a product that already exists under another one (or none); a SKU is set at creation only.</summary>
+    public static readonly Error SkuDiffers = new() { Key = nameof(SkuDiffers) };
 }

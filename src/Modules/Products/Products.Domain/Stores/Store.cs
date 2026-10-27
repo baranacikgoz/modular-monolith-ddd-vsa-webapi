@@ -5,6 +5,8 @@ using Common.Domain.ResultMonad;
 using Common.Domain.StronglyTypedIds;
 using Products.Domain.Products;
 using Products.Domain.Stores.DomainEvents.v1;
+using Products.Domain.Stores.DomainEvents.v2;
+using Products.Domain.Stores.Errors;
 
 namespace Products.Domain.Stores;
 
@@ -66,12 +68,91 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
         return store;
     }
 
+    /// <summary>A store that waits for an administrator's decision. Create opens an Active store directly; this opens a PendingApproval one.</summary>
+    public static Store Apply(ApplicationUserId ownerId, string name, string description, string address)
+    {
+        var id = StoreId.New();
+        var store = new Store();
+
+        var @event = new V1StoreApplicationSubmittedDomainEvent(id, ownerId, name, description, address);
+
+        store.Id = id;
+        store.OwnerId = ownerId;
+        store.Name = name;
+        store.Description = description;
+        store.Address = address;
+        store.Status = StoreStatus.PendingApproval;
+
+        store.RaiseEvent(@event);
+
+        return store;
+    }
+
+    /// <summary>Idempotent like <see cref="Deactivate" />: an Active store succeeds without an event, so a retry after a timeout publishes nothing twice.</summary>
+    public Result Approve()
+    {
+        if (Status == StoreStatus.Active)
+        {
+            return Result.Success;
+        }
+
+        if (Status != StoreStatus.PendingApproval)
+        {
+            return StoreErrors.NotPendingApproval;
+        }
+
+        var @event = new V1StoreApprovedDomainEvent(Id, OwnerId);
+
+        Status = StoreStatus.Active;
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
+    public Result Suspend()
+    {
+        if (Status == StoreStatus.Suspended)
+        {
+            return Result.Success;
+        }
+
+        if (Status != StoreStatus.Active)
+        {
+            return StoreErrors.NotActive;
+        }
+
+        var @event = new V1StoreSuspendedDomainEvent(Id);
+
+        Status = StoreStatus.Suspended;
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
+    /// <summary>Only a Suspended store comes back; a store that was deactivated, even after a suspension, stays closed.</summary>
+    public Result Reinstate()
+    {
+        if (Status == StoreStatus.Active)
+        {
+            return Result.Success;
+        }
+
+        if (Status != StoreStatus.Suspended)
+        {
+            return StoreErrors.NotSuspended;
+        }
+
+        var @event = new V1StoreReinstatedDomainEvent(Id);
+
+        Status = StoreStatus.Active;
+        RaiseEvent(@event);
+        return Result.Success;
+    }
+
     /// <summary>
     ///     Idempotent/retry-safe: a store already Inactive returns Success as a no-op rather than an error, so
     ///     a caller retrying after a timeout (never sure whether the first call landed) doesn't need to check
     ///     current state first. Which event fires branches on whether any product still has stock on hand -
     ///     a downstream consumer (e.g. inventory reconciliation) needs to know that without re-querying every
-    ///     product itself.
+    ///     product itself. A Suspended store can be deactivated, and deactivating a PendingApproval one rejects its application.
     /// </summary>
     public Result Deactivate()
     {
@@ -126,7 +207,7 @@ public class Store : AggregateRoot<StoreId>, ISearchLocalized
 
     private void UpdateAddress(string address)
     {
-        var @event = new V1StoreAddressUpdatedDomainEvent(Id, address);
+        var @event = new V2StoreAddressUpdatedDomainEvent(Id, address, Address);
         Address = address;
         RaiseEvent(@event);
     }

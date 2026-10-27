@@ -235,6 +235,15 @@
               },
               {
                 "name": "stores:update-own"
+              },
+              {
+                "name": "stores:approve"
+              },
+              {
+                "name": "stores:suspend"
+              },
+              {
+                "name": "stores:reinstate"
               }
             ]
           },
@@ -507,7 +516,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stores\"]",
-              "scopes": "[\"stores:create\",\"stores:update\"]",
+              "scopes": "[\"stores:create\",\"stores:update\",\"stores:approve\",\"stores:suspend\",\"stores:reinstate\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -683,6 +692,15 @@
           },
           {
             "name": "stores:update-own"
+          },
+          {
+            "name": "stores:approve"
+          },
+          {
+            "name": "stores:suspend"
+          },
+          {
+            "name": "stores:reinstate"
           },
           {
             "name": "products:create"

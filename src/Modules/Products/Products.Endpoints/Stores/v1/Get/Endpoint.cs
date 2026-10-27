@@ -41,6 +41,7 @@ internal static class Endpoint
                 Description = store.Description,
                 Address = store.Address,
                 ProductCount = store.Products.Count,
+                Status = store.Status,
                 CreatedBy = store.CreatedBy,
                 CreatedOn = store.CreatedOn,
                 LastModifiedBy = store.LastModifiedBy,

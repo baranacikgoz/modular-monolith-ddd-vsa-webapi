@@ -362,6 +362,12 @@ namespace Products.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Attributes")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValueSql("'[]'::jsonb");
+
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
@@ -404,6 +410,10 @@ namespace Products.Infrastructure.Migrations
                         .HasColumnName("SearchVector")
                         .HasComputedColumnSql("fts_product(\"Language\", \"Name\", \"Description\")", true);
 
+                    b.Property<string>("Sku")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<Guid>("StoreId")
                         .HasColumnType("uuid");
 
@@ -425,6 +435,10 @@ namespace Products.Infrastructure.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.HasIndex("StoreId");
+
+                    b.HasIndex("StoreId", "Sku")
+                        .IsUnique()
+                        .HasFilter("\"Sku\" IS NOT NULL");
 
                     b.ToTable("Products", "Products");
                 });
@@ -566,6 +580,41 @@ namespace Products.Infrastructure.Migrations
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Products.Domain.Products.PackageDimensions", "PackageDimensions", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<decimal>("HeightCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageHeightCm");
+
+                            b1.Property<decimal>("LengthCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageLengthCm");
+
+                            b1.Property<decimal>("WeightKg")
+                                .HasPrecision(10, 3)
+                                .HasColumnType("numeric(10,3)")
+                                .HasColumnName("PackageWeightKg");
+
+                            b1.Property<decimal>("WidthCm")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("PackageWidthCm");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("Products", "Products");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("PackageDimensions");
 
                     b.Navigation("ProductTemplate");
 

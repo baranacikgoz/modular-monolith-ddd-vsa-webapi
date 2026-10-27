@@ -78,13 +78,22 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
     public int Quantity { get; private set; }
     public decimal Price { get; private set; }
 
+    /// <summary>The store's own code for the product, unique within the store; null when the store keeps none. Set at creation only.</summary>
+    public string? Sku { get; private set; }
+
+    /// <summary>Size and weight of the product as shipped; null until the store sets them.</summary>
+    public PackageDimensions? PackageDimensions { get; private set; }
+
+    /// <summary>Name and value pairs the store describes the product with. Read and replaced as a whole (one jsonb column).</summary>
+    public IReadOnlyList<ProductAttribute> Attributes { get; private set; } = [];
+
     // Per-row search config; stamped on insert by ApplySearchLanguageInterceptor (no domain event).
     public string Language { get; private set; } = "simple_unaccent";
 
     public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
 
     public static Product Create(StoreId storeId, ProductTemplateId productTemplateId, string name, string description,
-        int quantity, decimal price)
+        int quantity, decimal price, string? sku = null)
     {
         var id = ProductId.New();
         var product = new Product();
@@ -101,6 +110,14 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
         product.Price = price;
 
         product.RaiseEvent(@event);
+
+        // The created event is frozen and has no SKU, so the SKU gets an event of its own right after it.
+        if (sku is not null)
+        {
+            var skuEvent = new V1ProductSkuAssignedDomainEvent(id, sku);
+            product.Sku = sku;
+            product.RaiseEvent(skuEvent);
+        }
 
         return product;
     }
@@ -182,6 +199,46 @@ public class Product : AggregateRoot<ProductId>, ISearchLocalized
 
         Price = price;
         RaiseEvent(@event);
+    }
+
+    /// <summary>The same values as the current ones are no change and raise nothing.</summary>
+    public void SetPackageDimensions(PackageDimensions dimensions)
+    {
+        if (dimensions.Equals(PackageDimensions))
+        {
+            return;
+        }
+
+        var @event = new V1ProductPackageDimensionsChangedDomainEvent(Id, dimensions.ToSnapshot());
+
+        PackageDimensions = dimensions;
+        RaiseEvent(@event);
+    }
+
+    /// <summary>Replaces the whole list. The same content in the same order is no change and raises nothing; the maximum comes
+    /// from the caller (it is an option), the rest of the rules are the product's own.</summary>
+    public Result SetAttributes(IReadOnlyList<ProductAttribute> attributes, int maxAttributes)
+    {
+        if (attributes.Count > maxAttributes)
+        {
+            return ProductErrors.TooManyAttributes;
+        }
+
+        if (attributes.Select(a => a.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != attributes.Count)
+        {
+            return ProductErrors.DuplicateAttributeName;
+        }
+
+        if (Attributes.SequenceEqual(attributes))
+        {
+            return Result.Success;
+        }
+
+        var @event = new V1ProductAttributesReplacedDomainEvent(Id, attributes.Select(a => a.ToSnapshot()).ToList());
+
+        Attributes = attributes.ToList();
+        RaiseEvent(@event);
+        return Result.Success;
     }
 
     /// <summary>The caller has uploaded (or is about to upload) the file under <paramref name="objectKey" />; the key is a

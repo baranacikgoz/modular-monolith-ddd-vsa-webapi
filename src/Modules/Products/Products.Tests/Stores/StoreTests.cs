@@ -3,6 +3,7 @@ using Products.Domain.Products;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 using Products.Domain.Stores.DomainEvents.v1;
+using Products.Domain.Stores.DomainEvents.v2;
 using Xunit;
 
 namespace Products.Tests.Stores;
@@ -67,8 +68,9 @@ public class StoreTests
         var descEvent = Assert.IsType<V1StoreDescriptionUpdatedDomainEvent>(events.ElementAt(1));
         Assert.Equal(newDescription, descEvent.Description);
 
-        var addressEvent = Assert.IsType<V1StoreAddressUpdatedDomainEvent>(events.ElementAt(2));
+        var addressEvent = Assert.IsType<V2StoreAddressUpdatedDomainEvent>(events.ElementAt(2));
         Assert.Equal(newAddress, addressEvent.Address);
+        Assert.Equal(Address, addressEvent.PreviousAddress);
     }
 
     [Fact]

@@ -82,4 +82,27 @@ public class RowParserTests
 
         Assert.Equal(ProductImportRowErrors.InvalidQuantity.Key, result.Error!.Key);
     }
+
+    [Fact]
+    public void Parse_SkuColumn_IsTrimmedAndKept()
+    {
+        var result = RowParser.Parse(Row("Desk lamp", "d", "1", "10", " SKU-1 "));
+
+        Assert.Equal("SKU-1", result.Value!.Sku);
+    }
+
+    [Fact]
+    public void Parse_BlankOrMissingSkuColumn_MeansNoSku()
+    {
+        Assert.Null(RowParser.Parse(Row("Desk lamp", "d", "1", "10", "  ")).Value!.Sku);
+        Assert.Null(RowParser.Parse(Row("Desk lamp", "d", "1", "10")).Value!.Sku);
+    }
+
+    [Fact]
+    public void Parse_SkuOverTheLimit_RejectsWithSkuTooLong()
+    {
+        var result = RowParser.Parse(Row("n", "d", "1", "10", new string('s', Constants.SkuMaxLength + 1)));
+
+        Assert.Equal(ProductImportRowErrors.SkuTooLong.Key, result.Error!.Key);
+    }
 }

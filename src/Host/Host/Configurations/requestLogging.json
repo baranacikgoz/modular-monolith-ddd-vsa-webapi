@@ -41,6 +41,12 @@
         "Methods": [
           "POST"
         ]
+      },
+      {
+        "Path": "/v1/stores/applications",
+        "Methods": [
+          "POST"
+        ]
       }
     ],
     "SensitiveResponseBodyPaths": [

@@ -8,5 +8,6 @@ public static partial class Policies
     public static IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>> Get()
     {
         yield return CreateStorePolicy;
+        yield return StoreApplicationPolicy;
     }
 }

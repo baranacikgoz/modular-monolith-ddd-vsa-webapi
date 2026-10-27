@@ -858,4 +858,103 @@
   <data name="Products_RemoveImage_ImageId_NotEmpty" xml:space="preserve">
     <value>Image id must not be empty.</value>
   </data>
+  <data name="Stores_v1_Apply_Email_MaxLength" xml:space="preserve">
+    <value>Email can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_NotEmpty" xml:space="preserve">
+    <value>Store name cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_MaxLength" xml:space="preserve">
+    <value>Store name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_NotEmpty" xml:space="preserve">
+    <value>Store description cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_MaxLength" xml:space="preserve">
+    <value>Store description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_NotEmpty" xml:space="preserve">
+    <value>Store address cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_MaxLength" xml:space="preserve">
+    <value>Store address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Approve_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Suspend_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Reinstate_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="NotPendingApproval" xml:space="preserve">
+    <value>The store is not waiting for approval.</value>
+  </data>
+  <data name="NotActive" xml:space="preserve">
+    <value>The store is not active.</value>
+  </data>
+  <data name="NotSuspended" xml:space="preserve">
+    <value>The store is not suspended.</value>
+  </data>
+  <data name="Stores_AddProduct_Sku_NotEmpty" xml:space="preserve">
+    <value>SKU cannot be empty.</value>
+  </data>
+  <data name="Stores_AddProduct_Sku_MaxLength" xml:space="preserve">
+    <value>SKU can be at most ({0}) characters long.</value>
+  </data>
+  <data name="SkuAlreadyExists" xml:space="preserve">
+    <value>Another product of this store already uses this SKU.</value>
+  </data>
+  <data name="ParentNoLongerExists" xml:space="preserve">
+    <value>The store or the product template no longer exists.</value>
+  </data>
+  <data name="Products_SetAttributes_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Body_NotEmpty" xml:space="preserve">
+    <value>Request body must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Attributes_NotNull" xml:space="preserve">
+    <value>The attribute list must not be null. Send an empty list to clear it.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_NotEmpty" xml:space="preserve">
+    <value>Attribute name must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Name_MaxLength" xml:space="preserve">
+    <value>Attribute name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_NotEmpty" xml:space="preserve">
+    <value>Attribute value must not be empty.</value>
+  </data>
+  <data name="Products_SetAttributes_Value_MaxLength" xml:space="preserve">
+    <value>Attribute value can be at most ({0}) characters long.</value>
+  </data>
+  <data name="TooManyAttributes" xml:space="preserve">
+    <value>The product has more attributes than allowed.</value>
+  </data>
+  <data name="DuplicateAttributeName" xml:space="preserve">
+    <value>An attribute name can be used only once.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_Id_NotEmpty" xml:space="preserve">
+    <value>Product id must not be empty.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_Body_NotEmpty" xml:space="preserve">
+    <value>Request body must not be empty.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_LengthCm_Range" xml:space="preserve">
+    <value>Length must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WidthCm_Range" xml:space="preserve">
+    <value>Width must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_HeightCm_Range" xml:space="preserve">
+    <value>Height must be greater than 0 and at most ({0}) cm.</value>
+  </data>
+  <data name="Products_SetPackageDimensions_WeightKg_Range" xml:space="preserve">
+    <value>Weight must be greater than 0 and at most ({0}) kg.</value>
+  </data>
+  <data name="InvalidPackageDimensions" xml:space="preserve">
+    <value>The package dimensions or weight are outside the valid range.</value>
+  </data>
 </root>

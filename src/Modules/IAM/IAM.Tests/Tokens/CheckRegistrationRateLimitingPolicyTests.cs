@@ -27,7 +27,8 @@ public class CheckRegistrationRateLimitingPolicyTests
 
         OtpVerify = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
 
-        WarehouseWebhook = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
+        WarehouseWebhook = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true },
+        StoreApplication = new FixedWindow { Limit = 1, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     }));
 
     private static readonly IServiceProvider EmptyServices = new ServiceCollection().BuildServiceProvider();

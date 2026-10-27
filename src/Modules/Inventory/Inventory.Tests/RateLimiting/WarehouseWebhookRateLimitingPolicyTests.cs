@@ -23,6 +23,7 @@ public class WarehouseWebhookRateLimitingPolicyTests
         TokenRefresh = Window(),
         Email = Window(),
         OtpVerify = Window(),
+        StoreApplication = Window(),
         WarehouseWebhook = new FixedWindow { Limit = 20, PeriodInMs = 1000, QueueLimit = 0, FailOpen = true }
     }));
 

@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Products.Application.Persistence;
 using Products.Domain.Products;
+using Products.Domain.Products.Errors;
 using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 using Products.Infrastructure.Telemetry;
 
 namespace Products.Endpoints.Stores.v1.AddProduct;
@@ -49,14 +51,16 @@ internal static class Endpoint
             {
                 var (store, productTemplate) = tuple;
                 return Product.Create(store.Id, productTemplate.Id, request.Body.Name, request.Body.Description,
-                    request.Body.Quantity, request.Body.Price);
+                    request.Body.Quantity, request.Body.Price, request.Body.Sku?.Trim());
             })
             .TapAsync(triple =>
             {
                 var (store, _, product) = triple;
                 store.AddProduct(product);
             })
-            .TapAsync(_ => dbContext.SaveChangesAsync(cancellationToken))
+            // The SKU is unique per store; a duplicate is a conflict answer, never an unhandled database error.
+            .BindAsync(_ => dbContext.SaveChangesDetectingConflictAsync(
+                ProductErrors.SkuAlreadyExists, ProductErrors.ParentNoLongerExists, cancellationToken))
             .TapAsync(triple =>
             {
                 ProductsTelemetry.ProductsAddedToStore.Add(1);

@@ -4,7 +4,7 @@ namespace Products.Tests.Support;
 
 internal static class Workbooks
 {
-    /// <summary>A one-sheet .xlsx with the import header (name, description, quantity, price) and the given data rows.
+    /// <summary>A one-sheet .xlsx with the import header (name, description, quantity, price) and the given data rows; a row may add a fifth cell, the SKU.
     /// Strings become text cells, numbers become numeric cells, the way a spreadsheet user would type them.</summary>
     public static byte[] Build(params object[][] rows)
     {

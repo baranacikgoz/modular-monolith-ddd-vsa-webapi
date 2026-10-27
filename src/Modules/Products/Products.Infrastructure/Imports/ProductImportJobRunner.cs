@@ -12,7 +12,9 @@ using Microsoft.Extensions.Options;
 using Products.Application.Imports;
 using Products.Application.Persistence;
 using Products.Domain.Products;
+using Products.Domain.Products.Errors;
 using Products.Domain.Stores;
+using Products.Infrastructure.Persistence;
 
 namespace Products.Infrastructure.Imports;
 
@@ -151,14 +153,26 @@ public sealed partial class ProductImportJobRunner(
             .Distinct()
             .ToList();
 
-        // One bounded IN per batch. Names are not unique in the table, so the oldest product of a name is the one a row updates.
-        var existing = (await dbContext.Products
-                .TagWith(nameof(ImportBatchAsync), job.StoreId)
-                .Where(p => p.StoreId == job.StoreId && names.Contains(p.Name))
-                .OrderBy(p => p.Id)
-                .ToListAsync(cancellationToken))
+        var skus = parsed
+            .Where(p => !p.Parsed.IsFailure && p.Parsed.Value!.Sku is not null)
+            .Select(p => p.Parsed.Value!.Sku!)
+            .Distinct()
+            .ToList();
+
+        // One bounded IN per batch, by name and by SKU. Names are not unique in the table, so the oldest product of a name
+        // is the one a row updates; a SKU is unique per store, so it names at most one product.
+        var loaded = await dbContext.Products
+            .TagWith(nameof(ImportBatchAsync), job.StoreId)
+            .Where(p => p.StoreId == job.StoreId && (names.Contains(p.Name) || (p.Sku != null && skus.Contains(p.Sku))))
+            .OrderBy(p => p.Id)
+            .ToListAsync(cancellationToken);
+        var existing = loaded
+            .Where(p => names.Contains(p.Name))
             .GroupBy(p => p.Name, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var bySku = loaded
+            .Where(p => p.Sku is not null)
+            .ToDictionary(p => p.Sku!, StringComparer.Ordinal);
 
         return await dbContext.Stores
             .TagWith(nameof(ImportBatchAsync), job.StoreId)
@@ -166,30 +180,48 @@ public sealed partial class ProductImportJobRunner(
             .SingleAsResultAsync(nameof(Store), cancellationToken)
             .MapAsync(store => parsed
                 .Select(p => p.Parsed.Match(
-                    row => Apply(job, store, existing, row),
+                    row => Apply(job, store, existing, bySku, row),
                     error => RowResult.Rejected(p.RowNumber, error)))
                 .ToList())
             .BindAsync(results => SaveBatchAsync(job, batch, results, storedErrors, cancellationToken));
     }
 
-    private static RowResult Apply(ProductImportJob job, Store store, Dictionary<string, Product> existing, ProductRow row)
+    private static RowResult Apply(
+        ProductImportJob job, Store store, Dictionary<string, Product> existing, Dictionary<string, Product> bySku, ProductRow row)
     {
         if (existing.TryGetValue(row.Name, out var product))
         {
+            // A SKU is set when the product is created and never changes, so a row cannot name another one for it.
+            if (row.Sku is not null && !string.Equals(product.Sku, row.Sku, StringComparison.Ordinal))
+            {
+                return RowResult.Rejected(row.RowNumber, ProductImportRowErrors.SkuDiffers);
+            }
+
             // The aggregate raises nothing for a row that changes nothing, so the event count tells an update from a no-op.
             var eventsBefore = product.Events.Count;
             product.Update(null, row.Description, row.Quantity, row.Price);
             return product.Events.Count > eventsBefore ? RowResult.Updated : RowResult.Unchanged;
         }
 
-        var created = Product.Create(job.StoreId, job.ProductTemplateId, row.Name, row.Description, row.Quantity, row.Price);
+        if (row.Sku is not null && bySku.ContainsKey(row.Sku))
+        {
+            return RowResult.Rejected(row.RowNumber, ProductErrors.SkuAlreadyExists);
+        }
+
+        var created = Product.Create(job.StoreId, job.ProductTemplateId, row.Name, row.Description, row.Quantity, row.Price, row.Sku);
         store.AddProduct(created);
         existing[row.Name] = created;
+        if (row.Sku is not null)
+        {
+            bySku[row.Sku] = created;
+        }
+
         return RowResult.Created;
     }
 
     /// <summary>Saves the batch's products and the job's cursor in one transaction. A concurrent writer on the same
-    /// store or product fails only this batch: its rows are reported and the file goes on.</summary>
+    /// store or product, or one that took a SKU of this batch first, fails only this batch: its rows are reported and the
+    /// file goes on.</summary>
     private async Task<Result> SaveBatchAsync(
         ProductImportJob job, SheetRow[] batch, List<RowResult> results, List<ProductImportRowError> storedErrors,
         CancellationToken cancellationToken)
@@ -203,7 +235,7 @@ public sealed partial class ProductImportJobRunner(
             await RecordBatchAsync(job.Id, batch, summary, storedErrors, cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (DbUpdateConcurrencyException ex)
+        catch (DbUpdateException ex) when (ex is DbUpdateConcurrencyException || ex.IsUniqueViolation())
         {
             LogBatchConflict(logger, job.Id.Value, ex);
             dbContext.ChangeTracker.Clear();
