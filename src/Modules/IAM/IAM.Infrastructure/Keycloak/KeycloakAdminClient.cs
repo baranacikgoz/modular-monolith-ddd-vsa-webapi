@@ -262,27 +262,20 @@ internal sealed partial class KeycloakAdminClient(
 
     public async Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken)
     {
-        using var rolesResponse = await SendAsync(
-            () => new HttpRequestMessage(HttpMethod.Get, AdminUri("roles?briefRepresentation=true")),
-            cancellationToken);
-        rolesResponse.EnsureSuccessStatusCode();
-        var roles = await rolesResponse.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
+        var childrenOf = await GetRoleGraphAsync(cancellationToken);
 
         var parentsOf = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-        foreach (var composite in roles.Where(r => r.Composite && !r.ClientRole))
+        foreach (var (composite, children) in childrenOf)
         {
-            foreach (var child in await GetCompositeChildrenAsync(composite.Name, cancellationToken))
+            foreach (var child in children)
             {
-                if (!child.ClientRole)
+                if (!parentsOf.TryGetValue(child, out var parents))
                 {
-                    if (!parentsOf.TryGetValue(child.Name, out var parents))
-                    {
-                        parents = [];
-                        parentsOf[child.Name] = parents;
-                    }
-
-                    parents.Add(composite.Name);
+                    parents = [];
+                    parentsOf[child] = parents;
                 }
+
+                parents.Add(composite);
             }
         }
 
@@ -301,6 +294,46 @@ internal sealed partial class KeycloakAdminClient(
         }
 
         return containing.Order(StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    ///     Every composite realm role with the realm roles it includes. Keycloak has no reverse lookup, so building it costs
+    ///     one listing plus one call per composite role; it is kept for <see cref="KeycloakOptions.RoleGraphCacheSeconds" />
+    ///     and a failed read is never cached. Remove <see cref="CacheKeys.For.KeycloakRoleGraph" /> to force a re-read.
+    /// </summary>
+    private ValueTask<Dictionary<string, string[]>> GetRoleGraphAsync(CancellationToken cancellationToken)
+    {
+        // A fresh options instance on purpose (same reason as the bulk user lookup): the configured defaults carry factory
+        // timeouts that would turn a slow Keycloak into a synthetic timeout mid-walk.
+        var entryOptions = new FusionCacheEntryOptions
+        {
+            Duration = TimeSpan.FromSeconds(keycloakOptionsProvider.Value.RoleGraphCacheSeconds),
+            IsFailSafeEnabled = true
+        };
+
+        return cache.GetOrSetAsync<Dictionary<string, string[]>>(
+            CacheKeys.For.KeycloakRoleGraph,
+            (_, ct) => ReadRoleGraphAsync(ct),
+            options: entryOptions,
+            token: cancellationToken);
+    }
+
+    private async Task<Dictionary<string, string[]>> ReadRoleGraphAsync(CancellationToken cancellationToken)
+    {
+        using var rolesResponse = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri("roles?briefRepresentation=true")),
+            cancellationToken);
+        rolesResponse.EnsureSuccessStatusCode();
+        var roles = await rolesResponse.Content.ReadFromJsonAsync<List<RoleSummaryRepresentation>>(cancellationToken) ?? [];
+
+        var childrenOf = new Dictionary<string, string[]>(StringComparer.Ordinal);
+        foreach (var composite in roles.Where(r => r.Composite && !r.ClientRole))
+        {
+            var children = await GetCompositeChildrenAsync(composite.Name, cancellationToken);
+            childrenOf[composite.Name] = children.Where(c => !c.ClientRole).Select(c => c.Name).ToArray();
+        }
+
+        return childrenOf;
     }
 
     private async Task<List<RoleSummaryRepresentation>> GetCompositeChildrenAsync(string roleName, CancellationToken cancellationToken)

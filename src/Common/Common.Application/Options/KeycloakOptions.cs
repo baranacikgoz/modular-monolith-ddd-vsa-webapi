@@ -54,6 +54,13 @@ public class KeycloakOptions
     /// <summary>Lifetime of the negative entry cached for an id Keycloak does not know, so repeated lists do not re-ask for a deleted actor.</summary>
     public required int UserDisplayNegativeCacheDurationSeconds { get; set; }
 
+    /// <summary>
+    ///     Lifetime of the cached realm role graph (each composite realm role and the realm roles it includes) that
+    ///     answers "which roles include this one". Composite roles change only from the realm file or the Keycloak console, so
+    ///     a short window turns the one-call-per-composite read into one read per window instead of one per request.
+    /// </summary>
+    public required int RoleGraphCacheSeconds { get; set; }
+
     public string Authority => $"{BaseUrl.TrimEnd('/')}/realms/{Realm}";
 }
 
@@ -130,5 +137,9 @@ public class KeycloakOptionsValidator : CustomValidator<KeycloakOptions>
         RuleFor(o => o.UserDisplayNegativeCacheDurationSeconds)
             .GreaterThan(0)
             .WithMessage("UserDisplayNegativeCacheDurationSeconds must be greater than 0.");
+
+        RuleFor(o => o.RoleGraphCacheSeconds)
+            .GreaterThan(0)
+            .WithMessage("RoleGraphCacheSeconds must be greater than 0.");
     }
 }

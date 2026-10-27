@@ -32,7 +32,8 @@ public interface IKeycloakAdminClient
     /// <summary>
     ///     Names of the realm roles that include <paramref name="roleName" />, directly or through other composite roles. The
     ///     role itself and client roles are not listed. Keycloak has no reverse lookup, so this reads the children of every
-    ///     composite realm role. An unknown role, or one no composite role includes, gives an empty list.
+    ///     composite realm role, and keeps that role graph for <c>KeycloakOptions.RoleGraphCacheSeconds</c>: a composite role
+    ///     changed in Keycloak shows up after that window. An unknown role, or one no composite role includes, gives an empty list.
     /// </summary>
     Task<IReadOnlyList<string>> GetRolesContainingAsync(string roleName, CancellationToken cancellationToken);
 

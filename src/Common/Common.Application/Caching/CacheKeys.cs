@@ -75,5 +75,12 @@ public static class CacheKeys
         {
             return $"user_display:{userId}";
         }
+
+        /// <summary>
+        ///     The realm role graph (every composite realm role and the realm roles it includes) that answers "which roles
+        ///     include this one". One entry for the configured realm; it expires after <c>KeycloakOptions.RoleGraphCacheSeconds</c> and can be
+        ///     evicted by removing this key.
+        /// </summary>
+        public const string KeycloakRoleGraph = "keycloak_role_graph";
     }
 }

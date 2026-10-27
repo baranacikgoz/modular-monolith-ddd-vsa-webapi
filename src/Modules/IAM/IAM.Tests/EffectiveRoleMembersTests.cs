@@ -1,4 +1,5 @@
 using Common.Application.Auth;
+using Common.Application.Caching;
 using Common.Application.Options;
 using Common.Domain.StronglyTypedIds;
 using Common.InterModuleRequests.IAM;
@@ -8,6 +9,7 @@ using IAM.Infrastructure.InterModuleRequestHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace IAM.Tests;
 
@@ -28,6 +30,13 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
     private Task<KeycloakRealmAdmin> ConnectRealmAsync()
     {
         return KeycloakRealmAdmin.ConnectAsync(Scope.ServiceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value.Realm);
+    }
+
+    /// <summary>Composes the roles in Keycloak and drops the cached role graph, which would otherwise hide the change for its window.</summary>
+    private async Task AddCompositeAsync(KeycloakRealmAdmin realm, string parent, string child)
+    {
+        await realm.AddCompositeAsync(parent, child);
+        await Scope.ServiceProvider.GetRequiredService<IFusionCache>().RemoveAsync(CacheKeys.For.KeycloakRoleGraph);
     }
 
     private static string NewRoleName(string prefix) => $"{prefix}-{Guid.NewGuid():N}";
@@ -103,10 +112,10 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
             await realm.CreateRoleAsync(role);
         }
 
-        await realm.AddCompositeAsync(middle, leaf);
-        await realm.AddCompositeAsync(top, middle);
-        await realm.AddCompositeAsync(top, leaf);
-        await realm.AddCompositeAsync(sibling, top);
+        await AddCompositeAsync(realm, middle, leaf);
+        await AddCompositeAsync(realm, top, middle);
+        await AddCompositeAsync(realm, top, leaf);
+        await AddCompositeAsync(realm, sibling, top);
 
         var roles = await AdminClient.GetRolesContainingAsync(leaf, CancellationToken.None);
 
@@ -146,8 +155,8 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
             await realm.CreateRoleAsync(role);
         }
 
-        await realm.AddCompositeAsync(middle, leaf);
-        await realm.AddCompositeAsync(top, middle);
+        await AddCompositeAsync(realm, middle, leaf);
+        await AddCompositeAsync(realm, top, middle);
         var direct = await CreateUserWithRolesAsync(leaf);
         var viaMiddle = await CreateUserWithRolesAsync(middle);
         var viaTop = await CreateUserWithRolesAsync(top);
@@ -171,7 +180,7 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
         var parent = NewRoleName("parent");
         await realm.CreateRoleAsync(role);
         await realm.CreateRoleAsync(parent);
-        await realm.AddCompositeAsync(parent, role);
+        await AddCompositeAsync(realm, parent, role);
         var directOnly = new[] { await CreateUserWithRolesAsync(role), await CreateUserWithRolesAsync(role) };
         var compositeOnly = new[] { await CreateUserWithRolesAsync(parent), await CreateUserWithRolesAsync(parent) };
         var both = await CreateUserWithRolesAsync(role, parent);
@@ -195,7 +204,7 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
         var parent = NewRoleName("parent");
         await realm.CreateRoleAsync(role);
         await realm.CreateRoleAsync(parent);
-        await realm.AddCompositeAsync(parent, role);
+        await AddCompositeAsync(realm, parent, role);
         await CreateUserWithRolesAsync(role);
         await CreateUserWithRolesAsync(parent);
         await CreateUserWithRolesAsync(parent);
@@ -220,7 +229,7 @@ public class EffectiveRoleMembersTests(IntegrationTestWebAppFactory factory) : B
         var parent = NewRoleName("parent");
         await realm.CreateRoleAsync(role);
         await realm.CreateRoleAsync(parent);
-        await realm.AddCompositeAsync(parent, role);
+        await AddCompositeAsync(realm, parent, role);
         var enabled = await CreateUserWithRolesAsync(parent);
         var disabled = await CreateUserWithRolesAsync(parent);
         await realm.SetEnabledAsync(disabled, enabled: false);
