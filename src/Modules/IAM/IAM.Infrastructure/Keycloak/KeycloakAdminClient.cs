@@ -52,7 +52,7 @@ internal sealed partial class KeycloakAdminClient(
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            EmailVerified = user.Email is null ? null : true,
+            EmailVerified = user.Email is null ? null : user.EmailVerified,
             Enabled = true,
             Attributes = attributes,
             Credentials = user.Password is null

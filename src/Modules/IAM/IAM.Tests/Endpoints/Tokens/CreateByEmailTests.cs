@@ -13,6 +13,24 @@ namespace IAM.Tests.Endpoints.Tokens;
 [Collection("IntegrationTestCollection")]
 public class CreateByEmailTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
+    /// <summary>
+    ///     A fresh user to fail logins against: the realm locks an account for a minute when two logins fail within a second,
+    ///     so failing against the shared seed staff user would lock out every later test that signs in as staff.
+    /// </summary>
+    private async Task<string> CreateThrowawayUserAsync(string password)
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+        var phone = IamTestClient.NewPhoneNumber();
+        var email = IamTestClient.NewEmail();
+
+        var created = await adminClient.CreateUserAsync(
+            new CreateKeycloakUser(phone, "Ayşe", "Yılmaz", phone, Email: email, Password: password, EmailVerified: true),
+            CancellationToken.None);
+
+        Assert.False(created.IsFailure);
+        return email;
+    }
+
     [Fact]
     public async Task CreateTokensByEmail_ValidPassword_ReturnsTokensWithStaffRole()
     {
@@ -26,7 +44,9 @@ public class CreateByEmailTests(IntegrationTestWebAppFactory factory) : BaseInte
     [Fact]
     public async Task CreateTokensByEmail_WrongPassword_Returns401()
     {
-        using var response = await IamTestClient.LoginByEmailRawAsync(Factory, SeedUsers.StaffEmail, "definitely-wrong");
+        var email = await CreateThrowawayUserAsync(IamTestClient.ValidPassword);
+
+        using var response = await IamTestClient.LoginByEmailRawAsync(Factory, email, "definitely-wrong");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -104,14 +124,15 @@ public class CreateByEmailTests(IntegrationTestWebAppFactory factory) : BaseInte
     [Fact]
     public async Task CreateTokensByEmail_WrongPasswordThenCorrectPassword_SameTokenStillWorks()
     {
-        var token = await IamTestClient.SeedEmailVerificationTokenAsync(Factory, SeedUsers.StaffEmail);
+        var email = await CreateThrowawayUserAsync(IamTestClient.ValidPassword);
+        var token = await IamTestClient.SeedEmailVerificationTokenAsync(Factory, email);
 
         using var wrongPassword = await IamTestClient.LoginByEmailRawAsync(
-            Factory, SeedUsers.StaffEmail, "definitely-wrong", emailVerificationToken: token);
+            Factory, email, "definitely-wrong", emailVerificationToken: token);
         Assert.Equal(HttpStatusCode.Unauthorized, wrongPassword.StatusCode);
 
         using var correctPassword = await IamTestClient.LoginByEmailRawAsync(
-            Factory, SeedUsers.StaffEmail, SeedUsers.StaffPassword, emailVerificationToken: token);
+            Factory, email, IamTestClient.ValidPassword, emailVerificationToken: token);
         Assert.True(correctPassword.IsSuccessStatusCode);
     }
 }

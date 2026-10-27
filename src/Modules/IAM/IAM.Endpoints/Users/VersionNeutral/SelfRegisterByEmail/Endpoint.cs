@@ -73,7 +73,8 @@ internal static class Endpoint
                     BirthDate: DateOnly.ParseExact(request.BirthDate, Constants.TurkishDateFormat,
                         CultureInfo.InvariantCulture),
                     Email: email,
-                    Password: request.Password),
+                    Password: request.Password,
+                    EmailVerified: true),
                 cancellationToken))
             .BindAsync(userId => RegistrationCompletion.AssignBasicRoleOrRollbackAsync(userId, adminClient, logger, cancellationToken))
             .TapAsync(userId => activity?.SetTag("user.id", userId.ToString()))

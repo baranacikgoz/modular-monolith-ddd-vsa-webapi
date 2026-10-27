@@ -49,6 +49,15 @@ public class ProvisionUserRequestHandlerTests(IntegrationTestWebAppFactory facto
     }
 
     [Fact]
+    public async Task ProvisionUser_ValidRequest_MarksTheEmailVerifiedBecauseTheCallerVerifiedIt()
+    {
+        var response = await SendAsync(Request($"{Guid.NewGuid():N}@example.com", IamTestClient.NewPhoneNumber(), ValidPassword));
+
+        Assert.Equal(ProvisionUserFailureReason.None, response.FailureReason);
+        Assert.True(await KeycloakUserAttributeReader.EmailVerifiedAsync(factory, Scope.ServiceProvider, response.UserId!.Value));
+    }
+
+    [Fact]
     public async Task ProvisionUser_ValidRequest_CreatesAUserWhoCanLogInWithTheDecryptedPassword()
     {
         var phone = IamTestClient.NewPhoneNumber();
