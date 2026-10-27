@@ -82,13 +82,15 @@ The hard constraint that shapes everything below: **in PostgreSQL full-text sear
 
 **Tradeoff:** A client wanting results in a non-UI language must change `Accept-Language`. Acceptable and consistent.
 
+**Outside a request.** A queue consumer has no request culture, so a product it creates would be stamped with the process default. The product import records the uploader's culture on the job (`UiCulture`) and its consumer runs each message under it, restoring the previous culture afterwards, so products created by an import get the language of the person who uploaded the file.
+
 ---
 
 ### 6. No language filter on read
 
 **Decision:** Read queries do **not** filter `WHERE Language = currentConfig`. They match against the whole vector with both query layers.
 
-**Why:** Filtering by language would make products authored in another language invisible, wrong for a marketplace. Because the universal layer is language-neutral and the prose layer naturally only matches same-language words, the dual-query approach (below) gives correct results without a filter. The `Language` column is a **write-side input to the vector**, not a read-side filter.
+**Why:** Filtering by language would make products authored in another language invisible, wrong for a catalogue whose stores write in more than one language. Because the universal layer is language-neutral and the prose layer naturally only matches same-language words, the dual-query approach (below) gives correct results without a filter. The `Language` column is a **write-side input to the vector**, not a read-side filter.
 
 ---
 
