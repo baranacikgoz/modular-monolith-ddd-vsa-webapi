@@ -8,6 +8,7 @@ public interface IKeycloakAdminClient
 {
     Task<Result<ApplicationUserId>> CreateUserAsync(CreateKeycloakUser user, CancellationToken cancellationToken);
 
+    /// <summary>Assigns a realm role. An already-held role is accepted. A user Keycloak does not know is <c>NotFound</c>; any other rejection is <c>IdentityProviderUnavailable</c>.</summary>
     Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken);
 
     /// <summary>Deletes the user. A user that no longer exists is not an error.</summary>

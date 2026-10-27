@@ -105,6 +105,18 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
     }
 
     [Fact]
+    public async Task AssignRealmRoleAsync_UnknownUser_ReturnsNotFound()
+    {
+        var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();
+
+        var result = await adminClient.AssignRealmRoleAsync(
+            new ApplicationUserId(Guid.NewGuid()), KeycloakRoles.StoreOwner, CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(HttpStatusCode.NotFound, result.Error!.StatusCode);
+    }
+
+    [Fact]
     public async Task DeleteUserAsync_EvictsTheCachedDisplayEntry()
     {
         var adminClient = Scope.ServiceProvider.GetRequiredService<IKeycloakAdminClient>();

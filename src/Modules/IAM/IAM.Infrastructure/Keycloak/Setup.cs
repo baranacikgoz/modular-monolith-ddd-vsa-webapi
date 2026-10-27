@@ -1,4 +1,5 @@
 using Common.Application.Options;
+using Common.Application.Persistence.Inbox;
 using Common.Infrastructure.Resiliency;
 using IAM.Application.Keycloak;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ public static class Setup
     public static IServiceCollection AddKeycloakInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<ServiceAccountTokenCache>();
+        // IAM has no DbContext: its consumers keep only the cache pre-filter of IntegrationEventHandlerBase.
+        services.AddSingleton(StatelessInboxStore.Instance);
 
         services.AddKeycloakHttpClient<IServiceAccountTokenProvider, ServiceAccountTokenProvider>();
         services.AddKeycloakHttpClient<IKeycloakTokenClient, KeycloakTokenClient>();

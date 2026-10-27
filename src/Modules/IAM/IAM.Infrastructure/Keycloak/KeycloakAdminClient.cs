@@ -134,7 +134,12 @@ internal sealed partial class KeycloakAdminClient(
         }
 
         LogRoleAssignmentFailed(logger, userId, roleName, (int)mappingResponse.StatusCode);
-        return IdentityErrors.IdentityProviderUnavailable;
+
+        // Keycloak answers 404 on the role-mapping resource of an id it does not know: the user is gone, not the
+        // identity provider. Consumers distinguish the two (a missing user is skipped, an outage is retried).
+        return mappingResponse.StatusCode == HttpStatusCode.NotFound
+            ? Error.NotFound(nameof(KeycloakUser), userId)
+            : IdentityErrors.IdentityProviderUnavailable;
     }
 
     public async Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)

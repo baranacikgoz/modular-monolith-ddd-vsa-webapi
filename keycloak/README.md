@@ -12,7 +12,7 @@ already exists, so a changed file only lands on a fresh database (dev: `rm -rf .
 
 | Concept | Value |
 | :--- | :--- |
-| Realm roles | `basic` (mobile end users), `staff` (support / management), `system-admin` (composite, includes `staff`) |
+| Realm roles | `basic` (mobile end users), `staff` (support / management), `system-admin` (composite, includes `staff`), `store-owner` (granted by the backend when a store is approved) |
 | `backend-api` | Resource server + Authorization Services host. Email + password direct grant. Service account with `realm-management` roles `view-realm`, `view-users`, `query-users`, `manage-users` for the Admin REST API. |
 | `backend-trusted-login` | Direct grant flow override `trusted-login`: only `Username Validation`, no credential step. The backend calls it after it has verified a one-time code itself. Its secret is equivalent to every end user's password. |
 | `ci-integration` | Sample machine caller (client credentials). Authorized through `Service Account Policy`. |
