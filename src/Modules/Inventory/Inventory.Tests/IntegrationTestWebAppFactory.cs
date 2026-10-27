@@ -1,4 +1,5 @@
 using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.IAM;
 using Common.InterModuleRequests.Products;
 using Common.Tests;
 using Microsoft.AspNetCore.Hosting;
@@ -25,10 +26,25 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
     public IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse> ProductSearchClient { get; } =
         Substitute.For<IInterModuleRequestClient<SearchProductsByTermRequest, SearchProductsByTermResponse>>();
 
+    /// <summary>
+    ///     Stands in for IAM's bulk user lookup, which the stock movement list calls to name the acting users. IAM is not
+    ///     active in these tests; a test sets what it returns. It answers with no users until then.
+    /// </summary>
+    public IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> UsersClient { get; } =
+        Substitute.For<IInterModuleRequestClient<GetUsersRequest, GetUsersResponse>>();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
 
-        builder.ConfigureTestServices(services => services.AddSingleton(ProductSearchClient));
+        UsersClient
+            .SendAsync(Arg.Any<GetUsersRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new GetUsersResponse([]));
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddSingleton(ProductSearchClient);
+            services.AddSingleton(UsersClient);
+        });
     }
 }

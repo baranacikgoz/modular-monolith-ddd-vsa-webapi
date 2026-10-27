@@ -2,7 +2,10 @@ using Common.Application.Auth;
 using Common.Application.Extensions;
 using Common.Application.Pagination;
 using Common.Domain.ResultMonad;
+using Common.Endpoints;
 using Common.Infrastructure.Persistence.Extensions;
+using Common.InterModuleRequests.Contracts;
+using Common.InterModuleRequests.IAM;
 using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +30,7 @@ internal static class Endpoint
     private static async Task<Result<PaginationResponse<Response>>> GetMovementsAsync(
         [AsParameters] Request request,
         IInventoryDbContext dbContext,
+        IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
         CancellationToken cancellationToken)
     {
         return await dbContext.StockLevels
@@ -54,6 +58,23 @@ internal static class Endpoint
                     },
                     orderByDescending: m => m.CreatedOn,
                     tiebreaker: m => m.Id,
-                    cancellationToken: cancellationToken));
+                    cancellationToken: cancellationToken))
+            .MapAsync(page => NameActingUsersAsync(page, usersClient, cancellationToken));
+    }
+
+    /// <summary>One IAM lookup for the whole page; a page whose rows have no acting user asks nobody.</summary>
+    private static async Task<PaginationResponse<Response>> NameActingUsersAsync(
+        PaginationResponse<Response> page,
+        IInterModuleRequestClient<GetUsersRequest, GetUsersResponse> usersClient,
+        CancellationToken cancellationToken)
+    {
+        var names = await ActorNames.ResolveAsync(usersClient, page.Data.Select(m => m.ActingUserId), cancellationToken);
+
+        return page with
+        {
+            Data = page.Data
+                .Select(m => m with { ActingUserName = m.ActingUserId is { } actor && names.TryGetValue(actor, out var name) ? name : null })
+                .ToList()
+        };
     }
 }
