@@ -745,6 +745,39 @@
             "name": "stores:reinstate"
           },
           {
+            "name": "stock-reservations:create"
+          },
+          {
+            "name": "stock-reservations:view"
+          },
+          {
+            "name": "stock-reservations:update"
+          },
+          {
+            "name": "stock-levels:view-all"
+          },
+          {
+            "name": "stock-levels:view-own"
+          },
+          {
+            "name": "stock-levels:update"
+          },
+          {
+            "name": "warehouse-connections:create"
+          },
+          {
+            "name": "warehouse-connections:view"
+          },
+          {
+            "name": "warehouse-connections:view-own"
+          },
+          {
+            "name": "warehouse-connections:update"
+          },
+          {
+            "name": "warehouse-connections:connect"
+          },
+          {
             "name": "products:create"
           },
           {

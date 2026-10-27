@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Common.Application.Auth;
 using Common.Application.Caching;
 using Common.Domain.StronglyTypedIds;
@@ -16,7 +17,7 @@ namespace IAM.Tests.Endpoints.Auth;
 ///     alone, and the own-data scope by every authenticated user.
 /// </summary>
 [Collection("IntegrationTestCollection")]
-public class StoreOwnerPermissionDecisionTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
+public class InventoryPermissionTests(IntegrationTestWebAppFactory factory) : BaseIntegrationTest(factory)
 {
     private static string PolicyOf(string scope) => KeycloakPermission.FromScope(scope).PolicyName();
 
@@ -46,6 +47,28 @@ public class StoreOwnerPermissionDecisionTests(IntegrationTestWebAppFactory fact
     {
         using var response = await IamTestClient.Authorized(Factory, tokens).GetAsync(new Uri("/users/me", UriKind.Relative));
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    // The client's top-level scope list is what Keycloak shows next to the resources; a scope on a resource but not in the list
+    // (or the other way round) is an import that drifted from the resources.
+    [Fact]
+    public void RealmScopeList_MatchesTheScopesTheResourcesDeclare()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(TestPaths.RealmFile));
+        var authorization = document.RootElement.GetProperty("clients").EnumerateArray()
+            .Single(c => c.GetProperty("clientId").GetString() == "backend-api")
+            .GetProperty("authorizationSettings");
+
+        var listed = authorization.GetProperty("scopes").EnumerateArray()
+            .Select(s => s.GetProperty("name").GetString()!)
+            .ToList();
+        var onResources = authorization.GetProperty("resources").EnumerateArray()
+            .SelectMany(r => r.GetProperty("scopes").EnumerateArray().Select(s => s.GetProperty("name").GetString()!))
+            .ToList();
+
+        Assert.Empty(onResources.Except(listed, StringComparer.Ordinal));
+        Assert.Empty(listed.Except(onResources, StringComparer.Ordinal));
+        Assert.Equal(listed.Count, listed.Distinct(StringComparer.Ordinal).Count());
     }
 
     [Fact]
