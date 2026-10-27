@@ -132,7 +132,7 @@ Read shape: `db.Set.AsNoTracking().TagWith(...).Where(...).Select(x => new Respo
 - Every `Request` is validated. Assume third parties fail; use resiliency (retry, circuit breaker); failures must not cascade.
 - Never call `services.BuildServiceProvider()` in DI registration (corrupts OTel providers). Scan `IServiceCollection` and use `Activator.CreateInstance`.
 - File uploads: `[FromForm] IFormFile`, `.DisableAntiforgery()`, and `.LimitRequestBody(...)` taken from Options plus the multipart framing allowance. The endpoint checks size and extension, and decides an image's type from its bytes (`ImageSignature`), never from the client's name or content type.
-- An anonymous endpoint carries a named rate limit policy (`.RequireRateLimiting(...)`, policy in `rateLimiting.json`). When its body carries a credential, its path is listed in the sensitive paths of `requestLogging.json`.
+- An anonymous endpoint that writes or costs money carries a named rate limit policy (`.RequireRateLimiting(...)`, policy in `rateLimiting.json`). When its body carries a credential, its path is listed in the sensitive request body paths of `requestLogging.json`.
 
 ## 6. Cross-module and events
 
