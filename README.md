@@ -60,12 +60,12 @@ This is deployment isolation on demand, not full microservices. [`docs/ARCHITECT
 
 ## Follow one request
 
-A seller adds a product to their store. Here is everything that happens, and everything you did not have to write:
+A store owner adds a product to their store. Here is everything that happens, and everything you did not have to write:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Seller
+    actor Owner as Store owner
     participant API as Products endpoint
     participant Agg as Store aggregate
     participant DB as PostgreSQL
@@ -73,7 +73,7 @@ sequenceDiagram
     participant MQ as RabbitMQ
     participant Inv as Inventory consumer
 
-    Seller->>API: POST /v1/stores/my/products
+    Owner->>API: POST /v1/stores/my/products
     API->>API: validate request, check Keycloak scope products:create-own
     API->>Agg: Product.Create, store.AddProduct
     Agg->>API: domain events raised
@@ -144,9 +144,9 @@ The second call returns `accessToken`, `refreshToken` and their expiry times. Pa
 
 | Module | What it owns | Database |
 | :-- | :-- | :-- |
-| **IAM** | Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone + SMS OTP or email + password. Also provisions and deprovisions users for other modules, looks up user names in bulk and grants the store-owner role when a store is approved. | None. Keycloak is the identity store. |
-| **Products** | Stores (with an application and approval flow), product templates and products (images, SKU, attributes, package dimensions), queued spreadsheet import and CSV export. The exemplar module: copy its shape. | Schema `Products` |
-| **Inventory** | Stock levels with an immutable movement ledger and low stock thresholds, stock reservations (a saga-shaped aggregate), per-store warehouse connections with encrypted credentials, a per-provider gateway, an HMAC-signed webhook that applies each delivery once, a dirty-set stock push, a queued bulk adjustment and sweep jobs. | Schema `Inventory` |
+| **IAM** | Login, registration, tokens, sessions and permissions, brokered through Keycloak. Phone + SMS OTP or email + password. Also provisions and deprovisions users for other modules (the password travels encrypted), looks up user names in bulk, lists the effective members of a role (composite roles and groups included) and grants the store-owner role when a store is approved. | None. Keycloak is the identity store. |
+| **Products** | Stores (an application with email ownership proof, an approval flow, a status gate on every store and product write, an administration listing of every status), product templates and products (images, SKU, attributes, package dimensions), queued spreadsheet import and CSV export. The exemplar module: copy its shape. | Schema `Products` |
+| **Inventory** | Stock levels with an immutable, sequenced movement ledger and low stock thresholds, stock reservations (a saga-shaped aggregate whose status follows the warehouse system, with a reconcile for unknown outcomes), per-store warehouse connections with encrypted, rotatable credentials, a per-provider gateway behind an address guard (and an in-memory `Dummy` provider for development), an HMAC-signed webhook that applies each delivery once and in the provider's time order, a dirty-set stock push, a queued bulk adjustment, owner-scoped `my` reads and sweep jobs. | Schema `Inventory` |
 | **Notifications** | SMS, email, push (Firebase), SignalR hub, OTP issuing and verification, device registry, critical alerts to a role. | Schema `Notifications` |
 | **Outbox** | Transactional outbox processor, cleanup, lag metrics and the inbox cleanup job. Loads on every instance. | Schema `Outbox` |
 | **BackgroundJobs** | Hangfire server, dashboard, job metrics and the no-overlap filter. Loads on every instance. | Schema `BackgroundJobs`, created by Hangfire itself |
@@ -185,7 +185,7 @@ Routes, scopes, events, requests, jobs and configuration for each module are in 
 | :-- | :-- |
 | Keycloak, realm as code | Users, roles, clients, flows, authorization services and seed users live in `keycloak/realm-modular-monolith.json`. Compose, tests and production start import the same file. Clients only talk to this API. |
 | Two login schemes | Phone + SMS OTP for end users, email + password with email verification for staff. `identityScheme.json` picks which self-service registration and login routes exist (`PhoneNumber` or `Email`). |
-| Fine-grained permissions | Endpoints declare `.RequireScope(KeycloakScopes.X.Y)`. The API asks Keycloak for a `resource#scope` decision with the caller's token and caches it per token. A test keeps code and realm in sync. |
+| Fine-grained permissions | Endpoints declare `.RequireScope(KeycloakScopes.X.Y)`. The API asks Keycloak for a `resource#scope` decision with the caller's token and caches it per token. An administration read asks `-view-all`, its owner twin `-view-own`; one right is held by a realm role policy (`store-owner`). A test keeps code and realm in sync. |
 | Sessions and devices | Every login binds a device and client. Users can list their sessions, revoke one or revoke all. Access tokens live 5 minutes and refresh tokens rotate. |
 | Token reuse defence | Replaying a rotated refresh token revokes the whole user session and sends the user a security alert push. |
 | Machine callers | A client-credentials sample (`ci-integration`) shows service-to-service access through a service account policy. |
@@ -205,18 +205,18 @@ Routes, scopes, events, requests, jobs and configuration for each module are in 
 | Seeding | Ordered `IDatabaseSeeder`s run after the host has fully started. |
 | Queued jobs | Accept, queue, poll: `JobRow`, an atomic claim, 202 answers, bounded batches with a stored cursor, a stuck-job sweep and housekeeping. Worked examples: product import and export, stock bulk adjustment. |
 | Spreadsheets and CSV | Uploaded `.xlsx` and `.xls` files are read in batches (ExcelDataReader) with a row ceiling, row-level rejections and a stored list of the first errors. A CSV writer guards against formula injection, and the file is served as a download. |
-| Secret protection | `SecretProtector` encrypts credentials a module must read back (AES-GCM, key from `secretProtection.json`), and `SecretGenerator` invents the secrets a caller presents back. |
+| Secret protection | `SecretProtector` encrypts credentials a module must read back (AES-GCM, key from `secretProtection.json`, key id in every value so the key can be rotated through `PreviousEncryptionKeys`), and `SecretGenerator` invents the secrets a caller presents back. |
 
 ### Resilience and protection
 
 | Capability | What you get |
 | :-- | :-- |
 | Rate limiting | Named fixed-window policies (global, SMS, email, OTP verify, registration, registration check, token create and refresh, own-store creation, store application, warehouse webhook). With Redis configured every replica shares one counter, without it an in-process limiter takes over. Each policy chooses to fail open or closed. |
-| Keyed resilience pipelines | Outbound HTTP gets timeouts, retries and circuit breakers from `ResiliencyOptions`, with keyed overrides per dependency. The warehouse gateway builds one pipeline per store connection, without a retry for calls that change state. |
-| Webhook hardening | Constant-time HMAC-SHA256 verification (hex or base64, with or without `sha256=`), a secret per connection, a request body size limit, a per-connection rate limit, and each delivery applied once through a delivery id table. |
+| Keyed resilience pipelines | Outbound HTTP gets timeouts, retries and circuit breakers from `ResiliencyOptions`, with keyed overrides per dependency. The warehouse gateway builds one pipeline per store connection, without a retry for calls that change state, and its HTTP client refuses addresses that lead into the server's own network (no private, loopback or link-local target, no redirects, no proxy). |
+| Webhook hardening | Constant-time HMAC-SHA256 verification (hex or base64, with or without `sha256=`), a secret per connection, a request body size limit, a per-connection rate limit, each delivery applied once through a delivery id table, and statuses applied in the order of the provider's own timestamp. |
 | Security headers | Configurable response headers from `securityHeaders.json`: `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` and `Permissions-Policy`. |
 | Reverse proxy support | Forwarded headers honoured only from configured trusted networks. |
-| Request and response logging | Size-capped body logging with per-path redaction for tokens, OTP codes and registrations, and path exclusions. |
+| Request and response logging | Size-capped body logging with per-path redaction for tokens, OTP codes, registrations, store applications and warehouse connection credentials, and path exclusions. |
 | Feature management | `Microsoft.FeatureManagement` with targeting and variants, plus a `.RequireFeature(...)` endpoint filter. |
 | Health checks | Separate live, ready, startup and dependency probes. PostgreSQL, RabbitMQ and Redis (when configured) gate readiness. Keycloak is reported on the dependency probe only, and only in a process that runs the IAM module, so an outage never takes the whole API out of rotation. |
 
@@ -244,7 +244,7 @@ Routes, scopes, events, requests, jobs and configuration for each module are in 
 | :-- | :-- |
 | Real-infrastructure tests | xUnit v3 on Microsoft.Testing.Platform with Testcontainers (PostgreSQL, Keycloak), Respawn resets, Bogus data and NSubstitute for external APIs only. |
 | CI matrix | Build, migration drift check, then one test job per module on separate runners. Release and hotfix branches, or a manual run with a tag, also build and push the Docker image. |
-| Load testing | A k6 suite with buyer, seller, new seller and admin scenarios (50 virtual users at peak). `make perf` runs it with the Aspire Dashboard open. |
+| Load testing | A k6 suite with buyer, store owner, new store owner and admin scenarios (50 virtual users at peak). `make perf` runs it with the Aspire Dashboard open. |
 | Postman collection | `postman/ModularMonolith-API.postman_collection.json` covers the IAM, Products, Inventory and Notifications endpoints, including the HMAC-signed warehouse webhook. |
 | Compose variants | Full stack, app only, performance run and the two-instance split deployment. |
 | Localization | Turkish (default) and English through `Aigamo.ResXGenerator`, so every message is a strongly typed `IResxLocalizer` member. |
@@ -262,11 +262,14 @@ Conventions rot under deadline pressure. These do not, because the build checks 
 | Queries never compare a strongly typed id through `.Value` (EF cannot translate it) | `StronglyTypedIdQueryTests` |
 | Aggregate methods take child entities, never child ids | `AggregateChildEntityParameterTests` |
 | Stock ledger rows are written only by the `StockLevel` aggregate | `StockMovementWriteGuardTests` |
+| Each owner and administration route asks the scope it should | `StockLevelRouteScopesTests`, `StockReservationRouteScopesTests`, `StoreRouteScopesTests` |
+| Every Inventory error key has a localized text | `ErrorKeyLocalizationTests` |
+| Product writes go through the store status gate | `StoreStatusGuardTests`, and the `internal` `Product` mutators |
 | Every endpoint scope exists in the Keycloak realm, and every realm scope is used | `PermissionCoverageTests` |
 | Handlers that bind request parts declare `[AsParameters]` | `EndpointParameterBindingTests` |
 | Every model migration has a committed SQL script | `make check-migration-drift`, run in CI |
 | The app never starts against an unmigrated database | `MigrationGuard` |
-| Production never boots with a fake provider | Startup validation rejects the `Dummy` SMS, email, push and captcha providers, a fixed OTP code, a cache without Redis (unless explicitly allowed) and SignalR without a Redis backplane. Outside Development it also rejects the checked-in secret protection key |
+| Production never boots with a fake provider | Startup validation rejects the `Dummy` SMS, email, push and captcha providers, a fixed OTP code, a cache without Redis (unless explicitly allowed) and SignalR without a Redis backplane. Outside Development it also rejects the checked-in secret protection key, and in Production it rejects `AllowPrivateWarehouseAddresses` and refuses a `Dummy` warehouse connection |
 | Zero warnings | `TreatWarningsAsErrors` with analyzers on |
 
 ## Database changes
