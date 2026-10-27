@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Products.Application.Exports;
 using Products.Application.Persistence;
+using Products.Domain.Products;
+using Products.Domain.ProductTemplates;
 using Products.Domain.Stores;
 using Products.Infrastructure.Exports;
 using Products.Tests.Support;
@@ -74,13 +76,45 @@ public class ProductExportJobRunnerTests(IntegrationTestWebAppFactory factory) :
         Assert.Equal("text/csv", PrivateStore.ContentTypeOf(job.ObjectKey!));
 
         var lines = ReadCsv(job).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-        Assert.Equal("Id,StoreId,Name,Description,Quantity,Price,CreatedOn", lines[0]);
+        Assert.Equal("Id,StoreId,Name,Description,Quantity,Price,Sku,CreatedOn", lines[0]);
         Assert.Equal(4, lines.Length);
         Assert.Contains(lines, l => l.Contains("\"Lamp, desk\"", StringComparison.Ordinal));
         Assert.Contains(lines, l => l.Contains("\"Say \"\"hi\"\"\"", StringComparison.Ordinal));
         Assert.Contains(lines, l => l.Contains("'=SUM(A1)", StringComparison.Ordinal));
         Assert.DoesNotContain(lines, l => l.Contains("Other store product", StringComparison.Ordinal));
         Assert.All(lines.Skip(1), l => Assert.Contains(wanted.Store.Id.ToString(), l, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Run_ProductWithASku_WritesItInTheSkuColumn()
+    {
+        var store = Store.Create(DefaultUser, $"Store {Guid.NewGuid():N}", "Description", "Address");
+        var template = ProductTemplate.Create("Brand", "Model", "Color");
+        Db.Stores.Add(store);
+        Db.ProductTemplates.Add(template);
+        store.AddProduct(Product.Create(store.Id, template.Id, "With sku", "d", 1, 10m, "SKU-1"));
+        store.AddProduct(Product.Create(store.Id, template.Id, "Without sku", "d", 1, 10m));
+        await Db.SaveChangesAsync();
+        Db.ChangeTracker.Clear();
+        var queued = await QueueJobAsync(store.Id);
+
+        await RunMessageAsync(queued.Id);
+
+        var lines = ReadCsv(await ReadJobAsync(queued.Id)).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+        var skuColumn = lines[0].Split(',').ToList().IndexOf("Sku");
+        Assert.Equal("SKU-1", lines.Single(l => l.Contains("With sku", StringComparison.Ordinal)).Split(',')[skuColumn]);
+        Assert.Equal(string.Empty, lines.Single(l => l.Contains("Without sku", StringComparison.Ordinal)).Split(',')[skuColumn]);
+    }
+
+    [Fact]
+    public async Task Run_Header_CarriesEveryColumnTheImportReads()
+    {
+        var queued = await QueueJobAsync();
+
+        await RunMessageAsync(queued.Id);
+
+        var header = ReadCsv(await ReadJobAsync(queued.Id)).Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[0].Split(',');
+        Assert.All(Workbooks.ImportColumns, column => Assert.Contains(column, header));
     }
 
     [Fact]

@@ -31,7 +31,8 @@ public sealed partial class ProductExportJobRunner(
     TimeProvider timeProvider,
     ILogger<ProductExportJobRunner> logger)
 {
-    private static readonly string[] Header = ["Id", "StoreId", "Name", "Description", "Quantity", "Price", "CreatedOn"];
+    // Carries every column the product import reads (name, description, quantity, price, SKU) next to the export's own.
+    private static readonly string[] Header = ["Id", "StoreId", "Name", "Description", "Quantity", "Price", "Sku", "CreatedOn"];
 
     public async Task RunAsync(ProductExportJobId jobId, CancellationToken cancellationToken)
     {
@@ -96,7 +97,7 @@ public sealed partial class ProductExportJobRunner(
         {
             var request = new ExportPageRequest { PageNumber = 1, PageSize = options.Value.ExportPageSize, After = cursor, IncludeTotal = false };
             var page = (await query.PaginateAsync(
-                    p => new ExportRow(p.Id, p.StoreId, p.Name, p.Description, p.Quantity, p.Price, p.CreatedOn),
+                    p => new ExportRow(p.Id, p.StoreId, p.Name, p.Description, p.Quantity, p.Price, p.Sku, p.CreatedOn),
                     request,
                     orderBy: p => p.CreatedOn,
                     tiebreaker: p => p.Id,
@@ -126,7 +127,7 @@ public sealed partial class ProductExportJobRunner(
 
     private sealed record ExportPageRequest : PaginationRequest;
 
-    private sealed record ExportRow(ProductId Id, StoreId StoreId, string Name, string Description, int Quantity, decimal Price, DateTimeOffset CreatedOn);
+    private sealed record ExportRow(ProductId Id, StoreId StoreId, string Name, string Description, int Quantity, decimal Price, string? Sku, DateTimeOffset CreatedOn);
 
     private static string?[] ToFields(ExportRow row)
     {
@@ -138,6 +139,7 @@ public sealed partial class ProductExportJobRunner(
             row.Description,
             row.Quantity.ToString(CultureInfo.InvariantCulture),
             row.Price.ToString(CultureInfo.InvariantCulture),
+            row.Sku,
             CsvWriter.FormatDate(row.CreatedOn)
         ];
     }
