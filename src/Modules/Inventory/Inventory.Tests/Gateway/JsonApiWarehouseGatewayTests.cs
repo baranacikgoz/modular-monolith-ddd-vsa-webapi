@@ -173,4 +173,52 @@ public class JsonApiWarehouseGatewayTests : WarehouseTransportTestBase
         Assert.True(result.IsFailure);
         Assert.Single(Handler.Requests);
     }
+
+    [Fact]
+    public async Task PushStockAsync_SuccessResponse_ReturnsTheBatchReferenceAfterOneBearerAuthenticatedJsonPost()
+    {
+        Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { confirmationReference = "wh-batch-1" });
+        WarehouseStockQuantity[] quantities = [new("product-1", 7), new("product-2", 0)];
+
+        var result = await NewGateway().PushStockAsync(quantities, CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal("wh-batch-1", result.Value);
+        var request = Assert.Single(Handler.Requests);
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.Equal(new Uri("https://warehouse.example-partner.local/api/stock/levels"), request.Uri);
+        Assert.Equal($"Bearer {Credential}", request.Authorization);
+        Assert.Equal("application/json", request.ContentType);
+        using var body = JsonDocument.Parse(request.Body);
+        var items = body.RootElement.GetProperty("items").EnumerateArray().ToList();
+        Assert.Equal(2, items.Count);
+        Assert.Equal("product-1", items[0].GetProperty("productReference").GetString());
+        Assert.Equal(7, items[0].GetProperty("quantity").GetInt32());
+        Assert.Equal("product-2", items[1].GetProperty("productReference").GetString());
+        Assert.Equal(0, items[1].GetProperty("quantity").GetInt32());
+    }
+
+    [Fact]
+    public async Task PushStockAsync_ServerErrorResponse_ReturnsBadGatewayAndIsSentOnce()
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+        var result = await NewGateway().PushStockAsync([new("product-1", 1)], CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("WarehouseGatewayCallFailed", result.Error!.Key);
+        Assert.Single(Handler.Requests);
+    }
+
+    // The quantities are absolute, so the caller can safely send the current ones again; the pipeline itself still never does.
+    [Fact]
+    public async Task PushStockAsync_TransportFailure_IsAnUnknownOutcomeAndTheBatchIsNotSentAgain()
+    {
+        Handler.Responder = _ => throw new HttpRequestException("Connection reset by peer.");
+
+        await Assert.ThrowsAsync<WarehouseOutcomeUnknownException>(
+            () => NewGateway().PushStockAsync([new("product-1", 1)], CancellationToken.None));
+
+        Assert.Single(Handler.Requests);
+    }
 }

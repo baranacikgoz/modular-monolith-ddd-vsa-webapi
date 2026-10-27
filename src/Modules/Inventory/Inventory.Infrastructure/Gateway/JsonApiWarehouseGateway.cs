@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Inventory.Application.Gateway;
 using Polly;
 
 namespace Inventory.Infrastructure.Gateway;
@@ -23,6 +24,15 @@ internal sealed class JsonApiWarehouseGateway(
             HttpMethod.Get, Resolve($"releases/{Uri.EscapeDataString(productReference)}/status")));
     }
 
+    protected override HttpRequestMessage BuildPushStockRequest(IReadOnlyCollection<WarehouseStockQuantity> quantities)
+    {
+        return Authenticated(new HttpRequestMessage(HttpMethod.Post, Resolve("stock/levels"))
+        {
+            Content = JsonContent.Create(new PushStockRequestBody(
+                [.. quantities.Select(q => new PushStockItem(q.ProductReference, q.Quantity))]))
+        });
+    }
+
     protected override async Task<string?> ReadReferenceAsync(HttpContent content, CancellationToken cancellationToken)
     {
         var body = await content.ReadFromJsonAsync<ReleaseResponseBody>(cancellationToken);
@@ -36,6 +46,10 @@ internal sealed class JsonApiWarehouseGateway(
     }
 
     private sealed record ReleaseRequestBody(string ProductReference, int Quantity);
+
+    private sealed record PushStockRequestBody(IReadOnlyList<PushStockItem> Items);
+
+    private sealed record PushStockItem(string ProductReference, int Quantity);
 
     private sealed record ReleaseResponseBody(string? ConfirmationReference);
 }

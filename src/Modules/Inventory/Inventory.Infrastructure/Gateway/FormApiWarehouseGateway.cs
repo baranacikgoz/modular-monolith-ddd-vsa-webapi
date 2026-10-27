@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Net.Http.Json;
+using Inventory.Application.Gateway;
 using Polly;
 
 namespace Inventory.Infrastructure.Gateway;
@@ -30,6 +31,18 @@ internal sealed class FormApiWarehouseGateway(
     {
         return Authenticated(new HttpRequestMessage(
             HttpMethod.Get, Resolve($"v2/holds/release?sku={Uri.EscapeDataString(productReference)}")));
+    }
+
+    protected override HttpRequestMessage BuildPushStockRequest(IReadOnlyCollection<WarehouseStockQuantity> quantities)
+    {
+        return Authenticated(new HttpRequestMessage(HttpMethod.Post, Resolve("v2/stock/sync"))
+        {
+            Content = new FormUrlEncodedContent(quantities.SelectMany((q, index) => new[]
+            {
+                KeyValuePair.Create($"sku[{index}]", q.ProductReference),
+                KeyValuePair.Create($"units[{index}]", q.Quantity.ToString(CultureInfo.InvariantCulture))
+            }))
+        });
     }
 
     protected override async Task<string?> ReadReferenceAsync(HttpContent content, CancellationToken cancellationToken)
