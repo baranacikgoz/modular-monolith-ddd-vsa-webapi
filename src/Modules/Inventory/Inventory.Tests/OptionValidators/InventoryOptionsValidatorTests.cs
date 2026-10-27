@@ -31,4 +31,22 @@ public class InventoryOptionsValidatorTests
 
         Assert.False(result.IsValid);
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void NonPositiveWebhookDeliveryRetentionDays_FailsValidation(int days)
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(webhookDeliveryRetentionDays: days));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void EmptyWebhookDeliveryRetentionCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(webhookDeliveryRetentionCron: ""));
+
+        Assert.False(result.IsValid);
+    }
 }

@@ -25,6 +25,15 @@ public class InventoryOptions
 
     /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
     public required int WebhookMaxBodyBytes { get; set; }
+
+    /// <summary>
+    ///     Days a recorded webhook delivery id is kept. It has to outlive the longest span in which the warehouse system may deliver
+    ///     the same delivery again; after that the record only takes space.
+    /// </summary>
+    public required int WebhookDeliveryRetentionDays { get; set; }
+
+    /// <summary>Cron for the recurring job that deletes recorded webhook deliveries older than <see cref="WebhookDeliveryRetentionDays" />.</summary>
+    public required string WebhookDeliveryRetentionCron { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -59,5 +68,13 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.WebhookMaxBodyBytes)
             .GreaterThan(0)
             .WithMessage("WebhookMaxBodyBytes must be greater than 0.");
+
+        RuleFor(x => x.WebhookDeliveryRetentionDays)
+            .GreaterThan(0)
+            .WithMessage("WebhookDeliveryRetentionDays must be greater than 0.");
+
+        RuleFor(x => x.WebhookDeliveryRetentionCron)
+            .NotEmpty()
+            .WithMessage("WebhookDeliveryRetentionCron must not be empty.");
     }
 }

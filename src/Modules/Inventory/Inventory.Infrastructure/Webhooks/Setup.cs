@@ -4,8 +4,10 @@ namespace Inventory.Infrastructure.Webhooks;
 
 public static class Setup
 {
-    public static IServiceCollection AddWarehouseWebhookIntake(this IServiceCollection services)
+    public static IServiceCollection AddWarehouseWebhooks(this IServiceCollection services)
     {
-        return services.AddScoped<WarehouseWebhookIntake>();
+        services.AddScoped<WarehouseWebhookIntake>();
+        services.AddScoped<WebhookDeliveryRetentionService>();
+        return services.AddHostedService<WebhookDeliveryRetentionJobRegistrar>();
     }
 }

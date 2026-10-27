@@ -6,6 +6,8 @@
     "StockReservationExpirySweepBatchSize": 100,
     "ProductSummaryReconciliationCron": "0 3 * * *",
     "BusinessTimeZoneId": "Europe/Berlin",
-    "WebhookMaxBodyBytes": 65536
+    "WebhookMaxBodyBytes": 65536,
+    "WebhookDeliveryRetentionDays": 30,
+    "WebhookDeliveryRetentionCron": "0 4 * * *"
   }
 }

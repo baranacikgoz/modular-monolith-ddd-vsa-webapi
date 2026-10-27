@@ -35,7 +35,7 @@ public sealed class InventoryModule : IModule
         services.AddStockReservationExpirySweep();
         services.AddProductSummaryReconciliation();
         services.AddWarehouseGatewayInfrastructure();
-        services.AddWarehouseWebhookIntake();
+        services.AddWarehouseWebhooks();
     }
 
     public void UseModule(IApplicationBuilder app)
