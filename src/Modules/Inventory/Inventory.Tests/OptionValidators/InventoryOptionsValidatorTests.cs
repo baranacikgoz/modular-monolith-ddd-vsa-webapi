@@ -49,4 +49,49 @@ public class InventoryOptionsValidatorTests
 
         Assert.False(result.IsValid);
     }
+
+    [Fact]
+    public void EmptyStockPushDirtySweepCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockPushDirtySweepCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void EmptyStockJobHousekeepingCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockJobHousekeepingCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void EmptyStockJobRequeueCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockJobRequeueCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(nameof(InventoryOptions.StockPushDirtyMinAgeSeconds))]
+    [InlineData(nameof(InventoryOptions.StockPushBatchSize))]
+    [InlineData(nameof(InventoryOptions.StockPushBatchesPerMessage))]
+    [InlineData(nameof(InventoryOptions.StockPushConcurrentMessageLimit))]
+    [InlineData(nameof(InventoryOptions.SweepPageSize))]
+    [InlineData(nameof(InventoryOptions.BulkAdjustJobConcurrentMessageLimit))]
+    [InlineData(nameof(InventoryOptions.BulkAdjustBatchesPerMessage))]
+    [InlineData(nameof(InventoryOptions.BulkAdjustMaxStoredRowErrors))]
+    [InlineData(nameof(InventoryOptions.StockJobRunningLeaseMinutes))]
+    [InlineData(nameof(InventoryOptions.StockJobMaxRequeues))]
+    public void ZeroTunable_FailsValidation(string tunable)
+    {
+        var options = TestInventoryOptions.Create();
+        typeof(InventoryOptions).GetProperty(tunable)!.SetValue(options, 0);
+
+        var result = new InventoryOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+    }
 }

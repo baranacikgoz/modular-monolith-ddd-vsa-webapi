@@ -101,4 +101,34 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
 
         Assert.Single(Handler.Requests);
     }
+
+    [Fact]
+    public async Task PushStockAsync_SuccessResponse_ReturnsTheReferenceAfterOneApiKeyAuthenticatedFormPost()
+    {
+        Handler.Responder = _ => FakeWarehouseHandler.Json(HttpStatusCode.OK, new { result = new { reference = "form-batch-4" } });
+        WarehouseStockQuantity[] quantities = [new("product-1", 7), new("product-2", 0)];
+
+        var result = await NewGateway().PushStockAsync(quantities, CancellationToken.None);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal("form-batch-4", result.Value);
+        var request = Assert.Single(Handler.Requests);
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.Equal(new Uri("https://warehouse.example-other.local/gateway/v2/stock/sync"), request.Uri);
+        Assert.Equal(Credential, request.ApiKey);
+        Assert.Null(request.Authorization);
+        Assert.Equal("application/x-www-form-urlencoded", request.ContentType);
+        Assert.Equal("sku%5B0%5D=product-1&units%5B0%5D=7&sku%5B1%5D=product-2&units%5B1%5D=0", request.Body);
+    }
+
+    [Fact]
+    public async Task PushStockAsync_TooManyRequests_ReturnsThrottled()
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.TooManyRequests);
+
+        var result = await NewGateway().PushStockAsync([new("product-1", 1)], CancellationToken.None);
+
+        Assert.Equal("WarehouseGatewayThrottled", result.Error!.Key);
+        Assert.Single(Handler.Requests);
+    }
 }

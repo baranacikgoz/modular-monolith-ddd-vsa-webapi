@@ -17,7 +17,8 @@ namespace Inventory.Infrastructure.Gateway;
 ///     <para>
 ///         Every call goes through <paramref name="pipeline" />, the pipeline of this connection and provider
 ///         (<see cref="WarehouseResiliencePipelines" />). It has no retry, so the release, which is not idempotent, is never sent
-///         twice by a retry; the reconcile call is a read and is simply asked again by whoever needs the answer. Our own quota
+///         twice by a retry; the reconcile call is a read and is simply asked again by whoever needs the answer. A stock push
+///         is no different for the pipeline, though its caller may always send fresh quantities again. Our own quota
 ///         and an open circuit stop a call before anything is sent, which is a definite outcome and comes back as a failed
 ///         <see cref="Result" />. A timeout or a dropped connection says nothing about what the warehouse did: it surfaces as a
 ///         <see cref="WarehouseOutcomeUnknownException" /> and the caller reconciles.
@@ -36,9 +37,16 @@ internal abstract class WarehouseHttpGateway(
         return SendAsync(BuildReconcileRequest(productReference), cancellationToken);
     }
 
+    public Task<Result<string>> PushStockAsync(IReadOnlyCollection<WarehouseStockQuantity> quantities, CancellationToken cancellationToken)
+    {
+        return SendAsync(BuildPushStockRequest(quantities), cancellationToken);
+    }
+
     protected abstract HttpRequestMessage BuildReleaseRequest(string productReference, int quantity);
 
     protected abstract HttpRequestMessage BuildReconcileRequest(string productReference);
+
+    protected abstract HttpRequestMessage BuildPushStockRequest(IReadOnlyCollection<WarehouseStockQuantity> quantities);
 
     /// <summary>The confirmation reference in a successful answer, or null when the body does not carry one.</summary>
     protected abstract Task<string?> ReadReferenceAsync(HttpContent content, CancellationToken cancellationToken);

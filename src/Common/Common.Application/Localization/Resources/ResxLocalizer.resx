@@ -569,6 +569,27 @@
   <data name="StockLevels_Movements_Id_NotEmpty" xml:space="preserve">
     <value>Stok seviyesi Id boş olamaz.</value>
   </data>
+  <data name="StockLevels_BulkAdjust_File_NotEmpty" xml:space="preserve">
+    <value>Dosya boş olamaz.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_File_InvalidExtension" xml:space="preserve">
+    <value>Dosya .xlsx veya .xls olmalıdır.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_ClientRequestId_NotEmpty" xml:space="preserve">
+    <value>İstek kimliği boş olamaz.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_ClientRequestId_MaxLength" xml:space="preserve">
+    <value>İstek kimliği en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_Reason_NotEmpty" xml:space="preserve">
+    <value>Düzeltme nedeni boş olamaz.</value>
+  </data>
+  <data name="StockLevels_BulkAdjust_Reason_MaximumLength" xml:space="preserve">
+    <value>Düzeltme nedeni en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="StockLevels_GetBulkAdjustment_Id_NotEmpty" xml:space="preserve">
+    <value>Toplu düzeltme işi Id boş olamaz.</value>
+  </data>
   <data name="WarehouseConnections_Create_StoreId_NotEmpty" xml:space="preserve">
     <value>Mağaza Id boş olamaz.</value>
   </data>

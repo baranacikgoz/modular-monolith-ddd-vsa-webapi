@@ -8,6 +8,19 @@
     "BusinessTimeZoneId": "Europe/Berlin",
     "WebhookMaxBodyBytes": 65536,
     "WebhookDeliveryRetentionDays": 30,
-    "WebhookDeliveryRetentionCron": "0 4 * * *"
+    "WebhookDeliveryRetentionCron": "0 4 * * *",
+    "StockPushDirtySweepCron": "0 */2 * * * *",
+    "StockPushDirtyMinAgeSeconds": 120,
+    "StockPushBatchSize": 100,
+    "StockPushBatchesPerMessage": 10,
+    "StockPushConcurrentMessageLimit": 4,
+    "SweepPageSize": 100,
+    "BulkAdjustJobConcurrentMessageLimit": 2,
+    "BulkAdjustBatchesPerMessage": 10,
+    "BulkAdjustMaxStoredRowErrors": 200,
+    "StockJobHousekeepingCron": "0 25 * * * *",
+    "StockJobRequeueCron": "0 */5 * * * *",
+    "StockJobRunningLeaseMinutes": 15,
+    "StockJobMaxRequeues": 3
   }
 }

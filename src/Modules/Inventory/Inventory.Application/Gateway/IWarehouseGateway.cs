@@ -14,6 +14,10 @@ namespace Inventory.Application.Gateway;
 ///         anything was sent); an exception (timeout, connection reset) is ambiguous and must be resolved with
 ///         <see cref="ReconcileReleaseAsync" />.
 ///     </para>
+///     <para>
+///         <see cref="PushStockAsync" /> follows the same rules but needs no reconcile call: it sets absolute quantities, so
+///         after an unknown outcome the caller simply sends the then current quantities again.
+///     </para>
 /// </summary>
 public interface IWarehouseGateway
 {
@@ -28,4 +32,10 @@ public interface IWarehouseGateway
     ///     itself after an ambiguous failure without reconciling first.
     /// </summary>
     Task<Result<string>> ReconcileReleaseAsync(string productReference, CancellationToken cancellationToken);
+
+    /// <summary>
+    ///     Sets the quantity the warehouse shows for each product in <paramref name="quantities" /> in one call. Returns the
+    ///     provider's reference of the batch on success. Safe to send again with fresh quantities, never retried by the pipeline.
+    /// </summary>
+    Task<Result<string>> PushStockAsync(IReadOnlyCollection<WarehouseStockQuantity> quantities, CancellationToken cancellationToken);
 }
