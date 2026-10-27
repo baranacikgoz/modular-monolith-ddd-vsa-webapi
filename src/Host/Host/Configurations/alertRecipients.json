@@ -1,0 +1,9 @@
+{
+  "AlertRecipientsOptions": {
+    "RoleName": "staff",
+    "ReconcileCron": "15 3 * * *",
+    "EmailSubjectTemplate": "[Critical alert] {0}",
+    "EmailHtmlBodyTemplate": "<h3>{0}</h3><p>{1}</p>",
+    "EmailTextBodyTemplate": "{0}\n\n{1}"
+  }
+}

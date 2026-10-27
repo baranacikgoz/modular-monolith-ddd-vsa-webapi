@@ -30,6 +30,10 @@ public class NotificationsTestFactory : IntegrationTestFactory
             // "live sessions" answer directly.
             services.AddSingleton(
                 Substitute.For<IInterModuleRequestClient<GetActiveSessionIdsRequest, GetActiveSessionIdsResponse>>());
+
+            // Same for the role-member pager behind the alert recipients projection.
+            services.AddSingleton(
+                Substitute.For<IInterModuleRequestClient<GetUsersInRolePageRequest, GetUsersInRolePageResponse>>());
         });
     }
 }

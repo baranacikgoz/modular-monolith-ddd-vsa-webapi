@@ -10,6 +10,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/localization");
         AddJsonFile(configuration, $"{configurationsDirectory}/keycloak");
         AddJsonFile(configuration, $"{configurationsDirectory}/devices");
+        AddJsonFile(configuration, $"{configurationsDirectory}/alertRecipients");
         AddJsonFile(configuration, $"{configurationsDirectory}/database");
         AddJsonFile(configuration, $"{configurationsDirectory}/otp");
         AddJsonFile(configuration, $"{configurationsDirectory}/captcha");

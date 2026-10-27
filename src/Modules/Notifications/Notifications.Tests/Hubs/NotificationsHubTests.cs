@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Common.Application.Auth;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Notifications.Application.Hubs;
@@ -45,5 +47,39 @@ public sealed class NotificationsHubTests : IDisposable
         _context.UserIdentifier.Returns((string?)null);
 
         await Assert.ThrowsAsync<HubException>(() => _hub.OnConnectedAsync());
+    }
+
+    private static ClaimsPrincipal PrincipalWithRoles(params string[] roles)
+    {
+        var identity = new ClaimsIdentity(
+            roles.Select(role => new Claim(JwtClaimNames.Roles, role)), "test", nameType: null, roleType: JwtClaimNames.Roles);
+        return new ClaimsPrincipal(identity);
+    }
+
+    /// <summary>Critical alerts addressed to a role are pushed to that role's group, so a connection joins one group per role it holds.</summary>
+    [Fact]
+    public async Task OnConnectedAsync_UserWithRoles_AlsoJoinsOneGroupPerRole()
+    {
+        _context.UserIdentifier.Returns("user-1");
+        _context.ConnectionId.Returns("conn-1");
+        _context.User.Returns(PrincipalWithRoles(KeycloakRoles.Staff, KeycloakRoles.StoreOwner, KeycloakRoles.Staff));
+
+        await _hub.OnConnectedAsync();
+
+        await _groups.Received(1).AddToGroupAsync("conn-1", NotificationGroupName.ForRole(KeycloakRoles.Staff), Arg.Any<CancellationToken>());
+        await _groups.Received(1).AddToGroupAsync("conn-1", NotificationGroupName.ForRole(KeycloakRoles.StoreOwner), Arg.Any<CancellationToken>());
+        await _groups.Received(3).AddToGroupAsync("conn-1", Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task OnConnectedAsync_UserWithoutRoles_JoinsOnlyTheUserGroup()
+    {
+        _context.UserIdentifier.Returns("user-2");
+        _context.ConnectionId.Returns("conn-2");
+        _context.User.Returns(PrincipalWithRoles());
+
+        await _hub.OnConnectedAsync();
+
+        await _groups.Received(1).AddToGroupAsync("conn-2", Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 }
