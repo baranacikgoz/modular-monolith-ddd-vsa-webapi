@@ -54,6 +54,12 @@
       "QueueLimit": 0,
       "FailOpen": false
     },
+    "StoreApplication": {
+      "Limit": 5,
+      "PeriodInMs": 3600000,
+      "QueueLimit": 0,
+      "FailOpen": true
+    },
     "ExemptPathPrefixes": [ "/hubs" ]
   }
 }

@@ -34,6 +34,9 @@ public static class KeycloakScopes
         public const string CreateOwn = "stores:create-own";
         public const string ViewOwn = "stores:view-own";
         public const string UpdateOwn = "stores:update-own";
+        public const string Approve = "stores:approve";
+        public const string Suspend = "stores:suspend";
+        public const string Reinstate = "stores:reinstate";
     }
 
     public static class Products

@@ -863,4 +863,43 @@
   <data name="Products_RemoveImage_ImageId_NotEmpty" xml:space="preserve">
     <value>Görsel Id boş olamaz.</value>
   </data>
+  <data name="Stores_v1_Apply_Email_MaxLength" xml:space="preserve">
+    <value>E-posta en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_NotEmpty" xml:space="preserve">
+    <value>Mağaza adı boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_MaxLength" xml:space="preserve">
+    <value>Mağaza adı en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_NotEmpty" xml:space="preserve">
+    <value>Mağaza açıklaması boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_MaxLength" xml:space="preserve">
+    <value>Mağaza açıklaması en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_NotEmpty" xml:space="preserve">
+    <value>Mağaza adresi boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_MaxLength" xml:space="preserve">
+    <value>Mağaza adresi en fazla ({0}) karakter olabilir.</value>
+  </data>
+  <data name="Stores_v1_Approve_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Suspend_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="Stores_v1_Reinstate_Id_NotEmpty" xml:space="preserve">
+    <value>Mağaza Id boş olamaz.</value>
+  </data>
+  <data name="NotPendingApproval" xml:space="preserve">
+    <value>Mağaza onay beklemiyor.</value>
+  </data>
+  <data name="NotActive" xml:space="preserve">
+    <value>Mağaza aktif değil.</value>
+  </data>
+  <data name="NotSuspended" xml:space="preserve">
+    <value>Mağaza askıda değil.</value>
+  </data>
 </root>

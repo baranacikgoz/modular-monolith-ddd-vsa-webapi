@@ -804,4 +804,43 @@
   <data name="Products_RemoveImage_ImageId_NotEmpty" xml:space="preserve">
     <value>Image id must not be empty.</value>
   </data>
+  <data name="Stores_v1_Apply_Email_MaxLength" xml:space="preserve">
+    <value>Email can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_NotEmpty" xml:space="preserve">
+    <value>Store name cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreName_MaxLength" xml:space="preserve">
+    <value>Store name can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_NotEmpty" xml:space="preserve">
+    <value>Store description cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreDescription_MaxLength" xml:space="preserve">
+    <value>Store description can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_NotEmpty" xml:space="preserve">
+    <value>Store address cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Apply_StoreAddress_MaxLength" xml:space="preserve">
+    <value>Store address can be at most ({0}) characters long.</value>
+  </data>
+  <data name="Stores_v1_Approve_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Suspend_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="Stores_v1_Reinstate_Id_NotEmpty" xml:space="preserve">
+    <value>Store ID cannot be empty.</value>
+  </data>
+  <data name="NotPendingApproval" xml:space="preserve">
+    <value>The store is not waiting for approval.</value>
+  </data>
+  <data name="NotActive" xml:space="preserve">
+    <value>The store is not active.</value>
+  </data>
+  <data name="NotSuspended" xml:space="preserve">
+    <value>The store is not suspended.</value>
+  </data>
 </root>

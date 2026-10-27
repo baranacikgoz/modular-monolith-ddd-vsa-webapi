@@ -22,6 +22,7 @@ public class RequestLoggingSensitivePathsTests
         { "POST", "/otp/email/verify" },
         { "POST", "/users/register/self" },
         { "POST", "/users/register/self/email" },
+        { "POST", "/v1/stores/applications" },
     };
 
     public static TheoryData<string, string> ResponseRoutesCarryingASecret => new()

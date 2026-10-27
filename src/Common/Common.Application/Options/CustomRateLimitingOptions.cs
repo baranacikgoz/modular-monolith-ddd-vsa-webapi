@@ -23,6 +23,8 @@ public class CustomRateLimitingOptions
 
     public required FixedWindow OtpVerify { get; set; }
 
+    public required FixedWindow StoreApplication { get; set; }
+
     /// <summary>
     /// Path prefixes the global limiter never applies to. Rate-limiting a persistent connection (e.g.
     /// a SignalR hub) is meaningless: reconnect storms and long-polling fallback would otherwise 429.
@@ -77,6 +79,9 @@ public class CustomRateLimitingOptionsValidator : CustomValidator<CustomRateLimi
             .SetValidator(new FixedWindowValidator());
 
         RuleFor(o => o.OtpVerify)
+            .SetValidator(new FixedWindowValidator());
+
+        RuleFor(o => o.StoreApplication)
             .SetValidator(new FixedWindowValidator());
 #pragma warning restore CS8620
     }
