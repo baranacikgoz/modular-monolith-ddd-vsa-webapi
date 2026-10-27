@@ -2,6 +2,7 @@ using Inventory.Application.Persistence;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockPushes;
 using Inventory.Domain.WarehouseConnections;
+using Inventory.Infrastructure.StockPushes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,6 +44,14 @@ internal static class StockPushTestData
         var stockLevel = await db.StockLevels.SingleAsync(s => s.Id == id);
         stockLevel.Receive(quantity, "Delivery");
         await db.SaveChangesAsync();
+    }
+
+    /// <summary>Marks a stock level dirty as of <paramref name="markedOn" />, without changing its quantity.</summary>
+    public static async Task MarkAsync(IServiceProvider services, StockLevel stockLevel, DefaultIdType storeId, DateTimeOffset markedOn)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+        await StockPushMarks.MarkAsync(db, stockLevel.Id, storeId, stockLevel.ProductId, markedOn, CancellationToken.None);
     }
 
     public static async Task<List<StockPushDirtyItem>> DirtyItemsAsync(IServiceProvider services)

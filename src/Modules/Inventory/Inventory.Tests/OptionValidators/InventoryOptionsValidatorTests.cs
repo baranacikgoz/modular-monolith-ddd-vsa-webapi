@@ -49,4 +49,28 @@ public class InventoryOptionsValidatorTests
 
         Assert.False(result.IsValid);
     }
+
+    [Fact]
+    public void EmptyStockPushDirtySweepCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create(configure: o => o.StockPushDirtySweepCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(nameof(InventoryOptions.StockPushDirtyMinAgeSeconds))]
+    [InlineData(nameof(InventoryOptions.StockPushBatchSize))]
+    [InlineData(nameof(InventoryOptions.StockPushBatchesPerMessage))]
+    [InlineData(nameof(InventoryOptions.StockPushConcurrentMessageLimit))]
+    [InlineData(nameof(InventoryOptions.SweepPageSize))]
+    public void ZeroTunable_FailsValidation(string tunable)
+    {
+        var options = TestInventoryOptions.Create();
+        typeof(InventoryOptions).GetProperty(tunable)!.SetValue(options, 0);
+
+        var result = new InventoryOptionsValidator().Validate(options);
+
+        Assert.False(result.IsValid);
+    }
 }

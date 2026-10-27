@@ -34,6 +34,30 @@ public class InventoryOptions
 
     /// <summary>Cron for the recurring job that deletes recorded webhook deliveries older than <see cref="WebhookDeliveryRetentionDays" />.</summary>
     public required string WebhookDeliveryRetentionCron { get; set; }
+
+    /// <summary>
+    ///     Cron for the recurring sweep that republishes the push of every connection with a stock mark older than
+    ///     <see cref="StockPushDirtyMinAgeSeconds" />. The sweep only publishes; a push runs in the queue consumer.
+    /// </summary>
+    public required string StockPushDirtySweepCron { get; set; }
+
+    /// <summary>
+    ///     A stock mark younger than this is left to the push its own change queued; an older one means that push was lost or
+    ///     failed, and the sweep queues another.
+    /// </summary>
+    public required int StockPushDirtyMinAgeSeconds { get; set; }
+
+    /// <summary>Stock levels sent to the warehouse in one gateway call.</summary>
+    public required int StockPushBatchSize { get; set; }
+
+    /// <summary>Gateway calls one push message makes before it queues a continuation for itself when marks remain.</summary>
+    public required int StockPushBatchesPerMessage { get; set; }
+
+    /// <summary>Push messages one pod works on at once. Also the consumer's prefetch count.</summary>
+    public required int StockPushConcurrentMessageLimit { get; set; }
+
+    /// <summary>Connections (or job rows) one page of a recurring sweep publishes before the next page is read.</summary>
+    public required int SweepPageSize { get; set; }
 }
 
 public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
@@ -76,5 +100,29 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.WebhookDeliveryRetentionCron)
             .NotEmpty()
             .WithMessage("WebhookDeliveryRetentionCron must not be empty.");
+
+        RuleFor(x => x.StockPushDirtySweepCron)
+            .NotEmpty()
+            .WithMessage("StockPushDirtySweepCron must not be empty.");
+
+        RuleFor(x => x.StockPushDirtyMinAgeSeconds)
+            .GreaterThan(0)
+            .WithMessage("StockPushDirtyMinAgeSeconds must be greater than 0.");
+
+        RuleFor(x => x.StockPushBatchSize)
+            .GreaterThan(0)
+            .WithMessage("StockPushBatchSize must be greater than 0.");
+
+        RuleFor(x => x.StockPushBatchesPerMessage)
+            .GreaterThan(0)
+            .WithMessage("StockPushBatchesPerMessage must be greater than 0.");
+
+        RuleFor(x => x.StockPushConcurrentMessageLimit)
+            .GreaterThan(0)
+            .WithMessage("StockPushConcurrentMessageLimit must be greater than 0.");
+
+        RuleFor(x => x.SweepPageSize)
+            .GreaterThan(0)
+            .WithMessage("SweepPageSize must be greater than 0.");
     }
 }
