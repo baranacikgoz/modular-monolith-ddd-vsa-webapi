@@ -543,6 +543,12 @@
   <data name="WarehouseConnections_Create_BaseUrl_MustBeHttps" xml:space="preserve">
     <value>Base URL must be a valid address that starts with https.</value>
   </data>
+  <data name="WarehouseConnections_Create_BaseUrl_NoUserInfoOrFragment" xml:space="preserve">
+    <value>Base URL cannot contain user information or a fragment (#).</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_AddressNotAllowed" xml:space="preserve">
+    <value>Base URL cannot lead to a local, private or reserved network address.</value>
+  </data>
   <data name="WarehouseConnections_Create_ApiCredential_NotEmpty" xml:space="preserve">
     <value>API credential cannot be empty.</value>
   </data>
@@ -593,6 +599,9 @@
   </data>
   <data name="WarehouseGatewayCircuitOpen" xml:space="preserve">
     <value>Calls to the warehouse system failed repeatedly, so the connection is paused for a moment.</value>
+  </data>
+  <data name="WarehouseGatewayAddressNotAllowed" xml:space="preserve">
+    <value>The address of the warehouse connection leads to a local, private or reserved network, the request was not sent.</value>
   </data>
   <data name="WarehouseGatewayEndpointNotFound" xml:space="preserve">
     <value>The warehouse system has no such address for this request, check the base address of the connection.</value>

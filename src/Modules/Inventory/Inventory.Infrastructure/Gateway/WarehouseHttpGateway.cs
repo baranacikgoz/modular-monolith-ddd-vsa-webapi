@@ -79,6 +79,11 @@ internal abstract class WarehouseHttpGateway(
             {
                 return WarehouseGatewayErrors.CircuitOpen;
             }
+            catch (HttpRequestException ex) when (WarehouseAddressRefusedException.IsCauseOf(ex))
+            {
+                // The connect guard refused the host before a byte was sent: a definite outcome, not an unknown one.
+                return WarehouseGatewayErrors.AddressNotAllowed;
+            }
             catch (Exception ex) when (IsOutcomeUnknown(ex, cancellationToken))
             {
                 throw new WarehouseOutcomeUnknownException("The warehouse system did not answer in time.", ex);

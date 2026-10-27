@@ -8,6 +8,7 @@
     "StoreAccessReconciliationCron": "30 3 * * *",
     "BusinessTimeZoneId": "Europe/Berlin",
     "DailyTotalsMaxRangeDays": 366,
+    "AllowPrivateWarehouseAddresses": false,
     "WebhookMaxBodyBytes": 65536,
     "WebhookDeliveryRetentionDays": 30,
     "WebhookDeliveryRetentionCron": "0 4 * * *",

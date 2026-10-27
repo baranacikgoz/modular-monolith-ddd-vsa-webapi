@@ -22,6 +22,16 @@ public static class WarehouseGatewayErrors
         StatusCode = HttpStatusCode.BadGateway
     };
 
+    /// <summary>
+    ///     The connection's host is, or resolves to, a loopback, private or otherwise non public address, so the connection was
+    ///     refused before anything was sent. A definite outcome: the call did not happen.
+    /// </summary>
+    public static readonly Error AddressNotAllowed = new()
+    {
+        Key = "WarehouseGatewayAddressNotAllowed",
+        StatusCode = HttpStatusCode.BadGateway
+    };
+
     /// <summary>The warehouse answered 404 to a call that asks about one reference (a reconcile): it knows no such release.</summary>
     public static readonly Error ReferenceNotFound = Error.NotFound("WarehouseReference");
 

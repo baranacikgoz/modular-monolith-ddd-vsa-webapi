@@ -29,6 +29,13 @@ public class InventoryOptions
     /// <summary>Most business days one daily totals read may span, both ends included; a longer range is refused.</summary>
     public required int DailyTotalsMaxRangeDays { get; set; }
 
+    /// <summary>
+    ///     False (the safe reading) refuses a warehouse connection whose address is, or resolves to, a loopback, private,
+    ///     link-local or other non public address, both when the connection is created and on every outbound connect. True lets a
+    ///     developer point a connection at a stub on the local machine or network. Rejected in Production.
+    /// </summary>
+    public required bool AllowPrivateWarehouseAddresses { get; set; }
+
     /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
     public required int WebhookMaxBodyBytes { get; set; }
 
@@ -135,6 +142,13 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.DailyTotalsMaxRangeDays)
             .GreaterThan(0)
             .WithMessage("DailyTotalsMaxRangeDays must be greater than 0.");
+
+        // Allowing private addresses switches the server-side request forgery guard off, which only makes sense on a machine
+        // that talks to a stub.
+        RuleFor(x => x.AllowPrivateWarehouseAddresses)
+            .Must((_, allowed, context) => !context.IsProduction() || !allowed)
+            .WithMessage($"{nameof(InventoryOptions)}.{nameof(InventoryOptions.AllowPrivateWarehouseAddresses)} is true in Production. " +
+                         "Warehouse connections could then be pointed at the server's own network. Set it to false.");
 
         RuleFor(x => x.WebhookMaxBodyBytes)
             .GreaterThan(0)

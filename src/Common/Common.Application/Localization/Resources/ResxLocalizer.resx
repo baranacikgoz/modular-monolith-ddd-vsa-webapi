@@ -602,6 +602,12 @@
   <data name="WarehouseConnections_Create_BaseUrl_MustBeHttps" xml:space="preserve">
     <value>Temel adres https ile başlayan geçerli bir adres olmalıdır.</value>
   </data>
+  <data name="WarehouseConnections_Create_BaseUrl_NoUserInfoOrFragment" xml:space="preserve">
+    <value>Temel adres kullanıcı bilgisi veya parça (#) içeremez.</value>
+  </data>
+  <data name="WarehouseConnections_Create_BaseUrl_AddressNotAllowed" xml:space="preserve">
+    <value>Temel adres yerel, özel veya ayrılmış bir ağ adresine çıkamaz.</value>
+  </data>
   <data name="WarehouseConnections_Create_ApiCredential_NotEmpty" xml:space="preserve">
     <value>API kimlik bilgisi boş olamaz.</value>
   </data>
@@ -652,6 +658,9 @@
   </data>
   <data name="WarehouseGatewayCircuitOpen" xml:space="preserve">
     <value>Depo sistemine yapılan çağrılar art arda başarısız olduğu için bağlantı geçici olarak durduruldu.</value>
+  </data>
+  <data name="WarehouseGatewayAddressNotAllowed" xml:space="preserve">
+    <value>Depo bağlantısının adresi yerel, özel veya ayrılmış bir ağa çıkıyor, istek gönderilmedi.</value>
   </data>
   <data name="WarehouseGatewayEndpointNotFound" xml:space="preserve">
     <value>Depo sistemi bu isteğin adresini bulamadı, bağlantının temel adresini kontrol edin.</value>

@@ -1,4 +1,6 @@
 using Common.Application.Options;
+using Common.Application.Validation;
+using Common.Tests;
 using Inventory.Tests.Support;
 using Xunit;
 
@@ -12,6 +14,32 @@ public class InventoryOptionsValidatorTests
         var result = new InventoryOptionsValidator().Validate(TestInventoryOptions.Create());
 
         Assert.True(result.IsValid);
+    }
+
+    private static FluentValidation.Results.ValidationResult ValidateIn(string environmentName, bool allowPrivateWarehouseAddresses)
+    {
+        var options = TestInventoryOptions.Create(configure: o => o.AllowPrivateWarehouseAddresses = allowPrivateWarehouseAddresses);
+        var context = new FluentValidation.ValidationContext<InventoryOptions>(options);
+        context.RootContextData[ValidationContextExtensions.HostEnvironmentKey] = new FakeHostEnvironment(environmentName);
+        return new InventoryOptionsValidator().Validate(context);
+    }
+
+    [Fact]
+    public void PrivateWarehouseAddressesAllowedInProduction_FailsValidation()
+    {
+        var result = ValidateIn("Production", allowPrivateWarehouseAddresses: true);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == nameof(InventoryOptions.AllowPrivateWarehouseAddresses));
+    }
+
+    [Theory]
+    [InlineData("Development", true)]
+    [InlineData("Staging", true)]
+    [InlineData("Production", false)]
+    public void PrivateWarehouseAddressesSetting_OutsideTheProductionGuard_PassesValidation(string environmentName, bool allowed)
+    {
+        Assert.True(ValidateIn(environmentName, allowed).IsValid);
     }
 
     [Fact]

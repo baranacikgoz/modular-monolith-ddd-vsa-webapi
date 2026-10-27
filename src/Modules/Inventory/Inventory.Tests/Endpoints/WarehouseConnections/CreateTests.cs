@@ -107,6 +107,24 @@ public class CreateTests(IntegrationTestWebAppFactory factory) : BaseIntegration
         Assert.Equal(1, await db.WarehouseConnections.AsNoTracking().CountAsync(c => c.StoreId == storeId));
     }
 
+    // The server would call this address itself: it is refused before anything is encrypted or saved.
+    [Theory]
+    [InlineData("https://169.254.169.254/latest/meta-data")]
+    [InlineData("https://localhost:8443/api")]
+    [InlineData("https://10.0.0.5/api")]
+    public async Task Create_BaseUrlLeadingToAnInternalAddress_ReturnsBadRequestAndStoresNothing(string address)
+    {
+        var client = StockLevelTestData.AuthedClient(Factory);
+        var storeId = DefaultIdType.CreateVersion7();
+
+        var response = await client.PostAsJsonAsync(Route, BodyOf(storeId, baseUrl: address));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        await using var scope = Factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<IInventoryDbContext>();
+        Assert.False(await db.WarehouseConnections.AsNoTracking().AnyAsync(c => c.StoreId == storeId));
+    }
+
     [Fact]
     public async Task Create_InvalidRequest_ReturnsBadRequestAndStoresNothing()
     {

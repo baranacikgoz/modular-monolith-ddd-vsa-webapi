@@ -23,6 +23,7 @@ internal static class TestInventoryOptions
             StoreAccessReconciliationCron = "30 3 * * *",
             BusinessTimeZoneId = businessTimeZoneId,
             DailyTotalsMaxRangeDays = 366,
+            AllowPrivateWarehouseAddresses = false,
             WebhookMaxBodyBytes = 65536,
             WebhookDeliveryRetentionDays = webhookDeliveryRetentionDays,
             WebhookDeliveryRetentionCron = webhookDeliveryRetentionCron,
