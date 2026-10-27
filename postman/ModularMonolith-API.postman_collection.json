@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Modular Monolith DDD VSA API",
-    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite: 74 requests. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key`: get captcha key (auto-saves)\n2. `OTP > Send OTP`: send SMS with captcha\n3. `Auth > Create Tokens`: verify OTP, get JWT tokens (auto-saves)\n4. All other endpoints use auto-injected `{{accessToken}}`\n\nRequests that need an administrator scope (store approval, stock level changes, warehouse connections, product export) need a token of a user in the `system-admin` role. Requests that upload a file have an empty `File` field to fill in.\n\n### Postman Features Used:\n- **Collection variables**: auto-saved between requests\n- **Pre-request scripts**: auto-inject Bearer token\n- **Test scripts**: status, response time, schema checks\n- **Example responses**: structured success/error samples\n- **Bearer auth**: configured at collection level with `{{accessToken}}`",
+    "description": "## Modular Monolith + DDD + Vertical Slices Boilerplate\n\nFull API suite: 93 requests. Bearer JWT auth.\n\n### Auth Flow (run in order):\n1. `Captcha > Get Client Key`: get captcha key (auto-saves; only when the `IAM.Captcha` flag is on)\n2. `OTP > Send Login OTP`: send the SMS code (in development the code is always `{{otpCode}}`)\n3. `Auth > Create Tokens (Login)`: verify OTP, get JWT tokens (auto-saves). Staff and email accounts use `OTP > Send Email OTP`, `Verify Email OTP` and `Auth > Create Tokens by Email`\n4. All other endpoints use auto-injected `{{accessToken}}`\n\nRequests that need an administrator scope (store approval, stock level changes, warehouse connections, product export) need a token of a user in the `system-admin` role. Requests that upload a file have an empty `File` field to fill in. The `my` requests act on the caller's own stores; `Create My Warehouse Connection` needs the `store-owner` role, so refresh the token after the store was approved. Apply for a Store needs the email steps first (`Send Email OTP`, `Verify Email OTP`).\n\n### Postman Features Used:\n- **Collection variables**: auto-saved between requests\n- **Pre-request scripts**: auto-inject Bearer token\n- **Test scripts**: status, response time, schema checks\n- **Example responses**: structured success/error samples\n- **Bearer auth**: configured at collection level with `{{accessToken}}`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "20929383"
   },
@@ -29,16 +29,32 @@
       "value": ""
     },
     {
+      "key": "sessionId",
+      "value": ""
+    },
+    {
       "key": "captchaToken",
       "value": ""
     },
     {
       "key": "phoneNumber",
-      "value": "+905551234567"
+      "value": "901111111111"
     },
     {
       "key": "otpCode",
       "value": "123456"
+    },
+    {
+      "key": "otpEmail",
+      "value": "applicant@example.com"
+    },
+    {
+      "key": "emailVerificationToken",
+      "value": ""
+    },
+    {
+      "key": "emailLoginPassword",
+      "value": ""
     },
     {
       "key": "productId",
@@ -75,7 +91,7 @@
     },
     {
       "key": "birthDate",
-      "value": "1990-01-15"
+      "value": "15-01-1990"
     },
     {
       "key": "productBrand",
@@ -167,7 +183,7 @@
     },
     {
       "key": "warehouseWebhookSecret",
-      "value": "dev-only-shared-secret-change-in-production"
+      "value": ""
     },
     {
       "key": "pushToken",
@@ -222,7 +238,15 @@
       "value": "api-credential-dev"
     },
     {
+      "key": "warehouseProvider",
+      "value": "Dummy"
+    },
+    {
       "key": "warehouseDeliveryId",
+      "value": ""
+    },
+    {
+      "key": "webhookOccurredOn",
       "value": ""
     }
   ],
@@ -278,7 +302,7 @@
             "auth": {
               "type": "noauth"
             },
-            "description": "Get captcha client key. Public endpoint \u2014 no auth required.\n\nAuto-saves `clientKey` to `{{captchaToken}}`."
+            "description": "Get captcha client key. Public endpoint, no auth required. Gated by the `IAM.Captcha` feature flag, which is off by default (the route is then absent and the captcha token of the OTP and registration requests may stay empty).\n\nAuto-saves `clientKey` to `{{captchaToken}}`."
           },
           "response": [
             {
@@ -314,7 +338,7 @@
       "description": "Send OTP SMS. Requires captcha token from Captcha step.",
       "item": [
         {
-          "name": "Send OTP",
+          "name": "Send Login OTP",
           "event": [
             {
               "listen": "test",
@@ -340,12 +364,13 @@
               }
             ],
             "url": {
-              "raw": "{{modular-monolith-base-url}}/otp",
+              "raw": "{{modular-monolith-base-url}}/otp/login",
               "host": [
                 "{{modular-monolith-base-url}}"
               ],
               "path": [
-                "otp"
+                "otp",
+                "login"
               ]
             },
             "auth": {
@@ -360,7 +385,7 @@
                 }
               }
             },
-            "description": "Send OTP code via SMS to phone number.\n\n**Body:**\n- `phoneNumber` \u2014 target phone\n- `captchaToken` \u2014 from Captcha step\n\nPublic endpoint."
+            "description": "Send a login code by SMS to a registered phone number (PhoneNumber identity scheme only). In development the SMS provider is `Dummy` and the code is always `{{otpCode}}`.\n\n**Body:**\n- `phoneNumber`: digits only, 12 characters, starts with 90\n- `captchaToken`: from the Captcha step, needed only when the `IAM.Captcha` flag is on\n\nPublic endpoint."
           },
           "response": [
             {
@@ -388,12 +413,174 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "Send Registration OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/otp/registration",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "otp",
+                "registration"
+              ]
+            },
+            "description": "Send a registration code by SMS to a phone number that is not registered yet (PhoneNumber identity scheme only).\n\n**Body:**\n- `phoneNumber`: digits only, 12 characters, starts with 90\n- `captchaToken`: needed only when the `IAM.Captcha` flag is on\n\nPublic endpoint.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phoneNumber\": \"{{phoneNumber}}\",\n    \"captchaToken\": \"{{captchaToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Email OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/otp/email",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "otp",
+                "email"
+              ]
+            },
+            "description": "Send a one-time code to the mailbox `{{otpEmail}}` (both identity schemes). Set `otpEmail` to the address you verify: the `applicantEmail` for a store application, or a staff address for Create Tokens by Email. In development the email provider is `Dummy` and the code is always `{{otpCode}}`.\n\n**Body:**\n- `email`\n- `captchaToken`: needed only when the `IAM.Captcha` flag is on\n\nPublic endpoint.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{otpEmail}}\",\n    \"captchaToken\": \"{{captchaToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.emailVerificationToken) {",
+                  "    pm.collectionVariables.set(\"emailVerificationToken\", body.emailVerificationToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/otp/email/verify",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "otp",
+                "email",
+                "verify"
+              ]
+            },
+            "description": "Verify the email code and receive a single-use `emailVerificationToken`, which Apply for a Store, Register Self by Email and Create Tokens by Email need. Auto-saves it as `emailVerificationToken`. `isRegistered` says whether the address already has a user.\n\n**Body:**\n- `email`\n- `otp`\n\nPublic endpoint.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{otpEmail}}\",\n    \"otp\": \"{{otpCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
         }
       ]
     },
     {
       "name": "Auth",
-      "description": "Authentication \u2014 OTP-based login, token refresh, logout.",
+      "description": "Authentication: OTP-based login, email login, token refresh, sessions, logout.",
       "item": [
         {
           "name": "Create Tokens (Login)",
@@ -452,7 +639,7 @@
                 }
               }
             },
-            "description": "Verify OTP code and receive JWT tokens.\n\n**Body:**\n- `phoneNumber` \u2014 registered phone\n- `otp` \u2014 OTP code from SMS\n\nAuto-saves `accessToken` and `refreshToken` to collection variables."
+            "description": "Verify the OTP code and receive JWT tokens (PhoneNumber identity scheme only).\n\n**Body:**\n- `phoneNumber`: registered phone\n- `otp`: OTP code from SMS\n- `deviceId`, `clientId`: the session binds to this pair; `clientId` must be one of `DevicesOptions.AllowedClientIds`\n- `deviceName`, `pushToken`: optional\n\nAuto-saves `accessToken` and `refreshToken` to collection variables."
           },
           "response": [
             {
@@ -480,6 +667,64 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "Create Tokens by Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+                  "pm.collectionVariables.set(\"refreshToken\", body.refreshToken);",
+                  "pm.expect(pm.collectionVariables.get(\"accessToken\")).to.not.be.empty;",
+                  "pm.expect(pm.collectionVariables.get(\"refreshToken\")).to.not.be.empty;"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/email",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "email"
+              ]
+            },
+            "description": "Email, password and a verification token for tokens (both identity schemes; staff sign in this way). Run Send Email OTP and Verify Email OTP first with `otpEmail` set to this account, and set `emailLoginPassword`. Auto-saves `accessToken` and `refreshToken`.\n\n**Body:**\n- `email`, `password`\n- `emailVerificationToken`: single use, from Verify Email OTP\n- `deviceId`, `clientId`\n- `deviceName`, `pushToken`: optional",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{otpEmail}}\",\n    \"password\": \"{{emailLoginPassword}}\",\n    \"emailVerificationToken\": \"{{emailVerificationToken}}\",\n    \"deviceId\": \"{{deviceId}}\",\n    \"clientId\": \"mobile-app-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
         },
         {
           "name": "Refresh Token",
@@ -602,7 +847,7 @@
                 "revoke"
               ]
             },
-            "description": "Revoke current refresh token. Use to log out. Requires auth."
+            "description": "Revoke the caller's current session (log out). Needs the `sessions:revoke-own` scope."
           },
           "response": [
             {
@@ -630,12 +875,159 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "List Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "const other = Array.isArray(body) ? body.find(s => !s.isCurrent) : null;",
+                  "if (other) {",
+                  "    pm.collectionVariables.set(\"sessionId\", other.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/sessions",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "sessions"
+              ]
+            },
+            "description": "List the caller's sessions, newest activity first; the current one has `isCurrent: true`. Auto-saves the id of the first other session as `sessionId`."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A session is needed. Run List Sessions first (it saves another session of the caller).",
+                  "if (!pm.collectionVariables.get(\"sessionId\")) {",
+                  "    console.warn(\"sessionId not set. A session is needed. Run List Sessions first (it saves another session of the caller).\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/sessions/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "sessions",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{sessionId}}"
+                }
+              ]
+            },
+            "description": "Sign out one specific session. 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke All Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/tokens/sessions/revoke-all",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "tokens",
+                "sessions",
+                "revoke-all"
+              ]
+            },
+            "description": "Sign out everywhere, the current session included. 204 No Content."
+          },
+          "response": []
         }
       ]
     },
     {
       "name": "Users",
-      "description": "User management \u2014 registration, search, profile.",
+      "description": "User management: registration, search, profile.",
       "item": [
         {
           "name": "Register Self",
@@ -650,13 +1042,11 @@
                   "// Response time",
                   "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
                   "",
-                  "// Extract response fields to collection variables",
                   "const body = pm.response.json();",
-                  "pm.collectionVariables.set(\"userId\", body.id);",
-                  "",
-                  "pm.test(\"Variables saved\", () => {",
-                  "    pm.expect(pm.collectionVariables.get(\"userId\")).to.not.be.empty;",
-                  "});"
+                  "pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+                  "pm.collectionVariables.set(\"refreshToken\", body.refreshToken);",
+                  "pm.expect(pm.collectionVariables.get(\"accessToken\")).to.not.be.empty;",
+                  "pm.expect(pm.collectionVariables.get(\"refreshToken\")).to.not.be.empty;"
                 ],
                 "type": "text/javascript"
               }
@@ -694,7 +1084,7 @@
                 }
               }
             },
-            "description": "Register a new user.\n\n**Body:**\n- `phoneNumber` \u2014 phone that received OTP\n- `otp` \u2014 OTP from SMS\n- `firstName`, `lastName` \u2014 user identity\n- `birthDate` \u2014 dd-MM-yyyy\n- `deviceId`, `clientId` \u2014 device binding (session per device)\n- `captchaToken` \u2014 from Captcha step\n\nAuto-saves new user ID."
+            "description": "Register a new user by phone (PhoneNumber identity scheme only) and sign them in.\n\n**Body:**\n- `phoneNumber`: phone that received the OTP\n- `otp`: OTP from SMS\n- `firstName`, `lastName`: user identity\n- `birthDate`: dd-MM-yyyy\n- `deviceId`, `clientId`: device binding (session per device)\n- `captchaToken`: needed only when the `IAM.Captcha` flag is on\n- `deviceName`, `pushToken`: optional\n\nThe answer carries the tokens; auto-saves `accessToken` and `refreshToken`. Run Get Current User to save the user ID."
           },
           "response": [
             {
@@ -722,6 +1112,66 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "Register Self by Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set(\"accessToken\", body.accessToken);",
+                  "pm.collectionVariables.set(\"refreshToken\", body.refreshToken);",
+                  "pm.expect(pm.collectionVariables.get(\"accessToken\")).to.not.be.empty;",
+                  "pm.expect(pm.collectionVariables.get(\"refreshToken\")).to.not.be.empty;"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/users/register/self/email",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "users",
+                "register",
+                "self",
+                "email"
+              ]
+            },
+            "description": "Register a new user by email and sign them in (Email identity scheme only). Run Send Email OTP and Verify Email OTP first; the verification token must have been issued for an address that has no user yet.\n\n**Body:**\n- `email`, `password`\n- `emailVerificationToken`: single use, from Verify Email OTP\n- `firstName`, `lastName`, `birthDate` (dd-MM-yyyy)\n- `deviceId`, `clientId`\n- `captchaToken`: needed only when the `IAM.Captcha` flag is on\n\nAuto-saves `accessToken` and `refreshToken`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{otpEmail}}\",\n    \"password\": \"{{applicantPassword}}\",\n    \"emailVerificationToken\": \"{{emailVerificationToken}}\",\n    \"firstName\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"birthDate\": \"{{birthDate}}\",\n    \"captchaToken\": \"{{captchaToken}}\",\n    \"deviceId\": \"{{deviceId}}\",\n    \"clientId\": \"mobile-app-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
         },
         {
           "name": "Get User",
@@ -833,17 +1283,7 @@
                 {
                   "key": "SearchTerm",
                   "value": "",
-                  "description": "optional"
-                },
-                {
-                  "key": "Name",
-                  "value": "",
-                  "description": "optional"
-                },
-                {
-                  "key": "LastName",
-                  "value": "",
-                  "description": "optional"
+                  "description": "optional, matched against username, first name, last name and email"
                 },
                 {
                   "key": "PageNumber",
@@ -857,7 +1297,7 @@
                 }
               ]
             },
-            "description": "Search users with optional filters.\n\n**Query params:** `SearchTerm`, `Name`, `LastName`, `PageNumber`, `PageSize`."
+            "description": "Search users. Needs the `users:search` scope.\n\n**Query params:** `SearchTerm`, `PageNumber`, `PageSize`."
           },
           "response": [
             {
@@ -1037,7 +1477,7 @@
     },
     {
       "name": "Products",
-      "description": "Product CRUD \u2014 admin and owner-scoped operations with search and audit log.",
+      "description": "Product CRUD: admin and owner-scoped operations with search and audit log.",
       "item": [
         {
           "name": "Get Product",
@@ -1197,7 +1637,7 @@
                 }
               }
             },
-            "description": "Update product (admin). 204 No Content on success."
+            "description": "Update product (admin). A store that is not Active refuses the write (409 `StoreIsPendingApproval`, `StoreIsSuspended` or `StoreIsInactive`). 204 No Content on success."
           },
           "response": [
             {
@@ -1284,11 +1724,6 @@
                   "description": "optional"
                 },
                 {
-                  "key": "Description",
-                  "value": "",
-                  "description": "optional"
-                },
-                {
                   "key": "MinQuantity",
                   "value": "",
                   "description": "optional"
@@ -1320,7 +1755,7 @@
                 }
               ]
             },
-            "description": "Search with filters: StoreId, OwnerId, SearchTerm, Name, Description, MinQuantity, MaxQuantity, MinPrice, MaxPrice."
+            "description": "Search with filters: StoreId, OwnerId, SearchTerm, Name, MinQuantity, MaxQuantity, MinPrice, MaxPrice."
           },
           "response": [
             {
@@ -1608,7 +2043,7 @@
                 }
               }
             },
-            "description": "Update own product (owner-scoped). 204 No Content."
+            "description": "Update own product (owner-scoped). A store that is not Active refuses the write (409). 204 No Content."
           },
           "response": [
             {
@@ -1686,11 +2121,6 @@
                   "description": "optional"
                 },
                 {
-                  "key": "Description",
-                  "value": "",
-                  "description": "optional"
-                },
-                {
                   "key": "MinPrice",
                   "value": "",
                   "description": "optional"
@@ -1722,7 +2152,7 @@
                 }
               ]
             },
-            "description": "Search own products with filters."
+            "description": "Search own products with filters: SearchTerm, Name, MinQuantity, MaxQuantity, MinPrice, MaxPrice."
           },
           "response": [
             {
@@ -2078,7 +2508,7 @@
                 "imports"
               ]
             },
-            "description": "Queue an upsert of products into my store from a spreadsheet (.xlsx or .xls; row 1 header; columns name, description, quantity, price, SKU). Select a file for the File field. Answers 202 with the job. Auto-saves the job ID.",
+            "description": "Queue an upsert of products into my store from a spreadsheet (.xlsx or .xls; row 1 header; columns name, description, quantity, price, SKU). The store must be Active (409 otherwise, before the file is stored). Rows with a SKU match by SKU first. Select a file for the File field. Answers 202 with the job. Auto-saves the job ID.",
             "body": {
               "mode": "formdata",
               "formdata": [
@@ -2266,7 +2696,7 @@
                 }
               ]
             },
-            "description": "Queue a CSV export of products (all, or one store with StoreId). Needs an administrator token. Answers 202 with the job. Auto-saves the job ID."
+            "description": "Queue a CSV export of products (all, or one store with StoreId). Columns: Name, Description, Quantity, Price, Sku, Id, StoreId, CreatedOn; a text that starts like a formula gets a leading apostrophe. To re-import, open the CSV, save it as .xlsx and upload that. Needs an administrator token. Answers 202 with the job. Auto-saves the job ID."
           },
           "response": []
         },
@@ -2390,6 +2820,57 @@
               ]
             },
             "description": "Download the CSV of a Succeeded export. 409 NotReady until the job has succeeded."
+          },
+          "response": []
+        },
+        {
+          "name": "Cross-Module Probe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/probe/cross-module?count=3",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "probe",
+                "cross-module"
+              ],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "3",
+                  "description": "required, greater than 0"
+                }
+              ]
+            },
+            "description": "Proof of a cross-process call: Products asks IAM for `count` user ids over the bus and returns them (see docs/split-deployment-poc.md). Public endpoint.",
+            "auth": {
+              "type": "noauth"
+            }
           },
           "response": []
         }
@@ -2843,7 +3324,7 @@
     },
     {
       "name": "Stores",
-      "description": "Store management \u2014 CRUD, inventory, audit log. Admin and owner-scoped.",
+      "description": "Store management: CRUD, inventory, audit log, applications and approval. Admin and owner-scoped.",
       "item": [
         {
           "name": "Create Store",
@@ -2891,14 +3372,14 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
+              "raw": "{\n    \"ownerId\": \"{{userId}}\",\n    \"name\": \"{{storeName}}\",\n    \"description\": \"{{storeDescription}}\",\n    \"address\": \"{{storeAddress}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "Create store (admin). Auto-saves ID."
+            "description": "Create an Active store for the owner `ownerId` (admin). Run Get Current User first to save `userId`, or set `userId` to another user. Auto-saves ID."
           },
           "response": [
             {
@@ -2993,7 +3474,7 @@
                 }
               }
             },
-            "description": "Update store (admin). 204 No Content."
+            "description": "Update store (admin). Only an Active store changes (409 otherwise). 204 No Content."
           },
           "response": [
             {
@@ -3079,7 +3560,7 @@
                 }
               ]
             },
-            "description": "Get store by ID."
+            "description": "Get a store by ID. Only an Active store is found; pending, suspended and closed stores are a 404 here (see List All Stores)."
           },
           "response": [
             {
@@ -3156,11 +3637,6 @@
                   "description": "optional"
                 },
                 {
-                  "key": "Description",
-                  "value": "",
-                  "description": "optional"
-                },
-                {
                   "key": "Address",
                   "value": "",
                   "description": "optional"
@@ -3177,7 +3653,7 @@
                 }
               ]
             },
-            "description": "Search stores with name/description/address filters."
+            "description": "Search Active stores with name/address filters (SearchTerm, Name, Address)."
           },
           "response": [
             {
@@ -3205,6 +3681,65 @@
               "body": "{\n  \"type\": \"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\n  \"title\": \"Unauthorized\",\n  \"status\": 401,\n  \"detail\": \"Invalid or expired token.\"\n}"
             }
           ]
+        },
+        {
+          "name": "List All Stores (Administration)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/administration?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "administration"
+              ],
+              "query": [
+                {
+                  "key": "Status",
+                  "value": "",
+                  "description": "optional: PendingApproval, Active, Suspended or Inactive",
+                  "disabled": true
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                }
+              ]
+            },
+            "description": "Stores in any status (PendingApproval, Active, Suspended, Inactive), newest first, optionally of one status. Needs an administrator token (`stores:view-all`)."
+          },
+          "response": []
         },
         {
           "name": "Get Store Audit Log",
@@ -3971,6 +4506,19 @@
                 ],
                 "type": "text/javascript"
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// An email verification token is needed. Run Send Email OTP and Verify Email OTP first, with otpEmail equal to applicantEmail.",
+                  "if (!pm.collectionVariables.get(\"emailVerificationToken\")) {",
+                  "    console.warn(\"emailVerificationToken not set. An email verification token is needed. Run Send Email OTP and Verify Email OTP first, with otpEmail equal to applicantEmail.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
           ],
           "request": {
@@ -3993,10 +4541,10 @@
                 "applications"
               ]
             },
-            "description": "Anonymous store application. Creates the owner's account and a store in PendingApproval; no role is assigned and no token is returned. Auto-saves the store ID as storeApplicationId.",
+            "description": "Anonymous store application. The applicant first proves they own the email address: run Send Email OTP and Verify Email OTP with `otpEmail` equal to `applicantEmail`; the single-use `emailVerificationToken` goes in the body (409 `EmailAlreadyRegistered` when the address already has a user). Creates the owner's account and a store in PendingApproval; no role is assigned and no token is returned. Auto-saves the store ID as storeApplicationId.",
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"{{applicantEmail}}\",\n    \"phoneNumber\": \"{{applicantPhoneNumber}}\",\n    \"password\": \"{{applicantPassword}}\",\n    \"firstName\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"storeName\": \"{{storeName}}\",\n    \"storeDescription\": \"{{storeDescription}}\",\n    \"storeAddress\": \"{{storeAddress}}\"\n}",
+              "raw": "{\n    \"email\": \"{{applicantEmail}}\",\n    \"emailVerificationToken\": \"{{emailVerificationToken}}\",\n    \"phoneNumber\": \"{{applicantPhoneNumber}}\",\n    \"password\": \"{{applicantPassword}}\",\n    \"firstName\": \"{{userName}}\",\n    \"lastName\": \"{{userLastName}}\",\n    \"storeName\": \"{{storeName}}\",\n    \"storeDescription\": \"{{storeDescription}}\",\n    \"storeAddress\": \"{{storeAddress}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4059,6 +4607,67 @@
               ]
             },
             "description": "Stores that wait for approval. Needs an administrator token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Store Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store application is needed. Run Apply for a Store first.",
+                  "if (!pm.collectionVariables.get(\"storeApplicationId\")) {",
+                  "    console.warn(\"storeApplicationId not set. A store application is needed. Run Apply for a Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stores/applications/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stores",
+                "applications",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{storeApplicationId}}"
+                }
+              ]
+            },
+            "description": "One store application that waits for a decision. Needs an administrator token (`stores:approve`)."
           },
           "response": []
         },
@@ -4510,7 +5119,139 @@
                 }
               ]
             },
-            "description": "Get a stock reservation and its status. isReadOnly is true once the warehouse system reported a status this system has no mapping for; providerStatus then holds the last status it reported."
+            "description": "Get a stock reservation and its status (administration, `stock-reservations:view-all`). isReadOnly is true once the warehouse system reported a status this system has no mapping for; providerStatus then holds the last status it reported. hasPendingReleaseAttempt is true while a release attempt marker is set."
+          },
+          "response": []
+        },
+        {
+          "name": "Search My Stock Reservations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/my?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                "my"
+              ],
+              "query": [
+                {
+                  "key": "ProductId",
+                  "value": "",
+                  "description": "optional",
+                  "disabled": true
+                },
+                {
+                  "key": "Status",
+                  "value": "",
+                  "description": "optional: Active, Committed, Released, Expired, RequiresReconciliation",
+                  "disabled": true
+                },
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                },
+                {
+                  "key": "After",
+                  "value": "",
+                  "description": "optional, NextCursor of the previous page",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "The reservations of the products of the active stores I own, newest first (`stock-reservations:view-own`). A store that is not active, or one Inventory has not been told about yet, contributes nothing, so the page can be empty."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Stock Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. A reservation is needed. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/my/:id",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                "my",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "One reservation of a product of an active store I own; the same answer as Get Stock Reservation. Anyone else's reservation is a 404."
           },
           "response": []
         },
@@ -4641,7 +5382,138 @@
                 }
               ]
             },
-            "description": "Release a reservation's hold. Calls the warehouse gateway. 204 No Content."
+            "description": "Release a reservation's hold. Calls the warehouse gateway of the product's store with the reservation id as the reference. 204 No Content. A 504 `WarehouseGatewayOutcomeUnknown` leaves the attempt marker: run Reconcile Release."
+          },
+          "response": []
+        },
+        {
+          "name": "Reconcile Release",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. A reservation is needed. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/:id/reconcile-release",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                ":id",
+                "reconcile-release"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "Resolve a release whose outcome is unknown: the warehouse system is asked what became of it. Answers `Released` (completed here), `NotReleased` (the attempt marker was dropped, a release can be tried again) or `AlreadyReleased`. 409 `NoReleaseAttempt` when no release was attempted. A recurring sweep does the same for old markers."
+          },
+          "response": []
+        },
+        {
+          "name": "Resolve Read-Only Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A reservation is needed. Run Reserve Stock first.",
+                  "if (!pm.collectionVariables.get(\"stockReservationId\")) {",
+                  "    console.warn(\"stockReservationId not set. A reservation is needed. Run Reserve Stock first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-reservations/:id/resolve-read-only",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-reservations",
+                ":id",
+                "resolve-read-only"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockReservationId}}"
+                }
+              ]
+            },
+            "description": "Bring a read-only reservation (its warehouse system reported a status this system could not map) back, after checking at the warehouse what it really is. `targetStatus` is Released, Committed or Expired; `providerReference` is needed to commit. 204 No Content; 409 `NotReadOnly` when it is not read-only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"targetStatus\": \"Released\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "response": []
         },
@@ -4667,6 +5539,8 @@
                 "exec": [
                   "// A fresh delivery id per send. It is stored first so the signed body and the sent body are the same text.",
                   "pm.collectionVariables.set(\"warehouseDeliveryId\", pm.variables.replaceIn(\"{{$guid}}\"));",
+                  "// The warehouse system's own time of the event. Statuses are applied in the order of this timestamp; a time further ahead of the server clock than the allowed skew is refused.",
+                  "pm.collectionVariables.set(\"webhookOccurredOn\", new Date().toISOString());",
                   "// Sign the exact body that will be sent (variables resolved) with the connection's webhook secret.",
                   "const secret = pm.collectionVariables.get(\"warehouseWebhookSecret\");",
                   "if (!secret || !pm.collectionVariables.get(\"warehouseConnectionId\")) {",
@@ -4709,10 +5583,10 @@
                 }
               ]
             },
-            "description": "Anonymous callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header, made with the webhook secret of the connection in the route (warehouseWebhookSecret, returned once by Create Warehouse Connection). The pre-request script signs the body. A deliveryId seen before on the connection is acknowledged and applies nothing. status is optional (held, confirmed, released or expired; a body without it is the original confirmation) and providerReference is required only when the status confirms the reservation. A status word this system has no mapping for is acknowledged and recorded, and the reservation turns read-only. 204 No Content.",
+            "description": "Anonymous callback from a store's warehouse system. Authenticated by an HMAC-SHA256 signature of the raw body in the X-Warehouse-Signature header, made with the webhook secret of the connection in the route (warehouseWebhookSecret, returned once by Create Warehouse Connection). The pre-request script signs the body. A deliveryId seen before on the connection is acknowledged and applies nothing. status is optional (held, confirmed, released or expired, of any JSON kind; a body without it is the original confirmation), occurredOn is optional (a delivery older than one already applied is acknowledged and changes nothing, one stamped too far ahead of the server clock is a 400) and providerReference is required only when the status confirms the reservation. A status word this system has no mapping for is acknowledged and recorded, and the reservation turns read-only. 204 No Content.",
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"deliveryId\": \"{{warehouseDeliveryId}}\",\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"status\": \"confirmed\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
+              "raw": "{\n    \"deliveryId\": \"{{warehouseDeliveryId}}\",\n    \"reservationId\": \"{{stockReservationId}}\",\n    \"status\": \"confirmed\",\n    \"occurredOn\": \"{{webhookOccurredOn}}\",\n    \"providerReference\": \"{{providerReference}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4785,10 +5659,85 @@
                   "key": "ProductName",
                   "value": "",
                   "description": "optional"
+                },
+                {
+                  "key": "After",
+                  "value": "",
+                  "description": "optional, NextCursor of the previous page",
+                  "disabled": true
                 }
               ]
             },
-            "description": "List stock levels, least stock first, with the product name. ProductName narrows the list through Products. Auto-saves the first stock level ID."
+            "description": "List every store's stock levels, least stock first, with the product name (administration, `stock-levels:view-all`). ProductName narrows the list through Products. Pass NextCursor as After to continue without an offset. Auto-saves the first stock level ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Search My Stock Levels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.data && body.data.length) {",
+                  "    pm.collectionVariables.set(\"stockLevelId\", body.data[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/my?PageNumber=1&PageSize=10&ProductName=",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "my"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                },
+                {
+                  "key": "ProductName",
+                  "value": "",
+                  "description": "optional"
+                },
+                {
+                  "key": "After",
+                  "value": "",
+                  "description": "optional, NextCursor of the previous page",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "The stock levels of the active stores I own, least stock first, with the same filters and paging as Search Stock Levels (`stock-levels:view-own`). A caller who owns no active store gets an empty page. Auto-saves the first stock level ID."
           },
           "response": []
         },
@@ -4867,7 +5816,87 @@
                 }
               ]
             },
-            "description": "The ledger of a stock level, newest first, with the acting user's name."
+            "description": "The ledger of a stock level, newest first by each row's sequence, with the acting user's name (administration, `stock-levels:view-all`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Stock Movements",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A stock level is needed. Run Search My Stock Levels first.",
+                  "if (!pm.collectionVariables.get(\"stockLevelId\")) {",
+                  "    console.warn(\"stockLevelId not set. A stock level is needed. Run Search My Stock Levels first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/my/:id/movements?PageNumber=1&PageSize=10",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "my",
+                ":id",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "PageNumber",
+                  "value": "1",
+                  "description": "required"
+                },
+                {
+                  "key": "PageSize",
+                  "value": "10",
+                  "description": "required"
+                },
+                {
+                  "key": "After",
+                  "value": "",
+                  "description": "optional, NextCursor of the previous page",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{stockLevelId}}"
+                }
+              ]
+            },
+            "description": "The ledger of one of my stock levels, newest first by sequence (`stock-levels:view-own`). A stock level of anyone else's store is a 404."
           },
           "response": []
         },
@@ -4938,7 +5967,79 @@
                 }
               ]
             },
-            "description": "A store's committed reservation totals per business day, oldest first. A day with no committed reservation has no row. The range is capped by InventoryOptions.DailyTotalsMaxRangeDays; a longer range or a first day after the last day is a 400."
+            "description": "(Administration, `stock-levels:view-all`.) A store's committed reservation totals per business day, oldest first. A day with no committed reservation has no row. The range is capped by InventoryOptions.DailyTotalsMaxRangeDays; a longer range or a first day after the last day is a 400."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Daily Stock Totals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create Store or Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create Store or Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/stock-levels/my/daily-totals?storeId={{storeId}}&from=2026-01-01&to=2026-01-31",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "stock-levels",
+                "my",
+                "daily-totals"
+              ],
+              "query": [
+                {
+                  "key": "storeId",
+                  "value": "{{storeId}}",
+                  "description": "required"
+                },
+                {
+                  "key": "from",
+                  "value": "2026-01-01",
+                  "description": "required, a date"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-01-31",
+                  "description": "optional, a date"
+                }
+              ]
+            },
+            "description": "The committed reservation totals per business day of one of the active stores I own, oldest first (`stock-levels:view-own`). Same range rules as Get Daily Stock Totals. A store that is not mine, or not active, has no days."
           },
           "response": []
         },
@@ -5388,10 +6489,81 @@
                 "warehouse-connections"
               ]
             },
-            "description": "Connect a store to its warehouse system. The answer carries the webhook secret exactly once; the request's API credential and that secret are stored encrypted and never returned again. Auto-saves the connection ID and the webhook secret.",
+            "description": "Connect a store to its warehouse system (administration, any store). `warehouseProvider` is Dummy by default: an in-memory stand-in that needs no server, ignores `baseUrl` and `apiCredential` and is refused in Production. JsonApi and FormApi need an https `baseUrl` that is not localhost and not a private address (set `InventoryOptions.AllowPrivateWarehouseAddresses` for a local stub) and an `apiCredential`. The answer carries the webhook secret exactly once; the credential and that secret are stored encrypted and never returned again. Auto-saves the connection ID and the webhook secret.",
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"storeId\": \"{{storeId}}\",\n    \"provider\": \"JsonApi\",\n    \"baseUrl\": \"{{warehouseBaseUrl}}\",\n    \"apiCredential\": \"{{warehouseApiCredential}}\"\n}",
+              "raw": "{\n    \"storeId\": \"{{storeId}}\",\n    \"provider\": \"{{warehouseProvider}}\",\n    \"baseUrl\": \"{{warehouseBaseUrl}}\",\n    \"apiCredential\": \"{{warehouseApiCredential}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create My Warehouse Connection",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Status check",
+                  "pm.test(\"Status 2xx\", () => pm.response.to.be.success);",
+                  "",
+                  "// Response time",
+                  "pm.test(\"Response < 5s\", () => pm.expect(pm.response.responseTime).to.be.below(5000));",
+                  "",
+                  "const body = pm.response.json();",
+                  "if (body.id) {",
+                  "    pm.collectionVariables.set(\"warehouseConnectionId\", body.id);",
+                  "}",
+                  "if (body.webhookSecret) {",
+                  "    pm.collectionVariables.set(\"warehouseWebhookSecret\", body.webhookSecret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// A store is needed. Run Create My Store first.",
+                  "if (!pm.collectionVariables.get(\"storeId\")) {",
+                  "    console.warn(\"storeId not set. A store is needed. Run Create My Store first.\");",
+                  "    postman.setNextRequest(null);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{modular-monolith-base-url}}/v1/warehouse-connections/my",
+              "host": [
+                "{{modular-monolith-base-url}}"
+              ],
+              "path": [
+                "v1",
+                "warehouse-connections",
+                "my"
+              ]
+            },
+            "description": "Connect one of the active stores I own to its warehouse system. Same body and answer as Create Warehouse Connection. Needs the `store-owner` role (`warehouse-connections:connect`): a token issued before the store was approved does not carry it, so refresh the token first. A store that is not mine, not active or unknown to Inventory is a 404. Auto-saves the connection ID and the webhook secret.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"storeId\": \"{{storeId}}\",\n    \"provider\": \"{{warehouseProvider}}\",\n    \"baseUrl\": \"{{warehouseBaseUrl}}\",\n    \"apiCredential\": \"{{warehouseApiCredential}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
