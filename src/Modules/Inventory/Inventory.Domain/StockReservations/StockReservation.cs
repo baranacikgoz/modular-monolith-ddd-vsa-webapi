@@ -236,6 +236,31 @@ public class StockReservation : AggregateRoot<StockReservationId>
     }
 
     /// <summary>
+    ///     The warehouse system confirmed the release this reservation's attempt marker stands for: the release call answered,
+    ///     or a reconcile found it done. A writable reservation is released exactly as <see cref="Release" /> does. A read-only
+    ///     one takes no local command (it turned read-only after the marker was saved, while the provider was releasing), so
+    ///     the confirmation only clears the marker and is mirrored into <see cref="ProviderStatus" />; the reservation's own
+    ///     status stays for a person to resolve.
+    /// </summary>
+    public Result ConfirmReleaseAttempt(DateTimeOffset utcNow)
+    {
+        if (!IsReadOnly)
+        {
+            return Release(utcNow);
+        }
+
+        if (LastReleaseAttemptReference is not null)
+        {
+            var @event = new V1StockReservationReleaseAttemptConfirmedDomainEvent(Id, utcNow);
+
+            LastReleaseAttemptReference = null;
+            RaiseEvent(@event);
+        }
+
+        return MirrorProviderStatus(ReservationStatus.Released, utcNow);
+    }
+
+    /// <summary>
     ///     Applies a status the provider reported in a word that maps (<see cref="ProviderStatusMap" />). A writable
     ///     reservation follows it through the same commands a local caller uses, so every rule of those commands holds;
     ///     <see cref="ReservationStatus.Active" /> says the provider still holds the reservation and changes nothing. A

@@ -17,9 +17,14 @@ public class StockReservationTests
         return reservation;
     }
 
-    private static StockReservation ReadOnlyReservation()
+    private static StockReservation ReadOnlyReservation(bool markerFirst = false)
     {
         var reservation = NewReservation();
+        if (markerFirst)
+        {
+            reservation.BeginReleaseAttempt(Now);
+        }
+
         reservation.RecordUnrecognizedProviderStatus("partially_picked", Now);
         reservation.ClearEvents();
         return reservation;
@@ -156,6 +161,47 @@ public class StockReservationTests
 
         Assert.Null(reservation.LastReleaseAttemptReference);
         Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptAbandonedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_WritableReservation_ReleasesItLikeRelease()
+    {
+        var reservation = NewReservation();
+        reservation.BeginReleaseAttempt(Now);
+
+        var result = reservation.ConfirmReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.Equal(ReservationStatus.Released, reservation.Status);
+        Assert.Single(reservation.Events.OfType<V1StockReservationReleasedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_ReadOnlyReservationWithAMarker_ClearsTheMarkerMirrorsTheReleaseAndKeepsItsStatus()
+    {
+        var reservation = ReadOnlyReservation(markerFirst: true);
+
+        var result = reservation.ConfirmReleaseAttempt(Now);
+
+        Assert.False(result.IsFailure);
+        Assert.True(reservation.IsReadOnly);
+        Assert.Equal(ReservationStatus.Active, reservation.Status);
+        Assert.Equal(ReservationStatus.Released, reservation.ProviderStatus);
+        Assert.Null(reservation.LastReleaseAttemptReference);
+        Assert.Single(reservation.Events.OfType<V1StockReservationReleaseAttemptConfirmedDomainEvent>());
+        Assert.Single(reservation.Events.OfType<V1StockReservationProviderStatusMirroredDomainEvent>());
+        Assert.Empty(reservation.Events.OfType<V1StockReservationReleasedDomainEvent>());
+    }
+
+    [Fact]
+    public void ConfirmReleaseAttempt_ReadOnlyReservationConfirmedAgain_IsANoOpWithoutAnEvent()
+    {
+        var reservation = ReadOnlyReservation(markerFirst: true);
+        reservation.ConfirmReleaseAttempt(Now);
+
+        AssertRaisesAnEventExactlyWhenAFieldChanged(reservation, r => Assert.False(r.ConfirmReleaseAttempt(Now).IsFailure));
+
+        Assert.Empty(reservation.Events);
     }
 
     [Fact]
