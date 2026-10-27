@@ -125,8 +125,8 @@ Per prose-bearing entity, an immutable wrapper that produces the two-layer vecto
 ```sql
 CREATE OR REPLACE FUNCTION fts_product(lang text, name text, descr text)
 RETURNS tsvector LANGUAGE sql IMMUTABLE AS $$
-  SELECT setweight(to_tsvector('simple_unaccent', coalesce(name,  '')), 'A')   -- universal layer
-      || setweight(to_tsvector(lang::regconfig,   coalesce(descr, '')), 'B');  -- prose layer (per-row language)
+  SELECT setweight(to_tsvector('simple_unaccent', coalesce(name,  '')), 'A')   /* universal layer */
+      || setweight(to_tsvector(lang::regconfig,   coalesce(descr, '')), 'B');  /* prose layer (per-row language) */
 $$;
 ```
 
@@ -183,12 +183,12 @@ GET /products/search?searchTerm=...    Accept-Language: <locale>
    │
    ▼  CurrentUICulture → ISearchLanguageResolver → userConfig (e.g. "english_unaccent")
 build TWO tsqueries from the same term:
-   simpleQ = websearch_to_tsquery('simple_unaccent', term)   -- universal layer, ALL locales
-   userQ   = websearch_to_tsquery( userConfig,        term)  -- prose layer, user's language stemming
+   simpleQ = websearch_to_tsquery('simple_unaccent', term)   /* universal layer, ALL locales */
+   userQ   = websearch_to_tsquery( userConfig,        term)  /* prose layer, user's language stemming */
    │
    ▼
 WHERE  SearchVector @@ simpleQ  OR  SearchVector @@ userQ
-ORDER BY ts_rank(SearchVector, simpleQ || userQ) DESC      -- only when a term is present
+ORDER BY ts_rank(SearchVector, simpleQ || userQ) DESC      /* only when a term is present */
 ```
 
 Why two queries: a single `tsquery` has one config. Querying the `simple`-indexed name layer with `english` would stem `running → run` and miss the stored `running`. The two OR-ed queries let the universal layer match for everyone while the prose layer is stemmed in the user's language.
