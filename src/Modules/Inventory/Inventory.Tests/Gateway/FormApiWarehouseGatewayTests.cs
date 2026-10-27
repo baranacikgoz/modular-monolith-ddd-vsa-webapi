@@ -59,13 +59,37 @@ public class FormApiWarehouseGatewayTests : WarehouseTransportTestBase
     }
 
     [Fact]
-    public async Task RequestReleaseAsync_NotFoundResponse_ReturnsNotFoundError()
+    public async Task RequestReleaseAsync_NotFoundResponse_ReturnsEndpointNotFoundNotAMissingReference()
     {
         Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
 
         var result = await NewGateway().RequestReleaseAsync("product-1", 5, CancellationToken.None);
 
+        Assert.Equal("WarehouseGatewayEndpointNotFound", result.Error!.Key);
+        Assert.Equal(HttpStatusCode.BadGateway, result.Error.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReconcileReleaseAsync_NotFoundResponse_ReturnsTheReferenceNotFound()
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        var result = await NewGateway().ReconcileReleaseAsync("rel-1", CancellationToken.None);
+
         Assert.Equal("NotFound", result.Error!.Key);
+        Assert.Equal("WarehouseReference", result.Error.ParameterName);
+        Assert.Equal(HttpStatusCode.NotFound, result.Error.StatusCode);
+    }
+
+    [Fact]
+    public async Task PushStockAsync_NotFoundResponse_ReturnsEndpointNotFoundNotAMissingReference()
+    {
+        Handler.Responder = _ => new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        var result = await NewGateway().PushStockAsync([new("product-1", 1)], CancellationToken.None);
+
+        Assert.Equal("WarehouseGatewayEndpointNotFound", result.Error!.Key);
+        Assert.Equal(HttpStatusCode.BadGateway, result.Error.StatusCode);
     }
 
     [Fact]
