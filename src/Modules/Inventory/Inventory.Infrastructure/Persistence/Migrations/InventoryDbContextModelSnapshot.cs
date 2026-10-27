@@ -251,6 +251,45 @@ namespace Inventory.Infrastructure.Migrations
                     b.ToTable("ProductSummaries", "Inventory");
                 });
 
+            modelBuilder.Entity("Inventory.Application.StoreAccesses.StoreAccess", b =>
+                {
+                    b.Property<Guid>("StoreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("SourceVersion")
+                        .HasColumnType("bigint");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("StoreId");
+
+                    b.HasIndex("OwnerId", "IsActive");
+
+                    b.ToTable("StoreAccess", "Inventory");
+                });
+
             modelBuilder.Entity("Inventory.Domain.StockCounters.StoreDailyStockTotal", b =>
                 {
                     b.Property<Guid>("StoreId")

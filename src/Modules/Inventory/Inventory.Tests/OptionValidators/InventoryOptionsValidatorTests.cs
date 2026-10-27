@@ -22,6 +22,15 @@ public class InventoryOptionsValidatorTests
         Assert.False(result.IsValid);
     }
 
+    [Fact]
+    public void EmptyStoreAccessReconciliationCron_FailsValidation()
+    {
+        var result = new InventoryOptionsValidator().Validate(
+            TestInventoryOptions.Create(configure: o => o.StoreAccessReconciliationCron = ""));
+
+        Assert.False(result.IsValid);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("Not/AZone")]

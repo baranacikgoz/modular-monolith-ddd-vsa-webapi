@@ -17,6 +17,9 @@ public class InventoryOptions
     /// <summary>Cron for the recurring job that heals the local product copy from Products.</summary>
     public required string ProductSummaryReconciliationCron { get; set; }
 
+    /// <summary>Cron for the recurring job that heals the local store access copy from Products.</summary>
+    public required string StoreAccessReconciliationCron { get; set; }
+
     /// <summary>
     ///     Time zone id (IANA, for example <c>Europe/Berlin</c>) whose calendar days the per-store daily stock totals are
     ///     counted in. A business day is not the UTC day.
@@ -116,6 +119,10 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
         RuleFor(x => x.ProductSummaryReconciliationCron)
             .NotEmpty()
             .WithMessage("ProductSummaryReconciliationCron must not be empty.");
+
+        RuleFor(x => x.StoreAccessReconciliationCron)
+            .NotEmpty()
+            .WithMessage("StoreAccessReconciliationCron must not be empty.");
 
         RuleFor(x => x.BusinessTimeZoneId)
             .NotEmpty()

@@ -300,6 +300,9 @@
                 "name": "warehouse-connections:view"
               },
               {
+                "name": "warehouse-connections:view-own"
+              },
+              {
                 "name": "warehouse-connections:update"
               }
             ]
@@ -562,6 +565,17 @@
               "resources": "[\"stock-levels\"]",
               "scopes": "[\"stock-levels:update\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
+            }
+          },
+          {
+            "name": "Warehouse Connections Self-Service Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"warehouse-connections\"]",
+              "scopes": "[\"warehouse-connections:view-own\"]",
+              "applyPolicies": "[\"Any Authenticated User Policy\"]"
             }
           },
           {

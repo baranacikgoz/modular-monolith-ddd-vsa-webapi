@@ -80,6 +80,7 @@ public static class KeycloakScopes
     {
         public const string Create = "warehouse-connections:create";
         public const string View = "warehouse-connections:view";
+        public const string ViewOwn = "warehouse-connections:view-own";
         public const string Update = "warehouse-connections:update";
     }
 

@@ -11,6 +11,7 @@ using Inventory.Infrastructure.ProductSummaries;
 using Inventory.Infrastructure.RateLimiting;
 using Inventory.Infrastructure.StockPushes;
 using Inventory.Infrastructure.StockReservations;
+using Inventory.Infrastructure.StoreAccesses;
 using Inventory.Infrastructure.Telemetry;
 using Inventory.Infrastructure.Webhooks;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +37,7 @@ public sealed class InventoryModule : IModule
         services.AddPersistence();
         services.AddStockReservationExpirySweep();
         services.AddProductSummaryReconciliation();
+        services.AddStoreAccessReconciliation();
         services.AddWarehouseGatewayInfrastructure();
         services.AddWarehouseWebhooks();
         services.AddStockPushes();

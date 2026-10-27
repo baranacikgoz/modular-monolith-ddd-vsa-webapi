@@ -6,6 +6,7 @@ using Common.Infrastructure.Persistence.EntityConfigurations;
 using Inventory.Application.BulkAdjustments;
 using Inventory.Application.Persistence;
 using Inventory.Application.ProductSummaries;
+using Inventory.Application.StoreAccesses;
 using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockPushes;
@@ -30,6 +31,7 @@ public sealed class InventoryDbContext(
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<StockReservation> StockReservations => Set<StockReservation>();
     public DbSet<ProductSummary> ProductSummaries => Set<ProductSummary>();
+    public DbSet<StoreAccess> StoreAccess => Set<StoreAccess>();
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals => Set<StoreDailyStockTotal>();
     public DbSet<StockPushDirtyItem> StockPushDirtyItems => Set<StockPushDirtyItem>();
     public DbSet<StockBulkAdjustJob> StockBulkAdjustJobs => Set<StockBulkAdjustJob>();
