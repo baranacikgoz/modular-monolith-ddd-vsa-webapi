@@ -56,7 +56,7 @@ public class PermissionCoverageTests(HostTestFactory factory)
 
     // A "-own" scope is decided against the caller's own resource ownership in the query, not the role: every
     // role must be allowed to reach the endpoint so ownership can be checked. "System Admin Role Policy" or
-    // "Basic Role Policy" alone silently 403s the other roles before ownership is ever evaluated (PR #149 #2).
+    // "Basic Role Policy" alone silently 403s the other roles before ownership is ever evaluated.
     [Fact]
     public void AllOwnScopePermissions_ApplyAnyAuthenticatedUserPolicy()
     {

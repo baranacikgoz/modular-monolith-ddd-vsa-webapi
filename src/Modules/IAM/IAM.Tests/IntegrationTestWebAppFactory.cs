@@ -100,7 +100,7 @@ public class IntegrationTestWebAppFactory : IntegrationTestFactory
 }
 
 /// <summary>
-///     Test-only seam for PR #149 #3 (self-registration rollback): lets a test mark a not-yet-created username
+///     Test-only seam for the self-registration rollback: lets a test mark a not-yet-created username
 ///     (phone number or email, whichever the scheme provisions) so its role assignment fails once, without
 ///     touching real Keycloak.
 /// </summary>

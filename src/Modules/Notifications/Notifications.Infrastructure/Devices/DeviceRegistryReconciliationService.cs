@@ -12,7 +12,7 @@ namespace Notifications.Infrastructure.Devices;
 /// <summary>
 ///     Keycloak can revoke a session without telling Notifications (idle expiry, admin console, reuse
 ///     detection), leaving <see cref="Notifications.Domain.Devices.DeviceRegistration" /> active with a live
-///     push token. Periodically asks IAM which sessions are still live and deactivates the rest (PR #149 #4).
+///     push token. Periodically asks IAM which sessions are still live and deactivates the rest.
 ///     Each run takes the <c>ReconcileBatchSize</c> users whose active rows were checked least recently
 ///     (<c>LastReconciledOn</c>, never-checked first) and stamps them, so consecutive runs walk the whole registry
 ///     instead of re-checking the same first batch forever.

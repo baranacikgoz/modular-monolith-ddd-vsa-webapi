@@ -13,7 +13,7 @@ namespace Common.Tests.Architecture;
 /// member-access-then-compare on that same converted property (m.Id.Value == rawGuid) throws
 /// "could not be translated" only when the query actually runs. Both forms compile with zero
 /// warnings, so this test turns the mistake into a build-time failure instead of a runtime one
-/// (CLAUDE.md &#167;4). See STRONGLY_TYPED_ID_VALUE_COMPARISON_FOOTGUN.md for the incident history.
+/// (CLAUDE.md &#167;4).
 /// </summary>
 public sealed class StronglyTypedIdQueryTests
 {

@@ -69,7 +69,7 @@ public class RefreshTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
         Assert.NotNull(sessions);
         Assert.DoesNotContain(sessions, s => s.Id == login.SessionId);
 
-        // PR #149 #4: reuse detection must reach the device registry too, not just Keycloak's own session store.
+        // Reuse detection must reach the device registry too, not just Keycloak's own session store.
         var notificationsDb = Scope.ServiceProvider.GetRequiredService<INotificationsDbContext>();
         var registration = await notificationsDb.DeviceRegistrations
             .AsNoTracking()
