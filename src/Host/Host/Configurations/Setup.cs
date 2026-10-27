@@ -23,6 +23,7 @@ internal static class Setup
         AddJsonFile(configuration, $"{configurationsDirectory}/outbox");
         AddJsonFile(configuration, $"{configurationsDirectory}/backgroundJobs");
         AddJsonFile(configuration, $"{configurationsDirectory}/caching");
+        AddJsonFile(configuration, $"{configurationsDirectory}/secretProtection");
         AddJsonFile(configuration, $"{configurationsDirectory}/auditLog");
         AddJsonFile(configuration, $"{configurationsDirectory}/modules");
         AddJsonFile(configuration, $"{configurationsDirectory}/healthCheck");
