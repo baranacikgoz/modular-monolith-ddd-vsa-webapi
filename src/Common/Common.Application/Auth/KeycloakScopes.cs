@@ -87,6 +87,12 @@ public static class KeycloakScopes
         public const string View = "warehouse-connections:view";
         public const string ViewOwn = "warehouse-connections:view-own";
         public const string Update = "warehouse-connections:update";
+
+        /// <summary>
+        ///     Connect one of the caller's own active stores to its warehouse system. Held by the <c>store-owner</c> realm role,
+        ///     so it is deliberately not a <c>-own</c> scope: the role decides who may ask, the store access copy decides which store.
+        /// </summary>
+        public const string Connect = "warehouse-connections:connect";
     }
 
     public static class Hangfire

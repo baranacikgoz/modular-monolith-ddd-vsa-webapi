@@ -20,5 +20,6 @@ public static class Setup
         v1.Get.Endpoint.MapEndpoint(v1WarehouseConnectionsApiGroup);
         v1.Search.Endpoint.MapEndpoint(v1WarehouseConnectionsApiGroup);
         v1.My.Search.Endpoint.MapEndpoint(v1WarehouseConnectionsApiGroup);
+        v1.My.Create.Endpoint.MapEndpoint(v1WarehouseConnectionsApiGroup);
     }
 }

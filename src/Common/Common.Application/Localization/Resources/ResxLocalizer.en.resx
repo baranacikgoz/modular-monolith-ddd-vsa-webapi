@@ -582,6 +582,9 @@
   <data name="WarehouseConnections_Search_Status_Invalid" xml:space="preserve">
     <value>The connection status is not valid.</value>
   </data>
+  <data name="StoreNotAccessible" xml:space="preserve">
+    <value>The store was not found or is not an active store of yours.</value>
+  </data>
   <data name="CannotChangeWhileDeactivated" xml:space="preserve">
     <value>A deactivated warehouse connection cannot be changed.</value>
   </data>

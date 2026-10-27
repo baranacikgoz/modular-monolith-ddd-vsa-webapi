@@ -307,6 +307,9 @@
               },
               {
                 "name": "warehouse-connections:update"
+              },
+              {
+                "name": "warehouse-connections:connect"
               }
             ]
           },
@@ -427,6 +430,17 @@
             "config": {
               "fetchRoles": "true",
               "roles": "[{\"id\":\"system-admin\",\"required\":false}]"
+            }
+          },
+          {
+            "name": "Store Owner Role Policy",
+            "description": "Users holding the realm role 'store-owner'.",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "fetchRoles": "true",
+              "roles": "[{\"id\":\"store-owner\",\"required\":false}]"
             }
           },
           {
@@ -579,6 +593,17 @@
               "resources": "[\"warehouse-connections\"]",
               "scopes": "[\"warehouse-connections:view-own\"]",
               "applyPolicies": "[\"Any Authenticated User Policy\"]"
+            }
+          },
+          {
+            "name": "Warehouse Connections Store Owner Permission",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "resources": "[\"warehouse-connections\"]",
+              "scopes": "[\"warehouse-connections:connect\"]",
+              "applyPolicies": "[\"Store Owner Role Policy\"]"
             }
           },
           {

@@ -641,6 +641,9 @@
   <data name="WarehouseConnections_Search_Status_Invalid" xml:space="preserve">
     <value>Bağlantı durumu geçersiz.</value>
   </data>
+  <data name="StoreNotAccessible" xml:space="preserve">
+    <value>Mağaza bulunamadı veya size ait etkin bir mağaza değil.</value>
+  </data>
   <data name="CannotChangeWhileDeactivated" xml:space="preserve">
     <value>Devre dışı bırakılmış depo bağlantısı değiştirilemez.</value>
   </data>
