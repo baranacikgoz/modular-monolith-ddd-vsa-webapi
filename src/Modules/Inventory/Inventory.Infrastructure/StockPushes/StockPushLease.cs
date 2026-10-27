@@ -1,3 +1,4 @@
+using Common.Infrastructure.Persistence.Extensions;
 using Inventory.Application.Persistence;
 using Inventory.Domain.WarehouseConnections;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ internal static class StockPushLease
         var key = KeyOf(connectionId);
         return await dbContext.Database
             .SqlQuery<bool>($"""SELECT pg_try_advisory_lock(hashtextextended({key}, 0)) AS "Value" """)
+            .TagWith(nameof(TryAcquireAsync), connectionId.Value)
             .SingleAsync(cancellationToken);
     }
 

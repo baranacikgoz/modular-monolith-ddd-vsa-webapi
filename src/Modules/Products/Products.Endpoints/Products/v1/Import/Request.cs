@@ -10,7 +10,7 @@ namespace Products.Endpoints.Products.v1.Import;
 public sealed record Request
 {
     /// <summary>An .xlsx or .xls workbook; the first worksheet is read, row 1 is the header. Columns: A name, B description
-    /// (optional), C quantity, D price.</summary>
+    /// (optional), C quantity, D price, E SKU (optional).</summary>
     public required IFormFile File { get; init; }
 
     /// <summary>Chosen by the client for this upload. Sending the same id again returns the first job instead of queueing

@@ -611,6 +611,27 @@
   <data name="WarehouseCredentialUnreadable" xml:space="preserve">
     <value>Depo bağlantısının saklı kimlik bilgisi okunamıyor, kimlik bilgisi yeniden girilmeli.</value>
   </data>
+  <data name="ImageAlreadyAdded" xml:space="preserve">
+    <value>Bu görsel üründe zaten var.</value>
+  </data>
+  <data name="ImageFileTooLarge" xml:space="preserve">
+    <value>Görsel dosyası izin verilen boyutu aşıyor.</value>
+  </data>
+  <data name="ImageLimitReached" xml:space="preserve">
+    <value>Ürün için görsel sınırına ulaşıldı.</value>
+  </data>
+  <data name="ImageUnsupportedType" xml:space="preserve">
+    <value>Görsel türü desteklenmiyor, JPEG, PNG veya WebP yükleyin.</value>
+  </data>
+  <data name="TooManyFailedAttempts" xml:space="preserve">
+    <value>Çok fazla hatalı deneme yapıldı, yeni bir kod isteyin.</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>Bildirim sağlayıcısı isteği kabul etmedi.</value>
+  </data>
+  <data name="Throttled" xml:space="preserve">
+    <value>Bildirim sağlayıcısı için istek sınırına ulaşıldı, biraz sonra tekrar deneyin.</value>
+  </data>
   <data name="WarehouseConnections_Create_BaseUrl_NotEmpty" xml:space="preserve">
     <value>Temel adres boş olamaz.</value>
   </data>

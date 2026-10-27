@@ -89,6 +89,7 @@ public sealed partial class OutboxProcessor(
                     """,
                     opts.BatchSize,
                     opts.ClaimLeaseSeconds)
+                .TagWith("ClaimOutboxBatch")
                 .ToListAsync(ct);
 #pragma warning restore S2077
 
