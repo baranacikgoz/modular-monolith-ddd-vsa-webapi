@@ -6,12 +6,12 @@ public abstract class ValueObject : IComparable<ValueObject>
 {
     public abstract int CompareTo(ValueObject? other);
 
-    protected static bool EqualOperator(ValueObject left, ValueObject right)
+    protected static bool EqualOperator(ValueObject? left, ValueObject? right)
     {
-        return !(left is null ^ right is null) && (left is null || left.Equals(right));
+        return left is null ? right is null : left.Equals(right);
     }
 
-    protected static bool NotEqualOperator(ValueObject left, ValueObject right)
+    protected static bool NotEqualOperator(ValueObject? left, ValueObject? right)
     {
         return !EqualOperator(left, right);
     }
@@ -36,12 +36,12 @@ public abstract class ValueObject : IComparable<ValueObject>
             .Aggregate((x, y) => x ^ y);
     }
 
-    public static bool operator ==(ValueObject left, ValueObject right)
+    public static bool operator ==(ValueObject? left, ValueObject? right)
     {
         return EqualOperator(left, right);
     }
 
-    public static bool operator !=(ValueObject left, ValueObject right)
+    public static bool operator !=(ValueObject? left, ValueObject? right)
     {
         return NotEqualOperator(left, right);
     }
