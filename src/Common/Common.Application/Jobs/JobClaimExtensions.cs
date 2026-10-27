@@ -31,7 +31,10 @@ public static class JobClaimExtensions
         return claimed == 1;
     }
 
-    /// <summary>Hands a Running job back to the queue (the consumer was cancelled before it could finish).</summary>
+    /// <summary>
+    ///     Hands a Running job back to the queue (the consumer was cancelled before it could finish). It has no lease test, so it
+    ///     is for the consumer that holds the job; a sweep uses the overload with a <c>startedBefore</c> cutoff.
+    /// </summary>
     public static async Task<bool> RequeueAsync<TJob, TId>(
         this DbSet<TJob> jobs, TId id, CancellationToken cancellationToken)
         where TJob : JobRow<TId>
