@@ -429,6 +429,15 @@
   <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
     <value>Provider reference must be at most ({0}) characters.</value>
   </data>
+  <data name="StockReservations_WebhookCallback_ConnectionId_NotEmpty" xml:space="preserve">
+    <value>Connection ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_DeliveryId_NotEmpty" xml:space="preserve">
+    <value>Delivery ID cannot be empty.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_DeliveryId_MaximumLength" xml:space="preserve">
+    <value>Delivery ID cannot be longer than ({0}) characters.</value>
+  </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Reservation ID cannot be empty.</value>
   </data>

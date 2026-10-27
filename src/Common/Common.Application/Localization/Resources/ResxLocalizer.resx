@@ -488,6 +488,15 @@
   <data name="StockReservations_WebhookCallback_ProviderReference_MaximumLength" xml:space="preserve">
     <value>Sağlayıcı referansı en fazla ({0}) karakter olabilir.</value>
   </data>
+  <data name="StockReservations_WebhookCallback_ConnectionId_NotEmpty" xml:space="preserve">
+    <value>Bağlantı Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_DeliveryId_NotEmpty" xml:space="preserve">
+    <value>Teslimat Id boş olamaz.</value>
+  </data>
+  <data name="StockReservations_WebhookCallback_DeliveryId_MaximumLength" xml:space="preserve">
+    <value>Teslimat Id en fazla ({0}) karakter olabilir.</value>
+  </data>
   <data name="StockReservations_Release_Id_NotEmpty" xml:space="preserve">
     <value>Rezervasyon Id boş olamaz.</value>
   </data>

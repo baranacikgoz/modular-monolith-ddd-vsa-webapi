@@ -1,3 +1,4 @@
+using Common.Application.Options;
 using Common.Endpoints.Versioning;
 using Common.Infrastructure.Modules;
 using Inventory.Endpoints.StockLevels;
@@ -6,9 +7,12 @@ using Inventory.Endpoints.WarehouseConnections;
 using Inventory.Infrastructure.Gateway;
 using Inventory.Infrastructure.Persistence;
 using Inventory.Infrastructure.ProductSummaries;
+using Inventory.Infrastructure.RateLimiting;
 using Inventory.Infrastructure.StockReservations;
 using Inventory.Infrastructure.Telemetry;
+using Inventory.Infrastructure.Webhooks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +35,7 @@ public sealed class InventoryModule : IModule
         services.AddStockReservationExpirySweep();
         services.AddProductSummaryReconciliation();
         services.AddWarehouseGatewayInfrastructure();
+        services.AddWarehouseWebhookIntake();
     }
 
     public void UseModule(IApplicationBuilder app)
@@ -51,4 +56,6 @@ public sealed class InventoryModule : IModule
         versionedApiGroup.MapStockLevelsEndpoints();
         versionedApiGroup.MapWarehouseConnectionsEndpoints();
     }
+
+    public IEnumerable<Action<RateLimiterOptions, CustomRateLimitingOptions>>? RateLimitingPolicies => Policies.Get();
 }

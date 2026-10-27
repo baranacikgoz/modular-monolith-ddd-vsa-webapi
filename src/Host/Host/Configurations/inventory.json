@@ -6,7 +6,6 @@
     "StockReservationExpirySweepBatchSize": 100,
     "ProductSummaryReconciliationCron": "0 3 * * *",
     "BusinessTimeZoneId": "Europe/Berlin",
-    "WebhookSharedSecret": "dev-only-shared-secret-change-in-production",
     "WebhookMaxBodyBytes": 65536
   }
 }

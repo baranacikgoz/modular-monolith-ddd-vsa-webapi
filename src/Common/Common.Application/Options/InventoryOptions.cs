@@ -23,9 +23,6 @@ public class InventoryOptions
     /// </summary>
     public required string BusinessTimeZoneId { get; set; }
 
-    /// <summary>Shared secret used to verify the HMAC-SHA256 signature on inbound warehouse webhook callbacks.</summary>
-    public required string WebhookSharedSecret { get; set; }
-
     /// <summary>Largest inbound warehouse webhook body accepted, in bytes; a larger one is refused with 413 before it is read.</summary>
     public required int WebhookMaxBodyBytes { get; set; }
 }
@@ -58,10 +55,6 @@ public class InventoryOptionsValidator : CustomValidator<InventoryOptions>
             .NotEmpty()
             .Must(id => !string.IsNullOrEmpty(id) && TimeZoneInfo.TryFindSystemTimeZoneById(id, out _))
             .WithMessage("BusinessTimeZoneId must be the id of a time zone known to the host.");
-
-        RuleFor(x => x.WebhookSharedSecret)
-            .NotEmpty()
-            .WithMessage("WebhookSharedSecret must not be empty.");
 
         RuleFor(x => x.WebhookMaxBodyBytes)
             .GreaterThan(0)

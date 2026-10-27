@@ -16,7 +16,6 @@ internal static class TestInventoryOptions
             StockReservationExpirySweepBatchSize = 100,
             ProductSummaryReconciliationCron = productSummaryReconciliationCron,
             BusinessTimeZoneId = businessTimeZoneId,
-            WebhookSharedSecret = "secret",
             WebhookMaxBodyBytes = 65536
         };
     }

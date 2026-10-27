@@ -4,6 +4,7 @@ using Inventory.Domain.StockCounters;
 using Inventory.Domain.StockLevels;
 using Inventory.Domain.StockReservations;
 using Inventory.Domain.WarehouseConnections;
+using Inventory.Domain.WebhookDeliveries;
 using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Application.Persistence;
@@ -16,4 +17,5 @@ public interface IInventoryDbContext : IDbContext
     public DbSet<ProductSummary> ProductSummaries { get; }
     public DbSet<StoreDailyStockTotal> StoreDailyStockTotals { get; }
     public DbSet<WarehouseConnection> WarehouseConnections { get; }
+    public DbSet<WebhookDelivery> WebhookDeliveries { get; }
 }
