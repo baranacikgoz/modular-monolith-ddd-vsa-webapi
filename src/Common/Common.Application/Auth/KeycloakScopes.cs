@@ -29,6 +29,10 @@ public static class KeycloakScopes
     {
         public const string Create = "stores:create";
         public const string View = "stores:view";
+
+        /// <summary>Every store in any status, pending, suspended and closed included. Administration only.</summary>
+        public const string ViewAll = "stores:view-all";
+
         public const string Search = "stores:search";
         public const string Update = "stores:update";
         public const string CreateOwn = "stores:create-own";

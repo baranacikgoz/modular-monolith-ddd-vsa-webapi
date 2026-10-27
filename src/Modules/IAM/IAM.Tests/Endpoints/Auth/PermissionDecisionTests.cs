@@ -30,6 +30,24 @@ public class PermissionDecisionTests(IntegrationTestWebAppFactory factory) : Bas
         Assert.True(granted);
     }
 
+    // Listing a store in any status (pending, suspended, closed) is administration; the public catalog scopes stay open to
+    // every authenticated role.
+    [Theory]
+    [InlineData(SeedUsers.AdminPhone, true)]
+    [InlineData(SeedUsers.BasicPhone, false)]
+    public async Task StoresViewAll_IsGrantedToTheAdministratorOnly(string phone, bool expected)
+    {
+        var tokens = await IamTestClient.LoginByPhoneAsync(Factory, phone);
+        var permissionClient = Scope.ServiceProvider.GetRequiredService<IKeycloakPermissionClient>();
+
+        var granted = await permissionClient.DecideAsync(
+            tokens.AccessToken,
+            KeycloakPermission.FromScope(KeycloakScopes.Stores.ViewAll).PolicyName(),
+            CancellationToken.None);
+
+        Assert.Equal(expected, granted);
+    }
+
     [Fact]
     public async Task ProtectedEndpoint_GrantedPermissionSetIsCachedPerToken()
     {

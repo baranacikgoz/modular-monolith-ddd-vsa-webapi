@@ -222,6 +222,9 @@
                 "name": "stores:view"
               },
               {
+                "name": "stores:view-all"
+              },
+              {
                 "name": "stores:search"
               },
               {
@@ -539,7 +542,7 @@
             "decisionStrategy": "AFFIRMATIVE",
             "config": {
               "resources": "[\"stores\"]",
-              "scopes": "[\"stores:create\",\"stores:update\",\"stores:approve\",\"stores:suspend\",\"stores:reinstate\"]",
+              "scopes": "[\"stores:create\",\"stores:view-all\",\"stores:update\",\"stores:approve\",\"stores:suspend\",\"stores:reinstate\"]",
               "applyPolicies": "[\"System Admin Role Policy\"]"
             }
           },
@@ -722,6 +725,9 @@
           },
           {
             "name": "stores:view"
+          },
+          {
+            "name": "stores:view-all"
           },
           {
             "name": "stores:search"
