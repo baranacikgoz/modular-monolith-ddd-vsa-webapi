@@ -132,6 +132,11 @@ internal sealed class FaultInjectingKeycloakAdminClient(IKeycloakAdminClient inn
             : inner.AssignRealmRoleAsync(userId, roleName, cancellationToken);
     }
 
+    public Task<Result> UpdateUserAsync(ApplicationUserId userId, UpdateKeycloakUser update, CancellationToken cancellationToken)
+    {
+        return inner.UpdateUserAsync(userId, update, cancellationToken);
+    }
+
     public Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
     {
         return inner.DeleteUserAsync(userId, cancellationToken);

@@ -11,6 +11,14 @@ public interface IKeycloakAdminClient
     /// <summary>Assigns a realm role. An already-held role is accepted. A user Keycloak does not know is <c>NotFound</c>; any other rejection is <c>IdentityProviderUnavailable</c>.</summary>
     Task<Result> AssignRealmRoleAsync(ApplicationUserId userId, string roleName, CancellationToken cancellationToken);
 
+    /// <summary>
+    ///     Changes a user's names and attributes. Keycloak's update replaces what the realm's user profile manages, so the
+    ///     current representation is read, the change applied and the whole of it written back: a field the call does not
+    ///     name keeps its value. A user Keycloak does not know is <c>NotFound</c>; a field the user profile rejects is
+    ///     <c>IdentityProviderRejectedUserField</c>. The cached display entry of the user is dropped.
+    /// </summary>
+    Task<Result> UpdateUserAsync(ApplicationUserId userId, UpdateKeycloakUser update, CancellationToken cancellationToken);
+
     /// <summary>Deletes the user. A user that no longer exists is not an error.</summary>
     Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken);
 

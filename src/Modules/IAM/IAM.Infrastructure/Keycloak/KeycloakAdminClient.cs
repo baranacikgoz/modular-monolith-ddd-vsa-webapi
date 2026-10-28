@@ -141,6 +141,74 @@ internal sealed partial class KeycloakAdminClient(
             : IdentityErrors.IdentityProviderUnavailable;
     }
 
+    public async Task<Result> UpdateUserAsync(ApplicationUserId userId, UpdateKeycloakUser update,
+        CancellationToken cancellationToken)
+    {
+        using var read = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, AdminUri($"{UsersResource}/{userId}")),
+            cancellationToken);
+
+        if (read.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Error.NotFound(nameof(KeycloakUser), userId);
+        }
+
+        read.EnsureSuccessStatusCode();
+        var representation = await read.Content.ReadFromJsonAsync<UserRepresentation>(cancellationToken)
+                             ?? throw new HttpRequestException("Keycloak returned an empty user representation.");
+
+        if (update.FirstName is not null)
+        {
+            representation.FirstName = update.FirstName;
+        }
+
+        if (update.LastName is not null)
+        {
+            representation.LastName = update.LastName;
+        }
+
+        if (update.Attributes is { Count: > 0 })
+        {
+            representation.Attributes ??= [];
+            foreach (var (name, value) in update.Attributes)
+            {
+                if (value is null)
+                {
+                    representation.Attributes.Remove(name);
+                }
+                else
+                {
+                    representation.Attributes[name] = [value];
+                }
+            }
+        }
+
+        using var write = await SendAsync(
+            () => new HttpRequestMessage(HttpMethod.Put, AdminUri($"{UsersResource}/{userId}"))
+            {
+                Content = JsonContent.Create(representation)
+            },
+            cancellationToken);
+
+        switch (write.StatusCode)
+        {
+            case HttpStatusCode.NoContent:
+                // The bulk display lookup caches the name for up to a day; drop it so the change shows now.
+                await cache.RemoveAsync(CacheKeys.For.UserDisplay(userId), token: cancellationToken);
+                return Result.Success;
+            case HttpStatusCode.NotFound:
+                return Error.NotFound(nameof(KeycloakUser), userId);
+            case HttpStatusCode.BadRequest:
+                var error = await write.Content.TryReadFromJsonAsync<ErrorRepresentation>(cancellationToken);
+                var rejection = error?.ErrorMessage ?? error?.ErrorDescription;
+                LogUserRejected(logger, error?.Field, rejection);
+                return IdentityErrors.IdentityProviderRejectedUserField(error?.Field, rejection);
+            default:
+                write.EnsureSuccessStatusCode();
+                throw new HttpRequestException($"Unexpected Keycloak status {(int)write.StatusCode} updating a user.");
+        }
+    }
+
     public async Task DeleteUserAsync(ApplicationUserId userId, CancellationToken cancellationToken)
     {
         using var response = await SendAsync(
