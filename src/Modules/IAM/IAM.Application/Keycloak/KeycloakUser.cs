@@ -13,6 +13,15 @@ public sealed record KeycloakUser(
     bool Enabled,
     DateTimeOffset CreatedOn);
 
+/// <summary>
+///     A partial user update. A null name leaves the current one. An attribute not named stays as it is, an attribute
+///     mapped to a value is set to it and an attribute mapped to null is removed.
+/// </summary>
+public sealed record UpdateKeycloakUser(
+    string? FirstName = null,
+    string? LastName = null,
+    IReadOnlyDictionary<string, string?>? Attributes = null);
+
 public sealed record KeycloakUserSession(
     string Id,
     string? IpAddress,
