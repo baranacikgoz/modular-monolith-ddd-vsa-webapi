@@ -13,8 +13,8 @@ namespace IAM.Infrastructure.InterModuleRequestHandlers;
 /// <summary>
 ///     Bulk-by-ids display lookup for other modules (audit "who" columns via <c>ActorNames</c>). Users live in
 ///     Keycloak and the Admin API has no lookup by id list, so every unknown id costs one <c>GET /users/{id}</c>.
-///     Each id is served from FusionCache first (<c>user_display:{id}</c>, L1 minutes, L2 a day: a name changes only
-///     from the Keycloak console, and <c>DeleteUserAsync</c> evicts the entry), and only the misses go to Keycloak,
+///     Each id is served from FusionCache first (<c>user_display:v2:{id}</c>, L1 minutes, L2 a day: a name or a phone
+///     number changes only from the Keycloak console, and <c>DeleteUserAsync</c> evicts the entry), and only the misses go to Keycloak,
 ///     at most <see cref="KeycloakOptions.UserLookupConcurrency" /> in flight.
 ///     An id Keycloak does not know is cached as a negative entry so a page listing a deleted actor does not re-ask
 ///     on every refresh. Fail-safe is on: while Keycloak is down a stale name beats an empty column.
@@ -53,7 +53,7 @@ public class GetUsersRequestHandler(
         var users = ids
             .Select(id => (Id: id, Entry: entries[id]))
             .Where(x => x.Entry.Exists)
-            .Select(x => new UserSummary(x.Id, x.Entry.Email, x.Entry.FirstName, x.Entry.LastName))
+            .Select(x => new UserSummary(x.Id, x.Entry.Email, x.Entry.FirstName, x.Entry.LastName, x.Entry.PhoneNumber))
             .ToList();
 
         return new GetUsersResponse(users);
@@ -80,7 +80,7 @@ public class GetUsersRequestHandler(
                 var result = await adminClient.GetUserAsync(id, ct);
                 if (result.Value is { } user)
                 {
-                    return new UserDisplayCacheEntry(true, user.Email, user.FirstName, user.LastName);
+                    return new UserDisplayCacheEntry(true, user.Email, user.FirstName, user.LastName, user.PhoneNumber);
                 }
 
                 var negativeDuration = TimeSpan.FromSeconds(options.UserDisplayNegativeCacheDurationSeconds);
@@ -94,11 +94,11 @@ public class GetUsersRequestHandler(
 }
 
 /// <summary>
-///     What the bulk lookup keeps per user: only the display fields <see cref="UserSummary" /> exposes. The id is the
+///     What the bulk lookup keeps per user: only the fields <see cref="UserSummary" /> exposes. The id is the
 ///     cache key, not part of the value. <see cref="Exists" /> false is the negative entry for an id Keycloak does not
 ///     know. Public so the L2 (Redis) serializer can round-trip it.
 /// </summary>
-public sealed record UserDisplayCacheEntry(bool Exists, string? Email, string? FirstName, string? LastName)
+public sealed record UserDisplayCacheEntry(bool Exists, string? Email, string? FirstName, string? LastName, string? PhoneNumber)
 {
-    public static readonly UserDisplayCacheEntry Missing = new(false, null, null, null);
+    public static readonly UserDisplayCacheEntry Missing = new(false, null, null, null, null);
 }

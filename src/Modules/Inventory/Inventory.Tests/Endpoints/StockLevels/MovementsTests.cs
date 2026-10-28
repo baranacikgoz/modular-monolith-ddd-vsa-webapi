@@ -149,7 +149,7 @@ public class MovementsTests(IntegrationTestWebAppFactory factory) : BaseIntegrat
     [Fact]
     public async Task GetMovements_KnownActingUser_CarriesTheDisplayNameFromOneLookupForThePage()
     {
-        UsersLookupReturns(new UserSummary(Actor, "ada@example.com", "Ada", "Lovelace"));
+        UsersLookupReturns(new UserSummary(Actor, "ada@example.com", "Ada", "Lovelace", null));
         var client = StockLevelTestData.AuthedClient(Factory);
         var stockLevel = await SeedLedgerAsync(client);
 
@@ -166,7 +166,7 @@ public class MovementsTests(IntegrationTestWebAppFactory factory) : BaseIntegrat
     [Fact]
     public async Task GetMovements_EveryPageAsksIamOnce()
     {
-        UsersLookupReturns(new UserSummary(Actor, "ada@example.com", "Ada", "Lovelace"));
+        UsersLookupReturns(new UserSummary(Actor, "ada@example.com", "Ada", "Lovelace", null));
         var client = StockLevelTestData.AuthedClient(Factory);
         var stockLevel = await SeedLedgerAsync(client);
 

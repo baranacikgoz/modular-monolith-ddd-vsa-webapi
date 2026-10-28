@@ -39,8 +39,8 @@ public sealed class ActorNamesTests
     {
         var first = NewId();
         var second = NewId();
-        _client.Users[first] = new UserSummary(first, "ada@example.com", "Ada", "Lovelace");
-        _client.Users[second] = new UserSummary(second, "grace@example.com", "Grace", "Hopper");
+        _client.Users[first] = new UserSummary(first, "ada@example.com", "Ada", "Lovelace", null);
+        _client.Users[second] = new UserSummary(second, "grace@example.com", "Grace", "Hopper", null);
 
         await ActorNames.ResolveAsync(_client, [first, null, second, first], _logger, CancellationToken.None);
 
@@ -52,7 +52,7 @@ public sealed class ActorNamesTests
     public async Task ResolveAsync_KnownUser_MapsIdToFullName()
     {
         var id = NewId();
-        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", "Lovelace");
+        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", "Lovelace", null);
 
         var names = await ActorNames.ResolveAsync(_client, [id], _logger, CancellationToken.None);
 
@@ -64,7 +64,7 @@ public sealed class ActorNamesTests
     {
         var known = NewId();
         var unknown = NewId();
-        _client.Users[known] = new UserSummary(known, "ada@example.com", "Ada", "Lovelace");
+        _client.Users[known] = new UserSummary(known, "ada@example.com", "Ada", "Lovelace", null);
 
         var names = await ActorNames.ResolveAsync(_client, [known, unknown], _logger, CancellationToken.None);
 
@@ -77,7 +77,7 @@ public sealed class ActorNamesTests
     public async Task ResolveAsync_UserWithoutAName_IsSkipped(string? firstName, string? lastName)
     {
         var id = NewId();
-        _client.Users[id] = new UserSummary(id, "nameless@example.com", firstName, lastName);
+        _client.Users[id] = new UserSummary(id, "nameless@example.com", firstName, lastName, null);
 
         var names = await ActorNames.ResolveAsync(_client, [id], _logger, CancellationToken.None);
 
@@ -88,7 +88,7 @@ public sealed class ActorNamesTests
     public async Task ResolveAsync_UserWithOnlyOneNamePart_TrimsTheMissingPart()
     {
         var id = NewId();
-        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", null);
+        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", null, null);
 
         var names = await ActorNames.ResolveAsync(_client, [id], _logger, CancellationToken.None);
 
@@ -136,7 +136,7 @@ public sealed class ActorNamesTests
     public async Task ResolveAsync_NoFailure_LogsNothing()
     {
         var id = NewId();
-        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", "Lovelace");
+        _client.Users[id] = new UserSummary(id, "ada@example.com", "Ada", "Lovelace", null);
 
         await ActorNames.ResolveAsync(_client, [id], _logger, CancellationToken.None);
 
