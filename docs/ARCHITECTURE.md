@@ -31,7 +31,7 @@ This architecture removes "extract later" from the equation entirely, because th
 1. **Develop as a monolith, deploy as microservices**: same codebase, same binary, one environment variable controls the process topology.
 2. **Boundaries enforced by the compiler, not convention**: a developer cannot accidentally create a cross-module dependency that the build does not catch.
 3. **Communication contracts that survive split deployment without rewriting**: the call site that works in-process must work cross-process identically.
-4. **Complexity arrives when the business earns it**: shared database with different schemas per module, single binary, and single pipeline are defaults. Splitting any of them is a config change, not a code change.
+4. **Complexity arrives when the business earns it**: a shared database with a schema per module, a single binary and a single pipeline are the defaults. Running modules as separate processes is a config change (`EnabledModules`). A database per module is not: every module context shares one data source built from the single `DatabaseOptions.ConnectionString`, so giving a module its own database takes a code change, and a separate binary or pipeline takes build and delivery work.
 
 ---
 
@@ -213,7 +213,7 @@ An administration read asks a `-view-all` scope and its owner twin a `-view-own`
 
 ## Honest Opinion
 
-**This is not full microservices**. True microservices give you independent deployment cadences, independent data stores per team, independent release trains, and true team autonomy at the binary level. This architecture gives you *deployment isolation on demand* and *development simplicity always*. If your team needs truly independent deployment cadences, you will eventually want separate repositories. This architecture solves everything before that point, which is where most teams spend most of their careers.
+**This is not full microservices**, but it is more than a monolith. Each module can run as its own process and talks to the others only through messages, so it can be scaled on its own. What stays shared is one codebase and one build, one database server with a schema per module, and one release train. Integration events are not frozen the way domain events are, so keeping two differently built modules compatible is up to the team. This architecture gives you *deployment isolation on demand* and *development simplicity always*. If your team needs modules released independently, or each with its own database, you extract them into their own service: the events and requests are already the seam and the schema is already the module's own. This architecture solves everything before that point, which is where most teams spend most of their careers.
 
 ---
 
