@@ -350,6 +350,16 @@ Details are in [`docs/ai-workflow.md`](docs/ai-workflow.md). None of it is requi
 
 Issues and pull requests are welcome. [`CONTRIBUTING.md`](CONTRIBUTING.md) explains the workflow and the checks a change must pass. Report vulnerabilities privately as described in [`SECURITY.md`](SECURITY.md).
 
+## Work with me
+
+This template is the backend foundation of [randevufast.com](https://randevufast.com), an online appointment platform for barbershops, salons and clinics in Turkey. A second production system built the same way is a dropshipping platform where a product supplier's sellers connect their Trendyol and Hepsiburada stores and sell the supplier's catalogue, with stock tracked across all of them.
+
+- **Architecture review.** I read your codebase against the concrete rule set this repository enforces with tests and send a prioritised written report with file and line references.
+- **Adoption sprint.** We fork the template together, replace the demo domain with your first real module, wire the guardrail tests into your pipeline and set up how you keep pulling template updates. The agent rulebook and commands come with it if your team uses AI coding agents. Scoped in days, not in outcomes.
+- **Team workshop.** Write to me for the details.
+
+Special focus: reliable marketplace and warehouse stock synchronisation. Write to [baran-acikgoz@outlook.com](mailto:baran-acikgoz@outlook.com).
+
 ## License
 
 Apache License 2.0. See [`LICENSE`](LICENSE).

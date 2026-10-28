@@ -1,4 +1,4 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-27)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-28)
 
 ## Corpus Check
 - 882 files · ~192,214 words
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e6bf700f`
+- Built from commit: `1a46d485`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
