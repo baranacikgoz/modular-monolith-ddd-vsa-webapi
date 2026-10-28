@@ -68,12 +68,15 @@ public static class CacheKeys
         }
 
         /// <summary>
-        ///     Cached Keycloak display data (name, email) of one user for the bulk <c>GetUsersRequest</c> lookup.
-        ///     Evicted by <c>DeleteUserAsync</c>; a name edit in the Keycloak console surfaces when the entry expires.
+        ///     Cached Keycloak data (name, email, phone number) of one user for the bulk <c>GetUsersRequest</c> lookup.
+        ///     Evicted by <c>DeleteUserAsync</c>; an edit in the Keycloak console surfaces when the entry expires.
+        ///     The <c>v2</c> segment retired the entries cached before the phone number joined the value: a shared
+        ///     (Redis) entry of the older shape would answer a null phone number for up to a day. Bump it again whenever
+        ///     the cached shape changes.
         /// </summary>
         public static string UserDisplay(ApplicationUserId userId)
         {
-            return $"user_display:{userId}";
+            return $"user_display:v2:{userId}";
         }
 
         /// <summary>

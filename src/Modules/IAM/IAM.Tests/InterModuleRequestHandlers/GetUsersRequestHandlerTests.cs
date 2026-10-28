@@ -20,6 +20,8 @@ namespace IAM.Tests.InterModuleRequestHandlers;
 /// </summary>
 public sealed class GetUsersRequestHandlerTests : IDisposable
 {
+    private const string PhoneNumber = "905550000001";
+
     private readonly IKeycloakAdminClient _adminClient = Substitute.For<IKeycloakAdminClient>();
     private readonly FusionCache _cache = new(new FusionCacheOptions());
 
@@ -47,6 +49,22 @@ public sealed class GetUsersRequestHandlerTests : IDisposable
             Assert.Equal("Ada", u.FirstName);
             Assert.Equal("Lovelace", u.LastName);
         });
+    }
+
+    [Fact]
+    public async Task HandleAsync_UserWithAPhoneNumber_ReturnsItOnTheFirstLookupAndFromTheCache()
+    {
+        var id = new ApplicationUserId(Guid.NewGuid());
+        _adminClient.GetUserAsync(id, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Result<KeycloakUser>>(NewUser(id)));
+        var handler = CreateHandler(concurrency: 8);
+
+        var first = await handler.HandleAsync(new GetUsersRequest([id]), CancellationToken.None);
+        var second = await handler.HandleAsync(new GetUsersRequest([id]), CancellationToken.None);
+
+        await _adminClient.Received(1).GetUserAsync(id, Arg.Any<CancellationToken>());
+        Assert.Equal(PhoneNumber, Assert.Single(first.Users).PhoneNumber);
+        Assert.Equal(PhoneNumber, Assert.Single(second.Users).PhoneNumber);
     }
 
     [Fact]
@@ -161,7 +179,7 @@ public sealed class GetUsersRequestHandlerTests : IDisposable
 
     private static KeycloakUser NewUser(ApplicationUserId id)
     {
-        return new KeycloakUser(id, id.ToString(), $"{id}@example.com", "Ada", "Lovelace", null, null, true, DateTimeOffset.UtcNow);
+        return new KeycloakUser(id, id.ToString(), $"{id}@example.com", "Ada", "Lovelace", PhoneNumber, null, true, DateTimeOffset.UtcNow);
     }
 
     /// <summary>A slow fake lookup that records how many calls overlapped, so the concurrency cap can be asserted.</summary>

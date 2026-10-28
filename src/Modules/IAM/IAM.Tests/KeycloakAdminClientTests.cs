@@ -182,7 +182,7 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
         var cache = Scope.ServiceProvider.GetRequiredService<IFusionCache>();
         var user = await CreateStaffUserAsync(adminClient);
         var key = CacheKeys.For.UserDisplay(user.Id);
-        await cache.SetAsync(key, new UserDisplayCacheEntry(true, user.Email, "Ada", "Lovelace"));
+        await cache.SetAsync(key, new UserDisplayCacheEntry(true, user.Email, "Ada", "Lovelace", null));
 
         await adminClient.DeleteUserAsync(user.Id, CancellationToken.None);
 
