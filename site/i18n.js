@@ -112,7 +112,6 @@
     'wk.b.d': 'Şablonu birlikte fork\'layıp projenize taşırız, şablondaki örnek modülleri ilk gerçek modülünüzle değiştiririz, mimari kuralları denetleyen testleri CI pipeline\'ınıza bağlarız ve şablonda çıkan güncellemeleri sonradan alabilmeniz için upstream akışını kurarız. Ekibiniz yapay zeka ajanları kullanıyorsa kural kitabı ve komutlar da kurulur. Kapsam sonuca göre değil, gün sayısına göre belirlenir.',
     'wk.c.t': 'Ekip atölyesi',
     'wk.c.d': 'Ayrıntılar için bana yazın.',
-    'wk.note': 'Özel odak: pazaryeri ve depo stok senkronizasyonunun güvenilir kurulması.',
     'wk.cta': 'Bana yazın',
     'ft.license': 'Apache Lisansı 2.0',
     'ft.built': 'Deponun README, doküman ve kaynak koduna dayanarak hazırlandı.'

@@ -439,7 +439,6 @@ main,.foot{position:relative;z-index:1}
 .doc b span{color:var(--dim);transition:all .3s}
 .doc:hover b span{color:var(--signal);transform:translate(3px,-3px)}
 .doc small{font:400 13px/1.45 var(--sans);color:var(--dim)}
-.work-note{margin:32px 0 0;max-width:40em;font-size:16px;color:var(--ink2)}
 .work-cta{margin:28px 0 0}
 
 .foot{padding:60px 24px 70px;border-top:1px solid var(--line)}
