@@ -167,16 +167,19 @@ internal sealed partial class KeycloakAdminClient(
             representation.LastName = update.LastName;
         }
 
-        foreach (var (name, value) in update.Attributes ?? new Dictionary<string, string?>())
+        if (update.Attributes is { Count: > 0 })
         {
             representation.Attributes ??= [];
-            if (value is null)
+            foreach (var (name, value) in update.Attributes)
             {
-                representation.Attributes.Remove(name);
-            }
-            else
-            {
-                representation.Attributes[name] = [value];
+                if (value is null)
+                {
+                    representation.Attributes.Remove(name);
+                }
+                else
+                {
+                    representation.Attributes[name] = [value];
+                }
             }
         }
 
