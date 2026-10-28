@@ -358,7 +358,7 @@ This template is the backend foundation of [randevufast.com](https://randevufast
 - **Adoption sprint.** We fork the template together, replace the demo domain with your first real module, wire the guardrail tests into your pipeline and set up how you keep pulling template updates. The agent rulebook and commands come with it if your team uses AI coding agents. Scoped in days, not in outcomes.
 - **Team workshop.** Write to me for the details.
 
-Special focus: reliable marketplace and warehouse stock synchronisation. Write to [baran-acikgoz@outlook.com](mailto:baran-acikgoz@outlook.com).
+Write to [baran-acikgoz@outlook.com](mailto:baran-acikgoz@outlook.com).
 
 ## License
 
