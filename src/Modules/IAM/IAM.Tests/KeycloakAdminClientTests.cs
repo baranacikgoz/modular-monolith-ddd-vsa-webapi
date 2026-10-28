@@ -114,6 +114,7 @@ public class KeycloakAdminClientTests(IntegrationTestWebAppFactory factory) : Ba
 
         Assert.False(result.IsFailure);
         Assert.Equal(expectedAttribute, await KeycloakUserAttributeReader.PhoneNumberVerifiedAsync(factory, Scope.ServiceProvider, result.Value));
+        Assert.Equal(verified, (await ReadUserAsync(adminClient, result.Value)).PhoneNumberVerified);
     }
 
     [Theory]

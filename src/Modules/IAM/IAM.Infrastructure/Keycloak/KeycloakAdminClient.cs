@@ -590,7 +590,9 @@ internal sealed partial class KeycloakAdminClient(
             attributes?.GetValueOrDefault(UserAttributes.PhoneNumber)?.FirstOrDefault(),
             birthDate,
             user.Enabled,
-            DateTimeOffset.FromUnixTimeMilliseconds(user.CreatedTimestamp ?? 0));
+            DateTimeOffset.FromUnixTimeMilliseconds(user.CreatedTimestamp ?? 0),
+            string.Equals(attributes?.GetValueOrDefault(UserAttributes.PhoneNumberVerified)?.FirstOrDefault(), "true",
+                StringComparison.OrdinalIgnoreCase));
     }
 
     [LoggerMessage(Level = LogLevel.Warning,
