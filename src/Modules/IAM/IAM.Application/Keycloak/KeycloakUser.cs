@@ -2,6 +2,10 @@ using Common.Domain.StronglyTypedIds;
 
 namespace IAM.Application.Keycloak;
 
+/// <summary>
+///     <paramref name="PhoneNumberVerified" /> is whether the user proved ownership of <paramref name="PhoneNumber" />
+///     (see <see cref="CreateKeycloakUser" />). A user with no phone number attribute reads as not verified.
+/// </summary>
 public sealed record KeycloakUser(
     ApplicationUserId Id,
     string Username,
@@ -11,7 +15,8 @@ public sealed record KeycloakUser(
     string? PhoneNumber,
     DateOnly? BirthDate,
     bool Enabled,
-    DateTimeOffset CreatedOn);
+    DateTimeOffset CreatedOn,
+    bool PhoneNumberVerified = false);
 
 /// <summary>
 ///     A partial user update. A null name leaves the current one. An attribute not named stays as it is, an attribute
