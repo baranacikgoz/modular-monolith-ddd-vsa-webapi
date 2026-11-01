@@ -1,4 +1,6 @@
+using Common.Application.EventBus;
 using Common.Infrastructure.Persistence.Extensions;
+using Common.IntegrationEvents;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,10 @@ using Notifications.Domain.Devices;
 
 namespace Notifications.Infrastructure.InterModuleRequestHandlers;
 
-public class BindDeviceSessionRequestHandler(INotificationsDbContext dbContext, TimeProvider timeProvider)
+public class BindDeviceSessionRequestHandler(
+    INotificationsDbContext dbContext,
+    IIntegrationEventOutbox outbox,
+    TimeProvider timeProvider)
     : InterModuleRequestHandler<BindDeviceSessionRequest, BindDeviceSessionResponse>
 {
     public override async Task<BindDeviceSessionResponse> HandleAsync(
@@ -33,6 +38,10 @@ public class BindDeviceSessionRequestHandler(INotificationsDbContext dbContext, 
         {
             supersededSessionId = registration.Rebind(request.SessionId, request.DeviceName, request.PushToken, now);
         }
+
+        // Committed with the registration, so a sign-in that was bound is never missing its event.
+        outbox.Collect(new UserSignedInIntegrationEvent(
+            request.UserId, request.SessionId, request.DeviceId, request.ClientId));
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

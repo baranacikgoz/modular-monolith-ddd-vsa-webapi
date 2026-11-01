@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Common.Domain.StronglyTypedIds;
+using Common.IntegrationEvents;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
 using Common.Tests;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Notifications.Application.Persistence;
 using Notifications.Infrastructure.Devices.UpdateCurrentPushToken;
+using Notifications.Tests.Support;
 using Xunit;
 
 namespace Notifications.Tests.Devices;
@@ -46,6 +48,45 @@ public sealed class DeviceRegistrationTests(NotificationsTestFactory factory) : 
         Assert.Equal("Pixel", registration.DeviceName);
         Assert.Equal("fcm-1", registration.PushToken);
         Assert.True(registration.IsActive);
+    }
+
+    [Fact]
+    public async Task Bind_FirstLoginOnDevice_QueuesTheSignedInEvent()
+    {
+        var userId = ApplicationUserId.New();
+        var deviceId = Guid.NewGuid();
+
+        await BindClient.SendAsync(
+            new BindDeviceSessionRequest(userId, "sid-1", deviceId, "mobile-app-1", "Pixel", "fcm-1"),
+            CancellationToken.None);
+
+        var queued = Assert.Single(
+            await ConsumerHarness.QueuedEventsAsync<UserSignedInIntegrationEvent>(Factory.Services),
+            e => e.UserId == userId);
+        Assert.Equal("sid-1", queued.SessionId);
+        Assert.Equal(deviceId, queued.DeviceId);
+        Assert.Equal("mobile-app-1", queued.ClientId);
+    }
+
+    [Fact]
+    public async Task Bind_EveryLoginOnTheSameDevice_QueuesItsOwnSignedInEvent()
+    {
+        var userId = ApplicationUserId.New();
+        var deviceId = Guid.NewGuid();
+
+        await BindClient.SendAsync(
+            new BindDeviceSessionRequest(userId, "sid-old", deviceId, "mobile-app-1", "Pixel", "fcm-1"),
+            CancellationToken.None);
+        await BindClient.SendAsync(
+            new BindDeviceSessionRequest(userId, "sid-new", deviceId, "mobile-app-1", DeviceName: null, PushToken: null),
+            CancellationToken.None);
+
+        var queued = (await ConsumerHarness.QueuedEventsAsync<UserSignedInIntegrationEvent>(Factory.Services))
+            .Where(e => e.UserId == userId)
+            .Select(e => e.SessionId)
+            .Order()
+            .ToList();
+        Assert.Equal(["sid-new", "sid-old"], queued);
     }
 
     [Fact]
