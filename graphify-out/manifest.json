@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/OutboxOptions.cs": {
-    "mtime": 1790339039.150082,
-    "seen": 1790339366.3682828,
-    "ast_hash": "000e77407883c53cb3298c81655291dd",
+    "mtime": 1794311066.1565564,
+    "seen": 1794311073.431367,
+    "ast_hash": "86276654046ee13ec0fae67568308399",
     "semantic_hash": ""
   },
   "src/Common/Common.Application/Options/RabbitMqOptions.cs": {
@@ -2700,9 +2700,9 @@
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/BindDeviceSessionRequestHandler.cs": {
-    "mtime": 1788814247.5591495,
-    "seen": 1788823272.568075,
-    "ast_hash": "653cb5f6968ca5b50a42b376c382d0ee",
+    "mtime": 1793551597.8742003,
+    "seen": 1793551601.8557959,
+    "ast_hash": "ddfe8ab9109fcc30f6266cea815da071",
     "semantic_hash": ""
   },
   "src/Modules/Notifications/Notifications.Infrastructure/InterModuleRequestHandlers/DeactivateDeviceSessionsRequestHandler.cs": {
@@ -3522,9 +3522,9 @@
     "semantic_hash": ""
   },
   "docs/modules.md": {
-    "mtime": 1793220742.867044,
-    "seen": 1793220747.651757,
-    "ast_hash": "0a33ddcd55b1e2fb01104166a1707775",
+    "mtime": 1793551597.7789586,
+    "seen": 1793551601.855974,
+    "ast_hash": "24fecab80afee6dbc159b1543b0aadff",
     "semantic_hash": ""
   },
   "docs/platform.md": {
@@ -3606,9 +3606,9 @@
     "semantic_hash": ""
   },
   "src/Common/Common.IntegrationEvents/Notifications.cs": {
-    "mtime": 1793119243.6068501,
-    "seen": 1793119252.802064,
-    "ast_hash": "6b1a284e8c367dfc5368a355a12cfc0b",
+    "mtime": 1793551597.8738537,
+    "seen": 1793551601.8555148,
+    "ast_hash": "3f05e9eebb9343b00fdba1d5d63d7739",
     "semantic_hash": ""
   },
   "src/Common/Common.IntegrationEvents/StoreAccess.cs": {

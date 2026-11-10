@@ -1,7 +1,7 @@
-# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-10-29)
+# Graph Report - modular-monolith-ddd-vsa-webapi  (2026-11-01)
 
 ## Corpus Check
-- 882 files · ~192,906 words
+- 882 files · ~192,947 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ae86b81d`
+- Built from commit: `1b41f299`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1333,7 +1333,7 @@ Nodes (62): Products.Endpoints.ProductTemplates.v1.Deactivate, Products.Endpoint
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Common.Application.Options` connect `Common.Application.Options` to `microsoft_extensions_logging`, `IServiceCollection`, `ObjectStorageOptions`, `PushOptions`, `TimeProvider`, `Common.Infrastructure.Extensions`, `Common.Domain.ResultMonad`, `EmailOptions`, `OutboxOptions.cs`, `FullTextSearchOptions`, `OpenApiOptions`, `InventoryOptions`, `CustomRateLimitingOptions`, `BackgroundJobsOptions`, `ProductSummariesReconciliationJob`, `CustomValidator`, `microsoft_entityframeworkcore`, `ObservabilityOptions`, `KeycloakPermissionAuthorizationHandler.cs`, `CorsOptions`, `CaptchaOptions`, `RabbitMqOptions`, `SmsOptions`, `Setup.Logger.cs`, `Host.Swagger`, `Common.InterModuleRequests.Products`, `KeycloakOptions`, `RequestLoggingOptions`, `fluentvalidation`, `AlertRecipientsOptions`, `AuditLogOptions`, `Response`, `ResiliencyOptions`, `Common.InterModuleRequests.Contracts`, `OtpOptions`, `ResxLocalizationOptions`, `InterModuleRequestOptions`, `DevicesOptions`, `system_net`, `SignalROptions`, `Response`, `ProductsOptions`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
+  _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **What connects `UserId`, `Id`, `IdAsString` to the rest of the system?**
   _1299 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `StockMovement` be split into smaller, more focused modules?**
