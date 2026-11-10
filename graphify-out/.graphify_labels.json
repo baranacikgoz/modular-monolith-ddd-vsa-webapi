@@ -1,6 +1,5 @@
 {
   "4": "Hybrid DDD (Writes) / VSA (Reads)",
-  "21": "BoundedRequestCaptureStream",
   "26": "Response",
   "33": "Response",
   "39": "ObservabilityOptions",
@@ -17,7 +16,6 @@
   "133": "Consumer Idempotency (IntegrationEventHandlerBase)",
   "170": "Notifications.Application/IAssemblyReference.cs",
   "181": "RabbitMqOptions",
-  "195": "Response",
   "201": "KeycloakScopes",
   "204": "Configuration-Driven Module Loading",
   "206": "IntegrationEvents (Async Cross-Module)",

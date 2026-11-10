@@ -7,6 +7,14 @@ public class OutboxOptions
 {
     public required int PollIntervalMs { get; set; }
     public required int BatchSize { get; set; }
+    /// <summary>
+    /// Failed publishes after which a message is marked permanently failed and never retried. Every failed
+    /// attempt costs up to <see cref="PublishTimeoutMs"/> plus a full-jitter exponential backoff (uniform in
+    /// [0, min(<see cref="MaxBackoffSeconds"/>, 2^failures * <see cref="BaseBackoffSeconds"/>))), so the budget
+    /// is a time window, not a fixed delay. With the shipped defaults 10 attempts outlast a broker outage of
+    /// about 6 minutes with 99 percent probability (median about 16 minutes), while 5 attempts give up after
+    /// about 1 minute. Lowering it turns a broker restart into permanently failed messages.
+    /// </summary>
     public required int MaxRetryCount { get; set; }
     public required bool IsProcessor { get; set; }
 
