@@ -1,8 +1,8 @@
+using System.Globalization;
 using Common.Application.Options;
 using Common.Infrastructure.Persistence.Extensions;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Hubs;
@@ -16,7 +16,7 @@ public class SendSecurityAlertRequestHandler(
     INotificationDispatcher dispatcher,
     IPushGateway pushGateway,
     IOptions<PushOptions> pushOptionsProvider,
-    IOptions<RequestLocalizationOptions> localizationOptionsProvider
+    IOptions<ResxLocalizationOptions> localizationOptionsProvider
 ) : InterModuleRequestHandler<SendSecurityAlertRequest, SendSecurityAlertResponse>
 {
     public override async Task<SendSecurityAlertResponse> HandleAsync(
@@ -40,7 +40,9 @@ public class SendSecurityAlertRequestHandler(
         if (pushTokens.Count > 0)
         {
             var templates = pushOptionsProvider.Value.Templates.SecurityAlert;
-            var language = localizationOptionsProvider.Value.DefaultRequestCulture.UICulture.TwoLetterISOLanguageName;
+            // The application's configured default, not RequestLocalizationOptions: nothing configures that
+            // DI-registered instance, so its default culture is the process culture (invariant in a container).
+            var language = new CultureInfo(localizationOptionsProvider.Value.DefaultCulture).TwoLetterISOLanguageName;
             if (!templates.TryGetValue(language, out var template))
             {
                 template = templates.Values.First();

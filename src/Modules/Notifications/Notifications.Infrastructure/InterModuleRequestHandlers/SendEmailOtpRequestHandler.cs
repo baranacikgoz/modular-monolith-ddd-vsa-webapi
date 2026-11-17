@@ -1,8 +1,8 @@
+using System.Globalization;
 using Common.Application.Caching;
 using Common.Application.Options;
 using Common.InterModuleRequests.Contracts;
 using Common.InterModuleRequests.Notifications;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Email;
 using Notifications.Application.Otp;
@@ -17,7 +17,7 @@ public sealed class SendEmailOtpRequestHandler(
     IFusionCache cache,
     IOptions<OtpOptions> otpOptionsProvider,
     IOptions<EmailOptions> emailOptionsProvider,
-    IOptions<RequestLocalizationOptions> localizationOptionsProvider
+    IOptions<ResxLocalizationOptions> localizationOptionsProvider
 ) : InterModuleRequestHandler<SendEmailOtpRequest, SendEmailOtpResponse>
 {
     public override async Task<SendEmailOtpResponse> HandleAsync(
@@ -43,17 +43,16 @@ public sealed class SendEmailOtpRequestHandler(
         }
 
         var templates = emailOptionsProvider.Value.Templates.Otp;
-        var language = request.Language
-                       ?? localizationOptionsProvider.Value.DefaultRequestCulture.UICulture.TwoLetterISOLanguageName;
+        // The application's configured default, not RequestLocalizationOptions: nothing configures that
+        // DI-registered instance, so its default culture is the process culture (invariant in a container).
+        var fallback = new CultureInfo(localizationOptionsProvider.Value.DefaultCulture).TwoLetterISOLanguageName;
+        var language = request.Language ?? fallback;
 
-        if (!templates.TryGetValue(language, out var template))
+        if (!templates.TryGetValue(language, out var template)
+            && !templates.TryGetValue(fallback, out template))
         {
-            var fallback = localizationOptionsProvider.Value.DefaultRequestCulture.UICulture.TwoLetterISOLanguageName;
-            if (!templates.TryGetValue(fallback, out template))
-            {
-                throw new InvalidOperationException(
-                    $"No EmailTemplate configured for language '{language}' or default language '{fallback}'. Add an entry to EmailOptions:Templates:Otp.");
-            }
+            throw new InvalidOperationException(
+                $"No EmailTemplate configured for language '{language}' or default language '{fallback}'. Add an entry to EmailOptions:Templates:Otp.");
         }
 
         var otp = otpService.Generate();
