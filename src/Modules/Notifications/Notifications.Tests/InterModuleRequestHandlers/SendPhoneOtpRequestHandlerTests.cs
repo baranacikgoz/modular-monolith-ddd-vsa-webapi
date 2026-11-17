@@ -1,8 +1,6 @@
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.InterModuleRequests.Notifications;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Otp;
 using Notifications.Application.Sms;
@@ -21,11 +19,13 @@ public sealed class SendPhoneOtpRequestHandlerTests : IDisposable
     private readonly IOtpService _otpService = Substitute.For<IOtpService>();
     private readonly ISmsGateway _smsGateway = Substitute.For<ISmsGateway>();
     private readonly FusionCache _cache;
+    private readonly IOptions<OtpOptions> _otpOptions;
+    private readonly IOptions<SmsOptions> _smsOptions;
     private readonly SendPhoneOtpRequestHandler _handler;
 
     public SendPhoneOtpRequestHandlerTests()
     {
-        var otpOptions = Options.Create(new OtpOptions
+        _otpOptions = Options.Create(new OtpOptions
         {
             Length = 6,
             ExpirationInMinutes = 5,
@@ -39,7 +39,7 @@ public sealed class SendPhoneOtpRequestHandlerTests : IDisposable
 
             VerificationTokenExpirationInMinutes = 30,
         });
-        var smsOptions = Options.Create(new SmsOptions
+        _smsOptions = Options.Create(new SmsOptions
         {
             Provider = SmsProvider.Dummy,
             AttemptTimeoutSeconds = 0,
@@ -48,17 +48,21 @@ public sealed class SendPhoneOtpRequestHandlerTests : IDisposable
             MaxPerPhoneNumberPerDay = 0,
             MaxPerDay = 0,
             ThrottleCounterTtlHours = 25,
-            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "Your code is: {0}" } },
-        });
-        var localizationOptions = Options.Create(new RequestLocalizationOptions
-        {
-            DefaultRequestCulture = new RequestCulture("en"),
+            Templates = new SmsTemplatesOptions { Otp = { ["en"] = "Your code is: {0}", ["tr"] = "Kodunuz: {0}" } },
         });
         _otpService.Generate().Returns("111111");
         _smsGateway.SendAsync(Arg.Any<SmsMessage>(), Arg.Any<CancellationToken>()).Returns(Result.Success);
         _cache = new FusionCache(new FusionCacheOptions());
-        _handler = new SendPhoneOtpRequestHandler(_otpService, _smsGateway, _cache, otpOptions, smsOptions, localizationOptions);
+        _handler = NewHandler(defaultCulture: "en");
     }
+
+    private SendPhoneOtpRequestHandler NewHandler(string defaultCulture) => new(
+        _otpService,
+        _smsGateway,
+        _cache,
+        _otpOptions,
+        _smsOptions,
+        Options.Create(new ResxLocalizationOptions { DefaultCulture = defaultCulture }));
 
     public void Dispose()
     {
@@ -140,6 +144,27 @@ public sealed class SendPhoneOtpRequestHandlerTests : IDisposable
         var response = await _handler.HandleAsync(new SendPhoneOtpRequest(PhoneNumber, "login"), CancellationToken.None);
 
         Assert.Equal(SmsOtpDispatchOutcome.Throttled, response.Outcome);
+    }
+
+    [Fact]
+    public async Task HandleAsync_NoLanguage_UsesTemplateOfTheConfiguredDefaultCulture()
+    {
+        var handler = NewHandler(defaultCulture: "tr");
+
+        var response = await handler.HandleAsync(new SendPhoneOtpRequest(PhoneNumber, "login"), CancellationToken.None);
+
+        Assert.Equal(SmsOtpDispatchOutcome.Sent, response.Outcome);
+        await _smsGateway.Received(1).SendAsync(
+            Arg.Is<SmsMessage>(m => m.Text == "Kodunuz: 111111"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_NoLanguageAndNoTemplateForDefaultCulture_Throws()
+    {
+        var handler = NewHandler(defaultCulture: "fr");
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            handler.HandleAsync(new SendPhoneOtpRequest(PhoneNumber, "login"), CancellationToken.None));
     }
 
     [Fact]

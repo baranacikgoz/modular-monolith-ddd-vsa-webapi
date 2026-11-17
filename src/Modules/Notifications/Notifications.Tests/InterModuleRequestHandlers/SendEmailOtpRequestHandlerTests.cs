@@ -1,8 +1,6 @@
 using Common.Application.Options;
 using Common.Domain.ResultMonad;
 using Common.InterModuleRequests.Notifications;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Notifications.Application.Email;
 using Notifications.Application.Otp;
@@ -21,11 +19,13 @@ public sealed class SendEmailOtpRequestHandlerTests : IDisposable
     private readonly IOtpService _otpService = Substitute.For<IOtpService>();
     private readonly IEmailGateway _emailGateway = Substitute.For<IEmailGateway>();
     private readonly FusionCache _cache;
+    private readonly IOptions<OtpOptions> _otpOptions;
+    private readonly IOptions<EmailOptions> _emailOptions;
     private readonly SendEmailOtpRequestHandler _handler;
 
     public SendEmailOtpRequestHandlerTests()
     {
-        var otpOptions = Options.Create(new OtpOptions
+        _otpOptions = Options.Create(new OtpOptions
         {
             Length = 6,
             ExpirationInMinutes = 5,
@@ -36,7 +36,7 @@ public sealed class SendEmailOtpRequestHandlerTests : IDisposable
             EmailQuotaWindowMinutes = 60,
             VerificationTokenExpirationInMinutes = 30,
         });
-        var emailOptions = Options.Create(new EmailOptions
+        _emailOptions = Options.Create(new EmailOptions
         {
             Provider = EmailProvider.Dummy,
             AttemptTimeoutSeconds = 0,
@@ -60,15 +60,19 @@ public sealed class SendEmailOtpRequestHandlerTests : IDisposable
                 },
             },
         });
-        var localizationOptions = Options.Create(new RequestLocalizationOptions
-        {
-            DefaultRequestCulture = new RequestCulture("en"),
-        });
         _otpService.Generate().Returns("111111");
         _emailGateway.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>()).Returns(Result.Success);
         _cache = new FusionCache(new FusionCacheOptions());
-        _handler = new SendEmailOtpRequestHandler(_otpService, _emailGateway, _cache, otpOptions, emailOptions, localizationOptions);
+        _handler = NewHandler(defaultCulture: "en");
     }
+
+    private SendEmailOtpRequestHandler NewHandler(string defaultCulture) => new(
+        _otpService,
+        _emailGateway,
+        _cache,
+        _otpOptions,
+        _emailOptions,
+        Options.Create(new ResxLocalizationOptions { DefaultCulture = defaultCulture }));
 
     public void Dispose()
     {
@@ -163,6 +167,28 @@ public sealed class SendEmailOtpRequestHandlerTests : IDisposable
         var response = await _handler.HandleAsync(new SendEmailOtpRequest(Email, "email_verification"), CancellationToken.None);
 
         Assert.Equal(EmailOtpDispatchOutcome.Throttled, response.Outcome);
+    }
+
+    [Fact]
+    public async Task HandleAsync_NoLanguage_UsesTemplateOfTheConfiguredDefaultCulture()
+    {
+        var handler = NewHandler(defaultCulture: "tr");
+
+        var response = await handler.HandleAsync(
+            new SendEmailOtpRequest(Email, "email_verification"), CancellationToken.None);
+
+        Assert.Equal(EmailOtpDispatchOutcome.Sent, response.Outcome);
+        await _emailGateway.Received(1).SendAsync(
+            Arg.Is<EmailMessage>(m => m.Subject == "Kodunuz: 111111"), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_NoLanguageAndNoTemplateForDefaultCulture_Throws()
+    {
+        var handler = NewHandler(defaultCulture: "fr");
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            handler.HandleAsync(new SendEmailOtpRequest(Email, "email_verification"), CancellationToken.None));
     }
 
     [Fact]
