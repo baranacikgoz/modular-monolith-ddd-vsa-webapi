@@ -16,7 +16,6 @@ public sealed record Request
 
     /// <summary>A JPEG, PNG or WebP image. The type is decided from the file's first bytes, never from its name or the
     /// client's content type.</summary>
-    [FromForm]
     public required IFormFile File { get; init; }
 }
 
